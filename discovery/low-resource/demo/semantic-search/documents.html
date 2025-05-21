@@ -1,0 +1,1855 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <title>Lightweight IDS</title>
+    <!-- Vuetify 3 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/vuetify@3.5.17/dist/vuetify.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Material Design Icons (MDI) -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Material Design Icons Iconfont (Classic) -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/material-design-icons-iconfont@7.0.1/dist/material-design-icons.css"
+      rel="stylesheet"
+    />
+
+    <!-- Splitpanes styles -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/splitpanes@latest/dist/splitpanes.css"
+      rel="stylesheet"
+    />
+
+    <!-- Google Fonts: Material Symbols & Material Icons -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.4.25/dist/vue.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@3.5.17/dist/vuetify.min.js"></script>
+
+    <!-- <link href="/css/ids.min.css" rel="stylesheet" /> -->
+    <link
+      href="https://avsolatorio.github.io/ai-for-data-blog/semantic-search/css/universal.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://avsolatorio.github.io/ai-for-data-blog/semantic-search/css/ids.min.css"
+      rel="stylesheet"
+    />
+
+    <script
+      type="text/javascript"
+      src="https://pym.nprapps.org/pym.v1.min.js"
+    ></script>
+    <script>
+      window.onload = function () {
+        var pymChild = new pym.Child({ polling: 500 });
+      };
+    </script>
+
+    <!-- <style>
+    html, body, #app {
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: 'Roboto', sans-serif;
+      background: #f9f9fc;
+    }
+
+    .scroll-panel {
+      flex-grow: 1;
+      overflow-y: auto;
+      height: 100%;
+    }
+
+    .card-clickable {
+      cursor: pointer;
+      transition: box-shadow 0.2s ease;
+    }
+
+    .card-clickable:hover {
+      box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .text-muted {
+      color: #666;
+    }
+
+    .search-bar-container{
+      background-color: #ffffff !important;
+      padding-right: 0% !important;
+    }
+
+    .content-panel {
+      background-color: var(--secondary-100);
+      border-radius: var(--border-radius);
+    }
+
+    @media (max-width: 960px) {
+      .desktop-only {
+        display: none !important;
+      }
+
+      .search-bar-container {
+        padding-right: 16px !important;
+      }
+    }
+
+    .low-sim {
+      opacity: 0.6;
+    }
+  </style> -->
+    <style>
+      /* html, body, #app {
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: 'Roboto', sans-serif;
+      background: #f9f9fc;
+    } */
+
+      :root {
+        --secondary-100: #f3f5fc;
+      }
+
+      .bg-secondary-100 {
+        background-color: var(--secondary-100);
+      }
+
+      .search-buttons {
+        color: #0c1a4d;
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+      }
+
+      .card-icons {
+        color: var(--primary-dark);
+        font-size: 15px;
+        width: 15px;
+        height: 15px;
+      }
+
+      .full-page-loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(255, 255, 255, 0.75);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+      }
+
+      .doi-link {
+        color: var(--primary-dark);
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .doi-link:hover {
+        text-decoration: underline;
+      }
+
+      .pdf-link {
+        color: var(--primary-dark);
+      }
+
+      .pdf-link:hover {
+        color: var(--primary);
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <v-app>
+        <main class="v-main">
+          <v-container fluid class="v-container--search">
+            <!-- Search Bar -->
+            <div class="px-4 px-md-0 mt-md-9">
+              <div
+                class="position-relative search-bar-area search-bar"
+                @click="isActive = true"
+                v-click-outside="handleClickOutside"
+              >
+                <div class="custom-search-bar-filter">
+                  <div class="custom-search-bar-filter__content">
+                    <div
+                      class="grow-wrap"
+                      ref="textareaGrowWrap"
+                      :class="{ active: isActive }"
+                    >
+                      <textarea
+                        v-model="query"
+                        name="text"
+                        :maxlength="5000"
+                        rows="1"
+                        id="text"
+                        placeholder="What are you looking for?"
+                        @input="updateReplicatedValue"
+                        @keydown="handleKeyDown"
+                      ></textarea>
+                    </div>
+                  </div>
+                  <div class="custom-search-bar-filter__append">
+                    <div class="right-icons-container">
+                      <div
+                        class="w-[30px] h-[30px] custom-search-bar-filter__icon d-flex justify-center align-center"
+                        v-if="(!query && !tempFile) || isListening === true"
+                      >
+                        <i
+                          class="v-icon material-symbols-outlined cursor-pointer"
+                          class="search-icon semibold cursor-pointer"
+                          class="search-buttons"
+                          size="24"
+                          onclick="onMicrophoneClick()"
+                          aria-label="search"
+                        >
+                          <!-- {{ isListening ? 'settings_voice' : 'mic' }} -->
+                          settings_voice
+                        </i>
+                      </div>
+                      <div class="d-flex right-icons-container__append" v-else>
+                        <v-icon-custom
+                          size="24"
+                          icon="cancel"
+                          type="symbol"
+                          class="v-icon--clickable v-btn--close custom-search-bar-filter__icon"
+                          outlined
+                          aria-label="clear"
+                          @click="clearSearch"
+                        ></v-icon-custom>
+
+                        <!-- <i
+                          class="v-icon material-symbols-outlined v-icon--clickable v-btn--close custom-search-bar-filter__icon search-buttons"
+                          size="24"
+                          onclick="clearSearch()"
+                          aria-label="clear"
+                        >
+
+                          cancel
+                        </i> -->
+                        <v-btn
+                          aria-label="search"
+                          class="h-[30px]"
+                          size="small"
+                          @click="submit"
+                        >
+                          <i
+                            class="material-icons v-icon notranslate v-theme--light v-icon--size-default"
+                            aria-hidden="true"
+                            >arrow_forward_ios</i
+                          >
+                        </v-btn>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <v-row
+              v-if="busy"
+              class="d-flex ga-md-5 mx-0 search-content mt-md-2"
+            >
+              <v-col
+                cols="12"
+                md="4"
+                class="search-content__result pa-4 px-md-0"
+              >
+                <v-skeleton-loader
+                  class="mx-auto w-100 border"
+                  elevation="12"
+                  type="list-item-two-line, list-item-three-line"
+                ></v-skeleton-loader>
+                <v-skeleton-loader
+                  class="mx-auto w-100 border mt-6"
+                  elevation="12"
+                  type="list-item-two-line, list-item-three-line"
+                ></v-skeleton-loader>
+
+                <v-skeleton-loader
+                  class="mx-auto w-100 border mt-6"
+                  elevation="12"
+                  type="list-item-two-line, list-item-three-line"
+                ></v-skeleton-loader>
+              </v-col>
+              <v-col
+                cols="12"
+                md="8"
+                class="search-content__detail pa-4 relative"
+              >
+                <v-skeleton-loader
+                  class="mx-auto w-100 border"
+                  elevation="12"
+                  theme="light"
+                  type="avatar, list-item-three-line, list-item-three-line, list-item-two-line, list-item-two-line, list-item-two-line, list-item-two-line, list-item-two-line"
+                />
+              </v-col>
+            </v-row>
+            <v-row
+              v-else
+              class="d-flex ga-md-5 mx-0 search-content mt-md-2"
+              :class="{ 'animation-slide': itemSelected === true }"
+            >
+              <v-col
+                v-show="!isFullscreen"
+                cols="12"
+                md="4"
+                class="search-content__result px-4 px-md-0"
+                ref="scrollSearchContentResultMobile"
+              >
+                <div class="d-flex flex-column search-content__result__area">
+                  <div
+                    class="scroll-area"
+                    ref="scrollSearchContentResultDesktop"
+                    v-if="fullResults"
+                  >
+                    <v-infinite-scroll
+                      v-if="!reranking && fullResults.length > 0 && semanticResults.length > 0"
+                      :items="semanticResults"
+                      @load="loadMore"
+                      class="scroll-panel"
+                      color="primary"
+                    >
+                      <!-- CardResult -->
+                      <template
+                        v-for="(result, index) in semanticResults"
+                        :key="result.code"
+                      >
+                        <div @click="(e) => handleResultSearchClick(e, result)">
+                          <v-card
+                            flat
+                            class="card-result relative"
+                            :class="{
+    active: viewItem?.idno === result?.idno,
+    'mt-3': index !== 0,
+  }"
+                            :link="false"
+                          >
+                            <div class="d-flex align-center mb-3 type-info">
+                              <i
+                                class="v-icon material-symbols-outlined v-icon--clickable v-btn--close custom-search-bar-filter__icon card-icons"
+                                size="15"
+                                onclick="clearSearch()"
+                                aria-label="clear"
+                              >
+                                {{ icons[result.type]?.name ?? 'more_horiz' }}
+                              </i>
+
+                              <!-- <v-icon-custom
+        type="symbol"
+        size="15"
+        color="primary-dark"
+        :outlined="icons[result.type]?.outlined ?? false"
+        >{{ icons[result.type]?.name ?? 'more_horiz' }}</v-icon-custom
+      > -->
+                              <div class="text-xs text-capitalize">
+                                {{ result?.type }}
+                              </div>
+                              <div
+                                v-if="result?.type_extra"
+                                class="text-xs text-capitalize ml-1"
+                              >
+                                [{{ result?.type_extra }}]
+                              </div>
+                            </div>
+                            <v-card-title
+                              color="primary-dark"
+                              class="leading-1.3"
+                              >{{ result?.title }}</v-card-title
+                            >
+                            <v-card-subtitle v-if="result?.sub_title"
+                              >{{ result?.sub_title ?? '' }}</v-card-subtitle
+                            >
+                            <!-- <v-card-subtitle v-if="result?.idno"
+                              >{{ result?.idno ?? '' }}</v-card-subtitle
+                            > -->
+                            <!-- <v-card-subtitle v-if="result?.code"
+                              >{{ result?.code ?? '' }}</v-card-subtitle
+                            > -->
+                            <v-card-text v-if="result?.text"
+                              >{{ result?.text ?? '-' }}</v-card-text
+                            >
+                            <div
+                              class="mt-4 d-flex flex-wrap align-center text-body-3 categories"
+                            >
+                              <div
+                                class="category-item clickable-fn"
+                                v-if="result?.geographic_coverage?.length === 1"
+                              >
+                                <!-- geographic_coverage -->
+                                <!-- <v-icon class="material-symbols-outlined"
+                                  >mdi-earth</v-icon
+                                > -->
+                                <i
+                                  class="mdi mdi-earth v-icon notranslate v-theme--light v-icon--size-default material-symbols-outlined"
+                                  aria-hidden="true"
+                                ></i>
+
+                                <div>
+                                  {{ result.geographic_coverage_title }}
+                                </div>
+                              </div>
+                              <v-menu
+                                v-else-if="result?.geographic_coverage?.length > 1"
+                                class="v-menu--none-shadow"
+                                content-class="v-menu--country"
+                                max-height="250"
+                                scroll-strategy="close"
+                              >
+                                <template v-slot:activator="{ props }">
+                                  <div
+                                    class="category-item clickable-fn"
+                                    v-bind="props"
+                                    v-if="result?.geographic_coverage?.length"
+                                  >
+                                    <!-- <v-icon class="material-symbols-outlined"
+                                      >mdi-earth</v-icon
+                                    > -->
+                                    <i
+                                      class="mdi mdi-earth v-icon notranslate v-theme--light v-icon--size-default material-symbols-outlined"
+                                      aria-hidden="true"
+                                    ></i>
+                                    <div>
+                                      {{ result.geographic_coverage_title }}
+                                    </div>
+                                  </div>
+                                </template>
+                                <div
+                                  class="v-menu--country__content text-light-gray relative"
+                                >
+                                  <div
+                                    v-for="(item, index) in result?.geographic_coverage"
+                                    :key="index"
+                                    class="v-menu--country__item pa-3"
+                                    :class="{
+              'text-purple': item.type === 'exist',
+              'text-alert-color text-decoration-line-through':
+                item.type === 'un_exist',
+            }"
+                                  >
+                                    {{ item.title }}
+                                  </div>
+                                </div>
+                              </v-menu>
+
+                              <div
+                                class="category-item"
+                                v-if="result.time_coverage"
+                              >
+                                <!-- <v-icon class="material-symbols-outlined"
+                                  >mdi-calendar</v-icon
+                                > -->
+                                <i
+                                  class="mdi mdi-calendar v-icon notranslate v-theme--light v-icon--size-default material-symbols-outlined"
+                                  aria-hidden="true"
+                                ></i>
+                                <div>{{ result?.time_coverage }}</div>
+                              </div>
+
+                              <!-- Authoring -->
+                              <div
+                                v-if="result?.source?.length === 1"
+                                class="category-item clickable-fn"
+                              >
+                                <!-- <v-icon
+                                  v-if="result?.type === 'document'"
+                                  class="material-symbols-outlined"
+                                  >mdi-account-circle-outline</v-icon
+                                > -->
+                                <i
+                                  v-if="result?.type === 'document'"
+                                  class="mdi-account-circle-outline mdi v-icon notranslate v-theme--light v-icon--size-default material-symbols-outlined"
+                                  aria-hidden="true"
+                                ></i>
+                                <v-icon-custom
+                                  v-else
+                                  color="dark-gray"
+                                  type="symbol"
+                                  icon="account_balance"
+                                  outlined
+                                ></v-icon-custom>
+                                <div>{{ result?.source?.[0] }}</div>
+                              </div>
+                              <v-menu
+                                v-else-if="result?.source?.length > 1"
+                                class="v-menu--none-shadow"
+                                content-class="v-menu--source"
+                                max-height="250"
+                                scroll-strategy="close"
+                              >
+                                <template v-slot:activator="{ props }">
+                                  <div
+                                    class="category-item clickable-fn"
+                                    v-bind="props"
+                                  >
+                                    <!-- <v-icon
+                                      v-if="result?.type === 'document'"
+                                      class="material-symbols-outlined"
+                                      >mdi-account-circle-outline</v-icon
+                                    > -->
+
+                                    <i
+                                      v-if="result?.type === 'document'"
+                                      class="mdi-account-circle-outline mdi v-icon notranslate v-theme--light v-icon--size-default material-symbols-outlined"
+                                      aria-hidden="true"
+                                    ></i>
+                                    <v-icon-custom
+                                      v-else
+                                      color="dark-gray"
+                                      type="symbol"
+                                      icon="account_balance"
+                                      outlined
+                                    ></v-icon-custom>
+                                    <!-- <div>{{ authorities_title }}</div> -->
+                                    <div>
+                                      {{ format_authorities_title(result) }}
+                                    </div>
+                                  </div>
+                                </template>
+                                <div
+                                  class="v-menu--source__content text-light-gray"
+                                >
+                                  <div
+                                    v-for="(item, index) in result?.source"
+                                    :key="index"
+                                    class="v-menu--source__item pa-3"
+                                  >
+                                    {{ item }}
+                                  </div>
+                                </div>
+                              </v-menu>
+                            </div>
+                          </v-card>
+                        </div>
+                      </template>
+
+                      <template v-slot:empty>
+                        <div class="text-center text-light-gray text-sm mt-3">
+                          No more items!
+                        </div>
+                      </template>
+                    </v-infinite-scroll>
+                  </div>
+                </div>
+              </v-col>
+
+              <v-col
+                :cols="isFullscreen ? 12 : 8"
+                class="search-content__detail px-4 mt-4 pa-md-4 bg-secondary-100 relative"
+              >
+                <!-- DetailsPanel -->
+                <template v-if="viewItem">
+                  <div class="search-content__detail__info ga-md-4">
+                    <div
+                      class="d-flex ga-md-4 flex-column flex-md-row flex-1-1-0"
+                    >
+                      <div class="search-content__detail__info__image">
+                        <template v-if="loading">
+                          <v-progress-circular
+                            :size="40"
+                            :width="4"
+                            indeterminate
+                            color="primary"
+                          />
+                        </template>
+                        <template v-else>
+                          <!-- :src="thumbnailURL ?? mockupImage" -->
+                          <img
+                            ref="thumbnailImage"
+                            src="https://data-compass.ihsn.org/files/thumbnails/thumbnail-s14220.jpeg"
+                            alt="image"
+                          />
+                          <!-- <img v-else :src="mockupImage" alt="image" /> -->
+                        </template>
+                      </div>
+                      <div
+                        class="search-content__detail__info__content relative"
+                      >
+                        <div
+                          class="d-flex align-center mb-3 type-info text-primary-dark"
+                        >
+                          <v-icon-custom
+                            type="symbol"
+                            :icon="icons[viewItem.type]?.name ?? 'more_horiz'"
+                            size="15"
+                            :outlined="icons[viewItem.type]?.outlined ?? false"
+                          ></v-icon-custom>
+                          <div class="ml-1 text-subtitle-2 text-capitalize">
+                            {{ viewItem.type }}
+                          </div>
+                          <div
+                            v-if="viewItem?.type_extra"
+                            class="text-subtitle-2 text-capitalize ml-1"
+                          >
+                            [{{ viewItem?.type_extra }}]
+                          </div>
+                        </div>
+
+                        <h6 class="text-primary-dark text-xl semibold">
+                          {{ viewItem.title }}
+                        </h6>
+
+                        <p
+                          class="text-charcoal text-sm medium mt-2"
+                          v-if="viewItem.sub_title"
+                        >
+                          <!-- TODO: remove mockup later -->
+                          {{ viewItem.sub_title }}
+                        </p>
+
+                        <div
+                          class="d-flex align-center flex-wrap text-gray-600 text-xs mt-3 ga-2"
+                        >
+                          <!-- TODO: Waiting data -->
+                          <!-- <div class="d-flex align-center">
+                            <v-icon-custom
+                              type="symbol"
+                              icon="lock_open"
+                              size="16"
+                              outlined
+                              class="mr-1"
+                            ></v-icon-custom>
+                            <span>Open Access</span>
+                          </div> -->
+
+                          <template v-if="viewItem.doi">
+                            <!-- <span class="mx-3">|</span> -->
+                            DOI:
+                            <a
+                              class="doi-link"
+                              :href="`https://doi.org/${viewItem.doi}`"
+                              target="_blank"
+                              >{{ viewItem.doi }}</a
+                            >
+                          </template>
+                        </div>
+
+                        <!-- <p class="text-xs medium text-primary-dark mt-4">Abstract:</p>
+                        <p class="text-xs mt-3 text-gray scroll-area abstract-scroll">
+                          {{
+                            viewItem.abstract ??
+                            'The 2009 MDHS was designed to provide data to monitor the population and health situation in Maldives.Specifically, the MDHS collected information on fertility levels and preferences, marriage, sexual activity.'
+                          }}
+                        </p> -->
+
+                        <!-- DetailsHeaderInfo -->
+                        <div
+                          class="d-flex text-dark-gray text-xs mt-4 align-center flex-wrap medium"
+                        >
+                          <section
+                            class="d-flex align-center"
+                            v-if="viewItem.geographic_coverage?.length"
+                          >
+                            <div
+                              class="d-flex py-1"
+                              v-if="viewItem.geographic_coverage?.length === 1"
+                            >
+                              <v-icon-custom
+                                type="symbol"
+                                icon="globe_asia"
+                                size="15"
+                                class="mr-1"
+                                outlined
+                              ></v-icon-custom>
+                              <span
+                                >{{ viewItem.geographic_coverage_title }}</span
+                              >
+                            </div>
+                            <v-menu
+                              v-else-if="viewItem?.geographic_coverage?.length > 1"
+                              class="v-menu--none-shadow"
+                              content-class="v-menu--country"
+                              max-height="250"
+                              scroll-strategy="close"
+                            >
+                              <template v-slot:activator="{ props }">
+                                <div
+                                  class="d-flex align-center py-1 cursor-pointer"
+                                  v-bind="props"
+                                  v-if="viewItem?.geographic_coverage?.length"
+                                >
+                                  <!-- <v-icon class="material-symbols-outlined"
+                                    >mdi-earth</v-icon
+                                  > -->
+                                  <!-- <i
+                                    class="mdi-earth mdi v-icon notranslate v-theme--light v-icon--size-default material-symbols-outlined"
+                                    size="15"
+                                    aria-hidden="true"
+                                  ></i> -->
+
+                                  <v-icon-custom
+                                    type="symbol"
+                                    icon="globe_asia"
+                                    size="15"
+                                    class="mr-1"
+                                    outlined
+                                  ></v-icon-custom>
+                                  <div>
+                                    {{ viewItem.geographic_coverage_title ?
+                                    viewItem.geographic_coverage_title :
+                                    "Countries" }}
+                                  </div>
+                                </div>
+                              </template>
+                              <div
+                                class="v-menu--country__content text-light-gray relative"
+                              >
+                                <div
+                                  v-for="(item, index) in viewItem?.geographic_coverage"
+                                  :key="index"
+                                  class="v-menu--country__item pa-3"
+                                  :class="{
+                                      'text-purple': item.type === 'exist',
+                                      'text-alert-color': item.type === 'un_exist',
+                                    }"
+                                >
+                                  {{ item.name }}
+                                </div>
+                              </div>
+                            </v-menu>
+                          </section>
+
+                          <section
+                            class="d-flex align-center"
+                            v-if="viewItem.time_coverage"
+                          >
+                            <span
+                              v-if="viewItem.geographic_coverage?.length"
+                              class="mx-2"
+                              >|</span
+                            >
+                            <div class="d-flex py-1">
+                              <v-icon-custom
+                                type="symbol"
+                                icon="calendar_today"
+                                size="15"
+                                class="mr-1"
+                                outlined
+                              ></v-icon-custom>
+                              <span>{{ viewItem.time_coverage }}</span>
+                            </div>
+                          </section>
+
+                          <section
+                            class="d-flex align-center"
+                            v-if="viewItem.source?.length && viewItem.type !== 'document'"
+                          >
+                            <span class="mx-2">|</span>
+                            <div
+                              class="d-flex py-1 align-center cursor-pointer"
+                              v-if="viewItem?.source?.length === 1"
+                            >
+                              <v-icon-custom
+                                type="symbol"
+                                icon="account_balance"
+                                size="15"
+                                class="mr-1"
+                                outlined
+                              ></v-icon-custom>
+                              <span>{{ authorities_title }}</span>
+                            </div>
+                            <v-menu
+                              v-else-if="viewItem?.source?.length > 1"
+                              class="v-menu--none-shadow"
+                              content-class="v-menu--source"
+                              max-height="250"
+                              scroll-strategy="close"
+                            >
+                              <template v-slot:activator="{ props }">
+                                <div
+                                  class="d-flex py-1 align-center cursor-pointer"
+                                  v-bind="props"
+                                >
+                                  <v-icon-custom
+                                    type="symbol"
+                                    icon="account_balance"
+                                    size="15"
+                                    class="mr-1"
+                                    outlined
+                                  ></v-icon-custom>
+
+                                  <div>{{ authorities_title }}</div>
+                                </div>
+                              </template>
+                              <div
+                                class="v-menu--source__content text-light-gray"
+                              >
+                                <div
+                                  v-for="(item, index) in viewItem?.source"
+                                  :key="index"
+                                  class="v-menu--source__item pa-3"
+                                >
+                                  {{ item }}
+                                </div>
+                              </div>
+                            </v-menu>
+                          </section>
+
+                          <section
+                            class="d-flex align-center"
+                            v-else-if="viewItem.source?.length"
+                          >
+                            <span class="mx-2">|</span>
+                            <div
+                              class="d-flex py-1 align-center cursor-pointer"
+                              v-if="viewItem?.source?.length === 1"
+                            >
+                              <v-icon-custom
+                                type="symbol"
+                                icon="account_circle"
+                                size="15"
+                                class="mr-1"
+                                outlined
+                              ></v-icon-custom>
+                              <span>{{ authorities_title }}</span>
+                            </div>
+                            <v-menu
+                              v-else-if="viewItem?.source?.length > 1"
+                              class="v-menu--none-shadow"
+                              content-class="v-menu--source"
+                              max-height="250"
+                              scroll-strategy="close"
+                            >
+                              <template v-slot:activator="{ props }">
+                                <div
+                                  class="d-flex py-1 align-center cursor-pointer"
+                                  v-bind="props"
+                                >
+                                  <v-icon-custom
+                                    type="symbol"
+                                    icon="account_circle"
+                                    size="15"
+                                    class="mr-1"
+                                    outlined
+                                  ></v-icon-custom>
+                                  <div>{{ authorities_title }}</div>
+                                </div>
+                              </template>
+                              <div
+                                class="v-menu--source__content text-light-gray"
+                              >
+                                <div
+                                  v-for="(item, index) in viewItem?.source"
+                                  :key="index"
+                                  class="v-menu--source__item pa-3"
+                                >
+                                  {{ item }}
+                                </div>
+                              </div>
+                            </v-menu>
+                          </section>
+
+                          <section
+                            class="d-flex align-center"
+                            v-if="viewItem.collection?.length"
+                          >
+                            <span class="mx-2">|</span>
+                            <div class="d-flex py-1">
+                              <v-icon-custom
+                                type="symbol"
+                                icon="folder"
+                                size="15"
+                                class="mr-1"
+                                outlined
+                              ></v-icon-custom>
+                              <span>{{ viewItem.collection }}</span>
+                            </div>
+                          </section>
+
+                          <section
+                            class="d-flex align-center"
+                            v-if="viewItem.dimensions?.length"
+                          >
+                            <span class="mx-2">|</span>
+                            <div class="d-flex py-1">
+                              <v-icon-custom
+                                type="symbol"
+                                icon="resize"
+                                size="15"
+                                class="mr-1"
+                                outlined
+                              ></v-icon-custom>
+                              <span>{{ viewItem.dimensions?.join(', ') }}</span>
+                            </div>
+                          </section>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Group buttons -->
+                    <div
+                      class="d-flex justify-space-between justify-md-end group-social-buttons"
+                    >
+                      <v-btn
+                        variant="outlined"
+                        class="v-btn-icon v-btn--search"
+                        @click="itemSelected = false"
+                        v-if="width < 960"
+                      >
+                        <v-icon-custom
+                          icon="chevron_backward"
+                          type="symbol"
+                          :size="20"
+                          outlined
+                        ></v-icon-custom>
+                      </v-btn>
+                      <!-- <div class="d-flex ga-2">
+                        <v-btn
+                          variant="outlined"
+                          class="v-btn-icon v-btn--search"
+                          v-for="(btn, index) in groupBTNs"
+                          :key="index"
+                          @click="handleGroupBTNFilter(btn, index)"
+                          :class="btn.class ? btn.class : ''"
+                          :aria-label="`Button ${
+                          !btn.switch ? btn.text : btn.isFullscreen ? btn.text2 : btn.text1
+                        }`"
+                        >
+                          <v-icon-custom
+                            :size="19"
+                            :type="btn.type ?? 'symbol'"
+                            :outlined="true"
+                            :icon="
+                            !btn.switch ? btn.icon : btn.isFullscreen ? btn.icon2 : btn.icon1
+                          "
+                          />
+                          <v-tooltip
+                            activator="parent"
+                            location="bottom"
+                            content-class="nav-menu-tooltip"
+                            :aria-label="`Tooltip ${
+                            !btn.switch ? btn.text : btn.isFullscreen ? btn.text2 : btn.text1
+                          }`"
+                          >
+                            <template #default>
+                              <span
+                                >{{ !btn.switch ? btn.text : btn.isFullscreen ?
+                                btn.text2 : btn.text1 }}</span
+                              >
+                            </template>
+                          </v-tooltip>
+                        </v-btn>
+                      </div> -->
+                    </div>
+                  </div>
+                  <template v-if="viewItem?.type == 'document'">
+                    <div
+                      class="search-content__detail__description mx-n4 mx-md-0 pt-4 py-md-5 px-md-1 bg-white rounded-lg mt-4"
+                    >
+                      <div
+                        class="d-flex ga-2 max-w-full flex-no-wrap overflow-hidden overflow-x-auto pb-2 px-4 px-md-4"
+                      >
+                        <v-btn
+                          variant="outlined"
+                          class="v-btn-icon v-btn--search"
+                          :class="{ active: btn.active }"
+                          v-for="(btn, index) in filteredBtnContents"
+                          :key="index"
+                          @click="handleFilter(btn, index)"
+                        >
+                          <v-icon-custom
+                            :size="16"
+                            type="symbol"
+                            :outlined="true"
+                            :icon="btn.icon"
+                          ></v-icon-custom>
+                          <span class="mx-1">{{ btn.text }}</span>
+                        </v-btn>
+                      </div>
+                      <div
+                        ref="scrollArea"
+                        class="scroll-area mt-6 px-4 px-md-4"
+                      >
+                        <div class="d-flex flex-column overflow-y-auto pr-2">
+                          <template v-if="active_tab === 'abstract'">
+                            <v-container>
+                              <v-row class="justify-center">
+                                <v-col cols="11">
+                                  <v-card-title class="text-h6"
+                                    >Abstract</v-card-title
+                                  >
+                                </v-col>
+                                <v-col cols="11">
+                                  <v-card-text>
+                                    <span
+                                      v-html="metadata?.document_description?.abstract"
+                                    ></span>
+                                    <!-- <span v-html="viewItem?.abstract"></span> -->
+                                  </v-card-text>
+                                </v-col>
+                              </v-row>
+                            </v-container>
+                          </template>
+
+                          <template v-if="active_tab === 'view' && metadata">
+                            <div
+                              :style="`height: 80vh;`"
+                              v-if="pdfURL && typeof pdfURL === 'string'"
+                            >
+                              <div class="mb-2">
+                                The document is available from
+                                <a
+                                  class="pdf-link"
+                                  :href="pdfURL"
+                                  target="_blank"
+                                  >here</a
+                                >.
+                              </div>
+
+                              <iframe
+                                ref="iframe"
+                                width="100%"
+                                height="100%"
+                                type="application/pdf"
+                                :src="'https://docs.google.com/gview?url=' + pdfURL + '&embedded=true'"
+                                frameborder="0"
+                              ></iframe>
+                            </div>
+                            <v-container v-else>
+                              <v-row justify="center">
+                                <v-col cols="12" md="6">
+                                  <v-alert
+                                    outlined
+                                    color="lighten"
+                                    icon="mdi-alert"
+                                    border="left"
+                                    elevation="2"
+                                  >
+                                    <span
+                                      >No link to this document is
+                                      available.</span
+                                    >
+                                  </v-alert>
+                                </v-col>
+                              </v-row>
+                            </v-container>
+                          </template>
+
+                          <!-- <TabsDocumentChat
+                            v-show="active_tab === 'chat'"
+                            :idno="viewItem.idno"
+                            :pdfUrl="metadata?.document_description?.url"
+                            key="d_chat"
+                            :parentHeight="containerHeight"
+                          />
+                          <TabsDocumentAbstract
+                            v-show="active_tab === 'abstract'"
+                            :metadata="metadata"
+                            key="d_abstract"
+                          />
+                          <TabsDocumentMetadata
+                            v-show="active_tab === 'metadata'"
+                            :metadata="metadata"
+                            :idno="viewItem.idno"
+                            key="d_metadata"
+                          />
+                          <TabsDocumentView
+                            v-show="active_tab === 'view'"
+                            :pdfURL="metadata?.document_description?.url"
+                            key="d_view"
+                          />
+                          <TabsDocumentDataSnapshot
+                            v-show="active_tab === 'data_snapshot'"
+                            :idno="viewItem.idno"
+                            :pdfURL="metadata?.document_description?.url"
+                            key="d_data_snapshot"
+                          /> -->
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+
+                  <template v-if="viewItem?.type == 'indicator'">
+                    <div
+                      class="search-content__detail__description mx-n4 mx-md-0 pt-4 py-md-5 px-md-1 bg-white rounded-lg mt-4"
+                      ref="detailDescription"
+                    >
+                      <div
+                        class="d-flex ga-2 max-w-full flex-no-wrap overflow-hidden overflow-x-auto pb-2 px-4 px-md-4"
+                      >
+                        <v-btn
+                          variant="outlined"
+                          class="v-btn-icon v-btn--search"
+                          :class="{ active: btn.active }"
+                          v-for="(btn, index) in filteredBtnContents"
+                          :key="index"
+                          @click="handleFilter(btn, index)"
+                        >
+                          <v-icon-custom
+                            :size="16"
+                            type="symbol"
+                            :outlined="true"
+                            :icon="btn.icon"
+                          ></v-icon-custom>
+
+                          <span class="mx-1">{{ btn.text }}</span>
+                        </v-btn>
+                      </div>
+                      <div class="scroll-area mt-6 px-4 px-md-4">
+                        <div class="d-flex flex-column overflow-y-auto pr-2">
+                          <template v-if="active_tab === 'metadata'">
+                            <div>
+                              Test
+
+                              <v-btn
+                                @click="handleMetadataDownload(idno, metadata)"
+                                color="gray-600"
+                                class="mb-4"
+                              >
+                                <v-icon>mdi-download</v-icon>
+                                JSON
+                              </v-btn>
+                              <!-- <TemplatesParser
+                                :template="display_template.template"
+                                :data="metadata"
+                              ></TemplatesParser> -->
+                            </div>
+                          </template>
+
+                          <!-- <TabsIndicatorData
+                            v-show="active_tab === 'data'"
+                            :metadata="metadata"
+                            :idno="viewItem.idno"
+                            key="i_data"
+                            :frameHeight="`${detailDescriptionHeight - 250}px`"
+                          />
+                          <TabsIndicatorVisualizations
+                            v-show="active_tab === 'visualizations'"
+                            :metadata="metadata"
+                            :idno="viewItem.idno"
+                            key="i_visualizations"
+                            :frameHeight="`${detailDescriptionHeight - 250}px`"
+                          />
+                          <TabsIndicatorMetadata
+                            v-show="active_tab === 'metadata'"
+                            :metadata="metadata"
+                            :idno="viewItem.idno"
+                            key="i_metadata"
+                          />
+                          <TabsIndicatorQuickAnswer
+                            v-show="active_tab === 'quick_answer'"
+                            :metadata="metadata"
+                            :query="filters?.query"
+                            key="i_quick_answer"
+                            :frameHeight="`${detailDescriptionHeight - 145}px`"
+                          /> -->
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+                </template>
+              </v-col>
+            </v-row>
+          </v-container>
+        </main>
+
+        <div v-if="pageLoading || loadingModel" class="full-page-loading">
+          <v-row align-content="center" class="fill-height" justify="center">
+            <v-col class="text-subtitle-1 text-center" cols="12">
+              {{ loadingMessage }}
+            </v-col>
+            <v-col cols="6">
+              <!-- <v-progress-circular
+                v-if="pageLoading"
+                :size="70"
+                color="var(--purple)"
+                width="5"
+                indeterminate
+              ></v-progress-circular> -->
+
+              <v-progress-linear
+                color="var(--purple)"
+                :size="70"
+                height="6"
+                indeterminate
+                rounded
+              ></v-progress-linear>
+
+              <!-- <v-progress-linear
+                v-if="pageLoading"
+                color="deep-purple-accent-4"
+                :size="70"
+                height="6"
+                indeterminate
+                rounded
+              ></v-progress-linear>
+
+              <v-progress-linear
+                v-if="loadingModel"
+                color="deep-purple-accent-4"
+                :size="70"
+                height="6"
+                v-model="loadingModelProgress"
+                rounded
+              ></v-progress-linear> -->
+            </v-col>
+          </v-row>
+        </div>
+      </v-app>
+    </div>
+
+    <div
+      id="firstLoading"
+      class="full-page-loading"
+      style="background-color: #f3f5fc; z-index: 999999 !important"
+    ></div>
+    <template id="v-icon-custom-template">
+      <i
+        class="v-icon material-symbols-outlined"
+        :class="cls"
+        v-if="type === 'symbol'"
+        :size="size"
+        :outlined="outlined"
+        :style="computedStyle"
+      >
+        {{ icon }}
+      </i>
+
+      <v-icon
+        v-else
+        :class="cls"
+        :color="color"
+        :disabled="disabled"
+        :end="end"
+        :size="size"
+        :start="start"
+        :tag="tag"
+        :theme="theme"
+        :outlined="outlined"
+        :icon="icon"
+        :style="styles"
+        :variant="variant"
+      >
+        {{ icon }}
+      </v-icon>
+    </template>
+
+    <script>
+      const VIconCustom = Vue.defineComponent({
+        template: "#v-icon-custom-template",
+        props: {
+          icon: String,
+          class: [String, Array, Object],
+          mainClass: String,
+          type: {
+            type: String,
+            default: "mdi",
+          },
+          color: String,
+          disabled: Boolean,
+          end: Boolean,
+          size: [String, Number],
+          start: Boolean,
+          tag: String,
+          theme: String,
+          outlined: Boolean,
+          variant: String,
+          styles: Object,
+        },
+        computed: {
+          cls() {
+            return this.class;
+          },
+          computedStyle() {
+            const size =
+              typeof this.size === "string" ? parseInt(this.size) : this.size;
+            return {
+              color: this.color,
+              fontSize: size ? size + "px" : undefined,
+              width: size ? size + "px" : undefined,
+              height: size ? size + "px" : undefined,
+              ...(this.styles || {}),
+            };
+          },
+        },
+      });
+    </script>
+
+    <script type="module">
+      import { useScroll, useWindowSize } from "https://esm.sh/@vueuse/core";
+      import {
+        env,
+        pipeline,
+      } from "https://cdn.jsdelivr.net/npm/@xenova/transformers";
+      env.allowRemoteModels = true;
+
+      const { createApp, ref, onMounted, nextTick, watch, computed } = Vue;
+      const { createVuetify } = Vuetify;
+      const vuetify = createVuetify({
+        defaults: {},
+        icons: {
+          defaultSet: "md",
+          sets: {
+            md: {
+              component: "v-icon", // uses <v-icon> by default
+            },
+          },
+        },
+      });
+
+      const useRerank = false;
+      let rerankWorker;
+
+      if (useRerank) {
+        // create once at top-level scope
+        const rerankWorkerRemote = new Worker(
+          "/ai-for-data-blog/semantic-search/js/search/rank.worker.js",
+          { type: "module" }
+        );
+        const rerankWorkerLocal = new Worker("/js/search/rank.worker.js", {
+          type: "module",
+        });
+
+        // rerankWorker = rerankWorkerRemote
+        rerankWorker = rerankWorkerLocal;
+      }
+      createApp({
+        setup() {
+          // const model_name = "GIST-all-MiniLM-L6-v2";
+          const model_name = "GIST-small-Embedding-v0";
+          const hf_organization = "avsolatorio";
+          const query = ref("");
+          const tab = ref(0);
+          const selected = ref(null);
+          const showMobileModal = ref(false);
+          const dataEmbeddings = ref([]);
+          const fullResults = ref([]);
+          const semanticResults = ref([]);
+          const loadedCount = ref(0);
+          const batchSize = 10;
+          const extractor = ref(null);
+          const loading = ref(false);
+          const applyReranking = ref(false);
+          const resultReranked = ref(false);
+          const reranking = ref(false);
+          const hasQueried = ref(false);
+          const threshold = 0.78;
+          const top_k = 20;
+          const isActive = ref(false);
+          const dtype = "document";
+          const viewItem = ref(null);
+          const busy = ref(false);
+          const { width } = useWindowSize();
+          const pageLoading = ref(true);
+          const metadata = ref(null);
+          const pdfURL = ref(null);
+          const loadingModel = ref(false);
+          const loadingMessage = ref("Loading data...");
+          const loadingModelProgress = ref(0);
+
+          const scrollSearchContentResultMobile = ref(null);
+          const scrollSearchContentResultDesktop = ref(null);
+          const btnContents = ref([
+            {
+              icon: "bolt",
+              text: "Quick answer",
+              key: "quick_answer",
+              active: true,
+              type: "indicator",
+            },
+            {
+              icon: "storage",
+              text: "Data",
+              key: "data",
+              active: false,
+              type: "indicator",
+            },
+            {
+              icon: "bar_chart_4_bars",
+              text: "Visualizations",
+              key: "visualizations",
+              active: false,
+              type: "indicator",
+            },
+            {
+              icon: "description",
+              text: "Metadata",
+              key: "metadata",
+              active: false,
+              type: "indicator",
+            },
+            // {
+            //   icon: 'router',
+            //   text: 'API',
+            //   key: 'api',
+            //   active: false,
+            // },
+            // {
+            //   icon: 'cached',
+            //   text: 'Usage stats',
+            //   key: 'usage_stats',
+            //   active: false,
+            // },
+            {
+              icon: "account_tree",
+              text: "See also",
+              key: "see_also",
+              active: false,
+              type: "indicator",
+            },
+            // Documents
+            {
+              icon: "note",
+              text: "Abstract",
+              key: "abstract",
+              active: true,
+              type: "document",
+            },
+            {
+              icon: "bolt",
+              text: "View",
+              key: "view",
+              active: false,
+              type: "document",
+            },
+            // {
+            //   icon: "robot_2",
+            //   text: "Chat",
+            //   key: "chat",
+            //   active: false,
+            //   type: "document",
+            // },
+            // {
+            //   icon: "document_scanner",
+            //   text: "Data Snapshot",
+            //   key: "data_snapshot",
+            //   active: false,
+            //   type: "document",
+            // },
+            // {
+            //  icon: "scan",
+            //   text: "Metadata",
+            //   key: "metadata",
+            //   active: false,
+            //   type: "document",
+            // },
+            // {
+            //   icon: "line_style",
+            //   text: "Topics",
+            //   key: "topics",
+            //   active: false,
+            //   type: "document",
+            // },
+            // {
+            //   icon: "cached",
+            //   text: "Usage stats",
+            //   key: "usage_stats",
+            //   active: false,
+            //   type: "document",
+            // },
+            // {
+            //   icon: "account_tree",
+            //   text: "See also",
+            //   key: "see_also",
+            //   active: false,
+            //   type: "document",
+            // },
+          ]);
+          // Filter out the quick answer button if the query is empty
+          const filteredBtnContents = computed(() => {
+            // return props.filters?.query
+
+            // return queryParserStore.entities.geopolitical_entities.length > 0
+            //   ? btnContents.value
+            //   : btnContents.value.filter((btn) => btn.key !== "quick_answer");
+
+            return btnContents.value.filter((btn) => btn.type === dtype);
+          });
+
+          const active_tab = ref(filteredBtnContents.value[0].key);
+
+          const handleFilter = (btn, index) => {
+            btn.active = true;
+            active_tab.value = btn.key;
+            filteredBtnContents.value.forEach((btn, i) => {
+              if (i !== index) {
+                btn.active = false;
+              }
+            });
+          };
+
+          // handleFilter(filteredBtnContents.value[0], 0);
+          // Controls
+          const isFullscreen = ref(false);
+          const itemSelected = ref(false);
+
+          watch(
+            () => width.value,
+            (value) => {
+              // get height of scrollSearchContentResultDesktop
+              if (scrollSearchContentResultDesktop.value) {
+                // scrollSearchContentResultDesktop.value.style.height = `${window.innerHeight}px`
+                infiniteHeight.value =
+                  scrollSearchContentResultDesktop.value.clientHeight ?? 0;
+              }
+            }
+          );
+
+          const format_authorities_title = (item) => {
+            let name = "-";
+            if (item?.source?.length === 1) {
+              name = item?.source[0];
+            }
+
+            if (item?.source?.length > 1) {
+              name = `${item?.source[0]} (+${item?.source?.length - 1})`;
+            }
+            return name;
+          };
+
+          const authorities_title = computed(() => {
+            return format_authorities_title(viewItem.value);
+          });
+
+          window.authorities_title = authorities_title;
+          window.viewItem = viewItem;
+
+          const loadModelCallback = async (progress) => {
+            console.log("progress", progress);
+            if (progress.status != "progress") {
+              loadingMessage.value = "";
+            }
+            const prog = parseInt(progress.progress);
+            loadingModelProgress.value = prog;
+            loadingMessage.value = "Loading AI model...";
+          };
+
+          const loadExtractor = async () => {
+            if (!extractor.value) {
+              loadingModel.value = true;
+              loadingMessage.value = "Loading AI model...";
+
+              extractor.value = await pipeline(
+                "feature-extraction",
+                `${hf_organization}/${model_name}`,
+                // { device: "webgpu", progress_callback: loadModelCallback }
+                { device: "webgpu" }
+              );
+              // loadingModelText.value = "Loading AI model..."
+              loadingModel.value = false;
+            }
+          };
+
+          const getEmbedding = async (text) => {
+            await loadExtractor();
+            const result = await extractor.value.model(
+              extractor.value.tokenizer(text)
+            );
+            return result.sentence_embedding.data;
+          };
+
+          const dotProduct = (a, b) =>
+            a.map((x, i) => x * b[i]).reduce((sum, val) => sum + val, 0);
+
+          const submit = async () => {
+            busy.value = true;
+            selected.value = null;
+            viewItem.value = null;
+            loadedCount.value = 0;
+            hasQueried.value = true;
+            resultReranked.value = false;
+
+            if (query.value) {
+              const emb = await getEmbedding(query.value);
+              fullResults.value = dataEmbeddings.value
+                .map((d) => ({
+                  ...d,
+                  // title: d.name,
+                  // type: dtype,
+                  // idno: d.code,
+                  // text: d.definition,
+                  // source: [d.source],
+                  sim: dotProduct(emb, d.embedding),
+                }))
+                .sort((a, b) => b.sim - a.sim)
+                .filter((x) => x.sim > 0.5);
+
+              if (applyReranking.value && useRerank) {
+                await rerank();
+              }
+            } else {
+              // If query is empty return result sorted by most recent first.
+              fullResults.value = dataEmbeddings.value.sort((a, b) => {
+                const tA = a.time_coverage;
+                const tB = b.time_coverage;
+
+                if (tA < tB) {
+                  return 1;
+                }
+                if (tA > tB) {
+                  return -1;
+                }
+                return 0;
+              });
+            }
+
+            semanticResults.value = [];
+            await loadMore({ done: () => {} });
+            window.results = semanticResults.value;
+            window.query = query.value;
+            window.fullResults = fullResults.value;
+            busy.value = false;
+            pageLoading.value = false;
+          };
+
+          const rerank = async () => {
+            if (!query.value || query.value.trim() === "") {
+              console.log("Query is empty. Not changing anything...");
+              return;
+            }
+
+            reranking.value = true;
+            const batch = fullResults.value.slice(0, top_k);
+            // const documents = batch.map((x) => x.title + "\n\n" + x.definition);
+            const documents = batch.map((x) => x.title + "\n\n" + x.abstract);
+            const reranked = await new Promise((resolve, reject) => {
+              rerankWorker.onmessage = (e) => {
+                console.log("[Main thread] Got reranked:", e.data);
+                resolve(e.data);
+              };
+              rerankWorker.onerror = (err) => {
+                console.error("Worker error:", err);
+                reject(err);
+              };
+              rerankWorker.postMessage({
+                query: query.value,
+                documents,
+                top_k,
+              });
+            });
+
+            console.log(reranked);
+
+            for (let i = 0; i < top_k; i++) {
+              fullResults.value[i] = {
+                ...batch[reranked[i].corpus_id],
+                rerank_score: reranked[i].score,
+              };
+            }
+
+            resultReranked.value = true;
+            reranking.value = false;
+          };
+
+          const mockApi = async (data, buffer) => {
+            const next = data.slice(buffer.length, buffer.length + batchSize);
+            return new Promise((resolve) =>
+              setTimeout(() => resolve(next), 500)
+            );
+          };
+
+          const loadMore = async ({ done }) => {
+            loading.value = true;
+            const res = await mockApi(fullResults.value, semanticResults.value);
+            loading.value = false;
+
+            if (res.length === 0) {
+              done("empty");
+              return;
+            }
+            semanticResults.value.push(...res);
+            loadedCount.value = semanticResults.value.length;
+
+            if (viewItem.value === null) {
+              if (width.value >= 960) {
+                selectItem(res[0]);
+              }
+            }
+
+            done("ok");
+          };
+
+          const selectItem = (item) => {
+            viewItem.value = item;
+            tab.value = 0;
+            if (window.innerWidth < 960) {
+              showMobileModal.value = true;
+            }
+            loadMetadata();
+          };
+
+          const closeMobileModal = () => {
+            showMobileModal.value = false;
+          };
+
+          const clearSearch = () => {
+            query.value = "";
+            viewItem.value = null;
+            semanticResults.value = [];
+            hasQueried.value = false;
+            submit();
+          };
+
+          const loadJSON = () => {
+            // fetch(
+            //   `https://raw.githubusercontent.com/avsolatorio/ai-for-data-blog/main/semantic-search/data/${model_name}__wdi_embeddings.json`
+            // )
+            // fetch(
+            //   `https://raw.githubusercontent.com/avsolatorio/ai-for-data-blog/main/semantic-search/data/${hf_organization}__${model_name}__005__embeddings.json`
+            // )
+            // fetch(
+            //   `https://raw.githubusercontent.com/avsolatorio/ai-for-data-blog/main/semantic-search/data/${hf_organization}__${model_name}__005__doc_embeddings.json`
+            // )
+
+            fetch(
+              `https://raw.githubusercontent.com/avsolatorio/ai-for-data-blog/main/semantic-search/data/${hf_organization}__${model_name}__004__doc_embeddings.json`
+            )
+              .then((res) => res.json())
+              .then((data) => {
+                dataEmbeddings.value = data;
+                submit();
+              });
+          };
+
+          // https://raw.githubusercontent.com/avsolatorio/ai-for-data-blog/main/semantic-search/data/metadata/document/document_6200517.json
+
+          const loadMetadata = () => {
+            fetch(
+              `https://avsolatorio.github.io/ids-metadata/data/metadata/${dtype}/${dtype}_${viewItem.value.idno}.json`
+            )
+              .then((res) => res.json())
+              .then((data) => {
+                metadata.value = data;
+                window.metadata = metadata.value;
+                pdfURL.value = metadata.value?.document_description?.url;
+              });
+          };
+
+          const sortTopKBy = (field) => {
+            const sorted = fullResults.value
+              .slice(0, top_k)
+              .sort((a, b) => (b[field] ?? 0) - (a[field] ?? 0));
+
+            fullResults.value = [...sorted, ...fullResults.value.slice(top_k)];
+          };
+
+          watch(applyReranking, async (newVal) => {
+            if (!useRerank) {
+              console.log("Reranking not activated...");
+            } else if (newVal) {
+              if (!resultReranked.value) {
+                await rerank();
+              } else {
+                sortTopKBy("rerank_score");
+              }
+            } else {
+              sortTopKBy("sim");
+              console.log("Reranking turned off");
+            }
+
+            semanticResults.value = [];
+            await loadMore({ done: () => {} });
+          });
+
+          onMounted(() => {
+            loadJSON();
+          });
+
+          const handleKeyDown = (event) => {
+            if (event.key === "Enter" && !event.shiftKey) {
+              // Prevent default behavior (adding a new line)
+              event.preventDefault();
+              submit();
+            }
+          };
+
+          const handleResultSearchClick = (event, result) => {
+            // const exist = detectClassName(event.target, "clickable-fn");
+
+            // if (exist) return;
+            if (result?.idno === viewItem.value?.idno) {
+              return;
+            }
+
+            itemSelected.value = true;
+            viewItem.value = result;
+            loadMetadata();
+            // window.viewItem = viewItem.value;
+          };
+
+          const icons = {
+            microdata: { name: "database", outlined: false },
+            geospatial: { name: "globe_asia", outlined: true },
+            timeseries: { name: "chart_data", outlined: true },
+            table: { name: "table", outlined: true },
+            document: { name: "article", outlined: false },
+            image: { name: "image", outlined: false },
+            video: { name: "videocam", outlined: false },
+            script: { name: "integration_instructions", outlined: false },
+            indicator: { name: "monitoring", outlined: false },
+          };
+
+          // Clear block page
+          document.getElementById("firstLoading").remove();
+
+          return {
+            query,
+            tab,
+            selected,
+            semanticResults,
+            selectItem,
+            clearSearch,
+            loadMore,
+            submit,
+            loadedCount,
+            loading,
+            hasQueried,
+            fullResults,
+            showMobileModal,
+            closeMobileModal,
+            threshold,
+            reranking,
+            applyReranking,
+            isActive,
+            itemSelected,
+            isFullscreen,
+            handleKeyDown,
+            icons,
+            viewItem,
+            handleResultSearchClick,
+            busy,
+            width,
+            authorities_title,
+            active_tab,
+            filteredBtnContents,
+            handleFilter,
+            format_authorities_title,
+            pageLoading,
+            metadata,
+            pdfURL,
+            loadingModel,
+            loadingMessage,
+            loadingModelProgress,
+          };
+        },
+      })
+        .use(vuetify)
+        .component("v-icon-custom", VIconCustom)
+        .mount("#app");
+    </script>
+  </body>
+</html>
+
+<!-- npx serve . -->
