@@ -1,0 +1,22 @@
+format: jb-book
+root: README
+
+parts:
+  - caption: Introduction
+    numbered: False
+    chapters:
+      - file: docs/introduction.md
+  - caption: Generative AI for Metadata Quality
+    numbered: False
+  - caption: Anomaly Detection in Data
+    numbered: False
+  - caption: Semantic Discovery and Retrieval
+    numbered: False
+  - caption: Model Context Protocol (MCP) for AI-centric Data Dissemination
+    numbered: False
+  - caption: Monitoring of Data Use
+    numbered: False
+  - caption: Efficient and Inclusive AI Applications
+    numbered: False
+  - caption: Partnerships
+    numbered: False
