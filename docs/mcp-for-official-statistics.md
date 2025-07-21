@@ -1,3 +1,3 @@
-## MCP for Official Statistics
+# MCP for Official Statistics
 
 Under development...
