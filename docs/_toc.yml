@@ -10,36 +10,36 @@ parts:
   - caption: AI for Metadata Quality
     numbered: false
     chapters:
-      - file: docs/generative-ai-for-metadata-quality.md
+      - file: docs/metadata-quality/generative-ai-for-metadata-quality.md
       - file: notebooks/metadata-quality-assessment-with-llm.ipynb
 
   - caption: Data Discoverability
     numbered: false
     chapters:
-      - file: docs/data-discoverability.md
+      - file: docs/data-discoverability/data-discoverability.md
 
   - caption: Model Context Protocol (MCP) for AI-centric Data Dissemination
     numbered: false
     chapters:
-      - file: docs/mcp.md
-      - file: docs/mcp-for-official-statistics.md
+      - file: docs/mcp/mcp.md
+      - file: docs/mcp/mcp-for-official-statistics.md
 
   - caption: Monitoring of Data Use
     numbered: false
     chapters:
-      - file: docs/data-use.md
+      - file: docs/data-use/data-use.md
 
   - caption: Anomaly Detection in Data
     numbered: false
     chapters:
-      - file: docs/anomaly-detection.md
+      - file: docs/anomaly-detection/anomaly-detection.md
 
   - caption: Efficient and Inclusive AI Applications
     numbered: false
     chapters:
-      - file: docs/inclusive-ai.md
+      - file: docs/inclusive-ai/inclusive-ai.md
 
   - caption: Partnerships
     numbered: false
     chapters:
-      - file: docs/partnerships.md
+      - file: docs/partnerships/partnerships.md
