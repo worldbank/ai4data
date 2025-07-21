@@ -15,30 +15,30 @@ parts:
 
   - caption: Anomaly Detection in Data
     numbered: false
-    # chapters:
-    #   - file: docs/anomaly-detection.md
+    chapters:
+      - file: docs/anomaly-detection.md
 
   - caption: Semantic Discovery and Retrieval
     numbered: false
-    # chapters:
-    #   - file: docs/semantic-discovery.md
+    chapters:
+      - file: docs/semantic-discovery.md
 
   - caption: Model Context Protocol (MCP) for AI-centric Data Dissemination
     numbered: false
-    # chapters:
-    #   - file: docs/mcp.md
+    chapters:
+      - file: docs/mcp.md
 
   - caption: Monitoring of Data Use
     numbered: false
-    # chapters:
-    #   - file: docs/monitoring.md
+    chapters:
+      - file: docs/data-use.md
 
   - caption: Efficient and Inclusive AI Applications
     numbered: false
-    # chapters:
-    #   - file: docs/inclusive-ai.md
+    chapters:
+      - file: docs/inclusive-ai.md
 
   - caption: Partnerships
     numbered: false
-    # chapters:
-    #   - file: docs/partnerships.md
+    chapters:
+      - file: docs/partnerships.md
