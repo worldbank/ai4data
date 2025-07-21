@@ -3,20 +3,41 @@ root: README
 
 parts:
   - caption: Introduction
-    numbered: False
+    numbered: false
     chapters:
       - file: docs/introduction.md
+
   - caption: Generative AI for Metadata Quality
-    numbered: False
+    numbered: false
+    # chapters:
+    #   - file: docs/metadata-quality.md
+
   - caption: Anomaly Detection in Data
-    numbered: False
+    numbered: false
+    # chapters:
+    #   - file: docs/anomaly-detection.md
+
   - caption: Semantic Discovery and Retrieval
-    numbered: False
+    numbered: false
+    # chapters:
+    #   - file: docs/semantic-discovery.md
+
   - caption: Model Context Protocol (MCP) for AI-centric Data Dissemination
-    numbered: False
+    numbered: false
+    # chapters:
+    #   - file: docs/mcp.md
+
   - caption: Monitoring of Data Use
-    numbered: False
+    numbered: false
+    # chapters:
+    #   - file: docs/monitoring.md
+
   - caption: Efficient and Inclusive AI Applications
-    numbered: False
+    numbered: false
+    # chapters:
+    #   - file: docs/inclusive-ai.md
+
   - caption: Partnerships
-    numbered: False
+    numbered: false
+    # chapters:
+    #   - file: docs/partnerships.md
