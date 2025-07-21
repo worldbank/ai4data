@@ -2,7 +2,7 @@
 
 ## Overview
 
-Data discoverability is underpins one of the foundational pillars of AI-ready data, AI-ready data systems. It refers to the ability to efficiently locate and access datasets that are relevant to a user's needs, even when the user cannot specify exact dataset names or metadata. This is especially important in the context of development data, where information is often fragmented, diverse, and described in different ways across sources. Effective data discoverability empowers users—including researchers, policymakers, and practitioners—to find and leverage data that might otherwise remain hidden or underutilized.
+Data discoverability underpins one of the foundational pillars of AI-ready data, AI-ready data systems. It refers to the ability to efficiently locate and access datasets that are relevant to a user's needs, even when the user cannot specify exact dataset names or metadata. This is especially important in the context of development data, where information is often fragmented, diverse, and described in different ways across sources. Effective data discoverability empowers users—including researchers, policymakers, and practitioners—to find and leverage data that might otherwise remain hidden or underutilized.
 
 ## How It Works
 
