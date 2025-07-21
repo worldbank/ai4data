@@ -7,7 +7,7 @@ parts:
     chapters:
       - file: docs/introduction.md
 
-  - caption: Generative AI for Metadata Quality
+  - caption: AI for Metadata Quality
     numbered: false
     chapters:
       - file: docs/generative-ai-for-metadata-quality.md
