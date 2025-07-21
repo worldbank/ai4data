@@ -9,8 +9,9 @@ parts:
 
   - caption: Generative AI for Metadata Quality
     numbered: false
-    # chapters:
-    #   - file: docs/metadata-quality.md
+    chapters:
+      - file: docs/generative-ai-for-metadata-quality.md
+      - file: notebooks/metadata-quality-assessment-with-llm.ipynb
 
   - caption: Anomaly Detection in Data
     numbered: false
