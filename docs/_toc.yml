@@ -22,6 +22,7 @@ parts:
     numbered: false
     chapters:
       - file: docs/mcp.md
+      - file: docs/mcp-for-official-statistics.md
 
   - caption: Monitoring of Data Use
     numbered: false
