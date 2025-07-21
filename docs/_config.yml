@@ -29,7 +29,8 @@ html:
 #######################################################################################
 # Execution settings
 execute:
-  execute_notebooks: "auto"
+  execute_notebooks: "off"
+  # execute_notebooks: "auto"
 
 #######################################################################################
 # Bibliography settings
