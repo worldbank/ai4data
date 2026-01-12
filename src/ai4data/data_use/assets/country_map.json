@@ -1,0 +1,1512 @@
+{
+    "abkhazia": [
+        "abkhazia",
+        "abkhaz",
+        "abkhazians"
+    ],
+    "afghanistan": [
+        "afghanistan",
+        "afghan",
+        "afghans"
+    ],
+    "aland": [
+        "åland",
+        "aland",
+        "aland islands",
+        "alandic"
+    ],
+    "albania": [
+        "albania",
+        "albanian",
+        "albanians"
+    ],
+    "algeria": [
+        "algeria",
+        "algerian",
+        "algerians"
+    ],
+    "american samoa": [
+        "american samoa",
+        "samoan",
+        "american samoans"
+    ],
+    "andorra": [
+        "andorra",
+        "andorran",
+        "andorrans"
+    ],
+    "angola": [
+        "angola",
+        "angolan",
+        "angolans"
+    ],
+    "anguilla": [
+        "anguilla",
+        "anguillan",
+        "anguillans"
+    ],
+    "antarctica": [
+        "antarctica",
+        "antarctic"
+    ],
+    "antigua and barbuda": [
+        "antigua and barbuda",
+        "antiguan",
+        "barbudan",
+        "antiguans",
+        "barbudans"
+    ],
+    "argentina": [
+        "argentina",
+        "argentine",
+        "argentines",
+        "argentinian",
+        "argentinians"
+    ],
+    "armenia": [
+        "armenia",
+        "armenian",
+        "armenians"
+    ],
+    "aruba": [
+        "aruba",
+        "aruban",
+        "arubans"
+    ],
+    "australia": [
+        "australia",
+        "australian",
+        "australians"
+    ],
+    "austria": [
+        "austria",
+        "austrian",
+        "austrians"
+    ],
+    "azerbaijan": [
+        "azerbaijan",
+        "azerbaijani",
+        "azerbaijanis",
+        "azeri",
+        "azeris"
+    ],
+    "bahamas": [
+        "bahamas",
+        "the bahamas",
+        "bahamian",
+        "bahamians"
+    ],
+    "bahrain": [
+        "bahrain",
+        "bahraini",
+        "bahrainis"
+    ],
+    "bangladesh": [
+        "bangladesh",
+        "bangladeshi",
+        "bangladeshis"
+    ],
+    "barbados": [
+        "barbados",
+        "barbadian",
+        "barbadians",
+        "bajan",
+        "bajans"
+    ],
+    "belarus": [
+        "belarus",
+        "belarusian",
+        "belarusians",
+        "byelorussian"
+    ],
+    "belgium": [
+        "belgium",
+        "belgian",
+        "belgians"
+    ],
+    "belize": [
+        "belize",
+        "belizean",
+        "belizeans"
+    ],
+    "benin": [
+        "benin",
+        "beninese"
+    ],
+    "bermuda": [
+        "bermuda",
+        "bermudian",
+        "bermudians"
+    ],
+    "bhutan": [
+        "bhutan",
+        "bhutanese"
+    ],
+    "bolivia": [
+        "bolivia",
+        "bolivian",
+        "bolivians"
+    ],
+    "bonaire": [
+        "bonaire",
+        "bonairean",
+        "bonaireans"
+    ],
+    "bosnia and herzegovina": [
+        "bosnia and herzegovina",
+        "bosnia",
+        "herzegovina",
+        "bosnian",
+        "herzegovinian",
+        "bosnians",
+        "herzegovinians",
+        "bosniak",
+        "bosnian serb",
+        "bosnian croat"
+    ],
+    "botswana": [
+        "botswana",
+        "motswana",
+        "batswana",
+        "tswana"
+    ],
+    "bouvet island": [
+        "bouvet island",
+        "bouvet"
+    ],
+    "brazil": [
+        "brazil",
+        "brazilian",
+        "brazilians"
+    ],
+    "british indian ocean territory": [
+        "british indian ocean territory"
+    ],
+    "brunei": [
+        "brunei",
+        "bruneian",
+        "bruneians"
+    ],
+    "bulgaria": [
+        "bulgaria",
+        "bulgarian",
+        "bulgarians"
+    ],
+    "burkina faso": [
+        "burkina faso",
+        "burkinabe"
+    ],
+    "burundi": [
+        "burundi",
+        "burundian",
+        "burundians"
+    ],
+    "cabo verde": [
+        "cabo verde",
+        "cape verde",
+        "caboverdean",
+        "caboverdeans"
+    ],
+    "cambodia": [
+        "cambodia",
+        "cambodian",
+        "cambodians",
+        "khmer"
+    ],
+    "cameroon": [
+        "cameroon",
+        "cameroonian",
+        "cameroonians"
+    ],
+    "canada": [
+        "canada",
+        "canadian",
+        "canadians"
+    ],
+    "cayman islands": [
+        "cayman islands",
+        "caymanian",
+        "caymanians"
+    ],
+    "central african republic": [
+        "central african republic",
+        "central african",
+        "central africans"
+    ],
+    "chad": [
+        "chad",
+        "chadian",
+        "chadians"
+    ],
+    "chile": [
+        "chile",
+        "chilean",
+        "chileans"
+    ],
+    "china": [
+        "china",
+        "chinese"
+    ],
+    "christmas island": [
+        "christmas island",
+        "christmas islander",
+        "christmas islanders"
+    ],
+    "cocos (keeling) islands": [
+        "cocos islands",
+        "keeling islands",
+        "cocos (keeling) islands",
+        "cocos islander",
+        "keeling islander"
+    ],
+    "colombia": [
+        "colombia",
+        "colombian",
+        "colombians"
+    ],
+    "comoros": [
+        "comoros",
+        "comorian",
+        "comorians"
+    ],
+    "democratic republic of the congo": [
+        "democratic republic of the congo",
+        "dr congo",
+        "drc",
+        "congo-kinshasa",
+        "congolese"
+    ],
+    "republic of the congo": [
+        "republic of the congo",
+        "congo-brazzaville",
+        "congolese"
+    ],
+    "cook islands": [
+        "cook islands",
+        "cook islander",
+        "cook islanders"
+    ],
+    "costa rica": [
+        "costa rica",
+        "costa rican",
+        "costa ricans",
+        "ticos"
+    ],
+    "croatia": [
+        "croatia",
+        "croatian",
+        "croats"
+    ],
+    "cuba": [
+        "cuba",
+        "cuban",
+        "cubans"
+    ],
+    "curaçao": [
+        "curaçao",
+        "curacao",
+        "curaçaoan",
+        "curacaoan",
+        "curaçaon"
+    ],
+    "cyprus": [
+        "cyprus",
+        "cypriot",
+        "cypriots"
+    ],
+    "czech republic": [
+        "czech republic",
+        "czechia",
+        "czech",
+        "czechs"
+    ],
+    "denmark": [
+        "denmark",
+        "danish",
+        "dane",
+        "danes"
+    ],
+    "djibouti": [
+        "djibouti",
+        "djiboutian",
+        "djiboutians"
+    ],
+    "dominica": [
+        "dominica",
+        "dominican",
+        "dominicans"
+    ],
+    "dominican republic": [
+        "dominican republic",
+        "dominican",
+        "dominicans"
+    ],
+    "east timor": [
+        "east timor",
+        "timor-leste",
+        "timorese"
+    ],
+    "ecuador": [
+        "ecuador",
+        "ecuadorian",
+        "ecuadorians"
+    ],
+    "egypt": [
+        "egypt",
+        "egyptian",
+        "egyptians"
+    ],
+    "el salvador": [
+        "el salvador",
+        "salvadoran",
+        "salvadorans"
+    ],
+    "england": [
+        "england",
+        "english",
+        "englishmen",
+        "englishwomen"
+    ],
+    "equatorial guinea": [
+        "equatorial guinea",
+        "equatoguinean",
+        "equatoguineans"
+    ],
+    "eritrea": [
+        "eritrea",
+        "eritrean",
+        "eritreans"
+    ],
+    "estonia": [
+        "estonia",
+        "estonian",
+        "estonians"
+    ],
+    "eswatini": [
+        "eswatini",
+        "swaziland",
+        "swazi",
+        "swazis"
+    ],
+    "ethiopia": [
+        "ethiopia",
+        "ethiopian",
+        "ethiopians"
+    ],
+    "european union": [
+        "european union",
+        "eu",
+        "european",
+        "europeans"
+    ],
+    "falkland islands": [
+        "falkland islands",
+        "falklander",
+        "falklanders"
+    ],
+    "faroe islands": [
+        "faroe islands",
+        "faroese"
+    ],
+    "fiji": [
+        "fiji",
+        "fijian",
+        "fijians"
+    ],
+    "finland": [
+        "finland",
+        "finnish",
+        "finn",
+        "finns"
+    ],
+    "france": [
+        "france",
+        "french",
+        "frenchman",
+        "frenchwoman",
+        "frenchmen",
+        "frenchwomen"
+    ],
+    "french guiana": [
+        "french guiana",
+        "guyanese (french)",
+        "guianan"
+    ],
+    "french polynesia": [
+        "french polynesia",
+        "polynesian",
+        "tahitian",
+        "tahitians"
+    ],
+    "french southern territories": [
+        "french southern territories"
+    ],
+    "gabon": [
+        "gabon",
+        "gabonese"
+    ],
+    "the gambia": [
+        "the gambia",
+        "gambia",
+        "gambian",
+        "gambians"
+    ],
+    "georgia": [
+        "georgia",
+        "georgian",
+        "georgians"
+    ],
+    "germany": [
+        "germany",
+        "german",
+        "germans"
+    ],
+    "ghana": [
+        "ghana",
+        "ghanaian",
+        "ghanaians"
+    ],
+    "gibraltar": [
+        "gibraltar",
+        "gibraltarian",
+        "gibraltarians"
+    ],
+    "greece": [
+        "greece",
+        "greek",
+        "greeks",
+        "hellenic"
+    ],
+    "greenland": [
+        "greenland",
+        "greenlander",
+        "greenlanders"
+    ],
+    "grenada": [
+        "grenada",
+        "grenadian",
+        "grenadians"
+    ],
+    "guadeloupe": [
+        "guadeloupe",
+        "guadeloupean",
+        "guadeloupeans"
+    ],
+    "guam": [
+        "guam",
+        "guamanian",
+        "guamanians"
+    ],
+    "guatemala": [
+        "guatemala",
+        "guatemalan",
+        "guatemalans"
+    ],
+    "guernsey": [
+        "guernsey",
+        "guernseyman",
+        "guernseymen",
+        "guernseywoman",
+        "guernseywomen"
+    ],
+    "guinea": [
+        "guinea",
+        "guinean",
+        "guineans"
+    ],
+    "guinea-bissau": [
+        "guinea-bissau",
+        "bissau-guinean",
+        "bissau-guineans"
+    ],
+    "guyana": [
+        "guyana",
+        "guyanese"
+    ],
+    "haiti": [
+        "haiti",
+        "haitian",
+        "haitians"
+    ],
+    "heard island and mcdonald islands": [
+        "heard island and mcdonald islands"
+    ],
+    "honduras": [
+        "honduras",
+        "honduran",
+        "hondurans"
+    ],
+    "hong kong": [
+        "hong kong",
+        "hongkonger",
+        "hongkongers"
+    ],
+    "hungary": [
+        "hungary",
+        "hungarian",
+        "hungarians"
+    ],
+    "iceland": [
+        "iceland",
+        "icelander",
+        "icelanders",
+        "icelandic"
+    ],
+    "india": [
+        "india",
+        "indian",
+        "indians"
+    ],
+    "indonesia": [
+        "indonesia",
+        "indonesian",
+        "indonesians"
+    ],
+    "iran": [
+        "iran",
+        "iranian",
+        "iranians",
+        "persian",
+        "persians"
+    ],
+    "iraq": [
+        "iraq",
+        "iraqi",
+        "iraqis"
+    ],
+    "ireland": [
+        "ireland",
+        "irish"
+    ],
+    "isle of man": [
+        "isle of man",
+        "manx"
+    ],
+    "israel": [
+        "israel",
+        "israeli",
+        "israelis"
+    ],
+    "italy": [
+        "italy",
+        "italian",
+        "italians"
+    ],
+    "ivory coast": [
+        "ivory coast",
+        "côte d’ivoire",
+        "cote divoire",
+        "cote d ivoire",
+        "ivorian",
+        "ivorians",
+        "ivoirien",
+        "ivoirienne",
+        "ivoiriens",
+        "ivoiriennes"
+    ],
+    "jamaica": [
+        "jamaica",
+        "jamaican",
+        "jamaicans"
+    ],
+    "jan mayen": [
+        "jan mayen"
+    ],
+    "japan": [
+        "japan",
+        "japanese"
+    ],
+    "jersey": [
+        "jersey",
+        "jersian",
+        "jerseymen",
+        "jerseywomen"
+    ],
+    "jordan": [
+        "jordan",
+        "jordanian",
+        "jordanians"
+    ],
+    "kazakhstan": [
+        "kazakhstan",
+        "kazakh",
+        "kazakhs",
+        "kazakhstani",
+        "kazakhstanis"
+    ],
+    "kenya": [
+        "kenya",
+        "kenyan",
+        "kenyans"
+    ],
+    "kiribati": [
+        "kiribati",
+        "i-kiribati"
+    ],
+    "north korea": [
+        "north korea",
+        "north korean",
+        "north koreans",
+        "dprk"
+    ],
+    "south korea": [
+        "south korea",
+        "south korean",
+        "south koreans",
+        "rok"
+    ],
+    "kosovo": [
+        "kosovo",
+        "kosovar",
+        "kosovars",
+        "kosovan",
+        "kosovans"
+    ],
+    "kuwait": [
+        "kuwait",
+        "kuwaiti",
+        "kuwaitis"
+    ],
+    "kyrgyzstan": [
+        "kyrgyzstan",
+        "kyrgyz",
+        "kyrgyzs",
+        "kyrgyzstani",
+        "kyrgyzstanis"
+    ],
+    "laos": [
+        "laos",
+        "laotian",
+        "laotians"
+    ],
+    "latvia": [
+        "latvia",
+        "latvian",
+        "latvians"
+    ],
+    "lebanon": [
+        "lebanon",
+        "lebanese"
+    ],
+    "lesotho": [
+        "lesotho",
+        "mosotho",
+        "basotho"
+    ],
+    "liberia": [
+        "liberia",
+        "liberian",
+        "liberians"
+    ],
+    "libya": [
+        "libya",
+        "libyan",
+        "libyans"
+    ],
+    "liechtenstein": [
+        "liechtenstein",
+        "liechtensteiner",
+        "liechtensteiners"
+    ],
+    "lithuania": [
+        "lithuania",
+        "lithuanian",
+        "lithuanians"
+    ],
+    "luxembourg": [
+        "luxembourg",
+        "luxembourger",
+        "luxembourgers",
+        "luxembourgish"
+    ],
+    "macau": [
+        "macau",
+        "macao",
+        "macanese"
+    ],
+    "madagascar": [
+        "madagascar",
+        "malagasy"
+    ],
+    "malawi": [
+        "malawi",
+        "malawian",
+        "malawians"
+    ],
+    "malaysia": [
+        "malaysia",
+        "malaysian",
+        "malaysians"
+    ],
+    "maldives": [
+        "maldives",
+        "maldivian",
+        "maldivians"
+    ],
+    "mali": [
+        "mali",
+        "malian",
+        "malians"
+    ],
+    "malta": [
+        "malta",
+        "maltese"
+    ],
+    "marshall islands": [
+        "marshall islands",
+        "marshallese"
+    ],
+    "martinique": [
+        "martinique",
+        "martiniquais",
+        "martiniquaise"
+    ],
+    "mauritania": [
+        "mauritania",
+        "mauritanian",
+        "mauritanians"
+    ],
+    "mauritius": [
+        "mauritius",
+        "mauritian",
+        "mauritians"
+    ],
+    "mayotte": [
+        "mayotte",
+        "mahoran",
+        "mahorais"
+    ],
+    "mexico": [
+        "mexico",
+        "mexican",
+        "mexicans"
+    ],
+    "micronesia": [
+        "micronesia",
+        "federated states of micronesia",
+        "micronesian",
+        "micronesians"
+    ],
+    "moldova": [
+        "moldova",
+        "moldovan",
+        "moldovans",
+        "moldavian",
+        "moldavians"
+    ],
+    "monaco": [
+        "monaco",
+        "monégasque",
+        "monegasque"
+    ],
+    "mongolia": [
+        "mongolia",
+        "mongolian",
+        "mongolians"
+    ],
+    "montenegro": [
+        "montenegro",
+        "montenegrin",
+        "montenegrins"
+    ],
+    "montserrat": [
+        "montserrat",
+        "montserratian",
+        "montserratians"
+    ],
+    "morocco": [
+        "morocco",
+        "moroccan",
+        "moroccans"
+    ],
+    "mozambique": [
+        "mozambique",
+        "mozambican",
+        "mozambicans"
+    ],
+    "myanmar": [
+        "myanmar",
+        "burma",
+        "burmese"
+    ],
+    "namibia": [
+        "namibia",
+        "namibian",
+        "namibians"
+    ],
+    "nauru": [
+        "nauru",
+        "nauruan",
+        "nauruans"
+    ],
+    "nepal": [
+        "nepal",
+        "nepali",
+        "nepalese"
+    ],
+    "netherlands": [
+        "netherlands",
+        "dutch",
+        "netherlander",
+        "netherlanders",
+        "holland"
+    ],
+    "new caledonia": [
+        "new caledonia",
+        "caledonian",
+        "caledonians"
+    ],
+    "new zealand": [
+        "new zealand",
+        "kiwi",
+        "new zealander",
+        "new zealanders"
+    ],
+    "nicaragua": [
+        "nicaragua",
+        "nicaraguan",
+        "nicaraguans"
+    ],
+    "niger": [
+        "niger",
+        "nigerien",
+        "nigeriens"
+    ],
+    "nigeria": [
+        "nigeria",
+        "nigerian",
+        "nigerians"
+    ],
+    "niue": [
+        "niue",
+        "niuean",
+        "niueans"
+    ],
+    "norfolk island": [
+        "norfolk island",
+        "norfolk islander",
+        "norfolk islanders"
+    ],
+    "north macedonia": [
+        "north macedonia",
+        "macedonia",
+        "macedonian",
+        "macedonians"
+    ],
+    "northern cyprus": [
+        "northern cyprus",
+        "turkish cypriot",
+        "turkish cypriots"
+    ],
+    "northern ireland": [
+        "northern ireland",
+        "northern irish"
+    ],
+    "northern mariana islands": [
+        "northern mariana islands",
+        "northern marianan",
+        "northern marianans"
+    ],
+    "norway": [
+        "norway",
+        "norwegian",
+        "norwegians"
+    ],
+    "oman": [
+        "oman",
+        "omani",
+        "omanis"
+    ],
+    "pakistan": [
+        "pakistan",
+        "pakistani",
+        "pakistanis"
+    ],
+    "palau": [
+        "palau",
+        "palauan",
+        "palauans"
+    ],
+    "palestine": [
+        "palestine",
+        "palestinian",
+        "palestinians"
+    ],
+    "panama": [
+        "panama",
+        "panamanian",
+        "panamanians"
+    ],
+    "papua new guinea": [
+        "papua new guinea",
+        "papuan",
+        "papuans"
+    ],
+    "paraguay": [
+        "paraguay",
+        "paraguayan",
+        "paraguayans"
+    ],
+    "peru": [
+        "peru",
+        "peruvian",
+        "peruvians"
+    ],
+    "philippines": [
+        "philippines",
+        "philippine",
+        "filipino",
+        "filipina",
+        "filipinos",
+        "filipinas"
+    ],
+    "pitcairn islands": [
+        "pitcairn islands",
+        "pitcairn islander",
+        "pitcairn islanders"
+    ],
+    "poland": [
+        "poland",
+        "polish",
+        "pole",
+        "poles"
+    ],
+    "portugal": [
+        "portugal",
+        "portuguese"
+    ],
+    "puerto rico": [
+        "puerto rico",
+        "puerto rican",
+        "puerto ricans"
+    ],
+    "qatar": [
+        "qatar",
+        "qatari",
+        "qataris"
+    ],
+    "réunion": [
+        "réunion",
+        "reunion",
+        "réunionnais",
+        "reunionese"
+    ],
+    "romania": [
+        "romania",
+        "romanian",
+        "romanians"
+    ],
+    "russia": [
+        "russia",
+        "russian",
+        "russians"
+    ],
+    "rwanda": [
+        "rwanda",
+        "rwandan",
+        "rwandans"
+    ],
+    "saba": [
+        "saba",
+        "saban",
+        "sabans"
+    ],
+    "saint barthélemy": [
+        "saint barthélemy",
+        "st barthélemy",
+        "st barts",
+        "barthélemois"
+    ],
+    "saint helena, ascension and tristan da cunha": [
+        "saint helena",
+        "ascension",
+        "tristan da cunha",
+        "saint helenian",
+        "ascension islander",
+        "tristanian"
+    ],
+    "saint kitts and nevis": [
+        "saint kitts and nevis",
+        "st kitts and nevis",
+        "kittitian",
+        "nevisian",
+        "kittitians",
+        "nevisians"
+    ],
+    "saint lucia": [
+        "saint lucia",
+        "st lucia",
+        "saint lucian",
+        "saint lucians"
+    ],
+    "saint martin": [
+        "saint martin",
+        "st martin",
+        "saint-martinoise"
+    ],
+    "saint pierre and miquelon": [
+        "saint pierre and miquelon",
+        "st pierre and miquelon",
+        "saint-pierrais",
+        "saint-pierraises",
+        "miquelonnais",
+        "miquelonnaises",
+        "saint pierre and miquelon islanders"
+    ],
+    "saint vincent and the grenadines": [
+        "saint vincent and the grenadines",
+        "st vincent and the grenadines",
+        "vincentian",
+        "vincentians"
+    ],
+    "samoa": [
+        "samoa",
+        "samoan",
+        "samoans"
+    ],
+    "san marino": [
+        "san marino",
+        "sammarinese"
+    ],
+    "são tomé and príncipe": [
+        "são tomé and príncipe",
+        "sao tome and principe",
+        "sao tomean",
+        "sao tomeans"
+    ],
+    "saudi arabia": [
+        "saudi arabia",
+        "saudi",
+        "saudis"
+    ],
+    "scotland": [
+        "scotland",
+        "scottish",
+        "scot",
+        "scots"
+    ],
+    "senegal": [
+        "senegal",
+        "senegalese"
+    ],
+    "serbia": [
+        "serbia",
+        "serbian",
+        "serbians",
+        "serbs"
+    ],
+    "seychelles": [
+        "seychelles",
+        "seychellois",
+        "seychelloises"
+    ],
+    "sierra leone": [
+        "sierra leone",
+        "sierra leonean",
+        "sierra leoneans"
+    ],
+    "singapore": [
+        "singapore",
+        "singaporean",
+        "singaporeans"
+    ],
+    "sint eustatius": [
+        "sint eustatius",
+        "statian"
+    ],
+    "sint maarten": [
+        "sint maarten",
+        "sint maartener"
+    ],
+    "slovakia": [
+        "slovakia",
+        "slovak",
+        "slovaks"
+    ],
+    "slovenia": [
+        "slovenia",
+        "slovene",
+        "slovenes",
+        "slovenian",
+        "slovenians"
+    ],
+    "solomon islands": [
+        "solomon islands",
+        "solomon islander",
+        "solomon islanders"
+    ],
+    "somalia": [
+        "somalia",
+        "somali",
+        "somalis"
+    ],
+    "somaliland": [
+        "somaliland",
+        "somali",
+        "somalis"
+    ],
+    "south africa": [
+        "south africa",
+        "south african",
+        "south africans"
+    ],
+    "south georgia and the south sandwich islands": [
+        "south georgia and the south sandwich islands",
+        "south georgian"
+    ],
+    "south ossetia": [
+        "south ossetia",
+        "ossetian",
+        "ossetians"
+    ],
+    "south sudan": [
+        "south sudan",
+        "south sudanese"
+    ],
+    "spain": [
+        "spain",
+        "spanish",
+        "spaniard",
+        "spaniards"
+    ],
+    "sri lanka": [
+        "sri lanka",
+        "sri lankan",
+        "sri lankans"
+    ],
+    "sudan": [
+        "sudan",
+        "sudanese"
+    ],
+    "suriname": [
+        "suriname",
+        "surinamese"
+    ],
+    "svalbard": [
+        "svalbard",
+        "svalbardian"
+    ],
+    "sweden": [
+        "sweden",
+        "swedish",
+        "swede",
+        "swedes"
+    ],
+    "switzerland": [
+        "switzerland",
+        "swiss"
+    ],
+    "syria": [
+        "syria",
+        "syrian",
+        "syrians"
+    ],
+    "taiwan": [
+        "taiwan",
+        "taiwanese",
+        "formosa",
+        "formosan"
+    ],
+    "tajikistan": [
+        "tajikistan",
+        "tajik",
+        "tajiks",
+        "tajikistani",
+        "tajikistanis"
+    ],
+    "tanzania": [
+        "tanzania",
+        "tanzanian",
+        "tanzanians"
+    ],
+    "thailand": [
+        "thailand",
+        "thai"
+    ],
+    "timor-leste": [
+        "timor-leste",
+        "east timor",
+        "timorese"
+    ],
+    "togo": [
+        "togo",
+        "togolese"
+    ],
+    "tokelau": [
+        "tokelau",
+        "tokelauan",
+        "tokelauans"
+    ],
+    "tonga": [
+        "tonga",
+        "tongan",
+        "tongans"
+    ],
+    "transnistria": [
+        "transnistria",
+        "transnistrian"
+    ],
+    "trinidad and tobago": [
+        "trinidad and tobago",
+        "trinidadian",
+        "tobagonian",
+        "trinidadians",
+        "tobagonians"
+    ],
+    "tunisia": [
+        "tunisia",
+        "tunisian",
+        "tunisians"
+    ],
+    "turkey": [
+        "turkey",
+        "turkish",
+        "turks"
+    ],
+    "turkmenistan": [
+        "turkmenistan",
+        "turkmen",
+        "turkmens",
+        "turkmenistani",
+        "turkmenistanis"
+    ],
+    "turks and caicos islands": [
+        "turks and caicos islands",
+        "turks islander",
+        "caicos islander",
+        "turks and caicos islanders"
+    ],
+    "tuvalu": [
+        "tuvalu",
+        "tuvaluan",
+        "tuvaluans"
+    ],
+    "uganda": [
+        "uganda",
+        "ugandan",
+        "ugandans"
+    ],
+    "ukraine": [
+        "ukraine",
+        "ukrainian",
+        "ukrainians"
+    ],
+    "united arab emirates": [
+        "united arab emirates",
+        "uae",
+        "emirati",
+        "emiratis"
+    ],
+    "united kingdom": [
+        "united kingdom",
+        "united kingdom of great britain and northern ireland",
+        "uk",
+        "britain",
+        "great britain",
+        "british",
+        "britons",
+        "english",
+        "scottish",
+        "welsh",
+        "northern irish"
+    ],
+    "united states of america": [
+        "united states of america",
+        "united states",
+        "usa",
+        "us",
+        "american",
+        "americans"
+    ],
+    "uruguay": [
+        "uruguay",
+        "uruguayan",
+        "uruguayans"
+    ],
+    "uzbekistan": [
+        "uzbekistan",
+        "uzbek",
+        "uzbeks",
+        "uzbekistani",
+        "uzbekistanis"
+    ],
+    "vanuatu": [
+        "vanuatu",
+        "ni-vanuatu"
+    ],
+    "vatican city": [
+        "vatican city",
+        "holy see",
+        "vatican",
+        "vatican citizen"
+    ],
+    "venezuela": [
+        "venezuela",
+        "venezuelan",
+        "venezuelans"
+    ],
+    "vietnam": [
+        "vietnam",
+        "vietnamese",
+        "viet nam"
+    ],
+    "british virgin islands": [
+        "british virgin islands",
+        "british virgin islander",
+        "british virgin islanders"
+    ],
+    "united states virgin islands": [
+        "united states virgin islands",
+        "us virgin islands",
+        "virgin islander",
+        "virgin islanders"
+    ],
+    "wales": [
+        "wales",
+        "welsh"
+    ],
+    "wallis and futuna": [
+        "wallis and futuna",
+        "wallisian",
+        "wallisians",
+        "futunan",
+        "futunans"
+    ],
+    "western sahara": [
+        "western sahara",
+        "sahrawi",
+        "sahrawis"
+    ],
+    "yemen": [
+        "yemen",
+        "yemeni",
+        "yemenis"
+    ],
+    "zambia": [
+        "zambia",
+        "zambian",
+        "zambians"
+    ],
+    "zanzibar": [
+        "zanzibar",
+        "zanzibari",
+        "zanzibaris"
+    ],
+    "zimbabwe": [
+        "zimbabwe",
+        "zimbabwean",
+        "zimbabweans"
+    ],
+    "africa": [
+        "africa",
+        "african",
+        "africans"
+    ],
+    "asia": [
+        "asia",
+        "asian",
+        "asians"
+    ],
+    "europe": [
+        "europe",
+        "european",
+        "europeans"
+    ],
+    "north america": [
+        "north america",
+        "north american",
+        "north americans"
+    ],
+    "south america": [
+        "south america",
+        "south american",
+        "south americans"
+    ],
+    "central america": [
+        "central america",
+        "central american",
+        "central americans"
+    ],
+    "latin america": [
+        "latin america",
+        "latin american",
+        "latin americans"
+    ],
+    "caribbean": [
+        "caribbean",
+        "caribbeaner",
+        "caribbeans"
+    ],
+    "middle east": [
+        "middle east",
+        "middle eastern"
+    ],
+    "north africa": [
+        "north africa",
+        "north african"
+    ],
+    "sub-saharan africa": [
+        "sub-saharan africa",
+        "sub-saharan african"
+    ],
+    "east africa": [
+        "east africa",
+        "east african"
+    ],
+    "west africa": [
+        "west africa",
+        "west african"
+    ],
+    "southern africa": [
+        "southern africa",
+        "southern african"
+    ],
+    "central africa": [
+        "central africa",
+        "central african"
+    ],
+    "arab world": [
+        "arab world",
+        "arab",
+        "arabs",
+        "arabic"
+    ],
+    "gulf states": [
+        "gulf states",
+        "gulf",
+        "gulf arab"
+    ],
+    "scandinavia": [
+        "scandinavia",
+        "scandinavian",
+        "scandinavians"
+    ],
+    "nordic countries": [
+        "nordic countries",
+        "nordic",
+        "nordics"
+    ],
+    "balkans": [
+        "balkans",
+        "balkan",
+        "balkan states"
+    ],
+    "caucasus": [
+        "caucasus",
+        "caucasian (region)",
+        "caucasians"
+    ],
+    "pacific islands": [
+        "pacific islands",
+        "pacific islander",
+        "pacific islanders"
+    ],
+    "caricom": [
+        "caricom",
+        "caribbean community"
+    ],
+    "cis": [
+        "cis",
+        "commonwealth of independent states"
+    ]
+}

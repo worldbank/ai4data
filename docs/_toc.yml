@@ -27,7 +27,7 @@ parts:
   - caption: Monitoring of Data Use
     numbered: false
     chapters:
-      - file: docs/data-use/data-use.md
+      - file: docs/data_use/data_use.md
 
   - caption: Anomaly Detection in Data
     numbered: false
