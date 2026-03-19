@@ -263,6 +263,15 @@ export class SearchClient {
   }
 
   /**
+   * Fetch curated highlight items from `index/highlights.json` when the manifest
+   * sets `index.highlights`. Listen with `client.on('highlights', ({ data }) => …)`.
+   * If the file is missing or empty, `data` is `[]`.
+   */
+  getHighlights(limit = 10): void {
+    this.worker.postMessage({ type: 'getHighlights', limit } satisfies WorkerInboundMessage)
+  }
+
+  /**
    * Ping the worker. Resolves when the worker responds with 'pong'.
    */
   ping(): Promise<void> {

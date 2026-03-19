@@ -19,6 +19,8 @@ export interface HNSWIndexConfig {
   node_to_shard?: string
   /** Relative path to index/titles.json (display metadata, no vectors) */
   titles?: string
+  /** Optional curated list: index/highlights.json — same entry shape as titles; object keyed by id or JSON array for explicit order */
+  highlights?: string
   /** Relative path to index/cluster_centroids.json */
   cluster_centroids?: string
   /** Relative path to index/bm25_corpus.json (lightweight text-only corpus for BM25) */

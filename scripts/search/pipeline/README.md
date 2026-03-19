@@ -151,6 +151,20 @@ The manifest references it as:
 }
 ```
 
+#### Optional `highlights.json` (browser client)
+
+The **`@ai4data/search`** worker can show a curated list via **`getHighlights()`** if you add **`index/highlights.json`** and reference it in **`manifest.json`**:
+
+```json
+{
+  "index": {
+    "highlights": "index/highlights.json"
+  }
+}
+```
+
+Use the **same per-entry shape as `titles.json`** (e.g. `id`, `title`, `idno`, `type`, …). Prefer a **JSON array** if you need a fixed display order; an object keyed by id is also accepted. This file is **not** produced by the pipeline — add and host it manually next to your index.
+
 **Key flags:**
 
 | Flag | Default | Description |

@@ -55,6 +55,8 @@ export type {
   WorkerIndexReadyMessage,
   WorkerErrorMessage,
   WorkerProgressMessage,
+  WorkerGetHighlightsMessage,
+  WorkerHighlightsMessage,
 } from './types/worker'
 
 // ── Engine (advanced / direct use) ────────────────────────────────────────────

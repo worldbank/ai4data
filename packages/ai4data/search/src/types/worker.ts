@@ -23,6 +23,7 @@ export type WorkerInboundMessage =
   | WorkerEmbedMessage
   | WorkerPingMessage
   | WorkerGetRecentMessage
+  | WorkerGetHighlightsMessage
   | WorkerSearchCompareMessage
 
 export interface WorkerInitMessage {
@@ -63,6 +64,11 @@ export interface WorkerGetRecentMessage {
   limit?: number
 }
 
+export interface WorkerGetHighlightsMessage {
+  type: 'getHighlights'
+  limit?: number
+}
+
 export interface WorkerSearchCompareMessage {
   type: 'searchCompare'
   text: string
@@ -82,6 +88,7 @@ export type WorkerOutboundMessage =
   | WorkerPongMessage
   | WorkerLoadingMessage
   | WorkerRecentMessage
+  | WorkerHighlightsMessage
   | WorkerCompareMessage
   | WorkerErrorMessage
 
@@ -140,6 +147,11 @@ export interface WorkerLoadingMessage {
 
 export interface WorkerRecentMessage {
   type: 'recent'
+  data: SearchResult[]
+}
+
+export interface WorkerHighlightsMessage {
+  type: 'highlights'
   data: SearchResult[]
 }
 

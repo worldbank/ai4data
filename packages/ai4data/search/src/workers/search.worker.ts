@@ -51,6 +51,8 @@ let hybridEngine: HybridSearch | null = null;
 let bm25Engine: ReturnType<typeof winkBM25> | null = null;
 let bm25Corpus: BM25CorpusEntry[] | null = null;
 let titlesMap: Record<string, Record<string, unknown>> | null = null;
+/** Curated highlights from index/highlights.json (manifest.index.highlights), in file order */
+let highlightsList: SearchResult[] | null = null;
 let flatCompareEngine: FlatEngine | null = null;
 let isModelReady = false;
 let isIndexReady = false;
@@ -77,6 +79,38 @@ function enrichFromTitlesMap(results: SearchResult[]): SearchResult[] {
       title: (meta.title as string) || r.title,
     } as SearchResult;
   });
+}
+
+/** Map a titles.json-shaped metadata object to a SearchResult preview row */
+function metaRecordToSearchResult(meta: Record<string, unknown>): SearchResult {
+  return {
+    id: (meta.id as string | number) ?? "",
+    score: 0,
+    title: (meta.title as string) ?? "",
+    ...meta,
+  } as SearchResult;
+}
+
+/**
+ * Parse highlights.json: same shape as titles.json (object id → meta) or a JSON array
+ * of meta objects (preserves explicit curation order).
+ */
+function parseHighlightsPayload(data: unknown): SearchResult[] {
+  if (data == null) return [];
+  if (Array.isArray(data)) {
+    return data
+      .filter(
+        (row): row is Record<string, unknown> =>
+          row != null && typeof row === "object" && !Array.isArray(row),
+      )
+      .map((meta) => metaRecordToSearchResult(meta));
+  }
+  if (typeof data === "object") {
+    return Object.values(data as Record<string, Record<string, unknown>>).map(
+      (meta) => metaRecordToSearchResult(meta),
+    );
+  }
+  return [];
 }
 
 // ── BM25 setup ────────────────────────────────────────────────────────────────
@@ -166,6 +200,7 @@ async function initIndex(
     );
   }
   manifest = (await resp.json()) as CollectionManifest;
+  highlightsList = null;
 
   baseUrl = manifestUrl.replace(/manifest\.json$/, "");
   if (!baseUrl.endsWith("/")) baseUrl += "/";
@@ -202,17 +237,25 @@ async function initIndex(
     const titlesUrl = manifest.index?.titles
       ? baseUrl + manifest.index.titles
       : null;
+    const highlightsUrl = manifest.index?.highlights
+      ? baseUrl + manifest.index.highlights
+      : null;
     const bm25Url =
       !skipBm25 && manifest.index?.bm25_corpus
         ? baseUrl + manifest.index.bm25_corpus
         : null;
 
-    const [, titlesData, bm25Data] = await Promise.all([
+    const [, titlesData, highlightsRaw, bm25Data] = await Promise.all([
       engine.init(baseUrl, { cacheName: CACHE_NAME, manifest }),
       titlesUrl
         ? fetchJson<Record<string, Record<string, unknown>>>(titlesUrl).catch(
             () => null,
           )
+        : Promise.resolve(null),
+      highlightsUrl
+        ? fetchJson<unknown>(highlightsUrl, {
+            cacheName: CACHE_NAME,
+          }).catch(() => null)
         : Promise.resolve(null),
       bm25Url
         ? fetchJson<BM25CorpusEntry[]>(bm25Url, {
@@ -222,6 +265,8 @@ async function initIndex(
     ]);
     searchEngine = engine;
     titlesMap = titlesData;
+    highlightsList =
+      highlightsRaw != null ? parseHighlightsPayload(highlightsRaw) : null;
     bm25Corpus = skipBm25 ? null : bm25Data;
   }
 
@@ -532,6 +577,17 @@ self.onmessage = async (
       }
 
       postMsg({ type: "recent", data: recent });
+      break;
+    }
+
+    case "getHighlights": {
+      const m = msg as Extract<WorkerInboundMessage, { type: "getHighlights" }>;
+      const limit = m.limit ?? 10;
+      const data =
+        highlightsList && highlightsList.length > 0
+          ? highlightsList.slice(0, limit)
+          : [];
+      postMsg({ type: "highlights", data });
       break;
     }
 

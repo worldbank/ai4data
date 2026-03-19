@@ -74,8 +74,8 @@
     <script type="importmap">
       {
         "imports": {
-          "@ai4data/search": "https://esm.sh/@ai4data/search@0.1.3",
-          "@ai4data/search/worker": "https://esm.sh/@ai4data/search@0.1.3/worker"
+          "@ai4data/search": "https://esm.sh/@ai4data/search@0.1.5",
+          "@ai4data/search/worker": "https://esm.sh/@ai4data/search@0.1.5/worker"
         }
       }
     </script>
@@ -2737,7 +2737,7 @@
     <script type="module">
       // import { SearchClient } from "../dist/index.mjs";
       import { SearchClient } from "@ai4data/search";
-      const WORKER_URL = "https://esm.sh/@ai4data/search@0.1.3/worker";
+      const WORKER_URL = "https://esm.sh/@ai4data/search@0.1.5/worker";
 
       const { createApp, ref, onMounted, nextTick, watch, computed } = Vue;
 
@@ -2774,7 +2774,7 @@
       if (useRerank) {
         rerankWorker = new Worker(
           new URL(
-            "https://esm.sh/@ai4data/search@0.1.3/rank-worker",
+            "https://esm.sh/@ai4data/search@0.1.5/rank-worker",
             import.meta.url,
           ),
           {
@@ -3034,8 +3034,20 @@
             });
           };
 
-          const loadRecent = () => {
-            clientRef.value?.getRecent(10);
+          /** Fill the list from highlights (if manifest has index.highlights) else recent */
+          const applyBrowseResults = async (results) => {
+            fullResults.value = results;
+            enrichResultsWithMetadata(results);
+            semanticResults.value = [];
+            await loadMore({ done: () => {} });
+            busy.value = false;
+            pageLoading.value = false;
+          };
+
+          /** Only request highlights here; `on('highlights')` falls back to getRecent if empty */
+          const defaultBrowseLimit = 20;
+          const loadDefaultList = () => {
+            clientRef.value?.getHighlights(defaultBrowseLimit);
           };
 
           const submit = async () => {
@@ -3048,7 +3060,7 @@
             const text = query.value.trim();
             if (!text) {
               hasQueried.value = false;
-              loadRecent();
+              loadDefaultList();
               return;
             }
 
@@ -3262,7 +3274,7 @@
           onMounted(() => {
             document.getElementById("firstLoading")?.remove();
             SearchClient.fromCDN(manifestUrl, {
-              workerUrl: "https://esm.sh/@ai4data/search@0.1.3/worker",
+              workerUrl: "https://esm.sh/@ai4data/search@0.1.5/worker",
               skipModelLoad,
               modelLoadDelaySeconds: skipModelLoad
                 ? undefined
@@ -3280,14 +3292,14 @@
                 client.on("index_ready", () => {
                   indexReady.value = true;
                   pageLoading.value = false;
-                  if (!hasQueried.value) loadRecent();
+                  if (!hasQueried.value) loadDefaultList();
                 });
                 client.on("ready", (msg) => {
                   modelReady.value = msg.modelLoaded !== false;
                   indexReady.value = true;
                   loadingMessage.value = "Ready";
                   pageLoading.value = false;
-                  if (!hasQueried.value) loadRecent();
+                  if (!hasQueried.value) loadDefaultList();
                 });
                 client.on("results", async (msg) => {
                   const results = msg.data || [];
@@ -3298,14 +3310,16 @@
                   busy.value = false;
                   pageLoading.value = false;
                 });
-                client.on("recent", async (msg) => {
+                client.on("highlights", async (msg) => {
                   const results = msg.data || [];
-                  fullResults.value = results;
-                  enrichResultsWithMetadata(results);
-                  semanticResults.value = [];
-                  await loadMore({ done: () => {} });
-                  busy.value = false;
-                  pageLoading.value = false;
+                  if (results.length > 0) {
+                    await applyBrowseResults(results);
+                  } else {
+                    clientRef.value?.getRecent(defaultBrowseLimit);
+                  }
+                });
+                client.on("recent", async (msg) => {
+                  await applyBrowseResults(msg.data || []);
                 });
                 client.on("error", (msg) => {
                   console.error("[Worker error]", msg.message);
