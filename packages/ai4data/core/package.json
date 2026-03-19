@@ -1,0 +1,30 @@
+{
+  "name": "@ai4data/core",
+  "version": "0.1.0",
+  "description": "AI for Data – Data for AI: core JavaScript/TypeScript utilities",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "echo 'Add your build step (e.g. tsc, rollup, esbuild)'",
+    "test": "echo 'Add your test runner (e.g. vitest, jest)'",
+    "lint": "echo 'Add ESLint if desired'"
+  },
+  "keywords": [
+    "ai4data",
+    "data4ai",
+    "worldbank",
+    "development-data"
+  ],
+  "author": "Development Data Group <ai4data@worldbank.org>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/worldbank/ai4data.git",
+    "directory": "packages/ai4data/core"
+  }
+}

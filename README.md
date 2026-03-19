@@ -1,11 +1,14 @@
 # AI for Data - Data for AI
 
+## Project Name
+
+**AI for Data – Data for AI**
+
+## Description
+
+**AI for Data – Data for AI** is a work program under the World Bank's Development Data Group, advancing the strategic use of artificial intelligence (AI) to improve the quality, usability, and impact of development data. The program focuses on two complementary missions: (1) **AI for Data** - applying AI to improve data and metadata quality, data discoverability and dissemination, monitoring of data use, and user experience in producing and accessing development datasets; and (2) **Data for AI** - ensuring development data is structured, documented, and made available in ways that enable effective and trustworthy use by AI systems. This repository provides Python tools and a JavaScript library, along with methodologies for data scientists, researchers, and development practitioners working with development data and AI applications.
+
 ## Overview
-
-**AI for Data – Data for AI** is a work program under the Development Data Group, advancing the strategic use of artificial intelligence (AI) to improve the quality, usability, and impact of development data. The program focuses on two complementary missions:
-
-- **AI for Data**: Applying AI to improve data and metadata quality, data discoverability and dissemination, monitoring of data use, and user experience in producing and accessing development datasets.
-- **Data for AI**: Ensuring development data—such as indicators, microdata, and geospatial datasets—is structured, documented, and made available in ways that enable effective and trustworthy use by AI systems. This includes producing AI-ready data and metadata, establishing standards and protocols to improve interoperability, and monitoring data quality so that AI models and tools can be built, evaluated, and deployed responsibly in development contexts.
 
 The program is spearheading the application of AI, along with the development of methodologies, tools, and models to drive improvements and efficiencies across the development data lifecycle. The work ranges from applying generative AI to enhance metadata quality to building low-resource AI models that support semantic search, data dissemination, and knowledge discovery—particularly for underserved contexts and users.
 
@@ -67,6 +70,90 @@ While also supporting the various programs in the Development Data Group, we als
 
 ---
 
+## Getting Started
+
+### Prerequisites
+
+- Python 3.11 or higher
+- pip or uv package manager
+
+### Installation
+
+Install the base package:
+
+```bash
+pip install ai4data
+```
+
+Or using uv:
+
+```bash
+uv pip install ai4data
+```
+
+### Optional Dependencies
+
+Install specific capabilities:
+
+```bash
+# For dataset mention extraction from text/documents
+pip install ai4data[datause]
+
+# For anomaly detection in data
+pip install ai4data[anomaly]
+
+# For dataset name harmonization and deduplication
+pip install ai4data[harmonization]
+
+# For all capabilities
+pip install ai4data[all]
+```
+
+### Usage Example
+
+```python
+from ai4data import data_use, anomaly_detection
+
+# Extract dataset mentions from text
+# See documentation for detailed examples
+```
+
+For detailed usage examples and API documentation, please refer to the [full documentation](https://worldbank.github.io/ai4data).
+
+### JavaScript / TypeScript
+
+JavaScript libraries are published under the **@ai4data** npm organization. Each package lives in `packages/ai4data/<library>/` and is installed as `@ai4data/<library>`:
+
+```bash
+npm install @ai4data/core
+npm install @ai4data/search   # semantic search client (HNSW + BM25, Web Worker)
+```
+
+To add or work on packages, use the root workspace: run `npm install` at the repo root, then build or test per package (e.g. `npm run build --workspace=@ai4data/core`) or for all workspaces (`npm run build`). See [Repository structure](docs/repo-structure.md) for the full layout and how to add new libraries.
+
+## Documentation
+
+Comprehensive documentation is available at: **https://worldbank.github.io/ai4data**
+
+The documentation includes:
+- Detailed API reference
+- Usage examples and tutorials
+- Methodology descriptions
+- Best practices and guidelines
+
+## Contact Information
+
+For questions, issues, or contributions, please contact:
+
+- **Development Data Group**: ai4data@worldbank.org
+- **GitHub Issues**: [https://github.com/worldbank/ai4data/issues](https://github.com/worldbank/ai4data/issues)
+
 ## Vision
 
-The **AI for Data – Data for AI** program reflects the World Bank’s commitment to harnessing frontier technologies for development impact. By aligning technical innovation with the principles of openness, quality, and inclusion, we are building a future where development data is not only easier to find—but more meaningful, more relevant, and more empowering for everyone.
+The **AI for Data – Data for AI** program reflects the World Bank's commitment to harnessing frontier technologies for development impact. By aligning technical innovation with the principles of openness, quality, and inclusion, we are building a future where development data is not only easier to find—but more meaningful, more relevant, and more empowering for everyone.
+
+---
+
+## License
+
+This project is licensed under the MIT License together with the World Bank IGO Rider. The Rider is purely procedural: it reserves all privileges and immunities enjoyed by the World Bank, without adding restrictions to the MIT permissions. Please review both files before using, distributing or contributing.

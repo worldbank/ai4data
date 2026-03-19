@@ -55,11 +55,23 @@ anomaly = [
 	"scipy>=1.11.0",
 ]
 
+# Semantic search
+search = [
+  "sentence-transformers>=2.7.0",
+  "fire>=0.6.0",
+  "scikit-learn>=1.4.2",
+  "faiss-cpu>=1.7.4",
+  "numpy>=1.24.0",
+  "requests>=2.31.0",
+  "countrycode>=0.4.0",
+]
+
 # All capabilities
 all = [
 	"ai4data[datause]",
 	"ai4data[harmonization]",
 	"ai4data[anomaly]",
+	"ai4data[search]",
 ]
 
 # Documentation
