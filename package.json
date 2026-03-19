@@ -1,0 +1,19 @@
+{
+  "name": "ai4data",
+  "private": true,
+  "description": "AI for Data – Data for AI monorepo (Python + JavaScript packages)",
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
+  },
+  "workspaces": [
+    "packages/ai4data/*"
+  ],
+  "keywords": ["ai4data", "monorepo"],
+  "author": "Development Data Group <ai4data@worldbank.org>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/worldbank/ai4data.git"
+  }
+}
