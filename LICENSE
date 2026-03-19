@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2024 Aivin V. Solatorio
+Copyright (c) 2024 The World Bank Group
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +19,22 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+WORLD BANK IGO RIDER
+
+The World Bank Group ("WBG") is an intergovernmental organization established by
+Articles of Agreement among its member countries, and enjoys certain privileges,
+immunities and exemptions under international law or treaty, including, without
+limitation, under the Convention on the Privileges and Immunities of the Specialized
+Agencies, as may be amended from time to time. Nothing in this MIT License shall
+constitute or be considered to be a limitation upon or a waiver of, whether express
+or implied, any of the privileges, immunities and exemptions of the WBG, including
+without limitation, immunity from suit and legal process, inviolability of its
+premises, archives and documents, and exemption from taxes and customs duties, which
+the WBG may have or may hereafter come to have.
+
+The MIT License is granted subject to the understanding that the WBG may have
+interests, rights, or privileges worldwide in the Software, and the WBG may use,
+publish, reproduce, distribute, display, or disclose the Software without limitation.
