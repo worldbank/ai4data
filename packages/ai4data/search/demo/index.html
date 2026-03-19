@@ -1,43 +1,105 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>@ai4data/search demo</title>
-  <style>
-    * { box-sizing: border-box; }
-    body { font-family: system-ui, sans-serif; max-width: 42rem; margin: 0 auto; padding: 1.5rem; }
-    label { display: block; margin-top: 1rem; font-weight: 600; }
-    input[type="url"], input[type="text"] { width: 100%; padding: 0.5rem; margin-top: 0.25rem; }
-    button { margin-top: 0.5rem; padding: 0.5rem 1rem; cursor: pointer; }
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
-    #status { margin: 1rem 0; padding: 0.75rem; background: #f0f0f0; border-radius: 4px; font-size: 0.9rem; }
-    #results { list-style: none; padding: 0; margin: 1rem 0 0; }
-    #results li { padding: 0.75rem; margin-bottom: 0.5rem; background: #f8f8f8; border-radius: 4px; border-left: 3px solid #0066cc; }
-    #results li strong { display: block; margin-bottom: 0.25rem; }
-    #results li small { color: #666; }
-    .search-row { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
-    .search-row input { flex: 1; }
-  </style>
-</head>
-<body>
-  <h1>@ai4data/search demo</h1>
-  <p>Connect to a search collection by manifest URL, then run semantic or hybrid search.</p>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ai4data/search demo</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 42rem;
+        margin: 0 auto;
+        padding: 1.5rem;
+      }
+      label {
+        display: block;
+        margin-top: 1rem;
+        font-weight: 600;
+      }
+      input[type="url"],
+      input[type="text"] {
+        width: 100%;
+        padding: 0.5rem;
+        margin-top: 0.25rem;
+      }
+      button {
+        margin-top: 0.5rem;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+      }
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      #status {
+        margin: 1rem 0;
+        padding: 0.75rem;
+        background: #f0f0f0;
+        border-radius: 4px;
+        font-size: 0.9rem;
+      }
+      #results {
+        list-style: none;
+        padding: 0;
+        margin: 1rem 0 0;
+      }
+      #results li {
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+        background: #f8f8f8;
+        border-radius: 4px;
+        border-left: 3px solid #0066cc;
+      }
+      #results li strong {
+        display: block;
+        margin-bottom: 0.25rem;
+      }
+      #results li small {
+        color: #666;
+      }
+      .search-row {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+      }
+      .search-row input {
+        flex: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>@ai4data/search demo</h1>
+    <p>
+      Connect to a search collection by manifest URL, then run semantic or
+      hybrid search.
+    </p>
 
-  <label for="manifestUrl">Manifest URL</label>
-  <input type="url" id="manifestUrl" placeholder="https://example.com/data/collection/manifest.json" />
+    <label for="manifestUrl">Manifest URL</label>
+    <input
+      type="url"
+      id="manifestUrl"
+      placeholder="https://example.com/data/collection/manifest.json"
+    />
 
-  <button id="connectBtn">Connect</button>
-  <div id="status">Enter a manifest URL and click Connect.</div>
+    <button id="connectBtn">Connect</button>
+    <div id="status">Enter a manifest URL and click Connect.</div>
 
-  <label for="query">Search (available after index is ready)</label>
-  <div class="search-row">
-    <input type="text" id="query" placeholder="e.g. climate finance" disabled />
-    <button id="searchBtn" disabled>Search</button>
-  </div>
+    <label for="query">Search (available after index is ready)</label>
+    <div class="search-row">
+      <input
+        type="text"
+        id="query"
+        placeholder="e.g. climate finance"
+        disabled
+      />
+      <button id="searchBtn" disabled>Search</button>
+    </div>
 
-  <ul id="results"></ul>
+    <ul id="results"></ul>
 
-  <script type="module" src="/demo/main.js"></script>
-</body>
+    <script type="module" src="/demo/main.js"></script>
+  </body>
 </html>

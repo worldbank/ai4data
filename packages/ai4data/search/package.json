@@ -1,6 +1,6 @@
 {
   "name": "@ai4data/search",
-  "version": "0.1.0",
+  "version": "0.1.4",
   "description": "Framework-agnostic semantic search client: HNSW, BM25, hybrid ranking in a Web Worker",
   "main": "dist/index.mjs",
   "module": "dist/index.mjs",

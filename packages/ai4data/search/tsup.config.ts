@@ -1,4 +1,11 @@
 import { defineConfig } from 'tsup'
+import { readFileSync } from 'fs'
+import { dirname, join } from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const pkg = JSON.parse(readFileSync(join(__dirname, 'package.json'), 'utf8'))
+const version = pkg.version ?? '0.0.0'
 
 export default defineConfig({
   entry: {
@@ -23,4 +30,10 @@ export default defineConfig({
     /^wink-eng-lite-web-model/,
     /^@huggingface\/transformers/,
   ],
+  esbuildOptions(options) {
+    options.define = {
+      ...options.define,
+      __PACKAGE_VERSION__: JSON.stringify(version),
+    }
+  },
 })

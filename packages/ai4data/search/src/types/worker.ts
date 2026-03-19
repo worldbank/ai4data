@@ -35,6 +35,8 @@ export interface WorkerInitMessage {
   skipModelLoad?: boolean
   /** Delay (seconds) before starting to load the embedding model; index + BM25 load first (for testing). */
   modelLoadDelaySeconds?: number
+  /** If true, do not load or build BM25 even when the manifest has bm25_corpus (semantic-only). */
+  skipBm25?: boolean
 }
 
 export interface WorkerSearchMessage {

@@ -149,7 +149,10 @@ async function getEmbedding(text: string): Promise<Float32Array> {
 
 // ── Index loading ─────────────────────────────────────────────────────────────
 
-async function initIndex(manifestUrl: string): Promise<void> {
+async function initIndex(
+  manifestUrl: string,
+  skipBm25?: boolean,
+): Promise<void> {
   postMsg({
     type: "progress",
     phase: "index",
@@ -176,26 +179,33 @@ async function initIndex(manifestUrl: string): Promise<void> {
     const engine = new FlatEngine();
     const flatItems = await engine.load(baseUrl + manifest.flat!.path);
     searchEngine = engine;
-    // Build BM25 corpus directly from flat items (they already carry title + text)
-    bm25Corpus = flatItems.map((item) => ({
-      id: item.id as string,
-      title: String(item.title ?? ""),
-      text: String(item.text ?? ""),
-    }));
+    // Build BM25 corpus from flat items unless skipBm25
+    if (!skipBm25) {
+      bm25Corpus = flatItems.map((item) => ({
+        id: item.id as string,
+        title: String(item.title ?? ""),
+        text: String(item.text ?? ""),
+      }));
+    } else {
+      bm25Corpus = null;
+    }
   } else {
-    // HNSW mode: load graph, titles, and BM25 corpus in parallel
+    // HNSW mode: load graph, titles, and optionally BM25 corpus
     postMsg({
       type: "progress",
       phase: "index",
-      message: "Loading HNSW index and BM25 corpus…",
+      message: skipBm25
+        ? "Loading HNSW index…"
+        : "Loading HNSW index and BM25 corpus…",
     });
     const engine = new HNSWEngine();
     const titlesUrl = manifest.index?.titles
       ? baseUrl + manifest.index.titles
       : null;
-    const bm25Url = manifest.index?.bm25_corpus
-      ? baseUrl + manifest.index.bm25_corpus
-      : null;
+    const bm25Url =
+      !skipBm25 && manifest.index?.bm25_corpus
+        ? baseUrl + manifest.index.bm25_corpus
+        : null;
 
     const [, titlesData, bm25Data] = await Promise.all([
       engine.init(baseUrl, { cacheName: CACHE_NAME, manifest }),
@@ -212,7 +222,7 @@ async function initIndex(manifestUrl: string): Promise<void> {
     ]);
     searchEngine = engine;
     titlesMap = titlesData;
-    bm25Corpus = bm25Data;
+    bm25Corpus = skipBm25 ? null : bm25Data;
   }
 
   // Build BM25 engine from corpus
@@ -263,11 +273,12 @@ async function init(
   modelId?: string,
   skipModelLoad?: boolean,
   modelLoadDelaySeconds?: number,
+  skipBm25?: boolean,
 ): Promise<void> {
   try {
     if (skipModelLoad) {
-      // Load index + BM25 only; leave embedding model unloaded to test BM25 fallback.
-      await initIndex(manifestUrl);
+      // Load index + BM25 only (unless skipBm25); leave embedding model unloaded to test BM25 fallback.
+      await initIndex(manifestUrl, skipBm25);
       postMsg({
         type: "ready",
         mode: manifest?.search_mode ?? "flat",
@@ -287,7 +298,10 @@ async function init(
         }
         await loadModel(modelId);
       };
-      await Promise.all([loadModelAfterDelay(), initIndex(manifestUrl)]);
+      await Promise.all([
+        loadModelAfterDelay(),
+        initIndex(manifestUrl, skipBm25),
+      ]);
       isModelReady = true;
       postMsg({
         type: "ready",
@@ -367,6 +381,7 @@ self.onmessage = async (
         m.modelId,
         m.skipModelLoad,
         m.modelLoadDelaySeconds,
+        m.skipBm25,
       );
       break;
     }

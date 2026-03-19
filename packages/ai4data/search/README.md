@@ -34,7 +34,32 @@ client.on('results', ({ data, stats }) => {
 client.destroy()
 ```
 
-### Custom worker path
+### Loading from a CDN (any origin)
+
+When you load the package from a CDN (e.g. via an import map) and your page is on another origin, the browser blocks creating a worker from the CDN URL. Use **`SearchClient.fromCDN()`** so the worker is fetched and run from a blob URL (same-origin):
+
+```ts
+import { SearchClient } from '@ai4data/search'
+
+const client = await SearchClient.fromCDN(manifestUrl)
+client.on('results', ({ data }) => console.log(data))
+```
+
+`workerUrl` defaults to unpkg for the **current package version** (injected at build time), so you usually don't need to pass it. To pin a different version, pass `workerUrl: 'https://unpkg.com/@ai4data/search@0.1.0/dist/worker.mjs'`. If you pass an esm.sh worker URL, the client fetches the raw bundle from unpkg (esm.sh returns a wrapper that fails from a blob). This works from any static host with no build step.
+
+### Disable BM25 (semantic-only)
+
+To skip loading and building the BM25 index even when the manifest includes `bm25_corpus` (e.g. to save memory or avoid lexical search):
+
+```ts
+new SearchClient(manifestUrl, { skipBm25: true })
+// or with fromCDN:
+await SearchClient.fromCDN(manifestUrl, { skipBm25: true })
+```
+
+Search will run in semantic-only mode; `mode: 'lexical'` and `mode: 'hybrid'` will behave as semantic when BM25 is disabled.
+
+### Custom worker path (bundler)
 
 If your bundler does not resolve the default worker URL, pass a factory:
 
@@ -63,15 +88,12 @@ Vue and React adapters are planned (future: `@ai4data/search/vue`, `@ai4data/sea
 
 ## Demo
 
-A minimal demo is included in this package. You need a **manifest URL** that points to a `manifest.json` for a search collection (from the Python index pipeline or compatible format).
+Two demos are included:
 
-From the package directory:
+1. **Local build** (uses the built package from `dist/`): run `npm run demo`, then open **http://localhost:5173/demo/**.
+2. **Standalone HTML** (loads the package from npm via [esm.sh](https://esm.sh)): open **demo/standalone.html** in a browser. Serve the file over HTTP (e.g. from the package directory run `npx serve .` and open http://localhost:3000/demo/standalone.html). No build step; you must use **workerFactory** so the worker is loaded from the CDN (see the file for the pattern).
 
-```bash
-npm run demo
-```
-
-Then open **http://localhost:5173/demo/** in your browser, paste your manifest URL, click Connect, and run a search once the index is ready.
+Both demos need a **manifest URL** that points to a `manifest.json` for a search collection.
 
 ## Development
 

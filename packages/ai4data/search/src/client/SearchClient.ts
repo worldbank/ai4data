@@ -26,6 +26,10 @@ import type { WorkerOutboundMessage, WorkerInboundMessage } from '../types/worke
 import type { CollectionManifest } from '../types/manifest'
 import type { SearchOptions } from '../types/search'
 
+/** Injected at build time from package.json version; fallback for source builds */
+declare const __PACKAGE_VERSION__: string | undefined
+const DEFAULT_CDN_WORKER_URL = `https://unpkg.com/@ai4data/search@${typeof __PACKAGE_VERSION__ !== 'undefined' ? __PACKAGE_VERSION__ : '0.0.0'}/dist/worker.mjs`
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 export type SearchMode = 'semantic' | 'lexical' | 'hybrid'
@@ -37,6 +41,8 @@ export interface SearchClientOptions {
   skipModelLoad?: boolean
   /** Delay (seconds) before loading the embedding model; index + BM25 load first (for testing). */
   modelLoadDelaySeconds?: number
+  /** If true, do not load or build BM25 even when the manifest has bm25_corpus (semantic-only). */
+  skipBm25?: boolean
   /**
    * Factory function that creates the Web Worker.
    * Defaults to the bundled search worker created via `new URL()`.
@@ -51,11 +57,80 @@ export interface SearchClientOptions {
    * ```
    */
   workerFactory?: () => Worker
+  /**
+   * URL to the worker script (e.g. from a CDN). Use this when loading the package from a CDN
+   * so the worker is created via fetch + blob and works cross-origin. Ignored if workerFactory is set.
+   *
+   * @example
+   * ```ts
+   * const client = await SearchClient.fromCDN(manifestUrl, {
+   *   workerUrl: 'https://esm.sh/@ai4data/search@0.1.0/worker'
+   * })
+   * ```
+   */
+  workerUrl?: string
 }
 
 type MessageHandler<T extends WorkerOutboundMessage['type']> = (
   msg: Extract<WorkerOutboundMessage, { type: T }>,
 ) => void
+
+/**
+ * Create a Worker from a cross-origin URL by fetching the script and instantiating
+ * from a blob URL. Use this when loading the package from a CDN so the worker is
+ * same-origin and browsers allow it.
+ *
+ * @param url - Full URL to the worker script (e.g. https://esm.sh/@ai4data/search@0.1.0/worker)
+ * @returns Promise that resolves with the Worker instance
+ */
+/**
+ * Resolve a CDN worker URL to one that returns a single script (no import statements).
+ * ESM.sh returns a wrapper with imports that fail when run from a blob: URL; unpkg/jsDelivr
+ * serve the raw dist/worker.mjs which is self-contained.
+ */
+function getBundledWorkerUrl(url: string): string {
+  const esmMatch = url.match(/esm\.sh\/@ai4data\/search@([^/]+)\/worker/)
+  if (esmMatch) {
+    const version = esmMatch[1].split('?')[0]
+    return `https://unpkg.com/@ai4data/search@${version}/dist/worker.mjs`
+  }
+  const jdelivrMatch = url.match(/cdn\.jsdelivr\.net\/npm\/@ai4data\/search@([^/]+)\//)
+  if (jdelivrMatch) return url
+  return url
+}
+
+export function createWorkerFromUrl(url: string): Promise<Worker> {
+  const fetchUrl = getBundledWorkerUrl(url)
+  return fetch(fetchUrl, { mode: 'cors' })
+    .then((r) => {
+      if (r.status === 404)
+        throw new Error(
+          `Worker not found (404). Version may not be published to npm yet. Publish with: npm publish --access public (from packages/ai4data/search). Or use a published version in workerUrl.`
+        )
+      if (!r.ok) throw new Error(`Failed to fetch worker: ${r.status} ${r.statusText}`)
+      return r.text()
+    })
+    .then((code) => {
+      const trimmed = code.trim()
+      if (trimmed.startsWith('<!') || trimmed.startsWith('<html'))
+        throw new Error('Worker URL returned HTML (likely 404 or error page). Check the worker URL and that the package is published.')
+      if (trimmed.length < 1000)
+        throw new Error(`Worker script too short (${trimmed.length} chars). Expected a bundled script. Check the worker URL.`)
+      // Reject wrapper scripts that would fail from blob (imports like /node/... don't resolve from blob:)
+      if (/^\s*import\s+/.test(trimmed))
+        throw new Error(
+          'Worker URL returned a wrapper with import statements; it cannot run from a blob. Use a CDN that serves the raw bundle (e.g. unpkg.com/@ai4data/search@VERSION/dist/worker.mjs).'
+        )
+      const blob = new Blob([code], { type: 'application/javascript' })
+      const blobUrl = URL.createObjectURL(blob)
+      try {
+        return new Worker(blobUrl, { type: 'module' })
+      } catch (e) {
+        URL.revokeObjectURL(blobUrl)
+        throw e instanceof Error ? e : new Error(String(e))
+      }
+    })
+}
 
 // ── SearchClient ──────────────────────────────────────────────────────────────
 
@@ -91,17 +166,31 @@ export class SearchClient {
    * @param opts        - Optional configuration.
    */
   constructor(manifestUrl: string, opts: SearchClientOptions = {}) {
-    this.worker = opts.workerFactory
-      ? opts.workerFactory()
-      : new Worker(new URL('./worker.mjs', import.meta.url), { type: 'module' })
+    if (opts.workerFactory) {
+      this.worker = opts.workerFactory()
+    } else if (opts.workerUrl) {
+      throw new Error(
+        'SearchClient: workerUrl is only supported with SearchClient.fromCDN(). Use fromCDN(manifestUrl, { workerUrl }) or pass workerFactory.'
+      )
+    } else {
+      this.worker = new Worker(new URL('./worker.mjs', import.meta.url), { type: 'module' })
+    }
 
     this.worker.onmessage = (e: MessageEvent<WorkerOutboundMessage>) => {
       this._handleMessage(e.data)
     }
 
-    this.worker.onerror = (err) => {
-      console.error('[SearchClient] Worker error:', err)
-      this.loadingMessage = 'Search worker error'
+    this.worker.onerror = (err: ErrorEvent) => {
+      const e = err as ErrorEvent & { error?: Error }
+      const msg =
+        e.error?.message ??
+        e.message ??
+        (e as unknown as { message?: string }).message ??
+        'Worker error (no details; check DevTools Console for the worker context or Network tab for failed requests)'
+      const filename = e.filename || ''
+      const lineno = e.lineno ?? ''
+      console.error('[SearchClient] Worker error:', msg, filename ? `at ${filename}` : '', lineno ? `:${lineno}` : '', e.error ? e.error.stack : '')
+      this.loadingMessage = `Search worker error: ${msg}`
     }
 
     // Resolve relative manifest URLs against current page origin
@@ -116,6 +205,7 @@ export class SearchClient {
       modelId: opts.modelId,
       skipModelLoad: opts.skipModelLoad,
       modelLoadDelaySeconds: opts.modelLoadDelaySeconds,
+      skipBm25: opts.skipBm25,
     }
     this.worker.postMessage(initMsg)
   }
@@ -191,6 +281,30 @@ export class SearchClient {
     this.destroyed = true
     this.worker.terminate()
     this.handlers.clear()
+  }
+
+  /**
+   * Create a SearchClient when loading the package from a CDN. Fetches the worker
+   * script and creates the worker from a blob URL so it works cross-origin.
+   *
+   * @param manifestUrl - URL to the collection manifest.json
+   * @param opts - Options; workerUrl defaults to unpkg for this package version
+   * @returns Promise that resolves with the SearchClient
+   *
+   * @example
+   * ```ts
+   * const client = await SearchClient.fromCDN('https://example.com/data/manifest.json')
+   * client.on('results', ({ data }) => console.log(data))
+   * ```
+   */
+  static fromCDN(
+    manifestUrl: string,
+    opts: SearchClientOptions & { workerUrl?: string } = {},
+  ): Promise<SearchClient> {
+    const { workerUrl = DEFAULT_CDN_WORKER_URL, ...rest } = opts
+    return createWorkerFromUrl(workerUrl).then((worker) => {
+      return new SearchClient(manifestUrl, { ...rest, workerFactory: () => worker })
+    })
   }
 
   // ── Internal ──────────────────────────────────────────────────────────────────

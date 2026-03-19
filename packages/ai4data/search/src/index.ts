@@ -18,7 +18,10 @@
  */
 
 // ── Core client ────────────────────────────────────────────────────────────────
-export { SearchClient } from './client/SearchClient'
+export {
+  SearchClient,
+  createWorkerFromUrl,
+} from './client/SearchClient'
 export type { SearchClientOptions, SearchMode } from './client/SearchClient'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
