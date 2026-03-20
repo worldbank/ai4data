@@ -68,7 +68,8 @@ search = [
 
 # Metadata (WDS mapper, schema mapping)
 metadata = [
-  "flask>=3.0.0",
+  "fastapi>=0.115.0",
+  "uvicorn[standard]>=0.32.0",
   "requests>=2.31.0",
   "countrycode>=0.4.0",
 ]

@@ -1,11 +1,12 @@
 """
 WDS Schema Mapper Mini App
 ==========================
-Flask server that fetches WDS document metadata, transforms it via wds_to_schema,
+FastAPI server that fetches WDS document metadata, transforms it via wds_to_schema,
 and serves a single-page UI to display original and mapped schema side-by-side.
 
 Run: uv run python scripts/metadata/wds_mapper_app.py
-Open: http://localhost:5050
+     or: uv run uvicorn scripts.metadata.wds_mapper_app:app --reload --port 5051
+Open: http://localhost:5051
 """
 
 from __future__ import annotations
@@ -18,7 +19,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import requests
-from flask import Flask, jsonify, request, send_from_directory
+from fastapi import FastAPI, Query
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, JSONResponse
 
 # Import from same package
 from wds_to_schema import wds_to_schema
@@ -27,16 +30,16 @@ from wds_schema_validator import validate_wds_to_schema
 WB_WDS_API = "https://search.worldbank.org/api/v3/wds"
 GUID_PATTERN = re.compile(r"guid=(\d+)")
 
-app = Flask(__name__, static_folder=Path(__file__).parent)
+app = FastAPI(
+    title="WDS Schema Mapper", description="Map WDS metadata to NADA document schema"
+)
 
-
-# CORS for local dev
-@app.after_request
-def add_cors_headers(response):
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Methods"] = "GET, OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type"
-    return response
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["GET", "OPTIONS"],
+    allow_headers=["Content-Type"],
+)
 
 
 def extract_guid(value: str) -> str | None:
@@ -70,42 +73,55 @@ def fetch_wds_document(guid: str) -> dict:
     return doc
 
 
-@app.route("/")
+@app.get("/")
 def index():
     """Serve the mapper HTML page."""
-    return send_from_directory(Path(__file__).parent, "wds_mapper.html")
+    return FileResponse(Path(__file__).parent / "wds_mapper.html")
 
 
-@app.route("/api/map")
-def api_map():
+@app.get("/api/map")
+def api_map(
+    url: str | None = Query(None, description="Full WDS URL or guid"),
+    guid: str | None = Query(None, description="Document guid"),
+    validate: str | None = Query(None, description="Run validation (any value)"),
+    deduplicate: str = Query(
+        "1", description="Deduplicate themes/topics/keywords (1/0)"
+    ),
+):
     """
-    GET /api/map?url=... or ?guid=...
-    Returns { original, mapped } for the WDS document.
+    Map WDS document to NADA schema.
+    Provide either url or guid.
     """
-    url_param = request.args.get("url", "").strip()
-    guid_param = request.args.get("guid", "").strip()
-    guid = extract_guid(url_param) or (guid_param if guid_param.isdigit() else None)
-    if not guid:
-        return jsonify(
-            {"error": "Provide url or guid (e.g. ?url=... or ?guid=969971600710472848)"}
-        ), 400
+    resolved_guid = extract_guid(url or "") or (
+        guid if guid and guid.isdigit() else None
+    )
+    if not resolved_guid:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "error": "Provide url or guid (e.g. ?url=... or ?guid=969971600710472848)"
+            },
+        )
     try:
-        doc = fetch_wds_document(guid)
-        deduplicate = request.args.get("deduplicate", "1").lower() not in ("0", "false", "no")
-        mapped = wds_to_schema(doc, deduplicate_combined_fields=deduplicate)
+        doc = fetch_wds_document(resolved_guid)
+        do_deduplicate = deduplicate.lower() not in ("0", "false", "no")
+        mapped = wds_to_schema(doc, deduplicate_combined_fields=do_deduplicate)
         payload: dict = {"original": doc, "mapped": mapped}
-        if request.args.get("validate"):
-            validation = validate_wds_to_schema(doc, mapped)
-            payload["validation"] = validation
-        return jsonify(payload)
+        if validate:
+            payload["validation"] = validate_wds_to_schema(doc, mapped)
+        return payload
     except requests.RequestException as e:
-        return jsonify({"error": f"Failed to fetch from WDS API: {e}"}), 502
+        return JSONResponse(
+            status_code=502, content={"error": f"Failed to fetch from WDS API: {e}"}
+        )
     except ValueError as e:
-        return jsonify({"error": str(e)}), 404
+        return JSONResponse(status_code=404, content={"error": str(e)})
 
 
 def main():
-    app.run(host="0.0.0.0", port=5051, debug=False)
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=5051)
 
 
 if __name__ == "__main__":

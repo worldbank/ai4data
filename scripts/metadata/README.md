@@ -25,7 +25,7 @@ A mini web application to visualize WDS metadata and its mapped schema side-by-s
 uv run python scripts/metadata/wds_mapper_app.py
 ```
 
-Open [http://localhost:5050](http://localhost:5050), paste a WDS URL or guid, and click Map. Enable "Validate" to verify all WDS fields are preserved in the mapped schema.
+Open [http://localhost:5051](http://localhost:5051), paste a WDS URL or guid, and click Map. Enable "Validate" to verify all WDS fields are preserved in the mapped schema.
 
 **Tip:** The mapped schema's `additional` block (at the bottom) preserves raw WDS values like `additional.wds_countrycode` (e.g. `"1W"`) for traceability alongside transformed values in `document_description`.
 
