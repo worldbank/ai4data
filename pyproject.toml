@@ -66,6 +66,13 @@ search = [
   "countrycode>=0.4.0",
 ]
 
+# Metadata (WDS mapper, schema mapping)
+metadata = [
+  "flask>=3.0.0",
+  "requests>=2.31.0",
+  "countrycode>=0.4.0",
+]
+
 # All capabilities
 all = [
 	"ai4data[datause]",

@@ -1,0 +1,993 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>WDS to Schema Mapper</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #0066b3;
+        --primary-dark: #0c1a4d;
+        --bg-light: #f5f6f8;
+        --bg-card: #ffffff;
+        --border: #e0e2e6;
+        --text: #1a1d21;
+        --text-muted: #5c6370;
+        --error: #c53030;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family:
+          "Inter",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        font-size: 15px;
+        line-height: 1.5;
+        color: var(--text);
+        background: var(--bg-light);
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 1.5rem;
+      }
+
+      header {
+        margin-bottom: 1.5rem;
+      }
+
+      h1 {
+        margin: 0 0 0.25rem 0;
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+      }
+
+      .subtitle {
+        margin: 0;
+        font-size: 0.9375rem;
+        color: var(--text-muted);
+      }
+
+      .input-area {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+      }
+
+      .input-area input {
+        flex: 1;
+        min-width: 200px;
+        padding: 0.625rem 0.875rem;
+        font-size: 0.9375rem;
+        font-family: inherit;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: var(--bg-card);
+      }
+
+      .input-area input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 2px rgba(0, 102, 179, 0.2);
+      }
+
+      .btn {
+        padding: 0.625rem 1.25rem;
+        font-size: 0.9375rem;
+        font-weight: 600;
+        font-family: inherit;
+        color: white;
+        background: var(--primary-dark);
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+
+      .btn:hover {
+        background: #152555;
+      }
+
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .split-view {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        min-height: 400px;
+      }
+
+      @media (max-width: 768px) {
+        .split-view {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .panel {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 1rem;
+        background: rgba(12, 26, 77, 0.04);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .panel-title {
+        margin: 0;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--primary-dark);
+      }
+
+      .copy-btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--primary-dark);
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .copy-btn:hover {
+        background: rgba(12, 26, 77, 0.06);
+      }
+
+      .panel-body {
+        flex: 1;
+        overflow: auto;
+        padding: 1rem;
+      }
+
+      .panel-body pre {
+        margin: 0;
+        font-family: "SF Mono", "Consolas", "Monaco", monospace;
+        font-size: 0.8125rem;
+        line-height: 1.5;
+      }
+
+      .loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        padding: 2rem;
+        color: var(--text-muted);
+      }
+
+      .spinner {
+        width: 32px;
+        height: 32px;
+        border: 3px solid var(--border);
+        border-top-color: var(--primary-dark);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .error-msg {
+        padding: 1rem;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 6px;
+        color: var(--error);
+        font-size: 0.9375rem;
+      }
+
+      .empty-state {
+        padding: 2rem;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.9375rem;
+      }
+
+      .validate-opt {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .validate-opt input {
+        width: auto;
+        min-width: 0;
+      }
+
+      .validation-banner {
+        margin-bottom: 1rem;
+        padding: 0.75rem 1rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+      }
+
+      .validation-banner.valid {
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
+        color: #065f46;
+      }
+
+      .validation-banner.invalid {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #991b1b;
+      }
+
+      /* Formatted metadata view (adapted from docs-demo) */
+      .metadata-document .metadata-section-title {
+        letter-spacing: 0.02em;
+        text-transform: capitalize;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        padding-bottom: 0.35rem;
+      }
+
+      .metadata-document .metadata-row {
+        display: flex;
+        align-items: flex-start;
+        line-height: 1.5;
+        margin-bottom: 0.75rem;
+      }
+
+      .metadata-document .metadata-row:last-child {
+        margin-bottom: 0;
+      }
+
+      .metadata-document .metadata-row .metadata-label {
+        width: 10rem;
+        min-width: 10rem;
+        flex-shrink: 0;
+        padding-right: 0.5rem;
+      }
+
+      .metadata-document .metadata-row .metadata-value {
+        min-width: 0;
+        flex: 1 1 auto;
+      }
+
+      .metadata-document .metadata-row-pills .metadata-value {
+        display: block;
+      }
+
+      .metadata-document .metadata-html {
+        display: block;
+        word-break: break-word;
+      }
+
+      .metadata-document .metadata-nested {
+        padding-left: 1rem;
+        margin-top: 0.25rem;
+        border-left: 2px solid rgba(0, 0, 0, 0.08);
+      }
+
+      .metadata-document .metadata-nested-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 0 0.5rem;
+        margin-bottom: 0.35rem;
+        line-height: 1.45;
+      }
+
+      .metadata-document .metadata-nested-row .metadata-label {
+        min-width: 8rem;
+        flex-shrink: 0;
+        font-size: 0.75rem;
+        opacity: 0.85;
+      }
+
+      .metadata-document .metadata-array-item {
+        margin-bottom: 0.75rem;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      }
+
+      .metadata-document .metadata-array-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+      }
+
+      .metadata-document .metadata-pills-block {
+        display: block;
+        padding-left: 1rem;
+        border-left: 2px solid rgba(0, 0, 0, 0.08);
+        width: 100%;
+        box-sizing: border-box;
+        max-height: 10rem;
+        overflow-y: auto;
+      }
+
+      .metadata-document .metadata-pills-group:last-child {
+        margin-bottom: 0;
+      }
+
+      .metadata-document .metadata-pills-vocabulary {
+        letter-spacing: 0.02em;
+      }
+
+      .metadata-document .metadata-pills-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+      }
+
+      .metadata-document .metadata-pill {
+        display: inline-block;
+        padding: 0.2rem 0.6rem;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        color: var(--primary-dark);
+        background: rgba(12, 26, 77, 0.08);
+        border-radius: 9999px;
+        border: 1px solid rgba(12, 26, 77, 0.12);
+      }
+
+      .metadata-document .metadata-authors-inline {
+        padding-left: 1rem;
+        border-left: 2px solid rgba(0, 0, 0, 0.08);
+        width: 100%;
+        box-sizing: border-box;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 0.25rem 0;
+        line-height: 1.7;
+        max-height: 10rem;
+        overflow-y: auto;
+      }
+
+      .metadata-document .metadata-authors-item {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0;
+      }
+
+      .metadata-document .metadata-authors-name {
+        font-weight: 500;
+        color: var(--primary-dark);
+        font-size: 0.9375rem;
+      }
+
+      .metadata-document .metadata-authors-sep {
+        color: rgba(0, 0, 0, 0.4);
+        font-weight: 600;
+        font-size: 1rem;
+        padding: 0 0.6rem;
+        user-select: none;
+        vertical-align: middle;
+      }
+
+      .metadata-document .metadata-namecode-inline {
+        padding-left: 1rem;
+        border-left: 2px solid rgba(0, 0, 0, 0.08);
+        width: 100%;
+        box-sizing: border-box;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 0.25rem 0;
+        line-height: 1.6;
+        max-height: 10rem;
+        overflow-y: auto;
+      }
+
+      .metadata-document .metadata-namecode-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+
+      .metadata-document .metadata-namecode-code {
+        font-size: 0.6875rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        color: var(--primary-dark);
+        background: rgba(12, 26, 77, 0.08);
+        padding: 0.2rem 0.45rem;
+        border-radius: 4px;
+        flex-shrink: 0;
+      }
+
+      .metadata-document .metadata-namecode-name {
+        font-weight: 500;
+        font-size: 0.875rem;
+        color: var(--primary-dark);
+      }
+
+      .metadata-document .metadata-namecode-sep {
+        color: rgba(0, 0, 0, 0.35);
+        font-weight: 600;
+        font-size: 0.75rem;
+        padding: 0 0.35rem;
+        user-select: none;
+      }
+
+      .metadata-document .text-caption {
+        font-size: 0.75rem;
+      }
+
+      .metadata-document .text-medium-emphasis {
+        opacity: 0.8;
+      }
+
+      .metadata-document .text-body-2 {
+        font-size: 0.875rem;
+      }
+
+      .metadata-document .text-subtitle-2 {
+        font-size: 0.875rem;
+        font-weight: 600;
+      }
+
+      .metadata-document .mb-3 {
+        margin-bottom: 0.75rem;
+      }
+
+      .metadata-document .mb-6 {
+        margin-bottom: 1.5rem;
+      }
+
+      .metadata-document .d-flex {
+        display: flex;
+      }
+
+      .metadata-document .flex-wrap {
+        flex-wrap: wrap;
+      }
+
+      .metadata-document .flex-grow-1 {
+        flex-grow: 1;
+      }
+
+      .metadata-document .ga-1 {
+        gap: 0.25rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>WDS to Schema Mapper</h1>
+        <p class="subtitle">
+          Paste a WDS API URL or guid to view original metadata and mapped
+          Document Metadata schema side-by-side.
+        </p>
+      </header>
+
+      <div class="input-area">
+        <input
+          type="text"
+          id="urlInput"
+          placeholder="Full WDS URL or guid (e.g. 969971600710472848)"
+          aria-label="WDS URL or guid"
+        />
+        <label
+          class="validate-opt"
+          title="When checked, merge duplicate values in themes/topics/keywords. Uncheck to preserve full provenance."
+        >
+          <input type="checkbox" id="deduplicateCheck" checked />
+          <span>Deduplicate</span>
+        </label>
+        <label class="validate-opt">
+          <input type="checkbox" id="validateCheck" />
+          <span>Validate</span>
+        </label>
+        <button type="button" class="btn" id="mapBtn">Map</button>
+      </div>
+
+      <div
+        id="validationBanner"
+        class="validation-banner"
+        style="display: none"
+      ></div>
+
+      <div class="split-view">
+        <div class="panel">
+          <div class="panel-header">
+            <h2 class="panel-title">Original (WDS API)</h2>
+            <button type="button" class="copy-btn" id="copyOriginal" disabled>
+              Copy
+            </button>
+          </div>
+          <div class="panel-body" id="originalBody">
+            <div class="empty-state" id="originalEmpty">
+              Enter a URL or guid and click Map.
+            </div>
+            <pre
+              id="originalPre"
+              style="display: none"
+            ><code id="originalCode" class="language-json"></code></pre>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header">
+            <h2 class="panel-title">Mapped (Document Metadata Schema)</h2>
+            <div style="display: flex; align-items: center; gap: 0.75rem">
+              <label
+                class="validate-opt"
+                title="Show metadata in a readable formatted view instead of raw JSON"
+              >
+                <input type="checkbox" id="formattedCheck" />
+                <span>Formatted</span>
+              </label>
+              <button type="button" class="copy-btn" id="copyMapped" disabled>
+                Copy
+              </button>
+            </div>
+          </div>
+          <div class="panel-body" id="mappedBody">
+            <div class="empty-state" id="mappedEmpty">
+              Mapped schema will appear here.
+            </div>
+            <pre
+              id="mappedPre"
+              style="display: none"
+            ><code id="mappedCode" class="language-json"></code></pre>
+            <div
+              id="mappedFormatted"
+              class="metadata-document"
+              style="display: none"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
+    <script>
+      (function () {
+        const urlInput = document.getElementById("urlInput");
+        const mapBtn = document.getElementById("mapBtn");
+        const originalEmpty = document.getElementById("originalEmpty");
+        const originalPre = document.getElementById("originalPre");
+        const originalCode = document.getElementById("originalCode");
+        const mappedEmpty = document.getElementById("mappedEmpty");
+        const mappedPre = document.getElementById("mappedPre");
+        const mappedCode = document.getElementById("mappedCode");
+        const copyOriginal = document.getElementById("copyOriginal");
+        const copyMapped = document.getElementById("copyMapped");
+        const validateCheck = document.getElementById("validateCheck");
+        const deduplicateCheck = document.getElementById("deduplicateCheck");
+        const formattedCheck = document.getElementById("formattedCheck");
+        const validationBanner = document.getElementById("validationBanner");
+        const mappedFormatted = document.getElementById("mappedFormatted");
+        let lastMapped = null;
+
+        function formatMetadataKey(key) {
+          if (typeof key !== "string") return key;
+          return key
+            .replace(/_/g, " ")
+            .replace(/\b\w/g, (c) => c.toUpperCase());
+        }
+
+        function hasMetadataValue(val) {
+          if (val === null || val === undefined) return false;
+          if (typeof val === "string") return val.trim().length > 0;
+          if (Array.isArray(val)) return val.length > 0;
+          if (typeof val === "object") return Object.keys(val).length > 0;
+          return true;
+        }
+
+        function groupKeywordsByVocabulary(arr) {
+          if (!Array.isArray(arr) || arr.length === 0) return [];
+          const map = {};
+          for (const kw of arr) {
+            if (kw == null || typeof kw !== "object") continue;
+            const vocab = kw.vocabulary ?? kw.Vocabulary ?? "Other";
+            const name = kw.name ?? kw.Name ?? kw.title ?? kw.Title ?? "";
+            if (String(name).trim()) {
+              if (!map[vocab]) map[vocab] = [];
+              map[vocab].push(String(name).trim());
+            }
+          }
+          return Object.entries(map).map(([vocabulary, names]) => ({
+            vocabulary,
+            names,
+          }));
+        }
+
+        function formatAuthorsForDisplay(authors) {
+          if (!Array.isArray(authors) || authors.length === 0) return [];
+          return authors
+            .map((a) => {
+              if (a == null || typeof a !== "object") return "";
+              const full = a.full_name ?? a["Full Name"] ?? a.fullName ?? "";
+              if (String(full).trim()) return String(full).trim();
+              const last = a.last_name ?? a["Last Name"] ?? "";
+              const first = a.first_name ?? a["First Name"] ?? "";
+              const initial = a.initial ?? a.Initial ?? "";
+              const parts = [last].filter(Boolean);
+              if (first) parts.push(first);
+              else if (initial) parts.push(initial);
+              return parts.length ? parts.join(", ") : "";
+            })
+            .filter(Boolean);
+        }
+
+        function isNameCodeArray(val) {
+          if (!Array.isArray(val) || val.length === 0) return false;
+          return val.every((item) => {
+            if (item == null || typeof item !== "object") return false;
+            const hasName = ["name", "Name"].some(
+              (k) => item[k] != null && String(item[k]).trim() !== "",
+            );
+            const hasCode = ["code", "Code"].some(
+              (k) => item[k] != null && String(item[k]).trim() !== "",
+            );
+            return hasName || hasCode;
+          });
+        }
+
+        function formatNameCodeList(arr) {
+          if (!Array.isArray(arr) || arr.length === 0) return [];
+          return arr
+            .map((item) => {
+              if (item == null || typeof item !== "object")
+                return { name: "—", code: "—" };
+              const name = String(item.name ?? item.Name ?? "").trim() || "—";
+              const code = String(item.code ?? item.Code ?? "").trim() || "—";
+              return { name, code };
+            })
+            .filter((item) => item.name !== "—" || item.code !== "—");
+        }
+
+        function escapeHtml(s) {
+          const div = document.createElement("div");
+          div.textContent = s;
+          return div.innerHTML;
+        }
+
+        function renderValue(val, keyName) {
+          if (val === null || val === undefined) return "—";
+          if (
+            (keyName === "abstract" || keyName === "description") &&
+            typeof val === "string"
+          ) {
+            return '<span class="metadata-html">' + val + "</span>";
+          }
+          if (Array.isArray(val)) {
+            if (val.length === 0) return "—";
+            return val
+              .map((item) => {
+                if (
+                  item !== null &&
+                  typeof item === "object" &&
+                  !Array.isArray(item)
+                ) {
+                  const rows = Object.entries(item)
+                    .filter(([, v]) => hasMetadataValue(v))
+                    .map(
+                      ([k, v]) =>
+                        '<div class="metadata-nested-row"><span class="metadata-label">' +
+                        escapeHtml(formatMetadataKey(k)) +
+                        "</span>" +
+                        renderValue(v, k) +
+                        "</div>",
+                    )
+                    .join("");
+                  return (
+                    '<div class="metadata-array-item"><div class="metadata-nested">' +
+                    rows +
+                    "</div></div>"
+                  );
+                }
+                return (
+                  '<div class="metadata-array-item">' +
+                  escapeHtml(String(item) ?? "—") +
+                  "</div>"
+                );
+              })
+              .join("");
+          }
+          if (typeof val === "object") {
+            const rows = Object.entries(val)
+              .filter(([, v]) => hasMetadataValue(v))
+              .map(
+                ([k, v]) =>
+                  '<div class="metadata-nested-row"><span class="metadata-label">' +
+                  escapeHtml(formatMetadataKey(k)) +
+                  "</span>" +
+                  renderValue(v, k) +
+                  "</div>",
+              )
+              .join("");
+            return '<div class="metadata-nested">' + rows + "</div>";
+          }
+          return escapeHtml(String(val));
+        }
+
+        function renderMetadataFormatted(obj) {
+          if (!obj || typeof obj !== "object") return "";
+          const entries = Object.entries(obj).sort((a, b) => {
+            if (a[0] === "additional") return 1;
+            if (b[0] === "additional") return -1;
+            return 0;
+          });
+          const sections = [];
+          for (const [sectionKey, sectionVal] of entries) {
+            const title = formatMetadataKey(sectionKey);
+            if (
+              sectionVal !== null &&
+              sectionVal !== undefined &&
+              typeof sectionVal === "object" &&
+              !Array.isArray(sectionVal)
+            ) {
+              const rows = [];
+              for (const [key, val] of Object.entries(sectionVal)) {
+                if (!hasMetadataValue(val)) continue;
+                const label = formatMetadataKey(key);
+                const pillsRow =
+                  (key === "keywords" ||
+                    key === "themes" ||
+                    key === "topics") &&
+                  Array.isArray(val) &&
+                  val.length > 0;
+                const authorsRow =
+                  (key === "authors" || key === "Authors") &&
+                  Array.isArray(val) &&
+                  val.length > 0;
+                const namecodeRow =
+                  Array.isArray(val) && val.length > 0 && isNameCodeArray(val);
+                let valueHtml = "";
+                if (pillsRow) {
+                  const groups = groupKeywordsByVocabulary(val);
+                  valueHtml =
+                    '<div class="metadata-pills-block">' +
+                    groups
+                      .map(
+                        (g) =>
+                          '<div class="metadata-pills-group mb-3"><div class="metadata-pills-vocabulary text-caption text-medium-emphasis mb-1">' +
+                          escapeHtml(g.vocabulary) +
+                          "</div><div class='metadata-pills-list d-flex flex-wrap ga-1'>" +
+                          g.names
+                            .map(
+                              (n) =>
+                                '<span class="metadata-pill">' +
+                                escapeHtml(n) +
+                                "</span>",
+                            )
+                            .join("") +
+                          "</div></div>",
+                      )
+                      .join("") +
+                    "</div>";
+                } else if (authorsRow) {
+                  const names = formatAuthorsForDisplay(val);
+                  valueHtml =
+                    '<div class="metadata-authors-inline">' +
+                    names
+                      .map(
+                        (n, i) =>
+                          '<span class="metadata-authors-item"><span class="metadata-authors-name">' +
+                          escapeHtml(n) +
+                          "</span></span>" +
+                          (i < names.length - 1
+                            ? '<span class="metadata-authors-sep" aria-hidden="true">·</span>'
+                            : ""),
+                      )
+                      .join("") +
+                    "</div>";
+                } else if (namecodeRow) {
+                  const items = formatNameCodeList(val);
+                  valueHtml =
+                    '<div class="metadata-namecode-inline">' +
+                    items
+                      .map(
+                        (item, i) =>
+                          '<span class="metadata-namecode-item"><span class="metadata-namecode-code">' +
+                          escapeHtml(item.code) +
+                          "</span><span class='metadata-namecode-name'>" +
+                          escapeHtml(item.name) +
+                          "</span></span>" +
+                          (i < items.length - 1
+                            ? '<span class="metadata-namecode-sep" aria-hidden="true">·</span>'
+                            : ""),
+                      )
+                      .join("") +
+                    "</div>";
+                } else {
+                  valueHtml = renderValue(val, key);
+                }
+                rows.push(
+                  '<div class="metadata-row d-flex align-start mb-3' +
+                    (pillsRow ? " metadata-row-pills" : "") +
+                    '"><span class="metadata-label text-caption text-medium-emphasis">' +
+                    escapeHtml(label) +
+                    '</span><span class="metadata-value text-body-2 flex-grow-1">' +
+                    valueHtml +
+                    "</span></div>",
+                );
+              }
+              sections.push(
+                '<div class="metadata-section mb-6"><div class="metadata-section-title text-subtitle-2 text-medium-emphasis mb-3">' +
+                  escapeHtml(title) +
+                  "</div>" +
+                  rows.join("") +
+                  "</div>",
+              );
+            } else if (Array.isArray(sectionVal) && sectionVal.length > 0) {
+              const content = renderValue(sectionVal, sectionKey);
+              sections.push(
+                '<div class="metadata-section mb-6"><div class="metadata-section-title text-subtitle-2 text-medium-emphasis mb-3">' +
+                  escapeHtml(title) +
+                  '</div><div class="metadata-row"><span class="metadata-value text-body-2">' +
+                  content +
+                  "</span></div></div>",
+              );
+            } else {
+              sections.push(
+                '<div class="metadata-section mb-6"><div class="metadata-section-title text-subtitle-2 text-medium-emphasis mb-3">' +
+                  escapeHtml(title) +
+                  '</div><div class="metadata-row"><span class="metadata-value text-body-2">' +
+                  (sectionVal == null ? "—" : escapeHtml(String(sectionVal))) +
+                  "</span></div></div>",
+              );
+            }
+          }
+          return sections.join("");
+        }
+
+        function setLoading(loading) {
+          mapBtn.disabled = loading;
+          if (loading) {
+            originalEmpty.className = "loading";
+            originalEmpty.innerHTML =
+              '<div class="spinner"></div><span>Fetching...</span>';
+            originalEmpty.style.display = "flex";
+            originalPre.style.display = "none";
+            mappedEmpty.className = "loading";
+            mappedEmpty.innerHTML =
+              '<div class="spinner"></div><span>Transforming...</span>';
+            mappedEmpty.style.display = "flex";
+            mappedPre.style.display = "none";
+            mappedFormatted.style.display = "none";
+            copyOriginal.disabled = true;
+            copyMapped.disabled = true;
+          }
+        }
+
+        function setError(msg) {
+          originalEmpty.className = "error-msg";
+          originalEmpty.innerHTML = msg;
+          originalEmpty.style.display = "block";
+          originalPre.style.display = "none";
+          mappedEmpty.className = "error-msg";
+          mappedEmpty.innerHTML = "—";
+          mappedEmpty.style.display = "block";
+          mappedPre.style.display = "none";
+          mappedFormatted.style.display = "none";
+          lastMapped = null;
+          copyOriginal.disabled = true;
+          copyMapped.disabled = true;
+        }
+
+        function updateMappedView(mapped) {
+          mappedCode.textContent = JSON.stringify(mapped, null, 2);
+          const formatted = formattedCheck.checked;
+          if (formatted) {
+            mappedPre.style.display = "none";
+            mappedFormatted.style.display = "block";
+            mappedFormatted.innerHTML = renderMetadataFormatted(mapped);
+          } else {
+            mappedFormatted.style.display = "none";
+            mappedPre.style.display = "block";
+            if (window.Prism) Prism.highlightElement(mappedCode);
+          }
+        }
+
+        function setResult(original, mapped, validation) {
+          validationBanner.style.display = "none";
+          if (validation) {
+            validationBanner.style.display = "block";
+            validationBanner.className =
+              "validation-banner " + (validation.valid ? "valid" : "invalid");
+            const n =
+              (validation.in_additional || []).length +
+              (validation.in_schema || []).length;
+            validationBanner.textContent = validation.valid
+              ? "Validation passed: all " +
+                n +
+                " WDS fields preserved in schema."
+              : "Validation failed: " +
+                (validation.missing || []).length +
+                " field(s) may be missing.";
+          }
+          originalEmpty.style.display = "none";
+          originalCode.textContent = JSON.stringify(original, null, 2);
+          originalPre.style.display = "block";
+          if (window.Prism) Prism.highlightElement(originalCode);
+
+          mappedEmpty.style.display = "none";
+          lastMapped = mapped;
+          updateMappedView(mapped);
+
+          copyOriginal.disabled = false;
+          copyMapped.disabled = false;
+        }
+
+        async function doMap() {
+          const val = urlInput.value.trim();
+          if (!val) {
+            setError("Please enter a WDS URL or guid.");
+            return;
+          }
+          setLoading(true);
+          const params = new URLSearchParams();
+          if (/^\d+$/.test(val)) {
+            params.set("guid", val);
+          } else {
+            params.set("url", val);
+          }
+          if (validateCheck.checked) params.set("validate", "1");
+          if (!deduplicateCheck.checked) params.set("deduplicate", "0");
+          try {
+            const res = await fetch("/api/map?" + params.toString());
+            const data = await res.json();
+            if (!res.ok) {
+              setError(data.error || "Request failed.");
+              return;
+            }
+            setResult(data.original, data.mapped, data.validation);
+          } catch (e) {
+            setError("Network error: " + e.message);
+          } finally {
+            setLoading(false);
+          }
+        }
+
+        formattedCheck.addEventListener("change", function () {
+          if (lastMapped) updateMappedView(lastMapped);
+        });
+
+        mapBtn.addEventListener("click", doMap);
+        urlInput.addEventListener("keydown", function (e) {
+          if (e.key === "Enter") doMap();
+        });
+
+        copyOriginal.addEventListener("click", function () {
+          navigator.clipboard.writeText(originalCode.textContent);
+        });
+        copyMapped.addEventListener("click", function () {
+          navigator.clipboard.writeText(mappedCode.textContent);
+        });
+      })();
+    </script>
+  </body>
+</html>
