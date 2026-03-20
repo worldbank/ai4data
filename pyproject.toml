@@ -66,6 +66,14 @@ search = [
   "countrycode>=0.4.0",
 ]
 
+# Metadata (WDS mapper, schema mapping)
+metadata = [
+  "fastapi>=0.115.0",
+  "uvicorn[standard]>=0.32.0",
+  "requests>=2.31.0",
+  "countrycode>=0.4.0",
+]
+
 # All capabilities
 all = [
 	"ai4data[datause]",
