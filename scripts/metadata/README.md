@@ -4,6 +4,8 @@ Tools for World Bank document metadata transformation and schema mapping.
 
 ## WDS to Schema Mapping
 
+![WDS to Document Metadata Schema Mapping](/docs/images/metadata-wds-dms-app.png)
+
 The [wds_to_schema.py](wds_to_schema.py) module converts World Bank Search API (WDS) v3 document metadata to the document schema (Chapter 5 of the [Metadata Standards Guide](https://worldbank.github.io/schema-guide/chapter05.html)). See [docs/WDS_TO_SCHEMA_MAPPING.md](docs/WDS_TO_SCHEMA_MAPPING.md) for the full mapping documentation and rationale.
 
 ```bash
