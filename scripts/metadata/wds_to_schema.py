@@ -3,7 +3,7 @@ wds_to_schema.py
 ================
 Convert World Bank Search API (WDS) v3 document metadata to the Document Metadata Schema
 schema defined in the Metadata Standards for Improved Data Discoverability
-(Chapter 5 Documents).
+(Documents section).
 
 Implements the mapping documented in docs/WDS_TO_SCHEMA_MAPPING.md.
 
@@ -198,7 +198,7 @@ def wds_to_schema(
     deduplicate_combined_fields: bool = True,
 ) -> dict[str, Any]:
     """
-    Convert a WDS API v3 document to the Document Metadata Schema (Chapter 5).
+    Convert a WDS API v3 document to the Document Metadata Schema (Documents section).
 
     Args:
         doc: Raw document dict from WDS API (documents.<key>).
