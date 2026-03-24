@@ -91,6 +91,16 @@ metadata = [
   "tqdm>=4.65.0",
 ]
 
+# Metadata error detection (async AI-powered scanning via AutoGen agents)
+error_scanner = [
+  "autogen-core>=0.4.0",
+  "autogen-agentchat>=0.4.0",
+  "autogen-ext[openai]>=0.4.0",
+  "openai>=2.29.0",
+  "httpx>=0.27.0",
+  "pyyaml>=6.0.0",
+]
+
 # All capabilities
 all = [
 	"ai4data[datause]",
@@ -98,6 +108,7 @@ all = [
 	"ai4data[anomaly]",
 	"ai4data[search]",
 	"ai4data[metadata]",
+	"ai4data[error_scanner]",
 ]
 
 # Documentation
@@ -120,6 +131,9 @@ ignore-words-list = "gost,Nd"
 include = [
     "src/**/*"
 ]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ai4data"]
 
 [tool.hatch.version]
 source = "vcs"
