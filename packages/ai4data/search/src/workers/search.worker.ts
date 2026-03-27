@@ -217,7 +217,9 @@ async function initIndex(
   manifest = (await resp.json()) as CollectionManifest;
   highlightsList = null;
 
-  baseUrl = manifestUrl.replace(/manifest\.json$/, "");
+  // Directory containing the manifest — any filename is allowed (not only manifest.json).
+  const manifestPathOnly = manifestUrl.split(/[?#]/)[0];
+  baseUrl = new URL(".", manifestPathOnly).href;
   if (!baseUrl.endsWith("/")) baseUrl += "/";
 
   if (manifest.search_mode === "flat") {

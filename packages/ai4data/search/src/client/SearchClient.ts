@@ -181,7 +181,7 @@ export class SearchClient {
   // ── Constructor ──────────────────────────────────────────────────────────────
 
   /**
-   * @param manifestUrl - Absolute or relative URL to `manifest.json`.
+   * @param manifestUrl - Absolute or relative URL to the collection manifest JSON (any filename, e.g. `search_manifest.json`).
    *   Relative URLs are resolved against `location.href`.
    * @param opts        - Optional configuration.
    */
