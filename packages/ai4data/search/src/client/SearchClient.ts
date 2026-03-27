@@ -44,6 +44,19 @@ export interface SearchClientOptions {
   /** If true, do not load or build BM25 even when the manifest has bm25_corpus (semantic-only). */
   skipBm25?: boolean
   /**
+   * Base URL passed to `@xenova/transformers` as `env.remoteHost` (default Hub is `https://huggingface.co/`).
+   * Point this at a same-origin proxy that forwards to the Hub so embedding downloads comply with CSP.
+   * `modelId` remains a full repo id (e.g. `org/model`); the proxy should mirror Hub paths:
+   * `…/org/model/resolve/{revision}/…` (see the package `demo/proxy-server.mjs` route `/api/hf-proxy/`).
+   * If another stack requests `/api/resolve-cache/models/…/{revision}/file`, use a proxy that maps that to the Hub
+   * (the same demo server supports that pattern). Relative URLs are resolved with `new URL(…, location.href)`.
+   */
+  transformersRemoteHost?: string
+  /**
+   * Optional `env.remotePathTemplate` override. Omit unless your proxy does not mirror the Hub path layout.
+   */
+  transformersRemotePathTemplate?: string
+  /**
    * Factory function that creates the Web Worker.
    * Defaults to the bundled search worker created via `new URL()`.
    * Override when you need a custom worker path (e.g. CDN, service worker proxy).
@@ -88,6 +101,13 @@ type MessageHandler<T extends WorkerOutboundMessage['type']> = (
  * ESM.sh returns a wrapper with imports that fail when run from a blob: URL; unpkg/jsDelivr
  * serve the raw dist/worker.mjs which is self-contained.
  */
+/** Resolve relative HF proxy base against the page; ensure trailing slash for Xenova pathJoin. */
+function resolveTransformersRemoteHost(raw: string): string {
+  const base = globalThis.location?.href ?? 'http://localhost/'
+  const u = new URL(raw, base).href
+  return u.endsWith('/') ? u : `${u}/`
+}
+
 function getBundledWorkerUrl(url: string): string {
   const esmMatch = url.match(/esm\.sh\/@ai4data\/search@([^/]+)\/worker/)
   if (esmMatch) {
@@ -206,6 +226,12 @@ export class SearchClient {
       skipModelLoad: opts.skipModelLoad,
       modelLoadDelaySeconds: opts.modelLoadDelaySeconds,
       skipBm25: opts.skipBm25,
+      ...(opts.transformersRemoteHost !== undefined && {
+        transformersRemoteHost: resolveTransformersRemoteHost(opts.transformersRemoteHost),
+      }),
+      ...(opts.transformersRemotePathTemplate !== undefined && {
+        transformersRemotePathTemplate: opts.transformersRemotePathTemplate,
+      }),
     }
     this.worker.postMessage(initMsg)
   }

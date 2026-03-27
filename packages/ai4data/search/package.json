@@ -26,6 +26,7 @@
   "scripts": {
     "build": "tsup",
     "demo": "npm run build && npx serve . -p 5173",
+    "demo:proxy": "npm run build && node demo/proxy-server.mjs",
     "prepublishOnly": "npm run build",
     "test": "echo 'Add smoke test if desired'",
     "lint": "echo 'Add ESLint if desired'"

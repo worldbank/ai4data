@@ -56,6 +56,37 @@ client.on('results', ({ data }) => console.log(data))
 
 `workerUrl` defaults to unpkg for the **current package version** (injected at build time), so you usually don't need to pass it. To pin a different version, pass `workerUrl: 'https://unpkg.com/@ai4data/search@0.1.0/dist/worker.mjs'`. If you pass an esm.sh worker URL, the client fetches the raw bundle from unpkg (esm.sh returns a wrapper that fails from a blob). This works from any static host with no build step.
 
+### CSP and Hugging Face (embedding proxy)
+
+The search worker loads the embedding model with **`@xenova/transformers`**, which fetches ONNX and tokenizer files from the Hugging Face Hub by default (`https://huggingface.co/...`). If your page’s **Content Security Policy** blocks `connect-src` to `huggingface.co` or to LFS/CDN hosts, those requests will fail.
+
+**Recommended approach:** serve a **same-origin reverse proxy** that forwards to the Hub, and point Transformers.js at it via **`env.remoteHost`**. This package exposes that as **`transformersRemoteHost`** (and optionally **`transformersRemotePathTemplate`** if your proxy does not mirror the Hub path layout).
+
+- **`modelId`** stays a **full Hub repo id** (e.g. `avsolatorio/GIST-small-Embedding-v0`). It is **not** a raw directory URL; the library builds paths like `…/{model}/resolve/{revision}/tokenizer.json`.
+- Pass an **absolute** base URL (or a path relative to the page, which `SearchClient` resolves against `location.href` so blob workers still target your app origin):
+
+```ts
+const origin = typeof location !== 'undefined' ? location.origin : 'https://example.com'
+
+const client = new SearchClient(manifestUrl, {
+  transformersRemoteHost: `${origin}/api/hf-proxy/`,
+})
+
+await SearchClient.fromCDN(manifestUrl, {
+  workerUrl: `${origin}/dist/worker.mjs`,
+  transformersRemoteHost: `${origin}/api/hf-proxy/`,
+})
+```
+
+Your proxy should forward to the Hub with the **same path suffix** after the prefix, for example:
+
+`GET https://your.app/api/hf-proxy/avsolatorio/GIST-small-Embedding-v0/resolve/main/config.json`  
+→ `GET https://huggingface.co/avsolatorio/GIST-small-Embedding-v0/resolve/main/config.json`
+
+**Important:** Hub responses often **302** to `cdn-lfs.huggingface.co`. The proxy must **follow redirects on the server** and return the final 200 response to the browser; if you pass 302 through, the browser will leave your origin and hit CSP again. The demo server below does this with `fetch(..., { redirect: 'follow' })`.
+
+A second path shape (`/api/resolve-cache/models/<org>/<model>/<revision>/<file…>`) is supported by the same demo server for tools that emit that URL pattern; it maps to `https://huggingface.co/<org>/<model>/resolve/<revision>/<file…>`.
+
 ### Disable BM25 (semantic-only)
 
 To skip loading and building the BM25 index even when the manifest includes `bm25_corpus` (e.g. to save memory or avoid lexical search):
@@ -121,12 +152,13 @@ Host the resulting output directory on any static host (or object storage with C
 
 ## Demo
 
-Two demos are included:
+Demos are included under **`demo/`**:
 
-1. **Local build** (uses the built package from `dist/`): run `npm run demo`, then open **http://localhost:5173/demo/**.
-2. **Standalone HTML** (loads the package from npm via [esm.sh](https://esm.sh)): open **demo/standalone.html** in a browser. Serve the file over HTTP (e.g. from the package directory run `npx serve .` and open http://localhost:3000/demo/standalone.html). No build step; you must use **workerFactory** so the worker is loaded from the CDN (see the file for the pattern).
+1. **Static server** (local `dist/`): run **`npm run demo`**, then open **http://localhost:5173/demo/** (uses [serve](https://www.npmjs.com/package/serve)).
+2. **Standalone HTML** (loads the package from npm via [esm.sh](https://esm.sh)): open **demo/standalone.html** in a browser. Serve the file over HTTP (e.g. `npx serve .` from this package). No build step; the file uses **`SearchClient.fromCDN`** with a worker URL (see the file).
+3. **HF proxy + CSP-friendly demo**: run **`npm run demo:proxy`** from this package (builds, then starts **demo/proxy-server.mjs**). Open **http://localhost:5173/** — it serves **demo/hf-proxy-demo.html**, which sets **`transformersRemoteHost`** to the same-origin **`/api/hf-proxy/`** prefix. The proxy forwards to `huggingface.co` and **follows redirects server-side** so the browser only talks to localhost.
 
-Both demos need a **manifest URL** that points to a `manifest.json` for a search collection (produce one with the pipeline above, or use an existing hosted collection).
+All demos need a **manifest URL** pointing at a hosted **`manifest.json`** (from the Python pipeline above or an existing collection).
 
 ## Development
 

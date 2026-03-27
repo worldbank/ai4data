@@ -56,6 +56,9 @@ let highlightsList: SearchResult[] | null = null;
 let flatCompareEngine: FlatEngine | null = null;
 let isModelReady = false;
 let isIndexReady = false;
+/** Set from `init`; applied in `loadModel` before `pipeline()` */
+let transformersRemoteHost: string | undefined;
+let transformersRemotePathTemplate: string | undefined;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -146,7 +149,19 @@ function buildBM25Engine(
 
 // ── Model loading ─────────────────────────────────────────────────────────────
 
+function applyTransformersRemoteEnv(): void {
+  if (transformersRemoteHost !== undefined) {
+    env.remoteHost = transformersRemoteHost.endsWith("/")
+      ? transformersRemoteHost
+      : `${transformersRemoteHost}/`;
+  }
+  if (transformersRemotePathTemplate !== undefined) {
+    env.remotePathTemplate = transformersRemotePathTemplate;
+  }
+}
+
 async function loadModel(modelId?: string): Promise<void> {
+  applyTransformersRemoteEnv();
   postMsg({
     type: "progress",
     phase: "model",
@@ -319,7 +334,11 @@ async function init(
   skipModelLoad?: boolean,
   modelLoadDelaySeconds?: number,
   skipBm25?: boolean,
+  remoteHost?: string,
+  remotePathTemplate?: string,
 ): Promise<void> {
+  transformersRemoteHost = remoteHost;
+  transformersRemotePathTemplate = remotePathTemplate;
   try {
     if (skipModelLoad) {
       // Load index + BM25 only (unless skipBm25); leave embedding model unloaded to test BM25 fallback.
@@ -427,6 +446,8 @@ self.onmessage = async (
         m.skipModelLoad,
         m.modelLoadDelaySeconds,
         m.skipBm25,
+        m.transformersRemoteHost,
+        m.transformersRemotePathTemplate,
       );
       break;
     }
