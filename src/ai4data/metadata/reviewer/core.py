@@ -3,32 +3,28 @@ import json
 import yaml
 import time
 import uuid
-import httpx
 import logging
 import threading
 
 from pathlib import Path
+from typing import Any
 from autogen_agentchat.agents import AssistantAgent
-from autogen_ext.models.openai import OpenAIChatCompletionClient
 from autogen_agentchat.conditions import ExternalTermination, TextMentionTermination
 from autogen_agentchat.teams import RoundRobinGroupChat, SelectorGroupChat, MagenticOneGroupChat, Swarm
-
-_http_client = httpx.AsyncClient(verify=False)
 
 _AGENT_NAME_MARKER = "----------"
 
 # Default assets dir = agents_manifest/ bundled inside this package
 _DEFAULT_ASSETS_DIR = str(Path(__file__).parent / "agents_manifest")
 _DEFAULT_MANIFEST_FILE = "default_agents_manifest.yml"
-_DEFAULT_MODEL = "gpt-5.4"
 _DEFAULT_TEAM_PRESET = "RoundRobinGroupChat"
 
 
-class ErrorScannerCore:
-    """Core error-scanning logic. Manages sessions, agents, and the AutoGen pipeline."""
+class MetadataReviewerCore:
+    """Core metadata reviewing logic. Manages sessions, agents, and the AutoGen pipeline."""
 
-    def __init__(self, openai_api_key: str, assets_dir: str | None = None):
-        self.openai_api_key = openai_api_key
+    def __init__(self, model_client: Any, assets_dir: str | None = None):
+        self.model_client = model_client
         self.assets_dir = assets_dir or _DEFAULT_ASSETS_DIR
         self.sessions: dict = {}
         self._lock = threading.Lock()
@@ -59,17 +55,6 @@ class ErrorScannerCore:
 
     # ── Model & agent creation ────────────────────────────────────────────
 
-    def create_openai_model_client(self, gpt_model: str) -> OpenAIChatCompletionClient:
-        temperature = 1 if gpt_model.startswith("gpt-5") else 0
-        return OpenAIChatCompletionClient(
-            model=gpt_model,
-            model_info={"family": "gpt", "vision": False, "json_output": True, "function_calling": True},
-            api_key=self.openai_api_key,
-            temperature=temperature,
-            seed=1029,
-            http_client=_http_client,
-        )
-
     def load_manifest(self, file_name: str) -> str:
         path = os.path.join(self.assets_dir, file_name)
         with open(path, "r", encoding="utf-8") as f:
@@ -82,10 +67,9 @@ class ErrorScannerCore:
         ]
         return sorted(files)
 
-    def create_agents(self, agents_manifest: str, gpt_model: str, session_id: str):
+    def create_agents(self, agents_manifest: str, session_id: str):
         session = self.get_session(session_id)
         manifest = yaml.safe_load(agents_manifest)
-        model_client = self.create_openai_model_client(gpt_model)
         agent_list = []
         for entry in manifest.get("agents_manifest", []):
             name = entry.get("name")
@@ -95,7 +79,7 @@ class ErrorScannerCore:
                 continue
             agent_list.append(AssistantAgent(
                 name=name,
-                model_client=model_client,
+                model_client=self.model_client,
                 system_message=system_message,
             ))
         session["agent_list"] = agent_list
@@ -159,7 +143,6 @@ class ErrorScannerCore:
         self,
         metadata_to_scan,
         manifest_file: str = _DEFAULT_MANIFEST_FILE,
-        model: str = _DEFAULT_MODEL,
         team_preset: str = _DEFAULT_TEAM_PRESET,
         cancel_flag: threading.Event | None = None,
     ):
@@ -167,7 +150,7 @@ class ErrorScannerCore:
         session_id = self.create_session()
         try:
             agents_manifest = self.load_manifest(manifest_file)
-            self.create_agents(agents_manifest, model, session_id)
+            self.create_agents(agents_manifest, session_id)
 
             if cancel_flag and cancel_flag.is_set():
                 return None

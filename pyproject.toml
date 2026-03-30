@@ -91,14 +91,36 @@ metadata = [
   "tqdm>=4.65.0",
 ]
 
-# Metadata error detection (async AI-powered scanning via AutoGen agents)
-error_scanner = [
-  "autogen-core>=0.4.0",
-  "autogen-agentchat>=0.4.0",
-  "autogen-ext[openai]>=0.4.0",
-  "openai>=2.29.0",
+# Metadata reviewer — base (no LLM provider)
+metadata_reviewer = [
+  "autogen-core>=0.7.5",
+  "autogen-agentchat>=0.7.5",
   "httpx>=0.27.0",
   "pyyaml>=6.0.0",
+]
+
+# LLM provider extras — combine with metadata_reviewer:
+#   pip install ai4data[metadata_reviewer,openai]
+#   pip install ai4data[metadata_reviewer,anthropic]
+#   pip install ai4data[metadata_reviewer,azure]
+#   pip install ai4data[metadata_reviewer,ollama]
+openai = [
+  "autogen-ext[openai]>=0.7.5",
+  "openai>=2.29.0",
+]
+
+anthropic = [
+  "autogen-ext[anthropic]>=0.7.5",
+]
+
+azure = [
+  "autogen-ext[openai]>=0.7.5",
+  "openai>=2.29.0",
+  "azure-identity>=1.15.0",
+]
+
+ollama = [
+  "autogen-ext[ollama]>=0.7.5",
 ]
 
 # All capabilities
@@ -108,7 +130,7 @@ all = [
 	"ai4data[anomaly]",
 	"ai4data[search]",
 	"ai4data[metadata]",
-	"ai4data[error_scanner]",
+	"ai4data[metadata_reviewer]",
 ]
 
 # Documentation

@@ -12,7 +12,7 @@ class JobStatus:
 
 
 class Job:
-    """Represents an async error-scanning job."""
+    """Represents an async metadata reviewing job."""
 
     def __init__(self, job_id: str):
         self.job_id = job_id

@@ -168,4 +168,4 @@ cython_debug/
 uv.lock
 
 # Test folders
-src/ai4data/metadata/error_scanner/tests
+src/ai4data/metadata/reviewer/tests

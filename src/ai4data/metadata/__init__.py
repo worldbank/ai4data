@@ -5,13 +5,13 @@ Install with: uv pip install ai4data[metadata]
 Sub-modules
 -----------
 augmentation   : Data dictionary augmentation via LLM-powered theme generation.
-error_scanner  : Async AI-powered metadata error detection (requires ai4data[error_scanner]).
+reviewer       : Async AI-powered metadata reviewer (requires ai4data[metadata_reviewer]).
 """
 
 from . import augmentation
 
 try:
-    from . import error_scanner
-    __all__ = ["augmentation", "error_scanner"]
+    from . import reviewer
+    __all__ = ["augmentation", "reviewer"]
 except ImportError:
     __all__ = ["augmentation"]
