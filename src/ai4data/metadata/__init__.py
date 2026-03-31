@@ -5,7 +5,7 @@ Install with: uv pip install ai4data[metadata]
 Sub-modules
 -----------
 augmentation   : Data dictionary augmentation via LLM-powered theme generation.
-reviewer       : Async AI-powered metadata reviewer (requires ai4data[metadata_reviewer]).
+reviewer       : Async AI-powered metadata reviewer (requires ai4data[metadata-reviewer]).
 """
 
 from . import augmentation

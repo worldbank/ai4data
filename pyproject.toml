@@ -92,18 +92,18 @@ metadata = [
 ]
 
 # Metadata reviewer — base (no LLM provider)
-metadata_reviewer = [
+metadata-reviewer = [
   "autogen-core>=0.7.5",
   "autogen-agentchat>=0.7.5",
   "httpx>=0.27.0",
   "pyyaml>=6.0.0",
 ]
 
-# LLM provider extras — combine with metadata_reviewer:
-#   pip install ai4data[metadata_reviewer,openai]
-#   pip install ai4data[metadata_reviewer,anthropic]
-#   pip install ai4data[metadata_reviewer,azure]
-#   pip install ai4data[metadata_reviewer,ollama]
+# LLM provider extras — combine with metadata-reviewer:
+#   pip install ai4data[metadata-reviewer,openai]
+#   pip install ai4data[metadata-reviewer,anthropic]
+#   pip install ai4data[metadata-reviewer,azure]
+#   pip install ai4data[metadata-reviewer,ollama]
 openai = [
   "autogen-ext[openai]>=0.7.5",
   "openai>=2.29.0",
@@ -130,7 +130,7 @@ all = [
 	"ai4data[anomaly]",
 	"ai4data[search]",
 	"ai4data[metadata]",
-	"ai4data[metadata_reviewer]",
+	"ai4data[metadata-reviewer]",
 ]
 
 # Documentation

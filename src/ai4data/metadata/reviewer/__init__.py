@@ -1,10 +1,10 @@
 """ai4data.metadata.reviewer — async AI-powered metadata reviewer.
 
 Install with one of:
-    uv pip install ai4data[metadata_reviewer,openai]
-    uv pip install ai4data[metadata_reviewer,azure]
-    uv pip install ai4data[metadata_reviewer,ollama]
-    uv pip install ai4data[metadata_reviewer,anthropic]
+    uv pip install ai4data[metadata-reviewer,openai]
+    uv pip install ai4data[metadata-reviewer,azure]
+    uv pip install ai4data[metadata-reviewer,ollama]
+    uv pip install ai4data[metadata-reviewer,anthropic]
 
 Quickstart (OpenAI)
 -------------------

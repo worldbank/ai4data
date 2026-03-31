@@ -82,10 +82,10 @@ The four built-in factory classmethods cover the most common providers. Each use
 Install with the extras for your chosen LLM provider:
 
 ```bash
-pip install ai4data[metadata_reviewer,openai]      # OpenAI
-pip install ai4data[metadata_reviewer,anthropic]   # Anthropic
-pip install ai4data[metadata_reviewer,azure]       # Azure OpenAI
-pip install ai4data[metadata_reviewer,ollama]      # Ollama (local)
+pip install ai4data[metadata-reviewer,openai]      # OpenAI
+pip install ai4data[metadata-reviewer,anthropic]   # Anthropic
+pip install ai4data[metadata-reviewer,azure]       # Azure OpenAI
+pip install ai4data[metadata-reviewer,ollama]      # Ollama (local)
 ```
 
 Requirements: Python >= 3.11, `autogen-agentchat`, and credentials for your chosen provider.

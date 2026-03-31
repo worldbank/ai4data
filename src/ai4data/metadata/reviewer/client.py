@@ -45,7 +45,7 @@ class MetadataReviewerClient:
     ) -> "MetadataReviewerClient":
         """Create a client using OpenAI.
 
-        Requires: ``ai4data[metadata_reviewer,openai]``
+        Requires: ``ai4data[metadata-reviewer,openai]``
 
         Parameters
         ----------
@@ -82,7 +82,7 @@ class MetadataReviewerClient:
     ) -> "MetadataReviewerClient":
         """Create a client using Azure OpenAI.
 
-        Requires: ``ai4data[metadata_reviewer,azure]``
+        Requires: ``ai4data[metadata-reviewer,azure]``
 
         Parameters
         ----------
@@ -124,7 +124,7 @@ class MetadataReviewerClient:
     ) -> "MetadataReviewerClient":
         """Create a client using a local Ollama server.
 
-        Requires: ``ai4data[metadata_reviewer,ollama]``
+        Requires: ``ai4data[metadata-reviewer,ollama]``
 
         Parameters
         ----------
@@ -152,7 +152,7 @@ class MetadataReviewerClient:
     ) -> "MetadataReviewerClient":
         """Create a client using Anthropic Claude.
 
-        Requires: ``ai4data[metadata_reviewer,anthropic]``
+        Requires: ``ai4data[metadata-reviewer,anthropic]``
 
         Parameters
         ----------
