@@ -206,7 +206,7 @@ def main(
     n_clusters: int | None = None,  # None = auto: max(10, sqrt(n_items))
     kmeans_niter: int = 30,
     # Preview fields to include in flat format (already written by 02_generate_embeddings.py)
-    preview_fields: str = "idno,title,abstract,type,doi",
+    preview_fields: str = "idno,title,abstract,authors,type,doi",
     # BM25 fields for manifest
     bm25_fields: str = "title,text",
     # Compression: "gzip" writes .json.gz and removes .json (smaller transfer).

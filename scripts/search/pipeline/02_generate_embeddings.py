@@ -21,7 +21,7 @@ Usage:
     --embeddings_path=data/avsolatorio__GIST-small-Embedding-v0__004__doc_embeddings.json \\
     --output_dir=data/prwp \\
     --id_field=idno \\
-    --content_field=abstract \\
+    --content_fields=abstract \\
     --title_field=title \\
     --preview_fields=idno,title,abstract,type,doi
 
@@ -31,13 +31,73 @@ Usage:
     --output_dir=data/prwp \\
     --model=nomic-ai/nomic-embed-text-v1.5 \\
     --matryoshka_dim=128
+
+  # Multiple fields for the embedding body (comma-separated); use dots for nested keys
+  python 02_generate_embeddings.py \\
+    --metadata_path=data/prwp/metadata.json \\
+    --output_dir=data/prwp \\
+    --content_fields=abstract,authors
 """
 
 import json
-import os
+from typing import Any
+
 import numpy as np
 import fire
 from pathlib import Path
+
+
+def _split_comma_list(spec: str | list | tuple) -> list[str]:
+    """Parse comma-separated field names; fire may pass tuples."""
+    if isinstance(spec, (list, tuple)):
+        return [str(f).strip() for f in spec if str(f).strip()]
+    return [f.strip() for f in str(spec).split(",") if f.strip()]
+
+
+def _get_path(doc: dict, path: str) -> Any:
+    """Value at dot-separated path (e.g. ``metadata.authors``). Missing → ``None``."""
+    cur: Any = doc
+    for part in path.strip().split("."):
+        if not isinstance(cur, dict) or part not in cur:
+            return None
+        cur = cur[part]
+    return cur
+
+
+def _value_to_text(val: Any) -> str:
+    """Turn JSON values into a string for embedding (lists, dicts, scalars)."""
+    if val is None:
+        return ""
+    if isinstance(val, str):
+        return val.strip()
+    if isinstance(val, (int, float, bool)):
+        return str(val)
+    if isinstance(val, list):
+        if not val:
+            return ""
+        if all(isinstance(x, str) for x in val):
+            return ", ".join(x.strip() for x in val if x and str(x).strip())
+        return json.dumps(val, ensure_ascii=False)
+    if isinstance(val, dict):
+        return json.dumps(val, ensure_ascii=False)
+    return str(val)
+
+
+def _build_embedding_body(doc: dict, content_fields: str | list | tuple) -> str:
+    """Body text under the title: one or more dot-paths joined with blank lines."""
+    paths = _split_comma_list(content_fields)
+    chunks: list[str] = []
+    for path in paths:
+        t = _value_to_text(_get_path(doc, path))
+        if t:
+            chunks.append(t)
+    return "\n\n".join(chunks)
+
+
+def _first_content_path(content_fields: str | list | tuple) -> str:
+    """First path segment, for BM25 fallback when ``bm25_text_field`` is absent."""
+    paths = _split_comma_list(content_fields)
+    return paths[0] if paths else "abstract"
 
 
 def quantize_sq8(vec: np.ndarray) -> dict:
@@ -155,7 +215,7 @@ def main(
     batch_size: int = 64,
     # Field names (for embeddings_path or metadata_path)
     id_field: str = "idno",
-    content_field: str = "abstract",
+    content_fields: str | list | tuple = "abstract",
     title_field: str = "title",
     embedding_field: str = "embedding",
     preview_fields: str = "idno,title,abstract,type,doi",  # comma-separated
@@ -182,7 +242,10 @@ def main(
         model: HuggingFace model ID used when ``metadata_path`` is provided.
         batch_size: Encoding batch size for sentence-transformers.
         id_field: Field name for the document identifier.
-        content_field: Field name for the main text content used for encoding.
+        content_fields: Comma-separated dot-separated paths merged into the
+            embedding body (below the title), each non-empty value separated by
+            blank lines. Use a single path for one field (default ``abstract``),
+            e.g. ``abstract,authors`` or ``metadata.abstract``.
         title_field: Field name for the document title.
         embedding_field: Key holding the raw embedding list when loading from
             ``embeddings_path``.
@@ -228,7 +291,8 @@ def main(
             if "idno" in meta:
                 meta["idno"] = str(meta["idno"])
             meta["title"] = item.get(title_field, "")
-            meta["text"] = item.get(bm25_text_field, item.get(content_field, ""))
+            fb = _value_to_text(_get_path(item, _first_content_path(content_fields)))
+            meta["text"] = item.get(bm25_text_field, fb)
             metadata.append(meta)
 
         embeddings = np.array(embeddings_list, dtype=np.float32)
@@ -245,7 +309,7 @@ def main(
         texts = [
             (doc.get(title_field, "") or "")
             + "\n\n"
-            + (doc.get(content_field, "") or "")
+            + _build_embedding_body(doc, content_fields)
             for doc in docs
         ]
         print(f"  Encoding {len(texts)} documents with {model}...")
@@ -269,7 +333,8 @@ def main(
                     meta["idno"]
                 )  # normalize to string (match semantic-search shape)
             meta["title"] = doc.get(title_field, "")
-            meta["text"] = doc.get(bm25_text_field, doc.get(content_field, ""))
+            fb = _value_to_text(_get_path(doc, _first_content_path(content_fields)))
+            meta["text"] = doc.get(bm25_text_field, fb)
             metadata.append(meta)
 
         print(f"  Generated embeddings: shape={embeddings.shape}")
