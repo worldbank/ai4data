@@ -95,7 +95,7 @@ class MetadataReviewerCore:
         """Async generator yielding (streamed_text, None) pairs as agents work."""
         session = self.get_session(session_id)
         agent_list = session["agent_list"]
-        text_termination = TextMentionTermination("DONE")
+        text_termination = TextMentionTermination("TERMINATE")
         ext_term = session["external_termination"]
 
         team_cls = {
@@ -105,7 +105,7 @@ class MetadataReviewerCore:
             "Swarm": Swarm,
         }.get(team_preset, RoundRobinGroupChat)
 
-        team = team_cls(agent_list, termination_condition=text_termination | ext_term)
+        team = team_cls(agent_list, termination_condition=text_termination | ext_term, max_turns=len(agent_list))
         await team.reset()
 
         outputs = []

@@ -261,4 +261,4 @@ agents_manifest:
         }
       ]
 
-      Print a final line: DONE
+      Print a final line: TERMINATE
