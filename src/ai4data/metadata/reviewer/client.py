@@ -66,6 +66,13 @@ class MetadataReviewerClient:
             temperature=temperature,
             seed=1029,
             http_client=httpx.AsyncClient(verify=False),
+            model_info={
+                "vision": False,
+                "function_calling": False,
+                "json_output": True,
+                "family": "unknown",
+                "structured_output": True,
+            },
         )
         return cls(model_client=model_client, assets_dir=assets_dir)
 
@@ -112,6 +119,13 @@ class MetadataReviewerClient:
             azure_ad_token_provider=azure_ad_token_provider,
             azure_ad_token=azure_ad_token,
             http_client=httpx.AsyncClient(verify=False),
+            model_info={
+                "vision": False,
+                "function_calling": False,
+                "json_output": True,
+                "family": "unknown",
+                "structured_output": True,
+            },
         )
         return cls(model_client=model_client, assets_dir=assets_dir)
 
@@ -140,6 +154,13 @@ class MetadataReviewerClient:
         model_client = OllamaChatCompletionClient(
             model=model,
             host=f"http://localhost:{port}",
+            model_info={
+                "vision": False,
+                "function_calling": False,
+                "json_output": True,
+                "family": "unknown",
+                "structured_output": True,
+            },
         )
         return cls(model_client=model_client, assets_dir=assets_dir)
 
@@ -168,6 +189,13 @@ class MetadataReviewerClient:
         model_client = AnthropicChatCompletionClient(
             model=model,
             api_key=api_key,
+            model_info={
+                "vision": False,
+                "function_calling": False,
+                "json_output": True,
+                "family": "unknown",
+                "structured_output": True,
+            },
         )
         return cls(model_client=model_client, assets_dir=assets_dir)
 
