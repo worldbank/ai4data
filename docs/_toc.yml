@@ -19,6 +19,13 @@ parts:
       - file: docs/metadata-augmentation/index.md
       - file: docs/metadata-augmentation/methodology.md
 
+  - caption: Metadata Reviewer
+    numbered: true
+    chapters:
+      - file: docs/metadata-reviewer/overview.md
+      - file: docs/metadata-reviewer/agentic-approach.md
+      - file: docs/metadata-reviewer/implementation.md
+
   - caption: Data Discoverability
     numbered: true
     chapters:
