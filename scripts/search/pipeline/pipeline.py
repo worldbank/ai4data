@@ -84,8 +84,8 @@ def main(
     input_file: str | None = None,
     sheet_name: str | None = None,
     id_field: str = "idno",
-    content_fields: str = "title,abstract",
-    preview_fields: str = "idno,title,abstract,type,doi,url,date_published",
+    content_fields: str = "title,abstract,authors",
+    preview_fields: str = "idno,title,abstract,authors,type,doi,url,date_published",
     bm25_fields: str = "title,text",
     max_docs: int = 0,
     # Step 2: embedding
@@ -190,15 +190,20 @@ def main(
         print("\nStep 2: Generating embeddings and quantizing...")
         embed_mod = _load_module("embed", pipeline_dir / "02_generate_embeddings.py")
         meta_path = str(output_path / "metadata.json")
+        # Step 01 merges title + body fields into `content`; step 02 encodes
+        # title_field + body paths. Omit a leading title path so we do not
+        # duplicate the title (matches former content_field=split(",")[1]).
+        _parts = [p.strip() for p in str(content_fields).split(",") if p.strip()]
+        if _parts and _parts[0] == title_field.strip():
+            _parts = _parts[1:]
+        embed_body_fields = ",".join(_parts) if _parts else "abstract"
         embed_mod.main(
             metadata_path=meta_path,
             output_dir=str(output_path),
             model=model,
             batch_size=batch_size,
             id_field=id_field,
-            content_field=content_fields.split(",")[1]
-            if "," in content_fields
-            else content_fields,
+            content_fields=embed_body_fields,
             title_field=title_field,
             preview_fields=preview_fields,
             matryoshka_dim=matryoshka_dim,

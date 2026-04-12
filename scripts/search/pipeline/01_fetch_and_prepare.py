@@ -11,7 +11,8 @@ Supported sources:
 
 For worldbank_api, each document is extracted as NADA schema (metadata_information,
 document_description, provenance) with top-level compatibility fields (title, abstract,
-content) for the embeddings pipeline. Output: metadata.json and metadata/document_<idno>.json.
+authors as a list of full names, content) for the embeddings pipeline. Output:
+metadata.json and metadata/document_<idno>.json.
 
 Usage examples:
   # Fetch all Policy Research Working Papers (NADA schema)
@@ -19,8 +20,8 @@ Usage examples:
     --source=worldbank_api \
     --doctype="Policy Research Working Paper" \
     --output_dir=data/prwp \
-    --content_fields="title,abstract" \
-    --preview_fields="idno,title,abstract,type,doi,url,date_published"
+    --content_fields="title,abstract,authors" \
+    --preview_fields="idno,title,abstract,authors,type,doi,url,date_published"
 
   # Fetch by docty_key (563787=WDR, 620265=PRWP)
   python 01_fetch_and_prepare.py \\
@@ -142,6 +143,7 @@ def _extract_wb_doc(
     Args:
         doc: Raw document dict from the World Bank API.
         content_field_list: Fields to concatenate into ``content`` for embedding.
+            Use ``authors`` to include comma-separated author full names from NADA.
         preview_field_list: Fields to include in compat_record for display.
         docty_key: Document type key (563787=WDR, 620265=PRWP).
 
@@ -158,13 +160,24 @@ def _extract_wb_doc(
     abstract = dd.get("abstract", "")
     idno = str(ts.get("idno", nada.get("metadata_information", {}).get("idno", "")))
 
-    # Compose content for embedding (title + abstract by default)
+    authors_raw = dd.get("authors") or []
+    author_names: list[str] = []
+    for a in authors_raw:
+        if isinstance(a, dict) and a.get("full_name"):
+            t = str(a["full_name"]).strip()
+            if t:
+                author_names.append(t)
+
+    # Compose content for embedding (title + abstract + authors by default)
     content_parts: list[str] = []
     for field in content_field_list:
         if field == "title":
             content_parts.append(title)
         elif field == "abstract":
             content_parts.append(abstract)
+        elif field == "authors":
+            if author_names:
+                content_parts.append(", ".join(author_names))
         else:
             val = dd.get(field) or ts.get(field)
             if val:
@@ -186,6 +199,7 @@ def _extract_wb_doc(
         "idno": idno,
         "title": title,
         "abstract": abstract,
+        "authors": author_names,
         "content": content,
         "type": dd.get("type", ""),
         "doi": doi,
@@ -451,8 +465,8 @@ def main(
     sheet_name: str | None = None,
     # Field configuration (comma-separated)
     id_field: str = "idno",
-    content_fields: str = "title,abstract",  # fields joined for embedding content
-    preview_fields: str = "idno,title,abstract,type,doi,url,date_published",
+    content_fields: str = "title,abstract,authors",  # fields joined for embedding content
+    preview_fields: str = "idno,title,abstract,authors,type,doi,url,date_published",
 ) -> None:
     """Entry point: fetch documents from the specified source and save metadata.json.
     World Bank API documents are extracted as NADA schema; also saved as metadata/document_<idno>.json.
@@ -469,7 +483,8 @@ def main(
         sheet_name: Sheet name for Excel files.
         id_field: Field name used as the document identifier.
         content_fields: Comma-separated field names to merge into the ``content``
-            text for embedding.
+            text for embedding. For ``worldbank_api``, ``authors`` is derived from
+            NADA ``document_description.authors`` (``full_name`` per author).
         preview_fields: Comma-separated field names to include in the output
             record for display purposes.
 
