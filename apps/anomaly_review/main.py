@@ -5,7 +5,7 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 from apps.anomaly_review.feedback import (
     FEEDBACK_SCHEMA,
@@ -92,6 +92,17 @@ class FeedbackIn(BaseModel):
     verdict: str  # approved | rejected | needs_review
     comment: str | None = None
     suggested_classification: str | None = None
+    facets: dict[str, dict[str, str]] | None = None
+    reference_explainer: str | None = None
+    best_explainer: str | None = None
+    overall_basis: str | None = None
+
+    @field_validator("facets", mode="before")
+    @classmethod
+    def empty_facets_none(cls, v):
+        if v == {} or v is None:
+            return None
+        return v
 
 
 @app.post("/api/feedback")
@@ -99,15 +110,22 @@ async def post_feedback(fb: FeedbackIn):
     """Submit reviewer feedback for an anomaly item."""
     if fb.verdict not in ("approved", "rejected", "needs_review"):
         raise HTTPException(400, "verdict must be approved, rejected, or needs_review")
-    return submit_feedback(
-        item_id=fb.item_id,
-        indicator_code=fb.indicator_code,
-        geography_code=fb.geography_code,
-        window_str=fb.window_str,
-        verdict=fb.verdict,
-        comment=fb.comment,
-        suggested_classification=fb.suggested_classification,
-    )
+    try:
+        return submit_feedback(
+            item_id=fb.item_id,
+            indicator_code=fb.indicator_code,
+            geography_code=fb.geography_code,
+            window_str=fb.window_str,
+            verdict=fb.verdict,
+            comment=fb.comment,
+            suggested_classification=fb.suggested_classification,
+            facets=fb.facets,
+            reference_explainer=fb.reference_explainer,
+            best_explainer=fb.best_explainer,
+            overall_basis=fb.overall_basis,
+        )
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
 
 
 @app.get("/api/feedback")
