@@ -1,5 +1,6 @@
-"""Submit, poll, and download LLM batch jobs for OpenAI and Gemini."""
+"""Submit, poll, and download LLM batch jobs for OpenAI, Gemini, and Anthropic."""
 
+import json
 import os
 import time
 from pathlib import Path
@@ -11,6 +12,7 @@ from ai4data.anomaly.explanation.llm_client import ENDPOINT_URLS
 def _get_openai_client(api_key: Optional[str] = None):
     """Lazy import to avoid requiring openai when not used."""
     from openai import OpenAI
+
     key = api_key or os.environ.get("OPENAI_API_KEY")
     if not key:
         raise ValueError("OpenAI API key required. Set OPENAI_API_KEY or pass api_key.")
@@ -20,10 +22,27 @@ def _get_openai_client(api_key: Optional[str] = None):
 def _get_gemini_client(api_key: Optional[str] = None):
     """Lazy import to avoid requiring google-genai when not used."""
     from google import genai
-    key = api_key or os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+
+    key = (
+        api_key or os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+    )
     if not key:
-        raise ValueError("Gemini API key required. Set GEMINI_API_KEY or GOOGLE_API_KEY or pass api_key.")
+        raise ValueError(
+            "Gemini API key required. Set GEMINI_API_KEY or GOOGLE_API_KEY or pass api_key."
+        )
     return genai.Client(api_key=key)
+
+
+def _get_anthropic_client(api_key: Optional[str] = None):
+    """Lazy import to avoid requiring anthropic when not used."""
+    from anthropic import Anthropic
+
+    key = api_key or os.environ.get("ANTHROPIC_API_KEY")
+    if not key:
+        raise ValueError(
+            "Anthropic API key required. Set ANTHROPIC_API_KEY or pass api_key."
+        )
+    return Anthropic(api_key=key)
 
 
 def submit_batch(
@@ -40,7 +59,7 @@ def submit_batch(
     Parameters
     ----------
     provider : str
-        "openai" or "gemini".
+        "openai", "gemini", or "anthropic".
     input_path : str or Path
         Path to JSONL batch input file.
     api_key : str, optional
@@ -48,7 +67,7 @@ def submit_batch(
     endpoint : str
         For OpenAI: "responses" or "completions".
     model_id : str, optional
-        For Gemini: model name (e.g., "gemini-2.0-flash"). Ignored for OpenAI.
+        For Gemini: model name (e.g., "gemini-2.5-flash"). Ignored for OpenAI.
     completion_window : str
         For OpenAI: "24h" or "24 hours". Ignored for Gemini.
 
@@ -75,9 +94,10 @@ def submit_batch(
 
     if provider == "gemini":
         client = _get_gemini_client(api_key)
-        model = model_id or "gemini-2.0-flash"
+        model = model_id or "gemini-2.5-flash"
         try:
             from google.genai import types
+
             uploaded = client.files.upload(
                 file=str(input_path),
                 config=types.UploadFileConfig(
@@ -94,7 +114,22 @@ def submit_batch(
         )
         return job.name
 
-    raise ValueError(f"Unknown provider '{provider}'. Use 'openai' or 'gemini'.")
+    if provider == "anthropic":
+        client = _get_anthropic_client(api_key)
+
+        def _request_lines() -> Any:
+            with open(input_path, encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line:
+                        yield json.loads(line)
+
+        batch = client.messages.batches.create(requests=_request_lines())
+        return batch.id
+
+    raise ValueError(
+        f"Unknown provider '{provider}'. Use 'openai', 'gemini', or 'anthropic'."
+    )
 
 
 def wait_for_batch(
@@ -109,7 +144,7 @@ def wait_for_batch(
     Parameters
     ----------
     provider : str
-        "openai" or "gemini".
+        "openai", "gemini", or "anthropic".
     batch_id : str
         Batch ID from submit_batch.
     api_key : str, optional
@@ -120,7 +155,7 @@ def wait_for_batch(
     Returns
     -------
     str
-        Final status: "completed" (OpenAI) or "JOB_STATE_SUCCEEDED" (Gemini).
+        Final status string for the provider (e.g. ``completed``, ``JOB_STATE_SUCCEEDED``, ``ended``).
         Raises on failure.
     """
     if provider == "openai":
@@ -129,7 +164,9 @@ def wait_for_batch(
             batch = client.batches.retrieve(batch_id)
             if batch.status in ("completed", "failed", "expired", "cancelled"):
                 if batch.status != "completed":
-                    raise RuntimeError(f"Batch {batch_id} ended with status: {batch.status}")
+                    raise RuntimeError(
+                        f"Batch {batch_id} ended with status: {batch.status}"
+                    )
                 return batch.status
             time.sleep(poll_interval)
 
@@ -138,11 +175,27 @@ def wait_for_batch(
         while True:
             job = client.batches.get(name=batch_id)
             state = job.state.name if hasattr(job.state, "name") else str(job.state)
-            if state in ("JOB_STATE_SUCCEEDED", "JOB_STATE_FAILED", "JOB_STATE_CANCELLED"):
+            if state in (
+                "JOB_STATE_SUCCEEDED",
+                "JOB_STATE_FAILED",
+                "JOB_STATE_CANCELLED",
+            ):
                 if state != "JOB_STATE_SUCCEEDED":
                     err = getattr(job, "error", None) or ""
-                    raise RuntimeError(f"Batch {batch_id} ended with state: {state}. {err}")
+                    raise RuntimeError(
+                        f"Batch {batch_id} ended with state: {state}. {err}"
+                    )
                 return state
+            time.sleep(poll_interval)
+
+    if provider == "anthropic":
+        client = _get_anthropic_client(api_key)
+        while True:
+            batch = client.messages.batches.retrieve(batch_id)
+            if batch.processing_status == "ended":
+                return batch.processing_status
+            if batch.processing_status == "canceling":
+                raise RuntimeError(f"Batch {batch_id} is canceling.")
             time.sleep(poll_interval)
 
     raise ValueError(f"Unknown provider '{provider}'.")
@@ -160,7 +213,7 @@ def download_batch_output(
     Parameters
     ----------
     provider : str
-        "openai" or "gemini".
+        "openai", "gemini", or "anthropic".
     batch_id : str
         Batch ID from submit_batch.
     output_path : str or Path
@@ -180,7 +233,9 @@ def download_batch_output(
         client = _get_openai_client(api_key)
         batch = client.batches.retrieve(batch_id)
         if batch.status != "completed" or not batch.output_file_id:
-            raise RuntimeError(f"Batch {batch_id} has no output (status={batch.status})")
+            raise RuntimeError(
+                f"Batch {batch_id} has no output (status={batch.status})"
+            )
         content = client.files.content(batch.output_file_id)
         output_path.write_bytes(content.read())
         return output_path
@@ -196,7 +251,22 @@ def download_batch_output(
                 "See https://github.com/googleapis/python-genai/issues/1527"
             )
         data = client.files.download(file=file_name)
-        output_path.write_bytes(data if isinstance(data, bytes) else data.encode("utf-8"))
+        output_path.write_bytes(
+            data if isinstance(data, bytes) else data.encode("utf-8")
+        )
+        return output_path
+
+    if provider == "anthropic":
+        client = _get_anthropic_client(api_key)
+        decoder = client.messages.batches.results(batch_id)
+        with open(output_path, "w", encoding="utf-8") as out:
+            for item in decoder:
+                row = (
+                    item.model_dump(mode="json")
+                    if hasattr(item, "model_dump")
+                    else item
+                )
+                out.write(json.dumps(row, ensure_ascii=False) + "\n")
         return output_path
 
     raise ValueError(f"Unknown provider '{provider}'.")
@@ -217,7 +287,7 @@ def run_batch(
     Parameters
     ----------
     provider : str
-        "openai" or "gemini".
+        "openai", "gemini", or "anthropic".
     input_path : str or Path
         Path to JSONL batch input (from build_batch_file).
     output_path : str or Path
@@ -237,7 +307,8 @@ def run_batch(
         Path to the written output file.
     """
     batch_id = submit_batch(
-        provider, input_path,
+        provider,
+        input_path,
         api_key=api_key,
         endpoint=endpoint,
         model_id=model_id,

@@ -1,6 +1,6 @@
 {
   "name": "@ai4data/search",
-  "version": "0.1.5",
+  "version": "0.1.7",
   "description": "Framework-agnostic semantic search client: HNSW, BM25, hybrid ranking in a Web Worker",
   "main": "dist/index.mjs",
   "module": "dist/index.mjs",
@@ -26,6 +26,7 @@
   "scripts": {
     "build": "tsup",
     "demo": "npm run build && npx serve . -p 5173",
+    "demo:proxy": "npm run build && node demo/proxy-server.mjs",
     "prepublishOnly": "npm run build",
     "test": "echo 'Add smoke test if desired'",
     "lint": "echo 'Add ESLint if desired'"

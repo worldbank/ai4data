@@ -29,6 +29,16 @@ from .adapters import (
     ConfigurableAdapter,
     ScorecardWideAdapter,
     adapter_from_config,
+    load_csv_filtered,
+)
+from .legacy_custom_id import (
+    new_compact_id_from_legacy_parts,
+    parse_legacy_nosearch_custom_id,
+    write_custom_id_map_from_legacy_batch_output,
+)
+from .mapping_suggest import (
+    suggest_column_mapping,
+    suggest_column_mapping_with_llm,
 )
 from .context import extract_anomaly_contexts
 from .arbiter import (
@@ -37,7 +47,12 @@ from .arbiter import (
     harmonize_explanations,
 )
 from .explainers import list_explainers, register_explainer
-from .batch_builder import build_batch_file, list_batch_providers
+from .batch_builder import (
+    CUSTOM_ID_MAP_SUFFIX,
+    build_batch_file,
+    compact_custom_id,
+    list_batch_providers,
+)
 from .batch_runner import (
     download_batch_output,
     run_batch,
@@ -63,9 +78,17 @@ __all__ = [
     "ConfigurableAdapter",
     "ScorecardWideAdapter",
     "adapter_from_config",
+    "load_csv_filtered",
+    "suggest_column_mapping",
+    "suggest_column_mapping_with_llm",
     "extract_anomaly_contexts",
     "build_batch_file",
+    "compact_custom_id",
+    "CUSTOM_ID_MAP_SUFFIX",
     "list_batch_providers",
+    "parse_legacy_nosearch_custom_id",
+    "new_compact_id_from_legacy_parts",
+    "write_custom_id_map_from_legacy_batch_output",
     "submit_batch",
     "wait_for_batch",
     "download_batch_output",

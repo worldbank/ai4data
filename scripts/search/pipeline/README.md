@@ -32,6 +32,16 @@ Key Python dependencies (see `pyproject.toml` / `uv.lock`):
 | `pandas` | Excel/CSV loading (optional) |
 | `openpyxl` | `.xlsx` support for pandas (optional) |
 
+**Search optional dependencies** — Steps **02** (embeddings) and **03** (FAISS / HNSW index) need packages from the **`search`** extra in `pyproject.toml` (`sentence-transformers`, `faiss-cpu`, etc.). Install them from the repository root:
+
+```bash
+uv sync --extra search
+```
+
+(or `uv pip install -e ".[search]"` if you install editable another way).
+
+Step **01** (fetch / prepare) only needs the base environment plus `requests` / `pandas` as listed above; run **`uv sync --extra search`** before a full three-step pipeline or before running `02_generate_embeddings.py` / `03_build_index.py` alone.
+
 ---
 
 ## Scripts
@@ -61,8 +71,8 @@ display fields.
 | `--input_file` | — | Path to `.xlsx`, `.csv`, or `.json` file |
 | `--sheet_name` | — | Sheet name for Excel inputs |
 | `--id_field` | `idno` | Column/key used as document ID |
-| `--content_fields` | `title,abstract` | Comma-separated fields merged into embedding text |
-| `--preview_fields` | `idno,title,abstract,type,doi,url,date_published` | Fields to keep for display |
+| `--content_fields` | `title,abstract,authors` | Comma-separated fields merged into embedding text (WB: `authors` from API) |
+| `--preview_fields` | `idno,title,abstract,authors,type,doi,url,date_published` | Fields to keep for display |
 
 **Output:** `{output_dir}/metadata.json`
 
@@ -89,7 +99,7 @@ set this flag for standard models like `GIST-small-Embedding-v0`.
 | `--model` | `avsolatorio/GIST-small-Embedding-v0` | HuggingFace model ID |
 | `--batch_size` | `64` | Encoding batch size |
 | `--id_field` | `idno` | Document ID field |
-| `--content_field` | `abstract` | Field used as main content text |
+| `--content_fields` | `abstract` | Comma-separated dot-paths for the body text (below title), e.g. `abstract,authors` |
 | `--title_field` | `title` | Field used as title |
 | `--preview_fields` | `idno,title,abstract,type,doi` | Fields in flat index |
 | `--matryoshka_dim` | `None` | Truncate to this many dims (MRL models only) |

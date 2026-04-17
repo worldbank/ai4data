@@ -190,9 +190,19 @@
       .main {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
+        gap: 0;
         min-height: 0;
         overflow: hidden;
+        flex: 1;
+      }
+
+      .main-split {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+        --chart-pane-height: 400px;
       }
 
       .chart-container {
@@ -204,7 +214,8 @@
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
-        height: 400px;
+        height: var(--chart-pane-height);
+        min-height: 140px;
         overflow: hidden;
       }
 
@@ -257,13 +268,41 @@
         border-radius: 50%;
       }
 
+      .split-resizer {
+        flex: 0 0 8px;
+        margin: 4px 0;
+        background: var(--border);
+        cursor: row-resize;
+        position: relative;
+        touch-action: none;
+        user-select: none;
+        border-radius: 4px;
+        transition: background 0.15s ease;
+      }
+      .split-resizer:hover,
+      .split-resizer.is-dragging {
+        background: var(--accent);
+      }
+      .split-resizer::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 32px;
+        height: 3px;
+        border-radius: 2px;
+        background: var(--surface-hover);
+        opacity: 0.9;
+      }
+
       .explanation-panel {
         background: var(--surface);
         border-radius: 8px;
         border: 1px solid var(--border);
         padding: 1.5rem;
-        flex: 1;
-        min-height: 180px;
+        flex: 1 1 auto;
+        min-height: 0;
         overflow-y: auto;
       }
 
@@ -555,6 +594,102 @@
         color: var(--success);
         margin-top: 0.5rem;
       }
+
+      .facet-controls-wrap {
+        margin-bottom: 0.75rem;
+      }
+      .facet-hint {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+        line-height: 1.45;
+      }
+      .facet-table-scroll {
+        overflow-x: auto;
+        margin-bottom: 0.5rem;
+      }
+      .facet-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.82rem;
+      }
+      .facet-table th,
+      .facet-table td {
+        border: 1px solid var(--border);
+        padding: 0.35rem 0.5rem;
+        text-align: left;
+        vertical-align: middle;
+      }
+      .facet-table thead th {
+        background: var(--bg);
+        font-weight: 600;
+      }
+      .facet-table tbody th[scope="row"] {
+        font-weight: 500;
+        color: var(--text-muted);
+        white-space: nowrap;
+      }
+      .facet-table select.facet-select {
+        width: 100%;
+        min-width: 7.5rem;
+        max-width: 14rem;
+        padding: 0.25rem 0.35rem;
+        border-radius: 4px;
+        border: 1px solid var(--border);
+        background: var(--bg);
+        color: var(--text);
+        font-family: inherit;
+        font-size: 0.82rem;
+      }
+      .facet-col-head.facet-col-active,
+      .facet-cell.facet-col-active {
+        background: var(--accent-dim);
+      }
+      .feedback-meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem 1.25rem;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+        align-items: flex-end;
+      }
+      .feedback-meta-row label {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+      .feedback-meta-row select {
+        padding: 0.3rem 0.45rem;
+        border-radius: 4px;
+        border: 1px solid var(--border);
+        background: var(--bg);
+        color: var(--text);
+        font-family: inherit;
+        font-size: 0.85rem;
+        min-width: 10rem;
+      }
+      .best-explainer-wrap.is-hidden {
+        display: none;
+      }
+      .suggested-classification-label {
+        display: block;
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        margin-top: 0.35rem;
+        margin-bottom: 0.25rem;
+      }
+      .feedback-input-text {
+        width: 100%;
+        padding: 0.45rem 0.5rem;
+        border-radius: 4px;
+        border: 1px solid var(--border);
+        background: var(--bg);
+        color: var(--text);
+        font-family: inherit;
+        font-size: 0.85rem;
+      }
     </style>
   </head>
   <body>
@@ -638,25 +773,56 @@
           <div id="item-list"></div>
         </aside>
         <main class="main">
-          <div class="chart-container">
-            <h3 id="chart-title">Timeseries</h3>
-            <div class="chart-wrapper">
-              <canvas id="chart"></canvas>
+          <div class="main-split" id="main-split">
+            <div class="chart-container" id="chart-pane">
+              <h3 id="chart-title">Timeseries</h3>
+              <div class="chart-wrapper">
+                <canvas id="chart"></canvas>
+              </div>
+              <div class="chart-legend" id="chart-legend">
+                <span><span class="swatch swatch-line"></span> Value</span>
+                <span
+                  ><span class="swatch swatch-anomaly"></span> Anomaly
+                  window</span
+                >
+                <span><span class="swatch swatch-imputed"></span> Imputed</span>
+              </div>
             </div>
-            <div class="chart-legend" id="chart-legend">
-              <span><span class="swatch swatch-line"></span> Value</span>
-              <span
-                ><span class="swatch swatch-anomaly"></span> Anomaly
-                window</span
-              >
-              <span><span class="swatch swatch-imputed"></span> Imputed</span>
-            </div>
-          </div>
-          <div class="explanation-panel">
+            <div
+              class="split-resizer"
+              id="split-resizer"
+              role="separator"
+              aria-orientation="horizontal"
+              aria-label="Drag to resize chart and explanation panels"
+              tabindex="0"
+            ></div>
+            <div class="explanation-panel">
             <h3>Explanation</h3>
             <div id="explanation-content"></div>
             <div class="feedback-section" id="feedback-section">
               <h4>Feedback</h4>
+              <div class="facet-controls-wrap" id="facet-controls-wrap">
+                <p class="facet-hint" id="facet-hint">
+                  Optional: rate each facet per model. Use the overall buttons below as
+                  the QA gate (whether this item is acceptable to ship), not as a single
+                  score for every dimension.
+                </p>
+                <div class="facet-table-scroll">
+                  <div id="facet-table"></div>
+                </div>
+                <div class="feedback-meta-row">
+                  <label>
+                    Reference explainer
+                    <select id="reference-explainer" aria-label="Reference explainer"></select>
+                  </label>
+                  <div class="best-explainer-wrap is-hidden" id="best-explainer-wrap">
+                    <label>
+                      Best overall (if models disagree)
+                      <select id="best-explainer" aria-label="Best explainer"></select>
+                    </label>
+                  </div>
+                </div>
+              </div>
               <div class="feedback-buttons">
                 <button
                   class="btn btn-approve"
@@ -680,6 +846,16 @@
                   Needs Review
                 </button>
               </div>
+              <label class="suggested-classification-label" for="feedback-suggested-classification">
+                Suggested classification (if incorrect)
+              </label>
+              <input
+                type="text"
+                id="feedback-suggested-classification"
+                class="feedback-input-text"
+                placeholder="When classification is wrong, enter the correct label…"
+                autocomplete="off"
+              />
               <textarea
                 id="feedback-comment"
                 placeholder="Optional comment..."
@@ -687,6 +863,7 @@
               ></textarea>
               <div id="feedback-status"></div>
             </div>
+          </div>
           </div>
         </main>
       </div>
@@ -738,6 +915,105 @@
       let selectedId = null;
       let currentChartConfig = null;
       let feedbackKeys = new Set();
+      let facetExplainerNames = [];
+
+      const FACET_DEFS = [
+        { key: "anomaly_validity", label: "Anomaly validity" },
+        { key: "classification", label: "Classification" },
+        { key: "explanation", label: "Explanation" },
+        { key: "evidence", label: "Evidence" },
+      ];
+      const RATING_OPTIONS = [
+        { value: "", label: "—" },
+        { value: "correct", label: "Correct" },
+        { value: "partially_correct", label: "Partially correct" },
+        { value: "incorrect", label: "Incorrect" },
+        { value: "not_applicable", label: "N/A" },
+        { value: "unsure", label: "Unsure" },
+      ];
+
+      function escapeAttr(s) {
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/"/g, "&quot;")
+          .replace(/</g, "&lt;");
+      }
+
+      function getExplainerNames(it) {
+        const ex = it.explanation || {};
+        const expl = ex.explainers || [];
+        if (expl.length) {
+          return expl.map((e) => (e.name && String(e.name).trim()) || "Unnamed");
+        }
+        const label = (ex.source || ex.name || "Model").trim() || "default";
+        return [label];
+      }
+
+      function buildFacetTable(it) {
+        const names = getExplainerNames(it);
+        facetExplainerNames = names;
+        const tableEl = document.getElementById("facet-table");
+        const thead = `<tr><th scope="col">Facet</th>${names
+          .map(
+            (n) =>
+              `<th scope="col" class="facet-col-head" data-explainer="${escapeAttr(n)}">${escapeHtml(n)}</th>`,
+          )
+          .join("")}</tr>`;
+        const tbody = FACET_DEFS.map((fd) => {
+          const cells = names
+            .map((n) => {
+              const opts = RATING_OPTIONS.map(
+                (o) =>
+                  `<option value="${escapeAttr(o.value)}">${escapeHtml(o.label)}</option>`,
+              ).join("");
+              return `<td class="facet-cell" data-explainer="${escapeAttr(n)}"><select class="facet-select" data-facet="${fd.key}" data-explainer="${escapeAttr(n)}">${opts}</select></td>`;
+            })
+            .join("");
+          return `<tr><th scope="row">${escapeHtml(fd.label)}</th>${cells}</tr>`;
+        }).join("");
+        tableEl.innerHTML = `<table class="facet-table"><thead>${thead}</thead><tbody>${tbody}</tbody></table>`;
+
+        const ref = document.getElementById("reference-explainer");
+        const bestWrap = document.getElementById("best-explainer-wrap");
+        const best = document.getElementById("best-explainer");
+        ref.innerHTML = names
+          .map((n) => `<option value="${escapeAttr(n)}">${escapeHtml(n)}</option>`)
+          .join("");
+        if (names.length) ref.selectedIndex = 0;
+
+        best.innerHTML =
+          '<option value="">—</option>' +
+          names.map((n) => `<option value="${escapeAttr(n)}">${escapeHtml(n)}</option>`).join("");
+        bestWrap.classList.toggle("is-hidden", names.length <= 1);
+      }
+
+      function setActiveExplainerForFacets(nameOrNull) {
+        document.querySelectorAll(".facet-col-head, .facet-cell").forEach((el) => {
+          const ex = el.getAttribute("data-explainer");
+          const match = Boolean(nameOrNull) && ex === nameOrNull;
+          el.classList.toggle("facet-col-active", match);
+        });
+      }
+
+      function collectFacetsFromDOM() {
+        const facets = {};
+        document.querySelectorAll(".facet-select").forEach((sel) => {
+          const f = sel.dataset.facet;
+          const ex = sel.dataset.explainer;
+          const v = (sel.value || "").trim();
+          if (!v || !f || !ex) return;
+          if (!facets[f]) facets[f] = {};
+          facets[f][ex] = v;
+        });
+        return Object.keys(facets).length ? facets : null;
+      }
+
+      function ensureOption(selectEl, value) {
+        if (!value) return;
+        const v = String(value);
+        const has = [...selectEl.options].some((o) => o.value === v);
+        if (!has) selectEl.add(new Option(v, v));
+      }
 
       function getChartColors() {
         const theme = document.documentElement.getAttribute("data-theme");
@@ -916,6 +1192,141 @@
         return feedbackKeys.has(
           [it.indicator_code, it.geography_code, it.window_str].join("\0"),
         );
+      }
+
+      const SPLIT_CHART_H_KEY = "anomaly-reviewer-chart-pane-px";
+      const SPLIT_MIN_CHART = 140;
+      const SPLIT_MIN_EXPL = 140;
+
+      function clampChartPaneHeight(px) {
+        const ms = document.getElementById("main-split");
+        const resizer = document.getElementById("split-resizer");
+        if (!ms || !document.getElementById("chart-pane")) return px;
+        const rH = resizer ? resizer.offsetHeight : 8;
+        const max = Math.max(
+          SPLIT_MIN_CHART,
+          ms.clientHeight - rH - SPLIT_MIN_EXPL,
+        );
+        return Math.round(Math.min(Math.max(px, SPLIT_MIN_CHART), max));
+      }
+
+      function setChartPaneHeight(px, persist) {
+        const ms = document.getElementById("main-split");
+        if (!ms) return;
+        const h = clampChartPaneHeight(px);
+        ms.style.setProperty("--chart-pane-height", `${h}px`);
+        if (persist !== false) {
+          try {
+            localStorage.setItem(SPLIT_CHART_H_KEY, String(h));
+          } catch (_) {
+            /* ignore */
+          }
+        }
+        if (chart) chart.resize();
+      }
+
+      function initSplitPane() {
+        const ms = document.getElementById("main-split");
+        const resizer = document.getElementById("split-resizer");
+        if (!ms || !resizer) return;
+
+        function applyStoredOrDefault() {
+          let saved = null;
+          try {
+            saved = localStorage.getItem(SPLIT_CHART_H_KEY);
+          } catch (_) {
+            /* ignore */
+          }
+          if (saved != null && saved !== "") {
+            const n = parseInt(saved, 10);
+            if (!Number.isNaN(n)) {
+              setChartPaneHeight(n, false);
+              return;
+            }
+          }
+        }
+
+        requestAnimationFrame(() => {
+          applyStoredOrDefault();
+          if (chart) chart.resize();
+        });
+
+        resizer.addEventListener("mousedown", (e) => {
+          e.preventDefault();
+          const pane = document.getElementById("chart-pane");
+          const startH = pane ? pane.offsetHeight : 400;
+          const startY = e.clientY;
+          resizer.classList.add("is-dragging");
+          document.body.style.cursor = "row-resize";
+          document.body.style.userSelect = "none";
+
+          function onMove(ev) {
+            const dy = ev.clientY - startY;
+            setChartPaneHeight(startH + dy, true);
+          }
+
+          function onUp() {
+            resizer.classList.remove("is-dragging");
+            document.body.style.cursor = "";
+            document.body.style.userSelect = "";
+            window.removeEventListener("mousemove", onMove);
+            window.removeEventListener("mouseup", onUp);
+            if (chart) chart.resize();
+          }
+
+          window.addEventListener("mousemove", onMove);
+          window.addEventListener("mouseup", onUp);
+        });
+
+        resizer.addEventListener("touchstart", (e) => {
+          if (e.touches.length !== 1) return;
+          e.preventDefault();
+          const pane = document.getElementById("chart-pane");
+          const startH = pane ? pane.offsetHeight : 400;
+          const startY = e.touches[0].clientY;
+          resizer.classList.add("is-dragging");
+
+          function onTouchMove(ev) {
+            if (ev.touches.length !== 1) return;
+            const dy = ev.touches[0].clientY - startY;
+            setChartPaneHeight(startH + dy, true);
+          }
+
+          function onTouchEnd() {
+            resizer.classList.remove("is-dragging");
+            window.removeEventListener("touchmove", onTouchMove);
+            window.removeEventListener("touchend", onTouchEnd);
+            window.removeEventListener("touchcancel", onTouchEnd);
+            if (chart) chart.resize();
+          }
+
+          window.addEventListener("touchmove", onTouchMove, { passive: false });
+          window.addEventListener("touchend", onTouchEnd);
+          window.addEventListener("touchcancel", onTouchEnd);
+        });
+
+        resizer.addEventListener("keydown", (e) => {
+          const pane = document.getElementById("chart-pane");
+          if (!pane) return;
+          const step = e.shiftKey ? 40 : 16;
+          if (e.key === "ArrowUp") {
+            e.preventDefault();
+            setChartPaneHeight(pane.offsetHeight - step, true);
+          } else if (e.key === "ArrowDown") {
+            e.preventDefault();
+            setChartPaneHeight(pane.offsetHeight + step, true);
+          }
+        });
+
+        let resizeTimer;
+        window.addEventListener("resize", () => {
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(() => {
+            const pane = document.getElementById("chart-pane");
+            if (!pane) return;
+            setChartPaneHeight(pane.offsetHeight, true);
+          }, 120);
+        });
       }
 
       async function load() {
@@ -1153,6 +1564,10 @@
               el.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("active"));
               btn.classList.add("active");
               el.querySelector(`.tab-panel[data-panel="${tab}"]`)?.classList.add("active");
+              if (facetExplainerNames.length) {
+                if (tab === 0) setActiveExplainerForFacets(null);
+                else setActiveExplainerForFacets(facetExplainerNames[tab - 1]);
+              }
             });
           });
         } else if (explainers.length === 1) {
@@ -1185,7 +1600,9 @@
           `;
         }
         document.getElementById("feedback-comment").value = "";
+        document.getElementById("feedback-suggested-classification").value = "";
         document.getElementById("feedback-status").textContent = "";
+        buildFacetTable(it);
         loadExistingFeedback(it);
       }
 
@@ -1204,8 +1621,29 @@
           const fb = await res.json();
           if (fb && fb.verdict) {
             document.getElementById("feedback-comment").value = fb.comment || "";
+            document.getElementById("feedback-suggested-classification").value =
+              fb.suggested_classification || "";
+            const facets = fb.facets || {};
+            document.querySelectorAll(".facet-select").forEach((sel) => {
+              const f = sel.dataset.facet;
+              const ex = sel.dataset.explainer;
+              const val = facets[f]?.[ex];
+              if (val) sel.value = val;
+            });
+            const ref = document.getElementById("reference-explainer");
+            const best = document.getElementById("best-explainer");
+            if (fb.reference_explainer) {
+              ensureOption(ref, fb.reference_explainer);
+              ref.value = fb.reference_explainer;
+            }
+            if (fb.best_explainer) {
+              ensureOption(best, fb.best_explainer);
+              best.value = fb.best_explainer;
+            }
+            let statusExtra = fb.verdict;
+            if (fb.reference_explainer) statusExtra += ` · ref: ${fb.reference_explainer}`;
             document.getElementById("feedback-status").textContent =
-              "Previous: " + fb.verdict + (fb.comment ? " — " + fb.comment : "");
+              "Previous: " + statusExtra + (fb.comment ? " — " + fb.comment : "");
             document.getElementById("feedback-status").style.color = "var(--text-muted)";
             document.querySelectorAll(".feedback-buttons .btn").forEach((btn) => {
               if (btn.dataset.verdict === fb.verdict) btn.classList.add("btn-active");
@@ -1221,6 +1659,11 @@
         if (!it) return;
         const comment =
           document.getElementById("feedback-comment").value.trim() || null;
+        const suggested =
+          document.getElementById("feedback-suggested-classification").value.trim() ||
+          null;
+        const refEl = document.getElementById("reference-explainer");
+        const bestEl = document.getElementById("best-explainer");
         try {
           const res = await fetch("/api/feedback", {
             method: "POST",
@@ -1232,6 +1675,11 @@
               window_str: it.window_str,
               verdict,
               comment,
+              suggested_classification: suggested,
+              facets: collectFacetsFromDOM(),
+              reference_explainer: refEl.value || null,
+              best_explainer: bestEl.value || null,
+              overall_basis: "explicit",
             }),
           });
           await res.json();
@@ -1259,6 +1707,7 @@
         return list[selectedId];
       }
 
+      initSplitPane();
       load();
     </script>
   </body>

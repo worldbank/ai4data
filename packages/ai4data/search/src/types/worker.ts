@@ -38,6 +38,17 @@ export interface WorkerInitMessage {
   modelLoadDelaySeconds?: number
   /** If true, do not load or build BM25 even when the manifest has bm25_corpus (semantic-only). */
   skipBm25?: boolean
+  /**
+   * Override `@xenova/transformers` `env.remoteHost` so model assets load from your origin or proxy
+   * (avoids CSP blocks on huggingface.co). Must mirror Hub paths unless `transformersRemotePathTemplate` is set.
+   * Absolute URL recommended; relative paths are resolved on the main thread before posting to the worker.
+   */
+  transformersRemoteHost?: string
+  /**
+   * Override `env.remotePathTemplate` (default `'{model}/resolve/{revision}/'`). Only needed if the proxy
+   * uses a different path layout than the Hugging Face Hub.
+   */
+  transformersRemotePathTemplate?: string
 }
 
 export interface WorkerSearchMessage {
