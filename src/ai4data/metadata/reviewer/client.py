@@ -133,6 +133,7 @@ class MetadataReviewerClient:
     def from_ollama(
         cls,
         model: str,
+        host: str = "http://localhost",
         port: int = 11434,
         assets_dir: str | None = None,
     ) -> "MetadataReviewerClient":
@@ -144,8 +145,10 @@ class MetadataReviewerClient:
         ----------
         model : str
             Model name, e.g. ``"llama3.2"``, ``"mistral"``.
+        host: str, optional
+            Host of the Ollama server. Defaults to ``"http://localhost"``.
         port : int, optional
-            Port of the local Ollama server. Defaults to ``11434``.
+            Port of the Ollama server. Defaults to ``11434``.
         assets_dir : str, optional
             Path to the agents-manifest directory.
         """
@@ -153,7 +156,7 @@ class MetadataReviewerClient:
 
         model_client = OllamaChatCompletionClient(
             model=model,
-            host=f"http://localhost:{port}",
+            host=f"{host}:{port}",
             model_info={
                 "vision": False,
                 "function_calling": False,
