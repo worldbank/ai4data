@@ -11,6 +11,9 @@ This package provides various AI-powered tools for data analysis:
 - metadata: Metadata quality assessment and augmentation
   Install with: uv pip install ai4data[metadata]
 
+- discovery: NADA catalog, metadata templates, and related discovery helpers
+  Install with: uv pip install ai4data[discovery]
+
 For all capabilities:
   uv pip install ai4data[all]
 """
@@ -27,11 +30,13 @@ except PackageNotFoundError:
 # if dependencies are not installed until you actually use the features
 from . import data_use
 from . import anomaly
+from . import discovery
 from . import metadata
 
 __all__ = [
     "__version__",
     "data_use",
     "anomaly",
+    "discovery",
     "metadata",
 ]

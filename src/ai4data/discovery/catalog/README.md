@@ -1,0 +1,33 @@
+# `ai4data.discovery.catalog`
+
+Public surface for **NADA** metadata: HTTP client, batch jobs, and ids used by downstream packages (e.g. `nada-opensearch`).
+
+## Modules
+
+| Module | Role |
+|--------|------|
+| `http.py` | Catalog HTTP API: `get_metadata_json`, `search_metadata`, `get_ids_type`, `get_metadata_ids`. |
+| `batch.py` | Save id lists, `scrape_all_ids`, `scrape_all_metadata`, Fire `main`. Run: `python -m ai4data.discovery.catalog.batch`. |
+| `data_api.py` | Authenticated JSON GET (`x-api-key`) for separate IHSN/API resources. |
+| `langdoc_id.py` | `get_langdoc_uuid` and UUID helper for chunk ids. |
+| `__init__.py` | Re-exports HTTP + `get_langdoc_uuid`. Import `MetadataLoader` / `get_metadata_langdocs` from `ai4data.discovery.metadata.handler` (avoiding a circular import). |
+
+## Related (not in `discovery/catalog/`)
+
+- **PDF download/cache** for document metadata: `ai4data.discovery.metadata.document_fetch` (`cache_download_pdf`, `download_pdf`).
+
+## Legacy shims
+
+`ai4data.catalog` re-exports this package for backward compatibility. `ai4data.scraper.metadata`, `ai4data.scraper.document`, and `ai4data.scraper.data_api` also shim older paths. Prefer imports from `ai4data.discovery.catalog`.
+
+## Consumers
+
+- `nada-opensearch` uses `ai4data.discovery.catalog` for HTTP + loader-related exports.
+
+## Maintenance
+
+Update `discovery/catalog/http.py` when catalog REST behavior changes. Batch CLI flags live in `discovery/catalog/batch.py`.
+
+## Configuration
+
+Environment variables for the catalog URL, API key, and related settings are documented in [`../README.md`](../README.md).

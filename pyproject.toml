@@ -92,6 +92,26 @@ metadata = [
   "tqdm>=4.65.0",
 ]
 
+# NADA discovery (catalog fetch, metadata templates, PDF helpers)
+discovery = [
+  "httpx>=0.27.0",
+  "backoff>=2.2.1",
+  "tqdm>=4.65.0",
+  "pydantic>=2.0.0",
+  "pydantic-settings>=2.0.0",
+  "python-dotenv>=1.0.0",
+  "jinja2>=3.0.0",
+  "numpy>=1.24.0",
+  "pandas>=2.2.3",
+  "scikit-learn>=1.3.0",
+  "beautifulsoup4>=4.12.0",
+  "langchain-core>=0.3.0",
+  "langchain-community>=0.3.0",
+  "langchain-huggingface>=0.1.0",
+  "tika>=2.6.0",
+  "pymupdf>=1.23.0",
+]
+
 # Metadata reviewer — base (no LLM provider)
 metadata-reviewer = [
   "autogen-core>=0.7.5",
@@ -131,6 +151,7 @@ all = [
 	"ai4data[anomaly]",
 	"ai4data[search]",
 	"ai4data[metadata]",
+	"ai4data[discovery]",
 	"ai4data[metadata-reviewer]",
 ]
 
