@@ -28,6 +28,29 @@ Defined in [`config.py`](./config.py) (`EmbeddingTemplatesConfig`). Controls whe
 |----------|-----------|-------------|
 | `AI4DATA_EMBEDDING_CONTENT_TEMPLATES_PATH` | No | Directory containing per-type template folders (`indicator`, `document`, …). Defaults to `metadata/templates` next to `config.py` inside the installed package. |
 
+The `AI4DATA_EMBEDDING_` prefix is shared with **embedding inference** (below). Unrecognized keys are ignored per settings class.
+
+### Embedding inference (`AI4DATA_EMBEDDING_*`)
+
+Defined in [`config.py`](./config.py) (`EmbeddingInferenceConfig`). Used by [`embeddings.py`](./embeddings.py) for `HuggingFaceEmbeddings` and the token text splitter when you call [`wiring.register_discovery_processors()`](./wiring.py) (see below). The `discovery` extra installs `torch`, `sentence-transformers` (>=5.4.1), and `langchain-text-splitters` needed for those code paths.
+
+| Variable | Required | Description |
+|----------|-----------|-------------|
+| `AI4DATA_EMBEDDING_MODEL` | No | HuggingFace model id (default: `avsolatorio/GIST-Embedding-v0`). |
+| `AI4DATA_EMBEDDING_BATCH_SIZE` | No | Encode batch size (default: `64`). |
+| `AI4DATA_EMBEDDING_DEVICE` | No | Device string, e.g. `cuda`, `mps`, `cpu`. If unset, auto-pick cuda → mps → cpu. |
+| `AI4DATA_EMBEDDING_SHOW_PROGRESS` | No | Progress bars during encoding (default: `true`). |
+
+**Wiring (required for `embed_documents` / `get_doc_reps`):** call once at process startup (not on import):
+
+```python
+from ai4data.discovery.wiring import register_discovery_processors
+
+register_discovery_processors()
+```
+
+To clear cached models in long-running jobs or tests, use `ai4data.discovery.embeddings.clear_embedding_caches()`.
+
 ### Local data / cache (`AI4DATA_DISCOVERY_*`)
 
 Defined in [`config.py`](./config.py) (`DiscoveryDataConfig`). Used by [`paths.py`](./paths.py) for `metadata_ids`, `metadata_cache`, `document_cache`, and related subpaths.

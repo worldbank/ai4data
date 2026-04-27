@@ -26,7 +26,7 @@ def configure_discovery_processors(
     """
     Wire embedding model, text splitter, and clustering used by :func:`embed_documents` / :func:`get_doc_reps`.
 
-    The monolith registers defaults via :mod:`ai4data.discovery_wiring`; call this in tests with fakes.
+    Default registration: :func:`ai4data.discovery.wiring.register_discovery_processors`. Call this in tests with fakes.
     """
     global _embedding_factory, _text_splitter_factory, _cluster_fn
     if embedding_factory is not None:
@@ -40,8 +40,8 @@ def configure_discovery_processors(
 def _get_embedding_model():
     if _embedding_factory is None:
         raise RuntimeError(
-            "Discovery processors are not wired: import ai4data.discovery_wiring (or call "
-            "configure_discovery_processors(embedding_factory=...)) before using embed_documents / get_doc_reps."
+            "Discovery processors are not wired: call ai4data.discovery.wiring.register_discovery_processors() "
+            "(or configure_discovery_processors(embedding_factory=...)) before using embed_documents / get_doc_reps."
         )
     return _embedding_factory()
 
@@ -49,8 +49,8 @@ def _get_embedding_model():
 def _get_text_splitter():
     if _text_splitter_factory is None:
         raise RuntimeError(
-            "Discovery processors are not wired: import ai4data.discovery_wiring (or call "
-            "configure_discovery_processors(text_splitter_factory=...)) before using get_doc_reps."
+            "Discovery processors are not wired: call ai4data.discovery.wiring.register_discovery_processors() "
+            "(or configure_discovery_processors(text_splitter_factory=...)) before using get_doc_reps."
         )
     return _text_splitter_factory()
 
@@ -58,8 +58,8 @@ def _get_text_splitter():
 def _get_cluster_fn():
     if _cluster_fn is None:
         raise RuntimeError(
-            "Discovery processors are not wired: import ai4data.discovery_wiring (or call "
-            "configure_discovery_processors(cluster_fn=...)) before using get_doc_reps."
+            "Discovery processors are not wired: call ai4data.discovery.wiring.register_discovery_processors() "
+            "(or configure_discovery_processors(cluster_fn=...)) before using get_doc_reps."
         )
     return _cluster_fn
 
