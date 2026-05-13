@@ -71,7 +71,7 @@ class DocumentFilterFacets(FilterFacets):
     type: str = "document"
     document_type: str = None
     date_published: str = None
-    date_created: str = None
+    date_created: str | None = None
     authors: list[str] = None
 
     @staticmethod
