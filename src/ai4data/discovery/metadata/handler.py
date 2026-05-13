@@ -9,12 +9,23 @@ from ..catalog.langdoc_id import get_langdoc_uuid  # noqa: F401 — re-exported 
 from ..paths import get_contextualized_dimensions_path
 from ..processors.document import load_pdf
 from .document_fetch import cache_download_pdf
-from .filters import DocumentFilterFacets, GeospatialFilterFacets, IndicatorFilterFacets, MicrodataFilterFacets
+from .filters import (
+    DocumentFilterFacets,
+    GeospatialFilterFacets,
+    IndicatorFilterFacets,
+    MicrodataFilterFacets,
+)
 from .templates.render import get_searchpath, render_embedding_content
 
 
 class Metadata(ABC):
-    def __init__(self, metadata: dict, collection_fields: list, metadata_type: str = None, searchpath: str = None):
+    def __init__(
+        self,
+        metadata: dict,
+        collection_fields: list,
+        metadata_type: str = None,
+        searchpath: str = None,
+    ):
         """
         Initialize the Metadata handler.
 
@@ -31,7 +42,9 @@ class Metadata(ABC):
         self.collection_fields = collection_fields
 
         path = Path(get_searchpath(self.type, searchpath))
-        self.available_fields = set(i.stem.split("__")[1] for i in path.glob("*.jinja2"))
+        self.available_fields = set(
+            i.stem.split("__")[1] for i in path.glob("*.jinja2")
+        )
 
     @property
     def metadata(self) -> dict:
@@ -84,7 +97,9 @@ class Metadata(ABC):
         if not page_content:
             return None
 
-        return LangchainDocument(page_content=page_content, metadata={"qfield": field, **self.payload})
+        return LangchainDocument(
+            page_content=page_content, metadata={"qfield": field, **self.payload}
+        )
 
     def embedding_content(self, field) -> str:
         """
@@ -93,9 +108,13 @@ class Metadata(ABC):
         Returns:
             str: The content to be used for embedding.
         """
-        assert field in self.collection_fields, f"Field {field} not in collection fields {self.collection_fields}"
+        assert field in self.collection_fields, (
+            f"Field {field} not in collection fields {self.collection_fields}"
+        )
 
-        embedding_content = render_embedding_content(self.metadata, self.type, field, searchpath=self.searchpath)
+        embedding_content = render_embedding_content(
+            self.metadata, self.type, field, searchpath=self.searchpath
+        )
 
         return embedding_content.strip()
 
@@ -116,7 +135,11 @@ class IndicatorMetadata(Metadata):
     def __init__(self, **kwargs):
         super().__init__(
             metadata_type="indicator",
-            collection_fields=["name", "definition", "dimensions"],  # , "relevance", "keywords"],
+            collection_fields=[
+                "name",
+                "definition",
+                "dimensions",
+            ],  # , "relevance", "keywords"],
             **kwargs,
         )
 
@@ -154,14 +177,22 @@ class IndicatorMetadata(Metadata):
         langdocs.append(
             LangchainDocument(
                 page_content=data["dimension_info"],
-                metadata={"qfield": "dimensions", "doc_meta": {"type": "actual"}, **self.payload},
+                metadata={
+                    "qfield": "dimensions",
+                    "doc_meta": {"type": "actual"},
+                    **self.payload,
+                },
             )
         )
 
         langdocs.append(
             LangchainDocument(
                 page_content=data["output"],
-                metadata={"qfield": "dimensions", "doc_meta": {"type": "contextual"}, **self.payload},
+                metadata={
+                    "qfield": "dimensions",
+                    "doc_meta": {"type": "contextual"},
+                    **self.payload,
+                },
             )
         )
 
@@ -212,7 +243,13 @@ class DocumentMetadata(Metadata):
     def __init__(self, **kwargs):
         super().__init__(
             metadata_type="document",
-            collection_fields=["title", "sub_title", "abstract", "passages", "keywords"],
+            collection_fields=[
+                "title",
+                "sub_title",
+                "abstract",
+                "passages",
+                "keywords",
+            ],
             **kwargs,
         )
 
@@ -234,7 +271,23 @@ class DocumentMetadata(Metadata):
         Returns:
             list: A list of LangChain documents.
         """
+
+        # Check if the document url is in the metadata
         url = self.metadata.get("document_description", {}).get("url", None)
+
+        # If external resources are available, prefer that over the document url
+        external_resources = self.metadata.get("external_resources", None)
+        if external_resources:
+            for resource in external_resources:
+                if (
+                    resource.get("dcformat", None) == "application/pdf"
+                    and resource.get("is_url", 1) == 0
+                ):
+                    url = resource.get("url", None)
+                    # We only consider the first pdf url we find
+                    # TODO: We should consider all pdf urls and use them all for the document
+                    break
+
         docs = []
 
         if url:
@@ -245,7 +298,8 @@ class DocumentMetadata(Metadata):
 
         return [
             LangchainDocument(
-                page_content=doc.page_content, metadata={"qfield": field, "doc_meta": doc.metadata, **self.payload}
+                page_content=doc.page_content,
+                metadata={"qfield": field, "doc_meta": doc.metadata, **self.payload},
             )
             for doc in docs
         ]
@@ -281,7 +335,11 @@ class DocumentMetadata(Metadata):
 
 class GeospatialMetadata(Metadata):
     def __init__(self, **kwargs):
-        super().__init__(metadata_type="geospatial", collection_fields=["title", "abstract"], **kwargs)
+        super().__init__(
+            metadata_type="geospatial",
+            collection_fields=["title", "abstract"],
+            **kwargs,
+        )
 
     def get_payload(self) -> dict:
         """
@@ -362,7 +420,9 @@ class MicrodataMetadata(Metadata):
 
 
 class MetadataLoader:
-    def __init__(self, idno: str, metadata_type: str, force: bool = False, searchpath: str = None):
+    def __init__(
+        self, idno: str, metadata_type: str, force: bool = False, searchpath: str = None
+    ):
         """
         Initialize the MetadataLoader.
 
@@ -400,7 +460,9 @@ class MetadataLoader:
         elif self.type == "document":
             return DocumentMetadata(metadata=self.metadata, searchpath=self.searchpath)
         elif self.type == "geospatial":
-            return GeospatialMetadata(metadata=self.metadata, searchpath=self.searchpath)
+            return GeospatialMetadata(
+                metadata=self.metadata, searchpath=self.searchpath
+            )
         elif self.type == "microdata":
             return MicrodataMetadata(metadata=self.metadata, searchpath=self.searchpath)
         else:
@@ -422,6 +484,8 @@ def get_metadata_langdocs(
     Returns:
         list: A list of LangChain documents.
     """
-    loader = MetadataLoader(idno=idno, metadata_type=metadata_type, force=force, searchpath=searchpath)
+    loader = MetadataLoader(
+        idno=idno, metadata_type=metadata_type, force=force, searchpath=searchpath
+    )
     metadata_handler = loader.get_metadata_handler()
     return metadata_handler.get_langdocs()
