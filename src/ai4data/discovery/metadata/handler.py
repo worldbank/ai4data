@@ -279,9 +279,13 @@ class DocumentMetadata(Metadata):
         external_resources = self.metadata.get("external_resources", None)
         if external_resources:
             for resource in external_resources:
+                is_url = str(resource.get("is_url", "1"))
+                assert is_url in ("0", "1"), (
+                    f'Invalid `is_url` value: {is_url}, expected "0" or "1"'
+                )
                 if (
                     resource.get("dcformat", None) == "application/pdf"
-                    and resource.get("is_url", 1) == 0
+                    and is_url == "0"
                 ):
                     url = resource.get("url", None)
                     # We only consider the first pdf url we find
@@ -482,7 +486,11 @@ class MetadataLoader:
 
 
 def get_metadata_langdocs(
-    idno: str, metadata_type: str, force: bool = False, searchpath: str = None
+    idno: str,
+    metadata_type: str,
+    force: bool = False,
+    searchpath: str = None,
+    include_resources: bool = False,
 ) -> list[LangchainDocument]:
     """
     Get the metadata documents for the given idno and metadata type.
@@ -492,12 +500,17 @@ def get_metadata_langdocs(
         metadata_type (str): The type of metadata (e.g., 'indicator', 'document').
         force (bool, optional): If True, forces fetching the metadata from the catalog even if cached. Defaults to False.
         searchpath (str, optional): Path used for searching or rendering templates. Defaults to None.
+        include_resources (bool, optional): If True, include the resources in the metadata. Defaults to False.
 
     Returns:
         list: A list of LangChain documents.
     """
     loader = MetadataLoader(
-        idno=idno, metadata_type=metadata_type, force=force, searchpath=searchpath
+        idno=idno,
+        metadata_type=metadata_type,
+        force=force,
+        searchpath=searchpath,
+        include_resources=include_resources,
     )
     metadata_handler = loader.get_metadata_handler()
     return metadata_handler.get_langdocs()
