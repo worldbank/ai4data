@@ -12,7 +12,7 @@ import json
 import httpx
 from tqdm.auto import tqdm
 
-from ..auth import get_catalog_auth_headers
+from ..auth import get_catalog_auth_headers, get_catalog_cookies
 from ..config import METADATA_CATALOG_URL
 from ..paths import get_metadata_cache_path
 
@@ -62,6 +62,7 @@ def get_metadata_json(
             f"{METADATA_CATALOG_URL}/api/catalog/json/{idno}",
             params=params,
             headers=get_catalog_auth_headers(),
+            cookies=get_catalog_cookies(),
         )
         response.raise_for_status()
         metadata: dict = response.json()
@@ -95,6 +96,7 @@ def search_metadata(params: dict = None) -> dict:
         f"{METADATA_CATALOG_URL}/api/catalog/search",
         params=params,
         headers=get_catalog_auth_headers(),
+        cookies=get_catalog_cookies(),
     )
     response.raise_for_status()
     data = response.json().get("result", {})

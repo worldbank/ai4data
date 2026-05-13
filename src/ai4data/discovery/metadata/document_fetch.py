@@ -9,7 +9,7 @@ import logging
 import backoff
 import httpx
 
-from ..auth import get_catalog_auth_headers
+from ..auth import get_catalog_auth_headers, get_catalog_cookies
 from ..paths import get_document_cache_path
 
 logger = logging.getLogger(__name__)
@@ -36,7 +36,10 @@ def download_pdf(url: str) -> bytes:
 
     When :envvar:`AI4DATA_METADATA_CATALOG_X_API_KEY` is configured, an ``x-api-key`` header
     is attached for hosts that match the catalog (or are allow-listed via
-    :envvar:`AI4DATA_METADATA_CATALOG_X_API_KEY_HOSTS`). See :mod:`ai4data.discovery.auth`.
+    :envvar:`AI4DATA_METADATA_CATALOG_X_API_KEY_HOSTS`). When
+    :envvar:`AI4DATA_METADATA_CATALOG_COOKIES` is configured, the parsed cookies are
+    attached with the same host scoping (e.g. for NADA instances that gate downloads
+    behind a logged-in session). See :mod:`ai4data.discovery.auth`.
     """
     assert isinstance(url, str), "The url must be a string"
 
@@ -45,6 +48,7 @@ def download_pdf(url: str) -> bytes:
         follow_redirects=True,
         timeout=30,
         headers=get_catalog_auth_headers(url),
+        cookies=get_catalog_cookies(url),
     )
     response.raise_for_status()
 

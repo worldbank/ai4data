@@ -29,6 +29,16 @@ class MetadataCatalogConfig(BaseSettings):
             "Hosts not on this list (or the catalog host) never receive the key."
         ),
     )
+    cookies: str | None = Field(
+        default=None,
+        description=(
+            "Optional cookie string sent alongside catalog requests (e.g. "
+            "``ihsn_nada=...; ccsrf=...``). Used for NADA instances that gate PDF downloads "
+            "behind a logged-in session. Host scoping mirrors ``x_api_key`` — the cookies are "
+            "sent unconditionally to catalog endpoints and host-scoped on document download "
+            "URLs (catalog host plus ``x_api_key_hosts``)."
+        ),
+    )
 
 
 class EmbeddingTemplatesConfig(BaseSettings):
