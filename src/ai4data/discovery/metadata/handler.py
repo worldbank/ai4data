@@ -421,7 +421,12 @@ class MicrodataMetadata(Metadata):
 
 class MetadataLoader:
     def __init__(
-        self, idno: str, metadata_type: str, force: bool = False, searchpath: str = None
+        self,
+        idno: str,
+        metadata_type: str,
+        force: bool = False,
+        searchpath: str = None,
+        include_resources: bool = False,
     ):
         """
         Initialize the MetadataLoader.
@@ -431,11 +436,13 @@ class MetadataLoader:
             metadata_type (str): Type of metadata (e.g., 'document', 'indicator').
             force (bool, optional): If True, forces fetching the metadata from the catalog even if cached. Defaults to False.
             searchpath (str, optional): Path used for searching or rendering templates. Defaults to None.
+            include_resources (bool, optional): If True, include the resources in the metadata. Defaults to False.
         """
         self.idno = idno
         self.type = metadata_type
         self.force = force
         self.searchpath = searchpath
+        self.include_resources = include_resources
         self.metadata = self.load_metadata()
         self.metadata["idno"] = self.idno
 
@@ -446,7 +453,12 @@ class MetadataLoader:
         Returns:
             dict: The loaded metadata.
         """
-        return get_metadata_json(self.idno, self.type, force=self.force)
+        return get_metadata_json(
+            self.idno,
+            self.type,
+            force=self.force,
+            include_resources=self.include_resources,
+        )
 
     def get_metadata_handler(self) -> Metadata:
         """

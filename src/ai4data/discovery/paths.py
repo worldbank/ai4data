@@ -73,16 +73,32 @@ def get_metadata_ids_path(metadata_type: str) -> Path:
     return construct_path(METADATA_IDS_DIR, f"metadata_ids_{metadata_type}.json")
 
 
-def get_metadata_cache_path(idno: str, metadata_type: str) -> Path:
-    return construct_path(METADATA_CACHE_DIR / metadata_type, f"{metadata_type}_{idno}.json")
+def get_metadata_cache_path(
+    idno: str, metadata_type: str, include_resources: bool = False
+) -> Path:
+    if include_resources:
+        return construct_path(
+            METADATA_CACHE_DIR / metadata_type, f"{metadata_type}_{idno}.res.json"
+        )
+    else:
+        return construct_path(
+            METADATA_CACHE_DIR / metadata_type, f"{metadata_type}_{idno}.json"
+        )
 
 
 def get_document_cache_path(idno: str, metadata_type: str) -> Path:
-    return construct_path(DOCUMENT_CACHE_DIR / metadata_type, f"{metadata_type}_{idno}.pdf")
+    return construct_path(
+        DOCUMENT_CACHE_DIR / metadata_type, f"{metadata_type}_{idno}.pdf"
+    )
 
 
 def get_contextualized_dimensions_path(idno: str, raw: bool = False) -> Path:
     root = get_discovery_data_root()
     if raw:
-        return root / "contextual_dimensions" / idno / f"contextual_dimensions.{idno}.raw.json"
+        return (
+            root
+            / "contextual_dimensions"
+            / idno
+            / f"contextual_dimensions.{idno}.raw.json"
+        )
     return root / "contextual_dimensions" / idno / f"contextual_dimensions.{idno}.txt"

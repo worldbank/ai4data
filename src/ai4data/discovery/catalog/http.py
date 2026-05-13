@@ -16,7 +16,13 @@ from ..config import METADATA_CATALOG_URL
 from ..paths import get_metadata_cache_path
 
 
-def get_metadata_json(idno: str, metadata_type: str = None, force: bool = False, load_exists: bool = True) -> dict:
+def get_metadata_json(
+    idno: str,
+    metadata_type: str = None,
+    force: bool = False,
+    load_exists: bool = True,
+    include_resources: bool = False,
+) -> dict:
     """
     Retrieve metadata from a cache or fetch it from the catalog if not cached or if forced.
 
@@ -25,12 +31,17 @@ def get_metadata_json(idno: str, metadata_type: str = None, force: bool = False,
         metadata_type (str, optional): Used for caching. If None, caching is bypassed.
         force (bool, optional): If True, forces a fresh retrieval.
         load_exists (bool, optional): If True, load from cache when present.
-
+        include_resources (bool, optional): If True, include the resources in the metadata. Defaults to False.
     Returns:
         dict: The metadata associated with the given ID number.
     """
-    cache_path = get_metadata_cache_path(idno, metadata_type) if metadata_type else None
-
+    cache_path = (
+        get_metadata_cache_path(
+            idno, metadata_type, include_resources=include_resources
+        )
+        if metadata_type
+        else None
+    )
     if cache_path and not force and cache_path.exists():
         try:
             if load_exists:
@@ -42,7 +53,13 @@ def get_metadata_json(idno: str, metadata_type: str = None, force: bool = False,
             print(f"Failed to read cache file {cache_path}: {e}")
 
     try:
-        response = httpx.get(f"{METADATA_CATALOG_URL}/api/catalog/json/{idno}")
+        # Add query parameters to the request
+        params = {
+            "include_resources": include_resources,
+        }
+        response = httpx.get(
+            f"{METADATA_CATALOG_URL}/api/catalog/json/{idno}", params=params
+        )
         response.raise_for_status()
         metadata: dict = response.json()
 
@@ -52,9 +69,9 @@ def get_metadata_json(idno: str, metadata_type: str = None, force: bool = False,
             metadata["type"] = "microdata"
 
         if metadata_type:
-            assert (
-                metadata.get("type", None) == metadata_type
-            ), f"The metadata {metadata.get('type')} does not match the requested type: {metadata_type}"
+            assert metadata.get("type", None) == metadata_type, (
+                f"The metadata {metadata.get('type')} does not match the requested type: {metadata_type}"
+            )
 
     except httpx.HTTPStatusError as e:
         raise RuntimeError(f"Failed to fetch metadata for ID {idno}: {e}") from e
@@ -88,17 +105,25 @@ def get_ids_type(result: dict = None) -> dict:
     elif metadata_type == "survey":
         metadata_type = "microdata"
 
-    return dict(id=result.get("id", None), idno=result.get("idno", None), type=metadata_type)
+    return dict(
+        id=result.get("id", None), idno=result.get("idno", None), type=metadata_type
+    )
 
 
-def get_metadata_ids(params: dict = None, search_metadata_func=search_metadata, max_items: int | None = None) -> list:
+def get_metadata_ids(
+    params: dict = None,
+    search_metadata_func=search_metadata,
+    max_items: int | None = None,
+) -> list:
     """
     Retrieve metadata IDs from the metadata catalog based on search parameters.
 
     Paginates through every page unless ``max_items`` is set, in which case pagination
     stops once that many rows have been collected (fewer HTTP calls for smoke tests).
     """
-    default_params = dict(sk="", ps=100, type="timeseries", sort_by="year", sort_order="asc")
+    default_params = dict(
+        sk="", ps=100, type="timeseries", sort_by="year", sort_order="asc"
+    )
     params = {**default_params, **(params or {})}
 
     if max_items is not None and max_items <= 0:
