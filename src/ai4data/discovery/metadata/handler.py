@@ -1,4 +1,5 @@
 import json
+import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
 
@@ -16,6 +17,8 @@ from .filters import (
     MicrodataFilterFacets,
 )
 from .templates.render import get_searchpath, render_embedding_content
+
+logger = logging.getLogger(__name__)
 
 
 class Metadata(ABC):
@@ -330,8 +333,19 @@ class DocumentMetadata(Metadata):
             if field_doc is not None:
                 langdocs.append(field_doc)
 
-        # Get the contents from the document itself
-        doc_contents = self.get_doc_langdocs()
+        # Get the contents from the document itself. PDF retrieval can fail (e.g. auth-gated
+        # URLs returning 200 OK with an empty body, transient HTTP errors, malformed PDFs).
+        # Don't let that drop the metadata-only langdocs (title / abstract / keywords) — they
+        # are still useful for search.
+        try:
+            doc_contents = self.get_doc_langdocs()
+        except Exception as exc:
+            logger.warning(
+                "Could not fetch PDF contents for document %s: %s",
+                self.metadata.get("idno"),
+                exc,
+            )
+            doc_contents = []
         langdocs.extend(doc_contents)
 
         return langdocs

@@ -12,6 +12,7 @@ import json
 import httpx
 from tqdm.auto import tqdm
 
+from ..auth import get_catalog_auth_headers
 from ..config import METADATA_CATALOG_URL
 from ..paths import get_metadata_cache_path
 
@@ -58,7 +59,9 @@ def get_metadata_json(
             "include_resources": include_resources,
         }
         response = httpx.get(
-            f"{METADATA_CATALOG_URL}/api/catalog/json/{idno}", params=params
+            f"{METADATA_CATALOG_URL}/api/catalog/json/{idno}",
+            params=params,
+            headers=get_catalog_auth_headers(),
         )
         response.raise_for_status()
         metadata: dict = response.json()
@@ -88,7 +91,11 @@ def get_metadata_json(
 
 def search_metadata(params: dict = None) -> dict:
     """Search metadata in the metadata catalog using provided search parameters."""
-    response = httpx.get(f"{METADATA_CATALOG_URL}/api/catalog/search", params=params)
+    response = httpx.get(
+        f"{METADATA_CATALOG_URL}/api/catalog/search",
+        params=params,
+        headers=get_catalog_auth_headers(),
+    )
     response.raise_for_status()
     data = response.json().get("result", {})
     return data

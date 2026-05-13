@@ -18,7 +18,8 @@ Defined in [`config.py`](./config.py) (`MetadataCatalogConfig`). Used by [`catal
 |----------|-----------|-------------|
 | `AI4DATA_METADATA_CATALOG_URL` | No | Base URL for the NADA catalog UI/API (default: `https://data-compass.ihsn.org/index.php`). Search and JSON endpoints are built from this value. |
 | `AI4DATA_METADATA_CATALOG_THUMBNAIL_URL` | No | Format string for document thumbnails; must include `{db_id}` (default matches NADA public thumbnails). |
-| `AI4DATA_METADATA_CATALOG_X_API_KEY` | Only for authenticated APIs | API key sent as header `x-api-key` by [`catalog/data_api.py`](./catalog/data_api.py). Public catalog HTTP in `http.py` does not attach this header; set it if you call authenticated resources. |
+| `AI4DATA_METADATA_CATALOG_X_API_KEY` | Only for authenticated APIs | API key sent as header `x-api-key`. Used by [`catalog/data_api.py`](./catalog/data_api.py), and — when set — also attached by [`catalog/http.py`](./catalog/http.py) (search, JSON metadata) and [`metadata/document_fetch.py`](./metadata/document_fetch.py) (PDF downloads). For PDF downloads the header is only sent when the URL's host matches the configured catalog host (or is allow-listed via `AI4DATA_METADATA_CATALOG_X_API_KEY_HOSTS`), so the credential is never sent to third-party hosts embedded as external resources. |
+| `AI4DATA_METADATA_CATALOG_X_API_KEY_HOSTS` | No | Comma-separated list of additional hostnames allowed to receive `x-api-key` for catalog-resolved downloads (e.g. `training.ihsn.org`). The catalog host itself is always allowed; use this when downloads are served from a separate subdomain. |
 
 ### Embedding templates (`AI4DATA_EMBEDDING_*`)
 

@@ -20,6 +20,15 @@ class MetadataCatalogConfig(BaseSettings):
     url: str = Field(default="https://data-compass.ihsn.org/index.php")
     thumbnail_url: str = Field(default="https://data-compass.ihsn.org/files/thumbnails/thumbnail-s{db_id}.jpeg")
     x_api_key: str | None = Field(default=None)
+    x_api_key_hosts: str | None = Field(
+        default=None,
+        description=(
+            "Comma-separated list of extra hostnames the ``x-api-key`` header may be sent to "
+            "(e.g. ``training.ihsn.org``). The configured catalog host is always allowed; this "
+            "list is for cases where catalog-resolved download URLs live on a separate subdomain. "
+            "Hosts not on this list (or the catalog host) never receive the key."
+        ),
+    )
 
 
 class EmbeddingTemplatesConfig(BaseSettings):
