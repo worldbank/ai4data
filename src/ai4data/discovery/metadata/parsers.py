@@ -40,7 +40,9 @@ class Parser:
 
         return get_idno(metadata, self.metadata_type)
 
-    def parse_geographies(self, geographies: list[dict], source: str = "name") -> list[str]:
+    def parse_geographies(
+        self, geographies: list[dict], source: str = "name"
+    ) -> list[str]:
         """
         Parse the geographies formated as `[{"name": <geo_name>, "code": <geo_code>}, ...]` into a list of strings.
 
@@ -52,12 +54,16 @@ class Parser:
             list[str]: The parsed geographies.
         """
         geographic_coverage = filter(lambda gc: gc.get(source), geographies)
-        geographic_coverage = sorted(set([gc.get(source) for gc in geographic_coverage]))
+        geographic_coverage = sorted(
+            set([gc.get(source) for gc in geographic_coverage])
+        )
         geographic_coverage = None if not geographic_coverage else geographic_coverage
 
         return geographic_coverage
 
-    def parse_periods(self, periods: list[dict], out_format: str = "summary") -> str | dict:
+    def parse_periods(
+        self, periods: list[dict], out_format: str = "summary"
+    ) -> str | dict:
         """
         Parse the periods into a single string.
 
@@ -107,7 +113,9 @@ class Parser:
             )
             return details
 
-    def parse_doi_from_identifiers(self, identifiers: list[dict[str, str]] | dict[str, str]) -> str | None:
+    def parse_doi_from_identifiers(
+        self, identifiers: list[dict[str, str]] | dict[str, str]
+    ) -> str | None:
         """
         Parse the DOI from the metadata identifiers.
 
@@ -117,7 +125,18 @@ class Parser:
         Returns:
             str: The parsed DOI.
         """
+        if not identifiers:
+            return None
+
         doi: str | None = None
+
+        # Use recursive approach to parse the DOI from a list of identifiers
+        if isinstance(identifiers, list):
+            for identifier in identifiers:
+                doi = self.parse_doi_from_identifiers(identifier)
+                if doi:
+                    return doi
+            return None
 
         for identifier in identifiers:
             if identifier.get("type", "").lower().strip() == "doi":
@@ -252,7 +271,9 @@ class IndicatorParser(Parser):
         """
         series: dict = self.get_series(metadata)
 
-        definition: str | None = series.get("definition_long", series.get("definition_short", None))
+        definition: str | None = series.get(
+            "definition_long", series.get("definition_short", None)
+        )
 
         return definition
 
@@ -268,13 +289,17 @@ class IndicatorParser(Parser):
         """
         series: dict = self.get_series(metadata)
 
-        dimensions: list[dict[str, str | list[dict[str, str | int]]]] = series.get("dimensions", [])
+        dimensions: list[dict[str, str | list[dict[str, str | int]]]] = series.get(
+            "dimensions", []
+        )
 
         dimensions = [dim.get("label") for dim in dimensions if dim.get("label")]
 
         return sorted(dimensions)
 
-    def parse_dimensions_for_llm(self, metadata: dict, add_indicator_info: bool = True, limit: int = 10) -> str | None:
+    def parse_dimensions_for_llm(
+        self, metadata: dict, add_indicator_info: bool = True, limit: int = 10
+    ) -> str | None:
         """
         Parse the dimensions from the metadata.
 
@@ -288,7 +313,9 @@ class IndicatorParser(Parser):
         """
         series: dict = self.get_series(metadata)
 
-        dimensions: list[dict[str, str | list[dict[str, str | int]]]] = series.get("dimensions", [])
+        dimensions: list[dict[str, str | list[dict[str, str | int]]]] = series.get(
+            "dimensions", []
+        )
 
         if not dimensions:
             return None
@@ -370,7 +397,9 @@ class DocumentParser(Parser):
 
         date_published: str = document_description.get("date_published", None)
 
-        date_published = date_parse(date_published).strftime("%Y-%m-%d") if date_published else None
+        date_published = (
+            date_parse(date_published).strftime("%Y-%m-%d") if date_published else None
+        )
 
         return date_published
 
@@ -388,7 +417,9 @@ class DocumentParser(Parser):
 
         date_created: str = document_description.get("date_created", None)
 
-        date_created = date_parse(date_created).strftime("%Y-%m-%d") if date_created else None
+        date_created = (
+            date_parse(date_created).strftime("%Y-%m-%d") if date_created else None
+        )
 
         return date_created
 
@@ -534,7 +565,9 @@ class GeospatialParser(Parser):
         extent: dict = identification_info.get("extent", {})
         geographic_coverage: list[dict] = extent.get("geographicElement", [])
         geographies = [
-            {"name": gc.get("geographicDescription")} for gc in geographic_coverage if gc.get("geographicDescription")
+            {"name": gc.get("geographicDescription")}
+            for gc in geographic_coverage
+            if gc.get("geographicDescription")
         ]
 
         geographies = super().parse_geographies(geographies)
@@ -581,7 +614,10 @@ class GeospatialParser(Parser):
 
         doi: str | None = None
 
-        if identifier.get("code") and identifier.get("authority").lower().strip() == "doi":
+        if (
+            identifier.get("code")
+            and identifier.get("authority").lower().strip() == "doi"
+        ):
             doi = identifier.get("code")
 
         return doi
@@ -774,7 +810,9 @@ class ScriptParser(Parser):
 
         authoring_entities: list[dict] = project.get("authoring_entity", [])
         authoring_entities = filter(lambda ae: ae.get("name"), authoring_entities)
-        source: list[str] | None = sorted(set([ae.get("name") for ae in authoring_entities]))
+        source: list[str] | None = sorted(
+            set([ae.get("name") for ae in authoring_entities])
+        )
         source = None if not source else source
 
         return source

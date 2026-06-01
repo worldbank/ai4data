@@ -89,7 +89,9 @@ def parse_dimension_label_values(metadata: dict) -> dict[str, list]:
                 dimension_label_values[label] = [value]
 
     if len(dimensions) > 0:
-        assert len(dimension_label_values) > 0, "No dimension label values found despite having dimensions"
+        assert len(dimension_label_values) > 0, (
+            "No dimension label values found despite having dimensions"
+        )
 
     return dimension_label_values
 
@@ -103,7 +105,7 @@ if _document_ids_path.is_file():
         IDNO_ID_MAP[metadata_id["idno"]] = metadata_id["id"]
 
 
-def get_thumbnail_url(idno: str) -> str:
+def get_thumbnail_url(idno: str) -> str | None:
     if idno not in IDNO_ID_MAP:
         return None
 

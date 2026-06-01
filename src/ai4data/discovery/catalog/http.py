@@ -73,9 +73,10 @@ def get_metadata_json(
             metadata["type"] = "microdata"
 
         if metadata_type:
-            assert metadata.get("type", None) == metadata_type, (
-                f"The metadata {metadata.get('type')} does not match the requested type: {metadata_type}"
-            )
+            if metadata_type and metadata.get("type", None) != metadata_type:
+                raise ValueError(
+                    f"The metadata type {metadata.get('type')} does not match the requested type: {metadata_type}"
+                )
 
     except httpx.HTTPStatusError as e:
         raise RuntimeError(f"Failed to fetch metadata for ID {idno}: {e}") from e

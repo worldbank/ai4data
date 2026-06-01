@@ -66,7 +66,10 @@ def _get_cluster_fn():
 
 # @task(log_prints=True)
 def load_pdf(
-    file_path: str, pdf_loader_cls: BasePDFLoader = PyMuPDFLoader, loader_kwargs: dict = None, load_kwargs: dict = None
+    file_path: str,
+    pdf_loader_cls: BasePDFLoader = PyMuPDFLoader,
+    loader_kwargs: dict = None,
+    load_kwargs: dict = None,
 ) -> list[LangchainDocument]:
     """
     Load a PDF file and return a LangchainDocument object.
@@ -92,7 +95,7 @@ def load_pdf(
 
     except Exception as exception:
         print(f"load_pdf Exception {exception}: {file_path}")
-        raise exception
+        raise
 
     return docs
 
@@ -125,7 +128,9 @@ def load_doc(
         raise ValueError("Either file_path or stream must be provided.")
 
 
-def merge_split_docs(docs: list[LangchainDocument], splitter) -> list[LangchainDocument]:
+def merge_split_docs(
+    docs: list[LangchainDocument], splitter
+) -> list[LangchainDocument]:
     """
     Merge the documents into one document, then split them into chunks defined in the splitter instance.
 
@@ -144,11 +149,14 @@ def merge_split_docs(docs: list[LangchainDocument], splitter) -> list[LangchainD
     chunks = splitter.split_text(page_content)
     metadata = docs[0].metadata
 
-    return [LangchainDocument(page_content=chunk, metadata=metadata) for chunk in chunks]
+    return [
+        LangchainDocument(page_content=chunk, metadata=metadata) for chunk in chunks
+    ]
 
 
 def embed_documents(
-    docs: list[str | LangchainDocument], embedding_model: HuggingFaceEmbeddings | None = None
+    docs: list[str | LangchainDocument],
+    embedding_model: HuggingFaceEmbeddings | None = None,
 ) -> np.ndarray:
     """
     Embed the documents and return a list of embedded documents.
@@ -160,6 +168,9 @@ def embed_documents(
     if embedding_model is None:
         embedding_model = _get_embedding_model()
 
+    if not docs:
+        raise ValueError("No documents to embed.")
+
     if isinstance(docs[0], LangchainDocument):
         docs = [doc.page_content for doc in docs]
 
@@ -168,7 +179,9 @@ def embed_documents(
 
 # @task
 def get_doc_reps(
-    docs: list[LangchainDocument], embedding_model: HuggingFaceEmbeddings | None = None, text_splitter=None
+    docs: list[LangchainDocument],
+    embedding_model: HuggingFaceEmbeddings | None = None,
+    text_splitter=None,
 ) -> list[LangchainDocument]:
     """
     Get the document representations by merging and splitting the documents, then embedding them.
@@ -205,7 +218,9 @@ def get_doc_reps(
         sub_vecs = doc_reps[cluster_info.labels == label]
 
         # Get the cosine similarity between the cluster center and the sub vectors
-        sims = cosine_similarity(cluster_info.cluster_centers[label].reshape(1, -1), sub_vecs)
+        sims = cosine_similarity(
+            cluster_info.cluster_centers[label].reshape(1, -1), sub_vecs
+        )
 
         # Get the original index
         idx = orig_idx[np.argmax(sims)]
@@ -229,13 +244,15 @@ def tika_parse_pdf(file_path: str) -> list[dict]:
     xhtml_data = BeautifulSoup(data["content"])
 
     for page, content in enumerate(xhtml_data.find_all("div", attrs={"class": "page"})):
-        print(f"Parsing page {page+1} of pdf file...")
+        print(f"Parsing page {page + 1} of pdf file...")
         _buffer.write(str(content))
 
         parsed_content = parser.from_buffer(_buffer.getvalue())
 
         _buffer.seek(0)
         _buffer.truncate()
-        file_data.append({"id": "page_" + str(page + 1), "content": parsed_content["content"]})
+        file_data.append(
+            {"id": "page_" + str(page + 1), "content": parsed_content["content"]}
+        )
 
     return file_data
