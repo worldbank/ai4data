@@ -1,0 +1,3 @@
+{% if series_description.name %}Indicator name: {{ series_description.name }}{% endif %}
+{% if series_description.definition_long or series_description.definition_short %}
+Definition: {{ series_description.definition_long or series_description.definition_short }}{% endif %}
