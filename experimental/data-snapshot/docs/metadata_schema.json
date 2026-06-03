@@ -1,0 +1,623 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "document_metadata_schema.json",
+  "title": "Document Metadata Schema",
+  "description": "Schema for document metadata following the World Bank Metadata Standards for Improved Data Discoverability (Chapter 5 - Documents). Reference: https://worldbank.github.io/schema-guide/chapter05.html",
+  "type": "object",
+  "required": ["type", "metadata_information", "document_description"],
+  "additionalProperties": true,
+  "properties": {
+    "type": {
+      "type": "string",
+      "description": "Resource type identifier.",
+      "const": "document"
+    },
+    "metadata_information": {
+      "$ref": "#/$defs/metadata_information"
+    },
+    "document_description": {
+      "$ref": "#/$defs/document_description"
+    },
+    "provenance": {
+      "type": "array",
+      "description": "Provenance information describing the origin and harvest history of the metadata.",
+      "items": {
+        "$ref": "#/$defs/provenance_entry"
+      }
+    },
+    "tags": {
+      "type": "array",
+      "description": "Tags for classification and filtering.",
+      "items": {
+        "$ref": "#/$defs/tag"
+      }
+    },
+    "schematype": {
+      "type": "string",
+      "description": "Schema type identifier.",
+      "const": "document"
+    },
+    "additional": {
+      "type": "object",
+      "description": "Additional fields not covered by the core schema. Keys follow the 'additional.<namespace>_<field>' convention. Used for source-specific metadata preservation.",
+      "additionalProperties": true
+    }
+  },
+
+  "$defs": {
+    "metadata_information": {
+      "type": "object",
+      "description": "Information about the metadata record itself (who created it, when, etc.).",
+      "required": ["title", "idno", "producers", "production_date"],
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Title of the metadata record."
+        },
+        "idno": {
+          "type": "string",
+          "description": "Unique identifier for the metadata record."
+        },
+        "producers": {
+          "type": "array",
+          "description": "Organizations or individuals that produced or contributed to the metadata.",
+          "items": {
+            "$ref": "#/$defs/producer"
+          }
+        },
+        "production_date": {
+          "type": "string",
+          "description": "Date the metadata was produced. ISO 8601 format: YYYY-MM-DD.",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "version": {
+          "type": "string",
+          "description": "Version or description of the metadata record."
+        }
+      }
+    },
+
+    "producer": {
+      "type": "object",
+      "description": "An organization or individual that produced metadata.",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the producing organization or individual."
+        },
+        "abbr": {
+          "type": "string",
+          "description": "Abbreviation of the producer name."
+        },
+        "affiliation": {
+          "type": "string",
+          "description": "Institutional affiliation of the producer."
+        },
+        "role": {
+          "type": "string",
+          "description": "Role of the producer (e.g., 'Source', 'Compiler')."
+        }
+      }
+    },
+
+    "document_description": {
+      "type": "object",
+      "description": "Core descriptive metadata about the document.",
+      "required": ["title_statement"],
+      "additionalProperties": false,
+      "properties": {
+        "title_statement": {
+          "$ref": "#/$defs/title_statement"
+        },
+        "authors": {
+          "type": "array",
+          "description": "List of document authors.",
+          "items": {
+            "$ref": "#/$defs/author"
+          }
+        },
+        "date_created": {
+          "type": "string",
+          "description": "Date the document was created. ISO 8601 format: YYYY-MM-DD."
+        },
+        "date_available": {
+          "type": "string",
+          "description": "Date the document was made available. ISO 8601 format: YYYY-MM-DD."
+        },
+        "date_modified": {
+          "type": "string",
+          "description": "Date the document was last modified. ISO 8601 format: YYYY-MM-DD."
+        },
+        "date_published": {
+          "type": "string",
+          "description": "Date the document was published. ISO 8601 format: YYYY-MM-DD."
+        },
+        "identifiers": {
+          "type": "array",
+          "description": "External identifiers (DOI, ISBN, ISSN, etc.).",
+          "items": {
+            "$ref": "#/$defs/identifier"
+          }
+        },
+        "type": {
+          "type": "string",
+          "description": "Document type (e.g., 'Working Paper', 'Report')."
+        },
+        "abstract": {
+          "type": "string",
+          "description": "Abstract or summary of the document."
+        },
+        "ref_country": {
+          "type": "array",
+          "description": "Countries referenced in the document.",
+          "items": {
+            "$ref": "#/$defs/country"
+          }
+        },
+        "geographic_units": {
+          "type": "array",
+          "description": "Geographic units or regions referenced.",
+          "items": {
+            "$ref": "#/$defs/geographic_unit"
+          }
+        },
+        "spatial_coverage": {
+          "type": "string",
+          "description": "Free-text description of spatial coverage."
+        },
+        "languages": {
+          "type": "array",
+          "description": "Languages of the document.",
+          "items": {
+            "$ref": "#/$defs/language"
+          }
+        },
+        "volume": {
+          "type": "string",
+          "description": "Volume number."
+        },
+        "number": {
+          "type": "string",
+          "description": "Issue or report number."
+        },
+        "series": {
+          "type": "string",
+          "description": "Series or collection name."
+        },
+        "publisher_address": {
+          "type": "string",
+          "description": "Publisher address or place of production."
+        },
+        "organization": {
+          "type": "string",
+          "description": "Publishing or sponsoring organization."
+        },
+        "url": {
+          "type": "string",
+          "description": "URL to the document."
+        },
+        "keywords": {
+          "type": "array",
+          "description": "Keywords associated with the document.",
+          "items": {
+            "$ref": "#/$defs/keyword"
+          }
+        },
+        "themes": {
+          "type": "array",
+          "description": "Thematic classifications.",
+          "items": {
+            "$ref": "#/$defs/theme"
+          }
+        },
+        "topics": {
+          "type": "array",
+          "description": "Topic classifications.",
+          "items": {
+            "$ref": "#/$defs/topic"
+          }
+        },
+        "relations": {
+          "type": "array",
+          "description": "Related resources (alternate formats, parent collections).",
+          "items": {
+            "$ref": "#/$defs/relation"
+          }
+        },
+        "security_classification": {
+          "type": "string",
+          "description": "Security classification level."
+        },
+        "access_restrictions": {
+          "type": "string",
+          "description": "Access restrictions or disclosure status."
+        },
+        "edition": {
+          "type": "string",
+          "description": "Edition or version type."
+        },
+        "contacts": {
+          "type": "array",
+          "description": "Contact information for inquiries.",
+          "items": {
+            "$ref": "#/$defs/contact"
+          }
+        },
+        "usage_terms": {
+          "type": "string",
+          "description": "Terms of use for the document."
+        },
+        "notes": {
+          "type": "array",
+          "description": "Additional notes about the document.",
+          "items": {
+            "$ref": "#/$defs/note"
+          }
+        },
+        "disclaimer": {
+          "type": "string",
+          "description": "Disclaimer text associated with the document."
+        },
+        "pricing": {
+          "type": "string",
+          "description": "Pricing or availability information."
+        },
+        "reproducibility": {
+          "$ref": "#/$defs/reproducibility"
+        }
+      }
+    },
+
+    "title_statement": {
+      "type": "object",
+      "description": "Title information for the document.",
+      "additionalProperties": false,
+      "properties": {
+        "idno": {
+          "type": "string",
+          "description": "Document identifier."
+        },
+        "title": {
+          "type": "string",
+          "description": "Primary title of the document."
+        },
+        "sub_title": {
+          "type": "string",
+          "description": "Subtitle of the document."
+        },
+        "alternate_title": {
+          "type": "string",
+          "description": "Alternate title."
+        },
+        "translated_title": {
+          "type": "string",
+          "description": "Translated title."
+        }
+      }
+    },
+
+    "author": {
+      "type": "object",
+      "description": "Document author information.",
+      "additionalProperties": false,
+      "properties": {
+        "first_name": {
+          "type": "string",
+          "description": "Author's first name."
+        },
+        "initial": {
+          "type": "string",
+          "description": "Author's middle initial."
+        },
+        "last_name": {
+          "type": "string",
+          "description": "Author's last name."
+        },
+        "affiliation": {
+          "type": "string",
+          "description": "Author's institutional affiliation."
+        },
+        "full_name": {
+          "type": "string",
+          "description": "Author's full name (used when individual name parts are unavailable)."
+        }
+      }
+    },
+
+    "identifier": {
+      "type": "object",
+      "description": "External identifier for the document.",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Identifier type (e.g., 'DOI', 'ISBN', 'ISSN')."
+        },
+        "identifier": {
+          "type": "string",
+          "description": "Identifier value."
+        }
+      }
+    },
+
+    "country": {
+      "type": "object",
+      "description": "Country reference.",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Country name."
+        },
+        "code": {
+          "type": "string",
+          "description": "ISO 3166-1 alpha-3 country code."
+        }
+      }
+    },
+
+    "geographic_unit": {
+      "type": "object",
+      "description": "Geographic unit or region.",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the geographic unit."
+        },
+        "code": {
+          "type": "string",
+          "description": "Code for the geographic unit."
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of geographic unit (e.g., 'region')."
+        }
+      }
+    },
+
+    "language": {
+      "type": "object",
+      "description": "Language information.",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Language name (e.g., 'English')."
+        },
+        "code": {
+          "type": "string",
+          "description": "ISO 639 language code (e.g., 'en')."
+        }
+      }
+    },
+
+    "keyword": {
+      "type": "object",
+      "description": "Keyword entry.",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Keyword identifier."
+        },
+        "name": {
+          "type": "string",
+          "description": "Keyword text."
+        },
+        "vocabulary": {
+          "type": "string",
+          "description": "Source vocabulary or controlled list."
+        },
+        "uri": {
+          "type": "string",
+          "description": "URI for the keyword in its vocabulary."
+        }
+      }
+    },
+
+    "theme": {
+      "type": "object",
+      "description": "Thematic classification entry.",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Theme identifier."
+        },
+        "name": {
+          "type": "string",
+          "description": "Theme name."
+        },
+        "parent_id": {
+          "type": "string",
+          "description": "Parent theme identifier (for hierarchical themes)."
+        },
+        "vocabulary": {
+          "type": "string",
+          "description": "Source vocabulary (e.g., 'World Bank - theme')."
+        },
+        "uri": {
+          "type": "string",
+          "description": "URI for the theme."
+        }
+      }
+    },
+
+    "topic": {
+      "type": "object",
+      "description": "Topic classification entry.",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Topic identifier."
+        },
+        "name": {
+          "type": "string",
+          "description": "Topic name."
+        },
+        "parent_id": {
+          "type": "string",
+          "description": "Parent topic identifier."
+        },
+        "vocabulary": {
+          "type": "string",
+          "description": "Source vocabulary."
+        },
+        "uri": {
+          "type": "string",
+          "description": "URI for the topic."
+        }
+      }
+    },
+
+    "relation": {
+      "type": "object",
+      "description": "Related resource entry.",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name or URL of the related resource."
+        },
+        "type": {
+          "type": "string",
+          "description": "Relationship type (e.g., 'hasFormat', 'isPartOf')."
+        }
+      }
+    },
+
+    "contact": {
+      "type": "object",
+      "description": "Contact information.",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Contact name."
+        },
+        "affiliation": {
+          "type": "string",
+          "description": "Contact's institutional affiliation."
+        },
+        "email": {
+          "type": "string",
+          "description": "Contact email address."
+        },
+        "uri": {
+          "type": "string",
+          "description": "Contact URI or URL."
+        }
+      }
+    },
+
+    "note": {
+      "type": "object",
+      "description": "A free-text note.",
+      "additionalProperties": false,
+      "properties": {
+        "note": {
+          "type": "string",
+          "description": "Note text."
+        }
+      }
+    },
+
+    "tag": {
+      "type": "object",
+      "description": "A tag entry for classification.",
+      "additionalProperties": false,
+      "properties": {
+        "tag": {
+          "type": "string",
+          "description": "Tag value."
+        },
+        "tag_group": {
+          "type": "string",
+          "description": "Tag group or category."
+        }
+      }
+    },
+
+    "provenance_entry": {
+      "type": "object",
+      "description": "A provenance record.",
+      "additionalProperties": false,
+      "properties": {
+        "origin_description": {
+          "$ref": "#/$defs/origin_description"
+        }
+      }
+    },
+
+    "origin_description": {
+      "type": "object",
+      "description": "Description of the metadata's origin and harvest details.",
+      "additionalProperties": false,
+      "properties": {
+        "harvest_date": {
+          "type": "string",
+          "description": "Date/time the metadata was harvested. ISO 8601 format."
+        },
+        "altered": {
+          "type": "boolean",
+          "description": "Whether the metadata was altered after harvest."
+        },
+        "base_url": {
+          "type": "string",
+          "description": "Base URL of the metadata source."
+        },
+        "identifier": {
+          "type": "string",
+          "description": "Identifier for the source record."
+        },
+        "date_stamp": {
+          "type": "string",
+          "description": "Timestamp of the source record. ISO 8601 format."
+        },
+        "metadata_namespace": {
+          "type": "string",
+          "description": "Namespace identifier for the metadata source."
+        }
+      }
+    },
+
+    "reproducibility": {
+      "type": "object",
+      "description": "Reproducibility information for the document.",
+      "additionalProperties": false,
+      "properties": {
+        "statement": {
+          "type": "string",
+          "description": "Reproducibility statement."
+        },
+        "links": {
+          "type": "array",
+          "description": "Links to reproducibility resources (code, data).",
+          "items": {
+            "$ref": "#/$defs/reproducibility_link"
+          }
+        }
+      }
+    },
+
+    "reproducibility_link": {
+      "type": "object",
+      "description": "A link to a reproducibility resource.",
+      "additionalProperties": false,
+      "properties": {
+        "uri": {
+          "type": "string",
+          "description": "URI of the reproducibility resource."
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the linked resource."
+        }
+      }
+    }
+  }
+}

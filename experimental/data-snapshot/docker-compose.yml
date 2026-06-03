@@ -1,0 +1,29 @@
+services:
+  labelstudio:
+    image: heartexlabs/label-studio:1.22.0
+    container_name: labelstudio
+    ports:
+      - "8080:8080"
+    environment:
+      - DJANGO_DB=default
+      - POSTGRE_HOST=db
+      - POSTGRE_PORT=5432
+      - POSTGRE_NAME=labelstudio
+      - POSTGRE_USER=labelstudio
+      - POSTGRE_PASSWORD=labelstudio
+      - LABEL_STUDIO_LOCAL_FILES_SERVING_ENABLED=true
+      - LABEL_STUDIO_LOCAL_FILES_DOCUMENT_ROOT=/label-studio/data/
+    volumes:
+      - ./labelstudio_data:/label-studio/data
+    depends_on:
+      - db
+
+  db:
+    image: postgres:17-alpine
+    container_name: labelstudio-db
+    environment:
+      - POSTGRES_DB=labelstudio
+      - POSTGRES_USER=labelstudio
+      - POSTGRES_PASSWORD=labelstudio
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
