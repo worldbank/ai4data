@@ -4,7 +4,7 @@ Pipeline:
 1. Optionally reduce dimensionality with TruncatedSVD (for large dictionaries).
 2. Estimate optimal number of clusters via silhouette score (or use heuristic).
 3. Run AgglomerativeClustering with Ward linkage.
-4. Post-hoc token-budget merge: combine clusters that would exceed the LLM
+4. Post-hoc token-budget split: subdivide clusters that would exceed the LLM
    context limit when rendered as a variable list.
 
 All sklearn/numpy imports are lazy to avoid import-time overhead.
@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 DEFAULT_SVD_COMPONENTS = 64
 DEFAULT_SVD_THRESHOLD = 150        # apply SVD only when N > this
 DEFAULT_N_CLUSTERS_RANGE = (3, 30)
-DEFAULT_MAX_CLUSTER_TOKENS = 450   # max tokens per cluster for LLM prompt
+DEFAULT_MAX_CLUSTER_TOKENS = 2048  # max tokens per cluster for LLM prompt
 DEFAULT_APPROX_TOKENS_PER_LABEL = 10  # conservative estimate per "name: label" line
 
 
@@ -244,12 +244,13 @@ def merge_clusters_for_token_budget(
     max_tokens_per_cluster: int = DEFAULT_MAX_CLUSTER_TOKENS,
     approx_tokens_per_label: int = DEFAULT_APPROX_TOKENS_PER_LABEL,
 ) -> "np.ndarray":
-    """Merge clusters that exceed the token budget into adjacent smaller clusters.
+    """Split clusters that exceed the token budget into smaller clusters.
 
     This post-hoc step ensures that each LLM call receives a variable list that
-    fits within the context window. Clusters are merged greedily: the largest
-    cluster is split by merging it with the cluster whose combined token count
-    still fits the budget.
+    fits within the context window. When a cluster is oversized, the minimum
+    number of trailing variables are moved into a new cluster until the
+    remainder fits the budget. The process repeats until all clusters comply,
+    or a single variable alone exceeds the limit (left unchanged).
 
     Parameters
     ----------
@@ -265,39 +266,48 @@ def merge_clusters_for_token_budget(
     Returns
     -------
     numpy.ndarray
-        Updated label array (same length, possibly fewer unique values).
+        Updated label array (same length, possibly more unique cluster IDs).
     """
-    import numpy as np
-
     labels = cluster_labels.copy()
     cluster_map = build_cluster_map(labels, variables)
-
-    # Iteratively merge clusters that exceed the budget
-    changed = True
+    name_to_idx = {v.variable_name: i for i, v in enumerate(variables)}
     next_id = int(labels.max()) + 1
+
+    changed = True
     while changed:
         changed = False
-        sizes = {
-            cid: _cluster_token_count(vars_, approx_tokens_per_label)
-            for cid, vars_ in cluster_map.items()
-        }
-        for cid, tokens in sorted(sizes.items(), key=lambda x: -x[1]):
+        oversized = sorted(
+            (
+                (cid, _cluster_token_count(vars_, approx_tokens_per_label))
+                for cid, vars_ in cluster_map.items()
+            ),
+            key=lambda x: -x[1],
+        )
+        for cid, tokens in oversized:
             if tokens <= max_tokens_per_cluster:
                 continue
-            # Split: keep half, merge the other half into a new cluster
-            vars_list = cluster_map[cid]
-            half = len(vars_list) // 2
-            keep_vars = vars_list[:half]
-            new_vars = vars_list[half:]
-            # Find variable name -> index map
-            name_to_idx = {v.variable_name: i for i, v in enumerate(variables)}
-            # Reassign new_vars to next_id
-            for var in new_vars:
-                idx = name_to_idx.get(var.variable_name)
-                if idx is not None:
-                    labels[idx] = next_id
-            cluster_map[cid] = keep_vars
-            cluster_map[next_id] = new_vars
+
+            remaining = list(cluster_map[cid])
+            if len(remaining) <= 1:
+                # A single variable exceeds the budget; cannot split further.
+                continue
+
+            move_vars: List[DictionaryVariable] = []
+            while (
+                len(remaining) > 1
+                and _cluster_token_count(remaining, approx_tokens_per_label)
+                > max_tokens_per_cluster
+            ):
+                move_vars.insert(0, remaining.pop())
+
+            if not move_vars:
+                continue
+
+            for var in move_vars:
+                labels[name_to_idx[var.variable_name]] = next_id
+
+            cluster_map[cid] = remaining
+            cluster_map[next_id] = move_vars
             next_id += 1
             changed = True
             break  # restart loop after any change

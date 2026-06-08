@@ -295,13 +295,22 @@ class DataDictionaryAugmentor:
 
     # ----- Step 4: Generate variable groups ----- #
 
-    def generate_variable_groups(self) -> AugmentedDictionary:
+    def generate_variable_groups(
+        self,
+        *,
+        show_progress_bar: bool = False,
+    ) -> AugmentedDictionary:
         """Call the LLM for each cluster and assemble the augmented dictionary.
 
         Makes one curation LLM call per cluster, optionally followed by a
         self-consistency QA call. Failures in individual clusters are logged
         and handled with a fallback ``VariableGroup`` so that partial results
         are always returned.
+
+        Parameters
+        ----------
+        show_progress_bar : bool
+            Display a tqdm progress bar during LLM calls per cluster.
 
         Returns
         -------
@@ -316,7 +325,19 @@ class DataDictionaryAugmentor:
         n_qa_failed = 0
         n_qa_skipped = 0
 
-        for cluster_id, vars_ in self._cluster_map.items():
+        clusters = self._cluster_map.items()
+        pbar = None
+        if show_progress_bar:
+            from tqdm import tqdm
+
+            pbar = tqdm(
+                clusters,
+                total=len(self._cluster_map),
+                desc="Variable groups",
+            )
+            clusters = pbar
+
+        for cluster_id, vars_ in clusters:
             curation = self._call_llm_for_cluster(cluster_id, vars_)
 
             if curation is not None:
@@ -366,6 +387,9 @@ class DataDictionaryAugmentor:
                         cluster_id=cluster_id,
                     )
                 )
+
+            if pbar is not None:
+                pbar.set_postfix(cluster=cluster_id, label=group.label[:30])
 
         metadata: Dict[str, Any] = {
             "model": self.model,
@@ -420,7 +444,7 @@ class DataDictionaryAugmentor:
         dataset_id : str, optional
             Dataset identifier for output metadata.
         show_progress_bar : bool
-            Show embedding progress bar.
+            Show tqdm progress bars during embedding and variable group generation.
 
         Returns
         -------
@@ -435,7 +459,7 @@ class DataDictionaryAugmentor:
             )
             .embed(show_progress_bar=show_progress_bar)
             .cluster(n_clusters=n_clusters)
-            .generate_variable_groups()
+            .generate_variable_groups(show_progress_bar=show_progress_bar)
         )
 
     # ----- Export ----- #
