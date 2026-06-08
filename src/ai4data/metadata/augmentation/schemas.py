@@ -151,6 +151,13 @@ class VariableGroupCurationResult(StrictBaseModel):
         return result
 
 
+class VariableGroupQAResult(StrictBaseModel):
+    """LLM output from the self-consistency QA agent."""
+
+    is_self_consistent: bool
+    rationale: str = ""
+
+
 # ----- Output schema ----- #
 
 
@@ -167,6 +174,8 @@ class VariableGroup(StrictBaseModel):
     txt: str
     definition: str
     cluster_id: int
+    qa_passed: Optional[bool] = None
+    qa_rationale: str = ""
 
     @classmethod
     def from_curation(
@@ -174,8 +183,19 @@ class VariableGroup(StrictBaseModel):
         curation: VariableGroupCurationResult,
         *,
         cluster_id: int,
+        qa: Optional[VariableGroupQAResult] = None,
+        qa_error: Optional[str] = None,
     ) -> VariableGroup:
         """Build a full DDI variable group from validated LLM curation output."""
+        if qa is not None:
+            qa_passed = qa.is_self_consistent
+            qa_rationale = qa.rationale
+        elif qa_error is not None:
+            qa_passed = None
+            qa_rationale = qa_error
+        else:
+            qa_passed = None
+            qa_rationale = ""
         return cls(
             vgid=make_vgid(curation.label, cluster_id),
             variables=" ".join(curation.variables),
@@ -187,6 +207,8 @@ class VariableGroup(StrictBaseModel):
             txt=curation.txt,
             definition=curation.definition,
             cluster_id=cluster_id,
+            qa_passed=qa_passed,
+            qa_rationale=qa_rationale,
         )
 
     @classmethod

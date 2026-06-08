@@ -200,13 +200,65 @@ Validation via `VariableGroupCurationResult.from_llm_response(content, candidate
 
 Structured output enforcement uses the provider's JSON Schema API when available (`response_format={"type": "json_schema", ...}`), falling back to `{"type": "json_object"}` for providers that don't support strict schema.
 
+---
+
+## Step 4b: Self-Consistency QA Agent
+
+Implemented in [`qa.py`](../../src/ai4data/metadata/augmentation/qa.py).
+
+After curation, the pipeline optionally runs a **QA agent** — a second LLM call that assesses whether the proposed group's parts are mutually coherent (self-consistency prompting). This catches cases where the label, description, or definition do not match the selected variables.
+
+### Manuscript mapping
+
+| Manuscript concept | DDI field | QA checks |
+|---|---|---|
+| Theme name | `label` | Aligns with txt and variable labels |
+| Description | `txt` | Describes selected variables, not unrelated concepts |
+| Examples | `variables` (+ input labels) | Support the stated label |
+| Grouping rationale | `definition` | Matches label and selected variables |
+
+### QA output schema
+
+```python
+class VariableGroupQAResult(StrictBaseModel):
+    is_self_consistent: bool
+    rationale: str = ""
+```
+
+Results are stored on each `VariableGroup` as `qa_passed` and `qa_rationale`. When QA is disabled, `qa_passed` is `None`.
+
+### Configuration
+
+```python
+# Default: curation and QA both use claude-sonnet-4-6
+augmentor = DataDictionaryAugmentor()
+
+# Cost tradeoff: cheaper curation, Sonnet QA
+augmentor = DataDictionaryAugmentor(
+    model="gpt-4o-mini",
+    qa_model="claude-sonnet-4-6",
+)
+
+# Disable QA
+augmentor = DataDictionaryAugmentor(enable_qa=False)
+```
+
+Run metadata records `qa_model`, `enable_qa`, `n_qa_passed`, `n_qa_failed`, and `n_qa_skipped`.
+
+### QA failure behavior
+
+- **Inconsistent curation** (`qa_passed=False`): curation output is kept; assignments are still emitted; rationale explains the inconsistency.
+- **QA call failure** (`qa_passed=None`): curation output is kept; `qa_rationale` is `"QA call failed"`.
+
+---
+
 ### LLM Provider Configuration (via litellm)
 
 The pipeline uses [litellm](https://docs.litellm.ai/) for provider-agnostic LLM calls. Any litellm-supported model string works:
 
 ```python
 # Anthropic Claude (default)
-augmentor = DataDictionaryAugmentor(model="claude-haiku-4-5-20251001")
+augmentor = DataDictionaryAugmentor(model="claude-sonnet-4-6")
 
 # OpenAI
 augmentor = DataDictionaryAugmentor(model="gpt-4o-mini")
@@ -257,6 +309,8 @@ class VariableGroup(StrictBaseModel):
     txt: str
     definition: str
     cluster_id: int
+    qa_passed: Optional[bool] = None
+    qa_rationale: str = ""
 
 class VariableGroupAssignment(StrictBaseModel):
     variable_name: str

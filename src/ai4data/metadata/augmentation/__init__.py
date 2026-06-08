@@ -24,7 +24,7 @@ The pipeline: Load → Embed → Cluster → Generate Variable Groups → Export
 See :class:`DataDictionaryAugmentor` for the full API.
 """
 
-from . import adapters, clustering, embeddings, prompts, schemas
+from . import adapters, clustering, embeddings, prompts, qa, schemas
 from .adapters import (
     ConfigurableDictionaryAdapter,
     NADACatalogAdapter,
@@ -37,6 +37,7 @@ from .schemas import (
     VariableGroup,
     VariableGroupAssignment,
     VariableGroupCurationResult,
+    VariableGroupQAResult,
     make_vgid,
 )
 
@@ -54,11 +55,13 @@ __all__ = [
     "VariableGroup",
     "VariableGroupAssignment",
     "VariableGroupCurationResult",
+    "VariableGroupQAResult",
     "make_vgid",
     # Submodules
     "adapters",
     "clustering",
     "embeddings",
     "prompts",
+    "qa",
     "schemas",
 ]

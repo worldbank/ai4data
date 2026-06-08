@@ -8,7 +8,7 @@
 5. Export: write the augmented dictionary to disk or return as a DataFrame
 
 The LLM backend is provider-agnostic via ``litellm``: set ``model`` to any
-litellm-supported model string (e.g., ``"claude-haiku-4-5-20251001"``,
+litellm-supported model string (e.g., ``"claude-sonnet-4-6"``,
 ``"gpt-4o-mini"``, ``"gemini/gemini-2.0-flash"``).
 
 Install requirements: ``uv pip install ai4data[metadata]``
@@ -43,17 +43,23 @@ from .prompts import (
     get_variable_group_response_format,
     render_user_prompt,
 )
+from .qa import (
+    QA_SYSTEM_PROMPT,
+    get_qa_response_format,
+    render_qa_user_prompt,
+)
 from .schemas import (
     AugmentedDictionary,
     DictionaryVariable,
     VariableGroup,
     VariableGroupAssignment,
     VariableGroupCurationResult,
+    VariableGroupQAResult,
 )
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_MODEL = "claude-haiku-4-5-20251001"
+DEFAULT_MODEL = "claude-sonnet-4-6"
 
 
 class DataDictionaryAugmentor:
@@ -65,8 +71,12 @@ class DataDictionaryAugmentor:
     Parameters
     ----------
     model : str
-        LiteLLM model string. Defaults to ``"claude-haiku-4-5-20251001"``.
+        LiteLLM model string for curation. Defaults to ``"claude-sonnet-4-6"``.
         Other examples: ``"gpt-4o-mini"``, ``"gemini/gemini-2.0-flash"``.
+    qa_model : str, optional
+        LiteLLM model string for self-consistency QA. Defaults to ``model``.
+    enable_qa : bool
+        When True, run a QA agent after each successful curation call.
     embedding_model : str
         SentenceTransformer model name. Defaults to ``"BAAI/bge-small-en-v1.5"``.
     n_clusters : int, optional
@@ -105,6 +115,8 @@ class DataDictionaryAugmentor:
     def __init__(
         self,
         model: str = DEFAULT_MODEL,
+        qa_model: Optional[str] = None,
+        enable_qa: bool = True,
         embedding_model: str = DEFAULT_EMBEDDING_MODEL,
         n_clusters: Optional[int] = None,
         max_cluster_tokens: int = DEFAULT_MAX_CLUSTER_TOKENS,
@@ -113,6 +125,8 @@ class DataDictionaryAugmentor:
         device: Optional[str] = None,
     ):
         self.model = model
+        self.qa_model = qa_model or model
+        self.enable_qa = enable_qa
         self.n_clusters = n_clusters
         self.max_cluster_tokens = max_cluster_tokens
         self.temperature = temperature
@@ -284,9 +298,10 @@ class DataDictionaryAugmentor:
     def generate_variable_groups(self) -> AugmentedDictionary:
         """Call the LLM for each cluster and assemble the augmented dictionary.
 
-        Makes one LLM call per cluster. Failures in individual clusters are
-        logged and handled with a fallback ``VariableGroup`` so that partial
-        results are always returned.
+        Makes one curation LLM call per cluster, optionally followed by a
+        self-consistency QA call. Failures in individual clusters are logged
+        and handled with a fallback ``VariableGroup`` so that partial results
+        are always returned.
 
         Returns
         -------
@@ -297,14 +312,41 @@ class DataDictionaryAugmentor:
 
         variable_groups: List[VariableGroup] = []
         variable_assignments: List[VariableGroupAssignment] = []
+        n_qa_passed = 0
+        n_qa_failed = 0
+        n_qa_skipped = 0
 
         for cluster_id, vars_ in self._cluster_map.items():
             curation = self._call_llm_for_cluster(cluster_id, vars_)
 
             if curation is not None:
-                group = VariableGroup.from_curation(
-                    curation, cluster_id=cluster_id
+                qa_result = (
+                    self._call_qa_for_curation(cluster_id, vars_, curation)
+                    if self.enable_qa
+                    else None
                 )
+                if qa_result is not None:
+                    if qa_result.is_self_consistent:
+                        n_qa_passed += 1
+                    else:
+                        n_qa_failed += 1
+                    group = VariableGroup.from_curation(
+                        curation,
+                        cluster_id=cluster_id,
+                        qa=qa_result,
+                    )
+                elif self.enable_qa:
+                    n_qa_skipped += 1
+                    group = VariableGroup.from_curation(
+                        curation,
+                        cluster_id=cluster_id,
+                        qa_error="QA call failed",
+                    )
+                else:
+                    group = VariableGroup.from_curation(
+                        curation,
+                        cluster_id=cluster_id,
+                    )
                 assigned_names = curation.variables
             else:
                 all_names = [v.variable_name for v in vars_]
@@ -325,17 +367,29 @@ class DataDictionaryAugmentor:
                     )
                 )
 
+        metadata: Dict[str, Any] = {
+            "model": self.model,
+            "embedding_model": self._encoder.model_name,
+            "n_variables": len(self._variables),
+            "n_clusters": len(self._cluster_map),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "enable_qa": self.enable_qa,
+        }
+        if self.enable_qa:
+            metadata.update(
+                {
+                    "qa_model": self.qa_model,
+                    "n_qa_passed": n_qa_passed,
+                    "n_qa_failed": n_qa_failed,
+                    "n_qa_skipped": n_qa_skipped,
+                }
+            )
+
         self._result = AugmentedDictionary(
             dataset_id=getattr(self, "_dataset_id", None),
             variable_groups=variable_groups,
             variable_assignments=variable_assignments,
-            metadata={
-                "model": self.model,
-                "embedding_model": self._encoder.model_name,
-                "n_variables": len(self._variables),
-                "n_clusters": len(self._cluster_map),
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-            },
+            metadata=metadata,
         )
         return self._result
 
@@ -444,27 +498,18 @@ class DataDictionaryAugmentor:
         ]
         return pd.DataFrame(rows)
 
-    # ----- Internal LLM call ----- #
+    # ----- Internal LLM calls ----- #
 
-    def _call_llm_for_cluster(
+    def _litellm_json_completion(
         self,
+        *,
+        model: str,
+        messages: List[Dict[str, str]],
+        response_format: Dict,
         cluster_id: int,
-        variables: List[DictionaryVariable],
-    ) -> Optional[VariableGroupCurationResult]:
-        """Make one litellm completion call for a single cluster.
-
-        Parameters
-        ----------
-        cluster_id : int
-            Cluster identifier (used for logging).
-        variables : list of DictionaryVariable
-            Variables in this cluster.
-
-        Returns
-        -------
-        VariableGroupCurationResult or None
-            Parsed and validated result, or None if the call failed.
-        """
+        call_label: str,
+    ) -> Optional[str]:
+        """Run a litellm completion and return raw JSON content, or None."""
         try:
             import litellm
         except ImportError as exc:
@@ -473,52 +518,110 @@ class DataDictionaryAugmentor:
                 "Install with: uv pip install ai4data[metadata]"
             ) from exc
 
-        candidate_names = {v.variable_name for v in variables}
-        user_prompt = render_user_prompt(variables)
-        messages = [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": user_prompt},
-        ]
-
-        # Try structured output first; fall back to json_object mode
-        response_format = get_variable_group_response_format()
         try:
             response = litellm.completion(
-                model=self.model,
+                model=model,
                 messages=messages,
                 response_format=response_format,
                 temperature=self.temperature,
             )
         except Exception:
-            # Some providers don't support strict JSON schema; retry with json_object
             try:
                 response = litellm.completion(
-                    model=self.model,
+                    model=model,
                     messages=messages,
                     response_format=get_json_object_format(),
                     temperature=self.temperature,
                 )
             except Exception as exc2:
                 logger.warning(
-                    "LLM call failed for cluster %d (%d variables): %s",
+                    "%s call failed for cluster %d: %s",
+                    call_label,
                     cluster_id,
-                    len(variables),
                     exc2,
                 )
                 return None
 
         try:
-            content = response.choices[0].message.content
+            return response.choices[0].message.content
+        except Exception as exc:
+            logger.warning(
+                "%s response missing content for cluster %d: %s",
+                call_label,
+                cluster_id,
+                exc,
+            )
+            return None
+
+    def _call_llm_for_cluster(
+        self,
+        cluster_id: int,
+        variables: List[DictionaryVariable],
+    ) -> Optional[VariableGroupCurationResult]:
+        """Make one litellm completion call for a single cluster."""
+        candidate_names = {v.variable_name for v in variables}
+        messages = [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": render_user_prompt(variables)},
+        ]
+
+        content = self._litellm_json_completion(
+            model=self.model,
+            messages=messages,
+            response_format=get_variable_group_response_format(),
+            cluster_id=cluster_id,
+            call_label="Curation",
+        )
+        if content is None:
+            return None
+
+        try:
             return VariableGroupCurationResult.from_llm_response(
                 content,
                 candidate_names=candidate_names,
             )
         except Exception as exc:
             logger.warning(
-                "Failed to parse LLM response for cluster %d: %s\nContent: %s",
+                "Failed to parse curation response for cluster %d: %s\nContent: %s",
                 cluster_id,
                 exc,
-                response.choices[0].message.content[:300] if response else "",
+                content[:300],
+            )
+            return None
+
+    def _call_qa_for_curation(
+        self,
+        cluster_id: int,
+        variables: List[DictionaryVariable],
+        curation: VariableGroupCurationResult,
+    ) -> Optional[VariableGroupQAResult]:
+        """Run the self-consistency QA agent on a curation result."""
+        messages = [
+            {"role": "system", "content": QA_SYSTEM_PROMPT},
+            {
+                "role": "user",
+                "content": render_qa_user_prompt(variables, curation),
+            },
+        ]
+
+        content = self._litellm_json_completion(
+            model=self.qa_model,
+            messages=messages,
+            response_format=get_qa_response_format(),
+            cluster_id=cluster_id,
+            call_label="QA",
+        )
+        if content is None:
+            return None
+
+        try:
+            return VariableGroupQAResult.model_validate_json(content)
+        except Exception as exc:
+            logger.warning(
+                "Failed to parse QA response for cluster %d: %s\nContent: %s",
+                cluster_id,
+                exc,
+                content[:300],
             )
             return None
 

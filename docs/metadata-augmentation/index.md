@@ -39,6 +39,9 @@ Variables are grouped using Agglomerative Clustering (Ward linkage). The number 
 **Step 4. Curating variable groups with an LLM**
 For each cluster, the pipeline calls an LLM (Claude, OpenAI, or Gemini via litellm) and asks it to curate a DDI-style variable group: select the variables that belong, and produce a label, description, definition, and optional universe/notes. The LLM output is structured JSON, validated against a Pydantic schema. Deterministic fields (`vgid`, `group_type`, `variable_groups`) are assembled by the framework.
 
+**Step 4b. Self-consistency QA**
+After curation, a second LLM call (the QA agent) assesses whether the label, description, definition, and selected variables are mutually coherent. Groups that fail QA are flagged (`qa_passed=False`) but kept in the output for human review.
+
 **Step 5. Assembling and exporting the augmented dictionary**
 The generated variable groups and curated variable assignments are assembled into an `AugmentedDictionary` object that can be exported to JSON or converted to a pandas DataFrame for further use.
 
@@ -75,10 +78,14 @@ augmentor.export("augmented_dictionary.json")
 
 # Inspect results
 for group in result.variable_groups:
-    print(f"{group.vgid}: {group.label}")
+    print(f"{group.vgid}: {group.label} (qa_passed={group.qa_passed})")
     print(f"  {group.txt}")
     print(f"  Variables: {group.variables}")
     print()
+
+# Filter groups that failed self-consistency QA
+failed = [g for g in result.variable_groups if g.qa_passed is False]
+print(f"{len(failed)} groups failed QA")
 ```
 
 Step-by-step usage with custom settings:
