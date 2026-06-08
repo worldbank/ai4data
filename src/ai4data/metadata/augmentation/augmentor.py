@@ -4,7 +4,7 @@
 1. Load: ingest variables from CSV, JSON, dict, or NADA catalog
 2. Embed: encode variable labels/descriptions with sentence-transformers
 3. Cluster: group semantically similar variables
-4. Generate: call an LLM for each cluster to produce a theme name + description
+4. Generate: call an LLM for each cluster to curate a DDI variable group
 5. Export: write the augmented dictionary to disk or return as a DataFrame
 
 The LLM backend is provider-agnostic via ``litellm``: set ``model`` to any
@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import json
 import logging
-import warnings
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
@@ -41,15 +40,15 @@ from .embeddings import DEFAULT_EMBEDDING_MODEL, EmbeddingEncoder
 from .prompts import (
     SYSTEM_PROMPT,
     get_json_object_format,
-    get_theme_response_format,
+    get_variable_group_response_format,
     render_user_prompt,
 )
 from .schemas import (
     AugmentedDictionary,
     DictionaryVariable,
-    Theme,
-    ThemeAssignment,
-    ThemeGenerationResult,
+    VariableGroup,
+    VariableGroupAssignment,
+    VariableGroupCurationResult,
 )
 
 logger = logging.getLogger(__name__)
@@ -60,8 +59,8 @@ DEFAULT_MODEL = "claude-haiku-4-5-20251001"
 class DataDictionaryAugmentor:
     """LLM-powered data dictionary augmentation.
 
-    Generates thematic structure for microdata or administrative data dictionary
-    variables using semantic clustering and LLM-elicited theme names.
+    Generates DDI-style variable groups for microdata or administrative data
+    dictionary variables using semantic clustering and LLM-elicited curation.
 
     Parameters
     ----------
@@ -99,7 +98,7 @@ class DataDictionaryAugmentor:
     ...     .load("dictionary.csv", adapter=adapter)
     ...     .embed(show_progress_bar=True)
     ...     .cluster(n_clusters=10)
-    ...     .generate_themes()
+    ...     .generate_variable_groups()
     ... )
     """
 
@@ -280,61 +279,55 @@ class DataDictionaryAugmentor:
         self._result = None
         return self
 
-    # ----- Step 4: Generate themes ----- #
+    # ----- Step 4: Generate variable groups ----- #
 
-    def generate_themes(self) -> AugmentedDictionary:
+    def generate_variable_groups(self) -> AugmentedDictionary:
         """Call the LLM for each cluster and assemble the augmented dictionary.
 
         Makes one LLM call per cluster. Failures in individual clusters are
-        logged and skipped (returning a ``Theme`` with name "Uncategorized" for
-        affected variables) so that partial results are always returned.
+        logged and handled with a fallback ``VariableGroup`` so that partial
+        results are always returned.
 
         Returns
         -------
         AugmentedDictionary
-            The complete augmented dictionary with all themes and assignments.
+            The complete augmented dictionary with variable groups and assignments.
         """
         self._require_clustered()
 
-        themes: List[Theme] = []
-        variable_assignments: List[ThemeAssignment] = []
-        cluster_to_theme: Dict[int, str] = {}
+        variable_groups: List[VariableGroup] = []
+        variable_assignments: List[VariableGroupAssignment] = []
 
         for cluster_id, vars_ in self._cluster_map.items():
-            result = self._call_llm_for_cluster(cluster_id, vars_)
-            if result is not None:
-                theme = Theme(
-                    theme_name=result.theme_name,
-                    description=result.description,
-                    example_variables=result.example_variables[:5],
+            curation = self._call_llm_for_cluster(cluster_id, vars_)
+
+            if curation is not None:
+                group = VariableGroup.from_curation(
+                    curation, cluster_id=cluster_id
                 )
-                theme_name = result.theme_name
+                assigned_names = curation.variables
             else:
-                # Graceful fallback for failed LLM calls
-                theme = Theme(
-                    theme_name="Uncategorized",
-                    description="Theme generation failed for this cluster.",
-                    example_variables=[vars_[0].variable_name] if vars_ else [],
+                all_names = [v.variable_name for v in vars_]
+                group = VariableGroup.uncategorized_fallback(
+                    cluster_id=cluster_id,
+                    variable_names=all_names,
                 )
-                theme_name = "Uncategorized"
+                assigned_names = all_names
 
-            themes.append(theme)
-            cluster_to_theme[cluster_id] = theme_name
-
-        # Build per-variable assignments
-        for idx, var in enumerate(self._variables):
-            cid = int(self._cluster_labels[idx])
-            variable_assignments.append(
-                ThemeAssignment(
-                    variable_name=var.variable_name,
-                    theme_name=cluster_to_theme.get(cid, "Uncategorized"),
-                    cluster_id=cid,
+            variable_groups.append(group)
+            for name in assigned_names:
+                variable_assignments.append(
+                    VariableGroupAssignment(
+                        variable_name=name,
+                        vgid=group.vgid,
+                        label=group.label,
+                        cluster_id=cluster_id,
+                    )
                 )
-            )
 
         self._result = AugmentedDictionary(
             dataset_id=getattr(self, "_dataset_id", None),
-            themes=themes,
+            variable_groups=variable_groups,
             variable_assignments=variable_assignments,
             metadata={
                 "model": self.model,
@@ -358,7 +351,7 @@ class DataDictionaryAugmentor:
         dataset_id: Optional[str] = None,
         show_progress_bar: bool = False,
     ) -> AugmentedDictionary:
-        """Load → embed → cluster → generate themes in one call.
+        """Load → embed → cluster → generate variable groups in one call.
 
         Parameters
         ----------
@@ -388,7 +381,7 @@ class DataDictionaryAugmentor:
             )
             .embed(show_progress_bar=show_progress_bar)
             .cluster(n_clusters=n_clusters)
-            .generate_themes()
+            .generate_variable_groups()
         )
 
     # ----- Export ----- #
@@ -432,8 +425,8 @@ class DataDictionaryAugmentor:
         Returns
         -------
         pandas.DataFrame
-            One row per variable with columns: ``variable_name``,
-            ``theme_name``, ``cluster_id``.
+            One row per curated variable with columns: ``variable_name``,
+            ``vgid``, ``label``, ``cluster_id``.
         """
         self._require_result()
         try:
@@ -443,7 +436,8 @@ class DataDictionaryAugmentor:
         rows = [
             {
                 "variable_name": a.variable_name,
-                "theme_name": a.theme_name,
+                "vgid": a.vgid,
+                "label": a.label,
                 "cluster_id": a.cluster_id,
             }
             for a in self._result.variable_assignments
@@ -456,7 +450,7 @@ class DataDictionaryAugmentor:
         self,
         cluster_id: int,
         variables: List[DictionaryVariable],
-    ) -> Optional[ThemeGenerationResult]:
+    ) -> Optional[VariableGroupCurationResult]:
         """Make one litellm completion call for a single cluster.
 
         Parameters
@@ -468,8 +462,8 @@ class DataDictionaryAugmentor:
 
         Returns
         -------
-        ThemeGenerationResult or None
-            Parsed result, or None if the call failed.
+        VariableGroupCurationResult or None
+            Parsed and validated result, or None if the call failed.
         """
         try:
             import litellm
@@ -479,6 +473,7 @@ class DataDictionaryAugmentor:
                 "Install with: uv pip install ai4data[metadata]"
             ) from exc
 
+        candidate_names = {v.variable_name for v in variables}
         user_prompt = render_user_prompt(variables)
         messages = [
             {"role": "system", "content": SYSTEM_PROMPT},
@@ -486,7 +481,7 @@ class DataDictionaryAugmentor:
         ]
 
         # Try structured output first; fall back to json_object mode
-        response_format = get_theme_response_format()
+        response_format = get_variable_group_response_format()
         try:
             response = litellm.completion(
                 model=self.model,
@@ -514,7 +509,10 @@ class DataDictionaryAugmentor:
 
         try:
             content = response.choices[0].message.content
-            return ThemeGenerationResult.model_validate_json(content)
+            return VariableGroupCurationResult.from_llm_response(
+                content,
+                candidate_names=candidate_names,
+            )
         except Exception as exc:
             logger.warning(
                 "Failed to parse LLM response for cluster %d: %s\nContent: %s",
@@ -543,13 +541,15 @@ class DataDictionaryAugmentor:
         self._require_embedded()
         if self._cluster_labels is None or self._cluster_map is None:
             raise RuntimeError(
-                "Clustering not done. Call .cluster() before .generate_themes()."
+                "Clustering not done. Call .cluster() before "
+                ".generate_variable_groups()."
             )
 
     def _require_result(self) -> None:
         if self._result is None:
             raise RuntimeError(
-                "No result available. Call .generate_themes() or .augment() first."
+                "No result available. Call .generate_variable_groups() or "
+                ".augment() first."
             )
 
     # ----- Properties ----- #

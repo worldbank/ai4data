@@ -1,7 +1,7 @@
 """ai4data.metadata.augmentation — LLM-powered data dictionary augmentation.
 
-Automatically generates thematic structure for microdata or administrative
-data dictionary variables using semantic clustering and LLM-elicited themes.
+Automatically generates DDI-style variable groups for microdata or administrative
+data dictionary variables using semantic clustering and LLM-elicited curation.
 
 Install
 -------
@@ -19,7 +19,7 @@ Quick Start
     result = augmentor.augment("variables.csv")
     augmentor.export("augmented.json")
 
-The pipeline: Load → Embed → Cluster → Generate Themes → Export.
+The pipeline: Load → Embed → Cluster → Generate Variable Groups → Export.
 
 See :class:`DataDictionaryAugmentor` for the full API.
 """
@@ -34,9 +34,10 @@ from .augmentor import DEFAULT_MODEL, DataDictionaryAugmentor
 from .schemas import (
     AugmentedDictionary,
     DictionaryVariable,
-    Theme,
-    ThemeAssignment,
-    ThemeGenerationResult,
+    VariableGroup,
+    VariableGroupAssignment,
+    VariableGroupCurationResult,
+    make_vgid,
 )
 
 __all__ = [
@@ -50,9 +51,10 @@ __all__ = [
     # Schemas
     "AugmentedDictionary",
     "DictionaryVariable",
-    "Theme",
-    "ThemeAssignment",
-    "ThemeGenerationResult",
+    "VariableGroup",
+    "VariableGroupAssignment",
+    "VariableGroupCurationResult",
+    "make_vgid",
     # Submodules
     "adapters",
     "clustering",

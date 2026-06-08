@@ -1,6 +1,6 @@
 # Metadata Augmentation Methodology
 
-This section describes the methodology implemented by the World Bank's Development Data Group for **automatically generating thematic structure** for data dictionary variables in microdata and administrative datasets. The approach uses semantic clustering and LLM-elicited theme names to organize hundreds or thousands of survey variables into meaningful thematic groups—without manual labeling.
+This section describes the methodology implemented by the World Bank's Development Data Group for **automatically generating DDI-style variable groups** for data dictionary variables in microdata and administrative datasets. The approach uses semantic clustering and LLM-elicited curation to organize hundreds or thousands of survey variables into meaningful groups—without manual labeling.
 
 The methodology is implemented in the `ai4data.metadata.augmentation` package. A step-by-step notebook is provided: Microdata Theme Generation with LLMs.
 
@@ -36,11 +36,11 @@ Each variable is encoded as a dense numerical vector using a sentence-transforme
 **Step 3. Clustering into semantic groups**
 Variables are grouped using Agglomerative Clustering (Ward linkage). The number of clusters is either specified by the user or estimated automatically using silhouette score optimization. A post-processing step ensures that each cluster's variable list fits within the LLM context window.
 
-**Step 4. Generating theme names with an LLM**
-For each cluster, the pipeline calls an LLM (Claude, OpenAI, or Gemini via litellm) and asks it to generate a concise theme name (2–6 words) and a 1–2 sentence description grounded in the variable labels. The LLM output is structured JSON, validated against a Pydantic schema.
+**Step 4. Curating variable groups with an LLM**
+For each cluster, the pipeline calls an LLM (Claude, OpenAI, or Gemini via litellm) and asks it to curate a DDI-style variable group: select the variables that belong, and produce a label, description, definition, and optional universe/notes. The LLM output is structured JSON, validated against a Pydantic schema. Deterministic fields (`vgid`, `group_type`, `variable_groups`) are assembled by the framework.
 
 **Step 5. Assembling and exporting the augmented dictionary**
-The generated themes and variable-to-theme assignments are assembled into an `AugmentedDictionary` object that can be exported to JSON or converted to a pandas DataFrame for further use.
+The generated variable groups and curated variable assignments are assembled into an `AugmentedDictionary` object that can be exported to JSON or converted to a pandas DataFrame for further use.
 
 ---
 
@@ -74,9 +74,10 @@ result = augmentor.augment("data_dictionary.csv")
 augmentor.export("augmented_dictionary.json")
 
 # Inspect results
-for theme in result.themes:
-    print(f"{theme.theme_name}: {theme.description}")
-    print(f"  Examples: {', '.join(theme.example_variables[:3])}")
+for group in result.variable_groups:
+    print(f"{group.vgid}: {group.label}")
+    print(f"  {group.txt}")
+    print(f"  Variables: {group.variables}")
     print()
 ```
 
@@ -105,7 +106,7 @@ result = (
     .load("custom_dictionary.csv", adapter=adapter)
     .embed(show_progress_bar=True)
     .cluster()
-    .generate_themes()
+    .generate_variable_groups()
 )
 
 # Export to DataFrame

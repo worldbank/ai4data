@@ -22,7 +22,7 @@ Not all tasks require the most powerful (and most expensive) LLM. Many data qual
 | Multi-step data analysis | Large (Claude Opus, GPT-4) | Complex reasoning, long context |
 | Classification with schema | Small–Medium | Structured output reduces hallucination risk |
 
-The ai4data project defaults to efficient models where appropriate. For example, `DataDictionaryAugmentor` defaults to `claude-haiku-4-5-20251001` for theme generation—a fast, cost-effective choice for short, structured outputs. The model can be overridden for tasks requiring more reasoning depth.
+The ai4data project defaults to efficient models where appropriate. For example, `DataDictionaryAugmentor` defaults to `claude-haiku-4-5-20251001` for variable group curation—a fast, cost-effective choice for short, structured outputs. The model can be overridden for tasks requiring more reasoning depth.
 
 ### Batch Processing
 

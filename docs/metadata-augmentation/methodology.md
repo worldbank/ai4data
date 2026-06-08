@@ -145,22 +145,23 @@ The merge splits oversized clusters by halving them iteratively. Token count per
 
 ---
 
-## Step 4: LLM Theme Generation
+## Step 4: LLM Variable Group Curation
 
 Implemented in [`prompts.py`](../../src/ai4data/metadata/augmentation/prompts.py) and [`augmentor.py`](../../src/ai4data/metadata/augmentation/augmentor.py).
 
 ### Prompt Design
 
 **System prompt** establishes the task and constraints:
-- Role: "data catalog specialist for social science and development datasets"
-- Goal: generate theme name, description, example variables
-- Constraints: 2–6 word title-case theme name, 1–2 sentence description, up to 5 variable names from the INPUT list only
+- Role: expert metadata curator for social science and development datasets
+- Goal: curate one DDI-style variable group from candidate variables (may be a subset)
+- LLM-generated fields: `label`, `universe`, `notes`, `txt`, `definition`, `variables` (JSON array)
+- Constraints: 2–6 word title-case label, catalog-style description, include all variables that fit (no artificial cap; cluster token budget is the practical limit)
 - Output: valid JSON only, no markdown or extra text
 
 **User prompt** renders the numbered variable list:
 ```
 # TASK
-Generate a theme name and description for the following cluster of survey variables.
+Create one DDI-style variable group from the following candidate variables.
 
 # VARIABLES
 1. HV001: Cluster number
@@ -168,19 +169,34 @@ Generate a theme name and description for the following cluster of survey variab
 3. HV003: Respondent's line number
 ...
 
-Output ONLY valid JSON matching the schema.
+Return ONLY valid JSON matching the required schema.
 ```
+
+### LLM vs Deterministic Fields
+
+| Field | Source |
+|-------|--------|
+| `label`, `universe`, `notes`, `txt`, `definition`, `variables` | LLM |
+| `vgid` | Deterministic (`make_vgid(label, cluster_id)`) |
+| `variable_groups` | Always `""` |
+| `group_type` | Always `"subject"` |
+| `variables` (space-separated string) | Framework joins validated LLM array |
 
 ### Structured Output Schema
 
-The LLM response is validated against `ThemeGenerationResult`:
+The LLM response is validated against `VariableGroupCurationResult`:
 
 ```python
-class ThemeGenerationResult(StrictBaseModel):
-    theme_name: str        # e.g., "Household Identification"
-    description: str       # e.g., "Variables identifying survey clusters and households."
-    example_variables: List[str]  # e.g., ["HV001", "HV002", "HV003"]
+class VariableGroupCurationResult(StrictBaseModel):
+    label: str
+    universe: str = ""
+    notes: str = ""
+    txt: str
+    definition: str
+    variables: List[str]  # min 1; all names must exist in candidate set
 ```
+
+Validation via `VariableGroupCurationResult.from_llm_response(content, candidate_names=...)` rejects duplicate names and any variable not in the cluster candidate set. The full DDI record is assembled by `VariableGroup.from_curation()`.
 
 Structured output enforcement uses the provider's JSON Schema API when available (`response_format={"type": "json_schema", ...}`), falling back to `{"type": "json_object"}` for providers that don't support strict schema.
 
@@ -211,7 +227,7 @@ export GEMINI_API_KEY="..."
 
 ### Error Handling
 
-Each cluster call is wrapped in a try/except. If the LLM call fails or the response cannot be parsed, the cluster receives a fallback theme ("Uncategorized") and execution continues. This ensures partial results are always returned even when individual calls fail—important for large dictionaries where one API error should not abort the entire run.
+Each cluster call is wrapped in a try/except. If the LLM call fails, the response cannot be parsed, or variable validation fails, the cluster receives a fallback variable group (`VG_UNCATEGORIZED_{cluster_id}`) and execution continues. This ensures partial results are always returned even when individual calls fail—important for large dictionaries where one API error should not abort the entire run.
 
 ---
 
@@ -221,23 +237,31 @@ The complete augmented dictionary is represented as an `AugmentedDictionary` Pyd
 
 ```python
 class AugmentedDictionary(StrictBaseModel):
-    dataset_id: Optional[str]                # source dataset identifier
-    themes: List[Theme]                      # one per cluster
-    variable_assignments: List[ThemeAssignment]  # one per input variable
-    metadata: Optional[Dict[str, Any]]       # run config, model, timestamp
+    dataset_id: Optional[str]
+    variable_groups: List[VariableGroup]              # one per cluster
+    variable_assignments: List[VariableGroupAssignment]  # curated variables only
+    metadata: Optional[Dict[str, Any]]
 ```
 
 Where:
 
 ```python
-class Theme(StrictBaseModel):
-    theme_name: str
-    description: str
-    example_variables: List[str]   # 1–5 representative variable names
+class VariableGroup(StrictBaseModel):
+    vgid: str
+    variables: str           # space-separated curated variable names
+    variable_groups: str = ""
+    group_type: str = "subject"
+    label: str
+    universe: str = ""
+    notes: str = ""
+    txt: str
+    definition: str
+    cluster_id: int
 
-class ThemeAssignment(StrictBaseModel):
+class VariableGroupAssignment(StrictBaseModel):
     variable_name: str
-    theme_name: str
+    vgid: str
+    label: str
     cluster_id: int
 ```
 
@@ -249,12 +273,12 @@ The `metadata` field records the model name, embedding model, number of variable
 # JSON file
 augmentor.export("augmented_dictionary.json")
 
-# pandas DataFrame (variable_name, theme_name, cluster_id)
+# pandas DataFrame (variable_name, vgid, label, cluster_id)
 df = augmentor.to_dataframe()
 
 # Direct Pydantic model access
 result = augmentor.result
-themes = {t.theme_name: t.description for t in result.themes}
+groups = {g.vgid: g.txt for g in result.variable_groups}
 ```
 
 ---
