@@ -18,9 +18,11 @@ from __future__ import annotations
 
 import json
 import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, cast
 
 from .adapters import (
     ConfigurableDictionaryAdapter,
@@ -62,6 +64,16 @@ logger = logging.getLogger(__name__)
 DEFAULT_MODEL = "claude-sonnet-4-6"
 
 
+@dataclass
+class _ClusterProcessResult:
+    cluster_id: int
+    group: VariableGroup
+    assignments: List[VariableGroupAssignment]
+    n_qa_passed: int = 0
+    n_qa_failed: int = 0
+    n_qa_skipped: int = 0
+
+
 class DataDictionaryAugmentor:
     """LLM-powered data dictionary augmentation.
 
@@ -87,6 +99,10 @@ class DataDictionaryAugmentor:
         LLM temperature. Use 0.0 for deterministic outputs.
     random_state : int
         Random seed for clustering and silhouette estimation.
+    max_concurrency : int
+        Maximum number of clusters to process in parallel during LLM
+        generation. Defaults to ``1`` (sequential). Increase to reduce
+        wall-clock time; watch provider rate limits.
     device : str, optional
         Embedding inference device (``"cuda"``, ``"mps"``, ``"cpu"``).
         Auto-detected if not specified.
@@ -122,6 +138,7 @@ class DataDictionaryAugmentor:
         max_cluster_tokens: int = DEFAULT_MAX_CLUSTER_TOKENS,
         temperature: float = 0.0,
         random_state: int = 42,
+        max_concurrency: int = 1,
         device: Optional[str] = None,
     ):
         self.model = model
@@ -131,6 +148,7 @@ class DataDictionaryAugmentor:
         self.max_cluster_tokens = max_cluster_tokens
         self.temperature = temperature
         self.random_state = random_state
+        self.max_concurrency = max_concurrency
 
         self._encoder = EmbeddingEncoder(embedding_model, device=device)
         self._variables: Optional[List[DictionaryVariable]] = None
@@ -299,6 +317,7 @@ class DataDictionaryAugmentor:
         self,
         *,
         show_progress_bar: bool = False,
+        max_concurrency: Optional[int] = None,
     ) -> AugmentedDictionary:
         """Call the LLM for each cluster and assemble the augmented dictionary.
 
@@ -311,6 +330,10 @@ class DataDictionaryAugmentor:
         ----------
         show_progress_bar : bool
             Display a tqdm progress bar during LLM calls per cluster.
+        max_concurrency : int, optional
+            Override the instance-level ``max_concurrency`` for this run.
+            When greater than 1, clusters are processed in parallel via a
+            thread pool.
 
         Returns
         -------
@@ -319,77 +342,24 @@ class DataDictionaryAugmentor:
         """
         self._require_clustered()
 
-        variable_groups: List[VariableGroup] = []
+        concurrency = (
+            max_concurrency if max_concurrency is not None else self.max_concurrency
+        )
+        items = list(self._cluster_map.items())
+        results = self._process_clusters(
+            items,
+            concurrency=concurrency,
+            show_progress_bar=show_progress_bar,
+        )
+
+        variable_groups = [r.group for r in results]
         variable_assignments: List[VariableGroupAssignment] = []
-        n_qa_passed = 0
-        n_qa_failed = 0
-        n_qa_skipped = 0
+        for result in results:
+            variable_assignments.extend(result.assignments)
 
-        clusters = self._cluster_map.items()
-        pbar = None
-        if show_progress_bar:
-            from tqdm import tqdm
-
-            pbar = tqdm(
-                clusters,
-                total=len(self._cluster_map),
-                desc="Variable groups",
-            )
-            clusters = pbar
-
-        for cluster_id, vars_ in clusters:
-            curation = self._call_llm_for_cluster(cluster_id, vars_)
-
-            if curation is not None:
-                qa_result = (
-                    self._call_qa_for_curation(cluster_id, vars_, curation)
-                    if self.enable_qa
-                    else None
-                )
-                if qa_result is not None:
-                    if qa_result.is_self_consistent:
-                        n_qa_passed += 1
-                    else:
-                        n_qa_failed += 1
-                    group = VariableGroup.from_curation(
-                        curation,
-                        cluster_id=cluster_id,
-                        qa=qa_result,
-                    )
-                elif self.enable_qa:
-                    n_qa_skipped += 1
-                    group = VariableGroup.from_curation(
-                        curation,
-                        cluster_id=cluster_id,
-                        qa_error="QA call failed",
-                    )
-                else:
-                    group = VariableGroup.from_curation(
-                        curation,
-                        cluster_id=cluster_id,
-                    )
-                assigned_names = curation.variables
-            else:
-                all_names = [v.variable_name for v in vars_]
-                group = VariableGroup.uncategorized_fallback(
-                    cluster_id=cluster_id,
-                    variable_names=all_names,
-                )
-                assigned_names = all_names
-
-            variable_groups.append(group)
-            for name in assigned_names:
-                variable_assignments.append(
-                    VariableGroupAssignment(
-                        variable_name=name,
-                        vgid=group.vgid,
-                        label=group.label,
-                        cluster_id=cluster_id,
-                    )
-                )
-
-            if pbar is not None:
-                pbar.set_postfix(cluster=cluster_id, label=group.label[:30])
+        n_qa_passed = sum(r.n_qa_passed for r in results)
+        n_qa_failed = sum(r.n_qa_failed for r in results)
+        n_qa_skipped = sum(r.n_qa_skipped for r in results)
 
         metadata: Dict[str, Any] = {
             "model": self.model,
@@ -398,6 +368,7 @@ class DataDictionaryAugmentor:
             "n_clusters": len(self._cluster_map),
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "enable_qa": self.enable_qa,
+            "max_concurrency": concurrency,
         }
         if self.enable_qa:
             metadata.update(
@@ -428,6 +399,7 @@ class DataDictionaryAugmentor:
         n_clusters: Optional[int] = None,
         dataset_id: Optional[str] = None,
         show_progress_bar: bool = False,
+        max_concurrency: Optional[int] = None,
     ) -> AugmentedDictionary:
         """Load → embed → cluster → generate variable groups in one call.
 
@@ -445,6 +417,9 @@ class DataDictionaryAugmentor:
             Dataset identifier for output metadata.
         show_progress_bar : bool
             Show tqdm progress bars during embedding and variable group generation.
+        max_concurrency : int, optional
+            Override parallel LLM concurrency for variable group generation
+            (see ``generate_variable_groups()``).
 
         Returns
         -------
@@ -459,7 +434,10 @@ class DataDictionaryAugmentor:
             )
             .embed(show_progress_bar=show_progress_bar)
             .cluster(n_clusters=n_clusters)
-            .generate_variable_groups(show_progress_bar=show_progress_bar)
+            .generate_variable_groups(
+                show_progress_bar=show_progress_bar,
+                max_concurrency=max_concurrency,
+            )
         )
 
     # ----- Export ----- #
@@ -521,6 +499,136 @@ class DataDictionaryAugmentor:
             for a in self._result.variable_assignments
         ]
         return pd.DataFrame(rows)
+
+    # ----- Internal cluster processing ----- #
+
+    def _process_cluster(
+        self,
+        cluster_id: int,
+        vars_: List[DictionaryVariable],
+    ) -> _ClusterProcessResult:
+        """Run curation (and optional QA) for a single cluster."""
+        n_qa_passed = 0
+        n_qa_failed = 0
+        n_qa_skipped = 0
+
+        curation = self._call_llm_for_cluster(cluster_id, vars_)
+
+        if curation is not None:
+            qa_result = (
+                self._call_qa_for_curation(cluster_id, vars_, curation)
+                if self.enable_qa
+                else None
+            )
+            if qa_result is not None:
+                if qa_result.is_self_consistent:
+                    n_qa_passed = 1
+                else:
+                    n_qa_failed = 1
+                group = VariableGroup.from_curation(
+                    curation,
+                    cluster_id=cluster_id,
+                    qa=qa_result,
+                )
+            elif self.enable_qa:
+                n_qa_skipped = 1
+                group = VariableGroup.from_curation(
+                    curation,
+                    cluster_id=cluster_id,
+                    qa_error="QA call failed",
+                )
+            else:
+                group = VariableGroup.from_curation(
+                    curation,
+                    cluster_id=cluster_id,
+                )
+            assigned_names = curation.variables
+        else:
+            all_names = [v.variable_name for v in vars_]
+            group = VariableGroup.uncategorized_fallback(
+                cluster_id=cluster_id,
+                variable_names=all_names,
+            )
+            assigned_names = all_names
+
+        assignments = [
+            VariableGroupAssignment(
+                variable_name=name,
+                vgid=group.vgid,
+                label=group.label,
+                cluster_id=cluster_id,
+            )
+            for name in assigned_names
+        ]
+
+        return _ClusterProcessResult(
+            cluster_id=cluster_id,
+            group=group,
+            assignments=assignments,
+            n_qa_passed=n_qa_passed,
+            n_qa_failed=n_qa_failed,
+            n_qa_skipped=n_qa_skipped,
+        )
+
+    def _process_clusters(
+        self,
+        items: List[tuple[int, List[DictionaryVariable]]],
+        *,
+        concurrency: int,
+        show_progress_bar: bool,
+    ) -> List[_ClusterProcessResult]:
+        """Process all clusters sequentially or in parallel."""
+        if concurrency <= 1:
+            if show_progress_bar:
+                from tqdm import tqdm
+
+                results: List[_ClusterProcessResult] = []
+                with tqdm(
+                    items,
+                    total=len(items),
+                    desc="Variable groups",
+                ) as pbar:
+                    for cluster_id, vars_ in pbar:
+                        result = self._process_cluster(cluster_id, vars_)
+                        results.append(result)
+                        pbar.set_postfix(
+                            cluster=result.cluster_id,
+                            label=result.group.label[:30],
+                        )
+                return results
+
+            return [
+                self._process_cluster(cluster_id, vars_)
+                for cluster_id, vars_ in items
+            ]
+
+        if show_progress_bar:
+            from tqdm import tqdm
+
+            results: List[Optional[_ClusterProcessResult]] = [None] * len(items)
+            with ThreadPoolExecutor(max_workers=concurrency) as executor:
+                future_to_index = {
+                    executor.submit(self._process_cluster, cid, vars_): i
+                    for i, (cid, vars_) in enumerate(items)
+                }
+                with tqdm(total=len(items), desc="Variable groups") as pbar:
+                    for future in as_completed(future_to_index):
+                        result = future.result()
+                        results[future_to_index[future]] = result
+                        pbar.set_postfix(
+                            cluster=result.cluster_id,
+                            label=result.group.label[:30],
+                        )
+                        pbar.update(1)
+            return cast(List[_ClusterProcessResult], results)
+
+        with ThreadPoolExecutor(max_workers=concurrency) as executor:
+            return list(
+                executor.map(
+                    lambda kv: self._process_cluster(kv[0], kv[1]),
+                    items,
+                )
+            )
 
     # ----- Internal LLM calls ----- #
 

@@ -241,9 +241,15 @@ augmentor = DataDictionaryAugmentor(
 
 # Disable QA
 augmentor = DataDictionaryAugmentor(enable_qa=False)
+
+# Parallel cluster generation (default max_concurrency=1 is sequential)
+augmentor = DataDictionaryAugmentor(max_concurrency=5)
+result = augmentor.augment("variables.csv", max_concurrency=5)
 ```
 
-Run metadata records `qa_model`, `enable_qa`, `n_qa_passed`, `n_qa_failed`, and `n_qa_skipped`.
+`max_concurrency` controls how many clusters are processed in parallel during LLM generation. It can be set on the constructor, overridden per run via `generate_variable_groups(max_concurrency=N)` or `augment(max_concurrency=N)`. Defaults to `1` (sequential). Higher values reduce wall-clock time but may trigger provider rate limits — tune to your API tier.
+
+Run metadata records `qa_model`, `enable_qa`, `n_qa_passed`, `n_qa_failed`, `n_qa_skipped`, and `max_concurrency`.
 
 ### QA failure behavior
 
