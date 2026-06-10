@@ -134,9 +134,9 @@ The silhouette score measures how similar each point is to its own cluster relat
 After clustering, a post-hoc split step ensures that no cluster's variable list exceeds the LLM context budget:
 
 ```python
-from ai4data.metadata.augmentation.clustering import merge_clusters_for_token_budget
+from ai4data.metadata.augmentation.clustering import split_clusters_for_token_budget
 
-labels = merge_clusters_for_token_budget(
+labels = split_clusters_for_token_budget(
     labels, variables, max_tokens_per_cluster=2048
 )
 ```

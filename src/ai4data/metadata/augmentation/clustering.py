@@ -13,6 +13,7 @@ All sklearn/numpy imports are lazy to avoid import-time overhead.
 from __future__ import annotations
 
 import math
+import warnings
 from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 from .schemas import DictionaryVariable
@@ -237,7 +238,7 @@ def _cluster_token_count(
     )
 
 
-def merge_clusters_for_token_budget(
+def split_clusters_for_token_budget(
     cluster_labels: "np.ndarray",
     variables: List[DictionaryVariable],
     *,
@@ -313,6 +314,28 @@ def merge_clusters_for_token_budget(
             break  # restart loop after any change
 
     return labels
+
+
+def merge_clusters_for_token_budget(
+    cluster_labels: "np.ndarray",
+    variables: List[DictionaryVariable],
+    *,
+    max_tokens_per_cluster: int = DEFAULT_MAX_CLUSTER_TOKENS,
+    approx_tokens_per_label: int = DEFAULT_APPROX_TOKENS_PER_LABEL,
+) -> "np.ndarray":
+    """Deprecated alias for :func:`split_clusters_for_token_budget`."""
+    warnings.warn(
+        "merge_clusters_for_token_budget is deprecated; "
+        "use split_clusters_for_token_budget instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return split_clusters_for_token_budget(
+        cluster_labels,
+        variables,
+        max_tokens_per_cluster=max_tokens_per_cluster,
+        approx_tokens_per_label=approx_tokens_per_label,
+    )
 
 
 # ----- Utility ----- #
