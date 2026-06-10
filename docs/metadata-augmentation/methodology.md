@@ -131,17 +131,17 @@ The silhouette score measures how similar each point is to its own cluster relat
 
 ### Token Budget Enforcement
 
-After clustering, a post-hoc merge step ensures that no cluster's variable list exceeds the LLM context budget:
+After clustering, a post-hoc split step ensures that no cluster's variable list exceeds the LLM context budget:
 
 ```python
-from ai4data.metadata.augmentation.clustering import merge_clusters_for_token_budget
+from ai4data.metadata.augmentation.clustering import split_clusters_for_token_budget
 
-labels = merge_clusters_for_token_budget(
+labels = split_clusters_for_token_budget(
     labels, variables, max_tokens_per_cluster=450
 )
 ```
 
-The merge splits oversized clusters by halving them iteratively. Token count per cluster is estimated conservatively (10 tokens per variable by default). This ensures every LLM call receives a variable list that fits within the context window without truncation.
+The function splits oversized clusters by halving them iteratively. Token count per cluster is estimated conservatively (10 tokens per variable by default). This ensures every LLM call receives a variable list that fits within the context window without truncation.
 
 ---
 

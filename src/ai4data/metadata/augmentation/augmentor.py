@@ -34,7 +34,7 @@ from .clustering import (
     DEFAULT_SVD_THRESHOLD,
     build_cluster_map,
     cluster_variables,
-    merge_clusters_for_token_budget,
+    split_clusters_for_token_budget,
     reduce_dimensions,
 )
 from .embeddings import DEFAULT_EMBEDDING_MODEL, EmbeddingEncoder
@@ -270,7 +270,7 @@ class DataDictionaryAugmentor:
             random_state=self.random_state,
         )
         # Enforce token budget per cluster
-        labels = merge_clusters_for_token_budget(
+        labels = split_clusters_for_token_budget(
             labels,
             self._variables,
             max_tokens_per_cluster=self.max_cluster_tokens,

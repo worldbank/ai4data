@@ -4,7 +4,7 @@ Pipeline:
 1. Optionally reduce dimensionality with TruncatedSVD (for large dictionaries).
 2. Estimate optimal number of clusters via silhouette score (or use heuristic).
 3. Run AgglomerativeClustering with Ward linkage.
-4. Post-hoc token-budget merge: combine clusters that would exceed the LLM
+4. Post-hoc token-budget split: divide clusters that would exceed the LLM
    context limit when rendered as a variable list.
 
 All sklearn/numpy imports are lazy to avoid import-time overhead.
@@ -237,19 +237,18 @@ def _cluster_token_count(
     )
 
 
-def merge_clusters_for_token_budget(
+def split_clusters_for_token_budget(
     cluster_labels: "np.ndarray",
     variables: List[DictionaryVariable],
     *,
     max_tokens_per_cluster: int = DEFAULT_MAX_CLUSTER_TOKENS,
     approx_tokens_per_label: int = DEFAULT_APPROX_TOKENS_PER_LABEL,
 ) -> "np.ndarray":
-    """Merge clusters that exceed the token budget into adjacent smaller clusters.
+    """Split clusters that exceed the token budget into smaller sub-clusters.
 
     This post-hoc step ensures that each LLM call receives a variable list that
-    fits within the context window. Clusters are merged greedily: the largest
-    cluster is split by merging it with the cluster whose combined token count
-    still fits the budget.
+    fits within the context window. Oversized clusters are halved iteratively
+    until every cluster's estimated token count is within the budget.
 
     Parameters
     ----------
@@ -265,14 +264,14 @@ def merge_clusters_for_token_budget(
     Returns
     -------
     numpy.ndarray
-        Updated label array (same length, possibly fewer unique values).
+        Updated label array (same length, possibly more unique values).
     """
     import numpy as np
 
     labels = cluster_labels.copy()
     cluster_map = build_cluster_map(labels, variables)
 
-    # Iteratively merge clusters that exceed the budget
+    # Iteratively split clusters that exceed the budget
     changed = True
     next_id = int(labels.max()) + 1
     while changed:
@@ -303,6 +302,35 @@ def merge_clusters_for_token_budget(
             break  # restart loop after any change
 
     return labels
+
+
+def merge_clusters_for_token_budget(
+    cluster_labels: "np.ndarray",
+    variables: List[DictionaryVariable],
+    *,
+    max_tokens_per_cluster: int = DEFAULT_MAX_CLUSTER_TOKENS,
+    approx_tokens_per_label: int = DEFAULT_APPROX_TOKENS_PER_LABEL,
+) -> "np.ndarray":
+    """Deprecated alias for :func:`split_clusters_for_token_budget`.
+
+    .. deprecated::
+        Use :func:`split_clusters_for_token_budget` instead. This alias will be
+        removed in a future release.
+    """
+    import warnings
+
+    warnings.warn(
+        "merge_clusters_for_token_budget is deprecated and will be removed in a "
+        "future release. Use split_clusters_for_token_budget instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return split_clusters_for_token_budget(
+        cluster_labels,
+        variables,
+        max_tokens_per_cluster=max_tokens_per_cluster,
+        approx_tokens_per_label=approx_tokens_per_label,
+    )
 
 
 # ----- Utility ----- #
