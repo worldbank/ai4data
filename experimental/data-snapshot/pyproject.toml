@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "data-snapshot"
+version = "0.1.0"
+description = "Label Studio and evaluation framework for data snapshot detection in PDF documents"
+requires-python = ">=3.10,<3.11"
+readme = "README.md"
+
+dependencies = [
+    "countrycode>=0.6.0",
+    "label-studio-sdk==2.0.19",
+    "pymupdf>=1.25.0",
+    "python-dotenv",
+    "tqdm==4.67.1",
+]
+
+
+[project.optional-dependencies]
+tfid = [
+    "transformers==4.46.0",
+    "torch==2.9.1",
+    "huggingface-hub==0.23.2",
+    "timm==1.0.24",
+    "einops==0.8.1",
+    "accelerate==1.12.0",
+]
+doclayout_yolo = [
+    "doclayout-yolo",
+    "huggingface-hub",
+]
+yolo11 = [
+    "huggingface-hub",
+    "ultralytics",
+]
+yolo26 = [
+    "huggingface-hub",
+    "ultralytics",
+]
+viz = [
+    "numpy",
+    "opencv-python",
+]
+dev = [
+    "data-snapshot[tfid,doclayout_yolo,viz,yolo11,yolo26]",
+    "pytest==9.0.2",
+    "black==25.1.0",
+]
+
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+
+[tool.pytest.ini_options]
+testpaths = ["tests/"]
