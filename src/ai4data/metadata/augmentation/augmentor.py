@@ -4,11 +4,11 @@
 1. Load: ingest variables from CSV, JSON, dict, or NADA catalog
 2. Embed: encode variable labels/descriptions with sentence-transformers
 3. Cluster: group semantically similar variables
-4. Generate: call an LLM for each cluster to produce a theme name + description
+4. Generate: call an LLM for each cluster to curate a DDI variable group
 5. Export: write the augmented dictionary to disk or return as a DataFrame
 
 The LLM backend is provider-agnostic via ``litellm``: set ``model`` to any
-litellm-supported model string (e.g., ``"claude-haiku-4-5-20251001"``,
+litellm-supported model string (e.g., ``"claude-sonnet-4-6"``,
 ``"gpt-4o-mini"``, ``"gemini/gemini-2.0-flash"``).
 
 Install requirements: ``uv pip install ai4data[metadata]``
@@ -18,10 +18,11 @@ from __future__ import annotations
 
 import json
 import logging
-import warnings
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, cast
 
 from .adapters import (
     ConfigurableDictionaryAdapter,
@@ -34,40 +35,60 @@ from .clustering import (
     DEFAULT_SVD_THRESHOLD,
     build_cluster_map,
     cluster_variables,
-    merge_clusters_for_token_budget,
+    split_clusters_for_token_budget,
     reduce_dimensions,
 )
 from .embeddings import DEFAULT_EMBEDDING_MODEL, EmbeddingEncoder
 from .prompts import (
     SYSTEM_PROMPT,
     get_json_object_format,
-    get_theme_response_format,
+    get_variable_group_response_format,
     render_user_prompt,
+)
+from .qa import (
+    QA_SYSTEM_PROMPT,
+    get_qa_response_format,
+    render_qa_user_prompt,
 )
 from .schemas import (
     AugmentedDictionary,
     DictionaryVariable,
-    Theme,
-    ThemeAssignment,
-    ThemeGenerationResult,
+    VariableGroup,
+    VariableGroupAssignment,
+    VariableGroupCurationResult,
+    VariableGroupQAResult,
 )
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_MODEL = "claude-haiku-4-5-20251001"
+DEFAULT_MODEL = "claude-sonnet-4-6"
+
+
+@dataclass
+class _ClusterProcessResult:
+    cluster_id: int
+    group: VariableGroup
+    assignments: List[VariableGroupAssignment]
+    n_qa_passed: int = 0
+    n_qa_failed: int = 0
+    n_qa_skipped: int = 0
 
 
 class DataDictionaryAugmentor:
     """LLM-powered data dictionary augmentation.
 
-    Generates thematic structure for microdata or administrative data dictionary
-    variables using semantic clustering and LLM-elicited theme names.
+    Generates DDI-style variable groups for microdata or administrative data
+    dictionary variables using semantic clustering and LLM-elicited curation.
 
     Parameters
     ----------
     model : str
-        LiteLLM model string. Defaults to ``"claude-haiku-4-5-20251001"``.
+        LiteLLM model string for curation. Defaults to ``"claude-sonnet-4-6"``.
         Other examples: ``"gpt-4o-mini"``, ``"gemini/gemini-2.0-flash"``.
+    qa_model : str, optional
+        LiteLLM model string for self-consistency QA. Defaults to ``model``.
+    enable_qa : bool
+        When True, run a QA agent after each successful curation call.
     embedding_model : str
         SentenceTransformer model name. Defaults to ``"BAAI/bge-small-en-v1.5"``.
     n_clusters : int, optional
@@ -78,6 +99,10 @@ class DataDictionaryAugmentor:
         LLM temperature. Use 0.0 for deterministic outputs.
     random_state : int
         Random seed for clustering and silhouette estimation.
+    max_concurrency : int
+        Maximum number of clusters to process in parallel during LLM
+        generation. Defaults to ``1`` (sequential). Increase to reduce
+        wall-clock time; watch provider rate limits.
     device : str, optional
         Embedding inference device (``"cuda"``, ``"mps"``, ``"cpu"``).
         Auto-detected if not specified.
@@ -99,25 +124,31 @@ class DataDictionaryAugmentor:
     ...     .load("dictionary.csv", adapter=adapter)
     ...     .embed(show_progress_bar=True)
     ...     .cluster(n_clusters=10)
-    ...     .generate_themes()
+    ...     .generate_variable_groups()
     ... )
     """
 
     def __init__(
         self,
         model: str = DEFAULT_MODEL,
+        qa_model: Optional[str] = None,
+        enable_qa: bool = True,
         embedding_model: str = DEFAULT_EMBEDDING_MODEL,
         n_clusters: Optional[int] = None,
         max_cluster_tokens: int = DEFAULT_MAX_CLUSTER_TOKENS,
         temperature: float = 0.0,
         random_state: int = 42,
+        max_concurrency: int = 1,
         device: Optional[str] = None,
     ):
         self.model = model
+        self.qa_model = qa_model or model
+        self.enable_qa = enable_qa
         self.n_clusters = n_clusters
         self.max_cluster_tokens = max_cluster_tokens
         self.temperature = temperature
         self.random_state = random_state
+        self.max_concurrency = max_concurrency
 
         self._encoder = EmbeddingEncoder(embedding_model, device=device)
         self._variables: Optional[List[DictionaryVariable]] = None
@@ -270,7 +301,7 @@ class DataDictionaryAugmentor:
             random_state=self.random_state,
         )
         # Enforce token budget per cluster
-        labels = merge_clusters_for_token_budget(
+        labels = split_clusters_for_token_budget(
             labels,
             self._variables,
             max_tokens_per_cluster=self.max_cluster_tokens,
@@ -280,69 +311,80 @@ class DataDictionaryAugmentor:
         self._result = None
         return self
 
-    # ----- Step 4: Generate themes ----- #
+    # ----- Step 4: Generate variable groups ----- #
 
-    def generate_themes(self) -> AugmentedDictionary:
+    def generate_variable_groups(
+        self,
+        *,
+        show_progress_bar: bool = False,
+        max_concurrency: Optional[int] = None,
+    ) -> AugmentedDictionary:
         """Call the LLM for each cluster and assemble the augmented dictionary.
 
-        Makes one LLM call per cluster. Failures in individual clusters are
-        logged and skipped (returning a ``Theme`` with name "Uncategorized" for
-        affected variables) so that partial results are always returned.
+        Makes one curation LLM call per cluster, optionally followed by a
+        self-consistency QA call. Failures in individual clusters are logged
+        and handled with a fallback ``VariableGroup`` so that partial results
+        are always returned.
+
+        Parameters
+        ----------
+        show_progress_bar : bool
+            Display a tqdm progress bar during LLM calls per cluster.
+        max_concurrency : int, optional
+            Override the instance-level ``max_concurrency`` for this run.
+            When greater than 1, clusters are processed in parallel via a
+            thread pool.
 
         Returns
         -------
         AugmentedDictionary
-            The complete augmented dictionary with all themes and assignments.
+            The complete augmented dictionary with variable groups and assignments.
         """
         self._require_clustered()
 
-        themes: List[Theme] = []
-        variable_assignments: List[ThemeAssignment] = []
-        cluster_to_theme: Dict[int, str] = {}
+        concurrency = (
+            max_concurrency if max_concurrency is not None else self.max_concurrency
+        )
+        items = list(self._cluster_map.items())
+        results = self._process_clusters(
+            items,
+            concurrency=concurrency,
+            show_progress_bar=show_progress_bar,
+        )
 
-        for cluster_id, vars_ in self._cluster_map.items():
-            result = self._call_llm_for_cluster(cluster_id, vars_)
-            if result is not None:
-                theme = Theme(
-                    theme_name=result.theme_name,
-                    description=result.description,
-                    example_variables=result.example_variables[:5],
-                )
-                theme_name = result.theme_name
-            else:
-                # Graceful fallback for failed LLM calls
-                theme = Theme(
-                    theme_name="Uncategorized",
-                    description="Theme generation failed for this cluster.",
-                    example_variables=[vars_[0].variable_name] if vars_ else [],
-                )
-                theme_name = "Uncategorized"
+        variable_groups = [r.group for r in results]
+        variable_assignments: List[VariableGroupAssignment] = []
+        for result in results:
+            variable_assignments.extend(result.assignments)
 
-            themes.append(theme)
-            cluster_to_theme[cluster_id] = theme_name
+        n_qa_passed = sum(r.n_qa_passed for r in results)
+        n_qa_failed = sum(r.n_qa_failed for r in results)
+        n_qa_skipped = sum(r.n_qa_skipped for r in results)
 
-        # Build per-variable assignments
-        for idx, var in enumerate(self._variables):
-            cid = int(self._cluster_labels[idx])
-            variable_assignments.append(
-                ThemeAssignment(
-                    variable_name=var.variable_name,
-                    theme_name=cluster_to_theme.get(cid, "Uncategorized"),
-                    cluster_id=cid,
-                )
+        metadata: Dict[str, Any] = {
+            "model": self.model,
+            "embedding_model": self._encoder.model_name,
+            "n_variables": len(self._variables),
+            "n_clusters": len(self._cluster_map),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "enable_qa": self.enable_qa,
+            "max_concurrency": concurrency,
+        }
+        if self.enable_qa:
+            metadata.update(
+                {
+                    "qa_model": self.qa_model,
+                    "n_qa_passed": n_qa_passed,
+                    "n_qa_failed": n_qa_failed,
+                    "n_qa_skipped": n_qa_skipped,
+                }
             )
 
         self._result = AugmentedDictionary(
             dataset_id=getattr(self, "_dataset_id", None),
-            themes=themes,
+            variable_groups=variable_groups,
             variable_assignments=variable_assignments,
-            metadata={
-                "model": self.model,
-                "embedding_model": self._encoder.model_name,
-                "n_variables": len(self._variables),
-                "n_clusters": len(self._cluster_map),
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-            },
+            metadata=metadata,
         )
         return self._result
 
@@ -357,8 +399,9 @@ class DataDictionaryAugmentor:
         n_clusters: Optional[int] = None,
         dataset_id: Optional[str] = None,
         show_progress_bar: bool = False,
+        max_concurrency: Optional[int] = None,
     ) -> AugmentedDictionary:
-        """Load → embed → cluster → generate themes in one call.
+        """Load → embed → cluster → generate variable groups in one call.
 
         Parameters
         ----------
@@ -373,7 +416,10 @@ class DataDictionaryAugmentor:
         dataset_id : str, optional
             Dataset identifier for output metadata.
         show_progress_bar : bool
-            Show embedding progress bar.
+            Show tqdm progress bars during embedding and variable group generation.
+        max_concurrency : int, optional
+            Override parallel LLM concurrency for variable group generation
+            (see ``generate_variable_groups()``).
 
         Returns
         -------
@@ -388,7 +434,10 @@ class DataDictionaryAugmentor:
             )
             .embed(show_progress_bar=show_progress_bar)
             .cluster(n_clusters=n_clusters)
-            .generate_themes()
+            .generate_variable_groups(
+                show_progress_bar=show_progress_bar,
+                max_concurrency=max_concurrency,
+            )
         )
 
     # ----- Export ----- #
@@ -432,8 +481,8 @@ class DataDictionaryAugmentor:
         Returns
         -------
         pandas.DataFrame
-            One row per variable with columns: ``variable_name``,
-            ``theme_name``, ``cluster_id``.
+            One row per curated variable with columns: ``variable_name``,
+            ``vgid``, ``label``, ``cluster_id``.
         """
         self._require_result()
         try:
@@ -443,34 +492,156 @@ class DataDictionaryAugmentor:
         rows = [
             {
                 "variable_name": a.variable_name,
-                "theme_name": a.theme_name,
+                "vgid": a.vgid,
+                "label": a.label,
                 "cluster_id": a.cluster_id,
             }
             for a in self._result.variable_assignments
         ]
         return pd.DataFrame(rows)
 
-    # ----- Internal LLM call ----- #
+    # ----- Internal cluster processing ----- #
 
-    def _call_llm_for_cluster(
+    def _process_cluster(
         self,
         cluster_id: int,
-        variables: List[DictionaryVariable],
-    ) -> Optional[ThemeGenerationResult]:
-        """Make one litellm completion call for a single cluster.
+        vars_: List[DictionaryVariable],
+    ) -> _ClusterProcessResult:
+        """Run curation (and optional QA) for a single cluster."""
+        n_qa_passed = 0
+        n_qa_failed = 0
+        n_qa_skipped = 0
 
-        Parameters
-        ----------
-        cluster_id : int
-            Cluster identifier (used for logging).
-        variables : list of DictionaryVariable
-            Variables in this cluster.
+        curation = self._call_llm_for_cluster(cluster_id, vars_)
 
-        Returns
-        -------
-        ThemeGenerationResult or None
-            Parsed result, or None if the call failed.
-        """
+        if curation is not None:
+            qa_result = (
+                self._call_qa_for_curation(cluster_id, vars_, curation)
+                if self.enable_qa
+                else None
+            )
+            if qa_result is not None:
+                if qa_result.is_self_consistent:
+                    n_qa_passed = 1
+                else:
+                    n_qa_failed = 1
+                group = VariableGroup.from_curation(
+                    curation,
+                    cluster_id=cluster_id,
+                    qa=qa_result,
+                )
+            elif self.enable_qa:
+                n_qa_skipped = 1
+                group = VariableGroup.from_curation(
+                    curation,
+                    cluster_id=cluster_id,
+                    qa_error="QA call failed",
+                )
+            else:
+                group = VariableGroup.from_curation(
+                    curation,
+                    cluster_id=cluster_id,
+                )
+            assigned_names = curation.variables
+        else:
+            all_names = [v.variable_name for v in vars_]
+            group = VariableGroup.uncategorized_fallback(
+                cluster_id=cluster_id,
+                variable_names=all_names,
+            )
+            assigned_names = all_names
+
+        assignments = [
+            VariableGroupAssignment(
+                variable_name=name,
+                vgid=group.vgid,
+                label=group.label,
+                cluster_id=cluster_id,
+            )
+            for name in assigned_names
+        ]
+
+        return _ClusterProcessResult(
+            cluster_id=cluster_id,
+            group=group,
+            assignments=assignments,
+            n_qa_passed=n_qa_passed,
+            n_qa_failed=n_qa_failed,
+            n_qa_skipped=n_qa_skipped,
+        )
+
+    def _process_clusters(
+        self,
+        items: List[tuple[int, List[DictionaryVariable]]],
+        *,
+        concurrency: int,
+        show_progress_bar: bool,
+    ) -> List[_ClusterProcessResult]:
+        """Process all clusters sequentially or in parallel."""
+        if concurrency <= 1:
+            if show_progress_bar:
+                from tqdm import tqdm
+
+                results: List[_ClusterProcessResult] = []
+                with tqdm(
+                    items,
+                    total=len(items),
+                    desc="Variable groups",
+                ) as pbar:
+                    for cluster_id, vars_ in pbar:
+                        result = self._process_cluster(cluster_id, vars_)
+                        results.append(result)
+                        pbar.set_postfix(
+                            cluster=result.cluster_id,
+                            label=result.group.label[:30],
+                        )
+                return results
+
+            return [
+                self._process_cluster(cluster_id, vars_)
+                for cluster_id, vars_ in items
+            ]
+
+        if show_progress_bar:
+            from tqdm import tqdm
+
+            results: List[Optional[_ClusterProcessResult]] = [None] * len(items)
+            with ThreadPoolExecutor(max_workers=concurrency) as executor:
+                future_to_index = {
+                    executor.submit(self._process_cluster, cid, vars_): i
+                    for i, (cid, vars_) in enumerate(items)
+                }
+                with tqdm(total=len(items), desc="Variable groups") as pbar:
+                    for future in as_completed(future_to_index):
+                        result = future.result()
+                        results[future_to_index[future]] = result
+                        pbar.set_postfix(
+                            cluster=result.cluster_id,
+                            label=result.group.label[:30],
+                        )
+                        pbar.update(1)
+            return cast(List[_ClusterProcessResult], results)
+
+        with ThreadPoolExecutor(max_workers=concurrency) as executor:
+            return list(
+                executor.map(
+                    lambda kv: self._process_cluster(kv[0], kv[1]),
+                    items,
+                )
+            )
+
+    # ----- Internal LLM calls ----- #
+
+    def _litellm_json_completion(
+        self,
+        *,
+        model: str,
+        messages: List[Dict[str, str]],
+        response_format: Dict,
+        cluster_id: int,
+        call_label: str,
+    ) -> Optional[str]:
+        """Run a litellm completion and return raw JSON content, or None."""
         try:
             import litellm
         except ImportError as exc:
@@ -479,48 +650,110 @@ class DataDictionaryAugmentor:
                 "Install with: uv pip install ai4data[metadata]"
             ) from exc
 
-        user_prompt = render_user_prompt(variables)
-        messages = [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": user_prompt},
-        ]
-
-        # Try structured output first; fall back to json_object mode
-        response_format = get_theme_response_format()
         try:
             response = litellm.completion(
-                model=self.model,
+                model=model,
                 messages=messages,
                 response_format=response_format,
                 temperature=self.temperature,
             )
         except Exception:
-            # Some providers don't support strict JSON schema; retry with json_object
             try:
                 response = litellm.completion(
-                    model=self.model,
+                    model=model,
                     messages=messages,
                     response_format=get_json_object_format(),
                     temperature=self.temperature,
                 )
             except Exception as exc2:
                 logger.warning(
-                    "LLM call failed for cluster %d (%d variables): %s",
+                    "%s call failed for cluster %d: %s",
+                    call_label,
                     cluster_id,
-                    len(variables),
                     exc2,
                 )
                 return None
 
         try:
-            content = response.choices[0].message.content
-            return ThemeGenerationResult.model_validate_json(content)
+            return response.choices[0].message.content
         except Exception as exc:
             logger.warning(
-                "Failed to parse LLM response for cluster %d: %s\nContent: %s",
+                "%s response missing content for cluster %d: %s",
+                call_label,
                 cluster_id,
                 exc,
-                response.choices[0].message.content[:300] if response else "",
+            )
+            return None
+
+    def _call_llm_for_cluster(
+        self,
+        cluster_id: int,
+        variables: List[DictionaryVariable],
+    ) -> Optional[VariableGroupCurationResult]:
+        """Make one litellm completion call for a single cluster."""
+        candidate_names = {v.variable_name for v in variables}
+        messages = [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": render_user_prompt(variables)},
+        ]
+
+        content = self._litellm_json_completion(
+            model=self.model,
+            messages=messages,
+            response_format=get_variable_group_response_format(),
+            cluster_id=cluster_id,
+            call_label="Curation",
+        )
+        if content is None:
+            return None
+
+        try:
+            return VariableGroupCurationResult.from_llm_response(
+                content,
+                candidate_names=candidate_names,
+            )
+        except Exception as exc:
+            logger.warning(
+                "Failed to parse curation response for cluster %d: %s\nContent: %s",
+                cluster_id,
+                exc,
+                content[:300],
+            )
+            return None
+
+    def _call_qa_for_curation(
+        self,
+        cluster_id: int,
+        variables: List[DictionaryVariable],
+        curation: VariableGroupCurationResult,
+    ) -> Optional[VariableGroupQAResult]:
+        """Run the self-consistency QA agent on a curation result."""
+        messages = [
+            {"role": "system", "content": QA_SYSTEM_PROMPT},
+            {
+                "role": "user",
+                "content": render_qa_user_prompt(variables, curation),
+            },
+        ]
+
+        content = self._litellm_json_completion(
+            model=self.qa_model,
+            messages=messages,
+            response_format=get_qa_response_format(),
+            cluster_id=cluster_id,
+            call_label="QA",
+        )
+        if content is None:
+            return None
+
+        try:
+            return VariableGroupQAResult.model_validate_json(content)
+        except Exception as exc:
+            logger.warning(
+                "Failed to parse QA response for cluster %d: %s\nContent: %s",
+                cluster_id,
+                exc,
+                content[:300],
             )
             return None
 
@@ -543,13 +776,15 @@ class DataDictionaryAugmentor:
         self._require_embedded()
         if self._cluster_labels is None or self._cluster_map is None:
             raise RuntimeError(
-                "Clustering not done. Call .cluster() before .generate_themes()."
+                "Clustering not done. Call .cluster() before "
+                ".generate_variable_groups()."
             )
 
     def _require_result(self) -> None:
         if self._result is None:
             raise RuntimeError(
-                "No result available. Call .generate_themes() or .augment() first."
+                "No result available. Call .generate_variable_groups() or "
+                ".augment() first."
             )
 
     # ----- Properties ----- #

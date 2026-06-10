@@ -1,58 +1,111 @@
-"""Prompt templates and utilities for data dictionary theme generation.
+"""Prompt templates and utilities for data dictionary variable group curation.
 
 The prompts follow an elicitation design: the LLM is asked to produce
-structured JSON conforming to the ``ThemeGenerationResult`` schema, not
-free-form text. This reduces hallucination and makes outputs parseable.
+structured JSON conforming to the ``VariableGroupCurationResult`` schema, not
+free-form text. Deterministic DDI fields (``vgid``, ``group_type``, etc.)
+are assembled downstream by the framework.
 
 Design choices:
 - ``SYSTEM_PROMPT``: Establishes the assistant role and output constraints.
   Explicitly forbids inventing variable names outside the provided list.
 - ``USER_PROMPT_TEMPLATE``: Renders the cluster variable list with a numbered
   format so the LLM can reference variables by name easily.
-- JSON schema: Derived from ``ThemeGenerationResult.model_json_schema()`` for
-  strict type-safe validation at the API boundary.
+- JSON schema: Derived from ``VariableGroupCurationResult.model_json_schema()``
+  for strict type-safe validation at the API boundary.
 """
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Dict, List
+from typing import Dict, List
 
-from .schemas import DictionaryVariable, ThemeGenerationResult
-
-if TYPE_CHECKING:
-    pass
+from .schemas import DictionaryVariable, VariableGroupCurationResult
 
 
 # ----- Prompt templates ----- #
 
 SYSTEM_PROMPT = """\
-You are a data catalog specialist for social science and development datasets.
+You are an expert metadata curator for social science, development, and administrative datasets.
 
-GOAL:
-Given a list of survey or administrative variable names and labels from a single \
-thematic cluster, generate:
-1. A concise theme name (2–6 words, title case, no punctuation)
-2. A factual 1–2 sentence description grounded in the variable labels provided
-3. Up to 5 representative variable names from the INPUT list
+Your task is to create one useful DDI-style variable group from a set of candidate variables.
 
-CONSTRAINTS:
-- Theme name: 2–6 words, title case. Examples: "Household Asset Ownership", \
-"Child Health and Nutrition", "Agricultural Land Use".
-- Description: factual, 1–2 sentences. Do not speculate beyond the variable labels.
-- Example variables: select up to 5 variable names EXACTLY as they appear in the \
-INPUT list. Do not invent or paraphrase variable names.
-- Output ONLY valid JSON matching the provided schema. No markdown, comments, or \
-any text outside the JSON object.
+The input variables are candidate variables identified as semantically related. They may all belong to the final variable group, or only a coherent subset may belong. Your role is to curate a useful variable group for a statistical data catalog.
+
+OUTPUT SCHEMA:
+Return exactly one JSON object with this structure:
+
+{
+  "label": "string",
+  "universe": "string",
+  "notes": "string",
+  "txt": "string",
+  "definition": "string",
+  "variables": ["string"]
+}
+
+FIELD RULES:
+
+label:
+- A concise user-facing name for the variable group.
+- Use 2–6 words in Title Case.
+- Capture the shared concept or domain of the selected variables.
+- Do not mention "cluster" or the grouping method.
+
+universe:
+- Describe the population or unit of observation only if clearly inferable from the variable labels.
+- Examples: "Households", "Individuals", "Children under five", "Agricultural households".
+- If not clearly inferable, return an empty string.
+
+notes:
+- Use only for important curation notes, such as excluded candidate variables or ambiguity in group membership.
+- If variables are excluded, briefly state which ones and why.
+- If no notes are needed, return an empty string.
+
+txt:
+- One or two factual sentences describing the subject matter represented by the variable group.
+- Write like metadata in a statistical data catalog.
+- Explain what the selected variables collectively describe.
+- Prefer the common domain or construct over an exhaustive list of individual variables.
+- Do not speculate beyond the provided labels.
+- Do not refer to embeddings, clustering, or the grouping process.
+
+definition:
+- A brief rationale for the grouping.
+- Explain why the selected variables form a coherent variable group.
+- Ground the rationale in the shared subject matter of the selected variable labels.
+
+variables:
+- Include the variable identifiers that belong to the curated group.
+- Use variable names EXACTLY as they appear in the input.
+- Return them as a JSON array of strings.
+- Include all variables that fit the group.
+- Exclude variables that do not fit the common concept.
+- The group may include all input variables or only a coherent subset.
+
+CURATION RULES:
+- Prefer a coherent and interpretable variable group over maximizing coverage.
+- If all candidate variables fit the same concept, include all of them.
+- If the candidates contain multiple concepts, select the strongest coherent group and exclude weaker or unrelated variables.
+- Do not include variables merely because they share similar words.
+- Do not invent, modify, or paraphrase variable names.
+- Do not mention coding schemes, missing values, frequencies, or technical metadata unless central to the group.
+- Output ONLY valid JSON.
+- Do not output markdown, explanations, comments, or additional text.
 """
 
 USER_PROMPT_TEMPLATE = """\
 # TASK
-Generate a theme name and description for the following cluster of survey variables.
+
+Create one DDI-style variable group from the following candidate variables.
+
+The variables are candidates for a thematic variable group. They may all belong to the final group, or only a coherent subset may belong.
+
+Your task is to identify the most useful common subject matter, select the variables that belong to that group, and produce metadata using the required schema.
 
 # VARIABLES
+
 {variable_list}
 
-Output ONLY valid JSON matching the schema. Do not include markdown or extra text.\
+Return ONLY valid JSON matching the required schema.
 """
 
 
@@ -121,32 +174,30 @@ def render_user_prompt(variables: List[DictionaryVariable]) -> str:
     str
         Formatted user prompt string.
     """
-    return USER_PROMPT_TEMPLATE.format(
-        variable_list=render_variable_list(variables)
-    )
+    return USER_PROMPT_TEMPLATE.format(variable_list=render_variable_list(variables))
 
 
 # ----- Response format schema ----- #
 
 
-def get_theme_response_format() -> Dict:
-    """Return the JSON schema dict for structured theme generation responses.
+def get_variable_group_response_format() -> Dict:
+    """Return the JSON schema dict for structured variable group curation responses.
 
     This is passed as the ``response_format`` argument to litellm / OpenAI
-    structured output APIs. The schema is derived from ``ThemeGenerationResult``
-    using Pydantic's ``model_json_schema()``, ensuring that the LLM response
-    always matches the expected Python type.
+    structured output APIs. The schema is derived from
+    ``VariableGroupCurationResult`` using Pydantic's ``model_json_schema()``,
+    ensuring that the LLM response always matches the expected Python type.
 
     Returns
     -------
     dict
         ``{"type": "json_schema", "json_schema": {...}}`` format.
     """
-    schema = ThemeGenerationResult.model_json_schema()
+    schema = VariableGroupCurationResult.model_json_schema()
     return {
         "type": "json_schema",
         "json_schema": {
-            "name": "theme_generation",
+            "name": "variable_group_curation",
             "strict": True,
             "schema": schema,
         },
@@ -157,8 +208,8 @@ def get_json_object_format() -> Dict:
     """Return a basic JSON object response format for providers without strict schema support.
 
     Some litellm providers accept ``{"type": "json_object"}`` but not the full
-    JSON Schema format. Use this as a fallback when ``get_theme_response_format``
-    is not supported.
+    JSON Schema format. Use this as a fallback when
+    ``get_variable_group_response_format`` is not supported.
 
     Returns
     -------
