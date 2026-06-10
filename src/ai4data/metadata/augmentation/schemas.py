@@ -64,10 +64,16 @@ class StrictBaseModel(BaseModel):
 
 def make_vgid(label: str, cluster_id: int) -> str:
     """Build a stable VG_* identifier from label slug and cluster_id."""
-    slug = re.sub(r"[^A-Za-z0-9]+", "_", label.upper()).strip("_")
-    slug = slug or "GROUP"
-    return f"VG_{slug}_{cluster_id:04d}"[:128]
+    prefix = "VG_"
+    suffix = f"_{cluster_id:04d}"
+    max_len = 128
+    max_slug_len = max_len - len(prefix) - len(suffix)
 
+    slug = re.sub(r"[^A-Za-z0-9]+", "_", label.upper()).strip("_") or "GROUP"
+    if len(slug) > max_slug_len:
+        slug = slug[:max_slug_len].rstrip("_") or "GROUP"
+
+    return f"{prefix}{slug}{suffix}"
 
 def make_uncategorized_vgid(cluster_id: int) -> str:
     """Build a deterministic vgid for fallback uncategorized groups."""
