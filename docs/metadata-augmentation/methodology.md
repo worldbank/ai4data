@@ -141,7 +141,7 @@ labels = split_clusters_for_token_budget(
 )
 ```
 
-The function splits oversized clusters by halving them iteratively. Token count per cluster is estimated conservatively (10 tokens per variable by default). This ensures every LLM call receives a variable list that fits within the context window without truncation.
+The `split_clusters_for_token_budget` function splits oversized clusters by halving them iteratively. Token count per cluster is estimated conservatively (10 tokens per variable by default). This ensures every LLM call receives a variable list that fits within the context window without truncation.
 
 ---
 
