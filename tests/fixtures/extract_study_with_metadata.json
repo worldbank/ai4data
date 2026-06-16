@@ -1,0 +1,39 @@
+{
+  "status": "success",
+  "offset": 0,
+  "limit": 1,
+  "total": 901,
+  "has_more": false,
+  "studies": [
+    {
+      "core_fields": {
+        "id": 42,
+        "idno": "RWA_NISR_DOC_2025_CPI-MR_MAY_FR_V1"
+      },
+      "filters": {
+        "doctype": 1,
+        "published": 1,
+        "dataset_type": "document",
+        "year_start": 2025,
+        "year_end": 2025,
+        "countries": [181],
+        "regions": [7, 9],
+        "tags": []
+      },
+      "metadata": {
+        "type": "document",
+        "idno": "RWA_NISR_DOC_2025_CPI-MR_MAY_FR_V1",
+        "metadata_information": {
+          "title": "Consumer Price Index May 2025",
+          "idno": "RWA_NISR_DOC_2025_CPI-MR_MAY_FR_V1"
+        },
+        "document_description": {
+          "title_statement": {
+            "title": "Consumer Price Index May 2025"
+          },
+          "abstract": "Monthly CPI report."
+        }
+      }
+    }
+  ]
+}

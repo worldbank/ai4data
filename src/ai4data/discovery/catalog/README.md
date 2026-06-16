@@ -6,7 +6,8 @@ Public surface for **NADA** metadata: HTTP client, batch jobs, and ids used by d
 
 | Module | Role |
 |--------|------|
-| `http.py` | Catalog HTTP API: `get_metadata_json`, `search_metadata`, `get_ids_type`, `get_metadata_ids`. |
+| `http.py` | Catalog HTTP API: `get_metadata_json`, `search_metadata`, `get_ids_type`, `get_metadata_ids`. Routes to extract API when `AI4DATA_METADATA_CATALOG_EXTRACT_PATH` is set. |
+| `extract.py` | IHSN search-metadata-extract client: paginated `/studies`, `study_to_catalog_metadata`, param mapping. |
 | `batch.py` | Save id lists, `scrape_all_ids`, `scrape_all_metadata`, Fire `main`. Run: `python -m ai4data.discovery.catalog.batch`. |
 | `data_api.py` | Authenticated JSON GET (`x-api-key`) for separate IHSN/API resources. |
 | `langdoc_id.py` | `get_langdoc_uuid` and UUID helper for chunk ids. |

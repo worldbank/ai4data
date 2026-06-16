@@ -20,6 +20,12 @@ Defined in [`config.py`](./config.py) (`MetadataCatalogConfig`). Used by [`catal
 | `AI4DATA_METADATA_CATALOG_THUMBNAIL_URL` | No | Format string for document thumbnails; must include `{db_id}` (default matches NADA public thumbnails). |
 | `AI4DATA_METADATA_CATALOG_X_API_KEY` | Only for authenticated APIs | API key sent as header `x-api-key`. Used by [`catalog/data_api.py`](./catalog/data_api.py), and — when set — also attached by [`catalog/http.py`](./catalog/http.py) (search, JSON metadata) and [`metadata/document_fetch.py`](./metadata/document_fetch.py) (PDF downloads). For PDF downloads the header is only sent when the URL's host matches the configured catalog host (or is allow-listed via `AI4DATA_METADATA_CATALOG_X_API_KEY_HOSTS`), so the credential is never sent to third-party hosts embedded as external resources. |
 | `AI4DATA_METADATA_CATALOG_X_API_KEY_HOSTS` | No | Comma-separated list of additional hostnames allowed to receive `x-api-key` for catalog-resolved downloads (e.g. `training.ihsn.org`). The catalog host itself is always allowed; use this when downloads are served from a separate subdomain. |
+| `AI4DATA_METADATA_CATALOG_COOKIES` | No | Optional cookie string for authenticated catalog / PDF download sessions. |
+| `AI4DATA_METADATA_CATALOG_EXTRACT_PATH` | No | When set (e.g. `api/admin/search-metadata-extract`), list and fetch metadata via the bulk extract API at `{URL}/{EXTRACT_PATH}/studies` instead of catalog search + per-idno JSON. Omit to keep classic behavior. |
+| `AI4DATA_METADATA_CATALOG_EXTRACT_INCLUDE_ADMIN_METADATA` | No | Query flag for extract requests (default: `true`). |
+| `AI4DATA_METADATA_CATALOG_EXTRACT_INCLUDE_METADATA` | No | Include full NADA JSON in extract responses (default: `true`; required for ingest). |
+| `AI4DATA_METADATA_CATALOG_EXTRACT_FALLBACK_CATALOG_JSON` | No | When `true`, `get_metadata_json(..., include_resources=True)` may fall back to `/api/catalog/json/{idno}` if resources are missing from extract payloads (default: `false`). |
+| `AI4DATA_METADATA_CATALOG_AUTH_BEARER` | No | Optional bearer token for admin extract endpoints. |
 
 ### Embedding templates (`AI4DATA_EMBEDDING_*`)
 

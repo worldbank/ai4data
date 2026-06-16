@@ -12,8 +12,9 @@ from collections.abc import Callable
 from fire import Fire
 from tqdm.auto import tqdm
 
-from ..paths import get_metadata_ids_path
-from .http import get_metadata_ids, get_metadata_json, search_metadata
+from ..paths import get_metadata_cache_path, get_metadata_ids_path
+from . import extract as catalog_extract
+from .http import get_metadata_ids, get_metadata_json, is_extract_mode, search_metadata
 
 
 def save_metadata_ids(metadata_ids: list, dtype: str) -> None:
@@ -34,6 +35,25 @@ def save_metadata_ids(metadata_ids: list, dtype: str) -> None:
         json.dump(metadata_ids, f, indent=2)
 
 
+def _normalize_scrape_params(params: dict) -> tuple[dict, str]:
+    params = dict(params)
+    assert "ps" in params, "The number of items per page is required"
+    assert "type" in params, "The type of metadata is required, e.g., timeseries, document, geospatial, etc."
+
+    if params["type"] == "indicator":
+        params["type"] = "timeseries"
+    if params["type"] == "microdata":
+        params["type"] = "survey"
+
+    dtype = params["type"]
+    if dtype == "timeseries":
+        dtype = "indicator"
+    elif dtype == "survey":
+        dtype = "microdata"
+
+    return params, dtype
+
+
 def scrape_all_ids(
     get_metadata_ids_func: Callable = get_metadata_ids,
     search_metadata_func: Callable = search_metadata,
@@ -49,25 +69,51 @@ def scrape_all_ids(
         save_metadata_ids_func (Callable, optional): Function or task to save metadata IDs.
         **kwargs: Arbitrary keyword arguments representing search parameters.
     """
-    params = kwargs
-
-    assert "ps" in params, "The number of items per page is required"
-    assert "type" in params, "The type of metadata is required, e.g., timeseries, document, geospatial, etc."
-
-    if params["type"] == "indicator":
-        params["type"] = "timeseries"
-    if params["type"] == "microdata":
-        params["type"] = "survey"
-
-    dtype = params["type"]
-    if dtype == "timeseries":
-        dtype = "indicator"
-    elif dtype == "survey":
-        dtype = "microdata"
+    params, dtype = _normalize_scrape_params(kwargs)
 
     metadata_ids = get_metadata_ids_func(params, search_metadata_func=search_metadata_func)
     print(f"Total metadata ids: {len(metadata_ids)}")
 
+    save_metadata_ids_func(metadata_ids, dtype)
+
+
+def _scrape_all_metadata_extract(
+    params: dict,
+    dtype: str,
+    *,
+    force: bool = False,
+    skip_errors: bool = False,
+    save_metadata_ids_func: Callable = save_metadata_ids,
+) -> None:
+    """Single-pass extract scrape: paginate studies, cache metadata, save id list."""
+    metadata_ids: list[dict] = []
+
+    for study in tqdm(catalog_extract.iter_extract_studies(params)):
+        try:
+            metadata = catalog_extract.study_to_catalog_metadata(study)
+            idno = metadata.get("idno") or catalog_extract.study_idno(study)
+            metadata_type = metadata.get("type")
+            if not idno or not metadata_type:
+                continue
+
+            if force or not get_metadata_cache_path(idno, metadata_type).exists():
+                catalog_extract.write_metadata_cache(metadata, idno, metadata_type)
+
+            row = catalog_extract.study_to_search_row(study)
+            metadata_ids.append(
+                {
+                    "id": row.get("id"),
+                    "idno": idno,
+                    "type": metadata_type,
+                }
+            )
+        except Exception as e:
+            idno = catalog_extract.study_idno(study) or "unknown"
+            print(f"Error processing metadata for {idno}: {e}")
+            if not skip_errors:
+                raise
+
+    print(f"Total metadata ids: {len(metadata_ids)}")
     save_metadata_ids_func(metadata_ids, dtype)
 
 
@@ -90,6 +136,18 @@ def scrape_all_metadata(
     """
 
     skip_errors = kwargs.get("skip_errors", False)
+    force = kwargs.get("force", False)
+
+    if is_extract_mode():
+        params, dtype = _normalize_scrape_params(kwargs)
+        _scrape_all_metadata_extract(
+            params,
+            dtype,
+            force=force,
+            skip_errors=skip_errors,
+            save_metadata_ids_func=save_metadata_ids_func,
+        )
+        return
 
     scrape_all_ids(
         get_metadata_ids_func=get_metadata_ids_func,
@@ -99,8 +157,6 @@ def scrape_all_metadata(
     )
 
     dtype = kwargs.get("type", "timeseries")
-    force = kwargs.get("force", False)
-
     if dtype == "indicator":
         dtype = "timeseries"
 
