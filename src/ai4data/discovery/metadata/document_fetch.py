@@ -11,6 +11,9 @@ import httpx
 
 from ..auth import get_catalog_auth_headers, get_catalog_cookies
 from ..paths import get_document_cache_path
+from ..ssl import configure_tls_trust_store
+
+configure_tls_trust_store()
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +72,13 @@ def download_pdf(url: str) -> bytes:
     return content
 
 
-def cache_download_pdf(url: str, idno: str, metadata_type: str, force: bool = False):
+def cache_download_pdf(
+    url: str,
+    idno: str,
+    metadata_type: str,
+    force: bool = False,
+    resource_id: str | None = None,
+):
     """
     Cache the downloaded pdf file.
 
@@ -78,7 +87,7 @@ def cache_download_pdf(url: str, idno: str, metadata_type: str, force: bool = Fa
     don't permanently poison the cache.
     """
 
-    fpath = get_document_cache_path(idno, metadata_type)
+    fpath = get_document_cache_path(idno, metadata_type, resource_id=resource_id)
 
     if fpath.exists() and not force:
         try:

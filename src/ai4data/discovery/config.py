@@ -39,6 +39,31 @@ class MetadataCatalogConfig(BaseSettings):
             "URLs (catalog host plus ``x_api_key_hosts``)."
         ),
     )
+    extract_path: str | None = Field(
+        default=None,
+        description=(
+            "Optional path segment for the IHSN search-metadata-extract API "
+            "(e.g. ``api/admin/search-metadata-extract``). When set, catalog list/fetch "
+            "operations use ``{url}/{extract_path}/studies`` instead of "
+            "``/api/catalog/search`` + ``/api/catalog/json/{idno}``."
+        ),
+    )
+    extract_include_admin_metadata: bool = Field(default=True)
+    extract_include_metadata: bool = Field(default=True)
+    extract_fallback_catalog_json: bool = Field(
+        default=False,
+        description=(
+            "When true and ``include_resources`` is requested, fall back to the classic "
+            "``/api/catalog/json/{idno}`` endpoint if the extract payload lacks resources."
+        ),
+    )
+    auth_bearer: str | None = Field(
+        default=None,
+        description=(
+            "Optional bearer token sent as ``Authorization: Bearer ...`` on extract API "
+            "requests (admin endpoints that do not accept ``x-api-key`` alone)."
+        ),
+    )
 
 
 class EmbeddingTemplatesConfig(BaseSettings):

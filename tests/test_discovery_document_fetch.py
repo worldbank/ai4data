@@ -140,6 +140,30 @@ class TestCacheDownloadPdf(_DocumentFetchTestCase):
         fpath = discovery_paths.get_document_cache_path("IDN-AUTH", "document")
         self.assertFalse(fpath.exists())
 
+    def test_resource_id_uses_double_hyphen_filename(self) -> None:
+        idno = "RWA_NISR_DOC_2025_CPI-MR_MAY_FR_V1"
+        resource_id = "772"
+        expected = discovery_paths.get_document_cache_path(
+            idno, "document", resource_id=resource_id
+        )
+        self.assertEqual(
+            expected.name,
+            f"document_{idno}--{resource_id}.pdf",
+        )
+
+        with mock.patch.object(
+            document_fetch.httpx, "get", return_value=_FakeResponse(_MIN_PDF)
+        ):
+            fpath = document_fetch.cache_download_pdf(
+                "https://example.test/doc.pdf",
+                idno,
+                "document",
+                resource_id=resource_id,
+            )
+
+        self.assertEqual(fpath, expected)
+        self.assertTrue(fpath.exists())
+
 
 if __name__ == "__main__":
     unittest.main()

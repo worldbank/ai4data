@@ -15,13 +15,16 @@ packages (e.g. ``nada-opensearch``).
 
 from __future__ import annotations
 
-from .http import get_ids_type, get_metadata_ids, get_metadata_json, search_metadata
+from . import extract as catalog_extract
+from .http import get_ids_type, get_metadata_ids, get_metadata_json, is_extract_mode, search_metadata
 from .langdoc_id import get_langdoc_uuid
 
 __all__ = [
+    "catalog_extract",
     "get_metadata_json",
     "get_metadata_ids",
     "get_ids_type",
     "search_metadata",
     "get_langdoc_uuid",
+    "is_extract_mode",
 ]

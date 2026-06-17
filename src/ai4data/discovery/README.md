@@ -20,6 +20,12 @@ Defined in [`config.py`](./config.py) (`MetadataCatalogConfig`). Used by [`catal
 | `AI4DATA_METADATA_CATALOG_THUMBNAIL_URL` | No | Format string for document thumbnails; must include `{db_id}` (default matches NADA public thumbnails). |
 | `AI4DATA_METADATA_CATALOG_X_API_KEY` | Only for authenticated APIs | API key sent as header `x-api-key`. Used by [`catalog/data_api.py`](./catalog/data_api.py), and — when set — also attached by [`catalog/http.py`](./catalog/http.py) (search, JSON metadata) and [`metadata/document_fetch.py`](./metadata/document_fetch.py) (PDF downloads). For PDF downloads the header is only sent when the URL's host matches the configured catalog host (or is allow-listed via `AI4DATA_METADATA_CATALOG_X_API_KEY_HOSTS`), so the credential is never sent to third-party hosts embedded as external resources. |
 | `AI4DATA_METADATA_CATALOG_X_API_KEY_HOSTS` | No | Comma-separated list of additional hostnames allowed to receive `x-api-key` for catalog-resolved downloads (e.g. `training.ihsn.org`). The catalog host itself is always allowed; use this when downloads are served from a separate subdomain. |
+| `AI4DATA_METADATA_CATALOG_COOKIES` | No | Optional cookie string for authenticated catalog / PDF download sessions. |
+| `AI4DATA_METADATA_CATALOG_EXTRACT_PATH` | No | When set (e.g. `api/admin/search-metadata-extract`), list and fetch metadata via the bulk extract API at `{URL}/{EXTRACT_PATH}/studies` instead of catalog search + per-idno JSON. Omit to keep classic behavior. |
+| `AI4DATA_METADATA_CATALOG_EXTRACT_INCLUDE_ADMIN_METADATA` | No | Query flag for extract requests (default: `true`). |
+| `AI4DATA_METADATA_CATALOG_EXTRACT_INCLUDE_METADATA` | No | Include full NADA JSON in extract responses (default: `true`; required for ingest). |
+| `AI4DATA_METADATA_CATALOG_EXTRACT_FALLBACK_CATALOG_JSON` | No | When `true`, `get_metadata_json(..., include_resources=True)` may fall back to `/api/catalog/json/{idno}` if resources are missing from extract payloads (default: `false`). |
+| `AI4DATA_METADATA_CATALOG_AUTH_BEARER` | No | Optional bearer token for admin extract endpoints. |
 
 ### Embedding templates (`AI4DATA_EMBEDDING_*`)
 
@@ -61,6 +67,16 @@ Defined in [`config.py`](./config.py) (`DiscoveryDataConfig`). Used by [`paths.p
 | `AI4DATA_DISCOVERY_DATA_PATH` | No | Root directory for discovery caches. If unset, defaults to `ai4data/data` under the installed package (in this repo from source: `src/ai4data/data`). |
 
 **Precedence:** `init_discovery_paths(Path("..."))` with a non-`None` path always wins over the env var. Calling `init_discovery_paths(None)` (or `init_discovery_paths()` with default) applies `_default_data_root()`, which respects `AI4DATA_DISCOVERY_DATA_PATH` when set.
+
+### TLS / corporate proxy (`truststore`, `SSL_CERT_FILE`)
+
+Catalog HTTP clients call :func:`ai4data.discovery.ssl.configure_tls_trust_store` on import. With the **`discovery`** extra installed, **`truststore`** injects the **OS trust store** into Python's :mod:`ssl` module so :mod:`httpx` can verify TLS through corporate proxies that re-sign traffic (CAs in macOS Keychain, Windows cert store, etc.).
+
+| Situation | What to do |
+|-----------|------------|
+| **Host ingest on macOS** | Install `ai4data[discovery]` (includes `truststore`); ingest should work if the site opens in your browser |
+| **Docker ingest** | The container only has Debian public CAs — **not** your Mac Keychain. Export your org root CA to a `.pem` file and set `SSL_CERT_FILE` (see nada-ai `docs/qdrant-pipeline-guide.md`, TLS section) |
+| **Custom CA file (any env)** | Set `SSL_CERT_FILE` or `REQUESTS_CA_BUNDLE` to a `.pem` bundle before running ingest |
 
 ### Optional: Apache Tika
 

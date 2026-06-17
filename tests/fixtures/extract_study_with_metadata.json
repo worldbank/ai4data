@@ -1,0 +1,80 @@
+{
+  "status": "success",
+  "offset": 0,
+  "limit": 1,
+  "total": 901,
+  "has_more": false,
+  "studies": [
+    {
+      "core_fields": {
+        "id": 42,
+        "idno": "RWA_NISR_DOC_2025_CPI-MR_MAY_FR_V1"
+      },
+      "filters": {
+        "doctype": 1,
+        "published": 1,
+        "dataset_type": "document",
+        "year_start": 2025,
+        "year_end": 2025,
+        "countries": [181],
+        "regions": [7, 9],
+        "tags": []
+      },
+      "metadata": {
+        "type": "document",
+        "idno": "RWA_NISR_DOC_2025_CPI-MR_MAY_FR_V1",
+        "metadata_information": {
+          "title": "Consumer Price Index May 2025",
+          "idno": "RWA_NISR_DOC_2025_CPI-MR_MAY_FR_V1"
+        },
+        "document_description": {
+          "title_statement": {
+            "title": "Consumer Price Index May 2025"
+          },
+          "abstract": "Monthly CPI report."
+        }
+      },
+      "resources": [
+        {
+          "resource_id": "1",
+          "dctype": "Document, Other [doc/oth]",
+          "resource_type": "doc/oth",
+          "filename": "http://statistics.gov.rw/sites/default/files/documents/2025-06/CPI Publication _French_Mai 2025_0.pdf",
+          "is_url": "1",
+          "dcformat": "PDF",
+          "title": "INDICE DES PRIX A LA CONSOMMATION (IPC) MAI 2025",
+          "_links": {
+            "download": "http://statistics.gov.rw/sites/default/files/documents/2025-06/CPI Publication _French_Mai 2025_0.pdf",
+            "type": "link"
+          }
+        },
+        {
+          "resource_id": "772",
+          "dctype": "Document, Other [doc/oth]",
+          "resource_type": "doc/oth",
+          "filename": "CPI Publication _French_Mai 2025_0.pdf",
+          "is_url": "0",
+          "dcformat": "application/pdf",
+          "title": "INDICE DES PRIX A LA CONSOMMATION (IPC) MAI 2025",
+          "_links": {
+            "download": "https://training.ihsn.org/index.php/api/admin/resources/RWA_NISR_DOC_2025_CPI-MR_MAY_FR_V1/resources/download/772",
+            "type": "download"
+          }
+        },
+        {
+          "resource_id": "37",
+          "dctype": "Document, Analytical [doc/anl]",
+          "resource_type": "doc/anl",
+          "filename": "http://statistics.gov.rw/sites/default/files/documents/2025-06/CPI Publication _French_Mai 2025_0.pdf",
+          "is_url": "1",
+          "dcformat": "PDF",
+          "title": "INDICE DES PRIX A LA CONSOMMATION (IPC) MAI 2025",
+          "_links": {
+            "download": "http://statistics.gov.rw/sites/default/files/documents/2025-06/CPI Publication _French_Mai 2025_0.pdf",
+            "type": "link"
+          }
+        }
+      ]
+    }
+  ]
+}
