@@ -68,6 +68,16 @@ Defined in [`config.py`](./config.py) (`DiscoveryDataConfig`). Used by [`paths.p
 
 **Precedence:** `init_discovery_paths(Path("..."))` with a non-`None` path always wins over the env var. Calling `init_discovery_paths(None)` (or `init_discovery_paths()` with default) applies `_default_data_root()`, which respects `AI4DATA_DISCOVERY_DATA_PATH` when set.
 
+### TLS / corporate proxy (`truststore`, `SSL_CERT_FILE`)
+
+Catalog HTTP clients call :func:`ai4data.discovery.ssl.configure_tls_trust_store` on import. With the **`discovery`** extra installed, **`truststore`** injects the **OS trust store** into Python's :mod:`ssl` module so :mod:`httpx` can verify TLS through corporate proxies that re-sign traffic (CAs in macOS Keychain, Windows cert store, etc.).
+
+| Situation | What to do |
+|-----------|------------|
+| **Host ingest on macOS** | Install `ai4data[discovery]` (includes `truststore`); ingest should work if the site opens in your browser |
+| **Docker ingest** | The container only has Debian public CAs — **not** your Mac Keychain. Export your org root CA to a `.pem` file and set `SSL_CERT_FILE` (see nada-ai `docs/qdrant-pipeline-guide.md`, TLS section) |
+| **Custom CA file (any env)** | Set `SSL_CERT_FILE` or `REQUESTS_CA_BUNDLE` to a `.pem` bundle before running ingest |
+
 ### Optional: Apache Tika
 
 [`processors/document.py`](./processors/document.py) uses **`tika`** for `tika_parse_pdf`. The Python package may require a running Tika server or local JAR; see [tika-python](https://github.com/chrismattmann/tika-python) documentation for server/JVM setup. That is runtime configuration outside `ai4data.discovery.config`.

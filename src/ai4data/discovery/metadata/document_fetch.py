@@ -11,6 +11,9 @@ import httpx
 
 from ..auth import get_catalog_auth_headers, get_catalog_cookies
 from ..paths import get_document_cache_path
+from ..ssl import configure_tls_trust_store
+
+configure_tls_trust_store()
 
 logger = logging.getLogger(__name__)
 

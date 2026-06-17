@@ -20,14 +20,9 @@ For all capabilities:
 
 from importlib.metadata import version, PackageNotFoundError
 
-# Use the OS trust store for TLS: corporate proxies re-sign API traffic
-# with CAs that certifi doesn't know.
-try:
-    import truststore
+from .discovery.ssl import configure_tls_trust_store
 
-    truststore.inject_into_ssl()
-except ImportError:
-    pass
+configure_tls_trust_store()
 
 try:
     __version__ = version("ai4data")

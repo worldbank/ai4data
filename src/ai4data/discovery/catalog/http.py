@@ -18,7 +18,10 @@ from tqdm.auto import tqdm
 from ..auth import get_catalog_auth_headers, get_catalog_cookies
 from ..config import METADATA_CATALOG_URL
 from ..paths import get_metadata_cache_path
+from ..ssl import configure_tls_trust_store
 from . import extract as catalog_extract
+
+configure_tls_trust_store()
 
 
 def is_extract_mode() -> bool:

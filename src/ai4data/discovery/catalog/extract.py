@@ -12,7 +12,10 @@ import httpx
 from ..auth import get_catalog_auth_headers, get_catalog_cookies
 from ..config import METADATA_CATALOG_URL, metadata_catalog
 from ..paths import get_metadata_cache_path
+from ..ssl import configure_tls_trust_store
 from ..type_normalization import normalize_catalog_metadata_type
+
+configure_tls_trust_store()
 
 SUCCESS_STATUSES = {"", "success", "ok"}
 
