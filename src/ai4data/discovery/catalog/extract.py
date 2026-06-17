@@ -140,6 +140,37 @@ def study_metadata_type(study: dict[str, Any]) -> str | None:
     return None
 
 
+def study_download_resources(study: dict[str, Any]) -> list[dict[str, Any]]:
+    """Normalize extract study resources with ``_links.type == \"download\"`` to catalog shape."""
+    raw = study.get("resources")
+    if not isinstance(raw, list):
+        return []
+
+    downloads: list[dict[str, Any]] = []
+    for resource in raw:
+        if not isinstance(resource, dict):
+            continue
+        links = resource.get("_links")
+        if not isinstance(links, dict) or links.get("type") != "download":
+            continue
+        url = links.get("download")
+        if not url:
+            continue
+
+        item: dict[str, Any] = {
+            "resource_id": resource.get("resource_id"),
+            "url": url,
+            "dcformat": resource.get("dcformat"),
+            "is_url": str(resource.get("is_url", "0")),
+        }
+        for key in ("title", "dctype", "resource_type", "filename", "sort_order"):
+            if resource.get(key) is not None:
+                item[key] = resource[key]
+        downloads.append(item)
+
+    return downloads
+
+
 def study_to_search_row(study: dict[str, Any]) -> dict[str, Any]:
     """Build a catalog-search-compatible row from one extract study payload."""
     core = study.get("core_fields") if isinstance(study.get("core_fields"), dict) else {}
@@ -169,6 +200,10 @@ def study_to_catalog_metadata(study: dict[str, Any]) -> dict[str, Any]:
     filters = study.get("filters")
     if isinstance(filters, dict):
         result["_extract_filters"] = filters
+
+    downloads = study_download_resources(study)
+    if downloads:
+        result["external_resources"] = downloads
 
     return result
 

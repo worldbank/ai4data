@@ -86,10 +86,14 @@ def get_metadata_cache_path(
         )
 
 
-def get_document_cache_path(idno: str, metadata_type: str) -> Path:
-    return construct_path(
-        DOCUMENT_CACHE_DIR / metadata_type, f"{metadata_type}_{idno}.pdf"
-    )
+def get_document_cache_path(
+    idno: str, metadata_type: str, resource_id: str | None = None
+) -> Path:
+    if resource_id is not None:
+        filename = f"{metadata_type}_{idno}--{resource_id}.pdf"
+    else:
+        filename = f"{metadata_type}_{idno}.pdf"
+    return construct_path(DOCUMENT_CACHE_DIR / metadata_type, filename)
 
 
 def get_contextualized_dimensions_path(idno: str, raw: bool = False) -> Path:

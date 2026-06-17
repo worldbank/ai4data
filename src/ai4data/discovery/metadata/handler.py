@@ -228,6 +228,39 @@ class IndicatorMetadata(Metadata):
         return langdocs
 
 
+def _is_pdf_dcformat(dcformat: object) -> bool:
+    if not dcformat:
+        return False
+    normalized = str(dcformat).strip().lower()
+    return normalized in ("application/pdf", "pdf")
+
+
+def _pdf_download_candidates(metadata: dict) -> list[dict]:
+    """Return hosted PDF external resources, or a legacy single URL fallback."""
+    external_resources = metadata.get("external_resources")
+    if isinstance(external_resources, list) and external_resources:
+        candidates: list[dict] = []
+        for resource in external_resources:
+            if not isinstance(resource, dict):
+                continue
+            is_url = str(resource.get("is_url", "1"))
+            if is_url not in ("0", "1"):
+                raise AssertionError(
+                    f'Invalid `is_url` value: {is_url}, expected "0" or "1"'
+                )
+            if _is_pdf_dcformat(resource.get("dcformat")) and is_url == "0":
+                url = resource.get("url")
+                if url:
+                    candidates.append(resource)
+        if candidates:
+            return candidates
+
+    legacy_url = metadata.get("document_description", {}).get("url")
+    if legacy_url:
+        return [{"url": legacy_url}]
+    return []
+
+
 class DocumentMetadata(Metadata):
     """
     Ideas for how we should work with documents:
@@ -274,42 +307,27 @@ class DocumentMetadata(Metadata):
         Returns:
             list: A list of LangChain documents.
         """
+        idno = self.metadata.get("idno")
+        langdocs: list[LangchainDocument] = []
 
-        # Check if the document url is in the metadata
-        url = self.metadata.get("document_description", {}).get("url", None)
-
-        # If external resources are available, prefer that over the document url
-        external_resources = self.metadata.get("external_resources", None)
-        if external_resources:
-            for resource in external_resources:
-                is_url = str(resource.get("is_url", "1"))
-                assert is_url in ("0", "1"), (
-                    f'Invalid `is_url` value: {is_url}, expected "0" or "1"'
-                )
-                if (
-                    resource.get("dcformat", None) == "application/pdf"
-                    and is_url == "0"
-                ):
-                    url = resource.get("url", None)
-                    # We only consider the first pdf url we find
-                    # TODO: We should consider all pdf urls and use them all for the document
-                    break
-
-        docs = []
-
-        if url:
-            # Download the document pdf.
-            # We only consider pdfs for now.
-            pdf_path = cache_download_pdf(url, self.metadata.get("idno"), self.type)
-            docs = load_pdf(pdf_path)
-
-        return [
-            LangchainDocument(
-                page_content=doc.page_content,
-                metadata={"qfield": field, "doc_meta": doc.metadata, **self.payload},
+        for resource in _pdf_download_candidates(self.metadata):
+            url = resource["url"]
+            resource_id = resource.get("resource_id")
+            pdf_path = cache_download_pdf(
+                url,
+                idno,
+                self.type,
+                resource_id=str(resource_id) if resource_id is not None else None,
             )
-            for doc in docs
-        ]
+            for doc in load_pdf(pdf_path):
+                extra_meta: dict = {"qfield": field, "doc_meta": doc.metadata, **self.payload}
+                if resource_id is not None:
+                    extra_meta["resource_id"] = str(resource_id)
+                langdocs.append(
+                    LangchainDocument(page_content=doc.page_content, metadata=extra_meta)
+                )
+
+        return langdocs
 
     def get_langdocs(self) -> list[LangchainDocument]:
         """

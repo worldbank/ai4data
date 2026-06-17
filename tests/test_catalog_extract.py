@@ -78,6 +78,30 @@ class TestStudyNormalization(unittest.TestCase):
         metadata = catalog_extract.study_to_catalog_metadata(study)
         self.assertEqual(metadata["type"], "indicator")
 
+    def test_study_download_resources_filters_link_type(self):
+        metadata = catalog_extract.study_to_catalog_metadata(SAMPLE_STUDY)
+        resources = metadata.get("external_resources", [])
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]["resource_id"], "772")
+        self.assertEqual(
+            resources[0]["url"],
+            "https://training.ihsn.org/index.php/api/admin/resources/"
+            "RWA_NISR_DOC_2025_CPI-MR_MAY_FR_V1/resources/download/772",
+        )
+        self.assertEqual(resources[0]["is_url"], "0")
+        self.assertEqual(resources[0]["dcformat"], "application/pdf")
+
+    def test_study_download_resources_empty_when_no_download_type(self):
+        study = dict(SAMPLE_STUDY)
+        study["resources"] = [
+            {
+                "resource_id": "1",
+                "_links": {"download": "http://example.test/doc.pdf", "type": "link"},
+            }
+        ]
+        metadata = catalog_extract.study_to_catalog_metadata(study)
+        self.assertNotIn("external_resources", metadata)
+
 
 class TestExtractHttp(ExtractModeTestCase):
     @mock.patch("ai4data.discovery.catalog.extract.httpx.get")
