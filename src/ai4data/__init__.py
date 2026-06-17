@@ -17,7 +17,17 @@ This package provides various AI-powered tools for data analysis:
 For all capabilities:
   uv pip install ai4data[all]
 """
+
 from importlib.metadata import version, PackageNotFoundError
+
+# Use the OS trust store for TLS: corporate proxies re-sign API traffic
+# with CAs that certifi doesn't know.
+try:
+    import truststore
+
+    truststore.inject_into_ssl()
+except ImportError:
+    pass
 
 try:
     __version__ = version("ai4data")
