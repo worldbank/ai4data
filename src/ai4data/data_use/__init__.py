@@ -135,7 +135,7 @@ def extract_from_text(
     model_id: Optional[str] = None,
     enable_chunking: bool = True,
     use_classifier: bool = False,
-    adapter_id: Optional[str] = "rafmacalaba/gliner2-datause-large-v5-approach-e",
+    adapter_id: Optional[str] = "ai4data/datause-extraction-v1",
     normalize_text: bool = True,
 ) -> Dict[str, Any]:
     """Extract dataset mentions from text.
@@ -146,12 +146,12 @@ def extract_from_text(
         custom_schema: Optional custom schema to use instead of default
         exclude_non_datasets: If True, filter out datasets with dataset_tag="non-dataset"
         dataset_threshold: Optional confidence threshold for dataset_name field (0.0-1.0)
-        max_tokens: Maximum tokens per chunk for long texts (default: 512)
+        max_tokens: Maximum tokens per chunk for long texts (default: 200)
         model_id: Optional model ID to use for this specific extraction
         enable_chunking: Whether to split long text into chunks (default: True)
         use_classifier: Whether to use pre-filtering classifier (default: False)
         adapter_id: HuggingFace adapter repo ID to apply to the base model.
-            Defaults to "rafmacalaba/gliner2-datause-large-v5-approach-e".
+            Defaults to "ai4data/datause-extraction-v1".
         normalize_text: If True, normalize page text before extraction (default: True)
 
     Returns:
@@ -167,7 +167,7 @@ def extract_from_text(
         >>> print(result['datasets'])
     """
     _default_adapter_id = "ai4data/datause-extraction-v1"
-    if adapter_id != _default_adapter_id:
+    if adapter_id != _default_adapter_id or model_id is not None:
         extractor = DatasetExtractor(model_id=model_id, adapter_id=adapter_id)
     else:
         extractor = _get_default_extractor()
@@ -209,7 +209,7 @@ def extract_from_document(
         include_metadata: Whether to include metadata
         exclude_non_datasets: If True, filter out datasets with dataset_tag="non-dataset"
         dataset_threshold: Optional confidence threshold for dataset_name field (0.0-1.0)
-        max_tokens: Maximum tokens per chunk for long texts (default: 512)
+        max_tokens: Maximum tokens per chunk for long texts (default: 200)
         use_classifier: If True, skip chunks that fail the English pre-filter before
             running GLiNER2 extraction (default: True)
         skip_references: If True, skip pages in references/appendix sections (default: True)

@@ -41,9 +41,9 @@ class ModelManager:
             model_id: HuggingFace model ID or path to local model.
                      If None, uses default model.
             adapter_id: HuggingFace adapter repo ID to apply after loading the base model.
-                       If not provided, falls back to the adapter_id set on __init__
-                       (DEFAULT_ADAPTER_ID by default). Pass an empty string or explicitly
-                       pass ``None`` via ``load(adapter_id=None)`` to skip adapter loading.
+                       If not provided (None), falls back to the adapter_id set on __init__
+                       (DEFAULT_ADAPTER_ID by default). Pass an empty string to skip adapter
+                       loading entirely.
 
         Returns:
             Loaded GLiNER2 model (with adapter applied if specified)

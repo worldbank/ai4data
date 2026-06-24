@@ -422,8 +422,7 @@ class DatasetExtractor:
 
         Uses token counting to determine approximate split points, then snaps
         each split to the nearest markdown structural boundary (headers,
-        paragraph breaks, table edges). Footnote definitions referenced in
-        each chunk are appended for model context.
+        paragraph breaks, table edges).
 
         Args:
             text: Input text to chunk
@@ -435,8 +434,6 @@ class DatasetExtractor:
         Returns:
             List of tuples (chunk_text, char_offset) where char_offset is the
             starting character position of the chunk in the original text.
-            Note: chunk_text may include appended footnotes that extend beyond
-            the offset range (for model context only).
         """
         from gliner2.processor import WhitespaceTokenSplitter
 
@@ -447,8 +444,7 @@ class DatasetExtractor:
         if len(tokens) <= max_tokens:
             return [(text, 0)]
 
-        # Pre-compute footnotes and table boundaries
-        footnotes, _ = self._extract_footnotes(text)
+        # Pre-compute table boundaries
         table_boundaries = self._detect_table_boundaries(text)
 
         chunks = []
@@ -781,7 +777,7 @@ class DatasetExtractor:
                 false positives such as table/figure labels (default: False)
             normalize_text: If True, normalize input text before extraction by
                 fixing hyphenated line breaks and collapsing excessive whitespace.
-                Useful for pymupdf4llm markdown outputs (default: False)
+                Useful for pymupdf4llm markdown outputs (default: True)
             extract_provenance: If True, also extract provenance fields
                 (author, producer, publication_year, reference_year,
                 reference_population, geography, description, acronym).

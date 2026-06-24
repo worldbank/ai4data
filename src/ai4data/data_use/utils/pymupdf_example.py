@@ -1,3 +1,11 @@
+import json
+import os
+import tempfile
+from typing import Dict, List, Union
+
+import requests
+
+
 def load_pdf(
     fname_or_url: str, n_pages: int = 1, parser: str = "pymupdf"
 ) -> List[Dict[str, Union[str, List[int]]]]:

@@ -48,7 +48,6 @@ def mock_gliner_model():
 
     # Mock the create_schema method chain
     mock_schema_builder = MagicMock()
-    MagicMock()
 
     # Setup method chaining
     mock_schema_builder.structure.return_value = mock_schema_builder
