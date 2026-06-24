@@ -34,11 +34,12 @@ dependencies = [
 [project.optional-dependencies]
 # Core data use extraction (dataset mention extraction from text/documents)
 datause = [
-	"gliner2>=0.1.0",
+	"gliner2>=1.3.0",
 	"torch>=2.0.0",
 	"transformers>=4.30.0",
 	"pymupdf>=1.23.0",
 	"rapidfuzz>=3.0.0",
+	"peft>=0.11.0",
 ]
 
 # Harmonization (clustering and deduplication of dataset names)

@@ -1,9 +1,5 @@
-
-
 def load_pdf(
-    fname_or_url: str, 
-    n_pages: int = 1,
-    parser: str = "pymupdf"
+    fname_or_url: str, n_pages: int = 1, parser: str = "pymupdf"
 ) -> List[Dict[str, Union[str, List[int]]]]:
     """
     Loads a PDF using the selected parser.
@@ -17,6 +13,7 @@ def load_pdf(
 
     def _open_pymupdf(path: str) -> List[Dict[str, Union[str, List[int]]]]:
         import fitz  # pymupdf
+
         doc = fitz.open(path)
         total = len(doc)
         for start in range(0, total, n_pages):
@@ -50,15 +47,16 @@ def load_pdf(
     else:
         raise ValueError(f"Unknown parser: {parser}")
 
+
 def load_json_data(filepath: str):
     """
     Loads a JSON or JSONL file from the given path.
     Returns a dict or list (for JSON) or list of dicts (for JSONL).
     """
-    with open(filepath, 'r', encoding='utf-8') as f:
+    with open(filepath, "r", encoding="utf-8") as f:
         first_line = f.readline()
         f.seek(0)
-        if first_line.strip().startswith('{') and not first_line.strip().endswith('['):
+        if first_line.strip().startswith("{") and not first_line.strip().endswith("["):
             # Try JSON Lines: each line is a dict
             try:
                 data = [json.loads(line) for line in f if line.strip()]

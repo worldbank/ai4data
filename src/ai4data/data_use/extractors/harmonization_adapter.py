@@ -92,7 +92,11 @@ def extract_dataset_mentions(dedup_files: List[Dict[str, Any]]) -> pd.DataFrame:
             if not dataset_name:
                 continue
 
-            dataset_tag = dataset.get("dataset_tag", "named")
+            # Read v21-diversity field name first, fall back to legacy name
+            dataset_tag = (
+                dataset.get("specificity_tag")
+                or dataset.get("dataset_tag", "named")
+            )
             count = dataset.get("count", 1)
 
             # Extract acronym - handle both list and string formats
