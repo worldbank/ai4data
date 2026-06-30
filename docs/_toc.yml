@@ -26,6 +26,24 @@ parts:
       - file: docs/metadata-reviewer/agentic-approach.md
       - file: docs/metadata-reviewer/implementation.md
 
+  - caption: Metadata Reviewer User Manual
+    numbered: true
+    chapters:
+      - file: docs/metadata-reviewer/user-manual/index.md
+      - file: docs/metadata-reviewer/user-manual/introduction.md
+      - file: docs/metadata-reviewer/user-manual/core-concepts.md
+      - file: docs/metadata-reviewer/user-manual/installation.md
+      - file: docs/metadata-reviewer/user-manual/quick-start.md
+      - file: docs/metadata-reviewer/user-manual/client-api.md
+      - file: docs/metadata-reviewer/user-manual/jobs.md
+      - file: docs/metadata-reviewer/user-manual/advanced-usage.md
+      - file: docs/metadata-reviewer/user-manual/review-board.md
+      - file: docs/metadata-reviewer/user-manual/end-to-end-workflow.md
+      - file: docs/metadata-reviewer/user-manual/troubleshooting.md
+      - file: docs/metadata-reviewer/user-manual/appendix-api-reference.md
+      - file: docs/metadata-reviewer/user-manual/appendix-glossary.md
+      - file: docs/metadata-reviewer/user-manual/appendix-agents-manifest.md
+
   - caption: Data Discoverability
     numbered: true
     chapters:
