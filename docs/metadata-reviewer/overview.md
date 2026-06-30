@@ -2,6 +2,8 @@
 
 `MetadataReviewerClient` uses a multi-agent LLM pipeline to scan dataset series metadata for quality issues: incorrect content, inconsistencies, typos, missing fields, and more. It returns a ranked list of detected issues with suggested corrections.
 
+For installation, API usage, the review board, and troubleshooting, see the **[Metadata Reviewer User Manual](user-manual/index.md)**.
+
 ---
 
 ## The Problem
