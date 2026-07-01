@@ -3,9 +3,9 @@
 A reusable, configuration-driven pipeline for **permutation-invariant fine-tuning
 (PI-FT)** of embedding models for **structured-metadata retrieval**.
 
-It packages the method from the paper *Field Order Should Not Matter:
+It packages the method from the paper [*Field Order Should Not Matter:
 Permutation-Invariant Embedding Model Fine-Tuning for Structured Metadata
-Retrieval* (Solatorio, Dupriez, Macalaba) into a tool any organization can point
+Retrieval*](https://arxiv.org/abs/2606.30473) (Solatorio, Dupriez, Macalaba) into a tool any organization can point
 at its own catalogue. You bring a set of structured records (each a small schema
 of labeled fields) and a YAML config; the toolkit generates training
 supervision, mines hard negatives, fine-tunes a small open encoder, evaluates it
@@ -164,6 +164,25 @@ This toolkit is a clean reimplementation of the published method for reuse. It i
 self-contained and does not import the paper's experiment scripts. The original,
 paper-exact pipeline (sweeps, figures, ablations) lives elsewhere in this
 repository and is documented in its own `REPRODUCE.md`.
+
+## Citation
+
+If you use this toolkit or the PI-FT method, please cite:
+
+```bibtex
+@article{solatorio2026fieldorder,
+  title={Field Order Should Not Matter: Permutation-Invariant Embedding Model Fine-Tuning for Structured Metadata Retrieval},
+  author={Solatorio, Aivin V. and Dupriez, Olivier and Macalaba, Rafael},
+  journal={arXiv preprint arXiv:2606.30473},
+  year={2026},
+  url={https://arxiv.org/abs/2606.30473},
+  eprint={2606.30473},
+  archivePrefix={arXiv},
+  primaryClass={cs.CL}
+}
+```
+
+Paper: [https://arxiv.org/abs/2606.30473](https://arxiv.org/abs/2606.30473)
 
 ## License
 

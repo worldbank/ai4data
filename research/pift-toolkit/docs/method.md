@@ -118,3 +118,7 @@ A fine-tuned SentenceTransformer directory you can load anywhere, plus a
 `pift_config.json` recording the query/document prefixes so evaluation and
 serving apply them automatically. The same encoder powers `pift evaluate` and
 `pift search`.
+
+## Reference
+
+For the full method, benchmark (DevDataBench), and experimental results, see Solatorio, Dupriez, and Macalaba (2026), [*Field Order Should Not Matter*](https://arxiv.org/abs/2606.30473) {cite}`solatorio2026fieldorder`.
