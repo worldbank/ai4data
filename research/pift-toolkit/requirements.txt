@@ -1,0 +1,14 @@
+# Core (config, serialization, metrics, generation wiring)
+pyyaml>=6.0
+numpy>=1.24
+python-dotenv>=1.0
+
+# Training / mining / evaluation / serving (install for everything past `generate`)
+torch>=2.1
+sentence-transformers>=3.0
+datasets>=2.16
+transformers>=4.40
+
+# Synthetic query generation against a hosted LLM (pick the one you use)
+anthropic>=0.40
+openai>=1.40
