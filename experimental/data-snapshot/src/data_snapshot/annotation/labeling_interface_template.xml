@@ -1,0 +1,16 @@
+<View>
+	<View style="display:flex;align-items:start;gap:8px;flex-direction:row">
+		<Image valueList="$pages" name="pdf" zoom="true" zoomControl="true"/>
+		<RectangleLabels name="rectangles" toName="pdf" showInline="false">
+			<Label value="Figure" background="#ff007b"/>
+			<Label value="Table" background="#0055ff"/>
+			<Label value="For review" background="#e4e708"/>
+		</RectangleLabels>
+	</View>
+</View><!--  {
+"pages": [
+    "https://htx-pub.s3.amazonaws.com/demo/images/demo_stock_purchase_agreement/0001.jpg",
+    "https://htx-pub.s3.amazonaws.com/demo/images/demo_stock_purchase_agreement/0002.jpg",
+    "https://htx-pub.s3.amazonaws.com/demo/images/demo_stock_purchase_agreement/0003.jpg"
+  ]
+}  -->
