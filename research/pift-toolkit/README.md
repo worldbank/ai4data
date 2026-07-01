@@ -158,13 +158,6 @@ Production serving: [docs/deployment.md](docs/deployment.md).
 | `examples/sample_catalogue/` | A small synthetic catalogue to run end to end |
 | `docs/` | Method, configuration, pipeline, and deployment guides |
 
-## Relationship to the research code
-
-This toolkit is a clean reimplementation of the published method for reuse. It is
-self-contained and does not import the paper's experiment scripts. The original,
-paper-exact pipeline (sweeps, figures, ablations) lives elsewhere in this
-repository and is documented in its own `REPRODUCE.md`.
-
 ## Citation
 
 If you use this toolkit or the PI-FT method, please cite:
@@ -184,7 +177,3 @@ If you use this toolkit or the PI-FT method, please cite:
 
 Paper: [https://arxiv.org/abs/2606.30473](https://arxiv.org/abs/2606.30473)
 
-## License
-
-Released for reuse. Add your organization's license file here before
-distributing.
