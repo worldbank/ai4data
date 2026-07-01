@@ -48,6 +48,17 @@ parts:
     numbered: true
     chapters:
       - file: docs/data-discoverability/data-discoverability.md
+      - file: docs/data-discoverability/embedding-fine-tuning.md
+        title: Fine-Tuning Embedding Models for Structured Metadata
+        sections:
+          - file: research/pift-toolkit/docs/method.md
+            title: The Method
+          - file: research/pift-toolkit/docs/pipeline.md
+            title: Pipeline Guide
+          - file: research/pift-toolkit/docs/configuration.md
+            title: Configuration Reference
+          - file: research/pift-toolkit/docs/deployment.md
+            title: Deployment
 
   - caption: Model Context Protocol (MCP) for AI-centric Data Dissemination
     numbered: true

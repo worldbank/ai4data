@@ -1,0 +1,85 @@
+# Example configuration for the sample catalogue.
+#
+# Copy this file, point `catalogue` at your records, and edit `fields` to match
+# your schema. Everything downstream reads from this one file. See
+# docs/configuration.md for the full reference.
+
+catalogue:
+  id_field: id                                   # unique record id (dotted path ok)
+  # Relative paths resolve against THIS config file's directory (configs/),
+  # so the toolkit works from any working directory.
+  records_file: ../examples/sample_catalogue/records.jsonl
+  # ...or a directory of one-JSON-per-record files:
+  # records_glob: "../examples/sample_catalogue/*.json"
+
+# Ordered list of fields to serialize. `role`:
+#   protected = never dropped (e.g. the title)
+#   fixed     = droppable, length-capped
+#   elastic   = shares the leftover budget (long free text), truncated fairly
+fields:
+  - {key: title,        label: "Title",               role: protected}
+  - {key: description,  label: "Description",         role: elastic}
+  - {key: methodology,  label: "Methodology",         role: elastic}
+  - {key: unit,         label: "Unit",                role: fixed}
+  - {key: frequency,    label: "Frequency",           role: fixed}
+  - {key: time_coverage, label: "Time coverage",      role: fixed}
+  - key: topics
+    label: "Topics"
+    role: fixed
+    max_chars: 250
+    extract: {type: list_join, subkey: name, sep: ", "}
+  - key: geographic_coverage
+    label: "Geographic coverage"
+    role: fixed
+    max_chars: 250
+    extract: {type: list_scalar, sep: ", "}
+  - {key: "source.organization", label: "Source",     role: fixed}
+
+serialization:
+  separator: " | "
+  total_chars: 1700        # ~512 tokens at ~4 chars/token; tune to your encoder
+  field_dropout: 0.15
+  label_scheme: label      # "label" = human labels above; "key" = raw field names
+
+# Query facets for synthetic supervision. Each maps to the field LABELS whose
+# content the facet depends on. Those labels are (a) skipped when a record lacks
+# them during generation, and (b) protected from dropout in the positive during
+# training, so the evidence the pair teaches is never removed.
+facets:
+  keyword: []
+  natural: []
+  definition: ["Description"]
+  methodology: ["Methodology"]
+  geo: ["Geographic coverage"]
+  year: ["Time coverage"]
+  geo_year: ["Geographic coverage", "Time coverage"]
+  unit: ["Unit"]
+  frequency: ["Frequency"]
+  source: ["Source"]
+  thematic: ["Topics"]
+
+# The encoder to fine-tune. Prefixes belong to the model family (E5 needs them);
+# leave empty for models that do not use prefixes.
+base_model:
+  hf_id: intfloat/multilingual-e5-small
+  query_prefix: "query: "
+  doc_prefix: "passage: "
+
+generation:
+  provider: anthropic            # anthropic | openai | heuristic (offline)
+  model: claude-haiku-4-5
+  eval_provider: anthropic
+  eval_model: claude-sonnet-4-6  # a different/stronger model for the eval split
+  languages: [en]                # add more, e.g. [en, es, fr, sw, ar, zh]
+  queries_per_record: 4
+  eval_fraction: 0.1             # held-out share of records (by id hash)
+
+training:
+  loss: cmnrl                    # cmnrl (unguided) | cgist (guided)
+  guide_model: null             # required for cgist, e.g. a strong open encoder
+  epochs: 5
+  batch_size: 128
+  mini_batch_size: 32
+  lr: 3.0e-5
+  n_negatives: 3
+  max_seq_length: 512

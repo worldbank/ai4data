@@ -94,6 +94,14 @@ uv pip install ai4data[search]
 
 ---
 
+## Fine-Tuning Embedding Models for Structured Metadata
+
+Catalogue search quality depends not only on the retrieval architecture above, but on how well the embedding model represents structured records. When metadata is a set of labeled fields rather than a single document, standard fine-tuning can make models sensitive to field order — a problem that surfaces when indexes are rebuilt or federated across systems that serialize records differently.
+
+The [Fine-Tuning Embedding Models for Structured Metadata](embedding-fine-tuning.md) subsection documents a permutation-invariant fine-tuning (PI-FT) pipeline {cite}`solatorio2026fieldorder`: a YAML-driven toolkit for generating training data, fine-tuning a small encoder, evaluating order robustness, and deploying search over structured catalogues.
+
+---
+
 ## Connecting Discovery to AI Assistants
 
 An emerging dimension of data discoverability is making datasets accessible to AI assistants directly, without going through a search UI. The [Model Context Protocol (MCP)](../mcp/mcp.md) provides a standardized interface through which AI assistants can query data catalogs, retrieve indicator values, and generate analysis—bringing search capabilities directly into AI workflows.
