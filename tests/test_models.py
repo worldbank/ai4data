@@ -228,12 +228,9 @@ class TestModelManager:
         monkeypatch.setattr(torch.backends.mps, "is_available", lambda: False)
 
         # Mock ModelManager.load to return a mock model for the default GLiNER classifier
-        class MockSchema:
-            def classification(self, name, labels, multi_label=False):
-                pass
         class MockModel:
-            def create_schema(self):
-                return MockSchema()
+            def classify_text(self, text, tasks, threshold=0.0, include_confidence=True):
+                return {"has_data_mention": {"label": "has_mention", "confidence": 1.0}}
         
         load_calls = []
         def mock_load(self, model_id=None, adapter_id=None):

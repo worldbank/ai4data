@@ -12,15 +12,17 @@ class GLiNERClassifierWrapper:
 
     def __init__(self, model):
         self.model = model
-        self.schema = model.create_schema()
-        self.schema.classification("data_use", ["WITH_DATA", "NO_DATA"], multi_label=False)
+        self.tasks = {"has_data_mention": ["has_mention", "no_mention"]}
 
     def __call__(self, text: str):
         if not text.strip():
             return [{"label": "NO_DATA", "score": 1.0}]
-        res = self.model.batch_extract([text], self.schema, include_confidence=True)[0]
-        info = res.get("data_use", {})
-        return [{"label": info.get("label", "NO_DATA"), "score": info.get("confidence", 0.0)}]
+        res = self.model.classify_text(text, self.tasks, threshold=0.0, include_confidence=True)
+        info = res.get("has_data_mention", {})
+        label = info.get("label", "no_mention")
+        score = info.get("confidence", 0.0)
+        mapped_label = "WITH_DATA" if label == "has_mention" else "NO_DATA"
+        return [{"label": mapped_label, "score": score}]
 
 
 class ModelManager:
