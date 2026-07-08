@@ -205,7 +205,7 @@ class TestModelManager:
             manager.load("invalid-model")
 
     def test_load_classifier(self, monkeypatch):
-        """Test load_classifier handles cache_dir properly."""
+        """Test load_classifier handles cache_dir and GLiNER vs standard paths."""
         clf_calls = []
         tokenizer_calls = []
 
@@ -227,20 +227,41 @@ class TestModelManager:
         monkeypatch.setattr(torch.cuda, "is_available", lambda: False)
         monkeypatch.setattr(torch.backends.mps, "is_available", lambda: False)
 
-        # Test with custom cache dir
+        # Mock ModelManager.load to return a mock model for the default GLiNER classifier
+        class MockSchema:
+            def classification(self, name, labels, multi_label=False):
+                pass
+        class MockModel:
+            def create_schema(self):
+                return MockSchema()
+        
+        load_calls = []
+        def mock_load(self, model_id=None, adapter_id=None):
+            load_calls.append((model_id, adapter_id))
+            return MockModel()
+        
+        monkeypatch.setattr(ModelManager, "load", mock_load)
+
+        # 1. Test GLiNER classifier loading path (default)
+        from ai4data.data_use.models.model_manager import GLiNERClassifierWrapper
         manager = ModelManager(cache_dir="./custom_cache")
         clf = manager.load_classifier()
+        assert isinstance(clf, GLiNERClassifierWrapper)
+        assert len(load_calls) == 1
+        assert load_calls[0] == ("fastino/gliner2-large-v1", "rafmacalaba/datause-classifier-v1")
 
-        assert clf == "mock_pipeline"
+        # 2. Test standard BERT sequence classifier path
+        clf_bert = manager.load_classifier(model_id="ai4data-use/bert-base-uncased-data-use")
+        assert clf_bert == "mock_pipeline"
         assert len(tokenizer_calls) == 1
         assert tokenizer_calls[0] == (
-            ModelManager.DEFAULT_CLASSIFIER_ID,
+            "ai4data-use/bert-base-uncased-data-use",
             {"cache_dir": "./custom_cache"},
         )
         assert len(clf_calls) == 1
         assert clf_calls[0] == (
             "text-classification",
-            ModelManager.DEFAULT_CLASSIFIER_ID,
+            "ai4data-use/bert-base-uncased-data-use",
             "mock_tokenizer",
             -1,
             True,

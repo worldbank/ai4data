@@ -7,12 +7,28 @@ from gliner2 import GLiNER2
 from huggingface_hub import snapshot_download
 
 
+class GLiNERClassifierWrapper:
+    """Wrapper to make GLiNER2-based sequence classification act like a HF pipeline."""
+
+    def __init__(self, model):
+        self.model = model
+        self.schema = model.create_schema()
+        self.schema.classification("data_use", ["WITH_DATA", "NO_DATA"], multi_label=False)
+
+    def __call__(self, text: str):
+        if not text.strip():
+            return [{"label": "NO_DATA", "score": 1.0}]
+        res = self.model.batch_extract([text], self.schema, include_confidence=True)[0]
+        info = res.get("data_use", {})
+        return [{"label": info.get("label", "NO_DATA"), "score": info.get("confidence", 0.0)}]
+
+
 class ModelManager:
     """Manages GLiNER2 model loading and caching."""
 
     DEFAULT_MODEL_ID = "fastino/gliner2-large-v1"
     DEFAULT_ADAPTER_ID = "ai4data/datause-extraction"
-    DEFAULT_CLASSIFIER_ID = "ai4data-use/bert-base-uncased-data-use"
+    DEFAULT_CLASSIFIER_ID = "rafmacalaba/datause-classifier-v1"
     _model_cache = {}
 
     def __init__(
@@ -107,15 +123,6 @@ class ModelManager:
         Raises:
             RuntimeError: If model loading fails
         """
-        try:
-            from transformers import AutoTokenizer
-            from transformers import pipeline as hf_pipeline
-        except ImportError as exc:
-            raise ImportError(
-                "The BERT page classifier requires 'transformers' and 'torch'. "
-                "Install them with: uv pip install transformers torch"
-            ) from exc
-
         model_id = model_id or self.DEFAULT_CLASSIFIER_ID
         cache_key = ("classifier", model_id)
 
@@ -123,6 +130,16 @@ class ModelManager:
             return self._model_cache[cache_key]
 
         try:
+            # If the classifier is a GLiNER2-based LoRA adapter
+            if "datause-classifier" in model_id:
+                model = self.load(model_id="fastino/gliner2-large-v1", adapter_id=model_id)
+                clf = GLiNERClassifierWrapper(model)
+                self._model_cache[cache_key] = clf
+                return clf
+
+            from transformers import AutoTokenizer
+            from transformers import pipeline as hf_pipeline
+
             if torch.cuda.is_available():
                 device = 0
             elif torch.backends.mps.is_available():
