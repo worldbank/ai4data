@@ -1,4 +1,11 @@
-"""Dataset mention extraction schema."""
+"""Dataset mention extraction schema.
+
+Updated for v21-diversity model:
+- `dataset_name`    -> `mention_name`
+- `dataset_tag`     -> `specificity_tag`  (choices: named, descriptive, vague, na)
+- `data_type`       -> `typology_tag`     (choices: survey, census, ...)
+- `has_data`        removed (subsumed by `is_used`)
+"""
 
 from typing import Any, Dict
 
@@ -30,133 +37,78 @@ class DatasetSchema:
         self._field_thresholds[field_name] = threshold
         return self
 
-    def build(self, extractor) -> Any:
+    def build(self, extractor, extract_provenance: bool = False) -> Any:
         """Build the GLiNER2 schema.
 
         Args:
             extractor: GLiNER2 extractor instance
+            extract_provenance: If True, include provenance fields (author,
+                producer, publication_year, reference_year, reference_population,
+                geography, description, acronym) in the schema. These fields are
+                informative but increase inference latency. Defaults to False.
 
         Returns:
             Configured schema object
         """
+        t = self._field_thresholds  # shorthand
+        default = self.threshold
+
         schema = (
-            extractor.create_schema()
-            .structure("dataset_mention")
-            # Core dataset identity
-            .field(
-                "dataset_name",
+            extractor.create_schema().structure("data_mention")
+            # ── Core identity ──────────────────────────────────────────────────
+            .field("mention_name", dtype="str", threshold=t.get("mention_name", default))
+        )
+
+        if extract_provenance:
+            # Optional provenance fields — slower inference, richer output
+            (
+                schema.field("acronym", dtype="str", threshold=t.get("acronym", default))
+                .field("producer", dtype="str")
+                .field("reference_year", dtype="str")
+                .field("geography", dtype="str")
+            )
+
+        # ── Classification fields (always extracted) ───────────────────────────
+        # These are forced-choice fields (constrained by `choices`). The model
+        # must pick one of the listed values, so thresholding adds no value and
+        # only causes silent data loss. Use threshold=0 to never suppress them.
+        # Per-field overrides via set_threshold() are still respected.
+        # NOTE: "na" is excluded from choices at inference time to force the
+        # model to commit to a concrete label.
+        (
+            schema.field(
+                "specificity_tag",
                 dtype="str",
-                threshold=self._field_thresholds.get("dataset_name", self.threshold),
-                # description=(
-                #     "The extracted name of the dataset as mentioned in the text. "
-                #     "May be a formal title (e.g., 'Demographic and Health Survey') or an informal reference "
-                #     "(e.g., 'household survey data'), depending on the tagging."
-                # ),
+                choices=["named", "descriptive", "vague"],
+                threshold=t.get("specificity_tag", 0),
             )
             .field(
-                "dataset_tag",
+                "typology_tag",
                 dtype="str",
-                choices=["named", "descriptive", "vague", "non-dataset"],
-                # description=(
-                #     "Classification of the dataset mention: "
-                #     "'named' for formal dataset titles, "
-                #     "'descriptive' for unnamed but clearly defined datasets, "
-                #     "'vague' for ambiguous references to data sources, "
-                #     "'non-dataset' when the term does not function as a dataset in context or empty."
-                # ),
+                choices=[
+                    "survey",
+                    "census",
+                    "database",
+                    "administrative",
+                    "indicator",
+                    "geospatial",
+                    "microdata",
+                    "report",
+                    "other",
+                ],
+                threshold=t.get("typology_tag", 0),
             )
             .field(
-                "description",
+                "usage_context",
                 dtype="str",
-                # description=(
-                #     "A short description of the type of data contained in the dataset, "
-                #     "such as 'household data', 'crime reports', 'satellite imagery', "
-                #     "'employment indicators', or 'administrative microdata'. This describes "
-                #     "the data content, not the dataset category."
-                # ),
+                choices=["primary", "supporting", "background"],
+                threshold=t.get("usage_context", 0),
             )
-            .field(
-                "data_type",
-                dtype="str",
-                description=(
-                    "The type or category of the dataset. e.g survey, report, system, etc."
-                ),
-            )
-            # Metadata related to provenance
-            .field(
-                "acronym",
-                dtype="str",
-                threshold=self._field_thresholds.get("acronym", self.threshold),
-                # description=(
-                #     "The acronym associated with the dataset, if explicitly mentioned "
-                #     "(e.g., 'HFS' for 'High-Frequency Survey')."
-                # ),
-            )
-            .field(
-                "author",
-                dtype="str",
-                # description=("The individual(s) or authors responsible for creating the dataset."),
-            )
-            .field(
-                "producer",
-                dtype="str",
-                # description=(
-                #     "The institution or organization that produced, collected, or published the dataset, "
-                #     "such as a national statistics office, ministry, research institution, or international agency."
-                # ),
-            )
-            .field(
-                "geography",
-                dtype="str",
-                # description=("The geographical coverage of the dataset, "),
-            )
-            .field(
-                "publication_year",
-                dtype="str",
-                # description=(
-                #     "The year the dataset was released or published. "
-                #     "This is distinct from the reference year, which refers to when the data were collected."
-                # ),
-            )
-            .field(
-                "reference_year",
-                dtype="str",
-                # description=(
-                #     "The year or time period the data refer to. "
-                #     "This is the year of data collection (e.g., 2018 survey year, 2020 census year), "
-                #     "which is separate from the publication or release year."
-                # ),
-            )
-            .field(
-                "reference_population",
-                dtype="str",
-                # description=(
-                #     "The target population covered by the dataset (e.g., 'households', "
-                #     "'migrant workers', 'urban residents', 'women aged 15–49')."
-                # ),
-            )
-            # Usage classification
             .field(
                 "is_used",
                 dtype="str",
                 choices=["True", "False"],
-                # choices=["used", "not_used"],
-                # description=(
-                #     "'True' if the dataset is used in the empirical analysis; "
-                #     "'False' if not."
-                # ),
-            )
-            # Context of the mention
-            .field(
-                "usage_context",
-                dtype="str",
-                choices=["primary", "background", "supporting"],
-                # description=(
-                #     "Describes how the dataset is used: "
-                #     "'primary' if it is a main analytical dataset, "
-                #     "'background' if cited for contextual or literature support, "
-                #     "'supporting' if used as secondary or robustness-check data."
-                # ),
+                threshold=t.get("is_used", 0),
             )
         )
 
