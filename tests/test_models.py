@@ -245,7 +245,7 @@ class TestModelManager:
         clf = manager.load_classifier()
         assert isinstance(clf, GLiNERClassifierWrapper)
         assert len(load_calls) == 1
-        assert load_calls[0] == ("fastino/gliner2-large-v1", "rafmacalaba/datause-classifier-v1")
+        assert load_calls[0] == ("fastino/gliner2-large-v1", "ai4data/datause-classifier")
 
         # 2. Test standard BERT sequence classifier path
         clf_bert = manager.load_classifier(model_id="ai4data-use/bert-base-uncased-data-use")

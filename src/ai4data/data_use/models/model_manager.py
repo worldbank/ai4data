@@ -30,7 +30,7 @@ class ModelManager:
 
     DEFAULT_MODEL_ID = "fastino/gliner2-large-v1"
     DEFAULT_ADAPTER_ID = "ai4data/datause-extraction"
-    DEFAULT_CLASSIFIER_ID = "rafmacalaba/datause-classifier-v1"
+    DEFAULT_CLASSIFIER_ID = "ai4data/datause-classifier"
     _model_cache = {}
 
     def __init__(
