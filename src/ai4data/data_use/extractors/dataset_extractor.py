@@ -1355,7 +1355,7 @@ class DatasetExtractor:
             )
             print(f"\n   Processing {len(chunks)} chunk(s) with use_classifier={use_classifier}")
 
-        for chunk in chunks:
+        for i, chunk in enumerate(chunks):
             chunk_text = chunk["text"]
             chunk_pages = chunk["pages"]
             page_label = f"page {chunk_pages[0] + 1}" if chunk_pages else "chunk"
@@ -1391,6 +1391,7 @@ class DatasetExtractor:
             all_results.append(
                 {
                     "page": chunk_pages[0] if chunk_pages else None,
+                    "chunk": i,
                     "input_text": input_text,
                     "datasets": datasets_extracted,
                     "classifier_skipped": classifier_skipped,
