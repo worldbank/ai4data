@@ -58,13 +58,13 @@ def mock_gliner_model():
     # Mock extract method
     mock_model.extract.return_value = {
         "entities": {
-            "name": [
+            "named_data": [
                 {
                     "text": "Test Dataset",
                     "confidence": 0.95,
                     "start": 83,
                     "end": 95,
-                    "label": "name",
+                    "label": "named_data",
                 }
             ]
         },
@@ -82,12 +82,7 @@ def mock_gliner_model():
 
     # Mock batch_extract method
     mock_model.batch_extract.return_value = [
-        {
-            "entities": {
-                "specificity": [{"text": "named", "confidence": 0.95, "start": 13, "end": 18}],
-                "usage": [{"text": "primary", "confidence": 0.95, "start": 47, "end": 54}],
-            }
-        }
+        {"usage": {"label": "primary", "confidence": 0.95}}
     ]
 
     # Mock extract_json method

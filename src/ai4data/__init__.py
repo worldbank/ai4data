@@ -37,6 +37,7 @@ from . import data_use
 from . import anomaly
 from . import discovery
 from . import metadata
+from .data_use import DatasetExtractor, extract_from_text, extract_from_document
 
 __all__ = [
     "__version__",
@@ -44,4 +45,7 @@ __all__ = [
     "anomaly",
     "discovery",
     "metadata",
+    "DatasetExtractor",
+    "extract_from_text",
+    "extract_from_document",
 ]

@@ -35,7 +35,7 @@ class TestModelManager:
 
     def test_default_adapter_id(self):
         """Test that default adapter ID is set."""
-        assert ModelManager.DEFAULT_ADAPTER_ID == "ai4data/datause-extraction-v1"
+        assert ModelManager.DEFAULT_ADAPTER_ID == "ai4data/datause-extraction"
 
     def test_load_with_adapter(self, monkeypatch, mock_gliner_model):
         """Test that snapshot_download and load_adapter are called when adapter_id is set."""

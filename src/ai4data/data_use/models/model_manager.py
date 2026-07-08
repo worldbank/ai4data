@@ -11,7 +11,7 @@ class ModelManager:
     """Manages GLiNER2 model loading and caching."""
 
     DEFAULT_MODEL_ID = "fastino/gliner2-large-v1"
-    DEFAULT_ADAPTER_ID = "ai4data/datause-extraction-v1"
+    DEFAULT_ADAPTER_ID = "ai4data/datause-extraction"
     DEFAULT_CLASSIFIER_ID = "ai4data-use/bert-base-uncased-data-use"
     _model_cache = {}
 
@@ -41,9 +41,9 @@ class ModelManager:
             model_id: HuggingFace model ID or path to local model.
                      If None, uses default model.
             adapter_id: HuggingFace adapter repo ID to apply after loading the base model.
-                       If not provided (None), falls back to the adapter_id set on __init__
-                       (DEFAULT_ADAPTER_ID by default). Pass an empty string to skip adapter
-                       loading entirely.
+                       If not provided, falls back to the adapter_id set on __init__
+                       (DEFAULT_ADAPTER_ID by default). Pass an empty string or explicitly
+                       pass ``None`` via ``load(adapter_id=None)`` to skip adapter loading.
 
         Returns:
             Loaded GLiNER2 model (with adapter applied if specified)

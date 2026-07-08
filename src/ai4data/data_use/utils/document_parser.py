@@ -209,7 +209,7 @@ class DocumentParser:
         fname_or_url: str,
         n_pages: int = 1,
         skip_references: bool = False,
-        as_markdown: bool = False,
+        as_markdown: bool = True,
         verbose: bool = False,
         pages: List[int] = None,
     ) -> List[Dict[str, Union[str, List[int]]]]:
@@ -221,7 +221,7 @@ class DocumentParser:
             skip_references: If True, skip pages after references/appendix section
                            is detected (only checks after halfway point)
             as_markdown: If True, use pymupdf4llm to extract text as markdown
-                        (default: False). If False, use standard text extraction.
+                        (default: True). If False, use standard text extraction.
             verbose: If True, print logging messages when references are detected
                     and pages are skipped
             pages: Optional list of 0-indexed page numbers to include. If None,

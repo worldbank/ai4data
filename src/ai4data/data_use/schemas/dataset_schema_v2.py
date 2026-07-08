@@ -382,45 +382,30 @@ class DatasetSchemaV3:
     """
 
     DEFAULT_THRESHOLD = 0.3
-    LABEL_PREFIX = (
-        "specificity: named | descriptive | vague " "usage: primary | supporting | background |"
-    )
-    CONTEXT_WINDOW = 350  # chars before/after entity span for fallback
+    LABEL_PREFIX = ""
 
     # Entity + relation schema field definitions (reused across calls)
     _ENTITY_DEFS = {
-        "name": "The exact full name of the data source or dataset",
+        "named_data": "A proper name or well-known acronym for a data source or dataset",
+        "descriptive_data": "A described data reference with enough detail to identify a dataset but no formal name",
+        "vague_data": "A generic or loosely specified reference to data with minimal identifying detail",
         "acronym": "The acronym or abbreviation if any",
-        "producer": "The organization or entity that produced or published the data",
+        "organization": "The organization or entity that produced or published the data",
         "timeframe": ("The year or time period of the data such as 2019 or 2019 to 2020"),
-        "datatype": (
-            "The type of data verbatim from text such as survey, report, "
-            "census, program, system, or assessment"
-        ),
         "geography": ("The country, region, or geographic area the data covers"),
-        "specificity": "Whether this mention is named, descriptive, or vague",
-        "usage": "Whether this is primary, supporting, or background data",
     }
     _RELATION_DEFS = {
         "has_acronym": "The acronym of the dataset",
-        "has_producer": "The producer of the dataset",
+        "has_organization": "The organization of the dataset",
         "has_timeframe": "The timeframe of the dataset",
-        "has_datatype": "The data type of the dataset",
         "has_geography": "The country or geographic coverage area of the dataset",
-        "has_specificity": "Whether this dataset is named, descriptive, or vague",
-        "has_usage": "Whether this dataset is primary, supporting, or background",
-    }
-    _FALLBACK_ENTITY_DEFS = {
-        "specificity": "Whether this mention is named, descriptive, or vague",
-        "usage": "Whether this is primary, supporting, or background data",
     }
 
     # Maps relation types to output field names
     _FACTUAL_RELATIONS = {
         "has_acronym": "acronym",
-        "has_producer": "producer",
+        "has_organization": "producer",
         "has_timeframe": "reference_year",
-        "has_datatype": "typology_tag",
         "has_geography": "geography",
     }
 
@@ -442,11 +427,53 @@ class DatasetSchemaV3:
     def _get_fallback_schema(self, model):
         if self._fallback_schema is None:
             s = model.create_schema()
-            s.entities(self._FALLBACK_ENTITY_DEFS)
+            s.classification(
+                "usage",
+                ["primary", "supporting", "background"],
+                multi_label=False
+            )
+            s.classification(
+                "typology",
+                [
+                    "survey",
+                    "census",
+                    "database",
+                    "administrative",
+                    "indicator",
+                    "geospatial",
+                    "microdata",
+                    "report",
+                    "estimates",
+                    "other",
+                ],
+                multi_label=False
+            )
             self._fallback_schema = s
         return self._fallback_schema
 
     # ── Helpers ───────────────────────────────────────────────────────────
+
+    @staticmethod
+    def _get_sentence_context(text, start, end):
+        """Find the sentence containing the span [start, end]."""
+        # Clamp start and end to text bounds to prevent IndexError on out-of-bounds mock spans
+        start = max(0, min(start, len(text)))
+        end = max(start, min(end, len(text)))
+
+        s_start = start
+        while s_start > 0:
+            if text[s_start - 1] in {'.', '!', '?', '\n'}:
+                break
+            s_start -= 1
+        
+        s_end = end
+        while s_end < len(text):
+            if text[s_end] in {'.', '!', '?', '\n'}:
+                s_end += 1
+                break
+            s_end += 1
+            
+        return text[s_start:s_end].strip()
 
     @staticmethod
     def _nms_name_spans(name_entities):
@@ -506,7 +533,7 @@ class DatasetSchemaV3:
                 # Self-link filter for producer relations
                 if (
                     head_text
-                    and rel_type == "has_producer"
+                    and rel_type == "has_organization"
                     and DatasetSchemaV3._is_self_link(head_text, tail.get("text", ""))
                 ):
                     continue
@@ -579,9 +606,9 @@ class DatasetSchemaV3:
         """Run 2-pass hybrid inference on a chunk of text."""
         clean_text = text.strip()
         prefix_len = len(self.LABEL_PREFIX)
-        prefix_offset = prefix_len + 1  # +1 for the joining space
+        prefix_offset = prefix_len + (1 if prefix_len > 0 else 0)
 
-        prefixed = f"{self.LABEL_PREFIX} {clean_text}"
+        prefixed = f"{self.LABEL_PREFIX} {clean_text}" if prefix_len > 0 else clean_text
 
         # ── Pass 1: Entity + Relation extraction ─────────────────────────
         pass1_schema = self._get_pass1_schema(model)
@@ -595,7 +622,19 @@ class DatasetSchemaV3:
 
         entities = raw.get("entities", {})
         relations = raw.get("relation_extraction", {})
-        name_entities = entities.get("name", [])
+        
+        named_ents = entities.get("named_data", [])
+        desc_ents = entities.get("descriptive_data", [])
+        vague_ents = entities.get("vague_data", [])
+        
+        for ne in named_ents:
+            ne["specificity_tag"] = "named"
+        for de in desc_ents:
+            de["specificity_tag"] = "descriptive"
+        for ve in vague_ents:
+            ve["specificity_tag"] = "vague"
+            
+        name_entities = named_ents + desc_ents + vague_ents
 
         if not name_entities:
             return []
@@ -639,37 +678,34 @@ class DatasetSchemaV3:
                 )
                 if matched:
                     text_val = matched["text"]
-                    if field_name == "typology_tag":
-                        text_val = map_typology(text_val)
-                    rec[field_name] = {
-                        "text": text_val,
-                        "confidence": float(matched["confidence"]),
-                        "start": max(0, matched["start"] - prefix_offset),
-                        "end": max(0, matched["end"] - prefix_offset),
-                    }
+                    # Only set if not already set, or if this match is higher confidence
+                    existing = rec.get(field_name)
+                    if not existing or existing.get("confidence", 0.0) < float(matched["confidence"]):
+                        rec[field_name] = {
+                            "text": text_val,
+                            "confidence": float(matched["confidence"]),
+                            "start": max(0, matched["start"] - prefix_offset),
+                            "end": max(0, matched["end"] - prefix_offset),
+                        }
                 else:
-                    default_val = "other" if field_name == "typology_tag" else ""
-                    rec[field_name] = {
-                        "text": default_val,
-                        "confidence": 0.0,
-                        "start": adj_start,
-                        "end": adj_end,
-                    }
+                    # Only set default if not already set by another relation
+                    if field_name not in rec:
+                        rec[field_name] = {
+                            "text": "",
+                            "confidence": 0.0,
+                            "start": adj_start,
+                            "end": adj_end,
+                        }
 
             # Classification relations (may be missing)
-            spec_match = self._find_best_relation(
-                relations, "has_specificity", ne["start"], ne["end"]
-            )
-            usage_match = self._find_best_relation(relations, "has_usage", ne["start"], ne["end"])
+            spec_match = {"text": ne["specificity_tag"], "confidence": confidence}
 
             rec["_spec_match"] = spec_match
-            rec["_usage_match"] = usage_match
+            rec["_usage_match"] = None
             rec["_orig_start"] = adj_start
             rec["_orig_end"] = adj_end
 
-            if not spec_match or not usage_match:
-                needs_fallback.append(len(records))
-
+            needs_fallback.append(len(records))
             records.append(rec)
 
         # ── Pass 2: Fallback classification ──────────────────────────────
@@ -678,10 +714,12 @@ class DatasetSchemaV3:
             contexts = []
             for rec_idx in needs_fallback:
                 rec = records[rec_idx]
-                c_start = max(0, rec["_orig_start"] - self.CONTEXT_WINDOW)
-                c_end = min(len(clean_text), rec["_orig_end"] + self.CONTEXT_WINDOW)
-                window = clean_text[c_start:c_end]
-                contexts.append(f"{self.LABEL_PREFIX} {window}")
+                sentence = self._get_sentence_context(
+                    clean_text,
+                    rec["_orig_start"],
+                    rec["_orig_end"]
+                )
+                contexts.append(sentence)
 
             fb_results = model.batch_extract(
                 contexts,
@@ -692,16 +730,36 @@ class DatasetSchemaV3:
 
             for i, rec_idx in enumerate(needs_fallback):
                 fb = fb_results[i] if i < len(fb_results) else {}
-                fb_ents = fb.get("entities", {})
                 rec = records[rec_idx]
 
-                if not rec["_spec_match"]:
-                    best = self._best_entity(fb_ents.get("specificity", []))
-                    rec["_spec_match"] = best
+                usage_info = fb.get("usage")
+                if usage_info and isinstance(usage_info, dict):
+                    rec["_usage_match"] = {
+                        "text": usage_info.get("label", "primary"),
+                        "confidence": float(usage_info.get("confidence", 0.0)),
+                    }
 
-                if not rec["_usage_match"]:
-                    best = self._best_entity(fb_ents.get("usage", []))
-                    rec["_usage_match"] = best
+                # Resolve typology tag via native classification
+                typology_info = fb.get("typology")
+                text_val = "other"
+                conf_val = 0.0
+                if typology_info and isinstance(typology_info, dict):
+                    text_val = typology_info.get("label", "other")
+                    conf_val = float(typology_info.get("confidence", 0.0))
+
+                # If classification is "other", try to fall back to keyword matching the mention name
+                if text_val == "other":
+                    mapped_val = map_typology(rec["mention_name"]["text"])
+                    if mapped_val != "other":
+                        text_val = mapped_val
+                        conf_val = 0.0
+
+                rec["typology_tag"] = {
+                    "text": text_val,
+                    "confidence": conf_val,
+                    "start": rec["mention_name"]["start"],
+                    "end": rec["mention_name"]["end"],
+                }
 
         # ── Finalize records ─────────────────────────────────────────────
         results = []
