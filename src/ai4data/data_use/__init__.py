@@ -135,7 +135,7 @@ def extract_from_text(
     model_id: Optional[str] = None,
     enable_chunking: bool = True,
     use_classifier: bool = False,
-    adapter_id: Optional[str] = "ai4data/datause-extraction-v1",
+    adapter_id: Optional[str] = "ai4data/datause-extraction",
     normalize_text: bool = True,
 ) -> Dict[str, Any]:
     """Extract dataset mentions from text.
@@ -151,7 +151,10 @@ def extract_from_text(
         enable_chunking: Whether to split long text into chunks (default: True)
         use_classifier: Whether to use pre-filtering classifier (default: False)
         adapter_id: HuggingFace adapter repo ID to apply to the base model.
-            Defaults to "ai4data/datause-extraction-v1".
+            Defaults to "rafmacalaba/gliner2-datause-large-v1". Pass a different
+            adapter (e.g. "rafmacalaba/gliner2-datause-large-v9") to use an
+            alternative fine-tuned checkpoint without affecting the shared
+            default extractor.
         normalize_text: If True, normalize page text before extraction (default: True)
 
     Returns:
@@ -166,7 +169,7 @@ def extract_from_text(
         >>> print(result['input_text'])
         >>> print(result['datasets'])
     """
-    _default_adapter_id = "ai4data/datause-extraction-v1"
+    _default_adapter_id = "ai4data/datause-extraction"
     if adapter_id != _default_adapter_id or model_id is not None:
         extractor = DatasetExtractor(model_id=model_id, adapter_id=adapter_id)
     else:
@@ -198,6 +201,8 @@ def extract_from_document(
     verbose: bool = False,
     normalize_text: bool = True,
     pages: Optional[List[int]] = None,
+    model_id: Optional[str] = None,
+    adapter_id: Optional[str] = "ai4data/datause-extraction",
 ) -> List[Dict[str, Any]]:
     """Extract dataset mentions from a PDF document.
 
@@ -217,6 +222,9 @@ def extract_from_document(
         normalize_text: If True, normalize page text before extraction (default: True)
         pages: Optional list of 0-indexed page numbers to include. If None,
                processes all pages.
+        model_id: Optional model ID to use for this specific extraction
+        adapter_id: HuggingFace adapter repo ID to apply to the base model.
+            Defaults to "ai4data/datause-extraction".
 
     Returns:
         List of dicts, one per page/chunk, each with:
@@ -236,7 +244,11 @@ def extract_from_document(
         >>> for result in results:
         ...     print(f"Page {result['page']}: {len(result['datasets'])} datasets found")
     """
-    extractor = _get_default_extractor()
+    _default_adapter_id = "ai4data/datause-extraction"
+    if adapter_id != _default_adapter_id or model_id is not None:
+        extractor = DatasetExtractor(model_id=model_id, adapter_id=adapter_id)
+    else:
+        extractor = _get_default_extractor()
     return extractor.extract_from_document(
         source,
         include_confidence=include_confidence,

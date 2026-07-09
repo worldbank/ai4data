@@ -422,7 +422,8 @@ class DatasetExtractor:
 
         Uses token counting to determine approximate split points, then snaps
         each split to the nearest markdown structural boundary (headers,
-        paragraph breaks, table edges).
+        paragraph breaks, table edges). Footnote definitions referenced in
+        each chunk are appended for model context.
 
         Args:
             text: Input text to chunk
@@ -434,6 +435,8 @@ class DatasetExtractor:
         Returns:
             List of tuples (chunk_text, char_offset) where char_offset is the
             starting character position of the chunk in the original text.
+            Note: chunk_text may include appended footnotes that extend beyond
+            the offset range (for model context only).
         """
         from gliner2.processor import WhitespaceTokenSplitter
 
@@ -444,7 +447,8 @@ class DatasetExtractor:
         if len(tokens) <= max_tokens:
             return [(text, 0)]
 
-        # Pre-compute table boundaries
+        # Pre-compute footnotes and table boundaries
+        footnotes, _ = self._extract_footnotes(text)
         table_boundaries = self._detect_table_boundaries(text)
 
         chunks = []
@@ -777,7 +781,7 @@ class DatasetExtractor:
                 false positives such as table/figure labels (default: False)
             normalize_text: If True, normalize input text before extraction by
                 fixing hyphenated line breaks and collapsing excessive whitespace.
-                Useful for pymupdf4llm markdown outputs (default: True)
+                Useful for pymupdf4llm markdown outputs (default: False)
             extract_provenance: If True, also extract provenance fields
                 (author, producer, publication_year, reference_year,
                 reference_population, geography, description, acronym).
@@ -1351,7 +1355,7 @@ class DatasetExtractor:
             )
             print(f"\n   Processing {len(chunks)} chunk(s) with use_classifier={use_classifier}")
 
-        for chunk in chunks:
+        for i, chunk in enumerate(chunks):
             chunk_text = chunk["text"]
             chunk_pages = chunk["pages"]
             page_label = f"page {chunk_pages[0] + 1}" if chunk_pages else "chunk"
@@ -1387,6 +1391,7 @@ class DatasetExtractor:
             all_results.append(
                 {
                     "page": chunk_pages[0] if chunk_pages else None,
+                    "chunk": i,
                     "input_text": input_text,
                     "datasets": datasets_extracted,
                     "classifier_skipped": classifier_skipped,

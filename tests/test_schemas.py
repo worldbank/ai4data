@@ -213,7 +213,7 @@ class TestDatasetSchemaV3EdgeCases:
         mock_model = MagicMock()
         mock_model.extract.return_value = {
             "entities": {
-                "name": [
+                "named_data": [
                     {"text": "Demographic Survey", "confidence": 0.9, "start": 50, "end": 68},
                     {"text": "Census Data", "confidence": 0.8, "start": 80, "end": 91},
                     {"text": "Geospatial Data", "confidence": 0.85, "start": 110, "end": 125},
@@ -249,20 +249,6 @@ class TestDatasetSchemaV3EdgeCases:
                         },
                     },
                 ],
-                "has_specificity": [
-                    {
-                        "head": {"start": 50, "end": 68},
-                        "tail": {"text": "named", "confidence": 0.95, "start": 100, "end": 105},
-                    },
-                    {
-                        "head": {"start": 80, "end": 91},
-                        "tail": {"text": "named", "confidence": 0.95, "start": 100, "end": 105},
-                    },
-                    {
-                        "head": {"start": 110, "end": 125},
-                        "tail": {"text": "named", "confidence": 0.95, "start": 100, "end": 105},
-                    },
-                ],
                 "has_usage": [
                     {
                         "head": {"start": 50, "end": 68},
@@ -281,7 +267,11 @@ class TestDatasetSchemaV3EdgeCases:
         }
 
         schema = DatasetSchemaV3()
-        mock_model.batch_extract.return_value = []
+        mock_model.batch_extract.return_value = [
+            {"usage": {"label": "primary", "confidence": 0.95}, "typology": {"label": "survey", "confidence": 0.95}},
+            {"usage": {"label": "primary", "confidence": 0.95}, "typology": {"label": "geospatial", "confidence": 0.85}},
+            {"usage": {"label": "primary", "confidence": 0.95}, "typology": {"label": "estimates", "confidence": 0.90}},
+        ]
 
         results = schema.extract_with_classification(
             "specificity: named | usage: primary | Some text...", mock_model

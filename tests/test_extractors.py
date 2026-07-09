@@ -350,7 +350,7 @@ class TestExtractFromDocumentOutputFormat:
         prefix_offset = 83
         mock_gliner_model.extract.return_value = {
             "entities": {
-                "name": [
+                "named_data": [
                     {
                         "text": "Demographic and Health Survey (DHS)",
                         "confidence": 0.95,
@@ -381,10 +381,7 @@ class TestExtractFromDocumentOutputFormat:
         }
         mock_gliner_model.batch_extract.return_value = [
             {
-                "entities": {
-                    "specificity": [{"text": "named", "confidence": 0.95, "start": 13, "end": 18}],
-                    "usage": [{"text": "primary", "confidence": 0.95, "start": 47, "end": 54}],
-                }
+                "usage": {"label": "primary", "confidence": 0.95}
             }
         ]
         extractor = DatasetExtractor()
@@ -424,7 +421,7 @@ class TestExtractFromDocumentOutputFormat:
         prefix_offset = 83
         mock_gliner_model.extract.return_value = {
             "entities": {
-                "name": [
+                "named_data": [
                     {
                         "text": "Ghana Living Standard Survey (GLSS)",
                         "confidence": 0.9,
@@ -437,6 +434,8 @@ class TestExtractFromDocumentOutputFormat:
                         "start": prefix_offset,
                         "end": prefix_offset + 28,
                     },
+                ],
+                "vague_data": [
                     {
                         "text": "Ghana",
                         "confidence": 0.9,
@@ -448,24 +447,9 @@ class TestExtractFromDocumentOutputFormat:
             "relation_extraction": {},
         }
         mock_gliner_model.batch_extract.return_value = [
-            {
-                "entities": {
-                    "specificity": [{"text": "named", "confidence": 0.9, "start": 13, "end": 18}],
-                    "usage": [{"text": "primary", "confidence": 0.9, "start": 47, "end": 54}],
-                }
-            },
-            {
-                "entities": {
-                    "specificity": [{"text": "named", "confidence": 0.9, "start": 13, "end": 18}],
-                    "usage": [{"text": "primary", "confidence": 0.9, "start": 47, "end": 54}],
-                }
-            },
-            {
-                "entities": {
-                    "specificity": [{"text": "vague", "confidence": 0.9, "start": 13, "end": 18}],
-                    "usage": [{"text": "primary", "confidence": 0.9, "start": 47, "end": 54}],
-                }
-            },
+            {"usage": {"label": "primary", "confidence": 0.9}},
+            {"usage": {"label": "primary", "confidence": 0.9}},
+            {"usage": {"label": "primary", "confidence": 0.9}},
         ]
         extractor = DatasetExtractor()
         results = extractor.extract_from_text(

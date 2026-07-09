@@ -66,10 +66,9 @@ def mock_model_manager(monkeypatch):
         name_ents = []
         relations = {
             "has_acronym": [],
-            "has_producer": [],
+            "has_organization": [],
             "has_timeframe": [],
             "has_datatype": [],
-            "has_specificity": [],
             "has_usage": [],
         }
 
@@ -98,7 +97,7 @@ def mock_model_manager(monkeypatch):
                     "start": name_start,
                     "end": name_end,
                     "confidence": 0.95,
-                    "label": "name",
+                    "label": "named_data",
                 }
             )
             matched_spans.append((name_start, name_end))
@@ -119,23 +118,6 @@ def mock_model_manager(monkeypatch):
                     }
                 )
                 matched_spans.append((acronym_start, acronym_end))
-
-            # Add specificity and usage relations directly to avoid fallback complexity
-            spec_start = text.find(specificity)
-            if spec_start != -1:
-                relations["has_specificity"].append(
-                    {
-                        "head": {"text": name_text, "start": name_start, "end": name_end},
-                        "tail": {
-                            "text": specificity,
-                            "start": spec_start,
-                            "end": spec_start + len(specificity),
-                            "confidence": 0.95,
-                        },
-                        "label": "has_specificity",
-                        "score": 0.95,
-                    }
-                )
 
             usage_start = text.find(usage)
             if usage_start != -1:
@@ -224,7 +206,7 @@ def mock_model_manager(monkeypatch):
             end = start + 3
             add_entity("WDI", start, end, acronym_text="WDI", acronym_start=start, acronym_end=end)
 
-        return {"entities": {"name": name_ents}, "relation_extraction": relations}
+        return {"entities": {"named_data": name_ents}, "relation_extraction": relations}
 
     def side_effect_batch_extract(texts, schema=None, include_confidence=True, **kwargs):
         return [side_effect_extract(t, schema, include_confidence, **kwargs) for t in texts]
