@@ -151,8 +151,8 @@ def extract_from_text(
         enable_chunking: Whether to split long text into chunks (default: True)
         use_classifier: Whether to use pre-filtering classifier (default: False)
         adapter_id: HuggingFace adapter repo ID to apply to the base model.
-            Defaults to "rafmacalaba/gliner2-datause-large-v1". Pass a different
-            adapter (e.g. "rafmacalaba/gliner2-datause-large-v9") to use an
+            Defaults to "ai4data/datause-extraction". Pass a different
+            adapter (e.g. "ai4data/datause-extraction-v2") to use an
             alternative fine-tuned checkpoint without affecting the shared
             default extractor.
         normalize_text: If True, normalize page text before extraction (default: True)

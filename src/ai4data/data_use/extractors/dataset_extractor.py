@@ -781,7 +781,7 @@ class DatasetExtractor:
                 false positives such as table/figure labels (default: False)
             normalize_text: If True, normalize input text before extraction by
                 fixing hyphenated line breaks and collapsing excessive whitespace.
-                Useful for pymupdf4llm markdown outputs (default: False)
+                Useful for pymupdf4llm markdown outputs (default: True)
             extract_provenance: If True, also extract provenance fields
                 (author, producer, publication_year, reference_year,
                 reference_population, geography, description, acronym).
