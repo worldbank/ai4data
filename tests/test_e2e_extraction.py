@@ -154,37 +154,23 @@ class TestFootnoteInjection:
 
 
 class TestSchemaAlignment:
-    """Test that schema matches v2 training data format."""
+    """Test that DatasetSchema exposes all expected fields and typology choices."""
 
-    def test_schema_has_all_v2_fields(self):
-        """Schema should include all fields from v2 training data."""
+    def test_schema_has_all_expected_fields(self):
+        """DatasetSchema should define all canonical output fields."""
         from ai4data.data_use.schemas.dataset_schema import DatasetSchema
 
         schema = DatasetSchema()
-        # Check by inspecting the field thresholds storage
-        # The fields are defined in build(), so we check the choices
-        _v2_fields = [
-            "dataset_name",
-            "acronym",
-            "producer",
-            "reference_year",
-            "geography",
-            "data_type",
-            "dataset_tag",
-            "usage_context",
-            "is_used",
-        ]
-        # We can't easily introspect the built schema without a model,
-        # but we can verify the class exists and has the build method
-        assert hasattr(schema, "build"), "Schema should have build method"
+        assert hasattr(schema, "_FACTUAL_RELATIONS"), "Schema should define _FACTUAL_RELATIONS"
+        assert hasattr(schema, "_ENTITY_DEFS"), "Schema should define _ENTITY_DEFS"
+        assert hasattr(schema, "_get_entity_schema"), "Schema should support Call 1"
+        assert hasattr(schema, "_get_relation_schema"), "Schema should support Call 1b"
+        assert hasattr(schema, "_get_classification_schema"), "Schema should support Call 2"
 
     def test_data_type_choices_match_v2(self):
-        """data_type choices should match v2 training data."""
-        import inspect
+        """Typology choices should include all canonical data types."""
+        from ai4data.data_use.schemas.dataset_schema import VALID_TYPOLOGIES
 
-        from ai4data.data_use.schemas.dataset_schema import DatasetSchema
-
-        source = inspect.getsource(DatasetSchema.build)
         expected_types = [
             "survey",
             "census",
@@ -197,22 +183,22 @@ class TestSchemaAlignment:
             "other",
         ]
         for dtype in expected_types:
-            assert dtype in source, f"data_type choice '{dtype}' missing from schema"
+            assert (
+                dtype in VALID_TYPOLOGIES
+            ), f"data_type choice '{dtype}' missing from VALID_TYPOLOGIES"
 
     def test_dataset_tag_choices_match_v2(self):
         """specificity_tag choices should be named/descriptive/vague only."""
-        import inspect
-
         from ai4data.data_use.schemas.dataset_schema import DatasetSchema
 
-        source = inspect.getsource(DatasetSchema.build)
-        assert "named" in source
-        assert "descriptive" in source
-        assert "vague" in source
-        # non-dataset should NOT be in the choices
-        choices_section = source[source.index("specificity_tag") :]
-        choices_section = choices_section[: choices_section.index("]")]
-        assert "non-dataset" not in choices_section
+        schema = DatasetSchema()
+        entity_defs = schema._ENTITY_DEFS
+        labels = list(entity_defs.keys())
+        assert any("named" in label for label in labels), "named_data entity type missing"
+        assert any(
+            "descriptive" in label for label in labels
+        ), "descriptive_data entity type missing"
+        assert any("vague" in label for label in labels), "vague_data entity type missing"
 
 
 class TestDeduplicate:

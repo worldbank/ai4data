@@ -7,12 +7,30 @@ from gliner2 import GLiNER2
 from huggingface_hub import snapshot_download
 
 
+class GLiNERClassifierWrapper:
+    """Wrapper to make GLiNER2-based sequence classification act like a HF pipeline."""
+
+    def __init__(self, model):
+        self.model = model
+        self.tasks = {"has_data_mention": ["has_mention", "no_mention"]}
+
+    def __call__(self, text: str):
+        if not text.strip():
+            return [{"label": "NO_DATA", "score": 1.0}]
+        res = self.model.classify_text(text, self.tasks, threshold=0.0, include_confidence=True)
+        info = res.get("has_data_mention", {})
+        label = info.get("label", "no_mention")
+        score = info.get("confidence", 0.0)
+        mapped_label = "WITH_DATA" if label == "has_mention" else "NO_DATA"
+        return [{"label": mapped_label, "score": score}]
+
+
 class ModelManager:
     """Manages GLiNER2 model loading and caching."""
 
     DEFAULT_MODEL_ID = "fastino/gliner2-large-v1"
-    DEFAULT_ADAPTER_ID = "ai4data/datause-extraction-v1"
-    DEFAULT_CLASSIFIER_ID = "ai4data-use/bert-base-uncased-data-use"
+    DEFAULT_ADAPTER_ID = "ai4data/datause-extraction"
+    DEFAULT_CLASSIFIER_ID = "ai4data/datause-classifier"
     _model_cache = {}
 
     def __init__(
@@ -41,9 +59,9 @@ class ModelManager:
             model_id: HuggingFace model ID or path to local model.
                      If None, uses default model.
             adapter_id: HuggingFace adapter repo ID to apply after loading the base model.
-                       If not provided (None), falls back to the adapter_id set on __init__
-                       (DEFAULT_ADAPTER_ID by default). Pass an empty string to skip adapter
-                       loading entirely.
+                       If not provided, falls back to the adapter_id set on __init__
+                       (DEFAULT_ADAPTER_ID by default). Pass an empty string or explicitly
+                       pass ``None`` via ``load(adapter_id=None)`` to skip adapter loading.
 
         Returns:
             Loaded GLiNER2 model (with adapter applied if specified)
@@ -91,31 +109,25 @@ class ModelManager:
             raise RuntimeError(f"Failed to load model '{model_id}': {str(e)}") from e
 
     def load_classifier(self, model_id: Optional[str] = None):
-        """Load the BERT page-relevance classifier, with caching.
+        """Load the GLiNER2-based page-relevance classifier, with caching.
 
-        Returns a HuggingFace text-classification pipeline that predicts
-        ``WITH_DATA`` (page likely contains a dataset mention) or ``NO_DATA``.
-        Token truncation at 512 is done by the pipeline's tokeniser so the
-        full token budget is used rather than a character approximation.
+        For ``datause-classifier`` adapters, loads ``fastino/gliner2-large-v1``
+        with the adapter and wraps it in ``GLiNERClassifierWrapper`` which
+        predicts ``WITH_DATA`` (page likely contains a dataset mention) or
+        ``NO_DATA`` via ``classify_text``.
+
+        Falls back to a HuggingFace text-classification pipeline for other
+        model IDs. Token truncation at 512 is done by the pipeline's tokeniser.
 
         Args:
             model_id: HuggingFace model ID. If None, uses DEFAULT_CLASSIFIER_ID.
 
         Returns:
-            Loaded HuggingFace pipeline instance
+            Loaded classifier (GLiNERClassifierWrapper or HF pipeline)
 
         Raises:
             RuntimeError: If model loading fails
         """
-        try:
-            from transformers import AutoTokenizer
-            from transformers import pipeline as hf_pipeline
-        except ImportError as exc:
-            raise ImportError(
-                "The BERT page classifier requires 'transformers' and 'torch'. "
-                "Install them with: uv pip install transformers torch"
-            ) from exc
-
         model_id = model_id or self.DEFAULT_CLASSIFIER_ID
         cache_key = ("classifier", model_id)
 
@@ -123,6 +135,16 @@ class ModelManager:
             return self._model_cache[cache_key]
 
         try:
+            # If the classifier is a GLiNER2-based LoRA adapter
+            if "datause-classifier" in model_id:
+                model = self.load(model_id="fastino/gliner2-large-v1", adapter_id=model_id)
+                clf = GLiNERClassifierWrapper(model)
+                self._model_cache[cache_key] = clf
+                return clf
+
+            from transformers import AutoTokenizer
+            from transformers import pipeline as hf_pipeline
+
             if torch.cuda.is_available():
                 device = 0
             elif torch.backends.mps.is_available():

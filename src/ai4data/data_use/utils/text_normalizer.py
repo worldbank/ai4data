@@ -71,17 +71,38 @@ class TextNormalizer:
 
                 if next_non_empty_idx != -1:
                     next_line = lines[next_non_empty_idx].strip()
-                    # Check if next line is structural (headers, lists, tables, links)
+                    # Check if next line is structural (headers, lists, tables, footnotes, links)
                     is_next_structural = next_line.startswith(
-                        ("#", "*", "-", "1.", ">", "|", "[", "**")
-                    )
-                    # Check if current line ends with sentence-ending punctuation
-                    ends_with_sentence_terminator = line.endswith((".", "?", "!"))
+                        ("#", "*", "-", "1.", ">", "|", "**")
+                    ) or bool(re.match(r"^\[\d+\]", next_line))
+                    # Check if current line ends with sentence-ending punctuation,
+                    # avoiding dots within URLs or unclosed parentheses (like markdown links)
+                    ends_with_sentence_terminator = False
+                    if line.endswith((".", "?", "!")):
+                        last_token = line.split()[-1] if line.split() else ""
+                        has_unclosed_parenthesis = line.count("(") > line.count(")")
+                        is_inside_url = (
+                            "http" in last_token
+                            or "/" in last_token
+                            or last_token.startswith("www.")
+                        )
+                        if not (has_unclosed_parenthesis or is_inside_url):
+                            ends_with_sentence_terminator = True
 
                     if not is_next_structural and not ends_with_sentence_terminator:
+                        last_token = line.split()[-1] if line.split() else ""
+                        is_inside_url = (
+                            "http" in last_token
+                            or "/" in last_token
+                            or last_token.startswith("www.")
+                        )
+
                         if line.endswith("-"):
                             # Join hyphenated word
                             joined = line[:-1] + next_line
+                        elif is_inside_url:
+                            # Join URL context without space to preserve URL formatting
+                            joined = line + next_line
                         else:
                             # Join with space
                             joined = line + " " + next_line

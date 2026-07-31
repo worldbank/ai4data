@@ -51,7 +51,7 @@ def mock_model_manager(monkeypatch):
     mock_model.create_schema.return_value = mock_schema
 
     def side_effect_extract(text, schema=None, include_confidence=True, **kwargs):
-        """Mock implementation of extract returning character offsets and relations for DatasetSchemaV3."""
+        """Mock implementation of extract returning character offsets and relations for DatasetSchema."""
 
         # Find all occurrences of a substring
         def find_all(sub, string):
@@ -224,7 +224,7 @@ def mock_model_manager(monkeypatch):
             end = start + 3
             add_entity("WDI", start, end, acronym_text="WDI", acronym_start=start, acronym_end=end)
 
-        return {"entities": {"name": name_ents}, "relation_extraction": relations}
+        return {"entities": {"named_data": name_ents}, "relation_extraction": relations}
 
     def side_effect_batch_extract(texts, schema=None, include_confidence=True, **kwargs):
         return [side_effect_extract(t, schema, include_confidence, **kwargs) for t in texts]

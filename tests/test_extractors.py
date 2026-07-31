@@ -13,7 +13,6 @@ class TestDatasetExtractor:
         assert extractor.model_id is None
         assert extractor._model is None
         assert extractor._schema_core is None
-        assert extractor._schema_provenance is None
 
     def test_initialization_with_custom_params(self):
         """Test extractor initialization with custom parameters."""
@@ -50,8 +49,8 @@ class TestDatasetExtractor:
         # Confidence should be included in mock response
         if results.get("datasets"):
             first_mention = results["datasets"][0]
-            if "dataset_name" in first_mention:
-                assert "confidence" in first_mention["dataset_name"]
+            if "mention_name" in first_mention:
+                assert "confidence" in first_mention["mention_name"]
 
     def test_extract_batch(self, mock_model_manager):
         """Test batch extraction."""
@@ -81,8 +80,7 @@ class TestDatasetExtractor:
         from ai4data.data_use.schemas.dataset_schema import DatasetSchema
 
         extractor = DatasetExtractor()
-        schema_builder = DatasetSchema(threshold=0.95)
-        custom_schema = schema_builder.build(extractor.model)
+        custom_schema = DatasetSchema(threshold=0.95)
 
         results = extractor.extract_from_text(sample_text, custom_schema=custom_schema)
 
@@ -94,7 +92,7 @@ class TestClassifierPreFilter:
 
     def test_use_classifier_skips_non_english(self, mock_model_manager, mock_gliner_model):
         """When use_classifier=True and text is non-English, extraction is skipped entirely."""
-        non_english_text = "Este es un análisis de los datos de pobreza en América Latina."
+        non_english_text = "Это анализ данных о бедности в странах Латинской Америки."
 
         extractor = DatasetExtractor()
         result = extractor.extract_from_text(non_english_text, use_classifier=True)
@@ -111,18 +109,18 @@ class TestClassifierPreFilter:
         result = extractor.extract_from_text(english_text, use_classifier=True)
 
         assert "skip_reason" not in result
-        mock_gliner_model.extract.assert_called_once()
+        assert mock_gliner_model.batch_extract.call_count >= 1
 
     def test_use_classifier_false_does_not_filter(
         self, mock_model_manager, mock_gliner_model, mock_classifier_pipeline
     ):
         """When use_classifier=False, classification is skipped and extraction proceeds."""
-        non_english_text = "Este es un análisis de los datos de pobreza en América Latina."
+        non_english_text = "Это анализ данных о бедности в странах Латинской Америки."
         extractor = DatasetExtractor()
         extractor.extract_from_text(non_english_text, use_classifier=False)
 
         mock_classifier_pipeline.assert_not_called()
-        mock_gliner_model.extract.assert_called_once()
+        assert mock_gliner_model.batch_extract.call_count >= 1
 
 
 class TestExtractFromDocumentForwarding:
@@ -222,32 +220,32 @@ class TestBertClassifierPreFilter:
         result = extractor.extract_from_text(english_text, use_classifier=True)
 
         assert "skip_reason" not in result
-        mock_gliner_model.extract.assert_called_once()
+        assert mock_gliner_model.batch_extract.call_count >= 1
 
     def test_non_english_skips_before_classifier(
         self, mock_model_manager, mock_gliner_model, mock_classifier_pipeline
     ):
         """Non-English text is rejected by is_english (stage 1) before BERT is called."""
-        non_english = "Este es un análisis de los datos de pobreza en América Latina."
+        non_english = "Это анализ данных о бедности в странах Латинской Америки."
         extractor = DatasetExtractor()
         result = extractor.extract_from_text(non_english, use_classifier=True)
 
         assert result["skip_reason"] == "non_english"
         # BERT classifier must not have been called
         mock_classifier_pipeline.assert_not_called()
-        mock_gliner_model.extract.assert_not_called()
+        mock_gliner_model.batch_extract.assert_not_called()
 
     def test_skip_reason_absent_when_classifier_disabled(
         self, mock_model_manager, mock_gliner_model, mock_classifier_pipeline
     ):
         """When use_classifier=False, skip_reason is never set."""
-        non_english = "Este es un análisis de los datos de pobreza en América Latina."
+        non_english = "Это анализ данных о бедности в странах Латинской Америки."
         extractor = DatasetExtractor()
         result = extractor.extract_from_text(non_english, use_classifier=False)
 
         assert "skip_reason" not in result
         mock_classifier_pipeline.assert_not_called()
-        mock_gliner_model.extract.assert_called_once()
+        assert mock_gliner_model.batch_extract.call_count >= 1
 
     def test_no_data_verbose_prints_skip_message(
         self, mock_model_manager, mock_classifier_pipeline, capsys
@@ -347,48 +345,68 @@ class TestExtractFromDocumentOutputFormat:
 
     def test_ignore_contained_acronym(self, mock_model_manager, mock_gliner_model):
         """Test that acronyms contained in the dataset name are ignored/cleared."""
-        prefix_offset = 83
-        mock_gliner_model.extract.return_value = {
-            "entities": {
-                "name": [
+
+        def fake_batch_extract(texts, schema, **kwargs):
+            kind = getattr(schema, "_kind", "entity")
+            n = len(texts) if isinstance(texts, list) else 1
+            if kind == "entity":
+                return [
                     {
-                        "text": "Demographic and Health Survey (DHS)",
-                        "confidence": 0.95,
-                        "start": prefix_offset,
-                        "end": prefix_offset + 35,
+                        "entities": {
+                            "named_data": [
+                                {
+                                    "text": "Demographic and Health Survey (DHS)",
+                                    "confidence": 0.95,
+                                    "start": 0,
+                                    "end": 35,
+                                }
+                            ]
+                        }
                     }
+                    for _ in range(n)
                 ]
-            },
-            "relation_extraction": {
-                "has_acronym": [
+            elif kind == "pass1":
+                # Call 1b: relation extraction.
+                return [
                     {
-                        "head": {
-                            "text": "Demographic and Health Survey (DHS)",
-                            "start": prefix_offset,
-                            "end": prefix_offset + 35,
+                        "entities": {},
+                        "relation_extraction": {
+                            "has_acronym": [
+                                {
+                                    "head": {
+                                        "text": "Demographic and Health Survey (DHS)",
+                                        "start": 0,
+                                        "end": 35,
+                                    },
+                                    "tail": {
+                                        "text": "DHS",
+                                        "start": 31,
+                                        "end": 34,
+                                        "confidence": 0.95,
+                                    },
+                                    "label": "has_acronym",
+                                    "score": 0.95,
+                                }
+                            ]
                         },
-                        "tail": {
-                            "text": "DHS",
-                            "start": prefix_offset + 31,
-                            "end": prefix_offset + 34,
-                            "confidence": 0.95,
-                        },
-                        "label": "has_acronym",
-                        "score": 0.95,
                     }
+                    for _ in range(n)
                 ]
-            },
-        }
-        mock_gliner_model.batch_extract.return_value = [
-            {
-                "entities": {
-                    "specificity": [{"text": "named", "confidence": 0.95, "start": 13, "end": 18}],
-                    "usage": [{"text": "primary", "confidence": 0.95, "start": 47, "end": 54}],
-                }
-            }
-        ]
+            else:  # fallback — Call 2: classification.
+                return [
+                    {
+                        "typology": {"label": "survey", "confidence": 0.95},
+                        "usage": {"label": "primary", "confidence": 0.95},
+                    }
+                    for _ in range(n)
+                ]
+
+        mock_gliner_model.batch_extract.side_effect = fake_batch_extract
+
         extractor = DatasetExtractor()
-        results = extractor.extract_from_text("Dummy text", include_confidence=True)
+        results = extractor.extract_from_text(
+            "Demographic and Health Survey (DHS)", include_confidence=True
+        )
         assert len(results["datasets"]) == 1
         acro = results["datasets"][0]["acronym"]
         assert acro["text"] == ""
@@ -421,52 +439,54 @@ class TestExtractFromDocumentOutputFormat:
         # A: "Ghana Living Standard Survey (GLSS)" at [0, 35], named, conf 0.9
         # B: "Ghana Living Standard Survey" at [0, 28], named, conf 0.9
         # C: "Ghana" at [0, 5], vague, conf 0.9
-        prefix_offset = 83
-        mock_gliner_model.extract.return_value = {
-            "entities": {
-                "name": [
+
+        def fake_batch_extract(texts, schema, **kwargs):
+            kind = getattr(schema, "_kind", "entity")
+            n = len(texts) if isinstance(texts, list) else 1
+            if kind == "entity":
+                return [
                     {
-                        "text": "Ghana Living Standard Survey (GLSS)",
-                        "confidence": 0.9,
-                        "start": prefix_offset,
-                        "end": prefix_offset + 35,
-                    },
-                    {
-                        "text": "Ghana Living Standard Survey",
-                        "confidence": 0.9,
-                        "start": prefix_offset,
-                        "end": prefix_offset + 28,
-                    },
-                    {
-                        "text": "Ghana",
-                        "confidence": 0.9,
-                        "start": prefix_offset,
-                        "end": prefix_offset + 5,
-                    },
+                        "entities": {
+                            "named_data": [
+                                {
+                                    "text": "Ghana Living Standard Survey (GLSS)",
+                                    "confidence": 0.9,
+                                    "start": 0,
+                                    "end": 35,
+                                },
+                                {
+                                    "text": "Ghana Living Standard Survey",
+                                    "confidence": 0.9,
+                                    "start": 0,
+                                    "end": 28,
+                                },
+                            ],
+                            "vague_data": [
+                                {
+                                    "text": "Ghana",
+                                    "confidence": 0.9,
+                                    "start": 0,
+                                    "end": 5,
+                                },
+                            ],
+                        },
+                        "relation_extraction": {},
+                    }
+                    for _ in range(n)
                 ]
-            },
-            "relation_extraction": {},
-        }
-        mock_gliner_model.batch_extract.return_value = [
-            {
-                "entities": {
-                    "specificity": [{"text": "named", "confidence": 0.9, "start": 13, "end": 18}],
-                    "usage": [{"text": "primary", "confidence": 0.9, "start": 47, "end": 54}],
-                }
-            },
-            {
-                "entities": {
-                    "specificity": [{"text": "named", "confidence": 0.9, "start": 13, "end": 18}],
-                    "usage": [{"text": "primary", "confidence": 0.9, "start": 47, "end": 54}],
-                }
-            },
-            {
-                "entities": {
-                    "specificity": [{"text": "vague", "confidence": 0.9, "start": 13, "end": 18}],
-                    "usage": [{"text": "primary", "confidence": 0.9, "start": 47, "end": 54}],
-                }
-            },
-        ]
+            elif kind == "pass1":
+                return [{"entities": {}, "relation_extraction": {}} for _ in range(n)]
+            else:  # fallback — Call 2: classification.
+                return [
+                    {
+                        "typology": {"label": "survey", "confidence": 0.9},
+                        "usage": {"label": "primary", "confidence": 0.9},
+                    }
+                    for _ in range(n)
+                ]
+
+        mock_gliner_model.batch_extract.side_effect = fake_batch_extract
+
         extractor = DatasetExtractor()
         results = extractor.extract_from_text(
             "Ghana Living Standard Survey (GLSS)", include_confidence=True

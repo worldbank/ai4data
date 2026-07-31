@@ -1,5 +1,7 @@
 """Tests for ModelManager."""
 
+from unittest.mock import MagicMock
+
 import pytest
 
 from ai4data.data_use.models.model_manager import ModelManager
@@ -35,7 +37,7 @@ class TestModelManager:
 
     def test_default_adapter_id(self):
         """Test that default adapter ID is set."""
-        assert ModelManager.DEFAULT_ADAPTER_ID == "ai4data/datause-extraction-v1"
+        assert ModelManager.DEFAULT_ADAPTER_ID == "ai4data/datause-extraction"
 
     def test_load_with_adapter(self, monkeypatch, mock_gliner_model):
         """Test that snapshot_download and load_adapter are called when adapter_id is set."""
@@ -147,55 +149,39 @@ class TestModelManager:
         assert len(manager._model_cache) == 2
 
     def test_clear_cache(self, monkeypatch, mock_gliner_model):
-        """Test cache clearing."""
-
-        def mock_from_pretrained(model_id, **kwargs):
-            return mock_gliner_model
-
+        """Test clearing model cache."""
         from gliner2 import GLiNER2
 
-        monkeypatch.setattr(GLiNER2, "from_pretrained", mock_from_pretrained)
-        monkeypatch.setattr(
-            "ai4data.data_use.models.model_manager.snapshot_download",
-            lambda repo_id: "/tmp/fake_adapter",
-        )
+        monkeypatch.setattr(GLiNER2, "from_pretrained", lambda model_id, **kw: mock_gliner_model)
 
-        manager = ModelManager()
-        manager.load("test-model")
-
-        assert len(manager._model_cache) == 1
-
+        manager = ModelManager(adapter_id=None)
+        manager.load()
+        assert len(ModelManager._model_cache) == 1
         manager.clear_cache()
-        assert len(manager._model_cache) == 0
+        assert len(ModelManager._model_cache) == 0
 
     def test_load_with_none_uses_default(self, monkeypatch, mock_gliner_model):
-        """Test that load(None) uses default model ID."""
-        loaded_model_id = {"id": None}
+        """Test that load(model_id=None) falls back to default model ID."""
+        from gliner2 import GLiNER2
+
+        loaded_model_id = []
 
         def mock_from_pretrained(model_id, **kwargs):
-            loaded_model_id["id"] = model_id
+            loaded_model_id.append(model_id)
             return mock_gliner_model
 
-        from gliner2 import GLiNER2
-
         monkeypatch.setattr(GLiNER2, "from_pretrained", mock_from_pretrained)
-        monkeypatch.setattr(
-            "ai4data.data_use.models.model_manager.snapshot_download",
-            lambda repo_id: "/tmp/fake_adapter",
-        )
 
-        manager = ModelManager()
-        manager.load(None)
-
-        assert loaded_model_id["id"] == ModelManager.DEFAULT_MODEL_ID
+        manager = ModelManager(adapter_id=None)
+        manager.load(model_id=None)
+        assert loaded_model_id[0] == ModelManager.DEFAULT_MODEL_ID
 
     def test_load_error_handling(self, monkeypatch):
-        """Test error handling when model loading fails."""
+        """Test error handling when from_pretrained raises exception."""
+        from gliner2 import GLiNER2
 
         def mock_from_pretrained(model_id, **kwargs):
-            raise Exception("Model not found")
-
-        from gliner2 import GLiNER2
+            raise ValueError("Invalid model")
 
         monkeypatch.setattr(GLiNER2, "from_pretrained", mock_from_pretrained)
 
@@ -204,8 +190,22 @@ class TestModelManager:
         with pytest.raises(RuntimeError, match="Failed to load model"):
             manager.load("invalid-model")
 
-    def test_load_classifier(self, monkeypatch):
-        """Test load_classifier handles cache_dir properly."""
+    def test_load_classifier(self, monkeypatch, mock_gliner_model):
+        """Test load_classifier resolves correct wrapper/pipeline instances."""
+        # 1. Test default GLiNER-based classifier
+        mock_load = MagicMock(return_value=mock_gliner_model)
+        monkeypatch.setattr(ModelManager, "load", mock_load)
+
+        manager = ModelManager()
+        clf = manager.load_classifier()
+
+        from ai4data.data_use.models.model_manager import GLiNERClassifierWrapper
+
+        assert isinstance(clf, GLiNERClassifierWrapper)
+        assert mock_load.call_count == 1
+        assert mock_load.call_args[1].get("adapter_id") == "ai4data/datause-classifier"
+
+        # 2. Test fallback transformers classifier (when custom model_id is used)
         clf_calls = []
         tokenizer_calls = []
 
@@ -227,20 +227,16 @@ class TestModelManager:
         monkeypatch.setattr(torch.cuda, "is_available", lambda: False)
         monkeypatch.setattr(torch.backends.mps, "is_available", lambda: False)
 
-        # Test with custom cache dir
-        manager = ModelManager(cache_dir="./custom_cache")
-        clf = manager.load_classifier()
+        manager_custom = ModelManager(cache_dir="./custom_cache")
+        clf_custom = manager_custom.load_classifier(model_id="custom-bert-model")
 
-        assert clf == "mock_pipeline"
+        assert clf_custom == "mock_pipeline"
         assert len(tokenizer_calls) == 1
-        assert tokenizer_calls[0] == (
-            ModelManager.DEFAULT_CLASSIFIER_ID,
-            {"cache_dir": "./custom_cache"},
-        )
+        assert tokenizer_calls[0] == ("custom-bert-model", {"cache_dir": "./custom_cache"})
         assert len(clf_calls) == 1
         assert clf_calls[0] == (
             "text-classification",
-            ModelManager.DEFAULT_CLASSIFIER_ID,
+            "custom-bert-model",
             "mock_tokenizer",
             -1,
             True,

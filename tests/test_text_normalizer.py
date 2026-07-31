@@ -78,3 +78,16 @@ def test_normalize_full_preserves_markdown():
     )
 
     assert TextNormalizer.normalize_full(md_text) == expected
+
+
+def test_normalize_full_joins_urls():
+    """Test that line breaks inside URLs/markdown links are joined correctly."""
+    text = (
+        "Based on [OECD data from 2021, which was indexed by CPI](https://stats.\n"
+        "oecd.org/index.aspx) and other national sources."
+    )
+    expected = (
+        "Based on [OECD data from 2021, which was indexed by CPI](https://stats.oecd.org/index.aspx) "
+        "and other national sources."
+    )
+    assert TextNormalizer.normalize_full(text) == expected

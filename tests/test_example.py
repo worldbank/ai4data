@@ -31,10 +31,10 @@ def test_example_extraction_import(monkeypatch):
     ):
         import importlib
 
-        import ai4data.data_use.example_extraction as example_extraction
+        import ai4data.data_use.example_extraction
 
-        importlib.reload(example_extraction)
+        importlib.reload(ai4data.data_use.example_extraction)
 
         # Verify the base model was loaded and the adapter was applied
-        assert example_extraction.model is mock_model
+        assert ai4data.data_use.example_extraction.model is mock_model
         mock_model.load_adapter.assert_called()
