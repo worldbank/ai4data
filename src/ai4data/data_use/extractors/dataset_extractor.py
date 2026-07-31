@@ -813,8 +813,12 @@ class DatasetExtractor:
                 training data token distribution)
             enable_chunking: Whether to split long text into chunks (default: True)
             use_classifier: Whether to use two-stage pre-filtering classifier
-                (is_english then GLiNER2 ``datause-classifier``) before
-                running the full extraction pipeline (default: False)
+                (is_english on full text, then per-chunk GLiNER2
+                ``datause-classifier``). Only chunks predicted as WITH_DATA
+                go through the expensive swarm pipeline. This avoids running
+                3 adapter loads + batch_extract on boilerplate chunks such
+                as tables of contents, blank pages, or reference lists
+                (default: False)
             model_id: Optional model ID override for this call (unused by default extractor)
             apply_heuristics: If True, apply heuristic filters to remove likely
                 false positives such as table/figure labels (default: False)
@@ -846,8 +850,10 @@ class DatasetExtractor:
 
         # Pre-filter: two-stage gate when use_classifier=True.
         #   Stage 1: cheap stopword heuristic — skip non-English pages immediately.
-        #   Stage 2: GLiNER2 ``datause-classifier`` adapter — skip pages the
-        #            model predicts have NO_DATA.
+        #   Stage 2: per-chunk GLiNER2 ``datause-classifier`` — only chunks
+        #            predicted as WITH_DATA go through the expensive swarm.
+        #            This avoids running 3 adapter loads + batch_extract on
+        #            chunks that have no dataset mentions (tables, boilerplate).
         # Both stages are skipped when use_classifier=False (default).
         if use_classifier:
             from ..utils.document_parser import DocumentParser
@@ -860,20 +866,34 @@ class DatasetExtractor:
                     print(f"   SKIP {label} (non-English) | preview: {preview!r}")
                 return {"input_text": text, "datasets": [], "skip_reason": "non_english"}
 
-            result = self.classifier(text)
-            if result[0]["label"] == "NO_DATA":
-                if verbose:
-                    label = _page_label or "chunk"
-                    score = result[0]["score"]
-                    logger.debug("SKIP %s (NO_DATA, conf=%.2f)", label, score)
-                    print(f"   SKIP {label} (NO_DATA, conf={score:.2f})")
-                return {"input_text": text, "datasets": [], "skip_reason": "no_data"}
-
         # Chunk text if it exceeds token limit (returns list of (chunk_text, offset) tuples)
         if enable_chunking:
             chunks_with_offsets = self._chunk_text(text, max_tokens=max_tokens, overlap=50)
         else:
             chunks_with_offsets = [(text, 0)]
+
+        if use_classifier:
+            _data_chunks = []
+            _skipped = 0
+            for chunk_text, offset in chunks_with_offsets:
+                result = self.classifier(chunk_text)
+                if result[0]["label"] == "WITH_DATA":
+                    _data_chunks.append((chunk_text, offset))
+                else:
+                    _skipped += 1
+                    if verbose:
+                        preview = chunk_text[:60].replace("\n", " ")
+                        logger.debug("SKIP chunk (NO_DATA) | preview: %r", preview)
+            if not _data_chunks:
+                if verbose:
+                    label = _page_label or "text"
+                    logger.debug("SKIP %s (all %d chunks are NO_DATA)", label, len(chunks_with_offsets))
+                    print(f"   SKIP {label} (all chunks NO_DATA)")
+                return {"input_text": text, "datasets": [], "skip_reason": "no_data"}
+            if _skipped and verbose:
+                label = _page_label or "text"
+                print(f"   GATE {label}: {len(_data_chunks)}/{len(chunks_with_offsets)} chunks WITH_DATA")
+            chunks_with_offsets = _data_chunks
 
         # ── Three-model swarm ─────────────
         # Call 1:  entity extraction (fine‑tuned adapter, entities only).
