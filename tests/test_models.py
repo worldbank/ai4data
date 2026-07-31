@@ -11,15 +11,18 @@ class TestModelManager:
     """Test suite for ModelManager class."""
 
     def setup_method(self):
-        """Clear the class-level model cache before each test."""
-        ModelManager._model_cache.clear()
+        """Clear the class-level caches before each test."""
+        ModelManager._base_cache.clear()
+        ModelManager._adapter_path_cache.clear()
+        ModelManager._active_adapter.clear()
+        ModelManager._classifier_cache.clear()
 
     def test_initialization_default(self):
         """Test manager initialization with default parameters."""
         manager = ModelManager()
         assert manager.cache_dir is None
         assert manager.adapter_id == ModelManager.DEFAULT_ADAPTER_ID
-        assert manager._model_cache == {}
+        assert manager._base_cache == {}
 
     def test_initialization_with_cache_dir(self):
         """Test manager initialization with custom cache directory."""
@@ -40,45 +43,120 @@ class TestModelManager:
         assert ModelManager.DEFAULT_ADAPTER_ID == "ai4data/datause-extraction"
 
     def test_load_with_adapter(self, monkeypatch, mock_gliner_model):
-        """Test that snapshot_download and load_adapter are called when adapter_id is set."""
+        """Test that load_adapter is called when adapter_id is set."""
         from gliner2 import GLiNER2
 
         monkeypatch.setattr(GLiNER2, "from_pretrained", lambda model_id, **kw: mock_gliner_model)
-
-        fake_adapter_path = "/tmp/fake_adapter"
         monkeypatch.setattr(
             "ai4data.data_use.models.model_manager.snapshot_download",
-            lambda repo_id: fake_adapter_path,
+            lambda repo_id, **kw: "/tmp/fake_adapter",
         )
 
         manager = ModelManager(adapter_id="rafmacalaba/gliner2-datause-v1")
         model = manager.load("fastino/gliner2-base-v1")
 
-        mock_gliner_model.load_adapter.assert_called_once_with(fake_adapter_path)
         assert model is mock_gliner_model
+        mock_gliner_model.load_adapter.assert_called_once_with("/tmp/fake_adapter")
 
     def test_load_without_adapter(self, monkeypatch, mock_gliner_model):
         """Test that load_adapter is NOT called when adapter_id is None."""
         from gliner2 import GLiNER2
 
         monkeypatch.setattr(GLiNER2, "from_pretrained", lambda model_id, **kw: mock_gliner_model)
-
-        snapshot_calls = []
         monkeypatch.setattr(
             "ai4data.data_use.models.model_manager.snapshot_download",
-            lambda repo_id: snapshot_calls.append(repo_id),
+            lambda repo_id: [],
         )
 
         manager = ModelManager(adapter_id=None)
         manager.load("fastino/gliner2-base-v1")
 
-        assert (
-            snapshot_calls == []
-        ), "snapshot_download should not be called when adapter_id is None"
         mock_gliner_model.load_adapter.assert_not_called()
 
     def test_model_caching(self, monkeypatch, mock_gliner_model):
-        """Test that models are cached after first load."""
+        """Test that the base model is loaded only once."""
+        load_count = {"count": 0}
+
+        def mock_from_pretrained(model_id, **kwargs):
+            load_count["count"] += 1
+            return mock_gliner_model
+
+        from gliner2 import GLiNER2
+
+        monkeypatch.setattr(GLiNER2, "from_pretrained", mock_from_pretrained)
+
+        manager = ModelManager()
+
+        model1 = manager.load("test-model")
+        assert load_count["count"] == 1
+
+        model2 = manager.load("test-model")
+        assert load_count["count"] == 1
+        assert model1 is model2
+
+    def test_adapter_scope_idempotent(self, monkeypatch, mock_gliner_model):
+        """Test that adapter_scope skips load_adapter if same adapter already active."""
+        def fake_download(repo, **kw):
+            return f"/tmp/{repo.split('/')[-1]}"
+
+        monkeypatch.setattr(
+            "ai4data.data_use.models.model_manager.snapshot_download", fake_download
+        )
+
+        manager = ModelManager()
+        model = mock_gliner_model
+
+        with manager.adapter_scope(model, "entity", "adapter-a"):
+            pass
+        assert mock_gliner_model.load_adapter.call_count == 1
+
+        with manager.adapter_scope(model, "entity", "adapter-a"):
+            pass
+        assert mock_gliner_model.load_adapter.call_count == 1
+
+    def test_adapter_scope_switches_on_different_adapter(
+        self, monkeypatch, mock_gliner_model
+    ):
+        """Test that adapter_scope reloads when a different adapter is requested."""
+        calls = []
+
+        def fake_download(repo, **kw):
+            path = f"/tmp/{repo.split('/')[-1]}"
+            calls.append(repo)
+            return path
+
+        monkeypatch.setattr(
+            "ai4data.data_use.models.model_manager.snapshot_download", fake_download
+        )
+
+        manager = ModelManager()
+        model = mock_gliner_model
+
+        with manager.adapter_scope(model, "entity", "adapter-a"):
+            pass
+        with manager.adapter_scope(model, "relation", "adapter-b"):
+            pass
+        with manager.adapter_scope(model, "impact", "adapter-c"):
+            pass
+
+        assert mock_gliner_model.load_adapter.call_count == 3
+        # Verify each adapter was downloaded
+        assert "adapter-a" in calls[0]
+        assert "adapter-b" in calls[1]
+        assert "adapter-c" in calls[2]
+
+    def test_adapter_scope_empty_adapter_is_noop(self, monkeypatch, mock_gliner_model):
+        """Test that adapter_scope with no adapter_id does nothing."""
+        manager = ModelManager()
+        model = mock_gliner_model
+
+        with manager.adapter_scope(model, "none", None):
+            passthrough = model
+        assert passthrough is model
+        mock_gliner_model.load_adapter.assert_not_called()
+
+    def test_one_base_shared_across_adapters(self, monkeypatch, mock_gliner_model):
+        """Test that the same base model serves multiple adapters."""
         load_count = {"count": 0}
 
         def mock_from_pretrained(model_id, **kwargs):
@@ -90,55 +168,28 @@ class TestModelManager:
         monkeypatch.setattr(GLiNER2, "from_pretrained", mock_from_pretrained)
         monkeypatch.setattr(
             "ai4data.data_use.models.model_manager.snapshot_download",
-            lambda repo_id: "/tmp/fake_adapter",
+            lambda repo_id, **kw: f"/tmp/{repo_id.split('/')[-1]}",
         )
 
         manager = ModelManager()
+        model_a = manager.load("fastino/gliner2-base-v1", adapter_id="adapter-a")
+        model_b = manager.load("fastino/gliner2-base-v1", adapter_id="adapter-b")
 
-        model1 = manager.load("test-model")
         assert load_count["count"] == 1
+        assert model_a is model_b
+        assert len(manager._base_cache) == 1
 
-        model2 = manager.load("test-model")
-        assert load_count["count"] == 1  # Should not increment
-        assert model1 is model2
-
-    def test_cache_key_includes_adapter(self, monkeypatch, mock_gliner_model):
-        """Test that same base model with different adapters creates separate cache entries."""
-        from gliner2 import GLiNER2
-
-        monkeypatch.setattr(GLiNER2, "from_pretrained", lambda model_id, **kw: mock_gliner_model)
-        monkeypatch.setattr(
-            "ai4data.data_use.models.model_manager.snapshot_download",
-            lambda repo_id: "/tmp/fake_adapter",
-        )
-
-        manager = ModelManager(adapter_id=None)  # start with no default adapter
-
-        manager.load("fastino/gliner2-base-v1", adapter_id="adapter-a")
-        manager.load("fastino/gliner2-base-v1", adapter_id="adapter-b")
-
-        assert len(manager._model_cache) == 2
-        assert ("fastino/gliner2-base-v1", "adapter-a") in manager._model_cache
-        assert ("fastino/gliner2-base-v1", "adapter-b") in manager._model_cache
-
-    def test_different_models_cached_separately(self, monkeypatch, mock_gliner_model):
-        """Test that different models are cached separately."""
+    def test_different_models_cached_separately(self, monkeypatch):
+        """Test that different base models are cached separately."""
 
         def mock_from_pretrained(model_id, **kwargs):
             mock = MagicMock()
             mock.model_id = model_id
-            mock.load_adapter = MagicMock()
             return mock
-
-        from unittest.mock import MagicMock
 
         from gliner2 import GLiNER2
 
         monkeypatch.setattr(GLiNER2, "from_pretrained", mock_from_pretrained)
-        monkeypatch.setattr(
-            "ai4data.data_use.models.model_manager.snapshot_download",
-            lambda repo_id: "/tmp/fake_adapter",
-        )
 
         manager = ModelManager()
 
@@ -146,29 +197,29 @@ class TestModelManager:
         model2 = manager.load("model-2")
 
         assert model1 is not model2
-        assert len(manager._model_cache) == 2
+        assert len(manager._base_cache) == 2
 
     def test_clear_cache(self, monkeypatch, mock_gliner_model):
-        """Test clearing model cache."""
+        """Test clearing model caches."""
         from gliner2 import GLiNER2
 
         monkeypatch.setattr(GLiNER2, "from_pretrained", lambda model_id, **kw: mock_gliner_model)
 
         manager = ModelManager(adapter_id=None)
         manager.load()
-        assert len(ModelManager._model_cache) == 1
+        assert len(ModelManager._base_cache) == 1
         manager.clear_cache()
-        assert len(ModelManager._model_cache) == 0
+        assert len(ModelManager._base_cache) == 0
 
     def test_load_with_none_uses_default(self, monkeypatch, mock_gliner_model):
         """Test that load(model_id=None) falls back to default model ID."""
-        from gliner2 import GLiNER2
-
         loaded_model_id = []
 
         def mock_from_pretrained(model_id, **kwargs):
             loaded_model_id.append(model_id)
             return mock_gliner_model
+
+        from gliner2 import GLiNER2
 
         monkeypatch.setattr(GLiNER2, "from_pretrained", mock_from_pretrained)
 
@@ -192,9 +243,14 @@ class TestModelManager:
 
     def test_load_classifier(self, monkeypatch, mock_gliner_model):
         """Test load_classifier resolves correct wrapper/pipeline instances."""
-        # 1. Test default GLiNER-based classifier
-        mock_load = MagicMock(return_value=mock_gliner_model)
-        monkeypatch.setattr(ModelManager, "load", mock_load)
+        # 1. Test default GLiNER-based classifier.
+        monkeypatch.setattr(
+            "ai4data.data_use.models.model_manager.snapshot_download",
+            lambda repo_id, **kw: "/tmp/fake_adapter",
+        )
+        from gliner2 import GLiNER2
+
+        monkeypatch.setattr(GLiNER2, "from_pretrained", lambda model_id, **kw: mock_gliner_model)
 
         manager = ModelManager()
         clf = manager.load_classifier()
@@ -202,8 +258,9 @@ class TestModelManager:
         from ai4data.data_use.models.model_manager import GLiNERClassifierWrapper
 
         assert isinstance(clf, GLiNERClassifierWrapper)
-        assert mock_load.call_count == 1
-        assert mock_load.call_args[1].get("adapter_id") == "ai4data/datause-classifier"
+        assert clf.model is mock_gliner_model
+        assert callable(clf._scope_fn)
+        assert len(manager._base_cache) == 1
 
         # 2. Test fallback transformers classifier (when custom model_id is used)
         clf_calls = []

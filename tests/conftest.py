@@ -166,36 +166,29 @@ def mock_classifier_pipeline():
 
 @pytest.fixture
 def mock_model_manager(monkeypatch, mock_gliner_model, mock_classifier_pipeline):
-    """Mock ModelManager to return distinct models per adapter.
+    """Mock ModelManager to share a single base model across adapters.
 
-    Production loads a different cached GLiNER2 object per adapter_id, so
-    ``self.relation_model is not self.model`` holds. The mock mirrors this
-    by returning a fresh MagicMock per adapter_id while sharing the
-    ``create_schema`` / ``batch_extract`` sub-mocks with ``mock_gliner_model``
-    so a single test-level ``side_effect`` override propagates to all of them.
+    Production loads one GLiNER2 base model and loads the fine-tuned LoRA
+    adapter on it via gliner2's native ``model.load_adapter(path)`` inside
+    ``adapter_scope``. The mock mirrors this: ``load_base`` returns the same
+    ``mock_gliner_model``, ``adapter_scope`` yields that model without actual
+    adapter loading.
     """
 
-    _cache = {}
+    from contextlib import contextmanager
 
-    def mock_load(self, model_id=None, adapter_id=None, **kwargs):
-        key = adapter_id or ""
-        if key not in _cache:
-            m = MagicMock()
-            # Share sub-mocks with the base model so test overrides apply.
-            m.create_schema = mock_gliner_model.create_schema
-            m.batch_extract = mock_gliner_model.batch_extract
-            m.extract = mock_gliner_model.extract
-            m.extract_json = mock_gliner_model.extract_json
-            m.load_adapter = mock_gliner_model.load_adapter
-            _cache[key] = m
-        return _cache[key]
-
-    def mock_load_classifier(self, model_id=None):
-        return mock_classifier_pipeline
+    import threading
 
     from ai4data.data_use.models.model_manager import ModelManager
 
-    monkeypatch.setattr(ModelManager, "load", mock_load)
-    monkeypatch.setattr(ModelManager, "load_classifier", mock_load_classifier)
+    @contextmanager
+    def mock_adapter_scope(self, model, adapter_name, adapter_id, model_id=None):
+        yield model
 
-    return ModelManager()
+    monkeypatch.setattr(ModelManager, "load_base", lambda self, model_id=None: mock_gliner_model)
+    monkeypatch.setattr(ModelManager, "adapter_scope", mock_adapter_scope)
+    monkeypatch.setattr(ModelManager, "load_classifier", lambda self, model_id=None: mock_classifier_pipeline)
+
+    manager = ModelManager()
+    manager._lock = threading.Lock()
+    return manager

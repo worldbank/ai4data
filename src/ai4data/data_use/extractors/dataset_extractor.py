@@ -143,40 +143,40 @@ class DatasetExtractor:
         self.relation_adapter_id = relation_adapter_id
         self.threshold = threshold
         self._model = None
-        self._classification_model = None
-        self._relation_model = None
         self._classifier = None
         # Cached DatasetSchema instance -- built lazily on first use.
         self._schema_core = None
 
     @property
     def model(self):
-        """Lazy load the GLiNER2 extraction model."""
+        """Lazy load the shared GLiNER2 base model (no adapter attached)."""
         if self._model is None:
-            self._model = self.model_manager.load(self.model_id, adapter_id=self.adapter_id)
+            self._model = self.model_manager.load_base(self.model_id)
         return self._model
+
+    def _model_scope(self, adapter_name: str, adapter_id: Optional[str]):
+        """Context manager making ``adapter_id`` active on the shared model."""
+        if adapter_id is None:
+            adapter_id = self.model_manager.adapter_id
+        return self.model_manager.adapter_scope(
+            self.model, adapter_name, adapter_id, self.model_id
+        )
 
     @property
     def classification_model(self):
-        """Lazy load the classification model (Call 2)."""
-        if self._classification_model is None and self.classification_adapter_id:
-            self._classification_model = self.model_manager.load(
-                self.model_id, adapter_id=self.classification_adapter_id
-            )
-        if self._classification_model is None:
-            self._classification_model = self.model
-        return self._classification_model
+        """The shared base model (adapter is loaded on-the-fly by _model_scope).
+
+        Kept for backward compatibility with code that preloads adapters.
+        """
+        return self.model
 
     @property
     def relation_model(self):
-        """Lazy load the relation extraction model (Call 1b)."""
-        if self._relation_model is None and self.relation_adapter_id:
-            self._relation_model = self.model_manager.load(
-                self.model_id, adapter_id=self.relation_adapter_id
-            )
-        if self._relation_model is None:
-            self._relation_model = self.model
-        return self._relation_model
+        """The shared base model (adapter is loaded on-the-fly by _model_scope).
+
+        Kept for backward compatibility with code that preloads adapters.
+        """
+        return self.model
 
     @property
     def classifier(self):
@@ -827,9 +827,10 @@ class DatasetExtractor:
                 may suppress genuinely ambiguous vague mentions. Default: False.
             _page_label: Optional label for the current page/chunk used in verbose
                 logging (e.g. "page 5"). Internal parameter for extract_from_document.
-            parallel: If True, run Call 1 (entity) and Call 1b (relation)
-                concurrently when the input splits into multiple chunks
-                (default: True). Falls back to sequential on error.
+            parallel: Deprecated no-op. Call 1 (entity) and Call 1b (relation)
+                share one base model with adapter switching, so they always run
+                sequentially (the GIL serializes threads anyway). Kept for
+                backward compatibility with existing callers.
 
         Returns:
             Dict with 'input_text' and 'datasets' keys containing the original text
@@ -893,54 +894,20 @@ class DatasetExtractor:
         #   - descriptive: relations only
         #   - vague:      no relations, no classification
         entity_schema = schema._get_entity_schema(self.model)
-        relation_schema = schema._get_relation_schema(self.relation_model)
-        classification_schema = schema._get_classification_schema(self.classification_model)
+        relation_schema = schema._get_relation_schema(self.model)
+        classification_schema = schema._get_classification_schema(self.model)
 
         chunk_texts = [c for c, _ in chunks_with_offsets]
         chunk_offsets = [o for _, o in chunks_with_offsets]
 
-        # ── Call 1 + Call 1b: concurrent when parallel + multi-chunk ──
-        # Call 1b runs in background while Call 1 result flows to
-        # entity processing → Call 2, so classification is not blocked.
-        use_parallel = parallel and len(chunk_texts) > 1
-        f_relation = None
-        if use_parallel:
-            from concurrent.futures import ThreadPoolExecutor
-
-            executor = ThreadPoolExecutor(max_workers=2)
-            try:
-                f_entity = executor.submit(
-                    self.model.batch_extract,
-                    chunk_texts,
-                    entity_schema,
-                    threshold=schema.threshold,
-                    include_confidence=True,
-                    include_spans=True,
-                )
-                if self.relation_model is not self.model:
-                    f_relation = executor.submit(
-                        self.relation_model.batch_extract,
-                        chunk_texts,
-                        relation_schema,
-                        threshold=schema.threshold,
-                        include_confidence=True,
-                        include_spans=True,
-                    )
-                pass1_batch = f_entity.result()
-            except Exception as exc:
-                logger.warning(
-                    "Parallel Call 1 failed: %s. Falling back to sequential.",
-                    exc,
-                )
-                if f_relation is not None:
-                    f_relation.cancel()
-                use_parallel = False
-            finally:
-                executor.shutdown(wait=False)
-        else:
-            f_relation = None
-
-        if not use_parallel:
+        # ── Call 1: entity extraction ──
+        # All three calls share a single base model; the fine-tuned LoRA
+        # adapter is switched on around each call via ModelManager.adapter_scope
+        # (which also serializes access via the class-wide lock).  This avoids
+        # loading three full base-model copies (~4x memory/startup savings) at
+        # the cost of sequential execution — the GIL would serialize the old
+        # threads anyway, so there is no speed regression.
+        with self._model_scope("entity", self.adapter_id):
             pass1_batch = self.model.batch_extract(
                 chunk_texts,
                 entity_schema,
@@ -948,8 +915,6 @@ class DatasetExtractor:
                 include_confidence=True,
                 include_spans=True,
             )
-
-        # Collect mentions from Call 1 (no relations yet — Call 1b may still be running).
         seen_spans: set = set()
         raw_mentions: list = []
         for chunk_idx, chunk_result in enumerate(pass1_batch):
@@ -997,61 +962,32 @@ class DatasetExtractor:
             named_sentences = [m["sentence"] for m in raw_mentions if m["specificity"] == "named"]
             unique_named_sentences = list(dict.fromkeys(named_sentences))
             if unique_named_sentences:
-                cls_batch = self.classification_model.batch_extract(
-                    unique_named_sentences,
-                    classification_schema,
-                    threshold=0.1,
-                    include_confidence=True,
-                )
+                with self._model_scope("impact", self.classification_adapter_id):
+                    cls_batch = self.model.batch_extract(
+                        unique_named_sentences,
+                        classification_schema,
+                        threshold=0.1,
+                        include_confidence=True,
+                    )
                 cls_cache = dict(zip(unique_named_sentences, cls_batch))
             else:
                 cls_cache = {}
 
-            # ── Wait for Call 1b (should already be finished) ──
-            if use_parallel and f_relation is not None:
-                try:
-                    pass1b_batch = f_relation.result()
-                except Exception as exc:
-                    logger.warning(
-                        "Parallel Call 1b failed: %s. Running relation extraction sequentially.",
-                        exc,
-                    )
-                    pass1b_batch = (
-                        self.relation_model.batch_extract(
-                            chunk_texts,
-                            relation_schema,
-                            threshold=schema.threshold,
-                            include_confidence=True,
-                            include_spans=True,
-                        )
-                        if self.relation_model is not self.model
-                        else [{}] * len(chunk_texts)
-                    )
-            elif use_parallel:
-                # Same model for entity + relation (not submitted in parallel).
-                pass1b_batch = (
-                    self.relation_model.batch_extract(
+            # ── Call 1b: relation extraction ──
+            # Runs on the relation adapter if configured; otherwise relations
+            # are left empty (the zero-shot relation model no longer exists as
+            # a separate base-model load — only its adapter).
+            if self.relation_adapter_id:
+                with self._model_scope("relation", self.relation_adapter_id):
+                    pass1b_batch = self.model.batch_extract(
                         chunk_texts,
                         relation_schema,
                         threshold=schema.threshold,
                         include_confidence=True,
                         include_spans=True,
                     )
-                    if self.relation_model is not self.model
-                    else [{}] * len(chunk_texts)
-                )
             else:
-                pass1b_batch = (
-                    self.relation_model.batch_extract(
-                        chunk_texts,
-                        relation_schema,
-                        threshold=schema.threshold,
-                        include_confidence=True,
-                        include_spans=True,
-                    )
-                    if self.relation_model is not self.model
-                    else [{}] * len(chunk_texts)
-                )
+                pass1b_batch = [{}] * len(chunk_texts)
 
             rel_by_chunk = {}
             for chunk_idx, chunk_result_1b in enumerate(pass1b_batch):

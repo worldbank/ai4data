@@ -42,7 +42,13 @@ effects of mining."""
 @pytest.fixture
 def mock_model_manager(monkeypatch):
     """Mock ModelManager to return a smart mock model that finds actual entities."""
+    from contextlib import contextmanager
+
     mock_model = MagicMock()
+
+    @contextmanager
+    def mock_adapter_scope(self, model, adapter_name, adapter_id, model_id=None):
+        yield model
 
     # Mock the schema builder chain
     mock_schema = MagicMock()
@@ -363,12 +369,13 @@ def mock_model_manager(monkeypatch):
     mock_model.batch_extract.side_effect = side_effect_batch_extract
     mock_model.extract_json.side_effect = side_effect_extract_json
 
-    def mock_load(self, model_id=None, **kwargs):
+    def mock_load_base(self, model_id=None):
         return mock_model
 
     from ai4data.data_use.models.model_manager import ModelManager
 
-    monkeypatch.setattr(ModelManager, "load", mock_load)
+    monkeypatch.setattr(ModelManager, "load_base", mock_load_base)
+    monkeypatch.setattr(ModelManager, "adapter_scope", mock_adapter_scope)
 
     return ModelManager()
 
