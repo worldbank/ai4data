@@ -145,7 +145,7 @@ def extract_from_text(
     max_tokens: int = 200,
     model_id: Optional[str] = None,
     enable_chunking: bool = True,
-    use_classifier: bool = False,
+    use_classifier: bool = True,
     adapter_id: Optional[str] = "ai4data/datause-extraction",
     normalize_text: bool = True,
 ) -> Dict[str, Any]:
@@ -160,7 +160,7 @@ def extract_from_text(
         max_tokens: Maximum tokens per chunk for long texts (default: 200)
         model_id: Optional model ID to use for this specific extraction
         enable_chunking: Whether to split long text into chunks (default: True)
-        use_classifier: Whether to use pre-filtering classifier (default: False)
+        use_classifier: Whether to use pre-filtering classifier (default: True)
         adapter_id: HuggingFace adapter repo ID to apply to the base model.
             Defaults to "ai4data/datause-extraction". Pass a different
             adapter (e.g. "ai4data/datause-extraction-v2") to use an

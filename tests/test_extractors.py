@@ -489,7 +489,8 @@ class TestExtractFromDocumentOutputFormat:
 
         extractor = DatasetExtractor()
         results = extractor.extract_from_text(
-            "Ghana Living Standard Survey (GLSS)", include_confidence=True
+            "Ghana Living Standard Survey (GLSS)", include_confidence=True,
+            use_classifier=False,
         )
 
         # Only the longest named mention should survive the overlap suppression

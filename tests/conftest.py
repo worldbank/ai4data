@@ -5,6 +5,21 @@ from unittest.mock import MagicMock
 import pytest
 
 
+@pytest.fixture(autouse=True)
+def _auto_mock_classifier(monkeypatch, mock_classifier_pipeline, request):
+    """Mock load_classifier for every test (skipped for slow/e2e tests)."""
+    if request.node.get_closest_marker("slow"):
+        return
+    if "test_models" in str(request.node.fspath):
+        return
+    from ai4data.data_use.models.model_manager import ModelManager
+
+    monkeypatch.setattr(
+        ModelManager, "load_classifier",
+        lambda self, model_id=None: mock_classifier_pipeline,
+    )
+
+
 @pytest.fixture
 def sample_text():
     """Sample text for testing extraction."""

@@ -790,7 +790,7 @@ class DatasetExtractor:
         dataset_threshold: Optional[float] = None,
         max_tokens: int = 200,
         enable_chunking: bool = True,
-        use_classifier: bool = False,
+        use_classifier: bool = True,
         model_id: Optional[str] = None,
         apply_heuristics: bool = False,
         normalize_text: bool = True,
@@ -818,7 +818,7 @@ class DatasetExtractor:
                 go through the expensive swarm pipeline. This avoids running
                 3 adapter loads + batch_extract on boilerplate chunks such
                 as tables of contents, blank pages, or reference lists
-                (default: False)
+                (default: True)
             model_id: Optional model ID override for this call (unused by default extractor)
             apply_heuristics: If True, apply heuristic filters to remove likely
                 false positives such as table/figure labels (default: False)
@@ -854,7 +854,7 @@ class DatasetExtractor:
         #            predicted as WITH_DATA go through the expensive swarm.
         #            This avoids running 3 adapter loads + batch_extract on
         #            chunks that have no dataset mentions (tables, boilerplate).
-        # Both stages are skipped when use_classifier=False (default).
+        # Both stages are skipped when use_classifier=False.
         if use_classifier:
             from ..utils.document_parser import DocumentParser
 
@@ -1813,7 +1813,7 @@ class DatasetExtractor:
         texts: List[str],
         include_confidence: bool = True,
         custom_schema: Optional[Any] = None,
-        use_classifier: bool = False,
+        use_classifier: bool = True,
         apply_heuristics: bool = False,
         exclude_non_datasets: bool = True,
         verbose: bool = False,
@@ -1826,7 +1826,7 @@ class DatasetExtractor:
             texts: List of input texts
             include_confidence: Whether to include confidence scores
             custom_schema: Custom schema to use instead of default
-            use_classifier: Whether to use two-stage pre-filtering classifier (default: False)
+            use_classifier: Whether to use two-stage pre-filtering classifier (default: True)
             apply_heuristics: If True, apply heuristic filters (default: False)
             exclude_non_datasets: If True, filter out non-dataset tagged entries (default: True)
             verbose: If True, print skip messages (default: False)
