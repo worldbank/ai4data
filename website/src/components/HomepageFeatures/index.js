@@ -70,42 +70,42 @@ const WorkstreamList = [
     title: 'Generative AI for Metadata Quality',
     to: '/docs/metadata-quality/generative-ai-for-metadata-quality',
     description:
-      'LLMs assess and improve metadata completeness, consistency, and semantic alignment across indicator catalogs.',
+      'Scores metadata across four dimensions — completeness, semantic alignment, specificity, and consistency — with structured, auditable LLM output.',
     Icon: SparklesIcon,
   },
   {
     title: 'Metadata Augmentation',
     to: '/docs/metadata-augmentation/',
     description:
-      'Automated thematic tagging and enrichment of microdata data dictionaries using semantic clustering and LLMs.',
+      'Organizes hundreds of survey variables into DDI-style thematic groups via semantic clustering — no manual labeling required.',
     Icon: LayersIcon,
   },
   {
     title: 'Anomaly Detection and Explanation',
     to: '/docs/anomaly-detection/',
     description:
-      'Statistical detection combined with LLM elicitation to classify and explain unusual patterns in timeseries data.',
+      'Classifies flagged anomalies as an external driver, data error, measurement update, or insufficient data — with cited evidence.',
     Icon: PulseIcon,
   },
   {
     title: 'Data Discoverability',
     to: '/docs/data-discoverability/',
     description:
-      'Semantic search systems enabling natural language queries over development datasets.',
+      'Conceptual search surfaces "Gini index" when you search "income inequality" — no exact keyword match required.',
     Icon: SearchIcon,
   },
   {
     title: 'Model Context Protocol',
     to: '/docs/mcp/',
     description:
-      'Enabling AI assistants to query official statistics directly via an open standard.',
+      'One MCP server, built once, callable by any compatible AI client — Claude, ChatGPT, or a custom agent — with no bespoke integration.',
     Icon: PlugIcon,
   },
   {
     title: 'Inclusive AI Applications',
     to: '/docs/inclusive-ai/',
     description:
-      'Approaches to extend AI benefits to low-resource contexts and languages.',
+      'Multilingual embedding models spanning 50+ languages, and batch inference at roughly half the synchronous-call cost.',
     Icon: GlobeIcon,
   },
 ];

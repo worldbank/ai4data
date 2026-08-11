@@ -3,16 +3,11 @@ import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
+import ScaleBand from '@site/src/components/ScaleBand';
+import PipelineShowcase from '@site/src/components/PipelineShowcase';
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
 
 import styles from './index.module.css';
-
-const Stats = [
-  {value: '1,400+', label: 'WDI Indicators'},
-  {value: '217', label: 'Economies Covered'},
-  {value: '6', label: 'Flagship Workstreams'},
-  {value: 'Open', label: 'Source Tooling'},
-];
 
 function HomepageHeader() {
   const {siteConfig} = useDocusaurusContext();
@@ -39,14 +34,6 @@ function HomepageHeader() {
             to="https://github.com/worldbank/ai4data">
             View on GitHub
           </Link>
-        </div>
-        <div className={styles.stats}>
-          {Stats.map((stat) => (
-            <div key={stat.label}>
-              <div className={styles.statValue}>{stat.value}</div>
-              <div className={styles.statLabel}>{stat.label}</div>
-            </div>
-          ))}
         </div>
       </div>
     </header>
@@ -87,6 +74,35 @@ function MissionSection() {
   );
 }
 
+function ClosingCta() {
+  return (
+    <section className={styles.closing}>
+      <div className={clsx('container', styles.closingInner)}>
+        <Heading as="h2" className={styles.closingTitle}>
+          Open source, built by the Development Data Group
+        </Heading>
+        <p className={styles.closingText}>
+          Every workstream on this site ships as Python tooling and
+          documentation you can read end to end — methodology, pipeline
+          code, and API reference alike.
+        </p>
+        <div className={styles.buttons}>
+          <Link
+            className={clsx('button button--lg', styles.primaryButton)}
+            to="https://github.com/worldbank/ai4data">
+            Explore the Repository
+          </Link>
+          <Link
+            className={clsx('button button--lg', styles.secondaryButtonLight)}
+            to="mailto:ai4data@worldbank.org">
+            Get in Touch
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   const {siteConfig} = useDocusaurusContext();
   return (
@@ -95,8 +111,11 @@ export default function Home() {
       description="A World Bank Development Data Group program applying AI to improve development data, and making development data AI-ready.">
       <HomepageHeader />
       <main>
+        <ScaleBand />
         <MissionSection />
+        <PipelineShowcase />
         <HomepageFeatures />
+        <ClosingCta />
       </main>
     </Layout>
   );

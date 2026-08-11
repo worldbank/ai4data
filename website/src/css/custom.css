@@ -147,6 +147,25 @@ html {
   font-weight: 700;
 }
 
+.sidebarSectionLabel {
+  margin: 1.1rem 0.75rem 0.4rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(11, 61, 102, 0.1);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ifm-color-emphasis-600);
+}
+.menu__list > li:first-child .sidebarSectionLabel {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+[data-theme='dark'] .sidebarSectionLabel {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
 /* ---------- Table of contents ---------- */
 
 .table-of-contents__link--active {

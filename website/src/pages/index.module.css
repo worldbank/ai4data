@@ -1,6 +1,6 @@
 .heroBanner {
   position: relative;
-  padding: 6.5rem 1rem 5rem;
+  padding: 6.5rem 1rem 4.5rem;
   text-align: center;
   overflow: hidden;
   color: #ffffff;
@@ -103,7 +103,6 @@
   justify-content: center;
   gap: 1rem;
   flex-wrap: wrap;
-  margin-bottom: 3.5rem;
 }
 
 .primaryButton {
@@ -134,31 +133,8 @@
   transform: translateY(-2px);
 }
 
-.stats {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 2.75rem;
-  padding-top: 2.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.16);
-}
-
-.statValue {
-  font-family: var(--ifm-heading-font-family);
-  font-size: 1.9rem;
-  font-weight: 700;
-  color: #ffffff;
-}
-
-.statLabel {
-  font-size: 0.85rem;
-  color: #a9cbe0;
-  margin-top: 0.2rem;
-  letter-spacing: 0.02em;
-}
-
 .missionSection {
-  padding: 4.5rem 0;
+  padding: 1rem 0 4.5rem;
   background: var(--ifm-background-color);
 }
 
@@ -206,4 +182,40 @@
   color: var(--ifm-color-emphasis-700);
   line-height: 1.65;
   margin: 0;
+}
+
+.closing {
+  padding: 5rem 1rem;
+  text-align: center;
+  color: #ffffff;
+  background: linear-gradient(160deg, #071f36 0%, #0b3d66 60%, #0f4f80 100%);
+}
+
+.closingInner {
+  max-width: 40rem;
+}
+
+.closingTitle {
+  color: #ffffff;
+  font-size: 1.9rem;
+  margin-bottom: 0.9rem;
+}
+
+.closingText {
+  color: #cfe7f6;
+  line-height: 1.65;
+  margin-bottom: 2rem;
+}
+
+.secondaryButtonLight {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+  font-weight: 600;
+}
+.secondaryButtonLight:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: #ffffff;
+  color: #ffffff;
+  transform: translateY(-2px);
 }

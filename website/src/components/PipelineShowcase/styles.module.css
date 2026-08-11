@@ -1,0 +1,176 @@
+.section {
+  padding: 4.5rem 0;
+  background: var(--ifm-background-surface-color);
+  border-top: 1px solid var(--ifm-color-emphasis-200);
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.eyebrow {
+  display: block;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--brand-blue, #1b75bc);
+  margin-bottom: 0.6rem;
+}
+
+.title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 0.8rem;
+}
+
+.lede {
+  max-width: 42rem;
+  margin: 0 auto 3rem;
+  text-align: center;
+  color: var(--ifm-color-emphasis-700);
+  line-height: 1.65;
+  font-size: 1.05rem;
+}
+
+.pipeline {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.stageWrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stage {
+  position: relative;
+  width: 11.5rem;
+  padding: 1.5rem 1.15rem 1.25rem;
+  border-radius: 14px;
+  border: 1px solid var(--ifm-color-emphasis-200);
+  background: var(--ifm-background-color);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.stage:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--brand-blue, #1b75bc);
+}
+
+.stageIndex {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  margin-bottom: 0.6rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--brand-blue, #1b75bc), var(--brand-cyan, #00aeef));
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.stageRole {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brand-blue, #1b75bc);
+  margin-bottom: 0.15rem;
+}
+
+.stageName {
+  font-family: var(--ifm-heading-font-family);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--brand-navy, #0b3d66);
+  margin-bottom: 0.4rem;
+}
+[data-theme='dark'] .stageName {
+  color: #eaf4fb;
+}
+
+.stageDescription {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--ifm-color-emphasis-700);
+  margin: 0;
+}
+
+.arrow {
+  flex-shrink: 0;
+  width: 1.4rem;
+  height: 1.4rem;
+  color: var(--ifm-color-emphasis-400);
+}
+
+@media screen and (max-width: 996px) {
+  .pipeline {
+    flex-direction: column;
+    align-items: center;
+  }
+  .stageWrap {
+    flex-direction: column;
+  }
+  .arrow {
+    transform: rotate(90deg);
+  }
+  .stage {
+    width: 100%;
+    max-width: 22rem;
+  }
+}
+
+.footRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  max-width: 62rem;
+  margin: 0 auto;
+  padding-top: 2rem;
+  border-top: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.footLabel {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ifm-color-emphasis-600);
+  margin-bottom: 0.7rem;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(27, 117, 188, 0.1);
+  color: var(--brand-navy, #0b3d66);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+[data-theme='dark'] .chip {
+  background: rgba(79, 180, 234, 0.16);
+  color: #ade1f6;
+}
+
+.footLink {
+  font-weight: 600;
+  white-space: nowrap;
+}
