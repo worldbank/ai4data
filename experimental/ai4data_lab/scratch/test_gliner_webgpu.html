@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GLiNER2 ONNX WebGPU Standalone Test</title>
+  <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.webgpu.min.js"></script>
+  <style>
+    body { font-family: monospace; background: #0f172a; color: #f8fafc; padding: 2rem; }
+    pre { background: #1e293b; padding: 1rem; border-radius: 8px; border: 1px solid #334155; }
+    .success { color: #34d399; font-weight: bold; }
+    .error { color: #f87171; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>GLiNER2 ONNX WebGPU Test</h1>
+  <div id="status">Initializing ONNX WebGPU execution provider...</div>
+  <pre id="log"></pre>
+
+  <script>
+    const logEl = document.getElementById('log');
+    const statusEl = document.getElementById('status');
+
+    function log(msg) {
+      logEl.innerText += msg + '\n';
+      console.log(msg);
+    }
+
+    async function testGLiNERWebGPU() {
+      try {
+        log('Checking WebGPU support...');
+        if (!navigator.gpu) {
+          statusEl.className = 'error';
+          statusEl.innerText = 'WebGPU is not supported in this browser.';
+          return;
+        }
+        const adapter = await navigator.gpu.requestAdapter();
+        log(`WebGPU Adapter found: ${adapter ? 'OK' : 'Failed'}`);
+
+        log('Fetching ONNX Model metadata from lion-ai/gliner2-base-v1-onnx...');
+        const modelUrl = 'https://huggingface.co/lion-ai/gliner2-base-v1-onnx/resolve/main/model.onnx';
+
+        log('Creating ONNX WebGPU InferenceSession...');
+        const startTime = performance.now();
+
+        const session = await ort.InferenceSession.create(modelUrl, {
+          executionProviders: ['webgpu']
+        });
+
+        const loadTime = (performance.now() - startTime).toFixed(1);
+        log(`ONNX WebGPU Session Created successfully in ${loadTime} ms!`);
+
+        log('Input Names: ' + JSON.stringify(session.inputNames));
+        log('Output Names: ' + JSON.stringify(session.outputNames));
+
+        statusEl.className = 'success';
+        statusEl.innerText = 'SUCCESS! lion-ai/gliner2-base-v1-onnx loaded cleanly on WebGPU!';
+      } catch (err) {
+        log('Error: ' + err.message);
+        statusEl.className = 'error';
+        statusEl.innerText = 'Failed to load model on WebGPU.';
+      }
+    }
+
+    testGLiNERWebGPU();
+  </script>
+</body>
+</html>
