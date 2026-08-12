@@ -1,75 +1,67 @@
 .section {
-  padding: 4.5rem 0 4rem;
-  background: var(--ifm-background-color);
+  padding: 5rem 0 1rem;
+  background: var(--paper);
 }
 
-.eyebrow {
-  display: block;
-  text-align: center;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--brand-blue, #1b75bc);
-  margin-bottom: 0.6rem;
+.head {
+  max-width: 34rem;
+  margin-bottom: 3rem;
 }
 
 .title {
-  text-align: center;
-  font-size: 2rem;
-  max-width: 40rem;
-  margin: 0 auto 1rem;
+  font-size: 2.1rem;
+  margin: 0.9rem 0 1.1rem;
 }
 
 .lede {
-  max-width: 42rem;
-  margin: 0 auto 3rem;
-  text-align: center;
-  color: var(--ifm-color-emphasis-700);
-  line-height: 1.65;
+  color: var(--ink-soft);
+  line-height: 1.7;
   font-size: 1.05rem;
+  margin: 0;
 }
 
-.grid {
+.ledger {
+  border-top: 1px solid var(--hairline);
+}
+
+.row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.25rem;
-  max-width: 68rem;
-  margin: 0 auto;
+  grid-template-columns: 12rem 1fr;
+  gap: 2rem;
+  align-items: baseline;
+  padding: 1.6rem 0;
+  border-bottom: 1px solid var(--hairline);
 }
 
-@media screen and (max-width: 996px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
+@media screen and (max-width: 768px) {
+  .row {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
   }
 }
 
-.stat {
-  padding: 1.5rem 1.25rem;
-  border-radius: 14px;
-  border: 1px solid var(--ifm-color-emphasis-200);
-  background: var(--ifm-background-surface-color);
-}
-
-.statValue {
-  font-family: var(--ifm-heading-font-family);
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--brand-navy, #0b3d66);
-  letter-spacing: -0.01em;
-}
-[data-theme='dark'] .statValue {
-  color: #7fc9f0;
-}
-
-.statLabel {
+.rowValue {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
   font-weight: 600;
-  margin-top: 0.3rem;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 
-.statDetail {
-  color: var(--ifm-color-emphasis-600);
-  font-size: 0.85rem;
+.rowLabel {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--accent-blue);
+  text-transform: uppercase;
+}
+
+.rowDetail {
+  color: var(--ink-soft);
+  font-size: 0.92rem;
   line-height: 1.5;
-  margin: 0.4rem 0 0;
+  margin: 0.35rem 0 0;
+  max-width: 30rem;
 }

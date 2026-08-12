@@ -12,28 +12,34 @@ import styles from './index.module.css';
 function HomepageHeader() {
   const {siteConfig} = useDocusaurusContext();
   return (
-    <header className={clsx('hero', styles.heroBanner)}>
-      <div className={clsx('container', styles.heroInner)}>
-        <span className={styles.badge}>
-          <span className={styles.badgeDot} />
-          World Bank &middot; Development Data Group
-        </span>
-        <Heading as="h1" className={styles.heroTitle}>
-          AI for Data <span className={styles.accent}>—</span> Data for{' '}
-          <span className={styles.accent}>AI</span>
-        </Heading>
-        <p className={styles.heroSubtitle}>{siteConfig.tagline}</p>
-        <div className={styles.buttons}>
-          <Link
-            className={clsx('button button--lg', styles.primaryButton)}
-            to="/docs/introduction">
-            Read the Documentation
-          </Link>
-          <Link
-            className={clsx('button button--lg', styles.secondaryButton)}
-            to="https://github.com/worldbank/ai4data">
-            View on GitHub
-          </Link>
+    <header className={styles.heroBanner}>
+      <div aria-hidden="true" className={styles.heroWatermark}>
+        01
+      </div>
+      <div className="container">
+        <div className={styles.heroInner}>
+          <div className={styles.kickerRow}>
+            <span className={styles.kickerRule} />
+            <span className="kicker">
+              World Bank — Development Data Group
+            </span>
+          </div>
+          <Heading as="h1" className={styles.heroTitle}>
+            AI for Data. <em>Data for AI.</em>
+          </Heading>
+          <p className={styles.heroSubtitle}>{siteConfig.tagline}</p>
+          <div className={styles.buttons}>
+            <Link
+              className={clsx('button button--lg', styles.primaryButton)}
+              to="/docs/introduction">
+              Read the Documentation
+            </Link>
+            <Link
+              className={clsx('button button--lg', styles.secondaryButton)}
+              to="https://github.com/worldbank/ai4data">
+              View on GitHub
+            </Link>
+          </div>
         </div>
       </div>
     </header>
@@ -45,8 +51,8 @@ function MissionSection() {
     <section className={styles.missionSection}>
       <div className="container">
         <div className={styles.missionGrid}>
-          <div className={styles.missionCard}>
-            <span className={styles.missionEyebrow}>Mission 01</span>
+          <div>
+            <span className={styles.missionNumber}>01</span>
             <Heading as="h3" className={styles.missionTitle}>
               AI for Data
             </Heading>
@@ -57,8 +63,9 @@ function MissionSection() {
               datasets.
             </p>
           </div>
-          <div className={styles.missionCard}>
-            <span className={styles.missionEyebrow}>Mission 02</span>
+          <div className={styles.missionDivider} />
+          <div>
+            <span className={styles.missionNumber}>02</span>
             <Heading as="h3" className={styles.missionTitle}>
               Data for AI
             </Heading>
@@ -77,26 +84,35 @@ function MissionSection() {
 function ClosingCta() {
   return (
     <section className={styles.closing}>
-      <div className={clsx('container', styles.closingInner)}>
-        <Heading as="h2" className={styles.closingTitle}>
-          Open source, built by the Development Data Group
-        </Heading>
-        <p className={styles.closingText}>
-          Every workstream on this site ships as Python tooling and
-          documentation you can read end to end — methodology, pipeline
-          code, and API reference alike.
-        </p>
-        <div className={styles.buttons}>
-          <Link
-            className={clsx('button button--lg', styles.primaryButton)}
-            to="https://github.com/worldbank/ai4data">
-            Explore the Repository
-          </Link>
-          <Link
-            className={clsx('button button--lg', styles.secondaryButtonLight)}
-            to="mailto:ai4data@worldbank.org">
-            Get in Touch
-          </Link>
+      <div className="container">
+        <div className={styles.closingInner}>
+          <span className="kicker">Open Source</span>
+          <Heading as="h2" className={styles.closingTitle}>
+            Built in the open by the Development Data Group
+          </Heading>
+          <p className={styles.closingText}>
+            Every workstream on this site ships as Python tooling and
+            documentation you can read end to end — methodology, pipeline
+            code, and API reference alike.
+          </p>
+          <div className={styles.buttons}>
+            <Link
+              className={clsx(
+                'button button--lg',
+                styles.closingButtonPrimary,
+              )}
+              to="https://github.com/worldbank/ai4data">
+              Explore the Repository
+            </Link>
+            <Link
+              className={clsx(
+                'button button--lg',
+                styles.closingButtonSecondary,
+              )}
+              to="mailto:ai4data@worldbank.org">
+              Get in Touch
+            </Link>
+          </div>
         </div>
       </div>
     </section>
