@@ -9,17 +9,17 @@ const Stats = [
   },
   {
     value: '1,000s',
-    label: 'anomalies / review cycle',
+    label: 'Anomalies / review cycle',
     detail: 'flagged by statistical detectors across WDI and Scorecard data',
   },
   {
     value: '500–1,000',
-    label: 'variables / survey',
+    label: 'Variables / survey',
     detail: 'in a single DHS-style microdata catalog entry',
   },
   {
     value: '50+',
-    label: 'languages supported',
+    label: 'Languages supported',
     detail: 'via multilingual embedding models for search and clustering',
   },
 ];
@@ -29,7 +29,7 @@ export default function ScaleBand() {
     <section className={styles.section}>
       <div className="container">
         <div className={styles.head}>
-          <span className="kicker">The Challenge</span>
+          <span className="eyebrow">The Challenge</span>
           <Heading as="h2" className={styles.title}>
             Development data at a scale manual review can&apos;t match
           </Heading>
@@ -41,14 +41,12 @@ export default function ScaleBand() {
             searching.
           </p>
         </div>
-        <div className={styles.ledger}>
+        <div className={styles.grid}>
           {Stats.map((stat) => (
-            <div className={styles.row} key={stat.label}>
-              <div className={styles.rowValue}>{stat.value}</div>
-              <div className={styles.rowMeta}>
-                <div className={styles.rowLabel}>{stat.label}</div>
-                <p className={styles.rowDetail}>{stat.detail}</p>
-              </div>
+            <div className={styles.tile} key={stat.label}>
+              <div className={styles.value}>{stat.value}</div>
+              <div className={styles.label}>{stat.label}</div>
+              <p className={styles.detail}>{stat.detail}</p>
             </div>
           ))}
         </div>

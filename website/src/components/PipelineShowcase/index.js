@@ -44,7 +44,7 @@ export default function PipelineShowcase() {
     <section className={styles.section}>
       <div className="container">
         <div className={styles.head}>
-          <span className="kicker">How It Works</span>
+          <span className="eyebrow">How It Works</span>
           <Heading as="h2" className={styles.title}>
             A five-agent pipeline, not a single prompt
           </Heading>
@@ -56,12 +56,13 @@ export default function PipelineShowcase() {
           </p>
         </div>
 
-        <div className={styles.timeline}>
-          <div className={styles.timelineRule} />
+        <div className={styles.pipeline}>
           {Stages.map((stage, idx) => (
             <div className={styles.stage} key={stage.name}>
-              <div className={styles.stageDot}>{idx + 1}</div>
-              <span className={styles.stageRole}>{stage.role}</span>
+              <div className={styles.stageHead}>
+                <span className={styles.stageIndex}>{idx + 1}</span>
+                <span className={styles.stageRole}>{stage.role}</span>
+              </div>
               <div className={styles.stageName}>{stage.name}</div>
               <p className={styles.stageDescription}>{stage.description}</p>
             </div>

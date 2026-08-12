@@ -1,67 +1,65 @@
 .section {
-  padding: 5rem 0 1rem;
-  background: var(--paper);
+  padding: 4.5rem 0 1rem;
+  background: var(--canvas);
 }
 
 .head {
   max-width: 34rem;
-  margin-bottom: 3rem;
+  margin-bottom: 2.5rem;
 }
 
 .title {
-  font-size: 2.1rem;
-  margin: 0.9rem 0 1.1rem;
+  font-size: 1.9rem;
+  font-weight: 600;
+  margin: 0.7rem 0 1rem;
+  letter-spacing: -0.01em;
 }
 
 .lede {
-  color: var(--ink-soft);
-  line-height: 1.7;
-  font-size: 1.05rem;
+  color: var(--ink-muted);
+  line-height: 1.68;
+  font-size: 1.03rem;
   margin: 0;
 }
 
-.ledger {
-  border-top: 1px solid var(--hairline);
-}
-
-.row {
+.grid {
   display: grid;
-  grid-template-columns: 12rem 1fr;
-  gap: 2rem;
-  align-items: baseline;
-  padding: 1.6rem 0;
-  border-bottom: 1px solid var(--hairline);
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
 }
 
-@media screen and (max-width: 768px) {
-  .row {
-    grid-template-columns: 1fr;
-    gap: 0.4rem;
+@media screen and (max-width: 996px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-.rowValue {
-  font-family: var(--font-display);
-  font-size: 2.4rem;
+.tile {
+  padding: 1.5rem 1.35rem;
+  background: var(--canvas);
+}
+
+.value {
+  font-size: 1.9rem;
   font-weight: 600;
   color: var(--ink);
   letter-spacing: -0.01em;
-  white-space: nowrap;
 }
 
-.rowLabel {
-  font-family: var(--font-mono);
-  font-size: 0.82rem;
+.label {
   font-weight: 600;
-  letter-spacing: 0.03em;
-  color: var(--accent-blue);
-  text-transform: uppercase;
+  font-size: 0.88rem;
+  margin-top: 0.3rem;
+  color: var(--primary);
 }
 
-.rowDetail {
-  color: var(--ink-soft);
-  font-size: 0.92rem;
+.detail {
+  color: var(--ink-subtle);
+  font-size: 0.85rem;
   line-height: 1.5;
-  margin: 0.35rem 0 0;
-  max-width: 30rem;
+  margin: 0.4rem 0 0;
 }

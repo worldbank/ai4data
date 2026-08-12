@@ -1,124 +1,81 @@
 .heroBanner {
-  position: relative;
-  padding: 6rem 0 4.5rem;
-  overflow: hidden;
-  background: var(--paper);
+  padding: 5.5rem 0 4.5rem;
+  background: var(--canvas);
   border-bottom: 1px solid var(--hairline);
 }
 
-.heroWatermark {
-  position: absolute;
-  top: -4rem;
-  right: -2rem;
-  font-family: var(--font-display);
-  font-size: 26rem;
-  font-weight: 600;
-  line-height: 1;
-  color: var(--ink);
-  opacity: 0.035;
-  pointer-events: none;
-  user-select: none;
-}
-
-@media screen and (max-width: 996px) {
-  .heroWatermark {
-    display: none;
-  }
-}
-
 .heroInner {
-  position: relative;
-  z-index: 1;
-  max-width: 46rem;
-}
-
-.kickerRow {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1.75rem;
-}
-
-.kickerRule {
-  width: 2.5rem;
-  height: 1px;
-  background: var(--accent-gold);
+  max-width: 42rem;
 }
 
 .heroTitle {
-  font-family: var(--font-display);
-  font-size: 3.6rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  line-height: 1.05;
+  font-weight: 300;
+  font-size: 3.25rem;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
   color: var(--ink);
-  margin: 0 0 1.5rem;
+  margin: 0.75rem 0 1.25rem;
 }
 
-.heroTitle em {
-  font-style: italic;
-  font-weight: 500;
-  color: var(--accent-blue);
+.heroTitle strong {
+  font-weight: 600;
+  color: var(--primary);
 }
 
 @media screen and (max-width: 996px) {
   .heroTitle {
-    font-size: 2.4rem;
+    font-size: 2.25rem;
   }
 }
 
 .heroSubtitle {
-  font-size: 1.15rem;
-  color: var(--ink-soft);
+  font-size: 1.1rem;
+  color: var(--ink-muted);
   max-width: 34rem;
-  margin: 0 0 2.5rem;
+  margin: 0 0 2.25rem;
   line-height: 1.65;
 }
 
 .buttons {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.85rem;
   flex-wrap: wrap;
 }
 
 .primaryButton {
-  background: var(--ink);
-  border: 1px solid var(--ink);
-  color: var(--paper);
-  font-weight: 600;
+  background: var(--primary);
+  border: 1px solid var(--primary);
+  color: #ffffff;
 }
 .primaryButton:hover {
-  background: var(--ink-block);
-  border-color: var(--ink-block);
-  color: var(--ink-block-text);
-  transform: translateY(-1px);
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+  color: #ffffff;
 }
 
 .secondaryButton {
   background: transparent;
   border: 1px solid var(--hairline);
   color: var(--ink);
-  font-weight: 600;
 }
 .secondaryButton:hover {
-  border-color: var(--ink);
+  border-color: var(--ink-subtle);
+  background: var(--surface-1);
   color: var(--ink);
-  background: rgba(20, 32, 44, 0.04);
-  transform: translateY(-1px);
 }
 
 /* ---------- Mission ---------- */
 
 .missionSection {
-  padding: 4.5rem 0;
-  background: var(--paper);
+  padding: 4rem 0;
+  background: var(--canvas);
 }
 
 .missionGrid {
   display: grid;
-  grid-template-columns: 1fr 1px 1fr;
-  gap: 3rem;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
   max-width: 60rem;
   margin: 0 auto;
 }
@@ -126,87 +83,84 @@
 @media screen and (max-width: 768px) {
   .missionGrid {
     grid-template-columns: 1fr;
-    gap: 2.5rem;
-  }
-  .missionDivider {
-    display: none;
   }
 }
 
-.missionDivider {
-  background: var(--hairline);
+.missionCard {
+  padding: 1.75rem;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  background: var(--surface-1);
 }
 
 .missionNumber {
-  font-family: var(--font-display);
-  font-size: 1.1rem;
-  font-style: italic;
-  color: var(--accent-gold);
-  margin-bottom: 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 0.6rem;
   display: block;
 }
 
 .missionTitle {
-  font-size: 1.6rem;
-  margin-bottom: 0.9rem;
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin-bottom: 0.7rem;
   color: var(--ink);
 }
 
 .missionText {
-  color: var(--ink-soft);
-  line-height: 1.7;
+  color: var(--ink-muted);
+  line-height: 1.68;
   margin: 0;
 }
 
 /* ---------- Closing ---------- */
 
 .closing {
-  padding: 5.5rem 0;
+  padding: 4.5rem 0;
   text-align: left;
   color: var(--ink-block-text);
   background: var(--ink-block);
 }
 
 .closingInner {
-  max-width: 40rem;
+  max-width: 38rem;
 }
 
 .closingTitle {
-  font-family: var(--font-display);
   color: #ffffff;
-  font-size: 2.1rem;
+  font-size: 1.85rem;
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin: 0.75rem 0 1rem;
+  letter-spacing: -0.01em;
 }
 
 .closingText {
-  color: #b7c0c8;
-  line-height: 1.7;
-  margin-bottom: 2.25rem;
-  font-size: 1.05rem;
+  color: var(--ink-block-text-soft);
+  line-height: 1.68;
+  margin-bottom: 2rem;
+  font-size: 1.02rem;
 }
 
 .closingButtonPrimary {
   background: #ffffff;
   border: 1px solid #ffffff;
   color: var(--ink-block);
-  font-weight: 600;
 }
 .closingButtonPrimary:hover {
-  background: var(--accent-gold);
-  border-color: var(--accent-gold);
+  background: #d7e3fb;
+  border-color: #d7e3fb;
   color: var(--ink-block);
-  transform: translateY(-1px);
 }
 
 .closingButtonSecondary {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.28);
   color: #ffffff;
-  font-weight: 600;
 }
 .closingButtonSecondary:hover {
   border-color: #ffffff;
   background: rgba(255, 255, 255, 0.08);
-  transform: translateY(-1px);
 }

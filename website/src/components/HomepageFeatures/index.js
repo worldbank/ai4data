@@ -63,7 +63,7 @@ export default function HomepageFeatures() {
     <section className={styles.features}>
       <div className="container">
         <div className={styles.head}>
-          <span className="kicker">What We Build</span>
+          <span className="eyebrow">What We Build</span>
           <Heading as="h2" className={styles.title}>
             Flagship Workstreams
           </Heading>

@@ -1,114 +1,91 @@
 .section {
-  padding: 5rem 0;
-  background: var(--paper-raised);
+  padding: 4.5rem 0;
+  background: var(--surface-1);
   border-top: 1px solid var(--hairline);
   border-bottom: 1px solid var(--hairline);
 }
 
 .head {
   max-width: 34rem;
-  margin-bottom: 3.5rem;
+  margin-bottom: 2.75rem;
 }
 
 .title {
-  font-size: 2.1rem;
-  margin: 0.9rem 0 1.1rem;
+  font-size: 1.9rem;
+  font-weight: 600;
+  margin: 0.7rem 0 1rem;
+  letter-spacing: -0.01em;
 }
 
 .lede {
-  color: var(--ink-soft);
-  line-height: 1.7;
-  font-size: 1.05rem;
+  color: var(--ink-muted);
+  line-height: 1.68;
+  font-size: 1.03rem;
   margin: 0;
 }
 
-.timeline {
-  position: relative;
+.pipeline {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 1.5rem;
-  margin-bottom: 3rem;
-}
-
-.timelineRule {
-  position: absolute;
-  top: 0.75rem;
-  left: 0;
-  right: 0;
-  height: 1px;
+  gap: 1px;
   background: var(--hairline);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 2.25rem;
 }
 
 @media screen and (max-width: 996px) {
-  .timeline {
+  .pipeline {
     grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-  .timelineRule {
-    top: 0;
-    bottom: 0;
-    left: 0.75rem;
-    right: auto;
-    width: 1px;
-    height: auto;
   }
 }
 
 .stage {
-  position: relative;
-  padding-top: 2.25rem;
+  padding: 1.35rem 1.25rem;
+  background: var(--canvas);
 }
 
-@media screen and (max-width: 996px) {
-  .stage {
-    padding-top: 0;
-    padding-left: 2.25rem;
-  }
+.stageHead {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 0.6rem;
 }
 
-.stageDot {
-  position: absolute;
-  top: 0;
-  left: 0;
+.stageIndex {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.4rem;
+  height: 1.4rem;
   border-radius: 50%;
-  background: var(--paper-raised);
-  border: 1px solid var(--ink);
-  color: var(--ink);
-  font-family: var(--font-mono);
+  background: var(--primary-subtle);
+  color: var(--primary);
   font-size: 0.72rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .stageRole {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--accent-blue);
-  margin-bottom: 0.3rem;
+  color: var(--ink-subtle);
 }
 
 .stageName {
-  font-family: var(--font-display);
   font-weight: 600;
-  font-size: 1.2rem;
+  font-size: 1.05rem;
   color: var(--ink);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
 }
 
 .stageDescription {
-  font-size: 0.88rem;
-  line-height: 1.55;
-  color: var(--ink-soft);
+  font-size: 0.87rem;
+  line-height: 1.5;
+  color: var(--ink-muted);
   margin: 0;
-  max-width: 14rem;
 }
 
 .footRow {
@@ -117,38 +94,36 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 1.5rem;
-  padding-top: 2.25rem;
-  border-top: 1px solid var(--hairline);
 }
 
 .footLabel {
   display: block;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
-  color: var(--ink-faint);
-  margin-bottom: 0.8rem;
+  color: var(--ink-subtle);
+  margin-bottom: 0.75rem;
 }
 
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6rem;
+  gap: 0.5rem;
 }
 
 .chip {
   padding: 0.3rem 0.7rem;
   border: 1px solid var(--hairline);
-  border-radius: 2px;
-  color: var(--ink-soft);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
+  border-radius: var(--radius);
+  background: var(--canvas);
+  color: var(--ink-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
 }
 
 .footLink {
   font-weight: 600;
-  color: var(--accent-blue);
+  color: var(--primary);
   white-space: nowrap;
 }
