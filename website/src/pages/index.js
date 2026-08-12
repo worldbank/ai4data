@@ -5,6 +5,7 @@ import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
 import ScaleBand from '@site/src/components/ScaleBand';
 import PipelineShowcase from '@site/src/components/PipelineShowcase';
+import AnomalyExample from '@site/src/components/AnomalyExample';
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
 
 import styles from './index.module.css';
@@ -123,6 +124,7 @@ export default function Home() {
         <ScaleBand />
         <MissionSection />
         <PipelineShowcase />
+        <AnomalyExample />
         <HomepageFeatures />
         <ClosingCta />
       </main>

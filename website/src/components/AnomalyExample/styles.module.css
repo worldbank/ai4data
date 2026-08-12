@@ -1,0 +1,146 @@
+.section {
+  padding: 4.5rem 0;
+  background: var(--canvas);
+}
+
+.head {
+  max-width: 34rem;
+  margin-bottom: 2.5rem;
+}
+
+.title {
+  font-size: 1.9rem;
+  font-weight: 600;
+  margin: 0.7rem 0 1rem;
+  letter-spacing: -0.01em;
+}
+
+.lede {
+  color: var(--ink-muted);
+  line-height: 1.68;
+  font-size: 1.03rem;
+  margin: 0;
+}
+
+.panel {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 1px;
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+@media screen and (max-width: 900px) {
+  .panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chartCol,
+.outputCol {
+  background: var(--canvas);
+  padding: 1.75rem;
+}
+
+.chartLabel {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+  margin-bottom: 0.75rem;
+}
+
+.chart {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.line {
+  stroke: var(--ink-subtle);
+  stroke-width: 2;
+}
+
+.point {
+  fill: var(--ink-subtle);
+}
+
+.pointFlagged {
+  fill: var(--primary);
+  stroke: var(--canvas);
+  stroke-width: 2;
+}
+
+.anomalyBand {
+  fill: var(--primary-subtle);
+}
+
+.axisLabel {
+  fill: var(--ink-subtle);
+  font-size: 10px;
+  font-family: var(--font-body);
+}
+
+.chartCaption {
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--ink-subtle);
+}
+
+.outputCol {
+  border-left: 1px solid var(--hairline);
+  display: flex;
+  flex-direction: column;
+}
+
+@media screen and (max-width: 900px) {
+  .outputCol {
+    border-left: none;
+    border-top: 1px solid var(--hairline);
+  }
+}
+
+.outputRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--hairline);
+  font-size: 0.9rem;
+}
+
+.outputKey {
+  color: var(--ink-subtle);
+}
+
+.outputValue {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.badge {
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  background: var(--primary-subtle);
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.82rem;
+}
+
+.explanation {
+  margin: 1.1rem 0 1.25rem;
+  padding: 0.9rem 1rem;
+  background: var(--surface-1);
+  border-radius: var(--radius);
+  color: var(--ink-muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  font-style: italic;
+}
+
+.footLink {
+  font-weight: 600;
+  color: var(--primary);
+  margin-top: auto;
+}

@@ -5,7 +5,7 @@
 
 .head {
   max-width: 34rem;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
 }
 
 .title {
@@ -15,8 +15,41 @@
   letter-spacing: -0.01em;
 }
 
+.group {
+  margin-bottom: 2.75rem;
+}
+.group:last-child {
+  margin-bottom: 0;
+}
+
+.groupHead {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--ink);
+}
+
+.groupLabel {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--ink);
+}
+
+.groupDescription {
+  font-size: 0.88rem;
+  color: var(--ink-subtle);
+}
+
 .list {
   border-top: 1px solid var(--hairline);
+}
+
+.item {
+  border-bottom: 1px solid var(--hairline);
 }
 
 .row {
@@ -25,7 +58,6 @@
   align-items: center;
   gap: 1.25rem;
   padding: 1.5rem 0.5rem;
-  border-bottom: 1px solid var(--hairline);
   text-decoration: none;
   color: inherit;
   transition: background 0.12s ease;
@@ -69,11 +101,18 @@
   color: var(--primary);
 }
 
+.rowVisual {
+  padding: 0 0.5rem 1.5rem 4.25rem;
+}
+
 @media screen and (max-width: 768px) {
   .row {
     grid-template-columns: 2rem 1fr;
   }
   .rowArrow {
     display: none;
+  }
+  .rowVisual {
+    padding-left: 0.5rem;
   }
 }

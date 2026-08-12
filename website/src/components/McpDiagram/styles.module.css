@@ -1,0 +1,71 @@
+.diagram {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: var(--surface-1);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.blockLabel {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--ink-subtle);
+  margin-bottom: 0.25rem;
+}
+
+.chain {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.box,
+.boxMuted,
+.boxAccent {
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius);
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.box {
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  color: var(--ink);
+}
+
+.boxMuted {
+  background: var(--canvas);
+  border: 1px dashed var(--hairline);
+  color: var(--ink-subtle);
+  font-weight: 500;
+}
+
+.boxAccent {
+  background: var(--primary);
+  border: 1px solid var(--primary);
+  color: #ffffff;
+}
+
+.arrow {
+  color: var(--ink-subtle);
+  font-size: 0.9rem;
+}
