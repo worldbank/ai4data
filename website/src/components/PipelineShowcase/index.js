@@ -46,7 +46,7 @@ export default function PipelineShowcase() {
         <div className={styles.head}>
           <span className="eyebrow">How It Works</span>
           <Heading as="h2" className={styles.title}>
-            A five-agent pipeline, not a single prompt
+            Five specialized agents, run in sequence
           </Heading>
           <p className={styles.lede}>
             The Metadata Reviewer decomposes quality review into specialized,
