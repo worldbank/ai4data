@@ -23,7 +23,7 @@ Standard keyword search finds only exact matches. The `ai4data.data_use` module 
 
 ## How It Works
 
-The extraction pipeline uses **GliNER** (Generalist and Lightweight NER), a zero-shot NER model that identifies named entities of arbitrary types given a label prompt at inference time {cite}`zaratiana2023gliner`. By prompting GliNER with the entity type "dataset," "survey," or "data source," the model can identify dataset mentions even in novel contexts without task-specific fine-tuning.
+The extraction pipeline uses **GliNER** (Generalist and Lightweight NER), a zero-shot NER model that identifies named entities of arbitrary types given a label prompt at inference time (Zaratiana et al., 2023). By prompting GliNER with the entity type "dataset," "survey," or "data source," the model can identify dataset mentions even in novel contexts without task-specific fine-tuning.
 
 ### Pipeline Overview
 

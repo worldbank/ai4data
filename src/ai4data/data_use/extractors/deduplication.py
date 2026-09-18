@@ -2,7 +2,7 @@ import re
 from collections import Counter, defaultdict
 from typing import Any, Dict, List
 
-from rapidfuzz import fuzz
+# rapidfuzz is an optional dependency — imported lazily in are_fuzzy_duplicates()
 
 # Define relation fields we want to keep as metadata
 # Only acronym is extracted from relations - other fields come directly from the schema
@@ -98,6 +98,14 @@ def are_fuzzy_duplicates(text1: str, text2: str, min_len_threshold: int = 10) ->
     # Exact match after normalization
     if text1.lower() == text2.lower():
         return True
+
+    try:
+        from rapidfuzz import fuzz
+    except ImportError as exc:
+        raise ImportError(
+            "rapidfuzz is required for fuzzy deduplication. "
+            "Install it with: pip install rapidfuzz"
+        ) from exc
 
     # Use multiple similarity metrics
     token_sort = fuzz.token_sort_ratio(text1, text2)
@@ -255,16 +263,16 @@ def extract_mentions(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             datasets = [datasets]
 
         for ds_entry in datasets:
-            # Handle nested dataset_name structure
-            dataset_name = ds_entry.get("dataset_name", "")
-            if isinstance(dataset_name, dict):
-                text = clean_text(dataset_name.get("text", ""))
-                start = dataset_name.get("start")
-                end = dataset_name.get("end")
-                # Confidence might be in dataset_name dict when include_confidence=True
-                confidence_from_name = dataset_name.get("confidence")
+            # Handle both v21-diversity ('mention_name') and legacy ('dataset_name') field names
+            name_field = ds_entry.get("mention_name") or ds_entry.get("dataset_name", "")
+            if isinstance(name_field, dict):
+                text = clean_text(name_field.get("text", ""))
+                start = name_field.get("start")
+                end = name_field.get("end")
+                # Confidence might be in the name dict when include_confidence=True
+                confidence_from_name = name_field.get("confidence")
             else:
-                text = clean_text(dataset_name)
+                text = clean_text(name_field)
                 start = ds_entry.get("start")
                 end = ds_entry.get("end")
                 confidence_from_name = None
@@ -272,8 +280,12 @@ def extract_mentions(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             if not text:
                 continue
 
-            # Extract dataset_tag (was label)
-            dataset_tag_field = ds_entry.get("dataset_tag", ds_entry.get("label", ""))
+            # Read 'specificity_tag' (v21) with 'dataset_tag' / 'label' as fallbacks
+            dataset_tag_field = (
+                ds_entry.get("specificity_tag")
+                or ds_entry.get("dataset_tag")
+                or ds_entry.get("label", "")
+            )
             if isinstance(dataset_tag_field, dict):
                 dataset_tag = dataset_tag_field.get("text", "")
             else:
@@ -373,8 +385,8 @@ def extract_mentions(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
                 vals = []
 
                 # Handle acronym from dataset_name structure
-                if field == "acronym" and isinstance(dataset_name, dict):
-                    acronym_list = dataset_name.get("acronym", [])
+                if field == "acronym" and isinstance(name_field, dict):
+                    acronym_list = name_field.get("acronym", [])
                     if isinstance(acronym_list, list):
                         for acr in acronym_list:
                             if isinstance(acr, dict):

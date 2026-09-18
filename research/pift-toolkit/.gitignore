@@ -1,0 +1,17 @@
+# Generated data and models
+data/
+models/
+*.jsonl.gz
+
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+.pytest_cache/

@@ -131,6 +131,21 @@ const config = {
 
   plugins: [
     [
+      '@docusaurus/plugin-content-docs',
+      /** @type {import('@docusaurus/plugin-content-docs').Options} */
+      ({
+        id: 'pift-toolkit',
+        path: '../research/pift-toolkit/docs',
+        routeBasePath: 'pift-toolkit',
+        sidebarPath: path.join(__dirname, 'sidebars-pift-toolkit.js'),
+        remarkPlugins: [
+          [codeImport, {rootDir: repoRoot, allowImportingFromOutside: true}],
+        ],
+        editUrl:
+          'https://github.com/worldbank/ai4data/edit/main/research/pift-toolkit/docs/',
+      }),
+    ],
+    [
       '@easyops-cn/docusaurus-search-local',
       /** @type {import('@easyops-cn/docusaurus-search-local').PluginOptions} */
       ({
@@ -138,7 +153,7 @@ const config = {
         indexDocs: true,
         indexBlog: false,
         indexPages: true,
-        docsRouteBasePath: '/docs',
+        docsRouteBasePath: ['/docs', '/pift-toolkit'],
       }),
     ],
   ],

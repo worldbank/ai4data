@@ -46,7 +46,27 @@ const sidebars = {
     {
       type: 'category',
       label: 'Data Discoverability',
-      items: ['data-discoverability/data-discoverability'],
+      items: [
+        'data-discoverability/data-discoverability',
+        {
+          type: 'category',
+          label: 'Fine-Tuning Embedding Models',
+          link: {
+            type: 'doc',
+            id: 'data-discoverability/embedding-fine-tuning',
+          },
+          items: [
+            {type: 'link', label: 'The Method', href: '/pift-toolkit/method'},
+            {type: 'link', label: 'Pipeline Guide', href: '/pift-toolkit/pipeline'},
+            {
+              type: 'link',
+              label: 'Configuration Reference',
+              href: '/pift-toolkit/configuration',
+            },
+            {type: 'link', label: 'Deployment', href: '/pift-toolkit/deployment'},
+          ],
+        },
+      ],
     },
     {
       type: 'category',

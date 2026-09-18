@@ -33,11 +33,11 @@ This enables:
 - *Conceptual matching*: "income inequality" → finds "Gini index", "income share of poorest 40%"
 - *Cross-language queries*: (with multilingual models) "taux de pauvreté" → finds "poverty headcount ratio"
 
-Dense search is powered by vector similarity indices (e.g., FAISS {cite}`johnson2019faiss`, HNSW) that enable sub-millisecond nearest-neighbor lookup over millions of items.
+Dense search is powered by vector similarity indices (e.g., FAISS (Johnson et al., 2019), HNSW) that enable sub-millisecond nearest-neighbor lookup over millions of items.
 
 ### Sparse (Lexical) Search
 
-Keyword-based search using inverted indices (BM25 {cite}`robertson2009bm25`) remains valuable for:
+Keyword-based search using inverted indices (BM25 (Robertson & Zaragoza, 2009)) remains valuable for:
 - Exact code lookups (e.g., indicator code `NY.GDP.MKTP.KD.ZG`)
 - Short, specific queries where semantic models add noise
 - Efficient filtering before semantic re-ranking
@@ -94,6 +94,14 @@ uv pip install ai4data[search]
 
 ---
 
+## Fine-Tuning Embedding Models for Structured Metadata
+
+Catalogue search quality depends not only on the retrieval architecture above, but on how well the embedding model represents structured records. When metadata is a set of labeled fields rather than a single document, standard fine-tuning can make models sensitive to field order — a problem that surfaces when indexes are rebuilt or federated across systems that serialize records differently.
+
+The [Fine-Tuning Embedding Models for Structured Metadata](embedding-fine-tuning.md) subsection documents a permutation-invariant fine-tuning (PI-FT) pipeline (Solatorio et al., 2026): a YAML-driven toolkit for generating training data, fine-tuning a small encoder, evaluating order robustness, and deploying search over structured catalogues.
+
+---
+
 ## Connecting Discovery to AI Assistants
 
 An emerging dimension of data discoverability is making datasets accessible to AI assistants directly, without going through a search UI. The [Model Context Protocol (MCP)](../mcp/mcp.md) provides a standardized interface through which AI assistants can query data catalogs, retrieve indicator values, and generate analysis—bringing search capabilities directly into AI workflows.
@@ -102,5 +110,5 @@ An emerging dimension of data discoverability is making datasets accessible to A
 
 ## References
 
-- {cite}`johnson2019faiss` — Johnson, J., Douze, M., & Jégou, H. (2019). Billion-scale similarity search with GPUs. *IEEE Transactions on Big Data*, 7(3), 535–547.
-- {cite}`robertson2009bm25` — Robertson, S., & Zaragoza, H. (2009). The probabilistic relevance framework: BM25 and beyond. *Foundations and Trends in Information Retrieval*, 3(4), 333–389.
+- Johnson, J., Douze, M., & Jégou, H. (2019). Billion-scale similarity search with GPUs. *IEEE Transactions on Big Data*, 7(3), 535–547.
+- Robertson, S., & Zaragoza, H. (2009). The probabilistic relevance framework: BM25 and beyond. *Foundations and Trends in Information Retrieval*, 3(4), 333–389.

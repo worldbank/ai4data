@@ -30,9 +30,9 @@ The key design choice is **elicitation**, not generation: we do not ask the LLM 
 
 **Elicitation** means prompting the model to produce outputs that conform to a predefined schema—much like form-filling rather than essay-writing. This aligns with established frameworks for data quality and official statistics:
 
-**OpenAI Structured Outputs** {cite}`openai_structured_outputs_2024` and **Gemini Structured Output** {cite}`google_gemini_structured_output_2024` support JSON Schema enforcement so that responses are type-safe, parseable, and reliable. Schema adherence reduces hallucination and format errors.
+**OpenAI Structured Outputs** (OpenAI, 2024) and **Gemini Structured Output** (Google AI, 2024) support JSON Schema enforcement so that responses are type-safe, parseable, and reliable. Schema adherence reduces hallucination and format errors.
 
-**World Bank Data Quality Standards** {cite}`worldbank_data_quality_2024` stress traceability, verifiability, and transparent documentation. The guidelines require that explanations reference well-documented events when available.
+**World Bank Data Quality Standards** (World Bank, 2024) stress traceability, verifiability, and transparent documentation. The guidelines require that explanations reference well-documented events when available.
 
 By constraining outputs to a rigid taxonomy (`data_error`, `external_driver`, `measurement_system_update`, `insufficient_data`) and requiring evidence strength and verifiability levels, we ensure that explanations are actionable for reviewers and downstream systems.
 
@@ -64,7 +64,7 @@ Elicitation combines the breadth of LLM world-knowledge with the structure neede
 
 The design draws on several lines of research and practice:
 
-- **Faithful explanation and attribution.** Work on faithfulness in language model explanations (e.g., {cite}`openai_structured_outputs_2024`) motivates strict schema enforcement to reduce hallucination and post-hoc rationalization.
+- **Faithful explanation and attribution.** Work on faithfulness in language model explanations (e.g., OpenAI, 2024) motivates strict schema enforcement to reduce hallucination and post-hoc rationalization.
 - **UN Data Quality Assessment Framework (DQAF).** The UN Statistics Division's quality framework emphasizes traceability, coherence, and timeliness as dimensions of statistical data quality. The pipeline's classification taxonomy and verifiability levels are designed to produce outputs that speak directly to these dimensions.
 - **LLMs for data quality.** Narayan et al. (2022) demonstrated that foundation models can perform data wrangling tasks—entity matching, error detection, data transformation—with surprising effectiveness even without task-specific fine-tuning, suggesting that LLM world-knowledge is broadly applicable to data quality tasks.
 - **World Bank statistical review processes.** Internal review protocols for the WDI and Scorecard databases involve indicator-level sign-off by country economists and thematic experts, providing a well-understood human review target for the automated pipeline to support.

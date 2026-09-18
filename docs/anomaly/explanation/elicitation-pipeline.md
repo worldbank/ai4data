@@ -262,6 +262,6 @@ This loop ensures that LLM-elicited explanations are treated as hypotheses to be
 
 ## References
 
-- {cite}`openai_structured_outputs_2024` — [OpenAI: Structured model outputs](https://platform.openai.com/docs/guides/structured-outputs)
-- {cite}`google_gemini_structured_output_2024` — [Gemini: Structured output](https://ai.google.dev/gemini-api/docs/structured-output)
-- {cite}`worldbank_data_quality_2024` — [World Bank: Data Quality and Effectiveness](https://datahelpdesk.worldbank.org/knowledgebase/articles/906534-data-quality-and-effectiveness)
+- [OpenAI: Structured model outputs](https://platform.openai.com/docs/guides/structured-outputs)
+- [Gemini: Structured output](https://ai.google.dev/gemini-api/docs/structured-output)
+- [World Bank: Data Quality and Effectiveness](https://datahelpdesk.worldbank.org/knowledgebase/articles/906534-data-quality-and-effectiveness)

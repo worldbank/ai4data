@@ -11,13 +11,13 @@ For harmonization features:
 """
 
 from pathlib import Path
+from threading import Lock
 from typing import Any, Dict, List, Optional, Union
 
 # Lazy imports to avoid requiring dependencies at import time
 _DatasetExtractor = None
 _deduplicate_extraction = None
 _ModelManager = None
-_DatasetSchema = None
 
 
 def _check_datause_deps():
@@ -26,6 +26,7 @@ def _check_datause_deps():
         import gliner2  # noqa: F401
         import torch  # noqa: F401
         import transformers  # noqa: F401
+
         return True
     except ImportError:
         return False
@@ -41,6 +42,7 @@ def _get_dataset_extractor():
                 'Install with: uv pip install "ai4data[datause]"'
             )
         from .extractors.dataset_extractor import DatasetExtractor
+
         _DatasetExtractor = DatasetExtractor
     return _DatasetExtractor
 
@@ -50,6 +52,7 @@ def _get_deduplicate_extraction():
     global _deduplicate_extraction
     if _deduplicate_extraction is None:
         from .extractors.deduplication import deduplicate_extraction
+
         _deduplicate_extraction = deduplicate_extraction
     return _deduplicate_extraction
 
@@ -64,40 +67,49 @@ def _get_model_manager():
                 'Install with: uv pip install "ai4data[datause]"'
             )
         from .models.model_manager import ModelManager
+
         _ModelManager = ModelManager
     return _ModelManager
 
 
-def _get_dataset_schema():
-    """Get the DatasetSchema class, importing lazily."""
-    global _DatasetSchema
-    if _DatasetSchema is None:
-        from .schemas.dataset_schema import DatasetSchema
-        _DatasetSchema = DatasetSchema
-    return _DatasetSchema
+# Public API classes are resolved lazily via PEP 562 module __getattr__.
+# This preserves isinstance() semantics (the real class objects are bound
+# directly to module globals on first access) and avoids the fragile
+# __new__-returns-non-cls proxy pattern.
 
 
-# Public API - these are functions that return the actual classes
-# to maintain backwards compatibility
-class DatasetExtractor:
-    """Proxy class for lazy loading DatasetExtractor."""
-    def __new__(cls, *args, **kwargs):
-        RealClass = _get_dataset_extractor()
-        return RealClass(*args, **kwargs)
+def __getattr__(name):
+    """Lazy-load public API classes on first access (PEP 562).
+
+    Resolves and caches in ``globals()`` so subsequent accesses are direct
+    attribute lookups with no import overhead.
+    """
+    if name == "DatasetExtractor":
+        cls = _get_dataset_extractor()
+        globals()[name] = cls
+        return cls
+    if name == "ModelManager":
+        cls = _get_model_manager()
+        globals()[name] = cls
+        return cls
+    if name == "DatasetSchema":
+        from .schemas.dataset_schema import DatasetSchema as _Real
+
+        globals()[name] = _Real
+        return _Real
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
-class ModelManager:
-    """Proxy class for lazy loading ModelManager."""
-    def __new__(cls, *args, **kwargs):
-        RealClass = _get_model_manager()
-        return RealClass(*args, **kwargs)
-
-
-class DatasetSchema:
-    """Proxy class for lazy loading DatasetSchema."""
-    def __new__(cls, *args, **kwargs):
-        RealClass = _get_dataset_schema()
-        return RealClass(*args, **kwargs)
+def __dir__():
+    """Include lazily-resolved names in dir()."""
+    return sorted(
+        set(globals().keys())
+        | {
+            "DatasetExtractor",
+            "ModelManager",
+            "DatasetSchema",
+        }
+    )
 
 
 def deduplicate_extraction(*args, **kwargs):
@@ -110,14 +122,17 @@ __version__ = "0.1.0"
 
 # Convenience functions for simple usage
 _default_extractor = None
+_default_extractor_lock = Lock()
 
 
 def _get_default_extractor():
-    """Get or create the default extractor instance."""
+    """Get or create the default extractor instance (thread-safe)."""
     global _default_extractor
     if _default_extractor is None:
-        RealExtractor = _get_dataset_extractor()
-        _default_extractor = RealExtractor()
+        with _default_extractor_lock:
+            if _default_extractor is None:
+                real_extractor = _get_dataset_extractor()
+                _default_extractor = real_extractor()
     return _default_extractor
 
 
@@ -130,7 +145,9 @@ def extract_from_text(
     max_tokens: int = 200,
     model_id: Optional[str] = None,
     enable_chunking: bool = True,
-    use_classifier: bool = False,
+    use_classifier: bool = True,
+    adapter_id: Optional[str] = "ai4data/datause-extraction",
+    normalize_text: bool = True,
 ) -> Dict[str, Any]:
     """Extract dataset mentions from text.
 
@@ -140,10 +157,16 @@ def extract_from_text(
         custom_schema: Optional custom schema to use instead of default
         exclude_non_datasets: If True, filter out datasets with dataset_tag="non-dataset"
         dataset_threshold: Optional confidence threshold for dataset_name field (0.0-1.0)
-        max_tokens: Maximum tokens per chunk for long texts (default: 500)
+        max_tokens: Maximum tokens per chunk for long texts (default: 200)
         model_id: Optional model ID to use for this specific extraction
         enable_chunking: Whether to split long text into chunks (default: True)
-        use_classifier: Whether to use pre-filtering classifier (default: False)
+        use_classifier: Whether to use pre-filtering classifier (default: True)
+        adapter_id: HuggingFace adapter repo ID to apply to the base model.
+            Defaults to "ai4data/datause-extraction". Pass a different
+            adapter (e.g. "ai4data/datause-extraction-v2") to use an
+            alternative fine-tuned checkpoint without affecting the shared
+            default extractor.
+        normalize_text: If True, normalize page text before extraction (default: True)
 
     Returns:
         Dict with 'input_text' and 'datasets' keys containing the original text
@@ -157,7 +180,12 @@ def extract_from_text(
         >>> print(result['input_text'])
         >>> print(result['datasets'])
     """
-    extractor = _get_default_extractor()
+    _default_adapter_id = "ai4data/datause-extraction"
+    if adapter_id != _default_adapter_id or model_id is not None:
+        real_cls = _get_dataset_extractor()
+        extractor = real_cls(model_id=model_id, adapter_id=adapter_id)
+    else:
+        extractor = _get_default_extractor()
     return extractor.extract_from_text(
         text,
         include_confidence=include_confidence,
@@ -165,9 +193,9 @@ def extract_from_text(
         exclude_non_datasets=exclude_non_datasets,
         dataset_threshold=dataset_threshold,
         max_tokens=max_tokens,
-        model_id=model_id,
         enable_chunking=enable_chunking,
         use_classifier=use_classifier,
+        normalize_text=normalize_text,
     )
 
 
@@ -183,6 +211,10 @@ def extract_from_document(
     use_classifier: bool = True,
     skip_references: bool = True,
     verbose: bool = False,
+    normalize_text: bool = True,
+    pages: Optional[List[int]] = None,
+    model_id: Optional[str] = None,
+    adapter_id: Optional[str] = "ai4data/datause-extraction",
 ) -> List[Dict[str, Any]]:
     """Extract dataset mentions from a PDF document.
 
@@ -194,19 +226,42 @@ def extract_from_document(
         include_metadata: Whether to include metadata
         exclude_non_datasets: If True, filter out datasets with dataset_tag="non-dataset"
         dataset_threshold: Optional confidence threshold for dataset_name field (0.0-1.0)
-        max_tokens: Maximum tokens per chunk for long texts (default: 500)
-        use_classifier: Whether to use pre-filtering classifier (default: True)
+        max_tokens: Maximum tokens per chunk for long texts (default: 200)
+        use_classifier: If True, skip chunks that fail the English pre-filter before
+            running GLiNER2 extraction (default: True)
         skip_references: If True, skip pages in references/appendix sections (default: True)
         verbose: If True, print logging when references are detected and skipped
+        normalize_text: If True, normalize page text before extraction (default: True)
+        pages: Optional list of 0-indexed page numbers to include. If None,
+               processes all pages.
+        model_id: Optional model ID to use for this specific extraction
+        adapter_id: HuggingFace adapter repo ID to apply to the base model.
+            Defaults to "ai4data/datause-extraction".
+
+    Returns:
+        List of dicts, one per page/chunk, each with:
+            - ``page``: 0-indexed page number of the first page in the chunk
+            - ``input_text``: raw page text
+            - ``datasets``: list of extracted dataset mention dicts
+            - ``classifier_skipped``: True if the page was skipped by the pre-filter
+            - ``skip_reason``: 'non_english' | 'no_data' | None
+            - ``document``: dict with 'source' and 'pages' keys
+
+    Example:
         >>> results = extract_from_document(
         ...     "https://example.com/report.pdf",
         ...     include_confidence=True,
         ...     include_metadata=True
         ... )
         >>> for result in results:
-        ...     print(f"Page {result['pages']}: {result.get('dataset_name')}")
+        ...     print(f"Page {result['page']}: {len(result['datasets'])} datasets found")
     """
-    extractor = _get_default_extractor()
+    _default_adapter_id = "ai4data/datause-extraction"
+    if adapter_id != _default_adapter_id or model_id is not None:
+        real_cls = _get_dataset_extractor()
+        extractor = real_cls(model_id=model_id, adapter_id=adapter_id)
+    else:
+        extractor = _get_default_extractor()
     return extractor.extract_from_document(
         source,
         include_confidence=include_confidence,
@@ -219,6 +274,8 @@ def extract_from_document(
         use_classifier=use_classifier,
         skip_references=skip_references,
         verbose=verbose,
+        normalize_text=normalize_text,
+        pages=pages,
     )
 
 
