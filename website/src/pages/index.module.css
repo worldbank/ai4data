@@ -65,57 +65,6 @@
   color: var(--ink);
 }
 
-/* ---------- Mission ---------- */
-
-.missionSection {
-  padding: 4rem 0;
-  background: var(--canvas);
-}
-
-.missionGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.25rem;
-  max-width: 60rem;
-  margin: 0 auto;
-}
-
-@media screen and (max-width: 768px) {
-  .missionGrid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.missionCard {
-  padding: 1.75rem;
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-lg);
-  background: var(--surface-1);
-}
-
-.missionNumber {
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--primary);
-  margin-bottom: 0.6rem;
-  display: block;
-}
-
-.missionTitle {
-  font-size: 1.35rem;
-  font-weight: 600;
-  margin-bottom: 0.7rem;
-  color: var(--ink);
-}
-
-.missionText {
-  color: var(--ink-muted);
-  line-height: 1.68;
-  margin: 0;
-}
-
 /* ---------- Closing ---------- */
 
 .closing {

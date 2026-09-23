@@ -11,7 +11,7 @@ const repoRoot = path.resolve(__dirname, '..');
 const config = {
   title: 'AI for Data - Data for AI',
   tagline:
-    'Applying AI to improve development data, and making development data AI-ready.',
+    'A World Bank program applying AI across the development data lifecycle — from metadata creation to discovery to monitoring — to make development data AI-ready.',
   favicon: 'img/favicon.ico',
 
   future: {

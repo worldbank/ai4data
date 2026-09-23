@@ -4,6 +4,7 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
 import ScaleBand from '@site/src/components/ScaleBand';
+import DataLifecycle from '@site/src/components/DataLifecycle';
 import PipelineShowcase from '@site/src/components/PipelineShowcase';
 import AnomalyExample from '@site/src/components/AnomalyExample';
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
@@ -18,7 +19,7 @@ function HomepageHeader() {
         <div className={styles.heroInner}>
           <span className="eyebrow">World Bank — Development Data Group</span>
           <Heading as="h1" className={styles.heroTitle}>
-            AI for Data. <strong>Data for AI.</strong>
+            Making development data <strong>AI-ready.</strong>
           </Heading>
           <p className={styles.heroSubtitle}>{siteConfig.tagline}</p>
           <div className={styles.buttons}>
@@ -36,40 +37,6 @@ function HomepageHeader() {
         </div>
       </div>
     </header>
-  );
-}
-
-function MissionSection() {
-  return (
-    <section className={styles.missionSection}>
-      <div className="container">
-        <div className={styles.missionGrid}>
-          <div className={styles.missionCard}>
-            <span className={styles.missionNumber}>Mission 01</span>
-            <Heading as="h3" className={styles.missionTitle}>
-              AI for Data
-            </Heading>
-            <p className={styles.missionText}>
-              Applying AI to improve data and metadata quality, data
-              discoverability and dissemination, monitoring of data use, and
-              user experience in producing and accessing development
-              datasets.
-            </p>
-          </div>
-          <div className={styles.missionCard}>
-            <span className={styles.missionNumber}>Mission 02</span>
-            <Heading as="h3" className={styles.missionTitle}>
-              Data for AI
-            </Heading>
-            <p className={styles.missionText}>
-              Ensuring development data is structured, documented, and made
-              available in ways that enable effective and trustworthy use by
-              AI systems.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
   );
 }
 
@@ -118,11 +85,11 @@ export default function Home() {
   return (
     <Layout
       title={siteConfig.title}
-      description="A World Bank Development Data Group program applying AI to improve development data, and making development data AI-ready.">
+      description="A World Bank Development Data Group program applying AI across the development data lifecycle to make development data AI-ready.">
       <HomepageHeader />
       <main>
         <ScaleBand />
-        <MissionSection />
+        <DataLifecycle />
         <PipelineShowcase />
         <AnomalyExample />
         <HomepageFeatures />

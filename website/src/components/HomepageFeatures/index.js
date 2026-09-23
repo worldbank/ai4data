@@ -103,6 +103,11 @@ export default function HomepageFeatures() {
           <Heading as="h2" className={styles.title}>
             Flagship Workstreams
           </Heading>
+          <p className={styles.lede}>
+            Each stage of the lifecycle above is a workstream in its own
+            right — with its own methodology, pipeline code, and
+            documentation.
+          </p>
         </div>
         {Groups.map((group) => (
           <div className={styles.group} key={group.label}>
