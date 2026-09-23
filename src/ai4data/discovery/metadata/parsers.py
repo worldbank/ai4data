@@ -526,6 +526,27 @@ class DocumentParser(Parser):
 class GeospatialParser(Parser):
     metadata_type: str = "geospatial"
 
+    @staticmethod
+    def _identification_info(metadata: dict) -> dict:
+        """
+        Resolve ``description.identificationInfo`` to a single dict.
+
+        Per the geospatial schema this is declared ``type: object``, but
+        ``gmd:identificationInfo`` is a repeatable ISO 19139 element, so a
+        properly-imported record legitimately stores it as a one-item list
+        (``[{...}]``) rather than a bare dict — every parser below needs the
+        first (only) entry either way. Returns ``{}`` for anything else
+        (missing, empty list, or otherwise malformed) rather than raising, so
+        a record's other filter facets can still be extracted independently.
+        """
+        description = metadata.get("description")
+        if not isinstance(description, dict):
+            return {}
+        identification_info = description.get("identificationInfo")
+        if isinstance(identification_info, list):
+            identification_info = identification_info[0] if identification_info else {}
+        return identification_info if isinstance(identification_info, dict) else {}
+
     def parse_source(self, metadata: dict) -> list[str]:
         """
         Extract the unique authoring entities from the list of "citedResponsibleParty".
@@ -536,8 +557,7 @@ class GeospatialParser(Parser):
         Returns:
             list[str]: The unique authoring entities.
         """
-        description: dict = metadata.get("description", {})
-        identification_info: dict = description.get("identificationInfo", {})
+        identification_info = self._identification_info(metadata)
         citation: dict = identification_info.get("citation", {})
 
         # TODO: Check if this is the correct way to extract the authoring entities
@@ -560,8 +580,7 @@ class GeospatialParser(Parser):
         """
         # TODO: Check if this is the correct way to extract the geographic coverage
 
-        description: dict = metadata.get("description", {})
-        identification_info: dict = description.get("identificationInfo", {})
+        identification_info = self._identification_info(metadata)
         extent: dict = identification_info.get("extent", {})
         geographic_coverage: list[dict] = extent.get("geographicElement", [])
         geographies = [
@@ -586,8 +605,7 @@ class GeospatialParser(Parser):
         """
         # TODO: Check if this is the correct way to extract the time coverage
 
-        description: dict = metadata.get("description", {})
-        identification_info: dict = description.get("identificationInfo", {})
+        identification_info = self._identification_info(metadata)
         citation: dict = identification_info.get("citation", {})
         date: list[dict] = citation.get("date", [])
         date = [d.get("date") for d in date if d.get("type") == "temporal coverage"]
@@ -607,8 +625,7 @@ class GeospatialParser(Parser):
         Returns:
             str: The DOI.
         """
-        description: dict = metadata.get("description", {})
-        identification_info: dict = description.get("identificationInfo", {})
+        identification_info = self._identification_info(metadata)
         citation: dict = identification_info.get("citation", {})
         identifier: dict[str, str] = citation.get("identifier", {})
 
@@ -632,8 +649,7 @@ class GeospatialParser(Parser):
         Returns:
             str: The abstract.
         """
-        description: dict = metadata.get("description", {})
-        identification_info: dict = description.get("identificationInfo", {})
+        identification_info = self._identification_info(metadata)
 
         abstract: str | None = identification_info.get("abstract")
 

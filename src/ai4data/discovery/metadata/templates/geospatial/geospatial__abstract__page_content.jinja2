@@ -1,1 +1,8 @@
-{% if description.identificationInfo.abstract %}{{ description.identificationInfo.abstract }}{% endif %}
+{%- set desc = description if description is mapping else {} -%}
+{%- set ii = desc.identificationInfo -%}
+{%- if ii is sequence and ii is not mapping and ii -%}
+{%- set ii = ii[0] -%}
+{%- endif -%}
+{%- if ii is mapping and ii.abstract -%}
+{{ ii.abstract }}
+{%- endif -%}

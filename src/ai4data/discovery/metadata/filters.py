@@ -38,8 +38,8 @@ class FilterFacets(BaseModel):
 
 class IndicatorFilterFacets(FilterFacets):
     type: str = "indicator"
-    periodicity: str = None
-    source: list[str] = None
+    periodicity: str | None = None
+    source: list[str] | None = None
 
     @staticmethod
     def from_metadata(metadata: dict) -> IndicatorFilterFacets:
@@ -69,10 +69,10 @@ class IndicatorFilterFacets(FilterFacets):
 
 class DocumentFilterFacets(FilterFacets):
     type: str = "document"
-    document_type: str = None
-    date_published: str = None
+    document_type: str | None = None
+    date_published: str | None = None
     date_created: str | None = None
-    authors: list[str] = None
+    authors: list[str] | None = None
 
     @staticmethod
     def from_metadata(metadata: dict) -> DocumentFilterFacets:
@@ -107,7 +107,7 @@ class DocumentFilterFacets(FilterFacets):
 
 class GeospatialFilterFacets(FilterFacets):
     type: str = "geospatial"
-    source: list[str] = None
+    source: list[str] | None = None
 
     @staticmethod
     def from_metadata(metadata: dict) -> GeospatialFilterFacets:
