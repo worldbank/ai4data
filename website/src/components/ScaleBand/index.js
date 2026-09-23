@@ -37,13 +37,14 @@ export default function ScaleBand() {
             Development data has outgrown manual review
           </Heading>
           <p className={styles.lede}>
-            The World Bank&apos;s indicator catalogs and microdata libraries
-            have grown far past what a curator or analyst can check by hand.
-            A team can&apos;t hand-verify thousands of indicator
-            descriptions, investigate every anomaly a monitoring dataset
-            flags, or cover 50+ languages at once. This program automates
-            that first pass, reserving expert time for the judgment calls
-            only a human can make.
+            Statistical offices and development organizations increasingly
+            manage data at a scale no team can review by hand — indicator
+            databases spanning hundreds of geographies, microdata libraries
+            with thousands of surveys, metadata that has to work across
+            dozens of languages. A curator can&apos;t hand-check every
+            description, an analyst can&apos;t investigate every flagged
+            anomaly, and headcount alone never catches up. The World
+            Bank&apos;s own catalogs make that scale concrete:
           </p>
         </div>
         <div className={styles.grid}>
