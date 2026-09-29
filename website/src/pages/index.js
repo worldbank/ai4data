@@ -5,9 +5,9 @@ import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
 import ScaleBand from '@site/src/components/ScaleBand';
 import DataLifecycle from '@site/src/components/DataLifecycle';
-import PipelineShowcase from '@site/src/components/PipelineShowcase';
-import AnomalyExample from '@site/src/components/AnomalyExample';
+import ScrollDemo from '@site/src/components/ScrollDemo';
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
+import GetInvolved from '@site/src/components/GetInvolved';
 
 import styles from './index.module.css';
 
@@ -65,14 +65,6 @@ function ClosingCta() {
               to="https://github.com/worldbank/ai4data">
               Explore the Repository
             </Link>
-            <Link
-              className={clsx(
-                'button button--lg',
-                styles.closingButtonSecondary,
-              )}
-              to="mailto:ai4data@worldbank.org">
-              Get in Touch
-            </Link>
           </div>
         </div>
       </div>
@@ -90,9 +82,9 @@ export default function Home() {
       <main>
         <ScaleBand />
         <DataLifecycle />
-        <PipelineShowcase />
-        <AnomalyExample />
+        <ScrollDemo />
         <HomepageFeatures />
+        <GetInvolved />
         <ClosingCta />
       </main>
     </Layout>

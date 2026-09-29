@@ -1,6 +1,5 @@
 import Link from '@docusaurus/Link';
 import Heading from '@theme/Heading';
-import McpDiagram from '@site/src/components/McpDiagram';
 import styles from './styles.module.css';
 
 const Groups = [
@@ -37,7 +36,6 @@ const Groups = [
         to: '/docs/mcp/',
         description:
           'One MCP server, built once, callable by any compatible AI client — Claude, ChatGPT, or a custom agent — with no bespoke integration.',
-        visual: <McpDiagram />,
       },
     ],
   },

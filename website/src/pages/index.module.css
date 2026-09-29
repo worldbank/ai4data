@@ -103,13 +103,3 @@
   border-color: #d7e3fb;
   color: var(--ink-block);
 }
-
-.closingButtonSecondary {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  color: #ffffff;
-}
-.closingButtonSecondary:hover {
-  border-color: #ffffff;
-  background: rgba(255, 255, 255, 0.08);
-}

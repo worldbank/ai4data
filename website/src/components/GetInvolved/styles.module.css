@@ -1,0 +1,65 @@
+.section {
+  padding: 4.5rem 0;
+  background: var(--canvas);
+}
+
+.head {
+  max-width: 34rem;
+  margin-bottom: 2.5rem;
+}
+
+.title {
+  font-size: 1.9rem;
+  font-weight: 600;
+  margin: 0.7rem 0 0;
+  letter-spacing: -0.01em;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+@media screen and (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  display: block;
+  padding: 1.5rem;
+  background: var(--canvas);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.12s ease;
+}
+
+.card:hover {
+  background: var(--surface-1);
+  text-decoration: none;
+  color: inherit;
+}
+
+.cardTitle {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 0.4rem;
+}
+
+.card:hover .cardTitle {
+  color: var(--primary);
+}
+
+.cardBody {
+  color: var(--ink-muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  margin: 0;
+}
