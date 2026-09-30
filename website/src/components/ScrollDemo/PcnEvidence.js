@@ -7,6 +7,15 @@ import styles from './styles.module.css';
 // application compares the model's tagged number against.
 const OFFICIAL = 5.69201612823412;
 const RECORD_ID = '0328';
+const PAYLOAD = {
+  claim_id: RECORD_ID,
+  indicator: 'GDP growth (annual %)',
+  country: 'Philippines',
+  date: '2024',
+  value: OFFICIAL,
+  unit: 'Percentage',
+  source: 'World Development Indicators',
+};
 const QUESTION = 'How fast did the Philippines’ economy grow in 2024?';
 
 const Cases = [
@@ -38,7 +47,8 @@ function outcomeFor(c) {
       };
 }
 
-// phase: idle -> typing -> streaming -> verifying -> done
+// phase: idle -> typing -> streaming -> done. Verification is instant, so the
+// verdict shows as soon as the number appears.
 export default function PcnEvidence({active = true}) {
   const [caseKey, setCaseKey] = useState('match');
   const [run, setRun] = useState(0);
@@ -69,15 +79,13 @@ export default function PcnEvidence({active = true}) {
     setPhase('typing');
     at(800, () => setPhase('streaming'));
     WORDS.forEach((_, i) => at(800 + 110 * (i + 1), () => setShown(i + 1)));
-    const streamEnd = 800 + 110 * WORDS.length;
-    at(streamEnd + 150, () => setPhase('verifying'));
-    at(streamEnd + 1150, () => setPhase('done'));
+    at(800 + 110 * WORDS.length, () => setPhase('done'));
     return () => timers.forEach(clearTimeout);
   }, [active, caseKey, run]);
 
   const numValue = `${c.value.toFixed(1)}%`;
-  const done = phase === 'done';
-  const verifying = phase === 'verifying';
+  // The verdict applies from the moment the number is on screen.
+  const numVisible = shown > NUM_INDEX;
 
   return (
     <div className={styles.evidenceBox}>
@@ -126,31 +134,63 @@ export default function PcnEvidence({active = true}) {
                   if (i !== NUM_INDEX) {
                     return <span key={i}>{w} </span>;
                   }
+                  const verified = outcome.status === 'verified';
+                  const num = (
+                    <span
+                      className={clsx(
+                        styles.pcnNum,
+                        styles[`pcn_${outcome.status}`],
+                      )}>
+                      {numValue}
+                    </span>
+                  );
                   return (
                     <span key={i}>
-                      <span
-                        className={clsx(
-                          styles.pcnNum,
-                          verifying && styles.pcnChecking,
-                          done && styles[`pcn_${outcome.status}`],
-                        )}>
-                        {numValue}
-                      </span>
-                      {done && outcome.status === 'verified' && (
+                      {verified ? (
                         <span
-                          className={styles.pcnBadgeOk}
-                          role="img"
-                          aria-label="Verified">
-                          ✓
+                          className={styles.pcnProof}
+                          tabIndex={0}
+                          aria-describedby="pcn-proof-card">
+                          {num}
+                          <span
+                            className={styles.pcnBadgeOk}
+                            role="img"
+                            aria-label="Verified">
+                            ✓
+                          </span>
+                          <span
+                            className={styles.pcnPopover}
+                            role="tooltip"
+                            id="pcn-proof-card">
+                            <strong>Verified data</strong>
+                            <dl>
+                              <dt>Indicator</dt>
+                              <dd>GDP growth (annual %)</dd>
+                              <dt>Country</dt>
+                              <dd>Philippines</dd>
+                              <dt>Date</dt>
+                              <dd>2024</dd>
+                              <dt>Source value</dt>
+                              <dd>{OFFICIAL.toFixed(3)}</dd>
+                              <dt>Unit</dt>
+                              <dd>Percentage</dd>
+                              <dt>Display rule</dt>
+                              <dd>Match at 1 decimal place</dd>
+                            </dl>
+                          </span>
                         </span>
-                      )}
-                      {done && outcome.status === 'flagged' && (
-                        <span
-                          className={styles.pcnBadgeWarn}
-                          role="img"
-                          aria-label="Flagged">
-                          !
-                        </span>
+                      ) : (
+                        <>
+                          {num}
+                          {outcome.status === 'flagged' && (
+                            <span
+                              className={styles.pcnBadgeWarn}
+                              role="img"
+                              aria-label="Flagged">
+                              !
+                            </span>
+                          )}
+                        </>
                       )}{' '}
                     </span>
                   );
@@ -160,21 +200,28 @@ export default function PcnEvidence({active = true}) {
           </div>
         )}
 
-        <div
-          className={clsx(
-            styles.pcnStatusLine,
-            done && styles[`pcn_${outcome.status}`],
-          )}
-          aria-live="polite">
-          {verifying && (
-            <span>Checking against World Development Indicators…</span>
-          )}
-          {done && <span>{outcome.text}</span>}
-        </div>
       </div>
 
-      {done && (
-        <details className={styles.pcnDetails}>
+      <div
+        className={clsx(
+          styles.pcnStatusLine,
+          numVisible && styles[`pcn_${outcome.status}`],
+        )}
+        aria-live="polite">
+        {numVisible && (
+          <>
+            <span>{outcome.text}</span>
+            {outcome.status === 'verified' && (
+              <span className={styles.pcnHint}>
+                {' '}
+                Hover over the number to see the source record.
+              </span>
+            )}
+          </>
+        )}
+      </div>
+
+      <details className={styles.pcnDetails}>
           <summary>Show the tagged model output</summary>
           <code className={styles.pcnCode}>
             The Philippines&apos; economy grew by{' '}
@@ -189,8 +236,18 @@ export default function PcnEvidence({active = true}) {
             )}
             % in 2024.
           </code>
-        </details>
-      )}
+      </details>
+
+      <details className={styles.pcnDetails}>
+        <summary>Show the claim payload</summary>
+        <code className={styles.pcnCode}>
+          <pre>{JSON.stringify(PAYLOAD, null, 2)}</pre>
+        </code>
+        <span className={styles.pcnFine}>
+          Simplified for illustration. The application passes this record to
+          the model, which cites it by claim ID.
+        </span>
+      </details>
     </div>
   );
 }
