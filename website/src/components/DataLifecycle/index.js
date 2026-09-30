@@ -8,7 +8,7 @@ const Stages = [
     moment: 'Data and metadata are created',
     label: 'Metadata Quality & Enrichment',
     description:
-      'LLMs score metadata completeness and consistency, and cluster survey variables into thematic groups — cutting manual tagging from days to minutes.',
+      'LLMs score metadata completeness and consistency and cluster survey variables into thematic groups.',
     workstreams: [
       {
         title: 'Generative AI for Metadata Quality',
@@ -22,7 +22,7 @@ const Stages = [
     moment: 'Data is published and searched',
     label: 'Discovery & Access',
     description:
-      'Semantic search understands intent beyond keywords, and the Model Context Protocol lets any AI client query catalogs directly.',
+      'Semantic search matches the intent of a query, and the Model Context Protocol lets AI clients query catalogs directly.',
     workstreams: [
       {title: 'Data Discoverability', to: '/docs/data-discoverability/'},
       {title: 'Model Context Protocol', to: '/docs/mcp/'},
@@ -33,7 +33,7 @@ const Stages = [
     moment: 'Data is used, revised, and tracked over time',
     label: 'Monitoring & Trust',
     description:
-      'Statistical detectors flag anomalies and LLMs explain them with cited evidence; NER pipelines trace where datasets get cited in research and policy.',
+      'Statistical detectors flag anomalies, and LLMs explain them with cited evidence. NER pipelines trace where datasets are cited in research and policy.',
     workstreams: [
       {
         title: 'Anomaly Detection and Explanation',
@@ -51,12 +51,12 @@ export default function DataLifecycle() {
         <div className={styles.head}>
           <span className="eyebrow">The Data Lifecycle</span>
           <Heading as="h2" className={styles.title}>
-            Where AI makes data AI-ready
+            AI across the data lifecycle
           </Heading>
           <p className={styles.lede}>
-            Data becomes AI-ready gradually — as it&apos;s documented, made
-            discoverable, and proven trustworthy over time. Each stage below
-            is where a workstream applies AI to get it there.
+            Data becomes AI-ready gradually, as it is documented, made
+            discoverable, and shown to be trustworthy over time. Each stage
+            below lists the workstreams that apply AI at that point.
           </p>
         </div>
 
@@ -84,10 +84,10 @@ export default function DataLifecycle() {
 
         <div className={styles.foundation}>
           <span className={styles.foundationLabel}>
-            Enabling Capabilities — underpins every stage
+            Enabling Capabilities used at every stage
           </span>
           <Link className={styles.foundationLink} to="/docs/inclusive-ai/">
-            Inclusive AI Applications — multilingual models across 50+
+            Inclusive AI Applications: multilingual models covering 50+
             languages →
           </Link>
         </div>

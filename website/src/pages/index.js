@@ -17,7 +17,7 @@ function HomepageHeader() {
     <header className={styles.heroBanner}>
       <div className="container">
         <div className={styles.heroInner}>
-          <span className="eyebrow">World Bank — Development Data Group</span>
+          <span className="eyebrow">World Bank Development Data Group</span>
           <Heading as="h1" className={styles.heroTitle}>
             Making development data <strong>AI-ready.</strong>
           </Heading>
@@ -49,12 +49,12 @@ function ClosingCta() {
             Open Source
           </span>
           <Heading as="h2" className={styles.closingTitle}>
-            Built in the open by the Development Data Group
+            Open-source tooling and documentation
           </Heading>
           <p className={styles.closingText}>
-            Every workstream on this site ships as Python tooling and
-            documentation you can read end to end — methodology, pipeline
-            code, and API reference alike.
+            Every workstream on this site is released as Python tooling with
+            documentation that covers the methodology, the pipeline code,
+            and the API reference.
           </p>
           <div className={styles.buttons}>
             <Link

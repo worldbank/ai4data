@@ -72,7 +72,7 @@ export default function QueryToggle() {
             </div>
           </div>
           <p className={styles.caption}>
-            No exact keyword match required — the search understands intent.
+            The query matches on meaning, so no exact keyword is required.
           </p>
         </div>
       ) : (
@@ -80,8 +80,7 @@ export default function QueryToggle() {
           <pre className={styles.code}>{mcpPayload}</pre>
           <div className={styles.panelFoot}>
             <p className={styles.caption}>
-              Same question, same answer — issued as a tool call any MCP
-              client can make.
+              The same query as a tool call, which any MCP client can make.
             </p>
             <button type="button" className={styles.copyButton} onClick={handleCopy}>
               {copied ? 'Copied' : 'Copy'}

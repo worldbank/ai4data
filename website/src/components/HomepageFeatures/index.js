@@ -11,49 +11,49 @@ const Groups = [
         title: 'Generative AI for Metadata Quality',
         to: '/docs/metadata-quality/generative-ai-for-metadata-quality',
         description:
-          'Scores metadata across four dimensions — completeness, semantic alignment, specificity, and consistency — with structured, auditable LLM output.',
+          'Scores metadata on four dimensions: completeness, semantic alignment, specificity, and consistency. The LLM output is structured and auditable.',
       },
       {
         title: 'Metadata Augmentation',
         to: '/docs/metadata-augmentation/',
         description:
-          'Organizes hundreds of survey variables into DDI-style thematic groups via semantic clustering — no manual labeling required.',
+          'Organizes hundreds of survey variables into DDI-style thematic groups using semantic clustering.',
       },
     ],
   },
   {
     label: 'Discovery & Access',
-    description: 'Getting the data to whoever — or whatever — needs it.',
+    description: 'Making data available to people and AI systems.',
     items: [
       {
         title: 'Data Discoverability',
         to: '/docs/data-discoverability/',
         description:
-          'Conceptual search surfaces "Gini index" when you search "income inequality" — no exact keyword match required.',
+          'Conceptual search returns "Gini index" for the query "income inequality" without requiring an exact keyword match.',
       },
       {
         title: 'Model Context Protocol',
         to: '/docs/mcp/',
         description:
-          'One MCP server, built once, callable by any compatible AI client — Claude, ChatGPT, or a custom agent — with no bespoke integration.',
+          'An MCP server that any compatible AI client, such as Claude, ChatGPT, or a custom agent, can call.',
       },
     ],
   },
   {
     label: 'Monitoring & Trust',
-    description: 'Keeping the data trustworthy after it ships.',
+    description: 'Checking data quality after publication.',
     items: [
       {
         title: 'Anomaly Detection and Explanation',
         to: '/docs/anomaly-detection/',
         description:
-          'Classifies flagged anomalies as an external driver, data error, measurement update, or insufficient data — with cited evidence.',
+          'Classifies flagged anomalies as an external driver, data error, measurement update, or insufficient data, and cites the evidence.',
       },
       {
         title: 'Monitoring of Data Use',
         to: '/docs/data_use/',
         description:
-          'Extracts dataset mentions from reports and papers via zero-shot NER, even when names vary — "WDI" vs. "World Development Indicators."',
+          'Extracts dataset mentions from reports and papers with zero-shot NER, including name variants such as "WDI" and "World Development Indicators."',
       },
     ],
   },
@@ -65,7 +65,7 @@ const Groups = [
         title: 'Inclusive AI Applications',
         to: '/docs/inclusive-ai/',
         description:
-          'Multilingual embedding models spanning 50+ languages, and batch inference at roughly half the synchronous-call cost.',
+          'Multilingual embedding models covering 50+ languages, and batch inference at roughly half the cost of synchronous calls.',
       },
     ],
   },
@@ -102,8 +102,7 @@ export default function HomepageFeatures() {
             Flagship Workstreams
           </Heading>
           <p className={styles.lede}>
-            Each stage of the lifecycle above is a workstream in its own
-            right — with its own methodology, pipeline code, and
+            Each workstream has its own methodology, pipeline code, and
             documentation.
           </p>
         </div>

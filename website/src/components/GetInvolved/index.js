@@ -27,7 +27,7 @@ export default function GetInvolved() {
         <div className={styles.head}>
           <span className="eyebrow">Get Involved</span>
           <Heading as="h2" className={styles.title}>
-            Work with the program
+            Contribute and contact
           </Heading>
         </div>
         <div className={styles.grid}>

@@ -11,7 +11,7 @@ const repoRoot = path.resolve(__dirname, '..');
 const config = {
   title: 'AI for Data - Data for AI',
   tagline:
-    'A World Bank program applying AI across the development data lifecycle — from metadata creation to discovery to monitoring — to make development data AI-ready.',
+    'A World Bank program that applies AI to metadata creation, data discovery, and monitoring to make development data AI-ready.',
   favicon: 'img/favicon.ico',
 
   future: {
@@ -92,34 +92,24 @@ const config = {
       footer: {
         style: 'dark',
         links: [
+          {label: 'Introduction', to: '/docs/introduction'},
+          {label: 'Partnerships', to: '/docs/partnerships/'},
+          {label: 'GitHub', href: 'https://github.com/worldbank/ai4data'},
           {
-            title: 'Program',
-            items: [
-              {label: 'Introduction', to: '/docs/introduction'},
-              {label: 'Partnerships', to: '/docs/partnerships/'},
-            ],
-          },
-          {
-            title: 'Community',
-            items: [
-              {
-                label: 'GitHub',
-                href: 'https://github.com/worldbank/ai4data',
-              },
-              {
-                label: 'Issues',
-                href: 'https://github.com/worldbank/ai4data/issues',
-              },
-              {
-                label: 'Contact',
-                href: 'mailto:ai4data@worldbank.org',
-              },
-            ],
+            label: 'Issues',
+            href: 'https://github.com/worldbank/ai4data/issues',
           },
         ],
         copyright: `
-          <div>Country borders or names do not necessarily reflect the World Bank Group's official position. All maps are for illustrative purposes and do not imply the expression of any opinion on the part of the World Bank, concerning the legal status of any country or territory or concerning the delimitation of frontiers or boundaries.</div>
-          <div style="margin-top: 0.5rem">All content (unless otherwise specified) is subject to the <a href="https://opensource.org/license/mit">MIT License</a>. Copyright © ${new Date().getFullYear()} World Bank Group, Development Data Group.</div>
+          <div class="fb-brand">
+            <strong>AI for Data - Data for AI</strong>
+            <span>Development Data Group · World Bank Group</span>
+            <a href="mailto:ai4data@worldbank.org">ai4data@worldbank.org</a>
+          </div>
+          <div class="fb-legal">
+            <div>Country borders or names do not necessarily reflect the World Bank Group's official position. All maps are for illustrative purposes and do not imply the expression of any opinion on the part of the World Bank, concerning the legal status of any country or territory or concerning the delimitation of frontiers or boundaries.</div>
+            <div>All content (unless otherwise specified) is subject to the <a href="https://opensource.org/license/mit">MIT License</a>. Copyright © ${new Date().getFullYear()} World Bank Group, Development Data Group.</div>
+          </div>
         `,
       },
       prism: {
