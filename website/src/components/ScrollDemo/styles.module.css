@@ -26,32 +26,57 @@
 
 /* ---------- Layout ---------- */
 
+.track {
+  /* Scroll distance for the pinned stage: one screen-fraction per example. */
+  height: calc(var(--stops) * 60vh + 40vh);
+}
+
+.stage {
+  position: sticky;
+  top: calc(var(--ifm-navbar-height, 60px) + 1.5rem);
+  display: flex;
+  align-items: center;
+  min-height: calc(100vh - var(--ifm-navbar-height, 60px) - 3rem);
+}
+
+.stage > .layout {
+  width: 100%;
+}
+
 .layout {
   display: grid;
   grid-template-columns: 1.05fr 0.95fr;
   gap: 3rem;
+  align-items: center;
 }
 
-@media screen and (max-width: 900px) {
-  .layout {
-    grid-template-columns: 1fr;
-    gap: 0;
+/* Layers share one grid cell and crossfade through opacity. */
+.stops,
+.panelBody {
+  display: grid;
+  align-items: center;
+}
+
+/* The active layer fades in after the outgoing one has faded out, so two
+   layers are never visible together, whatever the scroll speed. */
+.layer {
+  grid-area: 1 / 1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.14s ease-out;
+}
+
+.layerActive {
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.22s ease-in 0.14s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .layer,
+  .layerActive {
+    transition: none;
   }
-}
-
-.rail {
-  position: relative;
-}
-
-@media screen and (max-width: 900px) {
-  .rail {
-    display: none;
-  }
-}
-
-.stickyPanel {
-  position: sticky;
-  top: calc(var(--ifm-navbar-height, 60px) + 2rem);
 }
 
 .stopEvidenceMobile {
@@ -59,23 +84,40 @@
 }
 
 @media screen and (max-width: 900px) {
+  .track {
+    height: auto;
+  }
+
+  .stage {
+    position: static;
+    min-height: 0;
+  }
+
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .rail {
+    display: none;
+  }
+
+  .stops {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  /* Inline list on small screens: every stop is fully visible. */
+  .layer {
+    opacity: 1;
+    pointer-events: auto;
+    transition: none;
+  }
+
   .stopEvidenceMobile {
     display: block;
     margin: 1.25rem 0 1.5rem;
-  }
-}
-
-/* ---------- Stops ---------- */
-
-.stops {
-  display: flex;
-  flex-direction: column;
-  gap: 4.5rem;
-}
-
-@media screen and (max-width: 900px) {
-  .stops {
-    gap: 3rem;
   }
 }
 
@@ -279,4 +321,287 @@
   color: var(--primary);
   font-weight: 600;
   font-size: 0.78rem;
+}
+
+/* ---------- Panel frame and active-stop emphasis ---------- */
+
+.panelFrame {
+  background: var(--canvas);
+  border: 1px solid var(--ink-muted);
+  border-top: 3px solid var(--primary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.65rem 1.5rem;
+  background: var(--primary-subtle);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.panelLabel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.panelSource {
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink-muted);
+}
+
+.panelDots {
+  display: flex;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.dot,
+.dotActive {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--hairline);
+  transition: background 0.2s;
+}
+
+.dotActive {
+  background: var(--primary);
+}
+
+.panelBody {
+  padding: 1.5rem;
+}
+
+/* The evidence box inside the frame needs no border or padding of its own. */
+.panelBody .layer > :global(*) {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+
+/* ---------- PCN evidence: simulated chatbot ---------- */
+
+.pcnTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.9rem;
+}
+
+.pcnCases {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.pcnCase,
+.pcnReplay {
+  font: inherit;
+  font-size: 0.8rem;
+  padding: 0.3rem 0.7rem;
+  color: var(--ink-muted);
+  background: transparent;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.pcnCaseActive {
+  color: var(--primary);
+  background: var(--primary-subtle);
+  border-color: var(--primary);
+}
+
+.pcnReplay:hover,
+.pcnCase:hover {
+  border-color: var(--ink-muted);
+}
+
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-height: 11.5rem;
+  padding: 1rem;
+  background: var(--surface-1);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+}
+
+.msg {
+  max-width: 88%;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  border-radius: 14px;
+}
+
+.msgUser {
+  align-self: flex-end;
+  color: #ffffff;
+  background: var(--primary);
+  border-bottom-right-radius: 4px;
+}
+
+.msgBot {
+  align-self: flex-start;
+  color: var(--ink);
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-bottom-left-radius: 4px;
+}
+
+.botText {
+  margin: 0;
+}
+
+.typing {
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0.2rem 0;
+}
+
+.typing i {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: var(--ink-muted);
+  animation: pcnBlink 1s infinite ease-in-out;
+}
+
+.typing i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.typing i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes pcnBlink {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+.pcnNum {
+  padding: 0 0.25rem;
+  border-radius: 4px;
+  font-weight: 600;
+  transition: background 0.2s, color 0.2s;
+}
+
+.pcnChecking {
+  background: var(--surface-2);
+  animation: pcnPulse 0.8s infinite ease-in-out;
+}
+
+@keyframes pcnPulse {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.pcn_verified.pcnNum {
+  background: var(--primary-subtle);
+  color: var(--primary);
+}
+
+.pcn_flagged.pcnNum {
+  background: #fbead3;
+  color: #8a4b08;
+}
+
+.pcnBadgeOk,
+.pcnBadgeWarn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-left: 0.3rem;
+  border-radius: 50%;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #ffffff;
+  vertical-align: 0.05em;
+}
+
+.pcnBadgeOk {
+  background: var(--primary);
+}
+
+.pcnBadgeWarn {
+  background: #b45309;
+}
+
+.pcnStatusLine {
+  min-height: 2.6em;
+  padding-left: 0.25rem;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--ink-muted);
+}
+
+.pcnStatusLine.pcn_verified {
+  color: var(--primary);
+}
+
+.pcnStatusLine.pcn_flagged {
+  color: #8a4b08;
+}
+
+.pcnDetails {
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+}
+
+.pcnDetails summary {
+  cursor: pointer;
+}
+
+.pcnCode {
+  display: block;
+  margin-top: 0.5rem;
+  padding: 0.6rem 0.8rem;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.76rem;
+  line-height: 1.6;
+  color: var(--ink);
+  background: var(--surface-2);
+  border-radius: var(--radius);
+  overflow-wrap: anywhere;
+}
+
+.pcnTag {
+  color: var(--primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .typing i,
+  .pcnChecking {
+    animation: none;
+  }
 }

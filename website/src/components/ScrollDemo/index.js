@@ -1,5 +1,7 @@
+import clsx from 'clsx';
 import {useEffect, useRef, useState} from 'react';
 import Link from '@docusaurus/Link';
+import PcnEvidence from './PcnEvidence';
 import Heading from '@theme/Heading';
 import QueryToggle from '@site/src/components/QueryToggle';
 import styles from './styles.module.css';
@@ -44,7 +46,7 @@ function PipelineEvidence() {
       </div>
       <div className={styles.pipelineFoot}>
         <span className={styles.pipelineFootLabel}>
-          Output — six issue categories
+          Output: six issue categories
         </span>
         <div className={styles.chips}>
           {IssueCategories.map((c) => (
@@ -61,7 +63,7 @@ function PipelineEvidence() {
 function AnomalyEvidence() {
   return (
     <div className={styles.evidenceBox}>
-      <div className={styles.chartLabel}>GDP growth (annual %) — Nigeria</div>
+      <div className={styles.chartLabel}>GDP growth (annual %), Nigeria</div>
       <svg
         className={styles.chart}
         viewBox="0 0 400 150"
@@ -105,13 +107,13 @@ const Stops = [
   {
     id: 'pipeline',
     eyebrow: 'Metadata Reviewer',
-    title: 'Five agents, one quality pipeline',
+    title: 'Five-agent metadata review pipeline',
     body: (
       <p>
         Detection, filtering, classification, and scoring run as
-        specialized, sequential agents instead of one prompt asked to do
-        everything at once — so the output stays consistent and auditable
-        across thousands of records.
+        specialized, sequential agents. Each step has a narrow task, which
+        keeps the output consistent and auditable across thousands of
+        records.
       </p>
     ),
     link: {
@@ -123,13 +125,13 @@ const Stops = [
   {
     id: 'anomaly',
     eyebrow: 'Anomaly Detection and Explanation',
-    title: 'Every anomaly ships with evidence',
+    title: 'Evidence-backed anomaly explanations',
     body: (
       <p>
         A statistical detector flags a data point as unusual. The
         elicitation pipeline turns that flag into a structured,
-        evidence-backed explanation — classification, confidence, and a
-        cited source — that a reviewer can check in seconds.
+        evidence-backed explanation with a classification, a confidence
+        score, and a cited source. A reviewer can check it in seconds.
       </p>
     ),
     link: {
@@ -141,87 +143,171 @@ const Stops = [
   {
     id: 'access',
     eyebrow: 'Data Discoverability & MCP',
-    title: 'The same question, answered two ways',
+    title: 'Search and MCP access to the catalog',
     body: (
       <p>
-        A person can search in plain language. An AI agent can issue the
-        same request as a Model Context Protocol tool call. Both resolve
-        against the same indicators, so a client never needs a bespoke
-        integration.
+        The catalog can be searched in plain language. The same query can
+        also be sent by an AI agent as a Model Context Protocol (MCP) tool
+        call. Both return results from the same indicator index.
       </p>
     ),
     link: {to: '/docs/mcp/', label: 'See the MCP integration guide'},
     Evidence: QueryToggle,
   },
+  {
+    id: 'pcn',
+    eyebrow: 'Proof-Carrying Numbers',
+    title: 'Number verification in chatbot answers',
+    body: (
+      <p>
+        In a chatbot answer built on official statistics, each number
+        carries a tag naming the record it came from. The application
+        compares the number with that record and shows a check mark when
+        they match. The application draws the check mark, so the model
+        cannot produce one. Numbers that differ from the record are
+        flagged, and numbers without a tag receive no mark.
+      </p>
+    ),
+    link: {
+      to: 'https://arxiv.org/abs/2509.06902',
+      label: 'Read the PCN paper',
+    },
+    Evidence: PcnEvidence,
+  },
 ];
 
+const clamp = (x, lo, hi) => Math.min(hi, Math.max(lo, x));
+
 export default function ScrollDemo() {
-  const [active, setActive] = useState(0);
-  const refs = useRef([]);
+  const [progress, setProgress] = useState(0);
+  const trackRef = useRef(null);
+  const stageRef = useRef(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const idx = Number(entry.target.dataset.stopIndex);
-            setActive(idx);
-          }
-        });
-      },
-      {rootMargin: '-35% 0px -50% 0px', threshold: 0},
-    );
-    refs.current.forEach((el) => el && observer.observe(el));
-    return () => observer.disconnect();
+    // Progress is derived from scroll position, so it is identical in both
+    // scroll directions. The stage is pinned while the track scrolls past;
+    // progress runs from 0 (first stop) to Stops.length - 1 (last stop).
+    let frame = null;
+    const update = () => {
+      frame = null;
+      const track = trackRef.current;
+      const stage = stageRef.current;
+      if (!track || !stage) {
+        return;
+      }
+      const stickyTop = parseFloat(window.getComputedStyle(stage).top) || 0;
+      const rect = track.getBoundingClientRect();
+      const total = rect.height - stage.offsetHeight;
+      const t = total > 0 ? clamp((stickyTop - rect.top) / total, 0, 1) : 0;
+      setProgress(t * (Stops.length - 1));
+    };
+    const onScroll = () => {
+      if (frame === null) {
+        frame = window.requestAnimationFrame(update);
+      }
+    };
+    update();
+    window.addEventListener('scroll', onScroll, {passive: true});
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (frame !== null) {
+        window.cancelAnimationFrame(frame);
+      }
+    };
   }, []);
 
-  const ActiveEvidence = Stops[active].Evidence;
+  const active = Math.round(progress);
 
   return (
     <section className={styles.section}>
       <div className="container">
         <div className={styles.head}>
-          <span className="eyebrow">See It Work</span>
+          <span className="eyebrow">Examples</span>
           <Heading as="h2" className={styles.title}>
-            Real output, not mockups
+            Example outputs
           </Heading>
           <p className={styles.lede}>
-            Scroll to see the evidence behind each workstream — the panel
-            updates to match. Every number and label below is drawn from
-            the program&apos;s own documentation and data.
+            Scroll to step through the examples. The panel and its
+            description change together. Every number and label below is
+            drawn from the program&apos;s own documentation and data.
           </p>
         </div>
 
-        <div className={styles.layout}>
-          <div className={styles.rail}>
-            <div className={styles.stickyPanel}>
-              <ActiveEvidence />
-            </div>
-          </div>
-
-          <div className={styles.stops}>
-            {Stops.map((stop, i) => {
-              const StopEvidence = stop.Evidence;
-              return (
-                <div
-                  className={styles.stop}
-                  key={stop.id}
-                  data-stop-index={i}
-                  ref={(el) => (refs.current[i] = el)}>
-                  <span className={styles.stopEyebrow}>{stop.eyebrow}</span>
-                  <Heading as="h3" className={styles.stopTitle}>
-                    {stop.title}
-                  </Heading>
-                  {stop.body}
-                  <div className={styles.stopEvidenceMobile}>
-                    <StopEvidence />
+        <div
+          className={styles.track}
+          ref={trackRef}
+          style={{'--stops': Stops.length}}>
+          <div className={styles.stage} ref={stageRef}>
+            <div className={styles.layout}>
+              <div className={styles.rail}>
+                <div className={styles.panelFrame}>
+                  <div className={styles.panelHeader}>
+                    <span className={styles.panelLabel}>
+                      Example {active + 1} of {Stops.length}
+                      <span className={styles.panelSource}>
+                        {Stops[active].eyebrow}
+                      </span>
+                    </span>
+                    <span className={styles.panelDots} aria-hidden="true">
+                      {Stops.map((stop, i) => (
+                        <span
+                          key={stop.id}
+                          className={
+                            i === active ? styles.dotActive : styles.dot
+                          }
+                        />
+                      ))}
+                    </span>
                   </div>
-                  <Link className={styles.stopLink} to={stop.link.to}>
-                    {stop.link.label} →
-                  </Link>
+                  <div className={styles.panelBody}>
+                    {Stops.map((stop, i) => {
+                      const Evidence = stop.Evidence;
+                      return (
+                        <div
+                          className={clsx(
+                            styles.layer,
+                            i === active && styles.layerActive,
+                          )}
+                          key={stop.id}
+                          aria-hidden={i !== active}>
+                          <Evidence active={i === active} />
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              );
-            })}
+              </div>
+
+              <div className={styles.stops}>
+                {Stops.map((stop, i) => {
+                  const StopEvidence = stop.Evidence;
+                  return (
+                    <div
+                      className={clsx(
+                        styles.stop,
+                        styles.layer,
+                        i === active && styles.layerActive,
+                      )}
+                      key={stop.id}
+                      aria-hidden={i !== active}>
+                      <span className={styles.stopEyebrow}>{stop.eyebrow}</span>
+                      <Heading as="h3" className={styles.stopTitle}>
+                        {stop.title}
+                      </Heading>
+                      {stop.body}
+                      <div className={styles.stopEvidenceMobile}>
+                        <StopEvidence />
+                      </div>
+                      <Link className={styles.stopLink} to={stop.link.to}>
+                        {stop.link.label} →
+                      </Link>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
       </div>
