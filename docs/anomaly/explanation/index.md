@@ -31,7 +31,7 @@ Each LLM (e.g., OpenAI, Gemini, Claude) is prompted with system rules and the ex
 When multiple LLMs produce explanations for the same anomaly, a **judge** (arbiter) LLM evaluates them and selects a single primary classification. The judge receives the timeseries context plus each explainer's output, then harmonizes disagreements (e.g., one model says `external_driver`, another says `insufficient_data`) into a final classification for the reviewer. This step is optional when using a single explainer.
 
 **Step 6. Reviewing and exporting for quality assurance**
-Human reviewers use a web application to view explanations alongside timeseries charts, approve or reject them, and optionally suggest corrections. Feedback is exported for audit, coverage analysis, or model improvement. LLM outputs are treated as hypotheses to be validated, not as final authority.
+Human reviewers use a web application to view explanations alongside timeseries charts, approve or reject them, and optionally suggest corrections. Feedback is exported for audit, coverage analysis, or model improvement. LLM outputs are treated as hypotheses to be validated.
 
 ---
 

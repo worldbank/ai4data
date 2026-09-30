@@ -256,7 +256,7 @@ The [Reviewer Feedback System](../../anomaly-detection/feedback-system.md) suppo
 - Optional free-text comments
 - Export to CSV for audit, coverage analysis, or model improvement
 
-This loop ensures that LLM-elicited explanations are treated as hypotheses to be validated, not as final authority. The methodology prioritizes traceability and human oversight in line with official statistics principles.
+This loop ensures that LLM-elicited explanations are treated as hypotheses to be validated. The methodology prioritizes traceability and human oversight in line with official statistics principles.
 
 ---
 

@@ -1,6 +1,6 @@
 # Motivation: Why LLM Elicitation for Anomaly Explanation
 
-This chapter describes the problem of explaining anomalies in development data, the rationale for using large language models (LLMs), and the design choice of *elicitation*—structured, schema-constrained outputs—rather than free-form generation.
+This chapter describes the problem of explaining anomalies in development data, the rationale for using large language models (LLMs), and the design choice of *elicitation*, which produces structured, schema-constrained outputs.
 
 ---
 
@@ -22,13 +22,13 @@ Large language models bring two critical capabilities to anomaly explanation:
 
 **Structured reasoning over time.** By framing the task as anomaly *windows* (e.g., 2019–2020) rather than single points, we align with how real-world events unfold. The model reasons over the relevant period and produces explanations that fit that context.
 
-The key design choice is **elicitation**, not generation: we do not ask the LLM for creative narrative. We elicit structured outputs—classifications, evidence citations, confidence scores—that are constrained by schema and prompt rules, making them amenable to validation and audit.
+The key design choice is **elicitation**. We do not ask the LLM for creative narrative. We elicit structured outputs (classifications, evidence citations, confidence scores) that are constrained by schema and prompt rules, which makes them amenable to validation and audit.
 
 ---
 
 ## LLM Elicitation as a Design Choice
 
-**Elicitation** means prompting the model to produce outputs that conform to a predefined schema—much like form-filling rather than essay-writing. This aligns with established frameworks for data quality and official statistics:
+**Elicitation** means prompting the model to produce outputs that conform to a predefined schema—much like filling in a form. This aligns with established frameworks for data quality and official statistics:
 
 **OpenAI Structured Outputs** (OpenAI, 2024) and **Gemini Structured Output** (Google AI, 2024) support JSON Schema enforcement so that responses are type-safe, parseable, and reliable. Schema adherence reduces hallucination and format errors.
 
