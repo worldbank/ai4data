@@ -177,7 +177,10 @@ export default function MetadataEvidence({active = true}) {
             title={`${s.role}: ${s.name}`}
             onClick={() => goTo(i + 1)}>
             <span className={styles.mrStepIndex}>{i + 1}</span>
-            <span className={styles.mrStepName}>{s.name}</span>
+            <span className={styles.mrStepText}>
+              <span className={styles.mrStepName}>{s.name}</span>
+              <span className={styles.mrStepRole}>{s.role}</span>
+            </span>
           </button>
         ))}
       </div>
@@ -204,6 +207,25 @@ export default function MetadataEvidence({active = true}) {
               </div>
             ))}
           </dl>
+          <div className={styles.mrFoot}>
+            <button
+              type="button"
+              className={styles.pcnReplay}
+              onClick={() => setRun((r) => r + 1)}>
+              {stage === 0 && !playing ? '▶ Run' : '↻ Replay'}
+            </button>
+            {stage >= 5 && (
+              <button
+                type="button"
+                className={styles.pcnReplay}
+                onClick={() => setShowJson(true)}>
+                {'{ }'} JSON output
+              </button>
+            )}
+          </div>
+          <span className={styles.pcnFine}>
+            Illustrative run on the record from the quick-start guide.
+          </span>
         </div>
 
         <div>
@@ -247,26 +269,6 @@ export default function MetadataEvidence({active = true}) {
           </ul>
         </div>
       </div>
-
-      <div className={styles.mrFoot}>
-        <button
-          type="button"
-          className={styles.pcnReplay}
-          onClick={() => setRun((r) => r + 1)}>
-          {stage === 0 && !playing ? '▶ Run' : '↻ Replay'}
-        </button>
-        {stage >= 5 && (
-          <button
-            type="button"
-            className={styles.pcnReplay}
-            onClick={() => setShowJson(true)}>
-            {'{ }'} Show JSON output
-          </button>
-        )}
-      </div>
-      <span className={styles.pcnFine}>
-        Illustrative run on the record from the quick-start guide.
-      </span>
 
       {showJson && (
         <div className={styles.mrJson} role="dialog" aria-label="JSON output">

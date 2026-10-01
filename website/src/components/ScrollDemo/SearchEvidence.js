@@ -1,51 +1,55 @@
-import {useEffect, useState} from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.css';
+import { useEffect, useState } from "react";
+import clsx from "clsx";
+import styles from "./styles.module.css";
 
 // Semantic search example over real WDI data. The ranking was computed with
 // avsolatorio/GIST-all-MiniLM-L6-v2 (cosine similarity between the full query
 // and the names of the 1,498 WDI indicators), and the Philippines values come
 // from the WDI API (latest year available, fetched 2026-10-01). Tool names
 // follow docs/mcp/mcp.md.
-const QUERY = 'how many people go hungry in the Philippines';
+const QUERY = "how many people go hungry in the Philippines";
 
 const RESULTS = [
   {
-    code: 'SN.ITK.SVFI.ZS',
-    name: 'Prevalence of severe food insecurity in the population (%)',
+    code: "SN.ITK.SVFI.ZS",
+    kind: "same",
+    name: "Prevalence of severe food insecurity in the population (%)",
     score: 0.796,
     year: 2023,
-    value: '3%',
+    value: "3%",
   },
   {
-    code: 'SN.ITK.MSFI.ZS',
-    name: 'Prevalence of moderate or severe food insecurity in the population (%)',
+    code: "SN.ITK.MSFI.ZS",
+    kind: "same",
+    name: "Prevalence of moderate or severe food insecurity in the population (%)",
     score: 0.786,
     year: 2023,
-    value: '32.9%',
+    value: "32.9%",
   },
   {
-    code: 'SI.SPR.PCAP',
-    name: 'Survey mean consumption or income per capita, total population (2021 PPP $ per day)',
+    code: "SI.SPR.PCAP",
+    kind: "related",
+    name: "Survey mean consumption or income per capita, total population (2021 PPP $ per day)",
     score: 0.783,
     year: 2023,
-    value: '$9.93 per day',
+    value: "$9.93 per day",
   },
   {
-    code: 'SI.SPR.PC40',
-    name: 'Survey mean consumption or income per capita, bottom 40% of population (2021 PPP $ per day)',
+    code: "SI.SPR.PC40",
+    kind: "related",
+    name: "Survey mean consumption or income per capita, bottom 40% of population (2021 PPP $ per day)",
     score: 0.781,
     year: 2023,
-    value: '$4.37 per day',
+    value: "$4.37 per day",
   },
 ];
 
 const Modes = [
-  {key: 'person', label: 'Person: natural language search'},
-  {key: 'agent', label: 'AI agent: MCP tool calls'},
+  { key: "person", label: "Person: natural language search" },
+  { key: "agent", label: "AI agent: MCP tool calls" },
 ];
 
-const STOPWORDS = new Set(['how', 'many', 'go', 'in', 'the']);
+const STOPWORDS = new Set(["how", "many", "go", "in", "the"]);
 const queryWords = new Set(
   QUERY.toLowerCase()
     .split(/\s+/)
@@ -53,17 +57,30 @@ const queryWords = new Set(
 );
 const tokenize = (name) => name.split(/(\s+)/);
 const isHit = (token) =>
-  queryWords.has(token.toLowerCase().replace(/[^a-z]/g, ''));
+  queryWords.has(token.toLowerCase().replace(/[^a-z]/g, ""));
+
+// "hungry" in the query and "food insecurity" in the titles describe the same
+// condition without sharing a word. Both are highlighted in the same colour.
+const withMark = (text, pattern, key) =>
+  text.split(pattern).map((part, i) =>
+    pattern.test(part) ? (
+      <mark className={styles.srConcept} key={`${key}-${i}`}>
+        {part}
+      </mark>
+    ) : (
+      <span key={`${key}-${i}`}>{part}</span>
+    ),
+  );
 
 const REQ1 = `→ tools/call  search_indicators\n  { "query": "${QUERY}" }`;
 const RESP1 = `← [ ${RESULTS.map(
   (r) => `{ "indicator": "${r.code}", "score": ${r.score} }`,
-).join(',\n    ')} ]`;
+).join(",\n    ")} ]`;
 const REQ2 = `→ tools/call  get_indicator\n  { "indicator_code": "${RESULTS[0].code}",\n    "country_code": "PHL",\n    "start_year": 2023, "end_year": 2023 }`;
 const RESP2 = `← { "country": "PHL", "year": 2023,\n    "value": 3 }`;
 
-export default function SearchEvidence({active = true}) {
-  const [mode, setMode] = useState('person');
+export default function SearchEvidence({ active = true }) {
+  const [mode, setMode] = useState("person");
   const [run, setRun] = useState(0);
   const [typed, setTyped] = useState(0); // characters of the current input
   const [step, setStep] = useState(0);
@@ -82,11 +99,11 @@ export default function SearchEvidence({active = true}) {
       return undefined;
     }
     const reduce =
-      typeof window !== 'undefined' &&
+      typeof window !== "undefined" &&
       window.matchMedia &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) {
-      setStep(mode === 'person' ? 2 : 5);
+      setStep(mode === "person" ? 2 : 5);
       setShown(RESULTS.length);
       setTyped(1000);
       return undefined;
@@ -96,7 +113,7 @@ export default function SearchEvidence({active = true}) {
     setStep(0);
     setTyped(0);
     setShown(0);
-    if (mode === 'person') {
+    if (mode === "person") {
       const per = 32;
       for (let i = 1; i <= QUERY.length; i += 1) {
         at(350 + per * i, () => setTyped(i));
@@ -104,7 +121,9 @@ export default function SearchEvidence({active = true}) {
       const t = 350 + per * QUERY.length;
       at(t + 80, () => setStep(1));
       at(t + 650, () => setStep(2));
-      RESULTS.forEach((_, i) => at(t + 650 + 170 * (i + 1), () => setShown(i + 1)));
+      RESULTS.forEach((_, i) =>
+        at(t + 650 + 170 * (i + 1), () => setShown(i + 1)),
+      );
     } else {
       const per = 13;
       for (let i = 1; i <= REQ1.length; i += 1) {
@@ -132,7 +151,7 @@ export default function SearchEvidence({active = true}) {
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(
-        [REQ1, RESP1, REQ2, RESP2].join('\n\n'),
+        [REQ1, RESP1, REQ2, RESP2].join("\n\n"),
       );
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
@@ -143,7 +162,8 @@ export default function SearchEvidence({active = true}) {
 
   const personDone = step >= 2;
   const agentDone = step === 5;
-  const done = mode === 'person' ? personDone && shown === RESULTS.length : agentDone;
+  const done =
+    mode === "person" ? personDone && shown === RESULTS.length : agentDone;
   const sink = (full, upTo) => full.slice(0, upTo);
 
   return (
@@ -156,34 +176,63 @@ export default function SearchEvidence({active = true}) {
             key={m.key}
             aria-selected={m.key === mode}
             className={clsx(styles.srTab, m.key === mode && styles.srTabActive)}
-            onClick={() => setMode(m.key)}>
+            onClick={() => setMode(m.key)}
+          >
             {m.label}
           </button>
         ))}
       </div>
 
       <div className={styles.srStage}>
-        {mode === 'person' ? (
+        {mode === "person" ? (
           <>
-            <div className={styles.srSearchBar}>
-              <span className={styles.srIcon} aria-hidden="true">
-                &#8981;
-              </span>
-              <span>
-                {sink(QUERY, typed)}
-                {step === 0 && (
-                  <span className={styles.srCaret} aria-hidden="true" />
-                )}
-              </span>
+            <div className={styles.srField}>
+              <div className={styles.srSearchBar}>
+                <span className={styles.srIcon} aria-hidden="true">
+                  &#8981;
+                </span>
+                <span className={styles.srQuery}>
+                  {personDone
+                    ? withMark(QUERY, /(hungry)/, "q")
+                    : sink(QUERY, typed)}
+                  {step === 0 && (
+                    <span className={styles.srCaret} aria-hidden="true" />
+                  )}
+                </span>
+                <span className={styles.srSubmit} aria-hidden="true">
+                  Search
+                </span>
+              </div>
             </div>
             {step === 1 && (
               <div className={styles.srStatus}>Matching on meaning…</div>
             )}
             {personDone && (
-              <ul className={styles.srList}>
-                {RESULTS.slice(0, shown).map((r, i) => {
-                  return (
-                    <li key={r.code}>
+              <>
+                <div className={styles.srResultsHead}>
+                  <span className={styles.srFieldLabel}>
+                    Results ranked by meaning
+                  </span>
+                  <span className={styles.srCount}>
+                    top 4 of 1,498 WDI indicators
+                  </span>
+                  <button
+                    type="button"
+                    className={clsx(styles.pcnReplay, styles.srReplaySmall)}
+                    onClick={() => setRun((r) => r + 1)}
+                  >
+                    ↻ Replay
+                  </button>
+                </div>
+                <ul className={styles.srList}>
+                  {RESULTS.slice(0, shown).map((r, i) => (
+                    <li
+                      key={r.code}
+                      className={clsx(
+                        styles.srItem,
+                        sel === i && styles.srItemSel,
+                      )}
+                    >
                       <button
                         type="button"
                         aria-expanded={sel === i}
@@ -191,53 +240,62 @@ export default function SearchEvidence({active = true}) {
                           styles.srRow,
                           sel === i && styles.srRowSel,
                         )}
-                        onClick={() => setSel(i)}>
+                        onClick={() => setSel(i)}
+                      >
+                        <span className={styles.srRank}>{i + 1}</span>
                         <span className={styles.srRowMain}>
                           <span className={styles.srRowCode}>{r.code}</span>
                           <span className={styles.srRowName}>
-                            {tokenize(r.name).map((t, k) =>
-                              isHit(t) ? (
-                                <mark className={styles.srMark} key={k}>
-                                  {t}
-                                </mark>
-                              ) : (
-                                <span key={k}>{t}</span>
-                              ),
-                            )}
+                            {r.kind === "same"
+                              ? withMark(r.name, /(food insecurity)/i, r.code)
+                              : r.name}
                           </span>
                         </span>
-                        <span className={styles.srScore}>
+                        <span className={styles.srMatch}>
+                          <span
+                            className={clsx(
+                              styles.srBadge,
+                              r.kind === "same"
+                                ? styles.srBadgeSame
+                                : styles.srBadgeRel,
+                            )}
+                          >
+                            {r.kind === "same" ? "Same meaning" : "Related"}
+                          </span>
                           <span className={styles.srScoreNum}>
                             {r.score.toFixed(3)}
-                          </span>
-                          <span className={styles.srBar}>
-                            <span
-                              className={styles.srBarFill}
-                              style={{width: `${r.score * 100}%`}}
-                            />
                           </span>
                         </span>
                       </button>
                       {sel === i && (
-                        <div className={styles.srDetail}>
-                          Philippines, {r.year}: <strong>{r.value}</strong>
+                        <div className={styles.srValueStrip}>
+                          <span>Philippines, {r.year}</span>
+                          <strong>{r.value}</strong>
                           <span className={styles.srDetailSrc}>
-                            {' '}
-                            (World Development Indicators)
+                            World Development Indicators
                           </span>
                         </div>
                       )}
                     </li>
-                  );
-                })}
-              </ul>
+                  ))}
+                </ul>
+                {done && (
+                  <div className={styles.srCallout}>
+                    <strong>Same meaning, different words.</strong> “Hungry” and
+                    “food insecurity” describe the same condition, and no title
+                    shares a word with the query.
+                  </div>
+                )}
+              </>
             )}
           </>
         ) : (
           <>
             <pre className={styles.srTerminal}>
               {step === 0 ? sink(REQ1, typed) : REQ1}
-              {step === 0 && <span className={styles.srCaret} aria-hidden="true" />}
+              {step === 0 && (
+                <span className={styles.srCaret} aria-hidden="true" />
+              )}
             </pre>
             {step === 1 && (
               <div className={styles.srStatus}>Waiting for the server…</div>
@@ -267,33 +325,44 @@ export default function SearchEvidence({active = true}) {
         )}
       </div>
 
-      <div className={styles.srFoot}>
-        <p className={styles.srNote}>
-          {done
-            ? mode === 'person'
-              ? 'No title contains a word from the query. The top two are food insecurity indicators and the next two are related consumption measures. Select a result to see its Philippines value.'
-              : 'The agent searches, then retrieves the value for the top result. Any MCP client can make these calls.'
-            : ' '}
-        </p>
-        <div className={styles.srActions}>
-          {mode === 'agent' && done && (
-            <button type="button" className={styles.pcnReplay} onClick={handleCopy}>
-              {copied ? 'Copied' : 'Copy'}
+      {mode === "agent" && (
+        <div className={styles.srFoot}>
+          <p className={styles.srNote}>
+            {done && mode === "agent"
+              ? "The agent searches, then retrieves the value for the top result. Any MCP client can make these calls."
+              : " "}
+          </p>
+          <div className={styles.srActions}>
+            {mode === "agent" && done && (
+              <button
+                type="button"
+                className={styles.pcnReplay}
+                onClick={handleCopy}
+              >
+                {copied ? "Copied" : "Copy"}
+              </button>
+            )}
+            <button
+              type="button"
+              className={styles.pcnReplay}
+              onClick={() => setRun((r) => r + 1)}
+            >
+              ↻ Replay
             </button>
-          )}
-          <button
-            type="button"
-            className={styles.pcnReplay}
-            onClick={() => setRun((r) => r + 1)}>
-            ↻ Replay
-          </button>
+          </div>
         </div>
-      </div>
-      <span className={styles.pcnFine}>
-        Ranking computed with avsolatorio/GIST-all-MiniLM-L6-v2 over the names
-        of the 1,498 WDI indicators. Values are the latest available for the
-        Philippines.
-      </span>
+      )}
+      <p className={styles.srMeta}>
+        <span>
+          Model <code>avsolatorio/GIST-all-MiniLM-L6-v2</code>
+        </span>
+        <span>
+          Index <code>names of 1,498 WDI indicators</code>
+        </span>
+        <span>
+          Values <code>WDI, latest year, Philippines</code>
+        </span>
+      </p>
     </div>
   );
 }
