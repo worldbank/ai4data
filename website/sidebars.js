@@ -9,6 +9,7 @@ const sidebars = {
       defaultStyle: true,
     },
     'introduction',
+    'ai-ready-framework',
     'gsbpm-mapping',
 
     {

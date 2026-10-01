@@ -22,6 +22,11 @@ The phase and sub-process names follow GSBPM version 5.1. Confirm the numbering 
 | Proof-Carrying Numbers | 6.2 (validate outputs) and 7.2 (produce dissemination products) | Checks each number in an AI-generated answer against the official record before it is shown |
 | [Monitoring of Data Use](data_use/data_use.md) | 8.1 (gather evaluation inputs), 8.2 (conduct evaluation), and 7.5 (manage user support) | Identifies where datasets are cited in reports and papers |
 | [Inclusive AI Applications](inclusive-ai/inclusive-ai.md) | Cross-cutting | Multilingual embedding models and batch inference used by the other workstreams |
+| Statistical classification and coding (in development) | 5.2 (classify and code) | AI-assisted coding of survey responses and records against standard classifications, with human review |
+| Synthetic data (in development) | 6.4 (apply disclosure control) | Privacy-preserving synthetic microdata for sharing and methodological research |
+| Global Question Bank (in development) | 2.2 (design variable descriptions) | Multilingual semantic mappings of survey questions and variables across surveys and countries |
+| AI-ready metadata and standards, and AI-assisted metadata platforms (in development) | Overarching: metadata management. Applied at 7.1 (update output systems) | Implementation guidance for metadata standards, and AI-assisted metadata creation and search in the Metadata Editor and NADA |
+| Responsible AI guidance (in development) | Overarching: quality management | Guidance and evaluation methods for using AI in official statistics |
 
 ---
 
@@ -29,20 +34,20 @@ The phase and sub-process names follow GSBPM version 5.1. Confirm the numbering 
 
 | Phase | Workstreams |
 |---|---|
-| 1. Specify needs | None yet |
-| 2. Design | Metadata Augmentation (2.2) |
-| 3. Build | None yet |
-| 4. Collect | None yet |
-| 5. Process | Metadata Augmentation (5.2), Anomaly Detection (5.3) |
-| 6. Analyse | Anomaly Detection (6.2, 6.3), Proof-Carrying Numbers (6.2), Metadata Quality (6.5) |
-| 7. Disseminate | Metadata Quality (7.1), Data Discoverability, MCP, Proof-Carrying Numbers, Monitoring of Data Use (7.5) |
+| 1. Specify needs | Open area |
+| 2. Design | Metadata Augmentation (2.2), Global Question Bank (2.2, in development) |
+| 3. Build | Open area |
+| 4. Collect | Open area |
+| 5. Process | Metadata Augmentation (5.2), Anomaly Detection (5.3), Statistical classification and coding (5.2, in development) |
+| 6. Analyse | Anomaly Detection (6.2, 6.3), Proof-Carrying Numbers (6.2), Metadata Quality (6.5), Synthetic data (6.4, in development) |
+| 7. Disseminate | Metadata Quality (7.1), Data Discoverability, MCP, Proof-Carrying Numbers, Monitoring of Data Use (7.5), AI-assisted metadata platforms (7.1, in development) |
 | 8. Evaluate | Monitoring of Data Use |
-| Overarching | Metadata management, quality management |
+| Overarching | Metadata management, quality management (including responsible AI guidance, in development) |
 
-Most of the current work sits in phases 5 to 8, where the data and metadata already exist and the task is to validate, explain, publish, and track them. Phases 1 to 4 are open areas. Candidate applications there include assisting with questionnaire design and concept harmonization (phases 2 and 3), and supporting data collection with automated checks (phase 4).
+Most of the released work sits in phases 5 to 8, where the data and metadata already exist and the task is to validate, explain, publish, and track them. The work in development extends into phase 5 (classification and coding), phase 6 (synthetic data), and phase 2 (the Global Question Bank). Phases 1, 3, and 4 are open areas. Candidate applications there include assisting with questionnaire design and concept harmonization (phases 1 to 3), and supporting data collection with automated checks (phase 4).
 
 ---
 
-## How this relates to the data lifecycle on the home page
+## How this relates to the AI-ready data framework
 
-The home page groups the workstreams into three stages: metadata quality and enrichment, discovery and access, and monitoring and trust. The stages are a simplified view for general readers. Roughly, stage 1 corresponds to the overarching metadata processes and phases 2 and 5, stage 2 to phase 7, and stage 3 to phases 5, 6, and 8.
+The [AI-ready data framework](ai-ready-framework.md) organizes the program by what AI needs from data: findable, accessible, interoperable, reusable, trustworthy, and inclusive. The GSBPM mapping is a complementary view. It shows where in the statistical production process each workstream applies, so that statistical organizations can place the tools in their own process.
