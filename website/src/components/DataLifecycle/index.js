@@ -7,39 +7,70 @@ const Stages = [
     step: '01',
     moment: 'Data and metadata are created',
     label: 'Metadata Quality & Enrichment',
-    description:
-      'LLMs score metadata completeness and consistency and cluster survey variables into thematic groups.',
     workstreams: [
       {
         title: 'Generative AI for Metadata Quality',
+        gsbpm: 'Metadata management',
         to: '/docs/metadata-quality/generative-ai-for-metadata-quality',
+        description:
+          'Scores metadata on four dimensions: completeness, semantic alignment, specificity, and consistency. The LLM output is structured and auditable.',
       },
-      {title: 'Metadata Augmentation', to: '/docs/metadata-augmentation/'},
+      {
+        title: 'Metadata Augmentation',
+        gsbpm: '5.2',
+        to: '/docs/metadata-augmentation/',
+        description:
+          'Organizes hundreds of survey variables into DDI-style thematic groups using semantic clustering.',
+      },
     ],
   },
   {
     step: '02',
     moment: 'Data is published and searched',
     label: 'Discovery & Access',
-    description:
-      'Semantic search matches the intent of a query, and the Model Context Protocol lets AI clients query catalogs directly.',
     workstreams: [
-      {title: 'Data Discoverability', to: '/docs/data-discoverability/'},
-      {title: 'Model Context Protocol', to: '/docs/mcp/'},
+      {
+        title: 'Data Discoverability',
+        gsbpm: '7.2, 7.5',
+        to: '/docs/data-discoverability/',
+        description:
+          'Conceptual search returns food insecurity indicators for the query “how many people go hungry”, although none of their titles contains those words.',
+      },
+      {
+        title: 'Model Context Protocol',
+        gsbpm: '7.2, 7.3',
+        to: '/docs/mcp/',
+        description:
+          'An MCP server that any compatible AI client, such as Claude, ChatGPT, or a custom agent, can call.',
+      },
     ],
   },
   {
     step: '03',
     moment: 'Data is used, revised, and tracked over time',
     label: 'Monitoring & Trust',
-    description:
-      'Statistical detectors flag anomalies, and LLMs explain them with cited evidence. NER pipelines trace where datasets are cited in research and policy.',
     workstreams: [
       {
         title: 'Anomaly Detection and Explanation',
+        gsbpm: '5.3, 6.2, 6.3',
         to: '/docs/anomaly-detection/',
+        description:
+          'Classifies flagged anomalies as an external driver, data error, measurement update, or insufficient data, and cites the evidence.',
       },
-      {title: 'Monitoring of Data Use', to: '/docs/data_use/'},
+      {
+        title: 'Monitoring of Data Use',
+        gsbpm: '8.1, 8.2',
+        to: '/docs/data_use/',
+        description:
+          'Extracts dataset mentions from reports and papers with zero-shot NER, including name variants such as “WDI” and “World Development Indicators.”',
+      },
+      {
+        title: 'Proof-Carrying Numbers',
+        gsbpm: '6.2, 7.2',
+        to: 'https://arxiv.org/abs/2509.06902',
+        description:
+          'Checks each number in a chatbot answer against the official record and marks it as verified or flagged.',
+      },
     ],
   },
 ];
@@ -56,7 +87,9 @@ export default function DataLifecycle() {
           <p className={styles.lede}>
             Data becomes AI-ready gradually, as it is documented, made
             discoverable, and shown to be trustworthy over time. Each stage
-            below lists the workstreams that apply AI at that point.
+            below lists the workstreams that apply AI at that point. Each
+            workstream has its own methodology, pipeline code, and
+            documentation.
           </p>
         </div>
 
@@ -70,14 +103,23 @@ export default function DataLifecycle() {
               <Heading as="h3" className={styles.stageLabel}>
                 {stage.label}
               </Heading>
-              <p className={styles.stageDescription}>{stage.description}</p>
-              <div className={styles.stageTags}>
+              <ul className={styles.workstreams}>
                 {stage.workstreams.map((w) => (
-                  <Link className={styles.tag} to={w.to} key={w.title}>
-                    {w.title}
-                  </Link>
+                  <li key={w.title}>
+                    <Link className={styles.workstream} to={w.to}>
+                      <span className={styles.workstreamTitle}>{w.title}</span>
+                      {w.gsbpm && (
+                        <span className={styles.gsbpm}>
+                          {/^\d/.test(w.gsbpm) ? `GSBPM ${w.gsbpm}` : w.gsbpm}
+                        </span>
+                      )}
+                      <span className={styles.workstreamBody}>
+                        {w.description}
+                      </span>
+                    </Link>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           ))}
         </div>
@@ -87,10 +129,21 @@ export default function DataLifecycle() {
             Enabling Capabilities used at every stage
           </span>
           <Link className={styles.foundationLink} to="/docs/inclusive-ai/">
-            Inclusive AI Applications: multilingual models covering 50+
-            languages →
+            <span className={styles.foundationTitle}>
+              Inclusive AI Applications →
+            </span>
+            <span className={styles.foundationBody}>
+              Multilingual embedding models covering 50+ languages, and batch
+              inference at roughly half the cost of synchronous calls.
+            </span>
           </Link>
         </div>
+
+        <p className={styles.gsbpmNote}>
+          Tags such as GSBPM 6.3 show where a workstream applies in the Generic
+          Statistical Business Process Model.{' '}
+          <Link to="/docs/gsbpm-mapping">See the full mapping →</Link>
+        </p>
       </div>
     </section>
   );

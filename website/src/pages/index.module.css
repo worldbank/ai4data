@@ -4,6 +4,27 @@
   border-bottom: 1px solid var(--hairline);
 }
 
+.heroGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+  gap: 3.5rem;
+  align-items: center;
+}
+
+@media screen and (max-width: 996px) {
+  .heroGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .heroVisual {
+    display: none;
+  }
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
 .heroInner {
   max-width: 42rem;
 }

@@ -1,0 +1,203 @@
+.wrap {
+  position: relative;
+  display: flex;
+  gap: 1rem;
+  padding: 1.25rem 1.25rem 1.25rem 0.5rem;
+  background: var(--surface-1);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+}
+
+.rail {
+  position: relative;
+  flex: 0 0 3px;
+  margin: 1.4rem 0 1.4rem 1rem;
+  background: var(--hairline);
+  border-radius: 2px;
+}
+
+.railFill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: var(--primary);
+  border-radius: 2px;
+  transition: height 0.5s ease;
+}
+
+.cards {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.85rem 1rem;
+  font: inherit;
+  text-align: left;
+  color: var(--ink-muted);
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  opacity: 0.62;
+  cursor: pointer;
+  transition: opacity 0.35s, border-color 0.35s, transform 0.35s;
+}
+
+.cardActive {
+  color: var(--ink);
+  border-color: var(--primary);
+  opacity: 1;
+  transform: translateX(6px);
+}
+
+.step {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.kicker {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.line {
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.field {
+  display: block;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.66rem;
+  color: var(--ink-muted);
+}
+
+.warn {
+  padding: 0 0.15rem;
+  background: #fbead3;
+  border-radius: 2px;
+}
+
+.del {
+  color: var(--ink-muted);
+}
+
+.ins {
+  padding: 0 0.15rem;
+  margin-left: 0.15rem;
+  text-decoration: none;
+  color: var(--primary);
+  background: var(--primary-subtle);
+  border-radius: 2px;
+}
+
+.chip {
+  align-self: flex-start;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+  background: var(--surface-2);
+  border-radius: 999px;
+  transition: background 0.3s, color 0.3s;
+}
+
+.chipOn {
+  color: var(--primary);
+  background: var(--primary-subtle);
+}
+
+.search {
+  font-size: 0.88rem;
+  color: var(--ink);
+}
+
+.result {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.25rem;
+}
+
+.code {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.resultName {
+  font-size: 0.82rem;
+  color: var(--ink);
+}
+
+.bar {
+  display: block;
+  height: 4px;
+  background: var(--surface-2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.barFill {
+  display: block;
+  height: 100%;
+  background: var(--primary);
+  transition: width 0.7s ease;
+}
+
+.num {
+  padding: 0 0.25rem;
+  font-weight: 700;
+  background: var(--surface-2);
+  border-radius: 4px;
+  transition: background 0.3s, color 0.3s;
+}
+
+.numOk {
+  color: var(--primary);
+  background: var(--primary-subtle);
+}
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.05rem;
+  height: 1.05rem;
+  margin-left: 0.35rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: var(--primary);
+  border-radius: 50%;
+  vertical-align: 0.05em;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.checkOn {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .railFill,
+  .barFill,
+  .check {
+    transition: none;
+  }
+}

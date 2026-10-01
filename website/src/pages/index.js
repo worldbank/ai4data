@@ -1,38 +1,55 @@
-import clsx from 'clsx';
-import Link from '@docusaurus/Link';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import Layout from '@theme/Layout';
-import Heading from '@theme/Heading';
-import ScaleBand from '@site/src/components/ScaleBand';
-import DataLifecycle from '@site/src/components/DataLifecycle';
-import ScrollDemo from '@site/src/components/ScrollDemo';
-import HomepageFeatures from '@site/src/components/HomepageFeatures';
-import GetInvolved from '@site/src/components/GetInvolved';
+import clsx from "clsx";
+import Link from "@docusaurus/Link";
+import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
+import Layout from "@theme/Layout";
+import Heading from "@theme/Heading";
+import ScaleBand from "@site/src/components/ScaleBand";
+import DataLifecycle from "@site/src/components/DataLifecycle";
+import ScrollDemo from "@site/src/components/ScrollDemo";
+import HeroVisual from "@site/src/components/HeroVisual";
+import GetInvolved from "@site/src/components/GetInvolved";
 
-import styles from './index.module.css';
+import styles from "./index.module.css";
 
 function HomepageHeader() {
-  const {siteConfig} = useDocusaurusContext();
+  const { siteConfig } = useDocusaurusContext();
   return (
     <header className={styles.heroBanner}>
       <div className="container">
-        <div className={styles.heroInner}>
-          <span className="eyebrow">World Bank Development Data Group</span>
-          <Heading as="h1" className={styles.heroTitle}>
-            Making development data <strong>AI-ready.</strong>
-          </Heading>
-          <p className={styles.heroSubtitle}>{siteConfig.tagline}</p>
-          <div className={styles.buttons}>
-            <Link
-              className={clsx('button button--lg', styles.primaryButton)}
-              to="/docs/introduction">
-              Read the Documentation
-            </Link>
-            <Link
-              className={clsx('button button--lg', styles.secondaryButton)}
-              to="https://github.com/worldbank/ai4data">
-              View on GitHub
-            </Link>
+        <div className={styles.heroGrid}>
+          <div className={styles.heroInner}>
+            <span className="eyebrow">World Bank Development Data Group</span>
+            <Heading as="h1" className={styles.heroTitle}>
+              Making development data <strong>AI-ready.</strong>
+            </Heading>
+            <p className={styles.heroSubtitle}>
+              {siteConfig.tagline.split(/(AI-ready)/).map((part, i) =>
+                part === "AI-ready" ? (
+                  <span className={styles.nowrap} key={i}>
+                    {part}
+                  </span>
+                ) : (
+                  part
+                ),
+              )}
+            </p>
+            <div className={styles.buttons}>
+              <Link
+                className={clsx("button button--lg", styles.primaryButton)}
+                to="/docs/introduction"
+              >
+                Read the Documentation
+              </Link>
+              <Link
+                className={clsx("button button--lg", styles.secondaryButton)}
+                to="https://github.com/worldbank/ai4data"
+              >
+                View on GitHub
+              </Link>
+            </div>
+          </div>
+          <div className={styles.heroVisual}>
+            <HeroVisual />
           </div>
         </div>
       </div>
@@ -45,7 +62,7 @@ function ClosingCta() {
     <section className={styles.closing}>
       <div className="container">
         <div className={styles.closingInner}>
-          <span className="eyebrow" style={{color: '#7ba7f2'}}>
+          <span className="eyebrow" style={{ color: "#7ba7f2" }}>
             Open Source
           </span>
           <Heading as="h2" className={styles.closingTitle}>
@@ -53,16 +70,14 @@ function ClosingCta() {
           </Heading>
           <p className={styles.closingText}>
             Every workstream on this site is released as Python tooling with
-            documentation that covers the methodology, the pipeline code,
-            and the API reference.
+            documentation that covers the methodology, the pipeline code, and
+            the API reference.
           </p>
           <div className={styles.buttons}>
             <Link
-              className={clsx(
-                'button button--lg',
-                styles.closingButtonPrimary,
-              )}
-              to="https://github.com/worldbank/ai4data">
+              className={clsx("button button--lg", styles.closingButtonPrimary)}
+              to="https://github.com/worldbank/ai4data"
+            >
               Explore the Repository
             </Link>
           </div>
@@ -73,17 +88,17 @@ function ClosingCta() {
 }
 
 export default function Home() {
-  const {siteConfig} = useDocusaurusContext();
+  const { siteConfig } = useDocusaurusContext();
   return (
     <Layout
       title={siteConfig.title}
-      description="A World Bank Development Data Group program applying AI across the development data lifecycle to make development data AI-ready.">
+      description="A World Bank Development Data Group program applying AI across the development data lifecycle to make development data AI-ready."
+    >
       <HomepageHeader />
       <main>
         <ScaleBand />
         <DataLifecycle />
         <ScrollDemo />
-        <HomepageFeatures />
         <GetInvolved />
         <ClosingCta />
       </main>
