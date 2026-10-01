@@ -19,20 +19,14 @@ function HomepageHeader() {
       <div className="container">
         <div className={styles.heroGrid}>
           <div className={styles.heroInner}>
-            <span className="eyebrow">World Bank Development Data Group</span>
+            <Link className="eyebrow" to="https://www.worldbank.org/en/about/unit/unit-dec/dev">
+              World Bank Development Data Group
+            </Link>
             <Heading as="h1" className={styles.heroTitle}>
               Making development data <strong>AI-ready.</strong>
             </Heading>
             <p className={styles.heroSubtitle}>
-              {siteConfig.tagline.split(/(AI-ready)/).map((part, i) =>
-                part === "AI-ready" ? (
-                  <span className={styles.nowrap} key={i}>
-                    {part}
-                  </span>
-                ) : (
-                  part
-                ),
-              )}
+              {siteConfig.tagline}
             </p>
             <div className={styles.buttons}>
               <Link
@@ -89,7 +83,7 @@ export default function Home() {
   return (
     <Layout
       title={siteConfig.title}
-      description="A World Bank program that applies AI to the production and dissemination of development data and prepares that data for use by AI systems."
+      description={siteConfig.tagline}
     >
       <HomepageHeader />
       <main>

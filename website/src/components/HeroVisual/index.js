@@ -2,10 +2,10 @@ import {useEffect, useState} from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.css';
 
-// Each stage shows a real artifact from the examples further down the page:
-// the quick-start metadata record, a WDI semantic search result, and a
-// verified number from the PCN example.
-const STEP_MS = 3200;
+// One indicator followed through three steps. The indicator name and the
+// Philippines value come from the WDI API (SN.ITK.SVFI.ZS, 2023). The typo in
+// the first step is an illustrative metadata issue.
+const STEP_MS = [3400, 3400, 5200];
 
 export default function HeroVisual() {
   const [active, setActive] = useState(0);
@@ -19,96 +19,119 @@ export default function HeroVisual() {
     if (paused || reduce) {
       return undefined;
     }
-    const t = setInterval(() => setActive((a) => (a + 1) % 3), STEP_MS);
-    return () => clearInterval(t);
-  }, [paused]);
+    const t = setTimeout(() => setActive((a) => (a + 1) % 3), STEP_MS[active]);
+    return () => clearTimeout(t);
+  }, [paused, active]);
 
-  const fixed = active === 0;
+  const verified = active === 2;
 
   return (
     <div
       className={styles.wrap}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      aria-label="Three stages of the data lifecycle with example outputs">
-      <div className={styles.rail} aria-hidden="true">
-        <span
-          className={styles.railFill}
-          style={{height: `${(active / 2) * 100}%`}}
-        />
-      </div>
+      aria-label="One indicator followed through three steps: fix the metadata, find it by meaning, check the number">
+      <div className={styles.header}>One indicator, three steps</div>
 
-      <div className={styles.cards}>
-        <button
-          type="button"
-          className={clsx(styles.card, active === 0 && styles.cardActive)}
-          onClick={() => setActive(0)}>
-          <span className={styles.step}>01</span>
-          <span className={styles.kicker}>Metadata quality</span>
-          <span className={styles.line}>
+      <div className={styles.body}>
+        <div className={styles.rail} aria-hidden="true">
+          <span
+            className={styles.railFill}
+            style={{height: `${(active / 2) * 100}%`}}
+          />
+        </div>
+
+        <div className={styles.cards}>
+          <button
+            type="button"
+            className={clsx(styles.card, active === 0 && styles.cardActive)}
+            onClick={() => setActive(0)}>
+            <span className={styles.title}>
+              <span className={styles.step}>1</span>
+              Fix the metadata
+            </span>
             <span className={styles.field}>name</span>
-            GDP per capita (
-            {fixed ? (
-              <>
-                <del className={styles.del}>curent</del>
-                <ins className={styles.ins}>current</ins>
-              </>
-            ) : (
-              <span className={styles.warn}>curent</span>
-            )}{' '}
-            US$)
-          </span>
-          <span className={clsx(styles.chip, fixed && styles.chipOn)}>
-            {fixed ? 'Typo / Language fixed' : 'Typo / Language, severity 2/5'}
-          </span>
-        </button>
+            <span className={styles.line}>
+              Prevalence of severe food{' '}
+              {active === 0 ? (
+                <>
+                  <del className={styles.del}>insecurty</del>
+                  <ins className={styles.ins}>insecurity</ins>
+                </>
+              ) : (
+                <span className={styles.plain}>insecurity</span>
+              )}{' '}
+              (%)
+            </span>
+            <span className={clsx(styles.chip, active === 0 && styles.chipOn)}>
+              Typo corrected
+            </span>
+          </button>
 
-        <button
-          type="button"
-          className={clsx(styles.card, active === 1 && styles.cardActive)}
-          onClick={() => setActive(1)}>
-          <span className={styles.step}>02</span>
-          <span className={styles.kicker}>Discovery</span>
-          <span className={styles.search}>
-            <span aria-hidden="true">&#8981;</span> how many people go hungry in the Philippines
-          </span>
-          <span className={styles.result}>
+          <button
+            type="button"
+            className={clsx(styles.card, active === 1 && styles.cardActive)}
+            onClick={() => setActive(1)}>
+            <span className={styles.title}>
+              <span className={styles.step}>2</span>
+              Find it by meaning
+            </span>
+            <span className={styles.search}>
+              <span aria-hidden="true">&#8981;</span> how many people go hungry
+              in the Philippines
+            </span>
+            <span className={styles.line}>
+              Prevalence of severe food insecurity (%)
+            </span>
             <span className={styles.code}>SN.ITK.SVFI.ZS</span>
-            <span className={styles.resultName}>
-              Prevalence of severe food insecurity
-            </span>
-            <span className={styles.bar}>
-              <span
-                className={styles.barFill}
-                style={{width: active === 1 ? '80%' : '0%'}}
-              />
-            </span>
-          </span>
-        </button>
+          </button>
 
-        <button
-          type="button"
-          className={clsx(styles.card, active === 2 && styles.cardActive)}
-          onClick={() => setActive(2)}>
-          <span className={styles.step}>03</span>
-          <span className={styles.kicker}>Trust</span>
-          <span className={styles.line}>
-            Philippines, 2023:{' '}
-            <span className={clsx(styles.num, active === 2 && styles.numOk)}>
-              3%
+          <button
+            type="button"
+            className={clsx(styles.card, active === 2 && styles.cardActive)}
+            onClick={() => setActive(2)}>
+            <span className={styles.title}>
+              <span className={styles.step}>3</span>
+              Check the number
             </span>
-            <span
-              className={clsx(styles.check, active === 2 && styles.checkOn)}
-              aria-hidden="true">
-              ✓
+            <span className={styles.line}>
+              Philippines, 2023:{' '}
+              <span className={clsx(styles.proof, verified && styles.proofOn)}>
+                <span className={clsx(styles.num, verified && styles.numOk)}>
+                  3%
+                </span>
+                <span
+                  className={clsx(styles.check, verified && styles.checkOn)}
+                  aria-hidden="true">
+                  ✓
+                </span>
+                <span className={styles.popover} role="tooltip">
+                  <span className={styles.popTitle}>Verified data</span>
+                  <span className={styles.popGrid}>
+                    <span>Indicator</span>
+                    <span>Prevalence of severe food insecurity (%)</span>
+                    <span>Country</span>
+                    <span>Philippines</span>
+                    <span>Date</span>
+                    <span>2023</span>
+                    <span>Source value</span>
+                    <span>3</span>
+                    <span>Source</span>
+                    <span>World Development Indicators</span>
+                    <span>Display rule</span>
+                    <span>Match at 1 decimal place</span>
+                  </span>
+                </span>
+              </span>
             </span>
-          </span>
-          <span className={clsx(styles.chip, active === 2 && styles.chipOn)}>
-            {active === 2
-              ? 'Verified against the WDI record'
-              : 'Awaiting verification'}
-          </span>
-        </button>
+            <span className={clsx(styles.chip, verified && styles.chipOn)}>
+              {verified ? 'Verified against WDI' : 'Source: WDI'}
+            </span>
+            {verified && (
+              <span className={styles.hint}>Hover over 3% to see the proof</span>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );

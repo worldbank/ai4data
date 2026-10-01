@@ -11,7 +11,7 @@ const repoRoot = path.resolve(__dirname, '..');
 const config = {
   title: 'AI for Data - Data for AI',
   tagline:
-    'A World Bank program that applies AI to the production and dissemination of development data and prepares that data for use by AI systems.',
+    'The AI for Data – Data for AI program applies AI to producing, reviewing, and sharing development data. It also prepares that data so AI systems can find, interpret, and cite it correctly.',
   favicon: 'img/favicon.ico',
 
   future: {
@@ -106,12 +106,12 @@ const config = {
         copyright: `
           <div class="fb-brand">
             <strong>AI for Data - Data for AI</strong>
-            <span>Development Data Group · World Bank Group</span>
+            <span><a href="https://www.worldbank.org/en/about/unit/unit-dec/dev">Development Data Group</a> · World Bank Group</span>
             <a href="mailto:ai4data@worldbank.org">ai4data@worldbank.org</a>
           </div>
           <div class="fb-legal">
             <div>Country borders or names do not necessarily reflect the World Bank Group's official position. All maps are for illustrative purposes and do not imply the expression of any opinion on the part of the World Bank, concerning the legal status of any country or territory or concerning the delimitation of frontiers or boundaries.</div>
-            <div>All content (unless otherwise specified) is subject to the <a href="https://opensource.org/license/mit">MIT License</a>. Copyright © ${new Date().getFullYear()} World Bank Group, Development Data Group.</div>
+            <div>All content (unless otherwise specified) is subject to the <a href="https://opensource.org/license/mit">MIT License</a>. Copyright © ${new Date().getFullYear()} World Bank Group, <a href="https://www.worldbank.org/en/about/unit/unit-dec/dev">Development Data Group</a>.</div>
           </div>
         `,
       },

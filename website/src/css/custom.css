@@ -101,6 +101,11 @@ html {
   color: var(--primary);
 }
 
+a.eyebrow:hover {
+  text-decoration: underline;
+  color: var(--primary);
+}
+
 /* ---------- Navbar ---------- */
 
 .navbar {
