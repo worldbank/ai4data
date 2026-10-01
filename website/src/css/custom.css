@@ -237,7 +237,7 @@ div[class*='codeBlockContainer'] {
    legal block below. The copyright HTML supplies .fb-brand and .fb-legal;
    display: contents lets them join the container's grid. */
 .footer {
-  padding: 1.1rem 0 0.9rem;
+  padding: 0.7rem 0 0.6rem;
   font-size: 0.85rem;
 }
 .footer .container {
@@ -247,7 +247,7 @@ div[class*='codeBlockContainer'] {
     'brand links'
     'legal legal';
   column-gap: 2rem;
-  row-gap: 0.75rem;
+  row-gap: 0.4rem;
 }
 .footer__links {
   grid-area: links;
@@ -271,8 +271,9 @@ div[class*='codeBlockContainer'] {
 .fb-brand {
   grid-area: brand;
   display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.1rem 1rem;
   text-align: left;
 }
 .fb-brand strong {
@@ -282,9 +283,9 @@ div[class*='codeBlockContainer'] {
 .fb-legal {
   grid-area: legal;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding-top: 0.6rem;
-  font-size: 0.7rem;
-  line-height: 1.45;
+  padding-top: 0.45rem;
+  font-size: 0.68rem;
+  line-height: 1.4;
   text-align: left;
 }
 @media screen and (max-width: 700px) {
