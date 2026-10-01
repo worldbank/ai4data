@@ -12,3 +12,7 @@ data/source/
 # Fresh API runs are local by default; checked-in paper outputs live in artifacts/.
 runs/
 
+# Notebook-local copies of the checked-in discovery evidence.
+!notebooks/schema_discovery/data/
+!notebooks/schema_discovery/data/*.jsonl
+
