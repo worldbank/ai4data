@@ -59,7 +59,7 @@ The program organizes the characteristics of AI-ready data in three groups.
 
 The program also develops an AI-readiness assessment framework for national statistical organizations. It assesses both the institution and the data products and services the institution provides. It has two pillars and twelve dimensions, with 69 questions plus a gateway question, and places each dimension on one of four maturity levels (A to D). Each question maps to the recommendations of the Committee for the Coordination of Statistical Activities (CCSA) for national statistical organizations.
 
-The [AI-readiness assessment page](pathname:///ai-readiness-assessment/) describes the pillars, lists the dimensions, and shows how the results form a readiness profile.
+The [AI-readiness assessment page](/ai-readiness-assessment) describes the pillars, lists the dimensions, and shows how the results form a readiness profile.
 
 ---
 

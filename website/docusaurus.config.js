@@ -86,8 +86,7 @@ const config = {
             label: 'Documentation',
           },
           {
-            to: 'pathname:///ai-readiness-assessment/',
-            target: '_self',
+            to: '/ai-readiness-assessment',
             label: 'AI-readiness assessment',
             position: 'left',
           },
@@ -103,7 +102,7 @@ const config = {
         links: [
           {label: 'Introduction', to: '/docs/introduction'},
           {label: 'Partnerships', to: '/docs/partnerships/'},
-          {label: 'AI-readiness assessment', to: 'pathname:///ai-readiness-assessment/', target: '_self'},
+          {label: 'AI-readiness assessment', to: '/ai-readiness-assessment'},
           {label: 'GitHub', href: 'https://github.com/worldbank/ai4data'},
           {
             label: 'Issues',

@@ -20,10 +20,7 @@ function Row({w, showGsbpm}) {
     </>
   );
   return w.to ? (
-    <Link
-      className={clsx(styles.row, styles.rowLink)}
-      to={w.to}
-      target={w.to.startsWith('pathname:') ? '_self' : undefined}>
+    <Link className={clsx(styles.row, styles.rowLink)} to={w.to}>
       {body}
     </Link>
   ) : (
@@ -63,7 +60,7 @@ export default function Program() {
             systems as consumers of data. Browse the workstreams by pillar or
             by the AI-ready dimension they improve. The program also develops
             an{' '}
-            <Link to="pathname:///ai-readiness-assessment/" target="_self">
+            <Link to="/ai-readiness-assessment">
               AI-readiness assessment framework
             </Link>{' '}
             for national statistical organizations.

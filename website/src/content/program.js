@@ -101,7 +101,7 @@ export const workstreams = {
   },
   assessment: {
     title: 'AI-readiness assessment framework',
-    to: 'pathname:///ai-readiness-assessment/',
+    to: '/ai-readiness-assessment',
     description:
       'Assesses the AI readiness of national statistical organizations across two pillars and twelve dimensions, covering both the institution and the data products and services it provides.',
   },

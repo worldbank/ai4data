@@ -30,7 +30,7 @@ The phase and sub-process names follow GSBPM version 5.1. Confirm the numbering 
 | [Data Snapshots](https://arxiv.org/abs/2606.06242) | 4.3 (run collection) and 5.1 (integrate data) | Locates figures and tables in PDF documents so that the data they contain can be extracted as structured data |
 | Small and Agentic AI | Cross-cutting | Small language models and agentic workflows for statistical processes and specialized tasks, and AI assistants built on them |
 | Ontologies and knowledge graphs | Overarching: metadata management | Shared concept definitions and links between indicators, variables, and datasets |
-| [AI-readiness assessment framework](pathname:///ai-readiness-assessment/) | Overarching: quality management | Assesses the readiness of an organization and of its data products and services for AI |
+| [AI-readiness assessment framework](/ai-readiness-assessment) | Overarching: quality management | Assesses the readiness of an organization and of its data products and services for AI |
 
 ---
 
