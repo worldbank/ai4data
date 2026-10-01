@@ -20,7 +20,10 @@ function Row({w, showGsbpm}) {
     </>
   );
   return w.to ? (
-    <Link className={clsx(styles.row, styles.rowLink)} to={w.to}>
+    <Link
+      className={clsx(styles.row, styles.rowLink)}
+      to={w.to}
+      target={w.to.startsWith('pathname:') ? '_self' : undefined}>
       {body}
     </Link>
   ) : (
@@ -58,7 +61,12 @@ export default function Program() {
           <p className={styles.lede}>
             The program builds on the FAIR principles and extends them for AI
             systems as consumers of data. Browse the workstreams by pillar or
-            by the AI-ready dimension they improve.
+            by the AI-ready dimension they improve. The program also develops
+            an{' '}
+            <Link to="pathname:///ai-readiness-assessment/" target="_self">
+              AI-readiness assessment framework
+            </Link>{' '}
+            for national statistical organizations.
           </p>
         </div>
 

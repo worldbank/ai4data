@@ -99,6 +99,12 @@ export const workstreams = {
     description:
       'Defines the attributes of AI-ready data under FAIR+ and maps each dimension to the workstreams of the program.',
   },
+  assessment: {
+    title: 'AI-readiness assessment framework',
+    to: 'pathname:///ai-readiness-assessment/',
+    description:
+      'Assesses the AI readiness of national statistical organizations across two pillars and twelve dimensions, covering both the institution and the data products and services it provides.',
+  },
   standards: {
     title: 'AI-ready metadata and standards',
     description:
@@ -160,6 +166,10 @@ export const pillars = [
     label: 'Data for AI',
     lede: 'Make development data discoverable, interpretable, and usable by AI systems through open standards and infrastructure.',
     groups: [
+      {
+        label: 'Assessment',
+        items: ['assessment'],
+      },
       {
         label: 'Standards and metadata',
         items: ['framework', 'standards'],

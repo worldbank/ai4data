@@ -12,12 +12,12 @@ The program builds on the FAIR principles (findable, accessible, interoperable, 
 
 | Dimension | Question for AI | Attributes covered | Workstreams |
 |---|---|---|---|
-| Findable | Can AI find the right data? | Data discoverability, comprehensive metadata | [Data Discoverability](data-discoverability/data-discoverability.md), [Metadata Augmentation](metadata-augmentation/index.md), open benchmarks (in development) |
-| Accessible | Can AI retrieve it, with context? | Openly accessible, machine-readable, real-time accessibility | [Model Context Protocol](mcp/mcp.md), AI-assisted metadata platforms (in development) |
-| Interoperable | Can AI combine and interpret it? | Integrative, machine-understandable, contextual relevance | AI-ready metadata and standards, Global Question Bank, statistical classification (all in development) |
-| Reusable | Is it documented well enough to reuse? | Comprehensive metadata, high data quality, licensing and privacy | [Generative AI for Metadata Quality](metadata-quality/generative-ai-for-metadata-quality.md), [Monitoring of Data Use](data_use/data_use.md), synthetic data (in development) |
-| Trustworthy | Can answers be traced and verified? | High data quality, ethical and governance standards | [Anomaly Detection and Explanation](anomaly-detection/anomaly-detection.md), Proof-Carrying Numbers, responsible AI guidance (in development) |
-| Inclusive | Does it work across languages and countries? | Diversity and representativeness | [Inclusive AI Applications](inclusive-ai/inclusive-ai.md) |
+| Findable | Can AI find the right data? | Data discoverability, comprehensive metadata | [Data Discoverability](data-discoverability/data-discoverability.md), [Metadata Augmentation](metadata-augmentation/index.md), open benchmarks and evaluation |
+| Accessible | Can AI retrieve it, with context? | Openly accessible, machine-readable, real-time accessibility | [Model Context Protocol](mcp/mcp.md), AI-assisted metadata platforms, [Data Snapshots](https://arxiv.org/abs/2606.06242) |
+| Interoperable | Can AI combine and interpret it? | Integrative, machine-understandable, contextual relevance | AI-ready metadata and standards, Global Question Bank, ontologies and knowledge graphs, statistical classification and coding |
+| Reusable | Is it documented well enough to reuse? | Comprehensive metadata, high data quality, licensing and privacy | [Generative AI for Metadata Quality](metadata-quality/generative-ai-for-metadata-quality.md), [Monitoring of Data Use](data_use/data_use.md), [synthetic data](https://github.com/avsolatorio/RealTabFormer) |
+| Trustworthy | Can answers be traced and verified? | High data quality, ethical and governance standards | [Anomaly Detection and Explanation](anomaly-detection/anomaly-detection.md), Proof-Carrying Numbers, responsible AI guidance |
+| Inclusive | Does it work across languages and countries? | Diversity and representativeness | [Inclusive AI Applications](inclusive-ai/inclusive-ai.md), Small and Agentic AI |
 
 ---
 
@@ -55,37 +55,49 @@ The program organizes the characteristics of AI-ready data in three groups.
 
 ---
 
+## AI-readiness assessment framework
+
+The program also develops an AI-readiness assessment framework for national statistical organizations. It assesses both the institution and the data products and services the institution provides. It has two pillars and twelve dimensions, with 69 questions plus a gateway question, and places each dimension on one of four maturity levels (A to D). Each question maps to the recommendations of the Committee for the Coordination of Statistical Activities (CCSA) for national statistical organizations.
+
+The [AI-readiness assessment page](pathname:///ai-readiness-assessment/) describes the pillars, lists the dimensions, and shows how the results form a readiness profile.
+
+---
+
 ## Program structure
 
-The workstreams fall under two pillars. Items marked *in development* are planned or underway and not yet released.
+The workstreams fall under two pillars.
 
 ### AI for Data
 
 AI is applied to produce, curate, and disseminate development data with less manual effort and higher quality.
 
-| Group | Workstream | Status |
-|---|---|---|
-| Data production | Statistical classification and coding | In development |
-| Data production | Synthetic data | In development |
-| Data quality and metadata | [Generative AI for Metadata Quality](metadata-quality/generative-ai-for-metadata-quality.md) | Available |
-| Data quality and metadata | [Metadata Augmentation](metadata-augmentation/index.md) | Available |
-| Data quality and metadata | [Anomaly Detection and Explanation](anomaly-detection/anomaly-detection.md) | Available |
-| Data quality and metadata | Responsible AI guidance | In development |
-| Discovery and trustworthy dissemination | [Data Discoverability](data-discoverability/data-discoverability.md) | Available |
-| Discovery and trustworthy dissemination | Proof-Carrying Numbers | Available |
-| Discovery and trustworthy dissemination | [Monitoring of Data Use](data_use/data_use.md) | Available |
-| Methods and open tools | [Inclusive AI Applications](inclusive-ai/inclusive-ai.md) | Available |
-| Methods and open tools | Open benchmarks and evaluation | In development |
+| Group | Workstream |
+|---|---|
+| Data production | Statistical classification and coding |
+| Data production | [Data Snapshots](https://arxiv.org/abs/2606.06242) |
+| Data production | Small and Agentic AI |
+| Data production | [Synthetic data](https://github.com/avsolatorio/RealTabFormer) |
+| Data quality and metadata | [Generative AI for Metadata Quality](metadata-quality/generative-ai-for-metadata-quality.md) |
+| Data quality and metadata | [Metadata Augmentation](metadata-augmentation/index.md) |
+| Data quality and metadata | [Anomaly Detection and Explanation](anomaly-detection/anomaly-detection.md) |
+| Data quality and metadata | Responsible AI guidance |
+| Discovery and trustworthy dissemination | [Data Discoverability](data-discoverability/data-discoverability.md) |
+| Discovery and trustworthy dissemination | Proof-Carrying Numbers |
+| Discovery and trustworthy dissemination | [Monitoring of Data Use](data_use/data_use.md) |
+| Methods and open tools | [Inclusive AI Applications](inclusive-ai/inclusive-ai.md) |
+| Methods and open tools | Open benchmarks and evaluation |
 
 ### Data for AI
 
 Development data is made discoverable, interpretable, and usable by AI systems through open standards and infrastructure.
 
-| Group | Workstream | Status |
-|---|---|---|
-| Standards and metadata | AI-ready metadata and standards | In development |
-| Infrastructure | [Model Context Protocol](mcp/mcp.md) | Available |
-| Infrastructure | AI-assisted metadata platforms | In development |
-| Semantic knowledge | Global Question Bank | In development |
+| Group | Workstream |
+|---|---|
+| Standards and metadata | [AI-ready data framework](ai-ready-framework.md) |
+| Standards and metadata | AI-ready metadata and standards |
+| Infrastructure | [Model Context Protocol](mcp/mcp.md) |
+| Infrastructure | AI-assisted metadata platforms |
+| Semantic knowledge | Global Question Bank |
+| Semantic knowledge | Ontologies and knowledge graphs |
 
 For where each workstream applies in the statistical production process, see the [mapping to the GSBPM](gsbpm-mapping.md).
