@@ -1,0 +1,642 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>AI-Readiness Framework for NSOs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<style>
+/* Layout: sticky section nav over a single scrolling page; dark hero band, then light content sections, each with one hands-on control. */
+:root{
+  --bg:#f3f8fc; --surface:#ffffff; --surface2:#eaf1f8; --fg:#0d2340; --muted:#4a5e78; --line:#d3dfea;
+  --navy:#0d2340; --on-navy:#f3f8fc; --on-navy-muted:#a9bbd2;
+  --p1:#1769e0; --p1-soft:#e8f0fe; --p1-ink:#0f4fb0;
+  --p2:#00797f; --p2-soft:#e3f7f6; --p2-ink:#00666b;
+  --lvA:#e8a317; --lvB:#00a6a6; --lvC:#1769e0; --lvD:#6e56cf; --lv-off:#dde5ee; --on-lv:#0d2340; --on-accent:#ffffff; --path5:#0d2340;
+  --shadow:0 1px 2px rgba(13,35,64,.06),0 6px 20px rgba(13,35,64,.06);
+  --f-display:'Bricolage Grotesque','Segoe UI',Arial,sans-serif;
+  --f-body:'Figtree','Segoe UI',Arial,sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#08172b; --surface:#0f2440; --surface2:#143050; --fg:#eaf1fa; --muted:#a3b6cc; --line:#24405f;
+  --p1:#6ea8ff; --p1-soft:#12305c; --p1-ink:#9cc3ff;
+  --p2:#3fd0c9; --p2-soft:#0d3a45; --p2-ink:#7fe3de;
+  --on-accent:#08172b; --path5:#143050; --lvA:#f0b332; --lvB:#22c0bd; --lvC:#5b9bff; --lvD:#9a86f0; --lv-off:#233d5a;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#08172b; --surface:#0f2440; --surface2:#143050; --fg:#eaf1fa; --muted:#a3b6cc; --line:#24405f;
+  --p1:#6ea8ff; --p1-soft:#12305c; --p1-ink:#9cc3ff;
+  --p2:#3fd0c9; --p2-soft:#0d3a45; --p2-ink:#7fe3de;
+  --on-accent:#08172b; --path5:#143050; --lvA:#f0b332; --lvB:#22c0bd; --lvC:#5b9bff; --lvD:#9a86f0; --lv-off:#233d5a;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25); color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:auto}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:17px;line-height:1.55;padding-inline:0}
+h1,h2,h3{font-family:var(--f-display);line-height:1.1;margin:0;text-wrap:balance}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
+.wrap{max-width:1120px;margin-inline:auto;padding-inline:20px}
+.eyebrow{font-family:var(--f-mono);font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--p2-ink);font-weight:600}
+
+/* nav */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--navy);color:var(--on-navy)}
+.nav .wrap{display:flex;align-items:center;gap:20px;height:60px}
+.nav img{height:30px;width:auto;background:#fff;border-radius:6px;padding:3px 8px;flex:none}
+.nav nav{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
+.nav nav::-webkit-scrollbar{display:none}
+.nav a{color:var(--on-navy-muted);text-decoration:none;font-size:14px;font-weight:600;padding:8px 12px;border-radius:8px;white-space:nowrap}
+.nav a:hover{color:#fff;background:rgba(255,255,255,.08)}
+.nav .home{flex:none;font-size:13.5px}
+.nav a.on{color:#fff;background:rgba(255,255,255,.14)}
+
+/* hero */
+.hero{background:var(--navy);color:var(--on-navy);overflow:hidden}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:40px;align-items:center;padding-block:56px 64px}
+.hero .eyebrow{color:#7fe3de}
+.hero h1{font-size:clamp(38px,5.6vw,68px);font-weight:700;letter-spacing:-.02em;margin-block:14px 16px}
+.hero .sub{font-size:20px;color:var(--on-navy-muted);max-width:32ch}
+.byline{margin-top:28px;padding-top:18px;border-top:1px solid rgba(255,255,255,.18);font-size:15px;color:var(--on-navy-muted)}
+.byline b{display:block;color:#fff;font-size:17px}
+.hero figure{margin:0;border-radius:18px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.14)}
+.hero figure img{display:block;width:100%;height:auto}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(255,255,255,.16);margin-top:0}
+.facts div{background:var(--navy);padding:18px 20px}
+.facts strong{font-family:var(--f-display);font-size:34px;display:block;line-height:1}
+.facts span{font-size:14px;color:var(--on-navy-muted)}
+
+/* sections */
+section.s{padding-block:76px 12px}
+.s h2{font-size:clamp(28px,3.6vw,42px);letter-spacing:-.015em;margin-block:8px 10px}
+.lede{color:var(--muted);max-width:62ch;font-size:18px}
+.sechead{margin-bottom:28px}
+
+/* cards */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:var(--shadow)}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.card h3{font-size:20px;margin-block:10px 8px}
+.card p{color:var(--muted);font-size:16px}
+.tag{font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.num{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--p1);color:var(--on-accent);font-weight:700;font-family:var(--f-display)}
+.num.t{background:var(--p2)} .num.pu{background:var(--lvD)}
+
+/* SPEED compare */
+.compare{display:grid;gap:14px;margin-bottom:20px}
+.bar{display:grid;grid-template-columns:150px minmax(0,1fr) 190px;gap:16px;align-items:center}
+.bar .track{height:44px;background:var(--surface2);border-radius:10px;overflow:hidden}
+.bar .fill{height:100%;border-radius:10px;display:flex;align-items:center;justify-content:flex-end;padding-right:12px;font-family:var(--f-display);font-weight:700;font-size:22px;color:var(--on-accent);width:0;transition:width 1.1s cubic-bezier(.2,.7,.2,1)}
+.bar .fill.speed{background:var(--muted)} .bar .fill.wb{background:var(--p2)}
+.bar small{color:var(--muted);font-size:14px;line-height:1.3}
+.bar b{font-size:15px}
+.banner{background:var(--navy);color:var(--on-navy);border-radius:14px;padding:22px 26px;margin-top:16px}
+.banner strong{font-family:var(--f-display);font-size:22px;display:block}
+.banner span{color:var(--on-navy-muted);font-size:16px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{font-size:14px;font-weight:600;padding:5px 12px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--muted)}
+
+/* explorer */
+.explorer{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:20px;align-items:start}
+.pillar{border-radius:14px;padding:18px;border:1.5px solid}
+.pillar.p1{background:var(--p1-soft);border-color:var(--p1)}
+.pillar.p2{background:var(--p2-soft);border-color:var(--p2)}
+.pillar + .pillar{margin-top:16px}
+.pillar .tag{color:var(--p1-ink)} .pillar.p2 .tag{color:var(--p2-ink)}
+.pillar h3{font-size:21px;margin-block:6px 2px}
+.pillar .q{color:var(--muted);font-size:15px;margin-bottom:12px}
+.dims{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.dim{display:flex;gap:10px;align-items:center;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;font-weight:600;font-size:15px;line-height:1.25;min-height:52px}
+.dim i{font-style:normal;flex:none;width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-size:13px;background:var(--p1);color:var(--on-accent);font-family:var(--f-mono)}
+.p2 .dim i{background:var(--p2)}
+.dim:hover{border-color:var(--muted)}
+.dim[aria-selected="true"]{border-color:var(--fg);box-shadow:0 0 0 2px var(--fg) inset}
+.detail{position:sticky;top:76px}
+.detail .top{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.detail h3{font-size:30px;margin-block:12px 10px}
+.detail .short{font-size:18px;margin-bottom:14px;color:var(--fg)}
+.detail .full{border-top:1px solid var(--line);padding-top:14px;color:var(--muted);font-size:15.5px}
+.detail .full-label{font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:block}
+.stepnav{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
+.btn{border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 14px;font-weight:600;font-size:14.5px}
+.btn:hover{border-color:var(--fg)}
+.btn.primary{background:var(--p1);color:var(--on-accent);border-color:var(--p1)}
+
+/* segmented */
+.seg{display:inline-flex;flex-wrap:wrap;gap:4px;background:var(--surface2);padding:4px;border-radius:12px;margin-bottom:20px}
+.seg button{border:0;background:transparent;padding:9px 16px;border-radius:9px;font-weight:600;font-size:15px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--fg);box-shadow:var(--shadow)}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.two .card{transition:opacity .25s,transform .25s;border-width:1.5px}
+.two .card.p1{border-color:var(--p1)} .two .card.p2{border-color:var(--p2)}
+.two .card.dim-off{opacity:.55}
+.two .lab{margin-top:14px} .two .lab .tag{color:var(--muted);display:block;font-size:11.5px}
+.two .lab b{font-size:17px}
+.lag{margin-top:16px;border:1.5px dashed var(--line);border-radius:10px;padding:14px;background:var(--bg)}
+.lag.hot{border-style:solid;border-color:var(--lvA);background:var(--surface)}
+.lag .tag{color:var(--muted);display:block;margin-bottom:4px}
+
+/* stepper */
+.steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.step{text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:14px;min-height:96px;display:flex;flex-direction:column;gap:8px}
+.step .tag{color:var(--muted)}
+.step b{font-size:15px;line-height:1.25}
+.step[aria-selected="true"]{border-color:var(--p1);background:var(--p1-soft)}
+.stepdetail{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.lvls{display:flex;gap:8px;margin-top:12px}
+.lv{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-weight:700;color:var(--on-lv);font-family:var(--f-display)}
+.lv.A{background:var(--lvA)} .lv.B{background:var(--lvB)} .lv.C{background:var(--lvC);color:var(--on-accent)} .lv.D{background:var(--lvD);color:var(--on-accent)}
+
+/* builder */
+.builder{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:20px;align-items:start}
+.matrix{display:grid;grid-template-columns:1fr 1fr;gap:6px 28px}
+.mhead{grid-column:1/-1;margin:10px 0 2px}
+.mhead:first-child{margin-top:0}
+.mrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:5px 0}
+.mrow span{font-weight:600;font-size:15px}
+.cells{display:flex;gap:5px;flex:none}
+.cell{width:32px;height:32px;border-radius:8px;border:0;background:var(--lv-off);color:transparent;font-weight:700;font-size:13px}
+.cell:hover{outline:2px solid var(--muted)}
+.cell.on.A{background:var(--lvA);color:var(--on-lv)} .cell.on.B{background:var(--lvB);color:var(--on-lv)}
+.cell.on.C{background:var(--lvC);color:var(--on-accent)} .cell.on.D{background:var(--lvD);color:var(--on-accent)}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid var(--line);align-items:center}
+.tools .hint{color:var(--muted);font-size:14px;flex:1;min-width:200px}
+.out h3{font-size:19px;margin-bottom:10px}
+.pbar{margin-bottom:14px}
+.pbar .row{display:flex;justify-content:space-between;font-weight:600;font-size:15px;margin-bottom:5px}
+.pbar .row em{font-style:normal;font-family:var(--f-mono);color:var(--muted);font-size:14px}
+.pbar .track{height:14px;border-radius:99px;background:var(--surface2);overflow:hidden}
+.pbar .fill{height:100%;border-radius:99px;transition:width .4s}
+.pbar .fill.p1{background:var(--p1)} .pbar .fill.p2{background:var(--p2)}
+.gaps{margin:0;padding:0;list-style:none;display:grid;gap:6px}
+.gaps li{display:flex;justify-content:space-between;gap:10px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 12px;font-size:15px;font-weight:600}
+.gaps li small{font-weight:500;color:var(--muted)}
+.reading{background:var(--bg);border-radius:10px;padding:14px;margin-block:14px;font-size:15.5px}
+.note{font-size:14px;color:var(--muted);margin-top:12px}
+
+/* path */
+.path{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;margin-bottom:18px;counter-reset:s}
+.path .ps{border:0;text-align:left;cursor:pointer;opacity:.72;background:var(--navy);color:#fff;padding:16px 12px 16px 26px;font-weight:700;font-family:var(--f-display);font-size:17px;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 50%,calc(100% - 16px) 100%,0 100%,16px 50%);margin-left:-8px;letter-spacing:.02em}
+.path .ps:first-child{clip-path:polygon(0 0,calc(100% - 16px) 0,100% 50%,calc(100% - 16px) 100%,0 100%);margin-left:0;padding-left:16px;border-radius:10px 0 0 10px}
+.path .ps:nth-child(1){background:var(--lvA);color:var(--on-lv)}
+.path .ps:nth-child(2){background:var(--lvB);color:var(--on-lv)}
+.path .ps:nth-child(3){background:var(--lvC);color:var(--on-accent)} .path .ps:nth-child(4){background:var(--lvD);color:var(--on-accent)}
+.path .ps:nth-child(5){background:var(--path5)}
+
+/* people */
+.people{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.person{display:flex;gap:14px;align-items:center}
+.av{flex:none;width:52px;height:52px;border-radius:50%;background:var(--p1);color:var(--on-accent);display:grid;place-items:center;font-family:var(--f-display);font-weight:700;font-size:18px}
+.person b{display:block;font-size:17px} .person span{display:block;color:var(--muted);font-size:14.5px}
+.person code{display:block;font-family:var(--f-mono);font-size:13px;color:var(--p1-ink);word-break:break-all}
+footer{padding-block:56px 48px;color:var(--muted);font-size:14px}
+footer .wrap{border-top:1px solid var(--line);padding-top:20px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+
+.rel{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
+.rbtn{font-family:var(--f-mono);font-size:13px;font-weight:600;padding:5px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface);color:var(--p1-ink)}
+.rbtn:hover{border-color:var(--p1)}
+.tl{color:var(--p1-ink);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.rtools{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:16px}
+.rtools input{flex:1;min-width:220px;font:inherit;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--fg)}
+.rtools .seg{margin:0}
+.rstat{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:15px;margin-bottom:12px}
+.recs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.rec{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;grid-template-columns:auto 1fr;gap:4px 14px}
+.rec .rid{font-family:var(--f-mono);font-weight:600;font-size:14px;color:var(--p1-ink);grid-row:span 2}
+.rec .rth{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.rec p{font-size:15.5px;line-height:1.45}
+.rec mark{background:var(--lvA);color:var(--on-lv);border-radius:3px;padding:0 2px}
+
+.brandrow{display:flex;align-items:center;gap:14px;margin-bottom:28px;flex-wrap:wrap}
+.brandrow img{height:46px;width:auto;background:#fff;border-radius:8px;padding:5px 12px;display:block}
+.brandrow span{font-size:14px;color:var(--on-navy-muted);padding-left:14px;border-left:1px solid rgba(255,255,255,.28);line-height:1.3}
+.hero .prog{margin-top:26px;font-size:15px;color:var(--on-navy-muted)}
+.hero .prog b{color:#fff;font-weight:600}
+.hero .prog a{color:#7fe3de;text-decoration:underline;text-underline-offset:3px}
+.people{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.person .mc{display:inline-block;margin-top:8px;font-style:normal;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:2px 10px}
+.person.main{border-color:var(--navy)}
+:root[data-theme="dark"] .person.main{border-color:var(--p1)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .person.main{border-color:var(--p1)}}
+.brandrow{flex-direction:column;align-items:flex-start!important;gap:16px!important;margin-top:32px!important;margin-bottom:0!important}
+.brandrow img{height:64px!important;padding:8px 16px!important}
+.orgs{display:flex;flex-direction:column;justify-content:center;gap:2px;padding:0}
+.orgs b{color:#fff;font-size:18px;font-weight:600;line-height:1.25}
+.orgs span{color:var(--on-navy-muted);font-size:13.5px;letter-spacing:.02em}
+.brandrow>span{display:none}
+.path .ps[aria-selected="true"]{opacity:1;box-shadow:inset 0 -5px 0 rgba(255,255,255,.9)}
+.path .ps:hover{opacity:1}
+.ppanel{margin-bottom:16px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:20px}
+.ppanel .full-label{font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;display:block}
+.ppanel h3{font-size:24px;margin-block:8px 10px}
+.ppanel .lead{color:var(--muted);font-size:16.5px}
+.ppanel .act{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
+.pg{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.pg li{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:grid;gap:6px}
+.pg .r1{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-weight:600;font-size:16px}
+.pg .r1 small{font-weight:500;color:var(--muted);font-size:14px}
+.pg .r2{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:13.5px;color:var(--muted)}
+.pstat{display:flex;gap:10px;flex-wrap:wrap}
+.pstat div{flex:1;min-width:120px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.pstat strong{display:block;font-family:var(--f-display);font-size:26px;line-height:1.1}
+.pstat span{font-size:13.5px;color:var(--muted)}
+.mback{position:fixed;inset:0;z-index:50;background:rgba(6,16,32,.62);display:grid;place-items:center;padding:20px;padding-block:calc(20px + env(safe-area-inset-top,0px)) calc(20px + env(safe-area-inset-bottom,0px))}
+.mback[hidden]{display:none}
+.modal{position:relative;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:16px;box-shadow:0 24px 80px rgba(0,0,0,.45);width:min(620px,100%);max-height:100%;overflow:auto;padding:26px 28px 22px}
+.modal:focus{outline:none}
+.mclose{position:absolute;top:10px;right:12px;width:40px;height:40px;border:0;background:transparent;font-size:28px;line-height:1;color:var(--muted);border-radius:10px}
+.mclose:hover{background:var(--surface2);color:var(--fg)}
+.mhead2{display:flex;justify-content:space-between;gap:12px;padding-right:40px;color:var(--muted)}
+.mid{font-family:var(--f-display);font-weight:700;font-size:54px;line-height:1;margin-block:14px 6px;color:var(--p1-ink)}
+.mtext{font-size:19px;line-height:1.5;margin-block:12px 22px}
+.modal .rth{font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.mfoot{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:16px}
+.mfoot .btn:disabled{opacity:.4;cursor:default}
+@media (max-width:860px){.ppanel{grid-template-columns:1fr}}
+@media (max-width:860px){.people{grid-template-columns:1fr!important}}
+@media (max-width:860px){.recs{grid-template-columns:1fr}}
+@media (max-width:860px){
+  .hero .wrap{grid-template-columns:1fr;padding-block:36px 44px}
+  .facts{grid-template-columns:repeat(2,1fr)}
+  .grid3,.people,.two,.stepdetail{grid-template-columns:1fr}
+  .explorer,.builder{grid-template-columns:1fr}
+  .detail{position:static}
+  .steps{grid-template-columns:1fr 1fr}
+  .bar{grid-template-columns:1fr;gap:6px}
+  .matrix{grid-template-columns:1fr}
+  .path{grid-template-columns:1fr;gap:6px}
+  .path .ps,.path .ps:first-child{clip-path:none;margin-left:0;padding:12px 16px;border-radius:10px}
+  .nav img{display:none}
+}
+@media (max-width:480px){.dims{grid-template-columns:1fr}.cell{width:30px;height:30px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head><body>
+<header class="nav">
+  <div class="wrap">
+    <img alt="World Bank Group Development Data Group" src="/ai4data/ai-readiness-assessment/img/logo.png">
+    <nav id="nav" aria-label="Sections">
+      <a href="#speed">Added value</a><a href="#framework">Framework</a><a href="#pillars">Two pillars</a><a href="#design">Design</a><a href="#profile">Try a profile</a><a href="#pathway">Pathway</a><a href="#ccsa">Annex: CCSA</a>
+    </nav>
+    <a class="home" href="/ai4data/">AI for Data - Data for AI</a>
+  </div>
+</header>
+
+<main>
+<div class="hero">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow">For National Statistical Organizations</div>
+      <h1>World Bank Group AI-Readiness Assessment Framework</h1>
+      <p class="sub">Assesses both the institution and the data products and services it provides.</p>
+      <div class="brandrow"><img alt="World Bank Group Development Data Group" src="/ai4data/ai-readiness-assessment/img/logo.png"><div class="orgs"><b>Development Data Group</b><b>Office of the WBG Chief Statistician</b></div></div>
+    </div>
+    <figure><img alt="Illustration of AI-ready official statistics: a glowing brain over a national statistics building, surrounded by icons for legal, skills, technical environment, funding, partnerships, API access, agentic access and trusted provenance" src="/ai4data/ai-readiness-assessment/img/hero.jpg"></figure>
+  </div>
+  <div class="facts"><div><strong>2</strong><span>pillars</span></div><div><strong>12</strong><span>dimensions</span></div><div><strong>69</strong><span>questions, plus a gateway question</span></div><div><strong>4</strong><span>maturity levels, A to D</span></div></div>
+</div>
+
+<section class="s" id="speed"><div class="wrap">
+  <div class="sechead"><div class="eyebrow">Value added</div><h2>What the WBG assessment adds to other assessments</h2>
+  <p class="lede">Existing assessments, such as <a class="tl" href="https://www.paris21.org/knowledge-base/ai-readiness-self-assessment-practical-guide-nsos" target="_blank" rel="noopener">SPEED</a>, give a broad institutional diagnostic. This assessment adds depth on data products and ties results to the guidance of the Committee for the Coordination of Statistical Activities (CCSA).</p></div>
+  <div class="compare card" id="bars">
+    <div class="bar"><b>SPEED</b><div class="track"><div class="fill speed" data-w="28">28</div></div><small>indicators across 5 pillars</small></div>
+    <div class="bar"><b>WBG assessment</b><div class="track"><div class="fill wb" data-w="69">69</div></div><small>questions across 12 dimensions, plus a gateway question</small></div>
+    <p class="note" style="margin:0">Bars are drawn to the same scale. The assessment is longer and asks more detailed questions.</p>
+  </div>
+  <div class="grid3">
+    <div class="card"><span class="num">1</span><h3>Data product depth</h3><p>Tests whether data products and services are ready for AI: catalog, APIs, agentic access, licensing and quality. SPEED covers this side with a few indicators.</p></div>
+    <div class="card"><span class="num t">2</span><h3>Readiness and use</h3><p>Scores whether the conditions for AI are in place, and separately how far AI is already used. Seeing both shows where use is ahead of the foundations.</p></div>
+    <div class="card"><span class="num pu">3</span><h3>Tied to CCSA guidance</h3><p>Each question maps to the CCSA recommendations for NSOs, so results point to internationally endorsed guidance. <a class="tl" href="#ccsa">See the annex</a>.</p></div>
+  </div>
+  <div class="banner"><strong>Results also help countries think about where to invest, and in what order.</strong><span>They give development partners a shared basis for discussing needs and support.</span></div>
+  <div class="chips"><span class="chip">Works for NSOs at any starting point</span><span class="chip">Also for central banks and ministries that produce official statistics</span><span class="chip">Open license, CC BY 4.0</span><span class="chip">Web form scores and reports automatically</span></div>
+</div></section>
+
+<section class="s" id="framework"><div class="wrap">
+  <div class="sechead"><div class="eyebrow">The framework at a glance</div><h2>One framework. Two pillars. Twelve dimensions.</h2>
+  <p class="lede">Select any dimension to read what it assesses. Use the arrow keys to move through them.</p></div>
+  <div class="explorer">
+    <div id="pillarsList">
+      <div class="pillar p1"><div class="tag">Pillar I · AI for Data</div><h3>Institutional Readiness for AI Adoption</h3><p class="q">Can the NSO use AI responsibly?</p><div class="dims" role="tablist" aria-label="Pillar I dimensions" id="d1"></div></div>
+      <div class="pillar p2"><div class="tag">Pillar II · Data for AI</div><h3>Readiness of Data Products and Services for AI</h3><p class="q">Can AI use official statistics reliably?</p><div class="dims" role="tablist" aria-label="Pillar II dimensions" id="d2"></div></div>
+    </div>
+    <div class="card detail" id="detail" aria-live="polite">
+      <div class="top"><span class="num" id="dNum"></span><span class="tag" id="dPillar"></span></div>
+      <h3 id="dName"></h3>
+      <p class="short" id="dShort"></p>
+      <div class="full"><span class="full-label">Full text from the framework document</span><p id="dFull"></p></div>
+      <div class="rel"><span class="full-label">Related CCSA recommendations</span><div class="chips" id="dRel" style="margin-top:6px"></div></div>
+      <div class="stepnav"><button class="btn" id="prev">← Previous</button><button class="btn primary" id="next">Next →</button></div>
+    </div>
+  </div>
+</div></section>
+
+<section class="s" id="pillars"><div class="wrap">
+  <div class="sechead"><div class="eyebrow">Why two pillars</div><h2>The two pillars point to different kinds of action</h2>
+  <p class="lede">An organization can score high on one pillar and low on the other, and each case calls for different action. Pick which pillar lags.</p></div>
+  <div class="seg" role="group" aria-label="Which pillar lags"><button aria-pressed="false" data-k="1">Pillar I lags</button><button aria-pressed="false" data-k="2">Pillar II lags</button><button aria-pressed="true" data-k="0">Show both</button></div>
+  <div class="two" id="two">
+    <div class="card p1" data-k="1"><div class="tag" style="color:var(--p1-ink)">Pillar I · AI for Data</div><h3>Institutional capacity to act</h3>
+      <div class="lab"><span class="tag">Typically requires</span><b>Strategic and organizational change</b></div>
+      <div class="lab"><span class="tag">Calls for investment in</span><b>Governance and capacity</b></div>
+      <div class="lag"><span class="tag">When this pillar lags</span>Data products can be open and API-accessible while the institution still lacks the foundations to adopt AI responsibly.</div></div>
+    <div class="card p2" data-k="2"><div class="tag" style="color:var(--p2-ink)">Pillar II · Data for AI</div><h3>Data products ready to serve</h3>
+      <div class="lab"><span class="tag">Typically requires</span><b>Technical and operational change</b></div>
+      <div class="lab"><span class="tag">Calls for investment in</span><b>Data product modernization</b></div>
+      <div class="lag"><span class="tag">When this pillar lags</span>Governance, skills and infrastructure can be strong while data products are not yet modernized for machine consumption.</div></div>
+  </div>
+</div></section>
+
+<section class="s" id="design"><div class="wrap">
+  <div class="sechead"><div class="eyebrow">Assessment design</div><h2>Questions become evidence, scores, and an actionable profile</h2>
+  <p class="lede">The instrument supports self-assessment or facilitated assessment across NSOs at any starting point.</p></div>
+  <div class="steps" role="tablist" aria-label="Assessment steps" id="steps"></div>
+  <div class="stepdetail">
+    <div class="card" id="stepCard"><span class="tag" id="stTag"></span><h3 id="stName"></h3><p id="stText"></p><div class="lvls" id="stLv" hidden><span class="lv A">A</span><span class="lv B">B</span><span class="lv C">C</span><span class="lv D">D</span></div></div>
+    <div class="grid2" style="grid-template-columns:1fr">
+      <div class="card" style="border-color:var(--p2)"><span class="tag" style="color:var(--p2-ink)">Readiness</span><h3>Conditions that enable safe and effective AI</h3></div>
+      <div class="card" style="border-color:var(--lvD)"><span class="tag" style="color:var(--lvD)">Adoption &amp; maturity</span><h3>Extent and sophistication of AI use</h3></div>
+    </div>
+  </div>
+</div></section>
+
+<section class="s" id="profile"><div class="wrap">
+  <div class="sechead"><div class="eyebrow">What the assessment produces</div><h2>A readiness profile that can move directly into action planning</h2>
+  <p class="lede">Click a cell to set a level for each dimension. The panel shows where gaps sit and how they cluster. It starts with the illustrative profile from the deck.</p></div>
+  <div class="builder">
+    <div class="card">
+      <div class="matrix" id="matrix"></div>
+      <div class="tools"><button class="btn" id="bIll">Illustrative profile</button><button class="btn" id="bMid">All at level B</button><button class="btn" id="bClr">Clear</button><span class="hint">Click the same cell again to clear a dimension.</span></div>
+    </div>
+    <div class="card out" aria-live="polite">
+      <h3>Pillar view</h3>
+      <div class="pbar"><div class="row"><span>Pillar I · AI for Data</span><em id="a1"></em></div><div class="track"><div class="fill p1" id="f1"></div></div></div>
+      <div class="pbar"><div class="row"><span>Pillar II · Data for AI</span><em id="a2"></em></div><div class="track"><div class="fill p2" id="f2"></div></div></div>
+      <div class="reading" id="reading"></div>
+      <h3>Priority gaps</h3>
+      <ul class="gaps" id="gaps"></ul>
+      <p class="note">Sandbox for exploring the format. Here the bars fill from A to D, as in the deck's illustrative profile. Expert review and institutional judgment remain essential.</p>
+    </div>
+  </div>
+  <div class="grid3" style="margin-top:16px">
+    <div class="card" style="border-color:var(--p1)"><span class="tag" style="color:var(--p1-ink)">Priority gaps</span><h3>Where readiness is constrained</h3></div>
+    <div class="card" style="border-color:var(--p2)"><span class="tag" style="color:var(--p2-ink)">Sequenced actions</span><h3>What to address first</h3></div>
+    <div class="card" style="border-color:var(--lvD)"><span class="tag" style="color:var(--lvD)">Partnership needs</span><h3>Where external support adds value</h3></div>
+  </div>
+</div></section>
+
+<section class="s" id="pathway"><div class="wrap">
+  <div class="sechead"><div class="eyebrow">Complementary value</div><h2>Assessment should lead to a country-owned modernization pathway</h2>
+  <p class="lede">The framework complements partner assessments by adding an explicit lens on AI-ready official statistics.</p></div>
+  <div class="path" role="tablist" aria-label="Pathway steps"><button class="ps" role="tab" data-i="0" aria-selected="true">1 Assess</button><button class="ps" role="tab" data-i="1" aria-selected="false">2 Prioritize</button><button class="ps" role="tab" data-i="2" aria-selected="false">3 Plan</button><button class="ps" role="tab" data-i="3" aria-selected="false">4 Implement</button><button class="ps" role="tab" data-i="4" aria-selected="false">5 Adapt</button></div>
+  <div class="card ppanel" id="pp" aria-live="polite"></div>
+  <div class="grid3">
+    <div class="card"><span class="tag">What to strengthen</span><h3>Priority institutional and data-service gaps</h3></div>
+    <div class="card"><span class="tag">What to build</span><h3>A realistic sequence aligned with national capacity</h3></div>
+    <div class="card"><span class="tag">Where to partner</span><h3>Shared tools, standards, financing and expertise</h3></div>
+  </div>
+  <div class="banner"><strong>The results give countries a shared basis for national action.</strong><span>The framework does not rank them.</span></div>
+</div></section>
+
+<section class="s" id="ccsa"><div class="wrap">
+  <div class="sechead"><div class="eyebrow">Annex · Tied to CCSA guidance</div><h2>39 recommendations for national statistical organizations</h2>
+  <p class="lede">From <i>AI-Ready Official Statistics: Opportunities, Challenges, and Recommendations</i>, a background document for the 57th session of the UN Statistical Commission (March 2026). The recommendations for NSOs run from R.1 to R.39 in five areas. <a class="tl" href="https://unstats.un.org/UNSDWebsite/statcom/session_57/documents/BG-5h-CCSA_AI_Readiness_Official_Statistics_v2-E.pdf" target="_blank" rel="noopener">Open the paper (PDF)</a></p></div>
+  <div class="rtools"><div class="seg" id="rseg" role="group" aria-label="Recommendation area"></div><input id="rq" type="search" placeholder="Search recommendations, for example API, license, skills" aria-label="Search recommendations"></div>
+  <div class="rstat" aria-live="polite"><span id="rcount"></span><button class="btn" id="rclear" hidden>Show all</button></div>
+  <div class="recs" id="recs"></div>
+  <p class="note">Summaries are condensed from the paper; see the PDF for the exact wording. The links from each dimension above are an indicative mapping made for this page. The assessment instrument holds the official question-level mapping.</p>
+</div></section>
+</main>
+<footer><div class="wrap"><span>World Bank Group · Development Data Group · Office of the WBG Chief Statistician</span><span>Recommendations: <a class="tl" href="https://unstats.un.org/UNSDWebsite/statcom/session_57/documents/BG-5h-CCSA_AI_Readiness_Official_Statistics_v2-E.pdf" target="_blank" rel="noopener">AI-Ready Official Statistics, UNSC 57</a></span></div></footer>
+
+<div class="mback" id="mback" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle" id="modal" tabindex="-1">
+    <button class="mclose" id="mClose" aria-label="Close">&times;</button>
+    <div class="mhead2"><span class="tag" id="mCtx"></span><span class="tag" id="mCount"></span></div>
+    <div class="mid" id="mTitle"></div>
+    <span class="rth" id="mTh"></span>
+    <p class="mtext" id="mText"></p>
+    <div class="mfoot"><button class="btn" id="mPrev">&larr; Previous</button><button class="btn" id="mAnnex">See in annex</button><button class="btn primary" id="mNext">Next &rarr;</button></div>
+  </div>
+</div>
+<script>
+const D=[
+{p:1,n:"Strategy & governance",s:"A clear, documented AI strategy aligned with the institutional mandate and the statistical modernization agenda. Also, the governance needed to carry it out responsibly: ethical guidelines, accountability mechanisms and oversight bodies.",f:"Assesses whether the organization has a clear, documented AI strategy that is aligned with its broader institutional mandate and statistical modernization agenda, and whether it has the governance structures, including ethical guidelines, accountability mechanisms, and oversight bodies, needed to implement that strategy responsibly and coherently."},
+{p:1,n:"Legal environment",s:"How adequate the legal and regulatory framework is for data privacy, security, intellectual property and AI-specific accountability. Covers the constraints the current legal environment places on AI adoption and awareness of gaps that may call for advocacy or reform.",f:"Examines the adequacy of the legal and regulatory framework within which the organization operates, including provisions for data privacy, security, intellectual property, and AI-specific accountability. This includes both the constraints the existing legal environment places on AI adoption and the organization's awareness of legal gaps that may need to be addressed through advocacy or regulatory reform."},
+{p:1,n:"Skills & capacity",s:"Availability of staff with data science, data engineering, machine learning and AI ethics skills, and the training, recruitment and retention that sustain them. Also covers the wider workforce, who need enough understanding of AI tools and their limits to use them critically.",f:"Evaluates the availability of human resources with the skills needed for AI adoption, including data science, data engineering, machine learning, and AI ethics, and the extent to which training, recruitment, and retention strategies are in place to sustain and develop that capacity. This dimension also considers the broader workforce: staff who are not AI specialists, but who need sufficient understanding of AI tools and their limitations to work with them effectively and critically."},
+{p:1,n:"Technical environment",s:"State of the IT infrastructure: connectivity, data storage, computing power (on-premises and cloud), data pipelines and the software ecosystem for AI development and deployment. Includes data governance tools and the capacity to manage, version and audit data flows.",f:"Reviews the state of the organization's Information Technology infrastructure, including connectivity, data storage, computing power (on-premises and cloud-based), data pipeline infrastructure, and the software ecosystem required for AI development and deployment. Attention is given to data governance tools and the capacity to manage, version, and audit the data flows that underpin AI systems."},
+{p:1,n:"Funding & resources",s:"Adequate, sustainable funding across the full AI lifecycle, from early experimentation to deployment and maintenance. Also sustained leadership commitment, because funding without senior buy-in tends to produce pilots that do not scale.",f:"Assesses whether adequate and sustainable financial resources are available to support AI initiatives across their full lifecycle, from early experimentation to operational deployment and maintenance. This dimension also considers the degree of sustained leadership commitment, recognizing that funding without institutional buy-in at senior levels tends to produce pilots that do not scale."},
+{p:1,n:"Partnerships",s:"Engagement with external partners to access expertise, share knowledge and foster innovation: academia for research and methods, the private sector for technology and tools, peer NSOs for methods and open-source solutions, and international bodies shaping standards for AI in official statistics.",f:"Evaluates the organization's engagement with external partners as a means of accessing expertise, sharing knowledge, and fostering innovation. This includes academic partnerships for research and methodological development, private sector partnerships for access to technology and tools, collaboration with peer NSOs for the exchange of methods and open-source solutions, and participation in international statistical coordination bodies that are shaping standards and norms for AI use in official statistics."},
+{p:2,n:"Metadata standards & ontologies",s:"Standardized, machine-readable metadata schemas and ontologies that let AI systems discover, interpret and integrate data. Includes international metadata standards, controlled vocabularies and classifications, and documented provenance and lineage.",f:"Assesses the adoption of standardized, machine-readable metadata schemas and ontologies that enable automated discovery, interpretation, and integration of data by AI systems. This includes the use of recognized international standards for structural and descriptive metadata, the adoption of controlled vocabularies and classifications, and the documentation of data provenance and lineage, which AI systems increasingly require to assess the reliability and appropriate use of the data they retrieve."},
+{p:2,n:"Searchable data catalog",s:"A comprehensive, well-maintained catalog with search and query for both people and machines. For AI, its value rests on consistent, complete and structured metadata, so the assessment covers content quality, machine-readability and links to the organization's metadata standards.",f:"Evaluates the availability of a comprehensive, well-maintained catalog of the organization's data assets, with search and query capabilities that support both human users and machine clients. For AI applications specifically, the value of a catalog depends heavily on the consistency, completeness, and structure of the metadata it exposes: a catalog with rich, standardized entries is far more useful to AI systems than one designed primarily for human browsing. This dimension therefore assesses not only the existence of a catalog but the quality and machine-readability of its content, and its integration with the organization's metadata standards."},
+{p:2,n:"API access",s:"Programmatic access to data and metadata for machine-to-machine use and integration with external platforms. Assesses whether APIs are stable, versioned and comprehensively documented, since undocumented or frequently changing APIs have limited value for AI.",f:"Examines the provision of application programming interfaces (APIs) for programmatic access to both data and associated metadata, enabling machine-to-machine communication and integration with external platforms and applications. This dimension assesses not only whether APIs exist but whether they are stable, versioned, and comprehensively documented, qualities that are essential for reliable machine consumption. APIs that are undocumented, frequently changed without notice, or limited in the metadata they expose are of limited value for AI integration regardless of their technical availability."},
+{p:2,n:"Agentic AI access",s:"Whether autonomous AI agents can retrieve, interpret and use data without human intermediation, for example through emerging protocols such as the Model Context Protocol (MCP), under clearly defined rules and controls. Standards are still developing, and this dimension focuses mainly on AI adoption and maturity.",f:"Evaluates whether data products are accessible to autonomous AI agents, systems that retrieve, interpret, and use data without direct human intermediation. While traditional API access enables programmatic data retrieval by human-directed applications, this dimension goes further, examining whether the organization supports emerging protocols, such as the Model Context Protocol (MCP), that allow AI agents to discover and consume trusted statistical data directly when generating responses or performing analytical tasks, under clearly defined rules and controls. This is an emerging dimension where standards and practices are still developing, and maturity levels across organizations are expected to vary significantly in the near term. This dimension focuses primarily on AI adoption and maturity."},
+{p:2,n:"Data licensing",s:"Clarity and openness of the licenses governing data use, whether licensing conditions are machine-readable and consistently applied, and whether licenses explicitly address use of data for AI, including as training data for machine learning models.",f:"Reviews the clarity and openness of the licenses governing the use of the organization's data, and assesses whether licensing conditions are machine-readable and consistently applied across the organization's data products. This dimension also considers whether licenses explicitly address the use of data for AI purposes, including as training data for machine learning models, an increasingly important and often unresolved question that affects whether the organization's data can be responsibly incorporated into AI development pipelines by third parties."},
+{p:2,n:"Quality control procedures",s:"Robustness of the procedures that ensure accuracy, consistency, completeness and integrity of data and metadata. AI systems cannot easily spot errors and gaps the way human analysts do, so quality is a prerequisite. Includes consistency over time: documented methodology changes, series breaks and revisions.",f:"Assesses the robustness of the procedures used to ensure the accuracy, consistency, completeness, and integrity of data and metadata. This dimension is particularly critical for AI readiness: unlike human analysts, AI systems cannot easily detect and compensate for errors, gaps, or inconsistencies in the data they consume, making data quality a prerequisite rather than a desirable property. Special attention is given to consistency over time, including the documentation of methodological changes, breaks in time series, and data revisions, since AI systems trained or calibrated on historical data are especially vulnerable to undocumented discontinuities."}
+];
+const SHORT=["Strategy","Legal","Skills","Technology","Funding","Partnerships","Metadata","Catalog","APIs","Agent access","Licensing","Quality"];
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+/* SPEED bars */
+const bars=$('#bars');
+function grow(){$$('.fill[data-w]').forEach(f=>f.style.width=(f.dataset.w/69*100)+'%')}
+if('IntersectionObserver' in window){new IntersectionObserver((e,o)=>{if(e[0].isIntersecting){grow();o.disconnect()}},{threshold:.3}).observe(bars)}else grow();
+setTimeout(grow,2500);
+
+/* explorer */
+let cur=0;
+D.forEach((d,i)=>{const b=document.createElement('button');b.className='dim';b.setAttribute('role','tab');b.dataset.i=i;
+  b.innerHTML='<i>'+(i%6+1)+'</i><span>'+d.n+'</span>';b.onclick=()=>pick(i);$(d.p==1?'#d1':'#d2').appendChild(b)});
+function pick(i,focus){cur=(i+12)%12;const d=D[cur];
+  $$('.dim').forEach(b=>{const on=+b.dataset.i===cur;b.setAttribute('aria-selected',on);b.tabIndex=on?0:-1;if(on&&focus)b.focus()});
+  $('#dNum').textContent=cur%6+1;$('#dNum').className='num'+(d.p==2?' t':'');
+  $('#dPillar').textContent=(d.p==1?'Pillar I · AI for Data':'Pillar II · Data for AI')+' · dimension '+(cur%6+1)+' of 6';
+  $('#dName').textContent=d.n;$('#dShort').textContent=d.s;$('#dFull').textContent=d.f;
+  const rel=$('#dRel');if(rel&&typeof REL!=='undefined'){rel.innerHTML='';REL[cur].forEach(n=>{const b=document.createElement('button');b.className='rbtn';b.textContent='R.'+n;b.title=RE[n-1].tx;b.onclick=()=>openRec(REL[cur],REL[cur].indexOf(n),d.n);rel.appendChild(b)});const a=document.createElement('button');a.className='btn';a.style.padding='4px 10px';a.textContent='Show all '+REL[cur].length;a.onclick=()=>openRec(REL[cur],0,d.n);rel.appendChild(a)}}
+$('#prev').onclick=()=>pick(cur-1);$('#next').onclick=()=>pick(cur+1);
+$('#pillarsList').addEventListener('keydown',e=>{const m={ArrowRight:1,ArrowDown:1,ArrowLeft:-1,ArrowUp:-1}[e.key];if(m){e.preventDefault();pick(cur+m,true)}});
+
+/* pillars toggle */
+$$('.seg button').forEach(b=>b.onclick=()=>{$$('.seg button').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  const k=b.dataset.k;$$('#two .card').forEach(c=>{const lagging=c.dataset.k===k;c.classList.toggle('dim-off',k!=='0'&&!lagging);c.querySelector('.lag').classList.toggle('hot',lagging)})});
+
+/* steps */
+const ST=[["Questions","Top-level questions + targeted subquestions","Every dimension is covered by top-level questions and targeted subquestions, 69 questions in all plus a gateway question."],
+["Evidence","Notes + supporting documentation","Answers are backed by notes and supporting documentation, which supports both self-assessment and facilitated assessment."],
+["Maturity","Four response levels","Each dimension is placed on one of four maturity levels, A to D.",1],
+["Scores","Dimension → pillar → overall","Scores roll up from dimension to pillar to overall."],
+["Profile","Gaps + priorities for action","The result is a profile of gaps and priorities for action."]];
+ST.forEach((s,i)=>{const b=document.createElement('button');b.className='step';b.setAttribute('role','tab');
+  b.innerHTML='<span class="tag">Step '+(i+1)+'</span><b>'+s[0]+'</b>';b.onclick=()=>step(i);$('#steps').appendChild(b)});
+function step(i){$$('.step').forEach((b,j)=>b.setAttribute('aria-selected',i===j));const s=ST[i];
+  $('#stTag').textContent='Step '+(i+1)+' of 5';$('#stName').textContent=s[1];$('#stText').textContent=s[2];$('#stLv').hidden=!s[3]}
+step(0);
+
+/* profile builder */
+const ILL=[2,1,4,3,2,1,4,2,1,4,3,3];
+let val=ILL.slice();
+const L='ABCD',M=$('#matrix');
+function build(){M.innerHTML='';
+  const c1=document.createElement('div'),c2=document.createElement('div');c1.style.display=c2.style.display='grid';c1.style.gap=c2.style.gap='6px';
+  const t1=document.createElement('div');t1.className='tag';t1.style.color='var(--p1-ink)';t1.textContent='Pillar I · AI for Data';c1.appendChild(t1);
+  const t2=document.createElement('div');t2.className='tag';t2.style.color='var(--p2-ink)';t2.textContent='Pillar II · Data for AI';c2.appendChild(t2);
+  D.forEach((d,i)=>{const r=document.createElement('div');r.className='mrow';
+    r.innerHTML='<span>'+SHORT[i]+'</span>';const cs=document.createElement('div');cs.className='cells';
+    for(let k=1;k<=4;k++){const b=document.createElement('button');b.className='cell';b.textContent=L[k-1];b.dataset.i=i;b.dataset.k=k;
+      b.setAttribute('aria-label',SHORT[i]+' level '+L[k-1]);b.onclick=()=>{val[i]=val[i]===k?0:k;render()};cs.appendChild(b)}
+    r.appendChild(cs);(d.p==1?c1:c2).appendChild(r)});
+  M.appendChild(c1);M.appendChild(c2)}
+function render(){
+  $$('.cell').forEach(b=>{const i=+b.dataset.i,k=+b.dataset.k;const on=k<=val[i];b.className='cell'+(on?' on '+L[k-1]:'');b.setAttribute('aria-pressed',k===val[i])});
+  const avg=p=>{const a=D.map((d,i)=>[d,val[i]]).filter(x=>x[0].p===p&&x[1]>0);return a.length?a.reduce((s,x)=>s+x[1],0)/a.length:0};
+  const a1=avg(1),a2=avg(2);
+  $('#a1').textContent=a1?a1.toFixed(1)+' of 4':'not set';$('#a2').textContent=a2?a2.toFixed(1)+' of 4':'not set';
+  $('#f1').style.width=(a1/4*100)+'%';$('#f2').style.width=(a2/4*100)+'%';
+  const r=$('#reading');
+  if(!a1||!a2)r.textContent='Set at least one dimension in each pillar to compare them.';
+  else if(Math.abs(a1-a2)<0.75)r.innerHTML='<b>The pillars are close.</b> Priorities can be drawn from the individual gaps below.';
+  else if(a1<a2)r.innerHTML='<b>Pillar I lags.</b> Data products may be ahead of the institution. This typically requires strategic and organizational change, and calls for investment in governance and capacity.';
+  else r.innerHTML='<b>Pillar II lags.</b> Governance, skills and infrastructure may be ahead of the data products. This typically requires technical and operational change, and calls for investment in data product modernization.';
+  const g=D.map((d,i)=>({i,d,v:val[i]})).filter(x=>x.v>0).sort((x,y)=>x.v-y.v||x.i-y.i).slice(0,4);
+  $('#gaps').innerHTML=g.length?g.map(x=>'<li>'+SHORT[x.i]+' <small>'+(x.d.p==1?'Pillar I':'Pillar II')+' · level '+L[x.v-1]+'</small></li>').join(''):'<li>No dimensions set yet</li>';
+  store.set('wbg-profile',JSON.stringify(val));
+}
+build();
+try{const s=JSON.parse(store.get('wbg-profile')||'null');if(Array.isArray(s)&&s.length===12)val=s.map(n=>Math.min(4,Math.max(0,+n||0)))}catch(e){}
+render();
+$('#bIll').onclick=()=>{val=ILL.slice();render()};$('#bMid').onclick=()=>{val=Array(12).fill(2);render()};$('#bClr').onclick=()=>{val=Array(12).fill(0);render()};
+
+
+/* CCSA recommendations */
+const TH={m:"Metadata standards",q:"Quality control",d:"Dissemination",s:"Skills and infrastructure",c:"Collaboration"};
+const RE=[
+["m","Adopt recognized standards (SDMX, DDI, ISO 19115/19119/19110) and publish web-ready subsets mapped to DCAT and schema.org for discoverability."],
+["m","Use standard taxonomies and domain ontologies; maintain versioned code lists accessible through stable APIs."],
+["m","Distribute metadata in open, machine-readable formats (JSON, JSON-LD) with persistent identifiers and licensing fields."],
+["m","Apply semantic versioning to metadata, with synchronized data versions and deprecation notices."],
+["m","Collaborate internationally on metadata quality criteria and benchmarks covering content and format conformance."],
+["m","Deploy open-source AI tools that assess metadata quality automatically and build them into dissemination pipelines."],
+["q","Build quality control pipelines that combine rule-based validation with statistical and machine learning methods to detect time-series anomalies, with human review for final decisions."],
+["q","Correct confirmed errors. Document legitimate outliers as observation-level annotations linked to events, validated by experts and exposed through APIs."],
+["q","Strengthen microdata quality with cross-record checks, weight verification, nonresponse assessment and reproducible documentation."],
+["q","Improve geospatial data quality by validating geometry, topology, coordinate systems and temporal consistency."],
+["q","Publish machine-readable quality metadata covering relevance, accuracy, timeliness, coherence, comparability and documented limitations."],
+["q","Define AI-aware quality metrics, including metadata completeness, standards conformance, provenance integrity and anomaly annotation rates."],
+["q","Set up governance for AI-generated statistics, including model documentation, testing protocols and bias assessment."],
+["q","Update National Quality Assurance Frameworks with AI-aware metrics, and make routine audits cover AI-assisted processes."],
+["d","Apply permissive licenses (for example CC BY 4.0) and display them prominently at dataset, distribution and API endpoints, with clear guidance."],
+["d","Publish machine- and human-readable licensing and attribution guidance, with citation formats, provenance and version references."],
+["d","Expose standards-compliant metadata through documented APIs, and publish web-ready subsets mapped to common profiles for search optimization."],
+["d","Distribute metadata in multiple formats: human-readable HTML pages and JSON or JSON-LD downloads with version and license details."],
+["d","Upgrade keyword search to semantic search that uses rich metadata, ontologies and embeddings, and provide API access."],
+["d","Deploy chatbots only with strict guardrails (source citation, retrieval transparency, Model Context Protocol integration) and adopt ethical frameworks on bias and accountability."],
+["d","Publish eligible datasets in reputable data commons that offer authoritative semantic dissemination."],
+["d","Provide stable, versioned APIs with clear rate limits, bulk downloads, sample queries and SDKs in languages such as R and Python."],
+["d","Maintain machine-readable advance release calendars, expose update notifications at dataset and API level, and publish versioned changelogs with subscription options."],
+["s","Modernize infrastructure for secure, scalable dissemination: well-managed APIs, standards-compliant catalogs and end-to-end data observability."],
+["s","Adopt cloud-ready or hybrid architectures with robust security, identity management, encryption and vulnerability scanning."],
+["s","Provide development sandboxes, staging environments and reproducible pipelines for safe validation before production."],
+["s","Plan for sustainability: use open-source tooling, design vendor-neutral architectures and track operational costs."],
+["s","Invest in reskilling and recruitment across data science, metadata management, data engineering, cloud operations and cybersecurity, with continuous learning programs."],
+["s","Create multidisciplinary teams that pair statisticians and subject-matter experts with engineers and product leads to design AI-ready products."],
+["c","Partner with international and regional organizations and peer NSOs to co-develop and share open-source solutions and common components."],
+["c","Take part in regional and international forums to exchange practices and co-create tools, with diverse capacity levels represented."],
+["c","Collaborate on reference implementations of metadata standards, validation test suites and discoverability metrics across domains and languages."],
+["c","Pilot joint projects on semantic discoverability: evaluate embedding models, build shared test sets and publish search quality benchmarks."],
+["c","Contribute case studies and code to shared repositories to speed adoption and support lower-capacity NSOs."],
+["c","Include detailed provisions in agreements with data redistributors on attribution, provenance, version control, update dissemination and usage monitoring."],
+["c","Publicly correct misinterpretation, issue notices as needed, and set up reporting and escalation mechanisms for misuse or misleading presentation."],
+["c","Set up structured collaboration (working groups, MOUs) with aggregators, search engines and AI assistants to improve how official statistics are surfaced, ranked and cited."],
+["c","Join technical exchanges on Model Context Protocol and API harmonization, with feedback loops and success metrics for citation, accuracy and correction time."],
+["c","Advocate for equitable access through affordable tooling, tiered pricing and subsidized access for resource-constrained NSOs."]
+].map((r,i)=>({id:i+1,th:r[0],tx:r[1]}));
+/* indicative mapping of the 12 dimensions to recommendations (R numbers) */
+const REL=[[13,14,20],[15,16,35,36],[28,29],[24,25,26],[27,39],[30,31,32,33,34,37,38],[1,2,3,4,5,6],[17,18,19,21],[17,22,23],[20,37,38],[15,16,35],[7,8,9,10,11,12,13,14]];
+let rTheme='all',rIds=null,rLabel='';
+const rseg=$('#rseg');
+[['all','All 39'],...Object.entries(TH)].forEach(([k,v])=>{const b=document.createElement('button');b.textContent=v;b.dataset.k=k;b.setAttribute('aria-pressed',k==='all');b.onclick=()=>{rTheme=k;rIds=null;drawRecs()};rseg.appendChild(b)});
+const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function drawRecs(){
+  $$('#rseg button').forEach(b=>b.setAttribute('aria-pressed',!rIds&&b.dataset.k===rTheme));
+  const q=$('#rq').value.trim().toLowerCase();
+  let l=RE.filter(r=>(rIds?rIds.includes(r.id):(rTheme==='all'||r.th===rTheme))&&(!q||r.tx.toLowerCase().includes(q)||TH[r.th].toLowerCase().includes(q)||('r.'+r.id)===q));
+  $('#recs').innerHTML=l.map(r=>{let x=esc(r.tx);if(q){const i=r.tx.toLowerCase().indexOf(q);if(i>=0)x=esc(r.tx.slice(0,i))+'<mark>'+esc(r.tx.slice(i,i+q.length))+'</mark>'+esc(r.tx.slice(i+q.length))}
+    return '<div class="rec"><span class="rid">R.'+r.id+'</span><span class="rth">'+TH[r.th]+'</span><p>'+x+'</p></div>'}).join('')||'<p class="note">No recommendation matches that search.</p>';
+  $('#rcount').textContent=(rIds?'Related to '+rLabel+': ':'')+l.length+' of 39 recommendations';
+  $('#rclear').hidden=!rIds;
+}
+$('#rq').addEventListener('input',drawRecs);
+$('#rclear').onclick=()=>{rIds=null;rTheme='all';$('#rq').value='';drawRecs()};
+function showRel(ids,label){rIds=ids;rLabel=label;$('#rq').value='';drawRecs();goTo('ccsa',true)}
+drawRecs();
+
+/* recommendation modal */
+let mIds=[],mI=0,mLabel='',mFrom=null;
+const mBack=$('#mback');
+function drawModal(){const n=mIds[mI],r=RE[n-1];
+  $('#mTitle').textContent='R.'+n;$('#mTh').textContent=TH[r.th];$('#mText').textContent=r.tx;
+  $('#mCtx').textContent=mLabel?'Related to '+mLabel:'CCSA recommendation';
+  $('#mCount').textContent=mIds.length>1?(mI+1)+' of '+mIds.length:'';
+  $('#mPrev').disabled=mI===0;$('#mNext').disabled=mI===mIds.length-1;
+  $('#mPrev').hidden=$('#mNext').hidden=mIds.length<2}
+function openRec(ids,i,label){mIds=ids.slice();mI=Math.max(0,i);mLabel=label||'';mFrom=document.activeElement;drawModal();mBack.hidden=false;document.body.style.overflow='hidden';$('#modal').focus()}
+function closeRec(){mBack.hidden=true;document.body.style.overflow='';if(mFrom&&mFrom.focus)try{mFrom.focus()}catch(e){}}
+$('#mPrev').onclick=()=>{if(mI>0){mI--;drawModal()}};
+$('#mNext').onclick=()=>{if(mI<mIds.length-1){mI++;drawModal()}};
+$('#mClose').onclick=closeRec;
+$('#mAnnex').onclick=()=>{const ids=mIds.length>1?mIds:[mIds[0]];const l=mLabel||('R.'+mIds[0]);closeRec();showRel(ids,l)};
+mBack.addEventListener('click',e=>{if(e.target===mBack)closeRec()});
+document.addEventListener('keydown',e=>{if(mBack.hidden)return;
+  if(e.key==='Escape')closeRec();
+  else if(e.key==='ArrowLeft'){e.preventDefault();$('#mPrev').click()}
+  else if(e.key==='ArrowRight'){e.preventDefault();$('#mNext').click()}
+  else if(e.key==='Tab'){const f=[...$('#modal').querySelectorAll('button:not([disabled]):not([hidden])')];if(!f.length)return;const a=document.activeElement,fi=f[0],la=f[f.length-1];
+    if(e.shiftKey&&(a===fi||a===$('#modal'))){e.preventDefault();la.focus()}else if(!e.shiftKey&&a===la){e.preventDefault();fi.focus()}}});
+
+/* pathway */
+let pStep=0;
+const PACT={1:"strategic and organizational change, and investment in governance and capacity",2:"technical and operational change, and investment in data product modernization"};
+function gapsNow(){return D.map((d,i)=>({i,d,v:val[i]})).filter(x=>x.v>0).sort((x,y)=>x.v-y.v||x.i-y.i).slice(0,4)}
+function relChips(i){return REL[i].slice(0,4).map(n=>'<button class="rbtn" data-ids="'+REL[i].join(',')+'" data-label="'+SHORT[i]+'" data-r="'+n+'" title="'+RE[n-1].tx.replace(/"/g,'&quot;')+'">R.'+n+'</button>').join('')}
+function gapList(withAct){const g=gapsNow();if(!g.length)return '<p class="lead">Set levels in the profile builder above and the priority gaps appear here.</p><div class="act"><button class="btn" data-go="profile">Open the profile builder</button></div>';
+  return '<ul class="pg">'+g.map((x,k)=>'<li><div class="r1"><span>'+(withAct?(k+1)+'. ':'')+SHORT[x.i]+'</span><small>'+(x.d.p==1?'Pillar I':'Pillar II')+' · level '+L[x.v-1]+'</small></div>'+(withAct?'<div class="r2">Typically requires '+PACT[x.d.p].split(', and')[0]+'</div>':'')+'<div class="r2">Related CCSA recommendations: '+relChips(x.i)+'</div></li>').join('')+'</ul>'}
+function pathRender(){
+  $$('.path .ps').forEach(b=>b.setAttribute('aria-selected',+b.dataset.i===pStep));
+  const P=$('#pp');if(!P)return;let h='';
+  const a=i=>{const q=D.map((d,j)=>[d,val[j]]).filter(x=>x[0].p===i&&x[1]>0);return q.length?(q.reduce((s,x)=>s+x[1],0)/q.length).toFixed(1):'–'};
+  const n=val.filter(v=>v>0).length;
+  if(pStep===0)h='<div><span class="tag">Step 1 of 5</span><h3>Assess</h3><p class="lead">Answer the questions, attach evidence, and place each dimension on a maturity level. Scores roll up from dimension to pillar to overall.</p><div class="act"><button class="btn" data-go="profile">Edit the profile</button><button class="btn primary" data-step="1">Next: Prioritize</button></div></div><div><span class="full-label">Your profile so far</span><div class="pstat"><div><strong>'+n+' of 12</strong><span>dimensions set</span></div><div><strong>'+a(1)+'</strong><span>Pillar I average, of 4</span></div><div><strong>'+a(2)+'</strong><span>Pillar II average, of 4</span></div></div></div>';
+  else if(pStep===1)h='<div><span class="tag">Step 2 of 5</span><h3>Prioritize</h3><p class="lead"><b>What to strengthen:</b> the priority institutional and data-service gaps. These are the lowest-level dimensions in your profile.</p><div class="act"><button class="btn" data-step="0">Back</button><button class="btn primary" data-step="2">Next: Plan</button></div></div><div><span class="full-label">Priority gaps and related CCSA recommendations</span>'+gapList(false)+'</div>';
+  else if(pStep===2)h='<div><span class="tag">Step 3 of 5</span><h3>Plan</h3><p class="lead"><b>What to build:</b> a realistic sequence aligned with national capacity. The first gap is listed first; adjust the order to fit funding, skills and leadership support.</p><div class="act"><button class="btn" data-step="1">Back</button><button class="btn primary" data-step="3">Next: Implement</button></div></div><div><span class="full-label">Sequence and kind of change</span>'+gapList(true)+'</div>';
+  else if(pStep===3)h='<div><span class="tag">Step 4 of 5</span><h3>Implement</h3><p class="lead">Carry out the sequenced actions with the partners you identified. Pillar I gaps typically need '+PACT[1]+'. Pillar II gaps typically need '+PACT[2]+'.</p><div class="act"><button class="btn" data-step="2">Back</button><button class="btn primary" data-step="4">Next: Adapt</button></div></div><div><span class="full-label">Where to partner</span><p class="lead">Shared tools, standards, financing and expertise. The CCSA recommendations on collaboration and partnerships are a starting point.</p><div class="chips" style="margin-top:10px">'+[30,31,32,33,34,37,38,39].map(n=>'<button class="rbtn" data-ids="30,31,32,33,34,37,38,39" data-label="Collaboration and partnerships" data-r="'+n+'" title="'+RE[n-1].tx.replace(/"/g,'&quot;')+'">R.'+n+'</button>').join('')+'</div></div>';
+  else h='<div><span class="tag">Step 5 of 5</span><h3>Adapt</h3><p class="lead">Review progress, update the profile and adjust the plan as conditions change. Then assess again.</p><div class="act"><button class="btn" data-step="3">Back</button><button class="btn primary" data-step="0">Start again at Assess</button></div></div><div><span class="full-label">A shared basis for national action</span><p class="lead">The results give countries a shared basis for national action. The framework does not rank them.</p></div>';
+  P.innerHTML=h}
+$$('.path .ps').forEach(b=>b.onclick=()=>{pStep=+b.dataset.i;pathRender()});
+$('#pp').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.step!==undefined){pStep=+b.dataset.step;pathRender()}
+  else if(b.dataset.go)goTo(b.dataset.go,true);
+  else if(b.dataset.r){const ids=b.dataset.ids.split(',').map(Number);openRec(ids,ids.indexOf(+b.dataset.r),b.dataset.label)}});
+const _render=render;render=function(){_render();pathRender()};
+pathRender();
+
+pick(0);
+/* nav: explicit scroll + scroll-position highlight */
+const links=$$('#nav a'),secs=$$('main section.s');
+const OFF=76;
+function goTo(id,smooth){const el=document.getElementById(id);if(!el)return;
+  const y=el.getBoundingClientRect().top+window.scrollY-OFF+ (id==='ccsa'||true?60:0);
+  const rm=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  window.scrollTo({top:Math.max(0,y),behavior:(smooth&&!rm)?'smooth':'auto'})}
+function mark(){let cur=null;const line=OFF+90;
+  secs.forEach(s=>{if(s.getBoundingClientRect().top<=line+60)cur=s.id});
+  if(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-4)cur=secs[secs.length-1].id;
+  links.forEach(a=>{const on=a.getAttribute('href')==='#'+cur;a.classList.toggle('on',on);if(on)a.setAttribute('aria-current','true');else a.removeAttribute('aria-current')});
+  const on=$('#nav a.on');if(on){const n=$('#nav');const l=on.offsetLeft-n.offsetLeft;if(l<n.scrollLeft||l+on.offsetWidth>n.scrollLeft+n.clientWidth)n.scrollLeft=Math.max(0,l-20)}}
+links.forEach(a=>a.addEventListener('click',e=>{e.preventDefault();goTo(a.getAttribute('href').slice(1),true)}));
+document.querySelectorAll('a[href="#ccsa"]').forEach(a=>{if(!a.closest('#nav'))a.addEventListener('click',e=>{e.preventDefault();goTo('ccsa',true)})});
+let tick=false;addEventListener('scroll',()=>{if(!tick){tick=true;requestAnimationFrame(()=>{tick=false;mark()})}},{passive:true});
+addEventListener('resize',mark);mark();
+</script>
+
+</body></html>
