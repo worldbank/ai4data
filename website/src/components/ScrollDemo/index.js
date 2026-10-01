@@ -1,107 +1,12 @@
 import clsx from 'clsx';
 import {useEffect, useRef, useState} from 'react';
 import Link from '@docusaurus/Link';
+import AnomalyEvidence from './AnomalyEvidence';
+import MetadataEvidence from './MetadataEvidence';
 import PcnEvidence from './PcnEvidence';
+import SearchEvidence from './SearchEvidence';
 import Heading from '@theme/Heading';
-import QueryToggle from '@site/src/components/QueryToggle';
 import styles from './styles.module.css';
-
-const PipelineStages = [
-  {name: 'Primary', role: 'Detect'},
-  {name: 'Secondary', role: 'Re-scan'},
-  {name: 'Critic', role: 'Filter'},
-  {name: 'Categorizer', role: 'Classify'},
-  {name: 'Severity Scorer', role: 'Rank'},
-];
-
-const IssueCategories = [
-  'Typo / Language',
-  'Formatting / Structure',
-  'Missing / Redundant Info',
-  'Inconsistency / Conflict',
-  'Incorrect / Invalid Content',
-  'Ambiguity / Unclear',
-];
-
-// Real worked example from docs/anomaly/explanation/elicitation-pipeline.md
-const YEARS = [2013, 2014, 2015, 2016, 2017];
-const VALUES = [6.67, 6.31, 2.65, -1.62, 0.8];
-const yFor = (v) => 140 - ((v + 3) / 11) * 130;
-const X = [20, 110, 200, 290, 380];
-const POINTS = X.map((x, i) => `${x},${yFor(VALUES[i]).toFixed(1)}`).join(' ');
-
-function PipelineEvidence() {
-  return (
-    <div className={styles.evidenceBox}>
-      <div className={styles.pipelineRow}>
-        {PipelineStages.map((stage, i) => (
-          <div className={styles.pipelineStage} key={stage.name}>
-            <div className={styles.pipelineStageHead}>
-              <span className={styles.pipelineIndex}>{i + 1}</span>
-              <span className={styles.pipelineRole}>{stage.role}</span>
-            </div>
-            <div className={styles.pipelineName}>{stage.name}</div>
-          </div>
-        ))}
-      </div>
-      <div className={styles.pipelineFoot}>
-        <span className={styles.pipelineFootLabel}>
-          Output: six issue categories
-        </span>
-        <div className={styles.chips}>
-          {IssueCategories.map((c) => (
-            <span className={styles.chip} key={c}>
-              {c}
-            </span>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function AnomalyEvidence() {
-  return (
-    <div className={styles.evidenceBox}>
-      <div className={styles.chartLabel}>GDP growth (annual %), Nigeria</div>
-      <svg
-        className={styles.chart}
-        viewBox="0 0 400 150"
-        preserveAspectRatio="xMidYMid meet">
-        <rect x={200} y={0} width={90} height={150} className={styles.anomalyBand} />
-        <polyline points={POINTS} className={styles.line} fill="none" />
-        {X.map((x, i) => (
-          <circle
-            key={x}
-            cx={x}
-            cy={yFor(VALUES[i])}
-            r={i === 3 ? 5 : 3}
-            className={i === 3 ? styles.pointFlagged : styles.point}
-          />
-        ))}
-        {YEARS.map((year, i) => (
-          <text key={year} x={X[i]} y={144} textAnchor="middle" className={styles.axisLabel}>
-            {year}
-          </text>
-        ))}
-      </svg>
-      <div className={styles.anomalyOutput}>
-        <div className={styles.outputRow}>
-          <span className={styles.outputKey}>Classification</span>
-          <span className={styles.badge}>external_driver</span>
-        </div>
-        <div className={styles.outputRow}>
-          <span className={styles.outputKey}>Confidence</span>
-          <span className={styles.outputValue}>0.92</span>
-        </div>
-        <div className={styles.outputRow}>
-          <span className={styles.outputKey}>Evidence strength</span>
-          <span className={styles.outputValue}>strong_direct</span>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 const Stops = [
   {
@@ -120,7 +25,7 @@ const Stops = [
       to: '/docs/metadata-reviewer/overview',
       label: 'See the full pipeline reference',
     },
-    Evidence: PipelineEvidence,
+    Evidence: MetadataEvidence,
   },
   {
     id: 'anomaly',
@@ -146,13 +51,14 @@ const Stops = [
     title: 'Search and MCP access to the catalog',
     body: (
       <p>
-        The catalog can be searched in plain language. The same query can
-        also be sent by an AI agent as a Model Context Protocol (MCP) tool
-        call. Both return results from the same indicator index.
+        The catalog can be searched in plain language, and the results are
+        ranked by meaning. A result can match a query without sharing any of
+        its words. The same query can also be sent by an AI agent as a Model
+        Context Protocol (MCP) tool call.
       </p>
     ),
     link: {to: '/docs/mcp/', label: 'See the MCP integration guide'},
-    Evidence: QueryToggle,
+    Evidence: SearchEvidence,
   },
   {
     id: 'pcn',
@@ -229,9 +135,9 @@ export default function ScrollDemo() {
             Example outputs
           </Heading>
           <p className={styles.lede}>
-            Scroll to step through the examples. The panel and its
-            description change together. Every number and label below is
-            drawn from the program&apos;s own documentation and data.
+            Each example shows output from one workstream. Every number and
+            label below is drawn from the program&apos;s own documentation
+            and data.
           </p>
         </div>
 
