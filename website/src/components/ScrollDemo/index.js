@@ -5,10 +5,28 @@ import AnomalyEvidence from './AnomalyEvidence';
 import MetadataEvidence from './MetadataEvidence';
 import PcnEvidence from './PcnEvidence';
 import SearchEvidence from './SearchEvidence';
+import SnapshotEvidence from './SnapshotEvidence';
 import Heading from '@theme/Heading';
 import styles from './styles.module.css';
 
 const Stops = [
+  {
+    id: 'snapshot',
+    eyebrow: 'Data Snapshots',
+    title: 'From a PDF figure to structured data',
+    body: (
+      <p>
+        A layout detection model locates a figure or table on a PDF page. The
+        region is saved as a data snapshot, and the snapshot is converted to
+        structured data that other tools can search and compute on.
+      </p>
+    ),
+    link: {
+      to: 'https://arxiv.org/abs/2606.06242',
+      label: 'Read the benchmark paper',
+    },
+    Evidence: SnapshotEvidence,
+  },
   {
     id: 'pipeline',
     eyebrow: 'Metadata Reviewer',
@@ -135,9 +153,9 @@ export default function ScrollDemo() {
             Example outputs
           </Heading>
           <p className={styles.lede}>
-            Each example shows output from one workstream. Every number and
-            label below is drawn from the program&apos;s own documentation
-            and data.
+            Each example shows output from one workstream, using the
+            program&apos;s documentation, data, and public datasets. Parts
+            that are illustrations are labeled as such.
           </p>
         </div>
 

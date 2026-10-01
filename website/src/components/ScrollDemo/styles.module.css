@@ -1,6 +1,6 @@
 .section {
   padding: 4.5rem 0;
-  background: var(--surface-1);
+  background: var(--band);
   border-top: 1px solid var(--hairline);
   border-bottom: 1px solid var(--hairline);
 }
@@ -1128,12 +1128,12 @@
 }
 
 .srTerminal {
-  margin: 0 0 0.6rem;
-  padding: 0.8rem 0.95rem;
-  min-height: 3.6rem;
+  margin: 0 0 0.45rem;
+  padding: 0.6rem 0.85rem;
+  min-height: 3rem;
   font-family: var(--ifm-font-family-monospace);
-  font-size: 0.76rem;
-  line-height: 1.6;
+  font-size: 0.7rem;
+  line-height: 1.5;
   color: var(--ink);
   background: var(--surface-2);
   border: 0;
@@ -1866,3 +1866,236 @@
   border-radius: 0 0 var(--radius) var(--radius);
 }
 
+
+.srLangs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.6rem;
+}
+
+.srLang {
+  padding: 0.2rem 0.65rem;
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+  background: transparent;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.srLang:hover {
+  color: var(--ink);
+}
+
+.srLangActive {
+  color: var(--primary);
+  background: var(--primary-subtle);
+  border-color: var(--primary);
+}
+
+/* ---------- Data Snapshots evidence ---------- */
+
+.mrSteps3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.35rem;
+  margin-bottom: 0.9rem;
+}
+
+.dsColumns {
+  display: grid;
+  grid-template-columns: 0.7fr 1.3fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.dsPage {
+  position: relative;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.dsPage img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.dsBox {
+  position: absolute;
+  border: 2px solid var(--primary);
+  background: rgba(21, 88, 214, 0.1);
+  border-radius: 2px;
+  animation: dsDraw 0.5s ease both;
+}
+
+.dsBoxTag {
+  position: absolute;
+  top: -1.15rem;
+  left: -2px;
+  padding: 0 0.35rem;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: var(--primary);
+  border-radius: 2px 2px 0 0;
+}
+
+@keyframes dsDraw {
+  from {
+    opacity: 0;
+    transform: scale(1.06);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.dsRight {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.dsSnap {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 11.5rem;
+  margin: 0 auto;
+  background: #ffffff;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  animation: dsFade 0.4s ease both;
+}
+
+@keyframes dsFade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.dsPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 4.2rem;
+  font-size: 0.78rem;
+  color: var(--ink-subtle);
+  border: 1px dashed var(--hairline);
+  border-radius: var(--radius);
+}
+
+.dsViews {
+  display: inline-flex;
+  gap: 0.25rem;
+  margin-left: 0.5rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.dsView {
+  padding: 0 0.5rem;
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+  background: transparent;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.dsViewOn {
+  color: var(--primary);
+  background: var(--primary-subtle);
+  border-color: var(--primary);
+}
+
+.dsTable {
+  display: table;
+  width: 100%;
+  margin: 0;
+  font-size: 0.76rem;
+  border-collapse: collapse;
+  animation: dsFade 0.4s ease both;
+}
+
+.dsTable th,
+.dsTable td {
+  padding: 0.3rem 0.5rem;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.dsTable thead th {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--ink-muted);
+}
+
+.dsTable td {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.dsJson {
+  max-height: 9.5rem;
+  margin: 0;
+  padding: 0.55rem 0.7rem;
+  overflow: auto;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.66rem;
+  line-height: 1.45;
+  color: var(--ink);
+  background: var(--surface-2);
+  border: 0;
+  border-radius: var(--radius);
+}
+
+.dsCheck {
+  margin: 0.4rem 0 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+@media screen and (max-width: 640px) {
+  .dsColumns {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dsBox,
+  .dsSnap,
+  .dsTable {
+    animation: none;
+  }
+}
+
+.dsFootRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  margin-top: 0.7rem;
+}
+
+.dsFootRow .pcnFine {
+  flex: 1;
+}
