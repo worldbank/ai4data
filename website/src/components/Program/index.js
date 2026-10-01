@@ -2,7 +2,7 @@ import {useState} from 'react';
 import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import Heading from '@theme/Heading';
-import {pillars, workstreams} from '@site/src/content/program';
+import {dimensions, pillars, workstreams} from '@site/src/content/program';
 import styles from './styles.module.css';
 
 function Row({w, showGsbpm}) {
@@ -28,9 +28,18 @@ function Row({w, showGsbpm}) {
   );
 }
 
+const views = [
+  {id: 'pillar', label: 'By pillar', tabs: pillars},
+  {id: 'fair', label: 'By AI-ready dimension', tabs: dimensions},
+];
+
 export default function Program() {
-  const [tab, setTab] = useState(pillars[0].id);
+  const [view, setView] = useState('pillar');
+  const [tabs, setTabs] = useState({pillar: pillars[0].id, fair: dimensions[0].id});
   const [showGsbpm, setShowGsbpm] = useState(false);
+  const current = views.find((v) => v.id === view);
+  const tab = tabs[view];
+
   return (
     <section className={styles.section}>
       <div className="container">
@@ -46,21 +55,23 @@ export default function Program() {
             and verify. All methods, software, and guidance are developed as
             open resources.
           </p>
+          <p className={styles.lede}>
+            The program builds on the FAIR principles and extends them for AI
+            systems as consumers of data. Browse the workstreams by pillar or
+            by the AI-ready dimension they improve.
+          </p>
         </div>
 
-        <div className={styles.bar}>
-          <div className={styles.tabs} role="tablist" aria-label="Program pillar">
-            {pillars.map((pillar) => (
+        <div className={styles.viewBar}>
+          <div className={styles.views} role="group" aria-label="Browse the workstreams">
+            {views.map((v) => (
               <button
                 type="button"
-                role="tab"
-                key={pillar.id}
-                id={`tab-${pillar.id}`}
-                aria-selected={tab === pillar.id}
-                aria-controls={`panel-${pillar.id}`}
-                className={clsx(styles.tab, tab === pillar.id && styles.tabActive)}
-                onClick={() => setTab(pillar.id)}>
-                {pillar.label}
+                key={v.id}
+                aria-pressed={view === v.id}
+                className={clsx(styles.view, view === v.id && styles.viewActive)}
+                onClick={() => setView(v.id)}>
+                {v.label}
               </button>
             ))}
           </div>
@@ -74,14 +85,29 @@ export default function Program() {
           </label>
         </div>
 
+        <div className={styles.bar}>
+          <div className={styles.tabs} role="tablist" aria-label={current.label}>
+            {current.tabs.map((t) => (
+              <button
+                type="button"
+                role="tab"
+                key={t.id}
+                aria-selected={tab === t.id}
+                className={clsx(styles.tab, tab === t.id && styles.tabActive)}
+                onClick={() => setTabs((prev) => ({...prev, [view]: t.id}))}>
+                {t.label}
+                {t.plus && <span className={styles.plus}>Added for AI</span>}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {pillars.map((pillar) => (
           <div
             className={styles.pillar}
             key={pillar.id}
             role="tabpanel"
-            id={`panel-${pillar.id}`}
-            aria-labelledby={`tab-${pillar.id}`}
-            hidden={tab !== pillar.id}>
+            hidden={view !== 'pillar' || tab !== pillar.id}>
             <p className={styles.pillarLede}>{pillar.lede}</p>
             <div className={styles.groups}>
               {pillar.groups.map((group) => (
@@ -96,6 +122,26 @@ export default function Program() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        ))}
+
+        {dimensions.map((d) => (
+          <div
+            className={styles.pillar}
+            key={d.id}
+            role="tabpanel"
+            hidden={view !== 'fair' || tab !== d.id}>
+            <p className={styles.pillarLede}>
+              <strong>{d.question}</strong> Attributes covered:{' '}
+              {d.attributes.join(', ').toLowerCase()}.
+            </p>
+            <div className={clsx(styles.group, styles.groupWide)}>
+              <div className={clsx(styles.rows, styles.rowsCols)}>
+                {d.items.map((id) => (
+                  <Row key={id} w={workstreams[id]} showGsbpm={showGsbpm} />
+                ))}
+              </div>
             </div>
           </div>
         ))}

@@ -10,6 +10,7 @@
   --canvas: #ffffff;
   --surface-1: #f6f7f8;
   --surface-2: #eef0f2;
+  --band: #edf2f9;
   --ink: #16191d;
   --ink-muted: #565f68;
   --ink-subtle: #8a929a;
@@ -65,6 +66,7 @@
   --canvas: #0e1013;
   --surface-1: #16191d;
   --surface-2: #1d2126;
+  --band: #141a24;
   --ink: #eef0f2;
   --ink-muted: #a2aab2;
   --ink-subtle: #6c747c;
@@ -98,11 +100,6 @@ html {
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--primary);
-}
-
-a.eyebrow:hover {
-  text-decoration: underline;
   color: var(--primary);
 }
 

@@ -4,7 +4,6 @@ import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Layout from "@theme/Layout";
 import Heading from "@theme/Heading";
 import Challenge from "@site/src/components/Challenge";
-import AiReady from "@site/src/components/AiReady";
 import Program from "@site/src/components/Program";
 import ScrollDemo from "@site/src/components/ScrollDemo";
 import HeroVisual from "@site/src/components/HeroVisual";
@@ -19,8 +18,8 @@ function HomepageHeader() {
       <div className="container">
         <div className={styles.heroGrid}>
           <div className={styles.heroInner}>
-            <Link className="eyebrow" to="https://www.worldbank.org/en/about/unit/unit-dec/dev">
-              World Bank Development Data Group
+            <Link className={clsx("eyebrow", styles.eyebrowLink)} to="https://www.worldbank.org/en/about/unit/unit-dec/dev">
+              Office of the WBG Chief Statistician &amp; Development Data Group
             </Link>
             <Heading as="h1" className={styles.heroTitle}>
               Making development data <strong>AI-ready.</strong>
@@ -88,9 +87,8 @@ export default function Home() {
       <HomepageHeader />
       <main>
         <Challenge />
-        <AiReady />
-        <Program />
         <ScrollDemo />
+        <Program />
         <GetInvolved />
         <ClosingCta />
       </main>

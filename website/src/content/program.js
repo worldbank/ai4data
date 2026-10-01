@@ -37,6 +37,12 @@ export const workstreams = {
       'AI-assisted coding of survey responses and records against standard classifications, with human review of the results.',
     gsbpm: '5.2',
   },
+  dataSnapshots: {
+    title: 'Data Snapshots',
+    to: 'https://arxiv.org/abs/2606.06242',
+    description:
+      'Layout detection models that locate figures and tables in PDF documents, so that the data they contain can be extracted. Includes a benchmark of open-source models.',
+  },
   smallAgentic: {
     title: 'Small and Agentic AI',
     description:
@@ -133,7 +139,7 @@ export const pillars = [
     groups: [
       {
         label: 'Data production',
-        items: ['classification', 'smallAgentic', 'synthetic'],
+        items: ['classification', 'dataSnapshots', 'smallAgentic', 'synthetic'],
       },
       {
         label: 'Data quality and metadata',
@@ -185,7 +191,7 @@ export const dimensions = [
     label: 'Accessible',
     question: 'Can AI retrieve it, with context?',
     attributes: ['Openly accessible', 'Machine-readable', 'Real-time accessibility'],
-    items: ['mcp', 'platforms'],
+    items: ['mcp', 'platforms', 'dataSnapshots'],
   },
   {
     id: 'interoperable',
@@ -214,7 +220,7 @@ export const dimensions = [
     label: 'Inclusive',
     question: 'Does it work across languages and countries?',
     attributes: ['Diversity and representativeness'],
-    items: ['inclusive'],
+    items: ['inclusive', 'smallAgentic'],
     plus: true,
   },
 ];

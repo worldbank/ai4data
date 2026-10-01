@@ -1,6 +1,6 @@
 .heroBanner {
   padding: 5.5rem 0 4.5rem;
-  background: var(--canvas);
+  background: linear-gradient(180deg, var(--band) 0%, var(--canvas) 100%);
   border-bottom: 1px solid var(--hairline);
 }
 
@@ -131,4 +131,13 @@
   background: #d7e3fb;
   border-color: #d7e3fb;
   color: var(--ink-block);
+}
+
+.eyebrowLink {
+  display: inline-block;
+}
+
+.eyebrowLink:hover {
+  color: var(--primary);
+  text-decoration: underline;
 }

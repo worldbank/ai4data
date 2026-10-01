@@ -106,12 +106,12 @@ const config = {
         copyright: `
           <div class="fb-brand">
             <strong>AI for Data - Data for AI</strong>
-            <span><a href="https://www.worldbank.org/en/about/unit/unit-dec/dev">Development Data Group</a> · World Bank Group</span>
+            <span><a href="https://www.worldbank.org/en/about/unit/unit-dec/dev">Office of the WBG Chief Statistician &amp; Development Data Group</a> · World Bank Group</span>
             <a href="mailto:ai4data@worldbank.org">ai4data@worldbank.org</a>
           </div>
           <div class="fb-legal">
             <div>Country borders or names do not necessarily reflect the World Bank Group's official position. All maps are for illustrative purposes and do not imply the expression of any opinion on the part of the World Bank, concerning the legal status of any country or territory or concerning the delimitation of frontiers or boundaries.</div>
-            <div>All content (unless otherwise specified) is subject to the <a href="https://opensource.org/license/mit">MIT License</a>. Copyright © ${new Date().getFullYear()} World Bank Group, <a href="https://www.worldbank.org/en/about/unit/unit-dec/dev">Development Data Group</a>.</div>
+            <div>All content (unless otherwise specified) is subject to the <a href="https://opensource.org/license/mit">MIT License</a>. Copyright © ${new Date().getFullYear()} World Bank Group, <a href="https://www.worldbank.org/en/about/unit/unit-dec/dev">Office of the WBG Chief Statistician &amp; Development Data Group</a>.</div>
           </div>
         `,
       },
