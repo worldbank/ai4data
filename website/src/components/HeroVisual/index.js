@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.css';
 
-// One indicator followed through three steps. The indicator name and the
+// A simple example that follows one indicator through three properties. The indicator name and the
 // Philippines value come from the WDI API (SN.ITK.SVFI.ZS, 2023). The typo in
 // the first step is an illustrative metadata issue.
 const STEP_MS = [3400, 3400, 5200];
@@ -30,8 +30,10 @@ export default function HeroVisual() {
       className={styles.wrap}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      aria-label="One indicator followed through three steps: fix the metadata, find it by meaning, check the number">
-      <div className={styles.header}>One indicator, three steps</div>
+      aria-label="A simple example with one indicator: clean metadata, findable by meaning, verifiable number">
+      <div className={styles.header}>
+        A simple example with one indicator
+      </div>
 
       <div className={styles.body}>
         <div className={styles.rail} aria-hidden="true">
@@ -48,7 +50,7 @@ export default function HeroVisual() {
             onClick={() => setActive(0)}>
             <span className={styles.title}>
               <span className={styles.step}>1</span>
-              Fix the metadata
+              Clean metadata
             </span>
             <span className={styles.field}>name</span>
             <span className={styles.line}>
@@ -74,7 +76,7 @@ export default function HeroVisual() {
             onClick={() => setActive(1)}>
             <span className={styles.title}>
               <span className={styles.step}>2</span>
-              Find it by meaning
+              Findable by meaning
             </span>
             <span className={styles.search}>
               <span aria-hidden="true">&#8981;</span> how many people go hungry
@@ -92,7 +94,7 @@ export default function HeroVisual() {
             onClick={() => setActive(2)}>
             <span className={styles.title}>
               <span className={styles.step}>3</span>
-              Check the number
+              Verifiable number
             </span>
             <span className={styles.line}>
               Philippines, 2023:{' '}
@@ -127,9 +129,11 @@ export default function HeroVisual() {
             <span className={clsx(styles.chip, verified && styles.chipOn)}>
               {verified ? 'Verified against WDI' : 'Source: WDI'}
             </span>
-            {verified && (
-              <span className={styles.hint}>Hover over 3% to see the proof</span>
-            )}
+            <span
+              className={clsx(styles.hint, !verified && styles.hintHidden)}
+              aria-hidden={!verified}>
+              Hover over 3% to see the proof
+            </span>
           </button>
         </div>
       </div>

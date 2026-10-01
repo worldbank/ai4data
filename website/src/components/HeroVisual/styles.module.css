@@ -242,6 +242,10 @@
   color: var(--ink-muted);
 }
 
+.hintHidden {
+  visibility: hidden;
+}
+
 .hint {
   font-size: 0.7rem;
   color: var(--ink-muted);
