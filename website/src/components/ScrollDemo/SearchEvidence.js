@@ -7,7 +7,35 @@ import styles from "./styles.module.css";
 // and the names of the 1,498 WDI indicators), and the Philippines values come
 // from the WDI API (latest year available, fetched 2026-10-01). Tool names
 // follow docs/mcp/mcp.md.
-const QUERY = "how many people go hungry in the Philippines";
+// English is the measured run. The other languages are an illustration: the
+// same ranking is shown for a translated query, without scores.
+const LANGS = [
+  {
+    key: "en",
+    label: "English",
+    query: "how many people go hungry in the Philippines",
+    concept: /(hungry)/,
+  },
+  {
+    key: "es",
+    label: "Español",
+    query: "cuántas personas pasan hambre en Filipinas",
+    concept: /(hambre)/,
+  },
+  {
+    key: "fr",
+    label: "Français",
+    query: "combien de personnes souffrent de la faim aux Philippines",
+    concept: /(faim)/,
+  },
+  {
+    key: "fil",
+    label: "Filipino",
+    query: "ilang tao ang nagugutom sa Pilipinas",
+    concept: /(nagugutom)/,
+  },
+];
+const QUERY = LANGS[0].query;
 
 const RESULTS = [
   {
@@ -49,16 +77,6 @@ const Modes = [
   { key: "agent", label: "AI agent: MCP tool calls" },
 ];
 
-const STOPWORDS = new Set(["how", "many", "go", "in", "the"]);
-const queryWords = new Set(
-  QUERY.toLowerCase()
-    .split(/\s+/)
-    .filter((w) => !STOPWORDS.has(w)),
-);
-const tokenize = (name) => name.split(/(\s+)/);
-const isHit = (token) =>
-  queryWords.has(token.toLowerCase().replace(/[^a-z]/g, ""));
-
 // "hungry" in the query and "food insecurity" in the titles describe the same
 // condition without sharing a word. Both are highlighted in the same colour.
 const withMark = (text, pattern, key) =>
@@ -74,7 +92,8 @@ const withMark = (text, pattern, key) =>
 
 const REQ1 = `→ tools/call  search_indicators\n  { "query": "${QUERY}" }`;
 const RESP1 = `← [ ${RESULTS.map(
-  (r) => `{ "indicator": "${r.code}", "score": ${r.score} }`,
+  (r) =>
+    `{ "indicator": "${r.code}", "score": ${r.score},\n      "name": "${r.name}" }`,
 ).join(",\n    ")} ]`;
 const REQ2 = `→ tools/call  get_indicator\n  { "indicator_code": "${RESULTS[0].code}",\n    "country_code": "PHL",\n    "start_year": 2023, "end_year": 2023 }`;
 const RESP2 = `← { "country": "PHL", "year": 2023,\n    "value": 3 }`;
@@ -86,7 +105,11 @@ export default function SearchEvidence({ active = true }) {
   const [step, setStep] = useState(0);
   const [shown, setShown] = useState(0); // person view: results revealed
   const [sel, setSel] = useState(0);
+  const [langKey, setLangKey] = useState("en");
   const [copied, setCopied] = useState(false);
+
+  const lang = LANGS.find((l) => l.key === langKey);
+  const measured = lang.key === "en";
 
   // Person steps: 0 typing, 1 waiting, 2 results. Agent steps: 0 typing
   // request 1, 1 waiting, 2 response 1, 3 typing request 2, 4 waiting, 5 done.
@@ -115,10 +138,10 @@ export default function SearchEvidence({ active = true }) {
     setShown(0);
     if (mode === "person") {
       const per = 32;
-      for (let i = 1; i <= QUERY.length; i += 1) {
+      for (let i = 1; i <= lang.query.length; i += 1) {
         at(350 + per * i, () => setTyped(i));
       }
-      const t = 350 + per * QUERY.length;
+      const t = 350 + per * lang.query.length;
       at(t + 80, () => setStep(1));
       at(t + 650, () => setStep(2));
       RESULTS.forEach((_, i) =>
@@ -146,7 +169,7 @@ export default function SearchEvidence({ active = true }) {
       at(t + 600, () => setStep(5));
     }
     return () => timers.forEach(clearTimeout);
-  }, [active, mode, run]);
+  }, [active, mode, run, langKey]);
 
   const handleCopy = async () => {
     try {
@@ -186,6 +209,22 @@ export default function SearchEvidence({ active = true }) {
       <div className={styles.srStage}>
         {mode === "person" ? (
           <>
+            <div className={styles.srLangs} role="group" aria-label="Query language">
+              {LANGS.map((l) => (
+                <button
+                  type="button"
+                  key={l.key}
+                  aria-pressed={l.key === langKey}
+                  className={clsx(
+                    styles.srLang,
+                    l.key === langKey && styles.srLangActive,
+                  )}
+                  onClick={() => setLangKey(l.key)}
+                >
+                  {l.label}
+                </button>
+              ))}
+            </div>
             <div className={styles.srField}>
               <div className={styles.srSearchBar}>
                 <span className={styles.srIcon} aria-hidden="true">
@@ -193,8 +232,8 @@ export default function SearchEvidence({ active = true }) {
                 </span>
                 <span className={styles.srQuery}>
                   {personDone
-                    ? withMark(QUERY, /(hungry)/, "q")
-                    : sink(QUERY, typed)}
+                    ? withMark(lang.query, lang.concept, "q")
+                    : sink(lang.query, typed)}
                   {step === 0 && (
                     <span className={styles.srCaret} aria-hidden="true" />
                   )}
@@ -262,9 +301,11 @@ export default function SearchEvidence({ active = true }) {
                           >
                             {r.kind === "same" ? "Same meaning" : "Related"}
                           </span>
-                          <span className={styles.srScoreNum}>
-                            {r.score.toFixed(3)}
-                          </span>
+                          {measured && (
+                            <span className={styles.srScoreNum}>
+                              {r.score.toFixed(3)}
+                            </span>
+                          )}
                         </span>
                       </button>
                       {sel === i && (
@@ -281,9 +322,18 @@ export default function SearchEvidence({ active = true }) {
                 </ul>
                 {done && (
                   <div className={styles.srCallout}>
-                    <strong>Same meaning, different words.</strong> “Hungry” and
-                    “food insecurity” describe the same condition, and no title
-                    shares a word with the query.
+                    {measured ? (
+                      <>
+                        <strong>Same meaning, different words.</strong>{" "}
+                        “Hungry” and “food insecurity” describe the same
+                        condition, and no title shares a word with the query.
+                      </>
+                    ) : (
+                      <>
+                        <strong>Same meaning, another language.</strong> The
+                        query and the English indicator titles share no words.
+                      </>
+                    )}
                   </div>
                 )}
               </>
@@ -353,9 +403,13 @@ export default function SearchEvidence({ active = true }) {
         </div>
       )}
       <p className={styles.srMeta}>
-        <span>
-          Model <code>avsolatorio/GIST-all-MiniLM-L6-v2</code>
-        </span>
+        {measured || mode === "agent" ? (
+          <span>
+            Model <code>avsolatorio/GIST-all-MiniLM-L6-v2</code>
+          </span>
+        ) : (
+          <span>Illustration: the English ranking shown for a translated query</span>
+        )}
         <span>
           Index <code>names of 1,498 WDI indicators</code>
         </span>
