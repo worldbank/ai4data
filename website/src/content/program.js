@@ -1,6 +1,4 @@
 // Single source of truth for the program structure shown on the home page.
-// `status`: 'available' means the work is in this repository or documented on
-// this site today. 'development' means planned or underway and not yet released.
 
 export const workstreams = {
   // AI for Data: data quality and metadata
@@ -9,7 +7,6 @@ export const workstreams = {
     to: '/docs/metadata-quality/generative-ai-for-metadata-quality',
     description:
       'Scores metadata on four dimensions: completeness, semantic alignment, specificity, and consistency. The LLM output is structured and auditable.',
-    status: 'available',
     gsbpm: 'Metadata management',
   },
   metadataAugmentation: {
@@ -17,7 +14,6 @@ export const workstreams = {
     to: '/docs/metadata-augmentation/',
     description:
       'Organizes hundreds of survey variables into DDI-style thematic groups using semantic clustering.',
-    status: 'available',
     gsbpm: '5.2',
   },
   anomaly: {
@@ -25,14 +21,12 @@ export const workstreams = {
     to: '/docs/anomaly-detection/',
     description:
       'Classifies flagged anomalies as an external driver, data error, measurement update, or insufficient data, and cites the evidence.',
-    status: 'available',
     gsbpm: '5.3, 6.2, 6.3',
   },
   responsibleAi: {
     title: 'Responsible AI guidance',
     description:
       'Guidance and evaluation methods for using AI in official statistics, aligned with the UN Fundamental Principles of Official Statistics.',
-    status: 'development',
     gsbpm: 'Quality management',
   },
 
@@ -41,14 +35,18 @@ export const workstreams = {
     title: 'Statistical classification and coding',
     description:
       'AI-assisted coding of survey responses and records against standard classifications, with human review of the results.',
-    status: 'development',
     gsbpm: '5.2',
+  },
+  smallAgentic: {
+    title: 'Small and Agentic AI',
+    description:
+      'Small language models and agentic workflows for statistical processes and specialized tasks, and AI assistants built on them.',
   },
   synthetic: {
     title: 'Synthetic data',
+    to: 'https://github.com/avsolatorio/RealTabFormer',
     description:
-      'Privacy-preserving synthetic microdata for data sharing and methodological research.',
-    status: 'development',
+      'Generates synthetic tabular and relational data with REaLTabFormer, an open-source transformer model, for data sharing and methodological research.',
     gsbpm: '6.4',
   },
 
@@ -58,7 +56,6 @@ export const workstreams = {
     to: '/docs/data-discoverability/',
     description:
       'Conceptual search returns food insecurity indicators for the query “how many people go hungry”, although none of their titles contains those words.',
-    status: 'available',
     gsbpm: '7.2, 7.5',
   },
   pcn: {
@@ -66,7 +63,6 @@ export const workstreams = {
     to: 'https://arxiv.org/abs/2509.06902',
     description:
       'Checks each number in a chatbot answer against the official record and marks it as verified or flagged.',
-    status: 'available',
     gsbpm: '6.2, 7.2',
   },
   dataUse: {
@@ -74,7 +70,6 @@ export const workstreams = {
     to: '/docs/data_use/',
     description:
       'Extracts dataset mentions from reports and papers with zero-shot NER, including name variants such as “WDI” and “World Development Indicators.”',
-    status: 'available',
     gsbpm: '8.1, 8.2',
   },
 
@@ -84,21 +79,24 @@ export const workstreams = {
     to: '/docs/inclusive-ai/',
     description:
       'Multilingual embedding models covering 50+ languages, and batch inference at roughly half the cost of synchronous calls.',
-    status: 'available',
   },
   evaluation: {
     title: 'Open benchmarks and evaluation',
     description:
       'Reusable benchmarks and evaluation methods for semantic search, metadata quality, and trustworthy dissemination.',
-    status: 'development',
   },
 
   // Data for AI
+  framework: {
+    title: 'AI-ready data framework',
+    to: '/docs/ai-ready-framework',
+    description:
+      'Defines the attributes of AI-ready data under FAIR+ and maps each dimension to the workstreams of the program.',
+  },
   standards: {
     title: 'AI-ready metadata and standards',
     description:
       'Implementation guidance for DDI, SDMX, DCAT, Croissant, and schema.org, so that metadata is machine-readable and multilingual.',
-    status: 'development',
     gsbpm: 'Metadata management',
   },
   mcp: {
@@ -106,21 +104,23 @@ export const workstreams = {
     to: '/docs/mcp/',
     description:
       'An MCP server that any compatible AI client, such as Claude, ChatGPT, or a custom agent, can call.',
-    status: 'available',
     gsbpm: '7.2, 7.3',
   },
   platforms: {
     title: 'AI-assisted metadata platforms',
     description:
       'AI-assisted metadata creation, semantic search, and AI-native APIs in the open-source Metadata Editor and NADA platforms.',
-    status: 'development',
     gsbpm: '7.1',
+  },
+  knowledgeGraphs: {
+    title: 'Ontologies and knowledge graphs',
+    description:
+      'Shared concept definitions and links between indicators, variables, and datasets, so that AI systems can resolve what a term refers to.',
   },
   questionBank: {
     title: 'Global Question Bank',
     description:
       'A shared repository of question- and variable-level metadata, with multilingual semantic mappings across surveys and countries.',
-    status: 'development',
     gsbpm: '2.2',
   },
 };
@@ -133,7 +133,7 @@ export const pillars = [
     groups: [
       {
         label: 'Data production',
-        items: ['classification', 'synthetic'],
+        items: ['classification', 'smallAgentic', 'synthetic'],
       },
       {
         label: 'Data quality and metadata',
@@ -156,7 +156,7 @@ export const pillars = [
     groups: [
       {
         label: 'Standards and metadata',
-        items: ['standards'],
+        items: ['framework', 'standards'],
       },
       {
         label: 'Infrastructure',
@@ -164,7 +164,7 @@ export const pillars = [
       },
       {
         label: 'Semantic knowledge',
-        items: ['questionBank'],
+        items: ['questionBank', 'knowledgeGraphs'],
       },
     ],
   },
@@ -192,7 +192,7 @@ export const dimensions = [
     label: 'Interoperable',
     question: 'Can AI combine and interpret it?',
     attributes: ['Integrative', 'Machine-understandable', 'Contextual relevance'],
-    items: ['standards', 'questionBank', 'classification'],
+    items: ['standards', 'questionBank', 'knowledgeGraphs', 'classification'],
   },
   {
     id: 'reusable',

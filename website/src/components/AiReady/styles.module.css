@@ -106,14 +106,3 @@
   border-radius: var(--radius);
 }
 
-.chipDev {
-  color: var(--ink-muted);
-  background: transparent;
-  border-style: dashed;
-}
-
-.legend {
-  margin: 1rem 0 0;
-  font-size: 0.8rem;
-  color: var(--ink-muted);
-}

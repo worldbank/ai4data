@@ -1,18 +1,16 @@
+import {useState} from 'react';
 import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import Heading from '@theme/Heading';
 import {pillars, workstreams} from '@site/src/content/program';
 import styles from './styles.module.css';
 
-function Row({w}) {
+function Row({w, showGsbpm}) {
   const body = (
     <>
       <span className={styles.rowTop}>
         <span className={styles.rowTitle}>{w.title}</span>
-        {w.status === 'development' && (
-          <span className={styles.dev}>In development</span>
-        )}
-        {w.gsbpm && (
+        {showGsbpm && w.gsbpm && (
           <span className={styles.gsbpm}>
             {/^\d/.test(w.gsbpm) ? `GSBPM ${w.gsbpm}` : w.gsbpm}
           </span>
@@ -31,6 +29,8 @@ function Row({w}) {
 }
 
 export default function Program() {
+  const [tab, setTab] = useState(pillars[0].id);
+  const [showGsbpm, setShowGsbpm] = useState(false);
   return (
     <section className={styles.section}>
       <div className="container">
@@ -48,23 +48,50 @@ export default function Program() {
           </p>
         </div>
 
-        {pillars.map((pillar) => (
-          <div className={styles.pillar} key={pillar.id}>
-            <div className={styles.pillarHead}>
-              <Heading as="h3" className={styles.pillarTitle}>
+        <div className={styles.bar}>
+          <div className={styles.tabs} role="tablist" aria-label="Program pillar">
+            {pillars.map((pillar) => (
+              <button
+                type="button"
+                role="tab"
+                key={pillar.id}
+                id={`tab-${pillar.id}`}
+                aria-selected={tab === pillar.id}
+                aria-controls={`panel-${pillar.id}`}
+                className={clsx(styles.tab, tab === pillar.id && styles.tabActive)}
+                onClick={() => setTab(pillar.id)}>
                 {pillar.label}
-              </Heading>
-              <p className={styles.pillarLede}>{pillar.lede}</p>
-            </div>
+              </button>
+            ))}
+          </div>
+          <label className={styles.toggle}>
+            <input
+              type="checkbox"
+              checked={showGsbpm}
+              onChange={(e) => setShowGsbpm(e.target.checked)}
+            />
+            Show GSBPM tags
+          </label>
+        </div>
+
+        {pillars.map((pillar) => (
+          <div
+            className={styles.pillar}
+            key={pillar.id}
+            role="tabpanel"
+            id={`panel-${pillar.id}`}
+            aria-labelledby={`tab-${pillar.id}`}
+            hidden={tab !== pillar.id}>
+            <p className={styles.pillarLede}>{pillar.lede}</p>
             <div className={styles.groups}>
               {pillar.groups.map((group) => (
                 <div className={styles.group} key={group.label}>
-                  <Heading as="h4" className={styles.groupLabel}>
+                  <Heading as="h3" className={styles.groupLabel}>
                     {group.label}
                   </Heading>
                   <div className={styles.rows}>
                     {group.items.map((id) => (
-                      <Row key={id} w={workstreams[id]} />
+                      <Row key={id} w={workstreams[id]} showGsbpm={showGsbpm} />
                     ))}
                   </div>
                 </div>
@@ -74,9 +101,8 @@ export default function Program() {
         ))}
 
         <p className={styles.note}>
-          Items marked In development are planned or underway and not yet
-          released. Tags such as GSBPM 6.3 show where a workstream applies in
-          the Generic Statistical Business Process Model.{' '}
+          GSBPM tags show where a workstream applies in the Generic Statistical
+          Business Process Model.{' '}
           <Link to="/docs/gsbpm-mapping">See the full mapping →</Link>
         </p>
       </div>

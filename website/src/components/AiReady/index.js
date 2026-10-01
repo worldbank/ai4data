@@ -1,4 +1,3 @@
-import clsx from 'clsx';
 import Heading from '@theme/Heading';
 import {dimensions, workstreams} from '@site/src/content/program';
 import styles from './styles.module.css';
@@ -36,12 +35,7 @@ export default function AiReady() {
                 {d.items.map((id) => {
                   const w = workstreams[id];
                   return (
-                    <li
-                      key={id}
-                      className={clsx(
-                        styles.chip,
-                        w.status === 'development' && styles.chipDev,
-                      )}>
+                    <li key={id} className={styles.chip}>
                       {w.title}
                     </li>
                   );
@@ -50,9 +44,6 @@ export default function AiReady() {
             </div>
           ))}
         </div>
-        <p className={styles.legend}>
-          Dashed items are in development and not yet released.
-        </p>
       </div>
     </section>
   );

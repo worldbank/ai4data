@@ -16,9 +16,9 @@ const Gaps = [
   },
   {
     label: 'Access',
-    title: 'Data is locked in documents',
+    title: 'Data is hard for AI to retrieve',
     detail:
-      'Statistics sit in PDFs and spreadsheets, and are rarely available through machine-readable or AI-native interfaces.',
+      'Many statistics are published as PDFs and spreadsheets. Where an API exists, each organization has its own, so an AI system needs a separate integration for every source.',
   },
   {
     label: 'Verify',
