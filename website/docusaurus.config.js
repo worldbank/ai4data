@@ -66,6 +66,7 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      image: 'img/social-card.png',
       colorMode: {
         respectPrefersColorScheme: true,
       },
@@ -74,6 +75,8 @@ const config = {
         logo: {
           alt: 'World Bank Group',
           src: 'img/logo.png',
+          srcDark: 'img/logo-dark.png',
+          height: 28,
         },
         items: [
           {
