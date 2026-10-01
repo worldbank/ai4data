@@ -32,6 +32,7 @@ export default function Challenge() {
   return (
     <section className={styles.section}>
       <div className="container">
+        <div className={styles.layout}>
         <div className={styles.head}>
           <span className="eyebrow">The Challenge</span>
           <Heading as="h2" className={styles.title}>
@@ -57,6 +58,7 @@ export default function Challenge() {
               <p className={styles.detail}>{gap.detail}</p>
             </div>
           ))}
+        </div>
         </div>
       </div>
     </section>
