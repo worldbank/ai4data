@@ -63,14 +63,12 @@
   margin-bottom: 0.7rem;
 }
 
-.value {
-  font-size: clamp(2rem, 3vw, 2.75rem);
-  font-weight: 700;
+.tileTitle {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.3;
   color: var(--ink);
-  letter-spacing: -0.02em;
-  font-variant-numeric: tabular-nums;
-  line-height: 1.05;
-  white-space: nowrap;
 }
 
 .detail {

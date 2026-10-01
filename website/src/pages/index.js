@@ -3,8 +3,9 @@ import Link from "@docusaurus/Link";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Layout from "@theme/Layout";
 import Heading from "@theme/Heading";
-import ScaleBand from "@site/src/components/ScaleBand";
-import DataLifecycle from "@site/src/components/DataLifecycle";
+import Challenge from "@site/src/components/Challenge";
+import AiReady from "@site/src/components/AiReady";
+import Program from "@site/src/components/Program";
 import ScrollDemo from "@site/src/components/ScrollDemo";
 import HeroVisual from "@site/src/components/HeroVisual";
 import GetInvolved from "@site/src/components/GetInvolved";
@@ -61,26 +62,22 @@ function ClosingCta() {
   return (
     <section className={styles.closing}>
       <div className="container">
-        <div className={styles.closingInner}>
-          <span className="eyebrow" style={{ color: "#7ba7f2" }}>
-            Open Source
-          </span>
-          <Heading as="h2" className={styles.closingTitle}>
-            Open-source tooling and documentation
-          </Heading>
-          <p className={styles.closingText}>
-            Every workstream on this site is released as Python tooling with
-            documentation that covers the methodology, the pipeline code, and
-            the API reference.
-          </p>
-          <div className={styles.buttons}>
-            <Link
-              className={clsx("button button--lg", styles.closingButtonPrimary)}
-              to="https://github.com/worldbank/ai4data"
-            >
-              Explore the Repository
-            </Link>
+        <div className={styles.closingRow}>
+          <div className={styles.closingInner}>
+            <Heading as="h2" className={styles.closingTitle}>
+              Open-source tooling and documentation
+            </Heading>
+            <p className={styles.closingText}>
+              Methods, software, and guidance are developed as open resources,
+              with documentation for each released workstream.
+            </p>
           </div>
+          <Link
+            className={clsx("button button--md", styles.closingButtonPrimary)}
+            to="https://github.com/worldbank/ai4data"
+          >
+            Explore the Repository
+          </Link>
         </div>
       </div>
     </section>
@@ -92,12 +89,13 @@ export default function Home() {
   return (
     <Layout
       title={siteConfig.title}
-      description="A World Bank Development Data Group program applying AI across the development data lifecycle to make development data AI-ready."
+      description="A World Bank program that applies AI to the production and dissemination of development data and prepares that data for use by AI systems."
     >
       <HomepageHeader />
       <main>
-        <ScaleBand />
-        <DataLifecycle />
+        <Challenge />
+        <AiReady />
+        <Program />
         <ScrollDemo />
         <GetInvolved />
         <ClosingCta />

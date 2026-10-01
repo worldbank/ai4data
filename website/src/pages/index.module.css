@@ -89,29 +89,37 @@
 /* ---------- Closing ---------- */
 
 .closing {
-  padding: 2.5rem 0;
+  padding: 1.6rem 0 1.4rem;
   text-align: left;
   color: var(--ink-block-text);
   background: var(--ink-block);
 }
 
+.closingRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+}
+
 .closingInner {
-  max-width: 38rem;
+  max-width: 40rem;
 }
 
 .closingTitle {
-  color: #ffffff;
-  font-size: 1.85rem;
+  margin: 0 0 0.3rem;
+  font-size: 1.35rem;
   font-weight: 600;
-  margin: 0.5rem 0 0.6rem;
   letter-spacing: -0.01em;
+  color: #ffffff;
 }
 
 .closingText {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.55;
   color: var(--ink-block-text-soft);
-  line-height: 1.68;
-  margin-bottom: 1.25rem;
-  font-size: 1rem;
 }
 
 .closingButtonPrimary {
