@@ -33,11 +33,11 @@ This enables:
 - *Conceptual matching*: "income inequality" → finds "Gini index", "income share of poorest 40%"
 - *Cross-language queries*: (with multilingual models) "taux de pauvreté" → finds "poverty headcount ratio"
 
-Dense search is powered by vector similarity indices (e.g., FAISS {cite}`johnson2019faiss`, HNSW) that enable sub-millisecond nearest-neighbor lookup over millions of items.
+Dense search is powered by vector similarity indices (e.g., FAISS (Johnson et al., 2019), HNSW) that enable sub-millisecond nearest-neighbor lookup over millions of items.
 
 ### Sparse (Lexical) Search
 
-Keyword-based search using inverted indices (BM25 {cite}`robertson2009bm25`) remains valuable for:
+Keyword-based search using inverted indices (BM25 (Robertson & Zaragoza, 2009)) remains valuable for:
 - Exact code lookups (e.g., indicator code `NY.GDP.MKTP.KD.ZG`)
 - Short, specific queries where semantic models add noise
 - Efficient filtering before semantic re-ranking
@@ -86,7 +86,7 @@ A practical semantic search deployment for development data involves:
 3. **Query serving** — At query time, encode the user's query and run nearest-neighbor search against the index.
 4. **Re-ranking (optional)** — Apply BM25 or a cross-encoder to re-rank the top-K candidates.
 
-The [`packages/ai4data/search/`](../../packages/ai4data/search/) directory contains the JavaScript implementation. For Python-based indexing and search, the `[search]` optional dependency group provides the necessary libraries:
+The [`packages/ai4data/search/`](https://github.com/worldbank/ai4data/tree/main/packages/ai4data/search/) directory contains the JavaScript implementation. For Python-based indexing and search, the `[search]` optional dependency group provides the necessary libraries:
 
 ```bash
 uv pip install ai4data[search]
@@ -98,7 +98,7 @@ uv pip install ai4data[search]
 
 Catalogue search quality depends not only on the retrieval architecture above, but on how well the embedding model represents structured records. When metadata is a set of labeled fields rather than a single document, standard fine-tuning can make models sensitive to field order — a problem that surfaces when indexes are rebuilt or federated across systems that serialize records differently.
 
-The [Fine-Tuning Embedding Models for Structured Metadata](embedding-fine-tuning.md) subsection documents a permutation-invariant fine-tuning (PI-FT) pipeline {cite}`solatorio2026fieldorder`: a YAML-driven toolkit for generating training data, fine-tuning a small encoder, evaluating order robustness, and deploying search over structured catalogues.
+The [Fine-Tuning Embedding Models for Structured Metadata](embedding-fine-tuning.md) subsection documents a permutation-invariant fine-tuning (PI-FT) pipeline (Solatorio et al., 2026): a YAML-driven toolkit for generating training data, fine-tuning a small encoder, evaluating order robustness, and deploying search over structured catalogues.
 
 ---
 
@@ -110,5 +110,5 @@ An emerging dimension of data discoverability is making datasets accessible to A
 
 ## References
 
-- {cite}`johnson2019faiss` — Johnson, J., Douze, M., & Jégou, H. (2019). Billion-scale similarity search with GPUs. *IEEE Transactions on Big Data*, 7(3), 535–547.
-- {cite}`robertson2009bm25` — Robertson, S., & Zaragoza, H. (2009). The probabilistic relevance framework: BM25 and beyond. *Foundations and Trends in Information Retrieval*, 3(4), 333–389.
+- Johnson, J., Douze, M., & Jégou, H. (2019). Billion-scale similarity search with GPUs. *IEEE Transactions on Big Data*, 7(3), 535–547.
+- Robertson, S., & Zaragoza, H. (2009). The probabilistic relevance framework: BM25 and beyond. *Foundations and Trends in Information Retrieval*, 3(4), 333–389.

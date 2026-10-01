@@ -34,7 +34,7 @@ environment blocks outbound access to model endpoints entirely, the
 pipeline will fail at the first agent call; in that case route through
 your approved proxy or use a locally served model via `from_ollama`.
 
-:::{tip} Tip
+:::tip[Tip]
 If outbound package installation is blocked, install the wheels on a
 machine with access and transfer them, or point pip at your
 organization's internal mirror. The lazy-import design means you

@@ -146,7 +146,7 @@ dollars, but `measurement_unit` says **constant** 2015 US$):
 ]
 ```
 
-:::{note} What you will NOT see
+:::note[What you will NOT see]
 Notice the example has no issue raised about `idno` or about the date
 format in `time_coverage`. Those fall under the built-in exclusion
 rules ([Advanced Usage](advanced-usage.md)): the `idno` field is excluded entirely, and

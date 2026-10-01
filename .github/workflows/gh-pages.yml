@@ -5,7 +5,7 @@ on:
       - main
 
 jobs:
-  build-book:
+  build-site:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -14,21 +14,31 @@ jobs:
         with:
           python-version: 3.11
           cache: "pip"
-      - name: Install Dependencies
-        run: |
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          if [ -f pyproject.toml ]; then pip install ".[docs]"; fi
-      - name: Build Juputer Book Documentation
-        run: |
-          jupyter-book build . --config docs/_config.yml --toc docs/_toc.yml
+      - name: Install notebook converter dependencies
+        run: pip install ".[docs]"
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: website/package-lock.json
+      - name: Install website dependencies
+        working-directory: website
+        run: npm ci
+      - name: Convert notebooks to Markdown
+        working-directory: website
+        run: npm run convert-notebooks
+      - name: Build Docusaurus site
+        working-directory: website
+        run: npm run docusaurus -- build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         if: github.ref == 'refs/heads/main' && job.status == 'success'
         with:
-          path: "_build/html"
+          path: "website/build"
 
-  deploy-book:
-    needs: build-book
+  deploy-site:
+    needs: build-site
     permissions:
       pages: write
       id-token: write

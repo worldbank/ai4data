@@ -31,7 +31,7 @@ Each LLM (e.g., OpenAI, Gemini, Claude) is prompted with system rules and the ex
 When multiple LLMs produce explanations for the same anomaly, a **judge** (arbiter) LLM evaluates them and selects a single primary classification. The judge receives the timeseries context plus each explainer's output, then harmonizes disagreements (e.g., one model says `external_driver`, another says `insufficient_data`) into a final classification for the reviewer. This step is optional when using a single explainer.
 
 **Step 6. Reviewing and exporting for quality assurance**
-Human reviewers use a web application to view explanations alongside timeseries charts, approve or reject them, and optionally suggest corrections. Feedback is exported for audit, coverage analysis, or model improvement. LLM outputs are treated as hypotheses to be validated, not as final authority.
+Human reviewers use a web application to view explanations alongside timeseries charts, approve or reject them, and optionally suggest corrections. Feedback is exported for audit, coverage analysis, or model improvement. LLM outputs are treated as hypotheses to be validated.
 
 ---
 
@@ -70,5 +70,5 @@ For large-scale runs across thousands of anomalies, use the batch mode described
 
 - [Motivation: Why LLM Elicitation](motivation.md) — The problem of anomaly explanation, why LLMs, and the design choice of elicitation versus generation
 - [Elicitation Pipeline](elicitation-pipeline.md) — Pipeline steps, schema, judge/arbiter, code examples, and batch mode
-- [Reviewer Feedback System](../anomaly-detection/feedback-system.md) — Reviewer feedback system and export formats
-- [Timeseries Anomaly Explanation with LLMs](../../notebooks/data-anomaly/Timeseries_Anomaly_Explanation_with_LLMs.ipynb) — Step-by-step implementation notebook
+- [Reviewer Feedback System](../../anomaly-detection/feedback-system.md) — Reviewer feedback system and export formats
+- [Timeseries Anomaly Explanation with LLMs](../../notebooks/data-anomaly/timeseries-anomaly-explanation-with-llms.md) — Step-by-step implementation notebook

@@ -36,7 +36,7 @@ except RuntimeError as exc:
     print("Review did not complete:", exc)
 ```
 
-:::{note} Timeout behaviour
+:::note[Timeout behaviour]
 If the timeout elapses before the job finishes, the wait returns
 rather than raising, but the result will reflect the job's current
 (possibly unfinished) state. Check `job.status` if you need to

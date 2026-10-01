@@ -2,7 +2,7 @@
 
 This page describes the internal architecture of `ai4data.metadata.reviewer`: how its two main classes divide responsibility, how the five-agent pipeline processes a metadata record, how jobs are managed, and how the design remains independent of any specific LLM provider.
 
-The implementation is in [`src/ai4data/metadata/reviewer/`](../../src/ai4data/metadata/reviewer/).
+The implementation is in [`src/ai4data/metadata/reviewer/`](https://github.com/worldbank/ai4data/tree/main/src/ai4data/metadata/reviewer/).
 
 ---
 
@@ -133,9 +133,9 @@ client.submit(
 
 ## References
 
-- [`src/ai4data/metadata/reviewer/core.py`](../../src/ai4data/metadata/reviewer/core.py) — `MetadataReviewerCore` implementation
-- [`src/ai4data/metadata/reviewer/client.py`](../../src/ai4data/metadata/reviewer/client.py) — `MetadataReviewerClient` implementation
-- [`src/ai4data/metadata/reviewer/jobs.py`](../../src/ai4data/metadata/reviewer/jobs.py) — `Job` class
-- [`src/ai4data/metadata/reviewer/agents_manifest/default_agents_manifest.yml`](../../src/ai4data/metadata/reviewer/agents_manifest/default_agents_manifest.yml) — Default agents manifest
+- [`src/ai4data/metadata/reviewer/core.py`](https://github.com/worldbank/ai4data/blob/main/src/ai4data/metadata/reviewer/core.py) — `MetadataReviewerCore` implementation
+- [`src/ai4data/metadata/reviewer/client.py`](https://github.com/worldbank/ai4data/blob/main/src/ai4data/metadata/reviewer/client.py) — `MetadataReviewerClient` implementation
+- [`src/ai4data/metadata/reviewer/jobs.py`](https://github.com/worldbank/ai4data/blob/main/src/ai4data/metadata/reviewer/jobs.py) — `Job` class
+- [`src/ai4data/metadata/reviewer/agents_manifest/default_agents_manifest.yml`](https://github.com/worldbank/ai4data/blob/main/src/ai4data/metadata/reviewer/agents_manifest/default_agents_manifest.yml) — Default agents manifest
 - [Microsoft AutoGen documentation](https://microsoft.github.io/autogen/) — Multi-agent framework
 - [autogen-agentchat](https://pypi.org/project/autogen-agentchat/) — AutoGen conversation and team orchestration library

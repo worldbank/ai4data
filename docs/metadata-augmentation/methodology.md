@@ -2,13 +2,13 @@
 
 This chapter provides technical depth on the five-step augmentation pipeline: embedding strategy, clustering approach, token budget enforcement, LLM configuration, and schema design. It is intended for data engineers and researchers who want to understand, extend, or adapt the implementation.
 
-The implementation is in [`src/ai4data/metadata/augmentation/`](../../src/ai4data/metadata/augmentation/).
+The implementation is in [`src/ai4data/metadata/augmentation/`](https://github.com/worldbank/ai4data/tree/main/src/ai4data/metadata/augmentation/).
 
 ---
 
 ## Step 1: Loading Data Dictionaries
 
-Adapters (in [`adapters.py`](../../src/ai4data/metadata/augmentation/adapters.py)) load variable data from diverse source formats into a canonical `DictionaryVariable` list.
+Adapters (in [`adapters.py`](https://github.com/worldbank/ai4data/blob/main/src/ai4data/metadata/augmentation/adapters.py)) load variable data from diverse source formats into a canonical `DictionaryVariable` list.
 
 ### Canonical Schema
 
@@ -51,7 +51,7 @@ variables = adapter.load_json("nada_catalog.json")
 
 ## Step 2: Semantic Embedding
 
-Embedding is implemented in [`embeddings.py`](../../src/ai4data/metadata/augmentation/embeddings.py) using the `sentence-transformers` library.
+Embedding is implemented in [`embeddings.py`](https://github.com/worldbank/ai4data/blob/main/src/ai4data/metadata/augmentation/embeddings.py) using the `sentence-transformers` library.
 
 ### Model Choice
 
@@ -103,7 +103,7 @@ SVD is skipped for small dictionaries where the full embedding space is appropri
 
 ## Step 3: Clustering
 
-Implemented in [`clustering.py`](../../src/ai4data/metadata/augmentation/clustering.py).
+Implemented in [`clustering.py`](https://github.com/worldbank/ai4data/blob/main/src/ai4data/metadata/augmentation/clustering.py).
 
 ### Algorithm: AgglomerativeClustering (Ward)
 
@@ -147,7 +147,7 @@ Oversized clusters are split by moving the minimum number of trailing variables 
 
 ## Step 4: LLM Variable Group Curation
 
-Implemented in [`prompts.py`](../../src/ai4data/metadata/augmentation/prompts.py) and [`augmentor.py`](../../src/ai4data/metadata/augmentation/augmentor.py).
+Implemented in [`prompts.py`](https://github.com/worldbank/ai4data/blob/main/src/ai4data/metadata/augmentation/prompts.py) and [`augmentor.py`](https://github.com/worldbank/ai4data/blob/main/src/ai4data/metadata/augmentation/augmentor.py).
 
 ### Prompt Design
 
@@ -204,7 +204,7 @@ Structured output enforcement uses the provider's JSON Schema API when available
 
 ## Step 4b: Self-Consistency QA Agent
 
-Implemented in [`qa.py`](../../src/ai4data/metadata/augmentation/qa.py).
+Implemented in [`qa.py`](https://github.com/worldbank/ai4data/blob/main/src/ai4data/metadata/augmentation/qa.py).
 
 After curation, the pipeline optionally runs a **QA agent** — a second LLM call that assesses whether the proposed group's parts are mutually coherent (self-consistency prompting). This catches cases where the label, description, or definition do not match the selected variables.
 
@@ -345,7 +345,7 @@ groups = {g.vgid: g.txt for g in result.variable_groups}
 
 ## References
 
-- [`src/ai4data/metadata/augmentation/`](../../src/ai4data/metadata/augmentation/) — Implementation
+- [`src/ai4data/metadata/augmentation/`](https://github.com/worldbank/ai4data/tree/main/src/ai4data/metadata/augmentation/) — Implementation
 - [BAAI/bge-small-en-v1.5](https://huggingface.co/BAAI/bge-small-en-v1.5) — Default embedding model
 - [LiteLLM documentation](https://docs.litellm.ai/) — LLM provider configuration
 - [NADA microdata catalog](https://nada.ihsn.org/) — Source format for NSO microdata

@@ -1,6 +1,6 @@
 # AI Suggestion Review Board
 
-:::{note} Companion tool, not part of the package
+:::note[Companion tool, not part of the package]
 The AI Suggestion Review Board is a standalone, browser-based
 prototype (`ai_suggestion_review_board.html`). It is shipped separately
 from the Python package and is used **after** a review run, to let a
@@ -53,7 +53,7 @@ for project_name, metadata in catalogue.items():  # your dict of records
 pd.DataFrame(rows).to_excel("review_board_input.xlsx", index=False)
 ```
 
-:::{note} Schema match
+:::note[Schema match]
 Each object inside the JSON array should carry `detected_issue`,
 `issue_category`, `issue_severity`, `current_metadata`, and
 `suggested_metadata` — exactly the schema the pipeline produces. The
@@ -91,7 +91,7 @@ single typo only the changed token is colored, making it easy to confirm
 the suggestion at a glance before accepting or rejecting it. A legend
 beneath the panels restates the color meaning.
 
-:::{note} Prototype status
+:::note[Prototype status]
 The board is labelled a prototype (version 0.3). It is a review aid:
 it displays and diffs the pipeline's suggestions but does not itself
 write changes back to your metadata source. Treat acceptance and

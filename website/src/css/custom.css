@@ -1,0 +1,319 @@
+/**
+ * AI for Data - Data for AI — institutional, restrained system.
+ * Grounded in the shared pattern across Stripe / IBM Carbon / Supabase /
+ * Mintlify: one accent color, near-monochrome base, flat hairline-bordered
+ * surfaces (no drop shadows), Inter only (monospace confined to code),
+ * disciplined small-radius scale applied consistently everywhere.
+ */
+
+:root {
+  --canvas: #ffffff;
+  --surface-1: #f6f7f8;
+  --surface-2: #eef0f2;
+  --band: #edf2f9;
+  --ink: #16191d;
+  --ink-muted: #565f68;
+  --ink-subtle: #8a929a;
+  --hairline: #e2e5e8;
+  --on-primary: #ffffff;
+
+  --primary: #1558d6;
+  --primary-hover: #0f45ab;
+  --primary-press: #0c3789;
+  --primary-subtle: #eaf0fd;
+
+  --radius: 6px;
+  --radius-lg: 8px;
+
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    sans-serif;
+
+  --ifm-color-primary: var(--primary);
+  --ifm-color-primary-dark: var(--primary-hover);
+  --ifm-color-primary-darker: var(--primary-press);
+  --ifm-color-primary-darkest: #092a68;
+  --ifm-color-primary-light: #2d6be0;
+  --ifm-color-primary-lighter: #4a80e4;
+  --ifm-color-primary-lightest: #7ba3ec;
+
+  --ifm-background-color: var(--canvas);
+  --ifm-background-surface-color: var(--canvas);
+  --ifm-navbar-background-color: var(--canvas);
+  --ifm-footer-background-color: var(--ink-block);
+  --ifm-font-color-base: var(--ink);
+  --ifm-heading-color: var(--ink);
+
+  --ifm-font-family-base: var(--font-body);
+  --ifm-heading-font-family: var(--font-body);
+  --ifm-heading-font-weight: 600;
+  --ifm-font-weight-semibold: 600;
+
+  --ifm-code-font-size: 88%;
+  --ifm-global-radius: var(--radius);
+  --ifm-code-border-radius: 4px;
+  --ifm-alert-border-left-width: 3px;
+  --docusaurus-highlighted-code-line-bg: rgba(21, 88, 214, 0.08);
+
+  /* Fixed dark surface for the footer / closing band — intentionally does
+     NOT flip with theme like --ink (which is the body text color and does
+     flip), so it stays legible with light text in both themes. */
+  --ink-block: #12151a;
+  --ink-block-text: #f2f4f6;
+  --ink-block-text-soft: #a7afb7;
+}
+
+[data-theme='dark'] {
+  --canvas: #0e1013;
+  --surface-1: #16191d;
+  --surface-2: #1d2126;
+  --band: #141a24;
+  --ink: #eef0f2;
+  --ink-muted: #a2aab2;
+  --ink-subtle: #6c747c;
+  --hairline: rgba(255, 255, 255, 0.12);
+
+  --primary: #5b93f0;
+  --primary-hover: #7ba7f2;
+  --primary-press: #9dbdf5;
+  --primary-subtle: rgba(91, 147, 240, 0.14);
+
+  --ifm-color-primary: var(--primary);
+  --ifm-color-primary-dark: #3f80ed;
+  --ifm-color-primary-darker: #2a72eb;
+  --ifm-color-primary-darkest: #1558d6;
+  --ifm-color-primary-light: #7ba7f2;
+  --ifm-color-primary-lighter: #8fb3f4;
+  --ifm-color-primary-lightest: #bcd2f9;
+
+  --ifm-background-color: var(--canvas);
+  --ifm-background-surface-color: var(--canvas);
+  --ifm-navbar-background-color: var(--canvas);
+  --docusaurus-highlighted-code-line-bg: rgba(91, 147, 240, 0.12);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.eyebrow {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+/* ---------- Navbar ---------- */
+
+.navbar {
+  border-bottom: 1px solid var(--hairline);
+  box-shadow: none;
+}
+
+.navbar__title {
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+
+.navbar__logo {
+  border-radius: 3px;
+}
+
+/* ---------- Sidebar ---------- */
+
+.theme-doc-sidebar-container {
+  border-right: 1px solid var(--hairline) !important;
+}
+
+.menu__link {
+  border-radius: var(--radius);
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.menu__link--active:not(.menu__link--sublist) {
+  background: var(--primary-subtle);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.menu__list-item-collapsible:hover,
+.menu__link:hover {
+  background: var(--surface-1);
+}
+
+.sidebarSectionLabel {
+  margin: 1.1rem 0.75rem 0.4rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--hairline);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-subtle);
+}
+.menu__list > li:first-child .sidebarSectionLabel {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+/* ---------- Table of contents ---------- */
+
+.table-of-contents__link--active {
+  color: var(--primary) !important;
+  font-weight: 600;
+}
+.table-of-contents {
+  border-left: 1px solid var(--hairline);
+}
+
+/* ---------- Content ---------- */
+
+article h1 {
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+article h2 {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.markdown > p,
+.markdown li {
+  line-height: 1.72;
+}
+
+.markdown a {
+  color: var(--primary);
+  font-weight: 500;
+}
+
+/* ---------- Admonitions ---------- */
+
+.admonition {
+  border-radius: var(--radius);
+  border: 1px solid var(--hairline);
+  border-left-width: 3px;
+  box-shadow: none;
+  background: var(--surface-1);
+}
+
+/* ---------- Code blocks ---------- */
+
+div[class*='codeBlockContainer'] {
+  box-shadow: none;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+}
+
+/* ---------- Pagination ---------- */
+
+.pagination-nav__link {
+  border-radius: var(--radius);
+  border: 1px solid var(--hairline);
+  transition: border-color 0.12s ease;
+}
+.pagination-nav__link:hover {
+  border-color: var(--primary);
+  box-shadow: none;
+}
+
+/* ---------- Footer ---------- */
+
+.footer {
+  background: var(--ink-block);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.footer,
+.footer__copyright {
+  color: var(--ink-block-text-soft);
+}
+.footer a {
+  color: #cbd2d8;
+}
+.footer a:hover {
+  color: #ffffff;
+}
+/* Compact footer: brand block at the left, inline links at the right, one
+   legal block below. The copyright HTML supplies .fb-brand and .fb-legal;
+   display: contents lets them join the container's grid. */
+.footer {
+  padding: 0.7rem 0 0.6rem;
+  font-size: 0.85rem;
+}
+.footer .container {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    'brand links'
+    'legal legal';
+  column-gap: 2rem;
+  row-gap: 0.4rem;
+}
+.footer__links {
+  grid-area: links;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-content: flex-start;
+  gap: 0.25rem 1.1rem;
+  margin: 0;
+}
+.footer__link-item {
+  margin: 0;
+}
+.footer__link-separator {
+  display: none;
+}
+.footer__bottom,
+.footer__copyright {
+  display: contents;
+}
+.fb-brand {
+  grid-area: brand;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.1rem 1rem;
+  text-align: left;
+}
+.fb-brand strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+.fb-legal {
+  grid-area: legal;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 0.45rem;
+  font-size: 0.68rem;
+  line-height: 1.4;
+  text-align: left;
+}
+@media screen and (max-width: 700px) {
+  .footer .container {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'brand'
+      'links'
+      'legal';
+  }
+  .footer__links {
+    justify-content: flex-start;
+  }
+}
+.footer__title {
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #8a929a;
+  font-weight: 600;
+}
+
+/* ---------- Buttons ---------- */
+
+.button {
+  border-radius: var(--radius);
+  font-weight: 600;
+  transition: opacity 0.12s ease, background-color 0.12s ease;
+}

@@ -14,7 +14,7 @@ This section explores how generative AI—particularly large language models (LL
 - **Interoperability.** Well-structured, standards-compliant metadata enables data to be combined and compared across sources. Development datasets from the World Bank, national statistical offices, and UN agencies can only be compared reliably if they share common terminologies and schema conventions.
 - **Trust and Reusability.** Accurate, up-to-date metadata builds user confidence and increases data reuse. When metadata is inconsistent or misleading, users learn not to trust it—and eventually not to use the data at all.
 
-Poor metadata is not just an inconvenience: it actively obscures valuable datasets and can lead to misuse. A poverty indicator with an outdated geographic definition, or a health survey with a misclassified age group, can distort research conclusions and policy decisions if the error is not caught and documented.
+Poor metadata obscures valuable datasets and can lead to misuse. A poverty indicator with an outdated geographic definition, or a health survey with a misclassified age group, can distort research conclusions and policy decisions if the error is not caught and documented.
 
 ---
 
@@ -62,7 +62,7 @@ AI models can systematically identify missing or inconsistent fields, flag unusu
 
 ## LLM Assessment Workflow
 
-The [`notebooks/metadata-quality-assessment-with-llm.ipynb`](../../notebooks/metadata-quality-assessment-with-llm.ipynb) notebook demonstrates a complete metadata quality assessment pipeline applied to a development data catalog.
+The [`notebooks/metadata-quality-assessment-with-llm.ipynb`](../notebooks/metadata-quality-assessment-with-llm.md) notebook demonstrates a complete metadata quality assessment pipeline applied to a development data catalog.
 
 The workflow:
 

@@ -17,7 +17,7 @@ MetadataReviewerClient(
 | `model_client` | Any object implementing AutoGen's `ChatCompletionClient` protocol. The factory methods below build this for you. |
 | `assets_dir` | Optional path to a directory of manifest YAML files. Defaults to the `agents_manifest/` directory bundled inside the package. Set this to point at your own custom manifests. |
 
-:::{note} assets_dir vs. manifest_file
+:::note[assets_dir vs. manifest_file]
 The directory of manifests is set **once, on the constructor** via
 `assets_dir`. The specific file to use is chosen **per submission** via
 the `manifest_file` argument to `submit()`. Do not pass `assets_dir` to

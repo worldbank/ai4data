@@ -18,7 +18,7 @@ pipeline. The alternatives change the routing strategy:
 job = client.submit(metadata, team_preset="SelectorGroupChat")
 ```
 
-:::{note} Turns are bounded by the agent count
+:::note[Turns are bounded by the agent count]
 Internally the team is run with `max_turns` equal to the number of
 agents in the manifest. With the default five-agent manifest, the
 conversation runs exactly five turns — one per agent. This matters
@@ -61,7 +61,7 @@ agents_manifest:
       Output a JSON array. Print a final line: TERMINATE
 ```
 
-:::{note} Critical: end with TERMINATE
+:::note[Critical: end with TERMINATE]
 The pipeline stops when an agent's message contains the exact word
 **TERMINATE**. Your final agent's system message must instruct it to
 print that word, or the run will continue until it hits the turn

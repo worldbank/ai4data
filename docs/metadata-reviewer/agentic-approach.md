@@ -50,11 +50,11 @@ For metadata enhancement, this distinction is critical. Metadata quality work re
 
 ## How Agentic Tools Fit into a Metadata Enhancement Workflow
 
-For metadata enhancement, the goal is not simply to generate answers but to implement repeated, conditional, and auditable logic. Agentic AI tools enable this by structuring metadata quality work as a coordinated pipeline of specialised agents.
+For metadata enhancement, the goal is to implement repeated, conditional, and auditable logic. Agentic AI tools enable this by structuring metadata quality work as a coordinated pipeline of specialised agents.
 
 A typical metadata quality agent pipeline begins with a **trigger mechanism**—such as a scheduled run or an event indicating that a dataset has been published or updated. A **detection agent** then scans metadata and applies quality rules to identify potential issues. A **context or memory agent** integrates persistent storage—such as a vector database or relational store—to retain knowledge of previous flags, annotations, and decisions. A **classification agent** assigns issue categories, such as consistency, completeness, or semantic error. A **severity scoring agent** applies policy-informed logic that considers rules, historical context, and prior reviewer behaviour. An **action and escalation agent** determines whether an issue should be presented as a suggestion, routed for human review, or escalated to a subject matter expert. Finally, a **logging and audit layer** records decisions, agent versions, and execution traces.
 
-This modular, agentic structure allows metadata enhancement to be both scalable and governable, ensuring that AI support strengthens—rather than undermines—human-centred metadata quality management.
+This modular, agentic structure allows metadata enhancement to be both scalable and governable, ensuring that AI support strengthens human-centred metadata quality management.
 
 `ai4data.metadata.reviewer` implements a focused subset of this pipeline. The **primary** and **secondary** agents serve as the detection layer. The **critic** enforces governance through explicit exclusion rules. The **categorizer** and **severity_scorer** handle classification and prioritisation. Persistent storage, escalation routing, and a logging layer are outside the current scope, which is designed as a stateless, per-submission quality check that can be embedded into a broader workflow. See [implementation.md](implementation.md) for the full pipeline details.
 

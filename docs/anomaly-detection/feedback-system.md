@@ -6,7 +6,7 @@ The Anomaly Explanation Reviewer application supports collecting structured feed
 
 ## Why Reviewer Feedback Matters
 
-LLM-elicited anomaly explanations are hypotheses, not facts. Even with schema enforcement and conservative prompting, models can propose incorrect classifications, cite the wrong events, or miss domain-specific knowledge that only an expert would know. The feedback system closes the human-in-the-loop by creating a structured mechanism for reviewers to:
+LLM-elicited anomaly explanations are hypotheses. Even with schema enforcement and conservative prompting, models can propose incorrect classifications, cite the wrong events, or miss domain-specific knowledge that only an expert would know. The feedback system closes the human-in-the-loop by creating a structured mechanism for reviewers to:
 
 1. **Validate** LLM outputs that are correct (approved verdicts build confidence in the pipeline)
 2. **Correct** wrong classifications or evidence (rejected + suggested_classification improves coverage)
@@ -213,4 +213,4 @@ Reviewed and corrected labels can be used to:
 
 ## Implementation Reference
 
-The feedback system implementation is in [`apps/anomaly_review/feedback.py`](../../../apps/anomaly_review/feedback.py) and [`apps/anomaly_review/main.py`](../../../apps/anomaly_review/main.py).
+The feedback system implementation is in [`apps/anomaly_review/feedback.py`](https://github.com/worldbank/ai4data/blob/main/apps/anomaly_review/feedback.py) and [`apps/anomaly_review/main.py`](https://github.com/worldbank/ai4data/blob/main/apps/anomaly_review/main.py).

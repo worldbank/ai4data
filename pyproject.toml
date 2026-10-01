@@ -164,10 +164,11 @@ all = [
 	"ai4data[metadata-reviewer]",
 ]
 
-# Documentation
+# Documentation (Docusaurus site in website/; notebooks are converted to Markdown
+# via scripts/docs/convert_notebooks.py before the site is built)
 docs = [
-	"docutils==0.17.1", # pinned to docutils==0.17.1 due to https://github.com/worldbank/template/issues/60. See also: https://jupyterbook.org/en/stable/content/citations.html?highlight=docutils#citations-and-bibliographies
-	"jupyter-book>=1,<2",
+	"nbconvert>=7",
+	"nbformat>=5",
 ]
 
 [project.urls]

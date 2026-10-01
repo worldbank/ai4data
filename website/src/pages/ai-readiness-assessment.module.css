@@ -1,0 +1,31 @@
+.frame {
+  display: block;
+  width: 100%;
+  height: calc(100vh - var(--ifm-navbar-height));
+  min-height: 32rem;
+  border: 0;
+  transition: height 0.25s ease, margin-top 0.25s ease;
+}
+
+/* The site header hides while the framework page scrolls down. The frame
+   grows into the space the header leaves. */
+.frameFull {
+  height: 100vh;
+  margin-top: calc(-1 * var(--ifm-navbar-height));
+}
+
+:global(body.ai-readiness-page) :global(.navbar) {
+  transition: transform 0.25s ease;
+}
+
+:global(body.ai-readiness-page.ai-readiness-header-hidden) :global(.navbar) {
+  transform: translateY(-100%);
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .frame,
+  :global(body.ai-readiness-page) :global(.navbar) {
+    transition: none;
+  }
+}

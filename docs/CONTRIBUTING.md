@@ -90,4 +90,4 @@ The generated documentation will be available in the `_build/html` directory. Op
 
 ## Licensing
 
-By contributing to this project, you agree that your contributions will be licensed under the project's [LICENSE](LICENSE).
+By contributing to this project, you agree that your contributions will be licensed under the project's [LICENSE](https://github.com/worldbank/ai4data/blob/main/LICENSE).

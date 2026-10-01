@@ -2,7 +2,7 @@
 
 Semantic search over a data catalogue depends on embedding models that map queries and records into the same vector space. When records are **structured** — a title, description, unit, source, and other labeled fields — they must be flattened into one string before encoding. That serialization forces a field order, and standard fine-tuning can make the model rely on field *position* instead of field *label*. Rebuilding the index under a different order then silently degrades retrieval quality.
 
-This subsection documents a **configuration-driven pipeline** for **permutation-invariant fine-tuning (PI-FT)** of embedding models on structured metadata catalogues. It packages the method from the paper [*Field Order Should Not Matter: Permutation-Invariant Embedding Model Fine-Tuning for Structured Metadata Retrieval*](https://arxiv.org/abs/2606.30473) {cite}`solatorio2026fieldorder`.
+This subsection documents a **configuration-driven pipeline** for **permutation-invariant fine-tuning (PI-FT)** of embedding models on structured metadata catalogues. It packages the method from the paper [*Field Order Should Not Matter: Permutation-Invariant Embedding Model Fine-Tuning for Structured Metadata Retrieval*](https://arxiv.org/abs/2606.30473) (Solatorio et al., 2026).
 
 You bring a set of structured records (each a small schema of labeled fields) and a YAML config; the pipeline generates training supervision, mines hard negatives, fine-tunes a small open encoder, evaluates it (including an order-robustness test), and serves search.
 
@@ -22,10 +22,10 @@ PI-FT removes field-order fragility by serializing each record under a freshly s
 
 | Page | Contents |
 |------|----------|
-| **The method** | Problem, fix, and design rationale for permutation-invariant fine-tuning |
-| **Pipeline guide** | The five stages, commands, and outputs |
-| **Configuration reference** | Every key in the YAML config |
-| **Deployment** | Loading the model, prefixes, and scaling the index |
+| **[The method](/pift-toolkit/method)** | Problem, fix, and design rationale for permutation-invariant fine-tuning |
+| **[Pipeline guide](/pift-toolkit/pipeline)** | The five stages, commands, and outputs |
+| **[Configuration reference](/pift-toolkit/configuration)** | Every key in the YAML config |
+| **[Deployment](/pift-toolkit/deployment)** | Loading the model, prefixes, and scaling the index |
 
 ---
 

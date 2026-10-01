@@ -26,7 +26,7 @@ AI System B ──┼──► MCP Client → MCP Protocol → MCP Server → WD
 AI System C ──┘
 ```
 
-A single MCP server implementation serves all compatible AI clients. The AI system calls standardized tools and receives standardized responses. The data provider maintains one server, not dozens of integrations.
+A single MCP server implementation serves all compatible AI clients. The AI system calls standardized tools and receives standardized responses. The data provider maintains a single server.
 
 ---
 

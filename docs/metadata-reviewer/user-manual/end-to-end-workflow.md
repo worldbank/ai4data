@@ -31,7 +31,7 @@ for name, job in jobs.items():
         results[name] = []
 ```
 
-:::{note} Throughput tip
+:::note[Throughput tip]
 Submitting many jobs at once issues many concurrent LLM calls, which
 can hit provider rate limits. If you see rate-limit errors surface as
 failed jobs, submit in smaller waves, or run sequentially (submit,

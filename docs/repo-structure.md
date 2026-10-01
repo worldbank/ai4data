@@ -59,7 +59,7 @@ Maintainers with publish access to the **ai4data** npm org can release the searc
 2. From `packages/ai4data/search`, run: `npm publish --access public`. The `prepublishOnly` script builds the package first.
 3. Optionally create a git tag (e.g. `@ai4data/search@1.0.0`) and push.
 
-See [packages/ai4data/search/README.md](../packages/ai4data/search/README.md#publishing-maintainers) for full publishing steps and prerequisites.
+See [packages/ai4data/search/README.md](https://github.com/worldbank/ai4data/blob/main/packages/ai4data/search/README.md#publishing-maintainers) for full publishing steps and prerequisites.
 
 ## Adding a new @ai4data library
 

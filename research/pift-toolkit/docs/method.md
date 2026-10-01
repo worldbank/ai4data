@@ -46,8 +46,8 @@ this cut the order-change penalty from 7.4 points to 0.2, at no cost to
 in-distribution accuracy.
 
 In code this is the permutation and dropout in
-[`serialize.render_segments`](../src/pift/serialize.py), applied on the fly by the
-training data loader in [`finetune._make_transform`](../src/pift/finetune.py). It
+[`serialize.render_segments`](https://github.com/worldbank/ai4data/blob/main/research/pift-toolkit/src/pift/serialize.py), applied on the fly by the
+training data loader in [`finetune._make_transform`](https://github.com/worldbank/ai4data/blob/main/research/pift-toolkit/src/pift/finetune.py). It
 is the "two lines in the data loader" the paper refers to. Everything else is
 standard contrastive fine-tuning.
 
@@ -121,4 +121,4 @@ serving apply them automatically. The same encoder powers `pift evaluate` and
 
 ## Reference
 
-For the full method, benchmark (DevDataBench), and experimental results, see Solatorio, Dupriez, and Macalaba (2026), [*Field Order Should Not Matter*](https://arxiv.org/abs/2606.30473) {cite}`solatorio2026fieldorder`.
+For the full method, benchmark (DevDataBench), and experimental results, see Solatorio, Dupriez, and Macalaba (2026), [*Field Order Should Not Matter*](https://arxiv.org/abs/2606.30473).

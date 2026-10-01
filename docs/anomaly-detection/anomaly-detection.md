@@ -10,7 +10,7 @@ This section covers the detection and **explanation** of anomalies in timeseries
 
 The World Bank's World Development Indicators (WDI) database contains over 1,400 indicators spanning 217 economies, some with annual records going back to the 1960s. The Corporate Scorecard and Scorecard-linked databases add hundreds more series at higher resolutions. Across this breadth of data, statistical anomaly detectors routinely flag thousands of data points per review cycle as potential outliers.
 
-The deeper challenge is not detection—it is **explanation**. Identifying that a value is statistically unusual is the beginning, not the end, of a quality assurance workflow. The critical question is: *why* did this happen? Is it a data entry error, a major external event (conflict, pandemic, economic shock), a legitimate methodological revision (rebasing, new census), or something else entirely?
+The deeper challenge is **explanation**. Identifying that a value is statistically unusual is the beginning of a quality assurance workflow. The critical question is: *why* did this happen? Is it a data entry error, a major external event (conflict, pandemic, economic shock), a legitimate methodological revision (rebasing, new census), or something else entirely?
 
 Answering that question historically required a domain expert with institutional knowledge about the specific country, indicator, and time period. At the scale of thousands of anomalies across hundreds of indicators and countries, that approach does not scale. This program automates the first pass—systematically generating structured hypotheses about causes that reviewers can validate or reject.
 
@@ -101,7 +101,7 @@ uv run python -m apps.anomaly_review review.json feedback.json
 # Navigate to http://localhost:8000
 ```
 
-See the [methodology handbook](../anomaly/explanation/index.md) and the [step-by-step notebook](../../notebooks/data-anomaly/Timeseries_Anomaly_Explanation_with_LLMs.ipynb) for the full pipeline with all options.
+See the [methodology handbook](../anomaly/explanation/index.md) and the [step-by-step notebook](../notebooks/data-anomaly/timeseries-anomaly-explanation-with-llms.md) for the full pipeline with all options.
 
 ---
 
@@ -111,4 +111,4 @@ See the [methodology handbook](../anomaly/explanation/index.md) and the [step-by
 - [Motivation: Why LLM Elicitation](../anomaly/explanation/motivation.md) — The problem, why LLMs, and the elicitation design choice
 - [Elicitation Pipeline](../anomaly/explanation/elicitation-pipeline.md) — Detailed pipeline, schema reference, code examples
 - [Reviewer Feedback System](feedback-system.md) — Collecting and using reviewer feedback
-- [Timeseries Anomaly Explanation with LLMs](../../notebooks/data-anomaly/Timeseries_Anomaly_Explanation_with_LLMs.ipynb) — Step-by-step implementation notebook
+- [Timeseries Anomaly Explanation with LLMs](../notebooks/data-anomaly/timeseries-anomaly-explanation-with-llms.md) — Step-by-step implementation notebook
