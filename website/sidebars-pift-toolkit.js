@@ -21,6 +21,7 @@ const sidebars = {
       defaultStyle: true,
     },
     {type: 'link', label: 'Introduction', href: '/docs/introduction'},
+    {type: 'link', label: 'Mapping to the GSBPM', href: '/docs/gsbpm-mapping'},
 
     {
       type: 'html',

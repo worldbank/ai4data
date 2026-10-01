@@ -9,6 +9,7 @@ const sidebars = {
       defaultStyle: true,
     },
     'introduction',
+    'gsbpm-mapping',
 
     {
       type: 'html',
