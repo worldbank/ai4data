@@ -446,7 +446,7 @@ def _create_openai_client() -> Any:
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
         raise ValueError("OPENAI_API_KEY is not set.")
-    return OpenAI(api_key=api_key)
+    return OpenAI(api_key=api_key, max_retries=0)
 
 
 def _serialize(value: Any) -> dict[str, Any] | None:
