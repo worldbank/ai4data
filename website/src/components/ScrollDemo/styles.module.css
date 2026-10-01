@@ -6,7 +6,7 @@
 }
 
 .head {
-  max-width: 34rem;
+  max-width: 36rem;
   margin-bottom: 2.75rem;
 }
 
@@ -2098,4 +2098,8 @@
 
 .dsFootRow .pcnFine {
   flex: 1;
+}
+
+.head .lede + .lede {
+  margin-top: 0.75rem;
 }

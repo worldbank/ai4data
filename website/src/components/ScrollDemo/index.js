@@ -150,12 +150,13 @@ export default function ScrollDemo() {
         <div className={styles.head}>
           <span className="eyebrow">Examples</span>
           <Heading as="h2" className={styles.title}>
-            Example outputs
+            See the tools at work
           </Heading>
           <p className={styles.lede}>
-            Each example shows output from one workstream, using the
-            program&apos;s documentation, data, and public datasets. Parts
-            that are illustrations are labeled as such.
+            Five short examples show what the program&apos;s tools do and how
+            they could fit your work. Scroll to step through them, and select
+            anything in a panel to try it. Parts that are illustrations are
+            labeled.
           </p>
         </div>
 
