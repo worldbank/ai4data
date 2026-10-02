@@ -180,7 +180,7 @@ def study_to_search_row(study: dict[str, Any]) -> dict[str, Any]:
     """Build a catalog-search-compatible row from one extract study payload."""
     core = study.get("core_fields") if isinstance(study.get("core_fields"), dict) else {}
     return {
-        "id": core.get("survey_uid"),
+        "id": core.get("catalog_id"),
         "idno": study_idno(study),
         "type": study_metadata_type(study),
     }
@@ -194,12 +194,10 @@ def study_to_catalog_metadata(study: dict[str, Any]) -> dict[str, Any]:
 
     result = dict(metadata)
 
-    idno = study_idno(study)
-    if idno:
+    if idno := study_idno(study):
         result["idno"] = idno
 
-    mtype = study_metadata_type(study)
-    if mtype:
+    if mtype := study_metadata_type(study):
         result["type"] = mtype
 
     filters = study.get("filters")
@@ -320,6 +318,9 @@ def iter_extract_studies(
     cookies: dict[str, str] | None = None,
 ) -> Iterator[dict[str, Any]]:
     """Paginate all studies matching ``params`` (classic search param shape)."""
+    if max_items is not None and max_items <= 0:
+        return
+
     base_params = dict(params or {})
     page_size = int(base_params.pop("ps", 100))
     base_params.pop("page", None)
@@ -417,6 +418,9 @@ def _iter_keyset_pages(
     ``on_page``, if given, is called with every raw response before its items are yielded — for what a page
     carries besides items (``total`` on the first page of a walk, for a progress figure).
     """
+    if max_items is not None and max_items <= 0:
+        return
+
     cursor: int | None = None
     seen = 0
     while True:

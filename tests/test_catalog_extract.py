@@ -54,7 +54,7 @@ class TestStudyNormalization(unittest.TestCase):
         self.assertEqual(metadata["idno"], "RWA_NISR_DOC_2025_CPI-MR_MAY_FR_V1")
         self.assertIn("_extract_filters", metadata)
         self.assertEqual(metadata["_extract_filters"]["dataset_type"], "document")
-        self.assertEqual(metadata["_extract_core_fields"]["survey_uid"], 42)
+        self.assertEqual(metadata["_extract_core_fields"]["catalog_id"], 42)
         self.assertEqual(metadata["_extract_core_fields"]["idno"], "RWA_NISR_DOC_2025_CPI-MR_MAY_FR_V1")
 
     def test_study_to_catalog_metadata_without_core_fields(self):
@@ -120,6 +120,14 @@ class TestExtractHttp(ExtractModeTestCase):
         self.assertEqual(len(data["rows"]), 1)
         self.assertEqual(data["found"], 901)
         self.assertEqual(data["rows"][0]["idno"], "RWA_NISR_DOC_2025_CPI-MR_MAY_FR_V1")
+
+    @mock.patch("ai4data.discovery.catalog.extract.httpx.get")
+    def test_iter_extract_studies_with_a_non_positive_max_items_yields_nothing_and_sends_no_request(self, mock_get):
+        mock_get.return_value = _FakeResponse(EXTRACT_LIST)
+
+        for max_items in (0, -1):
+            self.assertEqual(list(catalog_extract.iter_extract_studies(max_items=max_items)), [])
+        mock_get.assert_not_called()
 
     @mock.patch("ai4data.discovery.catalog.extract.httpx.get")
     def test_get_metadata_json_extract_writes_cache(self, mock_get):
@@ -283,6 +291,18 @@ class TestVariablesExtract(ExtractModeTestCase):
         )
 
         self.assertEqual(len(list(catalog_extract.iter_extract_variables(max_items=2))), 2)
+
+    @mock.patch("ai4data.discovery.catalog.extract.httpx.get")
+    def test_a_non_positive_max_items_yields_nothing_and_sends_no_request(self, mock_get):
+        mock_get.return_value = _FakeResponse(
+            {"status": "success", "has_more": False, "variables": [{"a": 1}], "citations": [{"id": 1}]}
+        )
+
+        for max_items in (0, -1):
+            self.assertEqual(list(catalog_extract.iter_extract_variables(max_items=max_items)), [])
+            self.assertEqual(list(catalog_extract.iter_extract_survey_variables("S1", max_items=max_items)), [])
+            self.assertEqual(list(catalog_extract.iter_extract_citations(max_items=max_items)), [])
+        mock_get.assert_not_called()
 
     @mock.patch("ai4data.discovery.catalog.extract.httpx.get")
     def test_access_denied_raises_for_variables_too(self, mock_get):
