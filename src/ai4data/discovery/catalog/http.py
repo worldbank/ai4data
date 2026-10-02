@@ -19,6 +19,7 @@ from ..auth import get_catalog_auth_headers, get_catalog_cookies
 from ..config import METADATA_CATALOG_URL
 from ..paths import get_metadata_cache_path
 from ..ssl import configure_tls_trust_store
+from ..type_normalization import normalize_catalog_metadata_type
 from . import extract as catalog_extract
 
 configure_tls_trust_store()
@@ -84,10 +85,8 @@ def get_metadata_json(
             response.raise_for_status()
             metadata: dict = response.json()
 
-            if metadata.get("type", None) == "timeseries":
-                metadata["type"] = "indicator"
-            if metadata.get("type", None) == "survey":
-                metadata["type"] = "microdata"
+            if metadata.get("type"):
+                metadata["type"] = normalize_catalog_metadata_type(metadata["type"])
 
             if metadata_type:
                 if metadata_type and metadata.get("type", None) != metadata_type:
@@ -132,10 +131,8 @@ def get_ids_type(result: dict = None) -> dict:
         return dict(id=None, idno=None, type=None)
 
     metadata_type = result.get("type", None)
-    if metadata_type == "timeseries":
-        metadata_type = "indicator"
-    elif metadata_type == "survey":
-        metadata_type = "microdata"
+    if metadata_type:
+        metadata_type = normalize_catalog_metadata_type(metadata_type)
 
     return dict(
         id=result.get("id", None), idno=result.get("idno", None), type=metadata_type

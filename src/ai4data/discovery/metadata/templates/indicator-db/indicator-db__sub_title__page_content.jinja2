@@ -1,0 +1,5 @@
+{%- set d = database_description if database_description is mapping else {} -%}
+{%- set ts = d.title_statement if d.title_statement is mapping else {} -%}
+{%- if ts.sub_title -%}
+{{ ts.sub_title }}
+{%- endif -%}

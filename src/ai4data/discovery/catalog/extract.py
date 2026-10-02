@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from typing import Any
 from urllib.parse import quote
 
@@ -125,17 +125,22 @@ def study_idno(study: dict[str, Any]) -> str | None:
 
 
 def study_metadata_type(study: dict[str, Any]) -> str | None:
-    metadata = study.get("metadata")
-    if isinstance(metadata, dict):
-        mtype = metadata.get("type")
-        if mtype:
-            return normalize_catalog_metadata_type(str(mtype))
+    """The normalized dataset type of a study.
 
-    filters = study.get("filters")
-    if isinstance(filters, dict):
-        dataset_type = filters.get("dataset_type")
+    NADA's own ``dataset_type`` (``filters`` / ``core_fields``) is authoritative. The record's inner
+    ``metadata.type`` is only a fallback: it is unrelated to the dataset type for some schemas (ISO
+    geospatial records carry ``type: "dataset"``), so trusting it first misclassified them.
+    """
+    for section in ("filters", "core_fields"):
+        source = study.get(section)
+        dataset_type = source.get("dataset_type") if isinstance(source, dict) else None
         if dataset_type:
             return normalize_catalog_metadata_type(str(dataset_type))
+
+    metadata = study.get("metadata")
+    mtype = metadata.get("type") if isinstance(metadata, dict) else None
+    if mtype:
+        return normalize_catalog_metadata_type(str(mtype))
 
     return None
 
@@ -175,7 +180,7 @@ def study_to_search_row(study: dict[str, Any]) -> dict[str, Any]:
     """Build a catalog-search-compatible row from one extract study payload."""
     core = study.get("core_fields") if isinstance(study.get("core_fields"), dict) else {}
     return {
-        "id": core.get("id") or study.get("id"),
+        "id": core.get("catalog_id"),
         "idno": study_idno(study),
         "type": study_metadata_type(study),
     }
@@ -189,17 +194,19 @@ def study_to_catalog_metadata(study: dict[str, Any]) -> dict[str, Any]:
 
     result = dict(metadata)
 
-    idno = study_idno(study)
-    if idno:
+    if idno := study_idno(study):
         result["idno"] = idno
 
-    mtype = result.get("type") or study_metadata_type(study)
-    if mtype:
-        result["type"] = normalize_catalog_metadata_type(str(mtype))
+    if mtype := study_metadata_type(study):
+        result["type"] = mtype
 
     filters = study.get("filters")
     if isinstance(filters, dict):
         result["_extract_filters"] = filters
+
+    core_fields = study.get("core_fields")
+    if isinstance(core_fields, dict):
+        result["_extract_core_fields"] = core_fields
 
     downloads = study_download_resources(study)
     if downloads:
@@ -311,6 +318,9 @@ def iter_extract_studies(
     cookies: dict[str, str] | None = None,
 ) -> Iterator[dict[str, Any]]:
     """Paginate all studies matching ``params`` (classic search param shape)."""
+    if max_items is not None and max_items <= 0:
+        return
+
     base_params = dict(params or {})
     page_size = int(base_params.pop("ps", 100))
     base_params.pop("page", None)
@@ -344,6 +354,220 @@ def iter_extract_studies(
         if not data.get("has_more"):
             break
         offset += page_size
+
+
+def _variables_from_response(data: dict[str, Any]) -> list[dict[str, Any]]:
+    variables = data.get("variables")
+    return [v for v in variables if isinstance(v, dict)] if isinstance(variables, list) else []
+
+
+def fetch_extract_variables_page(
+    params: dict[str, Any] | None = None,
+    *,
+    base_url: str | None = None,
+    headers: dict[str, str] | None = None,
+    cookies: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    """Fetch one paginated ``/variables`` page (the whole catalog, for a full backfill)."""
+    base = base_url or extract_base_url()
+    if not base:
+        raise CatalogExtractError("Extract path is not configured")
+
+    return _request_extract(f"{base.rstrip('/')}/variables", params=params, headers=headers, cookies=cookies)
+
+
+def fetch_extract_survey_variables(
+    idno: str,
+    *,
+    params: dict[str, Any] | None = None,
+    base_url: str | None = None,
+    headers: dict[str, str] | None = None,
+    cookies: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    """Fetch ONE page of a study's variables (``limit``/``after_uid``/``offset`` in ``params``).
+
+    A study can have far more variables than fit comfortably in one response, so the route is paged; use
+    :func:`iter_extract_survey_variables` to get all of them.
+    """
+    base = base_url or extract_base_url()
+    if not base:
+        raise CatalogExtractError("Extract path is not configured")
+
+    encoded = quote(idno.strip(), safe="")
+    return _request_extract(
+        f"{base.rstrip('/')}/variables/{encoded}",
+        params=params,
+        headers=headers,
+        cookies=cookies,
+    )
+
+
+def _iter_keyset_pages(
+    fetch: Any,
+    *,
+    params: dict[str, Any] | None,
+    page_size: int,
+    max_items: int | None,
+    on_page: Callable[[dict[str, Any]], None] | None,
+    items_key: str,
+    cursor_param: str,
+    cursor_key: str,
+) -> Iterator[dict[str, Any]]:
+    """Walk a keyset-paged extract route: the page's ``cursor_key`` is the next request's ``cursor_param``.
+
+    ``on_page``, if given, is called with every raw response before its items are yielded — for what a page
+    carries besides items (``total`` on the first page of a walk, for a progress figure).
+    """
+    if max_items is not None and max_items <= 0:
+        return
+
+    cursor: int | None = None
+    seen = 0
+    while True:
+        page_params = {**(params or {}), "limit": page_size}
+        if cursor is not None:
+            page_params[cursor_param] = cursor
+        data = fetch(page_params)
+        if on_page is not None:
+            on_page(data)
+        raw = data.get(items_key)
+        batch = [item for item in raw if isinstance(item, dict)] if isinstance(raw, list) else []
+        if not batch:
+            return
+
+        for item in batch:
+            yield item
+            seen += 1
+            if max_items is not None and seen >= max_items:
+                return
+
+        cursor = data.get(cursor_key)
+        if not data.get("has_more") or cursor is None:
+            return
+
+
+def _iter_variable_pages(
+    fetch: Any,
+    *,
+    params: dict[str, Any] | None,
+    page_size: int,
+    max_items: int | None,
+    on_page: Callable[[dict[str, Any]], None] | None = None,
+) -> Iterator[dict[str, Any]]:
+    """Walk a keyset-paged variables route: ``next_after_uid`` of one page is ``after_uid`` of the next."""
+    return _iter_keyset_pages(
+        fetch,
+        params=params,
+        page_size=page_size,
+        max_items=max_items,
+        on_page=on_page,
+        items_key="variables",
+        cursor_param="after_uid",
+        cursor_key="next_after_uid",
+    )
+
+
+def iter_extract_survey_variables(
+    idno: str,
+    *,
+    page_size: int = 1000,
+    max_items: int | None = None,
+    on_page: Callable[[dict[str, Any]], None] | None = None,
+    base_url: str | None = None,
+    headers: dict[str, str] | None = None,
+    cookies: dict[str, str] | None = None,
+) -> Iterator[dict[str, Any]]:
+    """Every variable of one study, fetched page by page (keyset paging, so a page costs the same however deep)."""
+    return _iter_variable_pages(
+        lambda params: fetch_extract_survey_variables(
+            idno, params=params, base_url=base_url, headers=headers, cookies=cookies
+        ),
+        params=None,
+        page_size=page_size,
+        max_items=max_items,
+        on_page=on_page,
+    )
+
+
+def iter_extract_variables(
+    params: dict[str, Any] | None = None,
+    *,
+    max_items: int | None = None,
+    page_size: int = 1000,
+    on_page: Callable[[dict[str, Any]], None] | None = None,
+    base_url: str | None = None,
+    headers: dict[str, str] | None = None,
+    cookies: dict[str, str] | None = None,
+) -> Iterator[dict[str, Any]]:
+    """Every variable in the catalog (the ``/variables`` batch route), keyset-paged."""
+    return _iter_variable_pages(
+        lambda page_params: fetch_extract_variables_page(
+            page_params, base_url=base_url, headers=headers, cookies=cookies
+        ),
+        params=params,
+        page_size=page_size,
+        max_items=max_items,
+        on_page=on_page,
+    )
+
+
+def fetch_extract_citation(
+    citation_id: int,
+    *,
+    base_url: str | None = None,
+    headers: dict[str, str] | None = None,
+    cookies: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    """Fetch one citation document (``metadata``, ``core_fields``, ``filters``) by its NADA id."""
+    base = base_url or extract_base_url()
+    if not base:
+        raise CatalogExtractError("Extract path is not configured")
+
+    data = _request_extract(f"{base.rstrip('/')}/citations/{int(citation_id)}", headers=headers, cookies=cookies)
+    citation = data.get("citation")
+    if not isinstance(citation, dict):
+        raise CatalogExtractError(f"Extract response for citation {citation_id} has no citation")
+    return citation
+
+
+def fetch_extract_citations_page(
+    params: dict[str, Any] | None = None,
+    *,
+    base_url: str | None = None,
+    headers: dict[str, str] | None = None,
+    cookies: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    """Fetch one paginated ``/citations`` page (``limit``/``after_id``/``offset`` in ``params``)."""
+    base = base_url or extract_base_url()
+    if not base:
+        raise CatalogExtractError("Extract path is not configured")
+
+    return _request_extract(f"{base.rstrip('/')}/citations", params=params, headers=headers, cookies=cookies)
+
+
+def iter_extract_citations(
+    params: dict[str, Any] | None = None,
+    *,
+    max_items: int | None = None,
+    page_size: int = 500,
+    on_page: Callable[[dict[str, Any]], None] | None = None,
+    base_url: str | None = None,
+    headers: dict[str, str] | None = None,
+    cookies: dict[str, str] | None = None,
+) -> Iterator[dict[str, Any]]:
+    """Every citation document in the catalog (the ``/citations`` batch route), keyset-paged on the citation id."""
+    return _iter_keyset_pages(
+        lambda page_params: fetch_extract_citations_page(
+            page_params, base_url=base_url, headers=headers, cookies=cookies
+        ),
+        params=params,
+        page_size=page_size,
+        max_items=max_items,
+        on_page=on_page,
+        items_key="citations",
+        cursor_param="after_id",
+        cursor_key="next_after_id",
+    )
 
 
 def write_metadata_cache(
@@ -401,10 +625,8 @@ def fetch_metadata_from_extract(
         )
         response.raise_for_status()
         fallback: dict = response.json()
-        if fallback.get("type") == "timeseries":
-            fallback["type"] = "indicator"
-        if fallback.get("type") == "survey":
-            fallback["type"] = "microdata"
+        if fallback.get("type"):
+            fallback["type"] = normalize_catalog_metadata_type(fallback["type"])
         metadata = fallback
 
     return metadata

@@ -7,7 +7,7 @@
   "studies": [
     {
       "core_fields": {
-        "id": 42,
+        "catalog_id": 42,
         "idno": "RWA_NISR_DOC_2025_CPI-MR_MAY_FR_V1"
       },
       "filters": {

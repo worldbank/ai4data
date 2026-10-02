@@ -7,12 +7,17 @@ import uuid
 from ..config import metadata_catalog
 from ..paths import get_metadata_ids_path
 
-IDNO_KEYS = dict(
-    indicator="series_description.idno",
-    document="document_description.title_statement.idno",
-    microdata="study_desc.title_statement.idno",
-    geospatial="description.idno",
-)
+IDNO_KEYS = {
+    "indicator": "series_description.idno",
+    "document": "document_description.title_statement.idno",
+    "microdata": "study_desc.title_statement.idno",
+    "geospatial": "description.idno",
+    "indicator-db": "database_description.title_statement.idno",
+    "table": "table_description.title_statement.idno",
+    "script": "project_desc.title_statement.idno",
+    "image": "image_description.idno",
+    "video": "video_description.idno",
+}
 
 
 def create_uuid_from_string(val: str):
@@ -43,18 +48,19 @@ def get_idno_key(metadata_type: str, prefix: str = None) -> str:
 
 
 def get_idno(metadata: dict, metadata_type: str) -> str:
-    if metadata_type == "indicator":
-        idno = metadata["series_description"]["idno"]
-    elif metadata_type == "document":
-        idno = metadata["document_description"]["title_statement"]["idno"]
-    elif metadata_type == "microdata":
-        idno = metadata["study_desc"]["title_statement"]["idno"]
-    elif metadata_type == "geospatial":
-        idno = metadata["description"]["idno"]
-    else:
+    if metadata_type not in IDNO_KEYS:
         raise ValueError(f"Type {metadata_type} not supported")
 
-    return idno
+    idno = metadata
+    try:
+        for key in IDNO_KEYS[metadata_type].split("."):
+            idno = idno[key]
+    except (KeyError, TypeError):
+        idno = None
+
+    # The image and video schemas make their own ``idno`` optional, but the catalog idno is always
+    # copied to the top level (by the extract client and by MetadataLoader).
+    return idno or metadata["idno"]
 
 
 def get_metadata_ids(metadata_type: str) -> list[dict]:

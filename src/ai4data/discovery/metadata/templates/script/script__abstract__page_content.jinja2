@@ -1,0 +1,4 @@
+{%- set d = project_desc if project_desc is mapping else {} -%}
+{%- if d.abstract -%}
+{{ d.abstract }}
+{%- endif -%}

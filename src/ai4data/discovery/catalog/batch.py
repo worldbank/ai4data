@@ -13,6 +13,7 @@ from fire import Fire
 from tqdm.auto import tqdm
 
 from ..paths import get_metadata_cache_path, get_metadata_ids_path
+from ..type_normalization import normalize_catalog_metadata_type, to_catalog_api_type
 from . import extract as catalog_extract
 from .http import get_metadata_ids, get_metadata_json, is_extract_mode, search_metadata
 
@@ -40,16 +41,8 @@ def _normalize_scrape_params(params: dict) -> tuple[dict, str]:
     assert "ps" in params, "The number of items per page is required"
     assert "type" in params, "The type of metadata is required, e.g., timeseries, document, geospatial, etc."
 
-    if params["type"] == "indicator":
-        params["type"] = "timeseries"
-    if params["type"] == "microdata":
-        params["type"] = "survey"
-
-    dtype = params["type"]
-    if dtype == "timeseries":
-        dtype = "indicator"
-    elif dtype == "survey":
-        dtype = "microdata"
+    params["type"] = to_catalog_api_type(params["type"])
+    dtype = normalize_catalog_metadata_type(params["type"])
 
     return params, dtype
 

@@ -23,6 +23,75 @@ def date_parse(date: str) -> pd.Timestamp:
     return pd.to_datetime(date)
 
 
+def _format_date(value) -> str | None:
+    """``YYYY-MM-DD`` for a parsable date, else ``None``.
+
+    Catalog records hold free text (placeholders such as ``"string"``, ``"n.d."``); one unparsable date
+    must not make the whole record fail to index, so it just yields no date.
+    """
+    if value is None or isinstance(value, bool) or not str(value).strip():
+        return None
+    try:
+        parsed = date_parse(str(value).strip())
+    except (ValueError, TypeError, OverflowError):
+        return None
+    return None if pd.isna(parsed) else parsed.strftime("%Y-%m-%d")
+
+
+def _as_dict(value) -> dict:
+    """``value`` when it is a dict, else ``{}`` — malformed shapes yield empty results, not errors."""
+    return value if isinstance(value, dict) else {}
+
+
+def _dict_items(value) -> list[dict]:
+    """The dict entries of a list field (a lone dict counts as a one-item list); anything else is dropped."""
+    if isinstance(value, dict):
+        value = [value]
+    return [v for v in value if isinstance(v, dict)] if isinstance(value, list) else []
+
+
+def _sorted_names(value, key: str = "name") -> list[str] | None:
+    """Unique, sorted non-empty ``key`` values from a list of dicts, or ``None`` when there are none."""
+    names = {str(i[key]).strip() for i in _dict_items(value) if i.get(key) and str(i[key]).strip()}
+    return sorted(names) or None
+
+
+def _scalar_strings(value) -> list[str]:
+    """Non-empty strings from a string or a list of strings (other entries are dropped)."""
+    if isinstance(value, str):
+        value = [value]
+    if not isinstance(value, list):
+        return []
+    return [v.strip() for v in value if isinstance(v, str) and v.strip()]
+
+
+def _date_periods(value) -> list[dict]:
+    """Single-date periods from a date string/number or a list of them.
+
+    Dates are coerced to ``str`` first: ``pandas.to_datetime(2019)`` reads an int as epoch
+    nanoseconds (1970), not the year 2019.
+    """
+    if isinstance(value, (str, int)) and not isinstance(value, bool):
+        value = [value]
+    if not isinstance(value, list):
+        return []
+    dates = [str(v).strip() for v in value if isinstance(v, (str, int)) and str(v).strip()]
+    return [{"start": d, "end": d} for d in dates]
+
+
+def _range_periods(value, start_key: str = "start", end_key: str = "end") -> list[dict]:
+    """``{start, end}`` periods from a list of range dicts, whatever the schema calls the bounds."""
+    periods = []
+    for item in _dict_items(value):
+        period = {
+            "start": str(item[start_key]).strip() if item.get(start_key) else None,
+            "end": str(item[end_key]).strip() if item.get(end_key) else None,
+        }
+        if period["start"] or period["end"]:
+            periods.append(period)
+    return periods
+
+
 class Parser:
     metadata_type: str = None
 
@@ -395,13 +464,7 @@ class DocumentParser(Parser):
         """
         document_description = self.get_document_description(metadata)
 
-        date_published: str = document_description.get("date_published", None)
-
-        date_published = (
-            date_parse(date_published).strftime("%Y-%m-%d") if date_published else None
-        )
-
-        return date_published
+        return _format_date(document_description.get("date_published"))
 
     def parse_date_created(self, metadata: dict) -> str:
         """
@@ -415,13 +478,7 @@ class DocumentParser(Parser):
         """
         document_description = self.get_document_description(metadata)
 
-        date_created: str = document_description.get("date_created", None)
-
-        date_created = (
-            date_parse(date_created).strftime("%Y-%m-%d") if date_created else None
-        )
-
-        return date_created
+        return _format_date(document_description.get("date_created"))
 
     def parse_periods(self, metadata: dict, out_format: str = "summary") -> str | dict:
         """
@@ -810,7 +867,7 @@ class ScriptParser(Parser):
         Returns:
             dict: The script project description.
         """
-        return metadata.get("project_desc", {})
+        return _as_dict(metadata.get("project_desc"))
 
     def parse_source(self, metadata: dict) -> list[str] | None:
         """
@@ -824,14 +881,7 @@ class ScriptParser(Parser):
         """
         project = self.get_project(metadata)
 
-        authoring_entities: list[dict] = project.get("authoring_entity", [])
-        authoring_entities = filter(lambda ae: ae.get("name"), authoring_entities)
-        source: list[str] | None = sorted(
-            set([ae.get("name") for ae in authoring_entities])
-        )
-        source = None if not source else source
-
-        return source
+        return _sorted_names(project.get("authoring_entity"))
 
     def parse_geographies(self, metadata: dict) -> list[str] | None:
         """
@@ -844,13 +894,15 @@ class ScriptParser(Parser):
             list[str]: The geographic coverage.
         """
         project = self.get_project(metadata)
-        geographies: list[dict] = project.get("geographic_units", [])
+        geographies = _dict_items(project.get("geographic_units"))
 
         return super().parse_geographies(geographies)
 
     def parse_periods(self, metadata: dict, out_format: str = "summary") -> str | dict:
         """
         Parse the period from the metadata.
+
+        ``production_date`` is a single string in the script schema; a list is also accepted.
 
         Args:
             metadata (dict): The metadata.
@@ -859,8 +911,7 @@ class ScriptParser(Parser):
             str: The parsed period.
         """
         project = self.get_project(metadata)
-        production_date = project.get("production_date", [])
-        periods = [{"start": date} for date in production_date]
+        periods = _date_periods(project.get("production_date"))
 
         return super().parse_periods(periods, out_format)
 
@@ -938,3 +989,147 @@ class ScriptParser(Parser):
                 break
 
         return github
+
+
+class IndicatorDbParser(Parser):
+    """Timeseries database (NADA ``timeseriesdb``): a collection of indicator series."""
+
+    metadata_type: str = "indicator-db"
+
+    def get_database(self, metadata: dict) -> dict:
+        """
+        Get the database description from the metadata.
+
+        Args:
+            metadata (dict): The metadata.
+
+        Returns:
+            dict: The database description.
+        """
+        return _as_dict(metadata.get("database_description"))
+
+    def parse_source(self, metadata: dict) -> list[str] | None:
+        """Extract the unique authoring entity names."""
+        return _sorted_names(self.get_database(metadata).get("authoring_entity"))
+
+    def parse_geographies(self, metadata: dict) -> list[str] | None:
+        """Extract the geographic coverage from ``ref_country``."""
+        geographies = _dict_items(self.get_database(metadata).get("ref_country"))
+
+        return super().parse_geographies(geographies)
+
+    def parse_periods(self, metadata: dict, out_format: str = "summary") -> str | dict:
+        """Parse the time coverage from ``time_coverage`` (``start``/``end`` ranges)."""
+        periods = _range_periods(self.get_database(metadata).get("time_coverage"))
+
+        return super().parse_periods(periods, out_format)
+
+
+class TableParser(Parser):
+    metadata_type: str = "table"
+
+    def get_table(self, metadata: dict) -> dict:
+        """
+        Get the table description from the metadata.
+
+        Args:
+            metadata (dict): The metadata.
+
+        Returns:
+            dict: The table description.
+        """
+        return _as_dict(metadata.get("table_description"))
+
+    def parse_source(self, metadata: dict) -> list[str] | None:
+        """Extract the unique authoring entity names, falling back to the publisher."""
+        table = self.get_table(metadata)
+
+        return _sorted_names(table.get("authoring_entity")) or _sorted_names(table.get("publisher"))
+
+    def parse_geographies(self, metadata: dict) -> list[str] | None:
+        """Extract the geographic coverage from ``ref_country``."""
+        geographies = _dict_items(self.get_table(metadata).get("ref_country"))
+
+        return super().parse_geographies(geographies)
+
+    def parse_periods(self, metadata: dict, out_format: str = "summary") -> str | dict:
+        """Parse the data coverage from ``time_periods`` (``from``/``to``), falling back to ``date_published``."""
+        table = self.get_table(metadata)
+        periods = _range_periods(table.get("time_periods"), start_key="from", end_key="to")
+        if not periods:
+            periods = _date_periods(table.get("date_published"))
+
+        return super().parse_periods(periods, out_format)
+
+
+class ImageParser(Parser):
+    """Images carry either a DCMI or an IPTC block; DCMI wins when both are filled in (as NADA does)."""
+
+    metadata_type: str = "image"
+
+    def get_dcmi(self, metadata: dict) -> dict:
+        """Get ``image_description.dcmi``."""
+        return _as_dict(_as_dict(metadata.get("image_description")).get("dcmi"))
+
+    def get_iptc(self, metadata: dict) -> dict:
+        """Get ``image_description.iptc.photoVideoMetadataIPTC``."""
+        image = _as_dict(metadata.get("image_description"))
+
+        return _as_dict(_as_dict(image.get("iptc")).get("photoVideoMetadataIPTC"))
+
+    def parse_source(self, metadata: dict) -> list[str] | None:
+        """Extract the creator: DCMI ``creator``, else IPTC ``creatorNames``."""
+        creators = _scalar_strings(self.get_dcmi(metadata).get("creator"))
+        if not creators:
+            creators = _scalar_strings(self.get_iptc(metadata).get("creatorNames"))
+
+        return sorted(set(creators)) or None
+
+    def parse_geographies(self, metadata: dict) -> list[str] | None:
+        """Extract the geographic coverage: DCMI ``country``, else IPTC ``locationsShown`` country names."""
+        geographies = _dict_items(self.get_dcmi(metadata).get("country"))
+        if not geographies:
+            locations = _dict_items(self.get_iptc(metadata).get("locationsShown"))
+            geographies = [{"name": loc.get("countryName") or loc.get("name")} for loc in locations]
+
+        return super().parse_geographies(geographies)
+
+    def parse_periods(self, metadata: dict, out_format: str = "summary") -> str | dict:
+        """Parse the creation date: DCMI ``date``, else IPTC ``dateCreated``."""
+        date = self.get_dcmi(metadata).get("date") or self.get_iptc(metadata).get("dateCreated")
+        periods = _date_periods(date)
+
+        return super().parse_periods(periods, out_format)
+
+
+class VideoParser(Parser):
+    metadata_type: str = "video"
+
+    def get_video(self, metadata: dict) -> dict:
+        """
+        Get the video description from the metadata.
+
+        Args:
+            metadata (dict): The metadata.
+
+        Returns:
+            dict: The video description.
+        """
+        return _as_dict(metadata.get("video_description"))
+
+    def parse_source(self, metadata: dict) -> list[str] | None:
+        """Extract the creator."""
+        return sorted(set(_scalar_strings(self.get_video(metadata).get("creator")))) or None
+
+    def parse_geographies(self, metadata: dict) -> list[str] | None:
+        """Extract the geographic coverage from ``country``."""
+        geographies = _dict_items(self.get_video(metadata).get("country"))
+
+        return super().parse_geographies(geographies)
+
+    def parse_periods(self, metadata: dict, out_format: str = "summary") -> str | dict:
+        """Parse ``date_published``, falling back to ``date_created``."""
+        video = self.get_video(metadata)
+        periods = _date_periods(video.get("date_published") or video.get("date_created"))
+
+        return super().parse_periods(periods, out_format)
