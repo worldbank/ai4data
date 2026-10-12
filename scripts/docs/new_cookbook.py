@@ -171,7 +171,7 @@ def main(argv: list[str] | None = None) -> int:
             f"    to: '/cookbook/{args.id}/',\n"
             "  },\n"
         )
-        cards = cards.replace("\n];\n", "\n" + card + "];\n")
+        cards = cards.replace("\n];\n", "\n" + card + "];\n", 1)
         CARDS.write_text(cards)
 
     print(f"created cookbook/{args.id}/ with {len(chapters)} chapter(s)")

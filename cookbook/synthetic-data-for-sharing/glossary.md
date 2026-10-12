@@ -45,6 +45,8 @@ description: Terms used in the Practical Guide to Synthetic Data for Sharing.
 
 **Fully synthetic.** A file in which every value is generated; the subject of this guide.
 
+**Gap.** The distance between a dimension's current level and its target, measured in levels and in the number of questions below the target's value.
+
 **Gate.** The rule that decides whether a change ships, applied to a paired comparison of the evaluation suite before and after the change.
 
 **GPU.** A graphics processing unit, the processor on which language models run fast; its memory decides which model fits.
@@ -91,6 +93,8 @@ description: Terms used in the Practical Guide to Synthetic Data for Sharing.
 
 **Target analysis.** A statistic or model that users of the file will compute, compared between the real and the synthetic file in the utility report.
 
+**Target level.** The maturity level a dimension is to reach by the end of a planning cycle, set with a written reason and approved by the board.
+
 **Threshold.** The value of a score (a confidence, a similarity, a garble rate) at which the rule changes what happens to an item; set from measurements.
 
 **Total variation distance.** A measure of the difference between two categorical distributions, from 0 (identical) to 1 (no overlap).
@@ -102,6 +106,8 @@ description: Terms used in the Practical Guide to Synthetic Data for Sharing.
 **Verified.** The status of an extracted value that matched a printed label, a total, a derivation, or a catalog value.
 
 **Visit sequence.** The order in which variables are synthesized in a sequential method.
+
+**Wave.** A set of dimensions that can be worked in parallel because everything they depend on is already at target or in an earlier wave.
 
 **Weight.** A variable that scales each record to the population, with the calibration and the estimates it applies to documented.
 

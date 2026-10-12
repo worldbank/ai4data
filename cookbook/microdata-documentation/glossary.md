@@ -15,6 +15,8 @@ description: Terms used in the Practical Guide to AI-Ready Microdata Documentati
 
 **AI-ready.** Data and metadata that software, including AI systems, can find, retrieve, interpret, and cite without manual steps. See the [AI-ready data framework](/docs/ai-ready-framework).
 
+**AI-use policy.** The one-page statement, approved at the top of the organization, of which tasks a model may assist, which uses are prohibited, which controls apply, and who owns each instrument.
+
 **API.** Application programming interface: the address at which a program asks a system for data and receives it in a structured form.
 
 **BM25.** A keyword ranking function used by most search engines. It matches exact words and weights rare ones more.
@@ -26,6 +28,8 @@ description: Terms used in the Practical Guide to AI-Ready Microdata Documentati
 **Checksum.** A fingerprint of a file's content (here SHA-256) that changes if one byte of the file changes; used to prove that a file is as released.
 
 **Code list.** A published table of the codes used in a dataset (for geography, periods, categories) with their labels. In SDMX, a code list is part of the data structure definition.
+
+**Component register.** The table with one row per AI component the organization runs: owner, model, provider, data, human review, risk tier, approval and review dates, and exit plan.
 
 **Concept map.** A table that links each variable to the concept it measures and the classification it follows, with version, level, and URI.
 
@@ -60,6 +64,8 @@ description: Terms used in the Practical Guide to AI-Ready Microdata Documentati
 **Embedding.** A list of numbers that a model assigns to a text so that texts with similar meaning have similar numbers; the basis of search by meaning.
 
 **Fine-tuning.** Changing a model's weights by training it further on the organization's own labelled examples, so that it does one task better or follows the organization's conventions.
+
+**Gap.** The distance between a dimension's current level and its target, measured in levels and in the number of questions below the target's value.
 
 **Gate.** The rule that decides whether a change ships, applied to a paired comparison of the evaluation suite before and after the change.
 
@@ -138,6 +144,8 @@ description: Terms used in the Practical Guide to AI-Ready Microdata Documentati
 **Statistical disclosure control.** Methods that prevent the identification of individuals from published data.
 
 **Study record.** The study-level documentation of a survey: title, abstract, dates, coverage, universe, design, access conditions.
+
+**Target level.** The maturity level a dimension is to reach by the end of a planning cycle, set with a written reason and approved by the board.
 
 **Threshold.** The value of a score (a confidence, a similarity, a garble rate) at which the rule changes what happens to an item; set from measurements.
 

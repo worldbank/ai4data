@@ -11,9 +11,13 @@ description: Terms used in the Practical Guide to Language Models in Statistical
 
 **AI-ready.** Data and metadata that software, including AI systems, can find, retrieve, interpret, and cite without manual steps. See the [AI-ready data framework](/docs/ai-ready-framework).
 
+**AI-use policy.** The one-page statement, approved at the top of the organization, of which tasks a model may assist, which uses are prohibited, which controls apply, and who owns each instrument.
+
 **Automated share.** The share of responses coded at or above the confidence threshold without a coder; measured by a re-coded sample each round.
 
 **Candidate.** A model shortlisted for a task, with its licence classified and its card checked, to be run on the suite.
+
+**Component register.** The table with one row per AI component the organization runs: owner, model, provider, data, human review, risk tier, approval and review dates, and exit plan.
 
 **Confidence.** A number between 0 and 1 that a model returns with its output to say how sure it is; the basis of a threshold rule.
 
@@ -49,6 +53,8 @@ description: Terms used in the Practical Guide to Language Models in Statistical
 
 **Harmonization.** The matching of mention variants to canonical identifiers.
 
+**Incident.** An AI component's output reaching a reviewer, a product, or a user with an error that the controls should have caught, or that a control caught at the last step; handled by a fixed procedure and recorded.
+
 **ISCO-08.** The International Standard Classification of Occupations, whose four-digit codes classify jobs; the label of the coding examples in this guide.
 
 **Issue.** The review pipeline's output: a detected problem with a category, a severity from 1 to 5, the current value, and a proposed value.
@@ -72,6 +78,8 @@ description: Terms used in the Practical Guide to Language Models in Statistical
 **Metadata Editor.** The World Bank's open-source application for documenting data of all the types in the World Bank schemas, with templates and validation, publishing to NADA, and export to SDMX, schema.org, Croissant, and DCAT.
 
 **Method of record.** The documented, reproducible imputation or estimation method the organization applies; a model proposes and explains beside it.
+
+**Number check.** The comparison of every figure in an assistant's answer with the values of the source table, which marks each as verified or unverified before the answer is used.
 
 **Open-weight model.** A model whose weights can be downloaded and run on the organization's own infrastructure, under a published licence that may be permissive or restricted.
 

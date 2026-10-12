@@ -224,6 +224,13 @@ export const dimensions = [
     support: {tools: 0, methods: 0, recipes: 1, reference: 0, guidance: 1},
     resources: ['responsibleAi'],
     cookbook: [
+      {to: '/cookbook/ai-assistants-at-work/unit', label: 'AI Assistants in Everyday Work, chapter 6: unit sessions and the quarterly collection, the change management of everyday use'},
+      {to: '/cookbook/assessment-to-pathway/targets', label: 'From Assessment to Pathway, chapter 2: target levels per dimension with reasons, approved by the board'},
+      {to: '/cookbook/assessment-to-pathway/pathway', label: 'From Assessment to Pathway, chapter 5: the improvement pathway document generated from the profile, the targets, the sequence, and the estimate'},
+      {to: '/cookbook/governance-and-risk/position', label: 'Governing AI Use, chapter 1: the AI-use policy with seven sections and the task boundary'},
+      {to: '/cookbook/governance-and-risk/risk', label: 'Governing AI Use, chapter 3: three risk ratings, tiers, controls per tier, and the acceptance of residual risk'},
+      {to: '/cookbook/governance-and-risk/decisions', label: 'Governing AI Use, chapter 4: the board\'s terms of reference, the decision log, and the incident procedure'},
+      {to: '/cookbook/governance-and-risk/review', label: 'Governing AI Use, chapter 8: the governance review and the evidence pack by assessment question'},
       {to: `${CB}govern`, label: 'Chapter 8: Governance and responsible operation (policy template, component register, injection tests)'},
       {to: '/cookbook/language-models-in-production/map', label: 'Language Models in Statistical Production, chapter 1: the map of model-assisted tasks, the tasks that stay with people, and the three rules the map check enforces'},
       {to: '/cookbook/language-models-in-production/assurance', label: 'Language Models in Statistical Production, chapter 7: decision points, suites, and the statement of model use'},
@@ -257,6 +264,8 @@ export const dimensions = [
     support: {tools: 1, methods: 0, recipes: 0, reference: 1, guidance: 0},
     resources: ['openSource'],
     cookbook: [
+      {to: '/cookbook/governance-and-risk/licensing', label: 'Governing AI Use, chapter 6: model licence classes and third-party terms'},
+      {to: '/cookbook/governance-and-risk/statement', label: 'Governing AI Use, chapter 7: the statement of model use as the record of accountability'},
       {to: '/cookbook/ml-ready-datasets/license', label: 'Publishing ML-Ready Datasets, chapter 7: licence and terms for model training, free-text screening, disclosure review'},
       {to: '/cookbook/serving-statistics-to-agents/access', label: 'Serving Statistics to AI Agents, chapter 5: terms of use for agents, tiers, and client registration'},
       {to: '/cookbook/small-and-open-models/candidates', label: 'Small and Open Models, chapter 2: reading and classifying model licences (third-party intellectual property)'},
@@ -283,6 +292,8 @@ export const dimensions = [
     support: {tools: 0, methods: 1, recipes: 2, reference: 0, guidance: 1},
     resources: ['cb', 'cbStart', 'inclusive', 'partnerships'],
     cookbook: [
+      {to: '/cookbook/ai-assistants-at-work/tasks', label: 'AI Assistants in Everyday Work, chapter 1: the task card per role, the AI literacy instrument for every member of staff'},
+      {to: '/cookbook/ai-assistants-at-work/unit', label: 'AI Assistants in Everyday Work, chapter 6: the two-hour unit session on the unit\'s own texts, with session records as evidence'},
       {to: `${CB}`, label: 'The cookbook as training material: recipes with code, scope notes, and tests'},
       {to: `${CB}start-here`, label: 'Self-assessment to place a team and choose a reading order'},
       {to: '/cookbook/#reading-paths', label: 'Reading paths by role across the cookbook series (dissemination lead, microdata curator, methodologist, IT and data science lead, management)'},
@@ -319,6 +330,8 @@ export const dimensions = [
     support: {tools: 2, methods: 2, recipes: 2, reference: 0, guidance: 1},
     resources: ['metadataSchemas', 'synthetic', 'pift', 'pcn', 'inclusive', 'smallAgentic'],
     cookbook: [
+      {to: '/cookbook/ai-assistants-at-work/inputs', label: 'AI Assistants in Everyday Work, chapter 2: the three data tiers, the screening script, and the local assistant for confidential tasks'},
+      {to: '/cookbook/ai-assistants-at-work/record', label: 'AI Assistants in Everyday Work, chapter 5: the use log and its summary, the measure of adoption of productivity tools in practice'},
       {to: `${CB}evaluate`, label: 'Chapter 6: Evaluation (question sets, Recall@k and MRR, answer-level tests)'},
       {to: `${CB}sustain`, label: 'Chapter 9: Sustainability and maintenance (smallest sufficient model, switch-off test, cost per query)'},
       {to: '/cookbook/small-and-open-models/serving', label: 'Small and Open Models, chapter 3: sizing and running a model server (computing resources)'},
@@ -353,6 +366,8 @@ export const dimensions = [
     support: {tools: 0, methods: 0, recipes: 1, reference: 0, guidance: 0},
     resources: [],
     cookbook: [
+      {to: '/cookbook/assessment-to-pathway/effort', label: 'From Assessment to Pathway, chapter 4: effort, roles, and kinds of cost of the pathway, with the items outside the series'},
+      {to: '/cookbook/governance-and-risk/providers', label: 'Governing AI Use, chapter 5: the cost record per component and the provider register'},
       {to: `${CB}sustain`, label: 'Chapter 9, recipe 9.2: estimate the cost per query before launch'},
       {to: '/cookbook/small-and-open-models/cost', label: 'Small and Open Models, chapter 7: cost per task over three years, including staff time, and the sustainability plan'},
       {to: '/cookbook/language-models-in-production/running', label: 'Language Models in Statistical Production, recipe 6.2: cost and time of a batch job before it runs'},
@@ -581,6 +596,7 @@ export const dimensions = [
     support: {tools: 1, methods: 0, recipes: 3, reference: 2, guidance: 2},
     resources: ['metadataSchemas', 'metadataEditor', 'cbStandards'],
     cookbook: [
+      {to: '/cookbook/governance-and-risk/licensing', label: 'Governing AI Use, chapter 6: the licence matrix with AI-use positions, machine-readable licence fields, and terms for machine clients'},
       {to: `${CB}trust`, label: 'Chapter 5, recipe 5.1: licence in the record, on the page, and in the citation'},
       {to: `${CB}find`, label: 'Chapter 1, recipe 1.2: licence in the schema.org record'},
       {to: `${CB}retrieve`, label: 'Chapter 2: licence and terms of use in the API description'},

@@ -55,6 +55,8 @@ description: Terms used in the Practical Guide to Monitoring Data Use.
 
 **Flagged.** The status of an extracted value that failed a check and awaits correction with the page open.
 
+**Gap.** The distance between a dimension's current level and its target, measured in levels and in the number of questions below the target's value.
+
 **Gate.** The rule that decides whether a change ships, applied to a paired comparison of the evaluation suite before and after the change.
 
 **Harmonization.** The matching of mention variants to canonical identifiers.
@@ -68,6 +70,8 @@ description: Terms used in the Practical Guide to Monitoring Data Use.
 **Labelled sample.** Sentences labelled by a person with the dataset mention they contain, or none, used to measure the extractor.
 
 **Language model.** A model that reads and writes text; used in these guides to draft, flag, code, explain, and translate, with a person deciding.
+
+**Machine client.** Software, including an AI assistant or agent, that retrieves data from the organization's API or MCP server and accepts the terms of use for doing so.
 
 **Map.** The table of model-assisted tasks with phase, role, review, data sensitivity, model location, and owner.
 

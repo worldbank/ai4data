@@ -13,6 +13,8 @@ description: Terms used in the Practical Guide to Evaluation Suites for Statisti
 
 **AI-ready.** Data and metadata that software, including AI systems, can find, retrieve, interpret, and cite without manual steps. See the [AI-ready data framework](/docs/ai-ready-framework).
 
+**AI-use policy.** The one-page statement, approved at the top of the organization, of which tasks a model may assist, which uses are prohibited, which controls apply, and who owns each instrument.
+
 **Annotation.** Optional properties on a tool that describe its behaviour (for example that it is read-only); hints that clients treat as untrusted unless the server is trusted.
 
 **API.** Application programming interface: the address at which a program asks a system for data and receives it in a structured form.
@@ -27,6 +29,8 @@ description: Terms used in the Practical Guide to Evaluation Suites for Statisti
 
 **Cohen's kappa.** A measure of agreement between two labellers that discounts the agreement expected by chance; 1 is perfect agreement, 0 is chance.
 
+**Component register.** The table with one row per AI component the organization runs: owner, model, provider, data, human review, risk tier, approval and review dates, and exit plan.
+
 **Confidence.** A number between 0 and 1 that a model returns with its output to say how sure it is; the basis of a threshold rule.
 
 **Coverage.** The share of a reference list of known uses that the collected documents contain.
@@ -34,6 +38,8 @@ description: Terms used in the Practical Guide to Evaluation Suites for Statisti
 **DDI.** The Data Documentation Initiative, the standard for documenting surveys and their variables, value labels, and files; the World Bank microdata schema is based on it.
 
 **Decision.** A curator's recorded verdict on a suggestion: accept, edit (with the final text), or reject (with a reason).
+
+**Decision log.** The table with one row per decision of the governance board: approval, change, incident, review, or policy, with the role that decided, the follow-up, and its status.
 
 **DOI.** Digital object identifier, a persistent identifier registered with DataCite that resolves to a dataset or to one version of it, carries citation metadata, and makes citations countable.
 
@@ -47,6 +53,8 @@ description: Terms used in the Practical Guide to Evaluation Suites for Statisti
 
 **Flagged.** The status of an extracted value that failed a check and awaits correction with the page open.
 
+**Gap.** The distance between a dimension's current level and its target, measured in levels and in the number of questions below the target's value.
+
 **Gate.** The rule that decides whether a change ships, applied to a paired comparison of the evaluation suite before and after the change.
 
 **Grader.** A language model, with a rubric, that scores answers the automatic checks cannot score; validated against human scores before use.
@@ -56,6 +64,8 @@ description: Terms used in the Practical Guide to Evaluation Suites for Statisti
 **Harness.** A program that sends questions to an agent connected to the server and logs the traces.
 
 **Held-out part.** Questions kept out of development so that a change tuned on the rest is tested on questions it has not seen.
+
+**Incident.** An AI component's output reaching a reviewer, a product, or a user with an error that the controls should have caught, or that a control caught at the last step; handled by a fixed procedure and recorded.
 
 **Inventory.** The list of documents with their type, year, page count, text-layer status, and counts of tables and figures.
 
@@ -84,6 +94,8 @@ description: Terms used in the Practical Guide to Evaluation Suites for Statisti
 **MRR.** Mean reciprocal rank: 1 when the right item comes first, one half when it comes second, and so on, averaged over the questions.
 
 **nDCG@k.** Normalized discounted cumulative gain at k. A retrieval measure that credits partially relevant results and rewards placing the best ones first.
+
+**Number check.** The comparison of every figure in an assistant's answer with the values of the source table, which marks each as verified or unverified before the answer is used.
 
 **Paired comparison.** The same questions through two versions, so that differences are between versions.
 

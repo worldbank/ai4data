@@ -24,6 +24,8 @@ chapters. Edit terms here; never edit the generated pages.
 
 **AI-ready.** Data and metadata that software, including AI systems, can find, retrieve, interpret, and cite without manual steps. See the [AI-ready data framework](/docs/ai-ready-framework).
 
+**AI-use policy.** The one-page statement, approved at the top of the organization, of which tasks a model may assist, which uses are prohibited, which controls apply, and who owns each instrument.
+
 **Annotation.** Optional properties on a tool that describe its behaviour (for example that it is read-only); hints that clients treat as untrusted unless the server is trusted.
 
 **API.** Application programming interface: the address at which a program asks a system for data and receives it in a structured form.
@@ -63,6 +65,8 @@ chapters. Edit terms here; never edit the generated pages.
 **Cohen's kappa.** A measure of agreement between two labellers that discounts the agreement expected by chance; 1 is perfect agreement, 0 is chance.
 <!-- match: kappa -->
 
+**Component register.** The table with one row per AI component the organization runs: owner, model, provider, data, human review, risk tier, approval and review dates, and exit plan.
+
 **Concept map.** A table that links each variable to the concept it measures and the classification it follows, with version, level, and URI.
 
 **Confidence.** A number between 0 and 1 that a model returns with its output to say how sure it is; the basis of a threshold rule.
@@ -70,6 +74,8 @@ chapters. Edit terms here; never edit the generated pages.
 **Confidence threshold.** The model confidence above which a code is accepted automatically, set from the measured accuracy curve.
 
 **Content-Oriented Guidelines.** The SDMX guidelines that define cross-domain concepts (`REF_AREA`, `TIME_PERIOD`, `OBS_VALUE`, `OBS_STATUS`, `UNIT_MEASURE`, and others) and cross-domain code lists for reuse across statistical domains.
+
+**Cost record.** One row per AI component and month with the provider, the number of requests, and the cost, summarized for the governance board.
 
 **Cost-quality frontier.** The candidates that no other candidate beats on both suite score and cost per query.
 
@@ -90,6 +96,8 @@ chapters. Edit terms here; never edit the generated pages.
 
 **Data snapshot.** The image of one table or figure cropped from a page, with its coordinates, class, and source document; the unit of extraction and of citation.
 
+**Data tier.** The class of a text for the purpose of entering it into an assistant: public (published), internal (drafts, embargoed, for the organization only), or confidential (anything at the level of a respondent, a record, or a member of staff, and any identifier).
+
 **DataCite.** The registration agency and metadata schema for dataset DOIs. The World Bank Microdata Library assigns DataCite DOIs.
 
 **Dataset card.** The one document that tells a user what a dataset is, why it exists, how it was collected and labelled, whom it represents, what it is for and not for, its licence, its version, and how to cite it.
@@ -101,6 +109,8 @@ chapters. Edit terms here; never edit the generated pages.
 **DDI Codebook.** The Data Documentation Initiative standard for documenting a study and its variables; the World Bank microdata schema is its JSON form.
 
 **Decision.** A curator's recorded verdict on a suggestion: accept, edit (with the final text), or reject (with a reason).
+
+**Decision log.** The table with one row per decision of the governance board: approval, change, incident, review, or policy, with the role that decided, the follow-up, and its status.
 
 **Decision point.** The step at which a named person decides on a model's output (a code, a proposal, an explanation, a draft).
 
@@ -132,7 +142,13 @@ chapters. Edit terms here; never edit the generated pages.
 
 **Evaluation set.** Decided records kept to test changes to prompts, manifests, rubrics, and models.
 
+**Evidence pack.** The list, by assessment question, of the artefact that answers it, its location, and its date, compiled for an AI-readiness assessment.
+
+**Evidence register.** The table with one row per assessment question below target, naming the document that will show the new answer, its owner, its due date, and its status.
+
 **Exact copy.** A synthetic record identical to a real one; a failed check that sends the file back to the method.
+
+**Exit plan.** The steps by which an AI component would be switched off or moved to a second model or provider, tested once on the component's evaluation suite.
 
 **Feature.** A column a model may use as input.
 
@@ -143,7 +159,11 @@ chapters. Edit terms here; never edit the generated pages.
 
 **Fully synthetic.** A file in which every value is generated; the subject of this guide.
 
+**Gap.** The distance between a dimension's current level and its target, measured in levels and in the number of questions below the target's value.
+
 **Gate.** The rule that decides whether a change ships, applied to a paired comparison of the evaluation suite before and after the change.
+
+**Governance board.** The body, with written terms of reference, that approves AI components, closes incidents, decides reviews, and accepts residual risk.
 
 **GPU.** A graphics processing unit, the processor on which language models run fast; its memory decides which model fits.
 
@@ -172,6 +192,10 @@ chapters. Edit terms here; never edit the generated pages.
 **Harness.** A program that sends questions to an agent connected to the server and logs the traces.
 
 **Held-out part.** Questions kept out of development so that a change tuned on the rest is tested on questions it has not seen.
+
+**Improvement pathway.** The document, generated from the profile, the targets, the sequence, and the estimate, that a board approves and a funder reads, with the narrative and the dates added by the planning team.
+
+**Incident.** An AI component's output reaching a reviewer, a product, or a user with an error that the controls should have caught, or that a control caught at the last step; handled by a fixed procedure and recorded.
 
 **Inventory.** The list of documents with their type, year, page count, text-layer status, and counts of tables and figures.
 
@@ -202,9 +226,15 @@ chapters. Edit terms here; never edit the generated pages.
 
 **Leakage.** Any way the answer reaches a model other than through its features: shared groups across splits, a feature that encodes the label, duplicated inputs.
 
+**Licence matrix.** The table with one row per published product giving its licence, the licence URL, whether AI use is allowed, under conditions, or prohibited, and whether the licence is machine-readable.
+
 **LLM.** Large language model. A model that generates text, used here for drafting metadata, answering questions, and grading.
 
+**Local assistant.** A chat interface on an open-weight model running on the organization's own server, with no connection to an external service, used for the confidential tasks the task card allows.
+
 **Lock file.** The record of a model's source, version, and file digests that the server verifies before loading.
+
+**Machine client.** Software, including an AI assistant or agent, that retrieves data from the organization's API or MCP server and accepts the terms of use for doing so.
 
 **Manifest.** A file that lists the parts of something so that it can be checked or resumed: for a job, the records and their status; for a release, every file with its checksum; for an agent interface, the design document of its tools, inputs, outputs, examples, and resources.
 
@@ -236,6 +266,8 @@ chapters. Edit terms here; never edit the generated pages.
 
 **nDCG@k.** Normalized discounted cumulative gain at k. A retrieval measure that credits partially relevant results and rewards placing the best ones first.
 
+**Number check.** The comparison of every figure in an assistant's answer with the values of the source table, which marks each as verified or unverified before the answer is used.
+
 **OBS_STATUS.** The SDMX observation status attribute, with codes such as `A` normal, `P` provisional, `B` break in series, `E` estimated.
 
 **OCR.** Optical character recognition: reading text from the image of a page, which is what a scanned document needs before anything can be extracted from it.
@@ -260,9 +292,13 @@ chapters. Edit terms here; never edit the generated pages.
 
 **Prompt injection.** Text placed in content a system reads (a document, a web page, a query) that is written as an instruction to the model in the hope that the model follows it; tested for before release.
 
+**Prompt library.** The organization's versioned file of questions for the tasks on the task card, each with its source, format, and constraints, its data tier, and its review.
+
 **Provenance.** The record of where a value came from: the series, the release, the source, the document and page, the method, and the version, carried with the value.
 
 **Provenance fields.** The fields every data response carries: series identifier, reference area, unit, release date, source URL, licence, citation, and observation status per value.
+
+**Provider register.** The table with one row per model provider, including the organization's own server, giving the services, the components, the data terms, the contract end, the second option, and the exit plan.
 
 **Public use file.** A microdata file released to anyone under terms of use, after disclosure control.
 
@@ -276,9 +312,13 @@ chapters. Edit terms here; never edit the generated pages.
 
 **RAG.** Retrieval-augmented generation. A pattern where the system retrieves records first and the model writes the answer from them.
 
+**Re-assessment.** A repeat of the AI-readiness assessment on the same framework version at the end of a cycle, answered from the evidence register's documents and compared with the first profile.
+
 **Re-coded sample.** A random sample of the automated share coded blind by staff each round to measure the automated accuracy.
 
 **Read-only.** A tool that reads and returns data and has no path to change anything; the property the server's safety rests on.
+
+**Readiness profile.** The summary of an AI-readiness assessment: an average and a level per dimension, an average per pillar, and an overall score, computed from the question-level answers.
 
 **Recall.** The share of labelled mentions that the extractor found.
 
@@ -297,9 +337,13 @@ chapters. Edit terms here; never edit the generated pages.
 
 **Required score.** The suite score a task's model has to reach, set from the cost of error before any candidate is tested.
 
+**Residual risk.** The risk that remains after a component's controls are in place, accepted by the role its tier names and recorded in the risk register and the decision log.
+
 **Resource.** Context a server offers to the model or the user, such as code lists or a release calendar, identified by a URI.
 
 **Review board.** The interface in which a curator sees the current and proposed values as a diff and decides.
+
+**Risk tier.** Low, Medium, or High, from the product of a component's three ratings (cost of error, exposure, reversibility); each tier carries a fixed list of controls.
 
 **Roles.** What a model may do in production: flag, propose, code, explain, draft. It does not decide.
 
@@ -353,6 +397,12 @@ chapters. Edit terms here; never edit the generated pages.
 
 **Target analysis.** A statistic or model that users of the file will compute, compared between the real and the synthetic file in the utility report.
 
+**Target level.** The maturity level a dimension is to reach by the end of a planning cycle, set with a written reason and approved by the board.
+
+**Task boundary.** The table that names, for each task where a model is used, the role of the model (propose, explain, draft, retrieve and rank) and the person who decides, and the tasks that stay with people.
+
+**Task card.** The one-page list per role of the everyday tasks an AI assistant may help with, with the model's role, the data tier, and the review for each, and the tasks that stay with the person.
+
 **Text layer.** The machine-readable text inside a PDF; absent in scanned documents until OCR produces it.
 
 **Thin group.** A group with too few examples for a model to learn its patterns; listed in the card with the minimum count used.
@@ -381,9 +431,13 @@ chapters. Edit terms here; never edit the generated pages.
 
 **Typology of use.** The distinction between mention and use, and among primary, secondary, and background use.
 
+**Unit session.** A two-hour session in which a unit works through the task card, the tiers, a library prompt, the number check, and the use log on its own texts.
+
 **Universe.** The population a variable applies to, as the question was asked.
 
 **Use.** A document whose analysis, decision, or statement depends on the data, as opposed to a mention that cites them as context.
+
+**Use log.** One row per use of an AI assistant for an everyday task, with the unit, the role, the task, the tool, the data tier, the reviewer, and the outcome, summarized for the unit and the governance board.
 
 **Utility.** How closely the synthetic file reproduces the real one at the marginal, association, and analysis levels.
 
@@ -399,6 +453,8 @@ chapters. Edit terms here; never edit the generated pages.
 **Visit sequence.** The order in which variables are synthesized in a sequential method.
 
 **Vocabulary.** A concept scheme with preferred labels, alternates, and URIs, to which free-text keywords and topics are mapped.
+
+**Wave.** A set of dimensions that can be worked in parallel because everything they depend on is already at target or in an earlier wave.
 
 **Weight.** A variable that scales each record to the population, with the calibration and the estimates it applies to documented.
 

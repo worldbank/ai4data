@@ -15,6 +15,8 @@ description: Terms used in the Practical Guide to Serving Official Statistics to
 
 **AI-ready.** Data and metadata that software, including AI systems, can find, retrieve, interpret, and cite without manual steps. See the [AI-ready data framework](/docs/ai-ready-framework).
 
+**AI-use policy.** The one-page statement, approved at the top of the organization, of which tasks a model may assist, which uses are prohibited, which controls apply, and who owns each instrument.
+
 **Annotation.** Optional properties on a tool that describe its behaviour (for example that it is read-only); hints that clients treat as untrusted unless the server is trusted.
 
 **API.** Application programming interface: the address at which a program asks a system for data and receives it in a structured form.
@@ -22,6 +24,8 @@ description: Terms used in the Practical Guide to Serving Official Statistics to
 **Client configuration.** The settings a user pastes into an assistant to connect it to the server: endpoint, transport, credentials.
 
 **Code list.** A published table of the codes used in a dataset (for geography, periods, categories) with their labels. In SDMX, a code list is part of the data structure definition.
+
+**Component register.** The table with one row per AI component the organization runs: owner, model, provider, data, human review, risk tier, approval and review dates, and exit plan.
 
 **Confidence.** A number between 0 and 1 that a model returns with its output to say how sure it is; the basis of a threshold rule.
 
@@ -35,9 +39,13 @@ description: Terms used in the Practical Guide to Serving Official Statistics to
 
 **Estimated.** The status of an extracted value for which the document offers no check: no printed label, total, or derivation.
 
+**Exit plan.** The steps by which an AI component would be switched off or moved to a second model or provider, tested once on the component's evaluation suite.
+
 **Feature.** A column a model may use as input.
 
 **Flagged.** The status of an extracted value that failed a check and awaits correction with the page open.
+
+**Gap.** The distance between a dimension's current level and its target, measured in levels and in the number of questions below the target's value.
 
 **Gate.** The rule that decides whether a change ships, applied to a paired comparison of the evaluation suite before and after the change.
 
@@ -48,6 +56,8 @@ description: Terms used in the Practical Guide to Serving Official Statistics to
 **Guidance resource.** A resource that tells the model how to use the tools: search first, read metadata before interpreting, cite the source and release.
 
 **Harness.** A program that sends questions to an agent connected to the server and logs the traces.
+
+**Incident.** An AI component's output reaching a reviewer, a product, or a user with an error that the controls should have caught, or that a control caught at the last step; handled by a fixed procedure and recorded.
 
 **Issue.** The review pipeline's output: a detected problem with a category, a severity from 1 to 5, the current value, and a proposed value.
 
@@ -72,6 +82,8 @@ description: Terms used in the Practical Guide to Serving Official Statistics to
 **Model Context Protocol (MCP).** An open standard through which AI assistants discover and call an organization's tools and read its resources.
 
 **NADA.** The open-source data catalog from the International Household Survey Network, used for the World Bank Microdata Library. It supports DDI Codebook, Dublin Core, ISO 19115/19139, and IPTC.
+
+**Number check.** The comparison of every figure in an assistant's answer with the values of the source table, which marks each as verified or unverified before the answer is used.
 
 **OBS_STATUS.** The SDMX observation status attribute, with codes such as `A` normal, `P` provisional, `B` break in series, `E` estimated.
 

@@ -13,6 +13,8 @@ description: Terms used in the Practical Guide to AI-Ready Data Dissemination.
 
 **AI-ready.** Data and metadata that software, including AI systems, can find, retrieve, interpret, and cite without manual steps. See the [AI-ready data framework](/docs/ai-ready-framework).
 
+**AI-use policy.** The one-page statement, approved at the top of the organization, of which tasks a model may assist, which uses are prohibited, which controls apply, and who owns each instrument.
+
 **API.** Application programming interface: the address at which a program asks a system for data and receives it in a structured form.
 
 **Benchmark (population).** The share of each group in the population, from the census or population estimates, against which a dataset's composition is compared.
@@ -26,6 +28,8 @@ description: Terms used in the Practical Guide to AI-Ready Data Dissemination.
 **Citation validity.** The share of citations in generated answers that resolve to a real record and support the statement they are attached to.
 
 **Code list.** A published table of the codes used in a dataset (for geography, periods, categories) with their labels. In SDMX, a code list is part of the data structure definition.
+
+**Component register.** The table with one row per AI component the organization runs: owner, model, provider, data, human review, risk tier, approval and review dates, and exit plan.
 
 **Confidence.** A number between 0 and 1 that a model returns with its output to say how sure it is; the basis of a threshold rule.
 
@@ -63,9 +67,13 @@ description: Terms used in the Practical Guide to AI-Ready Data Dissemination.
 
 **Estimated.** The status of an extracted value for which the document offers no check: no printed label, total, or derivation.
 
+**Exit plan.** The steps by which an AI component would be switched off or moved to a second model or provider, tested once on the component's evaluation suite.
+
 **Fine-tuning.** Changing a model's weights by training it further on the organization's own labelled examples, so that it does one task better or follows the organization's conventions.
 
 **Flagged.** The status of an extracted value that failed a check and awaits correction with the page open.
+
+**Gap.** The distance between a dimension's current level and its target, measured in levels and in the number of questions below the target's value.
 
 **Gate.** The rule that decides whether a change ships, applied to a paired comparison of the evaluation suite before and after the change.
 
@@ -114,6 +122,8 @@ description: Terms used in the Practical Guide to AI-Ready Data Dissemination.
 **NADA.** The open-source data catalog from the International Household Survey Network, used for the World Bank Microdata Library. It supports DDI Codebook, Dublin Core, ISO 19115/19139, and IPTC.
 
 **nDCG@k.** Normalized discounted cumulative gain at k. A retrieval measure that credits partially relevant results and rewards placing the best ones first.
+
+**Number check.** The comparison of every figure in an assistant's answer with the values of the source table, which marks each as verified or unverified before the answer is used.
 
 **OBS_STATUS.** The SDMX observation status attribute, with codes such as `A` normal, `P` provisional, `B` break in series, `E` estimated.
 
@@ -176,6 +186,8 @@ description: Terms used in the Practical Guide to AI-Ready Data Dissemination.
 **Suite.** A question set, the scripts that score it, the required scores, and the record of runs.
 
 **Switch-off test.** The test that production proceeds with the model layer stopped, with the fallback per task exercised.
+
+**Target level.** The maturity level a dimension is to reach by the end of a planning cycle, set with a written reason and approved by the board.
 
 **Tidy file.** A data file with one record per row, one variable per column, and the same columns in every row; for extracted data, one row per value with provenance columns (document, page, bounding box, class, title, row, column, value, unit, status).
 

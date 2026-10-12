@@ -13,6 +13,8 @@ description: Terms used in the Practical Guide to Small and Open Models for Stat
 
 **AI-ready.** Data and metadata that software, including AI systems, can find, retrieve, interpret, and cite without manual steps. See the [AI-ready data framework](/docs/ai-ready-framework).
 
+**AI-use policy.** The one-page statement, approved at the top of the organization, of which tasks a model may assist, which uses are prohibited, which controls apply, and who owns each instrument.
+
 **API.** Application programming interface: the address at which a program asks a system for data and receives it in a structured form.
 
 **Benchmark (population).** The share of each group in the population, from the census or population estimates, against which a dataset's composition is compared.
@@ -20,6 +22,8 @@ description: Terms used in the Practical Guide to Small and Open Models for Stat
 **Candidate.** A model shortlisted for a task, with its licence classified and its card checked, to be run on the suite.
 
 **Checksum.** A fingerprint of a file's content (here SHA-256) that changes if one byte of the file changes; used to prove that a file is as released.
+
+**Component register.** The table with one row per AI component the organization runs: owner, model, provider, data, human review, risk tier, approval and review dates, and exit plan.
 
 **Confidence.** A number between 0 and 1 that a model returns with its output to say how sure it is; the basis of a threshold rule.
 
@@ -42,6 +46,8 @@ description: Terms used in the Practical Guide to Small and Open Models for Stat
 **Feature.** A column a model may use as input.
 
 **Fine-tuning.** Changing a model's weights by training it further on the organization's own labelled examples, so that it does one task better or follows the organization's conventions.
+
+**Gap.** The distance between a dimension's current level and its target, measured in levels and in the number of questions below the target's value.
 
 **Gate.** The rule that decides whether a change ships, applied to a paired comparison of the evaluation suite before and after the change.
 

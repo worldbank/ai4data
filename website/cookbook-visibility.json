@@ -1,4 +1,8 @@
 {
   "_comment": "Cookbooks listed under 'hidden' stay in the repository and are built, but are not public: every page is unlisted (no landing card, no overview group, no reading path, no readiness-map link, no search or sitemap entry, a noindex tag and a banner), and the folder cookbook-files/<id>/ is removed from the build. A direct link still opens the pages for reviewers. The checker fails when a visible cookbook links into a hidden one. See 'Visibility' in cookbook/authoring/index.md.",
-  "hidden": []
+  "hidden": [
+    "governance-and-risk",
+    "assessment-to-pathway",
+    "ai-assistants-at-work"
+  ]
 }

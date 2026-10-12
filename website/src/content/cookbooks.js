@@ -103,6 +103,33 @@ const allCookbooks = [
     chapters: 8,
     to: '/cookbook/ml-ready-datasets/',
   },
+  {
+    id: 'governance-and-risk',
+    audience: 'Management, policy owners, and legal advisers in national statistical organizations',
+    title: 'Practical Guide to Governing AI Use in a Statistical Organization',
+    description:
+      'Helps management and the owner of the AI-use policy govern every AI component the organization runs: a written position, a register with owners, risk ratings with matching controls, a board that records decisions, provider dependence, licences and terms for AI use, the statement of model use, and the review before a re-assessment.',
+    chapters: 8,
+    to: '/cookbook/governance-and-risk/',
+  },
+  {
+    id: 'assessment-to-pathway',
+    audience: 'Management and planning teams in national statistical organizations, and the advisers who support them',
+    title: 'Practical Guide from the Readiness Assessment to an Improvement Pathway',
+    description:
+      'Helps management and the advisers who support them turn an AI-readiness profile into an agreed improvement pathway: reading the profile, setting target levels and sizing the gaps, ordering the work by dependency, estimating effort and kinds of cost, writing the pathway document, keeping an evidence register per question, and measuring progress at the re-assessment.',
+    chapters: 7,
+    to: '/cookbook/assessment-to-pathway/',
+  },
+  {
+    id: 'ai-assistants-at-work',
+    audience: 'All staff of national statistical organizations, and the managers who set the rules for assistant use',
+    title: 'Practical Guide to AI Assistants in Everyday Statistical Work',
+    description:
+      'Helps every member of staff use a general AI assistant for everyday tasks under the organization\'s rules: which tasks an assistant may help with, what may be entered into one, how to ask so that the answer can be checked, how to check an answer before it is used, how to record use, and how a unit adopts assistants together.',
+    chapters: 6,
+    to: '/cookbook/ai-assistants-at-work/',
+  },
 ];
 
 export const cookbooks = allCookbooks.filter((c) => !isHiddenCookbook(c.id));
@@ -125,6 +152,10 @@ const allGroups = [
     title: 'Measurement',
     ids: ['evaluation-suites', 'monitoring-data-use'],
   },
+  {
+    title: 'Governance and planning',
+    ids: ['assessment-to-pathway', 'governance-and-risk', 'ai-assistants-at-work'],
+  },
 ];
 
 export const groups = allGroups
@@ -133,6 +164,14 @@ export const groups = allGroups
 
 // Where to start, by role. Each path is three or four chapters in order.
 const allReadingPaths = [
+  {
+    role: 'All staff',
+    steps: [
+      {to: '/cookbook/ai-assistants-at-work/tasks', label: 'The task card for the role'},
+      {to: '/cookbook/ai-assistants-at-work/inputs', label: 'The three tiers before the paste'},
+      {to: '/cookbook/ai-assistants-at-work/checking', label: 'Every figure checked before use'},
+    ],
+  },
   {
     role: 'Dissemination lead',
     steps: [
@@ -172,6 +211,9 @@ const allReadingPaths = [
   {
     role: 'Management',
     steps: [
+      {to: '/cookbook/assessment-to-pathway/targets', label: 'Target levels and the gap per dimension'},
+      {to: '/cookbook/governance-and-risk/position', label: 'The organization\'s position on AI'},
+      {to: '/cookbook/governance-and-risk/risk', label: 'Risk tiers and the controls each requires'},
       {to: '/cookbook/ai-ready-dissemination/govern', label: 'The AI-use policy and the component register'},
       {to: '/cookbook/language-models-in-production/assurance', label: 'The statement of model use'},
       {to: '/cookbook/small-and-open-models/cost', label: 'What models cost to sustain'},

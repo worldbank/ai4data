@@ -10,6 +10,8 @@ description: Terms used in this guide, in plain language.
 
 **AI-ready.** Data and metadata that software, including AI systems, can find, retrieve, interpret, and cite without manual steps. See the [AI-ready data framework](/docs/ai-ready-framework).
 
+**AI-use policy.** The one-page statement, approved at the top of the organization, of which tasks a model may assist, which uses are prohibited, which controls apply, and who owns each instrument.
+
 **Annotation.** Optional properties on a tool that describe its behaviour (for example that it is read-only); hints that clients treat as untrusted unless the server is trusted.
 
 **API.** Application programming interface: the address at which a program asks a system for data and receives it in a structured form.
@@ -53,6 +55,8 @@ description: Terms used in this guide, in plain language.
 **Fine-tuning.** Changing a model's weights by training it further on the organization's own labelled examples, so that it does one task better or follows the organization's conventions.
 
 **Flagged.** The status of an extracted value that failed a check and awaits correction with the page open.
+
+**Gap.** The distance between a dimension's current level and its target, measured in levels and in the number of questions below the target's value.
 
 **Gate.** The rule that decides whether a change ships, applied to a paired comparison of the evaluation suite before and after the change.
 
@@ -139,6 +143,8 @@ description: Terms used in this guide, in plain language.
 **Verified.** The status of an extracted value that matched a printed label, a total, a derivation, or a catalog value.
 
 **Vocabulary.** A concept scheme with preferred labels, alternates, and URIs, to which free-text keywords and topics are mapped.
+
+**Wave.** A set of dimensions that can be worked in parallel because everything they depend on is already at target or in an earlier wave.
 
 **Weight.** A variable that scales each record to the population, with the calibration and the estimates it applies to documented.
 

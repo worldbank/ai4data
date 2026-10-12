@@ -25,6 +25,8 @@ description: Terms used in the Practical Guide to Extracting Data from Documents
 
 **Code list.** A published table of the codes used in a dataset (for geography, periods, categories) with their labels. In SDMX, a code list is part of the data structure definition.
 
+**Component register.** The table with one row per AI component the organization runs: owner, model, provider, data, human review, risk tier, approval and review dates, and exit plan.
+
 **Confidence.** A number between 0 and 1 that a model returns with its output to say how sure it is; the basis of a threshold rule.
 
 **Coverage.** The share of a reference list of known uses that the collected documents contain.
@@ -77,6 +79,8 @@ description: Terms used in the Practical Guide to Extracting Data from Documents
 
 **NADA.** The open-source data catalog from the International Household Survey Network, used for the World Bank Microdata Library. It supports DDI Codebook, Dublin Core, ISO 19115/19139, and IPTC.
 
+**Number check.** The comparison of every figure in an assistant's answer with the values of the source table, which marks each as verified or unverified before the answer is used.
+
 **OBS_STATUS.** The SDMX observation status attribute, with codes such as `A` normal, `P` provisional, `B` break in series, `E` estimated.
 
 **OCR.** Optical character recognition: reading text from the image of a page, which is what a scanned document needs before anything can be extracted from it.
@@ -114,6 +118,8 @@ description: Terms used in the Practical Guide to Extracting Data from Documents
 **Structured output.** A model's answer returned as data in a declared shape (a JSON object with named fields that conforms to a schema) so that a script can validate, read, and aggregate it.
 
 **Table record.** The catalog record of a statistical table in the World Bank table schema, with columns, rows, sources, definitions, citation, and relations.
+
+**Target level.** The maturity level a dimension is to reach by the end of a planning cycle, set with a written reason and approved by the board.
 
 **Text layer.** The machine-readable text inside a PDF; absent in scanned documents until OCR produces it.
 
