@@ -1,0 +1,51 @@
+question_id,dimension,evidence,owner,due,status
+1.1.1,1.1,AI strategy document adopted by the Director General,Director General's office,2026-03-31,in progress
+1.1.2,1.1,Board terms of reference and decision log,Head of methodology,2025-11-30,done
+1.1.3,1.1,Risk register with tiers and controls,Head of methodology,2025-12-15,done
+1.1.4,1.1,AI-use policy with principles and prohibited uses,Head of methodology,2025-10-31,done
+1.1.5,1.1,Change and training plan for the first cycle,Head of methodology,2026-02-28,planned
+1.2.1,1.2,Legal review of the statistics act for AI use,Legal adviser,2026-04-30,in progress
+1.2.2,1.2,List of applicable regulations with the obligations noted,Legal adviser,2026-04-30,in progress
+1.2.5,1.2,Model licence table and provider data terms,Legal adviser,2025-12-31,done
+1.2.7,1.2,Statement of model use for one release,Head of methodology,2025-12-31,done
+1.3.1,1.3,Attendance and completion records of the first training cycle,Trainer,2026-03-31,planned
+1.3.4,1.3,Training plan with external sources named,Head of methodology,2026-02-28,planned
+2.1.1,2.1,Records passing the completeness profile in the schema,Metadata lead,2025-12-31,done
+2.1.2,2.1,Published code lists and crosswalks,Metadata lead,2026-02-28,in progress
+2.1.4,2.1,schema.org markup validated on sampled pages,Web developer,2025-12-31,done
+2.1.5,2.1,Provenance fields in every record,Metadata lead,2026-01-31,in progress
+2.2.1,2.2,Quality framework section on model-assisted steps,Methodologist,2026-01-31,in progress
+2.2.5,2.2,Disclaimer text for generative dissemination adopted,Head of dissemination,2026-02-28,planned
+2.2.6,2.2,Status codes on every value in the values files,Data curator,2025-12-31,done
+2.2.7,2.2,Revisions log and break register,Methodologist,2026-01-31,in progress
+2.3.1,2.3,Catalog with a record per product and stable URLs,Catalog manager,2025-12-31,done
+2.3.2,2.3,Semantic search live with retrieval scores on the question set,Developer,2026-05-31,planned
+2.3.3,2.3,Lineage and quality fields in catalog records,Metadata lead,2026-03-31,planned
+2.3.5,2.3,Release calendar served as data,Dissemination lead,2026-02-28,planned
+2.3.6,2.3,DOIs registered for every dataset,Catalog manager,2026-02-28,in progress
+2.4.1,2.4,API covering the main series with an OpenAPI description,Developer,2026-06-30,planned
+2.4.2,2.4,API documentation with examples,Developer,2026-06-30,planned
+2.4.3,2.4,Monitoring reports of availability and latency,Developer,2026-06-30,planned
+2.4.4,2.4,Bulk file at a stable URL,Developer,2026-01-31,in progress
+2.4.5,2.4,Versioned datasets with retrievable vintages,Developer,2026-06-30,planned
+2.6.1,2.6,Licence chosen per product type,Legal adviser,2025-11-30,done
+2.6.2,2.6,Licence field in every record,Catalog manager,2026-01-31,in progress
+2.6.3,2.6,Licence URL in records and API responses,Catalog manager,2026-02-15,in progress
+2.6.4,2.6,AI-use position stated per product,Legal adviser,2025-12-31,done
+1.2.4,1.2,Legal note on access to privately held data for statistics,Legal adviser,2026-06-30,planned
+1.2.6,1.2,Repository with the organization's scripts under an open licence,Developer,2026-03-31,planned
+1.3.2,1.3,Terms of reference and recruitment of a data engineer,Management,2026-06-30,planned
+1.3.3,1.3,AI working group with curators and methodologists and IT named,Head of methodology,2026-02-28,planned
+1.3.5,1.3,Recognition of assistant and model use in the staff appraisal cycle,Human resources,2026-06-30,planned
+1.4.10,1.4,Disclosure review procedure for synthetic files,Methodologist,2026-09-30,planned
+1.4.11,1.4,Evaluation suite with a required score for the first component,Data scientist,2026-04-30,planned
+1.5.2,1.5,Budget line covering hosting and maintenance and training for three years,Finance,2026-06-30,planned
+1.5.4,1.5,Cost record and review outcomes reported to the board,Head of IT,2026-03-31,planned
+1.6.1,1.6,Partnership agreement reviewed under the AI-use policy,Management,2026-06-30,planned
+1.6.4,1.6,Question set contributed to the shared evaluation suites,Data scientist,2026-09-30,planned
+2.2.3,2.2,Metadata Reviewer in the release procedure with decisions logged,Metadata lead,2026-03-31,planned
+2.5.1,2.5,Public assistant pilot with every number verified,Head of dissemination,2026-09-30,planned
+2.5.2,2.5,MCP server pilot over the API with a manifest,Developer,2026-09-30,planned
+2.5.3,2.5,One ML-ready dataset with a Croissant record,Data curator,2026-09-30,planned
+2.5.4,2.5,Assistant answers only from retrieved records with citations,Developer,2026-09-30,planned
+2.5.5,2.5,Synthetic file for one public-use dataset with a synthesis record,Methodologist,2026-09-30,planned

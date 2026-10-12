@@ -1,0 +1,181 @@
+---
+id: pathway
+title: "5. The improvement pathway document"
+sidebar_label: "5. Pathway"
+sidebar_position: 5
+description: How the profile, the targets, the sequence, and the estimate become one document that a board can approve and a funder can read, generated from the tables so that it stays true to them, with the narrative and the dates added by the planning team.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 5. The improvement pathway document
+
+**Question:** How is the pathway written so that it can be agreed and funded?
+
+## Rationale
+
+The framework's third planning step is to plan: produce the tailored
+improvement pathway, sequencing actions by priority and feasibility. The
+pathway is a document because that is what a board approves, a ministry
+funds, and a development partner reads. It has a fixed shape so that each
+of those readers finds what they look for: a summary with the score, the
+gaps, the waves, and the effort; the profile; the targets with their
+reasons; the sequence; the effort and roles by wave; the evidence and
+re-assessment; and the governance of the pathway itself.
+
+The document is generated from the tables of chapters 1 to 4, for the
+same reason the statement of model use is generated from the register:
+a document written by hand drifts from the tables it summarizes, and a
+generated one cannot. The planning team adds what the tables do not hold,
+the narrative of the organization's choices and the dates a budget cycle
+imposes, in the document the script produces.
+
+## Target state
+
+- The pathway document exists with its seven sections, generated from the current tables.
+- The planning team's narrative and the dates are added, and the document is approved by the board and dated.
+- The document is the reference for the evidence register of chapter 6 and the re-assessment of chapter 7.
+- Changes to targets, waves, or estimates are made in the tables and the document is regenerated.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Generate the document, add the narrative and the dates, and approve it. |
+| **AI-ready** | Regenerate the document at each quarter's board meeting with the evidence register's status, and keep every version. |
+| **AI-native** | Publish the pathway, or its summary, with the statement of model use, and share it with the peer network. |
+
+:::info[Running example]
+The example organization's pathway document was generated from its
+tables and approved by its board in September 2025. Its summary reads:
+25.6 of 100 overall, nine dimensions with a gap in three waves, 75 to 149
+person-days across nine recipes, one item outside the series.
+:::
+
+## Recipes
+
+<Recipe title="5.1 Generate the pathway document from the tables" level="Foundational" skills="A planning officer who can run a Python script" time="Fifteen minutes">
+
+**Result:** a Markdown document with the seven sections, every table of
+which equals the output of the scripts of chapters 1 to 4.
+
+The generator reads the score file, the targets, the dependencies, and
+the recipe effort table, and writes the sections in order. The summary
+paragraph is written from the numbers so that the first sentence a reader
+sees is the one the tables support.
+
+1. Run the generator with the organization's name and the assessment
+   date.
+2. Read the document once as a reader of each kind would: the board for
+   the targets and the effort, the funder for the kinds of cost and the
+   waves, the units for their own dimension's recipes.
+3. Where something is wrong, correct the table and regenerate. The
+   document is never edited by hand before the narrative step of recipe
+   5.2.
+
+```bash
+python pathway_document.py question_scores.csv targets.csv dependencies.csv recipe_effort.csv --organization "National Statistics Office (example)" --assessed 2025-06-20
+```
+
+```text
+# Improvement pathway: National Statistics Office (example)
+
+Assessed on 2025-06-20 with the AI-readiness assessment framework.
+
+## Summary
+
+The organization scores 25.6 of 100 overall (pillar I 0.73, pillar II 0.80 on the 0 to 3 scale). 9 of 12 dimensions have a gap to their target, addressed in 3 waves. The pathway needs 75 to 149 person-days across 9 recipes, of which 1 item lie outside the cookbook series.
+...
+```
+
+**Worked example.** The example organization's document opens with the summary above. It continues with the profile table of chapter 1 and the targets and gaps of chapter 2 with their reasons. Then come the three waves of chapter 3 with the "after" dependencies, and the effort by wave of chapter 4 as a table with one row per selected recipe. The evidence
+section says that every question below target has a row in the evidence
+register, and the governance section names the head of methodology as
+the owner of the pathway and the board as the body that changes it.
+
+**What this does not do.** The generator writes what the tables hold. The
+narrative, the dates, and the signatures are added in recipe 5.2, and a
+regenerated document has to have them added again, which is why the
+narrative is kept as its own short file.
+
+</Recipe>
+
+<Recipe title="5.2 Add the narrative and the dates and take the pathway to the board" level="Foundational" skills="The planning team writes; the board approves" time="One day to write; one meeting to approve">
+
+**Result:** the pathway document carries the organization's explanation of
+its choices, the dates of each wave, the owners of each kind of cost, and
+the board's approval.
+
+The generated tables say what will be done. The narrative says why the
+organization chose it: which users or obligations press on which
+dimensions, what the previous cycle learned, what was left out and when
+it will be taken up. The dates come from the budget cycle and the staff
+available: a wave gets a start and an end, and each kind of cost gets an
+owner and the budget line it will sit on.
+
+1. Write a narrative of two or three paragraphs per section where the
+   tables need explanation, kept in a separate file so that it survives
+   regeneration.
+2. Give each wave a start and an end, from the estimate and the roles'
+   availability. A wave whose roles do not exist yet starts after the
+   recruitment or the training that creates them.
+3. Give each kind of cost an owner and a budget line.
+4. Submit the document to the board with the gap table, the sequence,
+   and the estimate as annexes, and record the approval in the decision
+   log of the governance cookbook.
+
+**Worked example.** The example organization's narrative explains two choices. Licensing went into the first wave because the legal adviser had capacity in the autumn and the licence matrix is the evidence for a whole dimension. The technical environment stayed at B because the model server the organization already runs is enough for the components of the cycle. The first wave
+runs from October 2025 to March 2026, the second from January to
+September 2026 with the API as the long item, and the third from July to
+September 2026. The gateway, the hosting, and the search host sit on the
+IT budget line owned by the head of IT; the legal fees on the legal
+adviser's line; the training venue on the methodology unit's line. The
+board approved the pathway in September 2025 and recorded the decision.
+
+**What this does not do.** Approval starts the pathway. Whether it is
+followed is what the evidence register of chapter 6 shows each quarter,
+and the dates in the document move by decisions of the board recorded in
+the log.
+
+</Recipe>
+
+## Implementation options
+
+- **Document format.** Markdown is what the generator writes and what version control keeps readable. The organization's template for board papers can take the sections in the same order.
+- **Annexes.** The gap table, the sequence, and the estimate are annexes; the evidence register of chapter 6 joins them at each quarter's version.
+- **Funding proposals.** A funder's template usually asks for objectives, activities, inputs, and indicators; the targets are the objectives, the recipes the activities, the kinds of cost the inputs, and the evidence register the indicators.
+
+## World Bank examples
+
+- The in-depth assessment engagements of the program end in a country assessment report with a prioritized improvement pathway; this chapter is the shape of that pathway for an organization that writes its own.
+- The [operational companion](/ai-readiness-in-practice) is the public reference the document can cite for each dimension's resources.
+
+## Resources
+
+- [pathway_document.py](pathname:///cookbook-files/assessment-to-pathway/pathway_document.py): the generator.
+- [Decision log of the governance cookbook](/cookbook/governance-and-risk/decisions): where the approval and later changes are recorded.
+
+## Common mistakes
+
+- **A document written from scratch.** It drifts from the tables within a quarter.
+- **A narrative inside the generated file.** It is lost at the next regeneration; a separate file survives.
+- **Dates set from the estimate alone.** The roles' availability sets the calendar.
+- **Approval without a record.** A pathway whose approval nobody can find has the standing of an intention.
+
+## Verification
+
+- **Generation check.** The generator runs on the current tables and the document's tables equal the scripts' outputs.
+- **Completeness check.** Every wave has dates, every kind of cost an owner, and the narrative file is present.
+- **Approval check.** The approval is in the decision log with the document's version and date.
+
+## Checklist
+
+<Checklist id="assessment-to-pathway-pathway" items={[
+  'Document generated from the current tables',
+  'Document read as each kind of reader would',
+  'Narrative written in a separate file',
+  'Waves dated from the roles\' availability',
+  'Kinds of cost given owners and budget lines',
+  'Pathway approved and recorded in the decision log',
+]} />
