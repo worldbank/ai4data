@@ -272,7 +272,7 @@ export const dimensions = [
     short: 'Skills',
     coverage: 'partial',
     summary:
-      'Workforce planning, recruitment, and incentives rest with the organization. The program supports AI literacy and skills development through documentation that explains each method, runnable notebooks, eleven cookbooks with reading paths by role, and the people and skills table of the modern office page, which names the roles and skills an AI-ready office needs by size.',
+      'Workforce planning, recruitment, and incentives rest with the organization. The program supports AI literacy and skills development through documentation that explains each method, runnable notebooks, the cookbook series with reading paths by role, and the people and skills table of the modern office page, which names the roles and skills an AI-ready office needs by size.',
     questions: [
       {id: '1.3.1', topic: 'AI literacy across the workforce', covered: true},
       {id: '1.3.2', topic: 'Specialized AI expertise'},
@@ -285,7 +285,7 @@ export const dimensions = [
     cookbook: [
       {to: `${CB}`, label: 'The cookbook as training material: recipes with code, scope notes, and tests'},
       {to: `${CB}start-here`, label: 'Self-assessment to place a team and choose a reading order'},
-      {to: '/cookbook/#reading-paths', label: 'Reading paths by role across the eleven cookbooks (dissemination lead, microdata curator, methodologist, IT and data science lead, management)'},
+      {to: '/cookbook/#reading-paths', label: 'Reading paths by role across the cookbook series (dissemination lead, microdata curator, methodologist, IT and data science lead, management)'},
       {to: '/modern-nso#resources', label: 'A modern statistical office: the people and skills table by office size'},
     ],
     steps: [

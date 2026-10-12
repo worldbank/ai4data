@@ -17,6 +17,8 @@ errors (exit status 1)
     "rather than", a statement plus a comma and a tag)
   - the cookbook is registered in website/sidebars-cookbook.js and
     website/src/content/cookbooks.js
+  - a visible cookbook does not link into a cookbook listed as hidden in
+    website/cookbook-visibility.json, and every hidden id names a folder
   - template placeholders ({{...}}), guidance comments, and sample text
     are gone
 
@@ -36,6 +38,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
 from pathlib import Path
@@ -46,6 +49,15 @@ SIDEBARS = REPO / "website" / "sidebars-cookbook.js"
 CARDS = REPO / "website" / "src" / "content" / "cookbooks.js"
 STATIC = REPO / "website" / "static" / "cookbook-files"
 SKIP = {"_template", "_shared", "authoring"}
+VISIBILITY = REPO / "website" / "cookbook-visibility.json"
+
+
+def hidden_cookbooks() -> set[str]:
+    """Ids listed as hidden in website/cookbook-visibility.json."""
+    if not VISIBILITY.exists():
+        return set()
+    return set(json.loads(VISIBILITY.read_text(encoding="utf-8")).get("hidden", []))
+
 
 LEVELS = {"Foundational", "AI-ready", "AI-native"}
 INDEX_SECTIONS = [
@@ -351,13 +363,23 @@ def resolve_target(
     return None
 
 
-def check_references(folder: Path, maps: dict[str, dict], rep: Report) -> None:
+def check_references(
+    folder: Path, maps: dict[str, dict], rep: Report, hidden: set[str] | None = None
+) -> None:
     """Chapter and recipe numbers in prose and in the index agree with the files."""
+    hidden = hidden or set()
     own = maps[folder.name]
-    for p in sorted(folder.glob("*.mdx")):
+    for p in sorted(folder.glob("*.mdx")) + sorted(folder.glob("*.md")):
         text = prose(p.read_text(encoding="utf-8"))
         for m in CHAPTER_LINK.finditer(text):
             label, target = m.group(1), m.group(2)
+            into = re.match(r"/cookbook/([^/#?]+)", target.split("#")[0])
+            if into and into.group(1) in hidden and folder.name not in hidden:
+                rep.error(
+                    p,
+                    f"links into hidden cookbook '{into.group(1)}' ({target}); "
+                    "a public page must not point at an unlisted one",
+                )
             hit = resolve_target(target, p, maps)
             if not hit:
                 continue
@@ -473,10 +495,16 @@ def main(argv: list[str] | None = None) -> int:
             sys.exit(f"no cookbook named {args.id!r}")
 
     rep = Report()
+    hidden = hidden_cookbooks()
+    for cid in sorted(hidden):
+        if not (COOKBOOK / cid).is_dir():
+            rep.error(
+                VISIBILITY, f"hidden cookbook '{cid}' has no folder under cookbook/"
+            )
     maps = {f.name: chapter_map(f) for f in folders}
     for folder in folders:
         check_cookbook(folder, rep)
-        check_references(folder, maps, rep)
+        check_references(folder, maps, rep, hidden)
     if not args.id:
         check_readiness_map(maps, rep)
 

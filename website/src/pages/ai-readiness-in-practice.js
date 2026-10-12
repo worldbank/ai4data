@@ -12,7 +12,11 @@ import {
 } from '@site/src/content/readinessMap';
 import investment from '@site/src/content/investment.json';
 import {LEVEL_TO_GRADE, investmentNotes} from '@site/src/content/investmentNotes';
+import {cookbooks} from '@site/src/content/cookbooks';
+import {isHiddenPath} from '@site/src/content/visibility';
 import styles from './ai-readiness-in-practice.module.css';
+
+const CHAPTER_COUNT = cookbooks.reduce((n, c) => n + c.chapters, 0);
 
 const PILLARS = {
   1: {label: 'Pillar I', name: 'Institutional readiness for AI adoption', tag: 'AI for Data'},
@@ -69,7 +73,7 @@ function Hero({counts}) {
           </div>
           <div>
             <dt>Cookbooks, chapters</dt>
-            <dd>11, 90</dd>
+            <dd>{cookbooks.length}, {CHAPTER_COUNT}</dd>
           </div>
         </dl>
       </div>
@@ -307,7 +311,7 @@ function Investment({dim}) {
                     <tr className={styles.invRecipes}>
                       <td colSpan={5}>
                         <ul className={styles.invList}>
-                          {d.recipes.map((r) => (
+                          {d.recipes.filter((r) => !isHiddenPath(`/cookbook/${r.chapter}`)).map((r) => (
                             <li key={r.chapter + r.title}>
                               <Link to={`/cookbook/${r.chapter}`}>{r.title}</Link>
                               <span className={styles.resNote}>{r.skills} · {r.time}</span>
@@ -366,6 +370,9 @@ function Explorer({selected, setSelected}) {
     const groups = {};
     d.resources.forEach((key) => {
       const r = resources[key];
+      if (isHiddenPath(r.to)) {
+        return;
+      }
       (groups[r.kind] = groups[r.kind] || []).push(r);
     });
     return groups;
@@ -463,13 +470,13 @@ function Explorer({selected, setSelected}) {
 
             {d.pillar === 2 && <Investment dim={d.id} />}
 
-            {d.cookbook.length > 0 && (
+            {d.cookbook.some((c) => !isHiddenPath(c.to)) && (
               <div className={styles.block}>
                 <Heading as="h4" className={styles.blockTitle}>
                   Relevant cookbook chapters
                 </Heading>
                 <ul className={styles.cbList}>
-                  {d.cookbook.map((c) => (
+                  {d.cookbook.filter((c) => !isHiddenPath(c.to)).map((c) => (
                     <li key={c.to + c.label}>
                       <Link to={c.to}>{c.label}</Link>
                     </li>

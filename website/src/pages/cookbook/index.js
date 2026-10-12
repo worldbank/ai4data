@@ -4,6 +4,7 @@ import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
 import ThemedImage from '@theme/ThemedImage';
 import {cookbooks, groups, readingPaths} from '@site/src/content/cookbooks';
+import {countWord} from '@site/src/content/visibility';
 import styles from './styles.module.css';
 
 const DDG_URL = 'https://www.worldbank.org/en/about/unit/unit-dec/dev';
@@ -28,7 +29,7 @@ export default function CookbookLanding() {
             Practical guides for AI-ready data
           </Heading>
           <p className={styles.lede}>
-            Eleven cookbooks for national statistical organizations, each
+            {countWord(cookbooks.length, true)} cookbooks for national statistical organizations, each
             organized around the questions a team asks, with recipes at three
             maturity levels, scripts that run on a shared example, open
             standards, and checklists. A team new to the series starts with

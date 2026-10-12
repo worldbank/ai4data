@@ -17,7 +17,7 @@ catalog, the guide uses that one.
 | Standard | Use | World Bank use | In this guide |
 |---|---|---|---|
 | [DDI Codebook](https://ddialliance.org/ddi-codebook) | Documentation of a study, its files, and its variables: labels, categories, universes, questions, derivations, concepts, summary statistics, variable groups | The Microdata Library, NADA, and the Metadata Editor; the World Bank microdata schema is DDI Codebook 2.5 as JSON Schema | Every chapter |
-| [World Bank metadata schemas](https://github.com/worldbank/metadata-schemas) | JSON Schema for microdata (DDI-based) and the other data types, with a Python library and Excel templates (MIT licence) | The Development Data Group's catalogs and tools | Chapters [1](./find.mdx), [2](./variables.mdx), [5](./fitness.mdx), [6](./access.mdx) |
+| [World Bank metadata schemas](https://github.com/worldbank/metadata-schemas) | JSON Schema for microdata (DDI-based) and the other data types, with a Python library and Excel templates (MIT licence) | The Development Data Group's catalogs and tools | Chapters [1](./find.mdx), [3](./variables.mdx), [7](./fitness.mdx), [8](./access.mdx) |
 | [DDI Lifecycle](https://ddialliance.org/ddi-lifecycle) | Reusable questions, concepts, and variables across studies | | Chapters [4](./concepts.mdx), recipe 4.3, and [6](./rounds.mdx), recipe 6.3 |
 | [DDI-CDI](https://ddialliance.org/ddi-cdi) | Data structures and provenance across data types | | Chapter 7: provenance of derived files |
 | [Metadata Editor](https://github.com/worldbank/metadata-editor) | Open-source application for documenting microdata and other types, with templates, validation, and publishing to NADA | Used by the Development Data Group's curators | Chapters 1 and 3 |

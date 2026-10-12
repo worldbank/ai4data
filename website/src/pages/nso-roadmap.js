@@ -123,7 +123,7 @@ function Scope() {
             <ul className={styles.list}>
               <li>The assessment framework that gives the project its components and its results indicators.</li>
               <li>Open-source tools and reference implementations: the Metadata Editor, NADA, the MCP server, Proof-Carrying Numbers, anomaly detection, and the PI-FT toolkit.</li>
-              <li>The eleven cookbooks as the method and the training material of each component.</li>
+              <li>The cookbook series as the method and the training material of each component.</li>
               <li>Advisory work during assessment, design, and the phase gates.</li>
               <li>Shared resources that the office joins at the end: the Global Question Bank, evaluation suites, and a peer network of offices.</li>
             </ul>

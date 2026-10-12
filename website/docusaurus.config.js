@@ -1,4 +1,5 @@
 // @ts-check
+import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {themes as prismThemes} from 'prism-react-renderer';
@@ -6,6 +7,37 @@ import codeImport from 'remark-code-import';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '..');
+
+// Cookbooks that are built but not public. The list is kept in one JSON file
+// read here, by src/content/visibility.js, and by scripts/docs/check_cookbooks.py.
+const hiddenCookbooks = JSON.parse(
+  fs.readFileSync(path.join(__dirname, 'cookbook-visibility.json'), 'utf8'),
+).hidden;
+const hiddenCookbookPath = hiddenCookbooks.length
+  ? new RegExp(`^cookbook/(${hiddenCookbooks.map((id) => id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})/`)
+  : null;
+
+/** Marks every page of a hidden cookbook as unlisted at build time. */
+async function parseFrontMatter(params) {
+  const result = await params.defaultParseFrontMatter(params);
+  const rel = path.relative(repoRoot, params.filePath).split(path.sep).join('/');
+  if (hiddenCookbookPath && hiddenCookbookPath.test(rel)) {
+    result.frontMatter.unlisted = true;
+  }
+  return result;
+}
+
+/** Removes the downloadable files of hidden cookbooks from the build output. */
+function hideCookbookFiles() {
+  return {
+    name: 'hide-cookbook-files',
+    async postBuild({outDir}) {
+      for (const id of hiddenCookbooks) {
+        await fs.promises.rm(path.join(outDir, 'cookbook-files', id), {recursive: true, force: true});
+      }
+    },
+  };
+}
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -29,6 +61,7 @@ const config = {
   markdown: {
     format: 'detect',
     mermaid: true,
+    parseFrontMatter,
     hooks: {
       onBrokenMarkdownLinks: 'warn',
     },
@@ -57,7 +90,11 @@ const config = {
         },
         blog: false,
         sitemap: {
-          ignorePatterns: ['/ai4data/nso-roadmap', '/ai4data/nso-roadmap/**'],
+          ignorePatterns: [
+            '/ai4data/nso-roadmap',
+            '/ai4data/nso-roadmap/**',
+            ...hiddenCookbooks.map((id) => `/ai4data/cookbook/${id}/**`),
+          ],
         },
         theme: {
           customCss: './src/css/custom.css',
@@ -149,6 +186,7 @@ const config = {
     }),
 
   plugins: [
+    hideCookbookFiles,
     [
       '@docusaurus/plugin-content-docs',
       /** @type {import('@docusaurus/plugin-content-docs').Options} */

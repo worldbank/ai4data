@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import Heading from '@theme/Heading';
 import {cookbooks, groups} from '@site/src/content/cookbooks';
+import {countWord} from '@site/src/content/visibility';
 import styles from './styles.module.css';
 
 export default function CookbookCta() {
@@ -15,7 +16,7 @@ export default function CookbookCta() {
               Practical guides for AI-ready data
             </Heading>
             <p className={styles.lede}>
-              Eleven cookbooks, each organized around the questions a team asks
+              {countWord(cookbooks.length, true)} cookbooks, each organized around the questions a team asks
               about one part of its work: dissemination, microdata, documents,
               metadata, agent interfaces, models in production, synthetic data,
               small and open models, evaluation, monitoring of use, and

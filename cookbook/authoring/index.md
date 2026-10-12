@@ -209,6 +209,26 @@ file per `slug:Title:Question` argument, creates
 `website/sidebars-cookbook.js`, and adds a card in
 `website/src/content/cookbooks.js`. It then prints the files to edit.
 
+## Visibility
+
+A cookbook can stay in the repository without being public. The file
+`website/cookbook-visibility.json` holds one list, `hidden`, of cookbook
+ids. For every id on it:
+
+- each page of the cookbook is built as unlisted: it carries a noindex tag
+  and a banner, and it is left out of search and the sitemap;
+- the landing page, the front-page overview, the reading paths, the
+  operational companion, and the modern office page drop their cards and
+  links into it;
+- the folder `cookbook-files/<id>/` is removed from the build output;
+- a direct link still opens the pages, so reviewers can read a draft.
+
+The checker fails when a public cookbook links into a hidden one, so that
+a hidden cookbook does not leak through a cross-reference. A new cookbook
+is added to the list when it is scaffolded and removed from it when it has
+been reviewed; nothing else changes between the two states. The development
+server shows every cookbook whatever the list says.
+
 ## Checking a cookbook
 
 ```bash

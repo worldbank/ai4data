@@ -4,6 +4,7 @@ import Link from '@docusaurus/Link';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
 import {LEVELS, LEVEL_INTRO, SIZES, dimensionsByUnit, releaseDay, resources, units} from '@site/src/content/modernNso';
+import {isHiddenPath} from '@site/src/content/visibility';
 import styles from './modern-nso.module.css';
 
 const LEVEL_INDEX = Object.fromEntries(LEVELS.map((l, i) => [l.id, i]));
@@ -200,7 +201,7 @@ function UnitDetail({unit, level, aiOff, setLevel}) {
       </div>
       <div className={styles.detailFoot}>
         <div className={styles.links}>
-          {at.links.map((l) => (
+          {at.links.filter((l) => !isHiddenPath(l.to)).map((l) => (
             <Link key={l.to} to={l.to}>
               {l.label} →
             </Link>

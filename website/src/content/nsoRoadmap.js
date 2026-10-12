@@ -200,7 +200,7 @@ export const AREAS = [
     ],
     contributes: [
       {level: 'available', text: 'Roles and effort per recipe, drawn from the cookbook.', to: '/ai-readiness-in-practice'},
-      {level: 'available', text: 'Reading paths by role across the eleven cookbooks.', to: '/cookbook/#reading-paths'},
+      {level: 'available', text: 'Reading paths by role across the cookbook series.', to: '/cookbook/#reading-paths'},
       {level: 'adapt', text: 'Terms of reference for the engineering roles, derived from the component list of the project.'},
     ],
     expansions: [
@@ -223,7 +223,7 @@ export const AREAS = [
       'Travel and venue costs for in-person cycles and the time of staff who attend.',
     ],
     contributes: [
-      {level: 'available', text: 'The eleven cookbooks, with worked examples on one running example organization and tests for each recipe.', to: '/cookbook/'},
+      {level: 'available', text: 'The cookbook series, with worked examples on one running example organization and tests for each recipe.', to: '/cookbook/'},
       {level: 'available', text: 'The self-assessment that places a team and chooses a reading order.', to: `${CB}ai-ready-dissemination/start-here`},
       {level: 'available', text: 'The notebooks and reference implementations in the repository.', to: '/docs/introduction'},
       {level: 'adapt', text: 'A curriculum assembled from the cookbooks for the office, with its own data in the exercises.'},

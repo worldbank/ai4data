@@ -1,6 +1,9 @@
+import {isHiddenCookbook, isHiddenPath} from './visibility';
+
 // Cookbooks listed on the /cookbook landing page. Each cookbook is a folder
-// under /cookbook with its own sidebar in sidebars-cookbook.js.
-export const cookbooks = [
+// under /cookbook with its own sidebar in sidebars-cookbook.js. The ids in
+// website/cookbook-visibility.json are dropped from every list exported here.
+const allCookbooks = [
   {
     id: 'ai-ready-dissemination',
     audience: 'National statistical organizations',
@@ -102,8 +105,10 @@ export const cookbooks = [
   },
 ];
 
+export const cookbooks = allCookbooks.filter((c) => !isHiddenCookbook(c.id));
+
 // The cookbooks grouped by what they are about, in the order a reader meets them.
-export const groups = [
+const allGroups = [
   {
     title: 'Data products that AI can use',
     ids: ['ai-ready-dissemination', 'microdata-documentation', 'data-from-documents', 'ml-ready-datasets'],
@@ -122,8 +127,12 @@ export const groups = [
   },
 ];
 
+export const groups = allGroups
+  .map((g) => ({...g, ids: g.ids.filter((id) => !isHiddenCookbook(id))}))
+  .filter((g) => g.ids.length > 0);
+
 // Where to start, by role. Each path is three or four chapters in order.
-export const readingPaths = [
+const allReadingPaths = [
   {
     role: 'Dissemination lead',
     steps: [
@@ -169,3 +178,7 @@ export const readingPaths = [
     ],
   },
 ];
+
+export const readingPaths = allReadingPaths
+  .map((p) => ({...p, steps: p.steps.filter((st) => !isHiddenPath(st.to))}))
+  .filter((p) => p.steps.length > 0);
