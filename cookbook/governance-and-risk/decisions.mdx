@@ -1,0 +1,248 @@
+---
+id: decisions
+title: "4. Decisions, incidents, and their record"
+sidebar_label: "4. Decisions"
+sidebar_position: 4
+description: How a governance board with terms of reference approves components, closes incidents, and decides reviews, how every decision is written in one log with its follow-up, and how an incident is handled from switch-off to the control that prevents a repeat.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 4. Decisions, incidents, and their record
+
+**Question:** How are decisions taken and incidents handled?
+
+## Rationale
+
+A policy, a register, and a set of ratings describe what the organization
+intends. Decisions are where intention meets a particular component on a
+particular day: may it go live, may it change its model, may it continue
+after an incident. If those decisions are taken in corridors and recorded
+nowhere, the organization cannot show an auditor, a user, or its own new
+head of unit why a component runs. A board with terms of reference and a
+log with one row per decision are the two instruments that make decisions
+findable.
+
+Incidents are the decisions nobody plans for. A component whose output
+reached a reviewer, a product, or a user with an error has failed in a way
+the ratings of chapter 3 tried to anticipate. The procedure for an incident
+is short and fixed, so that the people involved do not have to invent it
+under pressure: hold or switch off, notify, correct, find the cause, add
+the control, record the opening and the closing.
+
+## Target state
+
+- A board with written terms of reference takes the decisions the policy reserves for it, on a schedule and after incidents.
+- Every approval, change, review outcome, incident, and policy adoption is one row in the decision log, with the role that decided, the follow-up, its due date, and its status.
+- Every component in the register has an approval decision, and every High-tier approval was taken by the role that accepts residual risk.
+- Every incident has an opening entry, a report, and a closing entry naming the control that prevents a repeat.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Adopt the board's terms of reference and start the log with the policy's adoption and the approval of each existing component. |
+| **AI-ready** | Record every decision type; run the log check before each board meeting; handle incidents by the procedure with a report per incident. |
+| **AI-native** | Report the log's statistics (decisions, incidents, overdue follow-ups) to the board each quarter and publish the count of incidents with the statement of model use. |
+
+:::info[Running example]
+The example organization's board was constituted on 2025-09-15. Its
+decision log holds ten decisions as of 2026-01-15: the policy adoption,
+six approvals, one incident opened and closed, and one review. The
+incident, I-2025-01, concerned a wrong reference period in a commentary
+draft and was caught before publication. The files are
+[board_terms.md](pathname:///cookbook-files/governance-and-risk/board_terms.md),
+[decision_log.csv](pathname:///cookbook-files/governance-and-risk/decision_log.csv),
+and
+[incident_report.md](pathname:///cookbook-files/governance-and-risk/incident_report.md).
+:::
+
+## Recipes
+
+<Recipe title="4.1 Constitute the board with terms of reference" level="Foundational" skills="Management; the owner of the AI-use policy drafts" time="Half a day to draft; one meeting to adopt">
+
+**Result:** a board exists, with members, the decisions it takes, a
+procedure, and a schedule, written on one page and adopted.
+
+The board is small and made of the roles that own the instruments. The head of the organization chairs it and accepts residual risk. The policy owner keeps the registers and the log as secretary. The heads of dissemination and IT, the legal adviser, and a subject-matter head who speaks for production complete it. Its
+terms of reference say what it decides and how, so that a component owner
+knows what to bring and when.
+
+1. Start from the running example's
+   [terms of reference](pathname:///cookbook-files/governance-and-risk/board_terms.md)
+   and replace the roles with the organization's own.
+2. Keep the list of decisions short: approvals, High-tier changes,
+   incident closures, review outcomes, and acceptance of residual risk.
+   Everything else stays with the component's owner.
+3. Fix the procedure: what is submitted, how long before the meeting, who
+   checks it with the scripts, how the decision is recorded.
+4. Fix the schedule, with the rule that an incident that reached users
+   brings the board together within a few working days.
+5. Adopt the terms at the board's first meeting and record the adoption
+   as its first decision.
+
+**Worked example.** The example organization's board has six members: the
+Director General as chair, the head of methodology as secretary, the heads
+of dissemination and IT, the legal adviser, and a rotating subject-matter
+head. It meets every quarter and within five working days of an incident
+that reached users. A submission arrives a week before the meeting with
+the register row, the rating, and the evaluation report, and the secretary
+runs the register and risk scripts on it. The terms were adopted on
+2025-09-15 as part of decision D001.
+
+**What this does not do.** Terms of reference describe a board; attendance
+and preparation make it work. A board that meets without the scripts'
+results in front of it decides on impressions, and the governance review
+of chapter 8 will show it in overdue follow-ups.
+
+</Recipe>
+
+<Recipe title="4.2 Keep the decision log" level="AI-ready" skills="The board's secretary" time="Ten minutes per decision; the check before each meeting">
+
+**Result:** every decision the board takes is one row in a log that the
+scripts can check against the register, with its follow-up and status.
+
+The log is a CSV with one row per decision. Its types are fixed, so that the check knows what to look for. A `policy` row records an adoption or a revision, and an `approval` row a component going live. A `change` row records an approved change to a High-tier component, an `incident` row an opening or a closing, and a `review` row a scheduled review's outcome.
+
+| Column | Meaning |
+|---|---|
+| `decision_id`, `date`, `type` | The identifier, the date, and one of the fixed types |
+| `component_id` | The component concerned, empty for a policy decision |
+| `decision` | The decision in one or two sentences, including "residual risk accepted" where it was |
+| `decided_by` | The role that decided |
+| `follow_up`, `follow_up_due`, `closed` | What has to happen next, by when, and whether it has |
+
+```csv file=../../website/static/cookbook-files/governance-and-risk/decision_log.csv
+```
+
+1. Record each decision on the day, with the follow-up and its owner's
+   due date. A decision without a follow-up has `closed` set to yes.
+2. Before each meeting, run the check with the register and the current
+   date. It reports a component without an approval, a High-tier
+   approval not taken by the accepting role, an incident without a
+   closing entry, and the open follow-ups, marking the overdue ones.
+3. Put the overdue follow-ups on the agenda. An overdue follow-up on a
+   High-tier component is a reason to hold the component.
+
+```bash
+python check_decision_log.py decision_log.csv component_register.csv --as-of 2026-01-15
+```
+
+```text
+10 decisions: 1 policy, 6 approval, 2 incident, 1 review
+components approved: 6/6
+incidents: 1 opened, 1 closed
+open follow-ups: 2
+  D004 (C03): Report agreement by major group with each round, due 2026-01-06  OVERDUE
+  D007 (C06): First monthly review report, due 2026-01-05  OVERDUE
+result: PASS
+```
+
+**Worked example.** On 2026-01-15 the log has ten decisions. Every
+component has an approval, and the three High-tier approvals (D004, D006,
+D007) were decided by the Director General. The one incident, I-2025-01,
+was opened in D008 and closed in D009. Two follow-ups are overdue by about
+ten days: the agreement report for occupation coding, which waits for the
+quarter's re-coded sample, and the first monthly review report of the
+public assistant. Both go on the agenda of the January meeting, and the
+assistant's owner brings the December sample to it.
+
+**What this does not do.** The check verifies that decisions exist and
+were taken by the right role. Whether they were good decisions shows later
+in the suites, the reviews, and the incidents, and the log is what lets the
+organization trace a bad outcome back to the decision that allowed it.
+
+</Recipe>
+
+<Recipe title="4.3 Handle an incident from switch-off to the control that prevents a repeat" level="AI-ready" skills="The component's owner; the board closes" time="Hours to contain; days to close">
+
+**Result:** an incident has been contained, its cause found, a control
+added that prevents a repeat, and its opening and closing are in the log
+with a report.
+
+An incident is a component's output reaching a reviewer, a product, or a
+user with an error that the controls should have caught, or that a
+control caught at the last step. The second kind is recorded too, because
+a control that caught an error once is a control that will be relied on
+again, and the organization wants to know how close the error came. The
+procedure has six fixed steps.
+
+1. **Hold or switch off.** The owner stops the component's output from
+   reaching anyone further. For a High-tier component the policy says the
+   component is off until the board closes the incident.
+2. **Notify.** The owner informs the policy owner and, where users were
+   reached, the head of dissemination, who decides on a notice.
+3. **Correct.** Whatever reached a product or a user is corrected by the
+   usual correction procedure of the statistic.
+4. **Find the cause.** The owner traces the error to the prompt, the
+   data, the model, or the review step, and writes it in one paragraph.
+5. **Add the control.** A case that reproduces the error joins the
+   component's evaluation suite, and the step that let it through is
+   changed.
+6. **Record.** An opening entry of type `incident` goes in the log on the
+   day, a report is written from the
+   [template](pathname:///cookbook-files/governance-and-risk/incident_report.md),
+   and the board records the closing entry once the control is in place
+   and passes.
+
+**Worked example.** On 2025-11-20 the commentary draft of the labour
+market report for the second quarter of 2025 stated the youth unemployment
+rate as 17.5 percent, which is the first-quarter value; the second-quarter
+value is 16.8 percent. The number check of the commentary procedure
+flagged 17.5 as a figure present in the release table under a different
+reference period, and the analyst corrected the draft before approval. No
+wrong figure was published. The cause was a prompt that gave the model a
+two-quarter table without naming the reference period. The prompt now
+names the period and asks the model to quote it beside every figure, and a
+reference-period case runs in the commentary suite. Decision D008 opened
+incident I-2025-01 on the day; decision D009 closed it on 2025-12-05 after
+the case passed.
+
+**What this does not do.** The procedure handles an incident in one
+component. An incident that reveals a wrong rating, a weak suite, or a gap
+in the policy reopens chapters 3, the suites, and chapter 1, and the
+closing entry says which.
+
+</Recipe>
+
+## Implementation options
+
+- **Where the log lives.** A CSV in version control, next to the register, is what the scripts read. A ticketing system works when every decision is also a row the check can read.
+- **Incident severity.** Organizations with an existing incident procedure for data errors can fold AI incidents into it, with the component identifier as an extra field. The six steps are the same.
+- **Public reporting.** The count of incidents in a year, and whether any reached users, can be published with the statement of model use. Users read it as a sign that the organization looks.
+
+## World Bank examples
+
+- The [Language Models in Statistical Production](/cookbook/language-models-in-production/commentary) cookbook describes the number and claim check of a commentary draft that caught the running example's incident.
+- The [Evaluation Suites](/cookbook/evaluation-suites/gates) cookbook describes the gate on every change that the added case runs in.
+
+## Resources
+
+- [ISO/IEC 42001](https://www.iso.org/standard/42001): the management review and the nonconformity and corrective action clauses that the board and the incident procedure implement.
+- [Board terms of reference](pathname:///cookbook-files/governance-and-risk/board_terms.md), [decision log](pathname:///cookbook-files/governance-and-risk/decision_log.csv), [incident report](pathname:///cookbook-files/governance-and-risk/incident_report.md), and [check_decision_log.py](pathname:///cookbook-files/governance-and-risk/check_decision_log.py): the running example's instruments and the check.
+
+## Common mistakes
+
+- **Decisions in minutes only.** Minutes are prose. A row per decision with a type is what a check can read and a new head of unit can find.
+- **Follow-ups without dates.** A follow-up with no due date is never overdue and never done.
+- **Incidents that are fixed quietly.** A fixed error with no entry is a control that nobody knows was needed.
+- **A board that approves and never reviews.** Reviews are where components are switched off; without them the register only grows.
+
+## Verification
+
+- **Log check.** The check passes with the register, and the overdue follow-ups on the output are on the next agenda.
+- **Incident drill.** The owner of a High-tier component can state the six steps and the time to switch the component off.
+- **Traceability check.** For a component picked at random, its approval decision can be opened from its register row.
+
+## Checklist
+
+<Checklist id="governance-and-risk-decisions" items={[
+  'Board constituted with terms of reference and a schedule',
+  'Decision log started with the policy adoption and every approval',
+  'Fixed decision types in use',
+  'Log check run before each meeting',
+  'Overdue follow-ups on the agenda',
+  'Incident procedure known to every component owner',
+  'Each incident with an opening entry, a report, and a closing entry',
+]} />

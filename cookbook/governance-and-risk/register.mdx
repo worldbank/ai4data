@@ -1,0 +1,238 @@
+---
+id: register
+title: "2. The register of AI components"
+sidebar_label: "2. Register"
+sidebar_position: 2
+description: How the organization keeps one table of every AI component it runs, with the owner, the model, the data, the review, the risk tier, and the exit plan of each, and how a component enters the table before it goes live.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 2. The register of AI components
+
+**Question:** Which AI components exist, and who owns each?
+
+## Rationale
+
+A statistical organization that uses models in several units soon has
+components nobody can list. A curator's drafting tool, a coding model in
+the labour force survey, a search index on the website, and an assistant on
+the data portal are run by different people with different providers. When
+a user asks what AI the organization uses, when a provider changes its
+terms, or when an auditor asks who approved a component, the answer has to
+be found by asking around. The register is the table that answers these
+questions in one place.
+
+The register is also the gate. A component enters the table before it goes
+live, with a risk tier and an approval, and the rule "no row, no
+deployment" is what makes the policy of chapter 1 bind in practice. Each
+row has a review date, and the review is where the organization decides
+whether the component continues.
+
+## Target state
+
+- Every AI component in production or in everyday use has a row with an owner, a model, a provider, the data it sees, its human review, its risk tier, its approval, its review dates, and its exit plan.
+- No component goes live without a row, a tier, and an approval in the decision log.
+- The rows are reviewed on their dates, and each review is recorded.
+- The register's public columns are published with the policy.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Build the register from an inventory of the components that exist, with an owner and an exit plan for each, and run the check. |
+| **AI-ready** | Apply the rule that a component is added before it goes live, with its risk tier and its approval; review the rows on their dates and record the outcomes. |
+| **AI-native** | Generate the public columns of the register and the statement of model use from the same file; tie each row to its evaluation suite's report so that a review starts from the measurements. |
+
+:::info[Running example]
+The example organization's register has six components, C01 to C06, five
+on its own model server and one at a hosted provider. The register as of
+2026-01-15 has one review due, for the occupation coding component. The
+file is
+[component_register.csv](pathname:///cookbook-files/governance-and-risk/component_register.csv).
+:::
+
+## Recipes
+
+<Recipe title="2.1 Build the register from an inventory of components" level="Foundational" skills="The owner of the AI-use policy; the heads of units supply the rows" time="One hour per component for the first version">
+
+**Result:** the organization has one table, one row per AI component, that
+says who owns it, what model it uses, what data it sees, how its output is
+reviewed, what its risk tier is, when it is reviewed, and how it would be
+replaced.
+
+The register is a CSV with the columns below. The columns match the
+questions the policy's controls ask, so that a row is the evidence that a
+control is in place for that component.
+
+| Column | Meaning |
+|---|---|
+| `component_id`, `component`, `purpose` | A short identifier, the name, and what the component is for |
+| `owner` | The role responsible for the component |
+| `model_or_service`, `provider` | The model and who runs it: internal, or a named provider |
+| `data_used`, `data_sensitivity` | What data the component sees, and whether they are public, internal, or confidential |
+| `human_review` | Who checks the output and how |
+| `external_transfer` | Whether data leave the organization (yes or no) |
+| `risk_tier` | Low, Medium, or High, from the risk register of chapter 3 |
+| `approved_on`, `last_reviewed`, `next_review` | The approval date and the review dates |
+| `exit_plan` | How the component would be replaced or switched off |
+
+```csv file=../../website/static/cookbook-files/governance-and-risk/component_register.csv
+```
+
+1. Ask each unit where a model's output enters its work today. The task
+   boundary of recipe 1.2 is the list to start from. Each task with a
+   model is a component.
+2. Fill a row per component. The owner is a role, so that the row survives a change of staff. The exit plan is written
+   honestly: "switch provider" is a plan only when a second provider has
+   been tried (chapter 5).
+3. Give each row a risk tier from chapter 3. Until the tier is rated, the
+   row says so, and the component does not go live.
+4. Run the check. It reports an empty owner, exit plan, approval, or
+   review date; a tier outside Low, Medium, and High; confidential data
+   that leave the organization; and, with a date, the reviews due.
+
+```bash
+python check_register.py component_register.csv --as-of 2026-01-15
+```
+
+```text
+6 components; 5 Internal, 1 Provider A; 2 Low, 1 Medium, 3 High
+reviews due on or before 2026-01-15: 1
+  C03 Occupation coding: due 2026-01-06, owner Head of methodology
+result: PASS
+```
+
+**Worked example.** The example organization's six rows are the metadata
+description drafts (C01), the catalog semantic search (C02), occupation
+coding (C03), edit failure explanations (C04), release commentary drafts
+(C05), and the public statistics assistant (C06). Five run on the
+organization's own server with an open-weight model, and no data leave the
+organization. The commentary drafts run at a hosted provider on aggregate
+output tables, which are public data, so the external transfer is
+permitted. Three components are High tier, one Medium, two Low. On
+2026-01-15 the check passes and lists one review due: occupation coding,
+due 2026-01-06, owned by the head of methodology.
+
+**What this does not do.** The register lists components and does not
+evaluate them. A component's scores live in its evaluation suite, and the
+register's review date is the prompt to look at them.
+
+</Recipe>
+
+<Recipe title="2.2 Add a component before it goes live" level="AI-ready" skills="The component's owner; the board's secretary" time="One hour, plus the board's decision">
+
+**Result:** a new component has a row, a risk tier, and an approval in the
+decision log before its first output reaches anyone.
+
+The rule is "no row, no deployment". It is cheap to follow and expensive
+to skip, because a component that went live without a row has to be
+rated, approved, and documented afterwards, under the pressure of already
+being in use. The row is written by the owner, the tier by the owner with
+the policy's owner, and the approval by the board.
+
+1. The owner writes the row with every column filled. The approval and
+   review dates stay empty until the board decides.
+2. The owner rates the component on the three risk ratings of chapter 3
+   and records the tier in the row.
+3. The owner submits the row, the rating, and the evaluation report to the
+   board (chapter 4). A High-tier component needs the acceptance of
+   residual risk in the same decision.
+4. The secretary records the approval in the decision log, fills the
+   approval date and the first review date in the row, and the component
+   goes live.
+
+**Worked example.** The public statistics assistant (C06) was added on
+2025-12-01. Its row names the head of dissemination as owner and the open-weight model on the organization's server as its model. Its data are published values through the API and user questions. Its human review is a monthly sample of answers and every number verified, and its exit plan reads "switch the assistant off; search and the API remain". Its rating
+gave a score of 18 and a High tier. Decision D007 of the same date,
+decided by the Director General, approved it with the residual risk
+accepted and set a first monthly review report as the follow-up, due
+2026-01-05.
+
+**What this does not do.** The row and the approval say that the
+organization knows what it is running. Whether the component should run
+is the evaluation suite's required score, which the board reads before it
+decides, and the production and dissemination cookbooks describe the
+suites per task.
+
+</Recipe>
+
+<Recipe title="2.3 Review the rows on their dates" level="AI-ready" skills="The component's owner reports; the board decides" time="One hour per component; twice a year for most rows">
+
+**Result:** each component has been looked at on its review date, from
+its measurements, and the outcome (continue, change, or switch off) is in
+the decision log.
+
+A review is the moment the organization decides whether a component still
+earns its place. It reads four things: how much the component is used and
+how much of its output is accepted; its suite scores since the last
+review; its cost (chapter 5); and any incident. The review date is set at
+approval, six months for most components and three months for a High-tier
+component in its first year.
+
+1. Run the register check with the current date to list the reviews due.
+2. For each, the owner brings the four measures and a recommendation.
+3. The board decides and the secretary records a decision of type
+   `review` with the outcome, and updates `last_reviewed` and
+   `next_review` in the row.
+4. A component whose review is overdue is reported to the board as such;
+   an overdue review is a finding of the governance review (chapter 8).
+
+**Worked example.** The metadata description drafts (C01) came up for
+review on 2025-12-15 after six months. The owner reported 312 drafts
+produced and 289 accepted or edited by curators, suite scores unchanged,
+a cost of about 40 units a month on the organization's own server, and no
+incident. The board decided to continue (decision D010). On 2026-01-15 the
+check lists occupation coding (C03) as due since 2026-01-06; its review
+waits for the agreement figures of the quarter's round, which are the
+follow-up of decision D004.
+
+**What this does not do.** The review reads the measures the component's
+suite and log produce. A component without a suite has only its usage to
+show, which is why the Medium and High tiers require a suite (chapter 3).
+
+</Recipe>
+
+## Implementation options
+
+- **Format.** A CSV in version control is enough for most organizations and is what the scripts read. A register in a ticketing or asset-management system works when it can export the same columns.
+- **Public columns.** The component, purpose, owner, model, provider, data sensitivity, human review, and external transfer columns can be published with the policy. The exit plan and the review dates can stay internal.
+- **Relation to the statement of model use.** The statement of chapter 7 is generated from the register and the evaluation summary, so the register is written once and read in two places.
+- **Everyday assistants.** Staff use of general assistants is one row in the register, with the task card of the [AI assistants](/cookbook/ai-assistants-at-work/record) cookbook as its human review and its use log as its measure.
+
+## World Bank examples
+
+- The [AI-ready dissemination cookbook](/cookbook/ai-ready-dissemination/govern) gives the first version of the register, with two components, that this chapter extends.
+- The [Evaluation Suites](/cookbook/evaluation-suites/inventory) cookbook starts from an inventory of components ordered by cost of error, which is the same list as the register.
+
+## Resources
+
+- [ISO/IEC 42001](https://www.iso.org/standard/42001): the record of AI systems that the register implements.
+- [Model cards](https://arxiv.org/abs/1810.03993): the documentation convention for a model, which the `model_or_service` column can link to.
+- [Component register of the running example](pathname:///cookbook-files/governance-and-risk/component_register.csv) and [check_register.py](pathname:///cookbook-files/governance-and-risk/check_register.py): the table and its check.
+
+## Common mistakes
+
+- **A register written once.** Models and providers change. The review date is the point of the row.
+- **Owners by name.** A person leaves and the row is orphaned. The owner is a role.
+- **Exit plans that have never been tried.** "Switch provider" is a sentence until a second provider has run the suite (chapter 5).
+- **Components that entered through a pilot.** A pilot whose output reaches a product is a component, and it needs a row before that happens.
+
+## Verification
+
+- **Register check.** The check passes on the current register, and for a component picked at random the row names its owner, its model, and the data it sees.
+- **Gate check.** Every component in production has an approval decision in the log dated on or before its first output.
+- **Review check.** No review is overdue by more than one board cycle, and each past review has a decision of type `review`.
+
+## Checklist
+
+<Checklist id="governance-and-risk-register" items={[
+  'Inventory of components from every unit',
+  'One row per component with owner, model, data, review, tier, dates, and exit plan',
+  'Register check passes',
+  'Rule in force: no row, no deployment',
+  'Approval recorded in the decision log before go-live',
+  'Reviews on their dates with outcomes recorded',
+  'Public columns published with the policy',
+]} />

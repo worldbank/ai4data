@@ -1,0 +1,275 @@
+---
+id: position
+title: "1. The organization's position on AI"
+sidebar_label: "1. Position"
+sidebar_position: 1
+description: How a statistical organization states, in one approved page, which tasks a model may assist, which decisions stay with people, and which uses are prohibited, so that every later control has something to refer to.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 1. The organization's position on AI
+
+**Question:** What should the organization's position on AI use state?
+
+## Rationale
+
+Every other chapter of this guide refers back to a written position. The
+register of chapter 2 lists components against the uses the position
+permits. The risk tiers of chapter 3 attach controls that the position
+names. The board of chapter 4 approves components against it. The
+statement of model use of chapter 7 reports what the position allowed.
+Without the position, each of these instruments has to restate the rules,
+and they drift apart.
+
+A position is useful in proportion to how specific it is. A sentence such
+as "AI will be used responsibly" guides nobody on a Monday morning. A
+sentence such as "drafts of metadata may be produced with a model and are
+published only after a curator approves them" tells a curator what to do.
+The policy this chapter produces is built from sentences of the second
+kind. It is short, because the organization's staff have to know it, and it
+is approved at the top, because it binds every unit.
+
+The [AI-ready dissemination](/cookbook/ai-ready-dissemination/govern)
+cookbook gives a first version of this policy for dissemination alone.
+This chapter widens it to production, dissemination, and the everyday use
+of assistants by staff, and it adds the instruments that the rest of this
+guide maintains.
+
+## Target state
+
+- The organization has one approved policy on AI use that names permitted uses, prohibited uses, controls, roles, and a review cycle.
+- The policy says which tasks a model may assist and which decisions stay with people, and every unit can find its own work in it.
+- The policy is published, and the date of its adoption is in the decision log.
+- The policy is reviewed on a schedule, after any incident, and before each re-assessment.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Write the policy from the template with specific permitted and prohibited uses, name the approver, and set a review date. Decide the task boundary. |
+| **AI-ready** | Publish the policy, record its adoption in the decision log, and tie each control to the instrument that shows it is followed (the register, the risk register, the suites, the statement). |
+| **AI-native** | Review the policy from the evidence of a year: incidents, review outcomes, acceptance rates, and the re-assessment; publish the revisions with their reasons. |
+
+:::info[Running example]
+The example organization adopted its policy on the use of AI in official
+statistics, version 1.0, on 2025-09-15, with the Director General as
+approver and a review date of 2026-09-15. The policy permits seven uses and
+prohibits five. Its controls name the register, the board, the risk tiers,
+the evaluation suites, and the statement of model use that the later
+chapters maintain. The file is
+[ai_use_policy.md](pathname:///cookbook-files/governance-and-risk/ai_use_policy.md).
+:::
+
+## Recipes
+
+<Recipe title="1.1 Write the AI-use policy from the template" level="Foundational" skills="Head of methodology, with the legal adviser; management approves" time="One day to draft; approval time varies">
+
+**Result:** the organization has a one-page policy, approved at the top,
+that states what AI may and may not be used for and who decides when a new
+use is proposed.
+
+The policy has seven sections, and each one answers a question a member of
+staff or an auditor will ask. Scope says which systems and which people
+the policy binds. Principles restate the professional responsibility of
+the organization in terms of AI: models propose, staff decide;
+confidentiality holds in every use; methods are published. Permitted uses
+list the tasks a model may assist, each with the review that follows it.
+Prohibited uses list what may never be done. Controls name the instruments
+that show the policy is followed. Roles say who owns each instrument.
+Review says when the policy is reread.
+
+1. Start from the running example's
+   [policy](pathname:///cookbook-files/governance-and-risk/ai_use_policy.md)
+   and replace the organization, the approver, the dates, and the roles.
+   The structure is the one the checker expects.
+2. Rewrite the permitted uses from the organization's own work. Each item
+   names the task, the model's role, and the person who decides. A use
+   that nobody has asked for is left out; it can be added by the board
+   later.
+3. Keep the prohibited uses absolute. "Confidential data are not sent to
+   external services" is a rule. "Confidential data are sent to external
+   services only when necessary" is not.
+4. In the controls section, name the instruments of this guide: the
+   register (chapter 2), the risk tiers (chapter 3), the board and the
+   decision log (chapter 4), the evaluation suites, and the statement of
+   model use (chapter 7). A control that is not tied to an instrument
+   cannot be shown to work.
+5. Run the checker. It verifies the seven sections, the lists, the
+   approver, the review date, and that no template placeholder remains.
+
+```bash
+python check_policy.py ai_use_policy.md
+```
+
+```text
+  ok      Scope
+  ok      Principles
+  ok      Permitted uses
+  ok      Prohibited uses
+  ok      Controls
+  ok      Roles
+  ok      Review
+permitted uses: 7 item(s)
+prohibited uses: 5 item(s)
+approver: Director General
+review date: 2026-09-15
+placeholders left: none
+result: PASS
+```
+
+**Worked example.** The example organization's policy permits seven uses. Four concern dissemination: drafting metadata for curator review, ranking catalog records for search, answering user questions from published values with every number verified, and classifying and extracting information from published documents. Three concern production: coding open-text responses with a threshold and a re-coded sample, explaining edit failures to editors, and drafting release commentary with every number verified. It prohibits five: sending confidential or unpublished
+data to any external service, publishing unverified generated numbers,
+publishing generated text without named approval, letting a component
+change data directly, and using AI to make decisions about individuals.
+The roles table gives the Director General the approval and the chair of the board, and the head of methodology the policy and the registers. The head of dissemination owns the statement of model use, the head of IT the providers and the cost record, and the legal adviser the licences. The checker passes
+with no placeholder left.
+
+**What this does not do.** A policy states what is allowed. Whether it is
+followed shows in the register, the decision log, and the suites. A policy
+with an approver and a review date is the first instrument; the others are
+what make it more than a statement of intent.
+
+</Recipe>
+
+<Recipe title="1.2 Decide which tasks a model may assist and which stay with people" level="Foundational" skills="Head of methodology with the heads of the production and dissemination units" time="Half a day">
+
+**Result:** the organization has a short table that names, for each task
+where a model is or could be used, the role of the model and the person who
+decides, and a list of the tasks that stay with people.
+
+The task boundary is the part of the position that staff use most. A model
+can take one of a few roles in a task. It can propose a value or a code
+that a person accepts or changes. It can explain something to a person who
+then decides. It can draft text that a person verifies and approves. It can
+retrieve and rank material for a person or for another system. It does not
+decide. The boundary says which role the model has in each task, and it
+lists the tasks where the organization wants no model at all.
+
+| Model role | What the person does | Example in the running example |
+|---|---|---|
+| Propose | Accepts or changes the proposal | Occupation codes above a confidence threshold, with a re-coded sample |
+| Explain | Decides the case with the explanation in front of them | Edit failure explanations for editors |
+| Draft | Verifies every figure and approves the text | Release commentary from output tables |
+| Retrieve and rank | Reads the result, or another system verifies it | Catalog search; the public assistant with every number verified |
+| Decide | Never | Decisions about individuals, respondents, or staff; changes to data or estimates |
+
+1. List the tasks in each unit where a model's output enters the work
+   today or is proposed. The heads of units know these; a short meeting
+   per unit is enough.
+2. Assign each task a model role from the table and name the person who
+   decides. A task with no person who decides is a prohibited use until
+   one is named.
+3. List the tasks that stay with people, and say why in one sentence each.
+   The reason is usually that the decision concerns an individual, that it
+   changes an official figure directly, or that no measurement of the
+   model's performance is possible.
+4. Put the table in the permitted uses of the policy, one line per task,
+   and the second list in the prohibited uses.
+
+**Worked example.** The example organization's boundary has six tasks with
+a model role and three that stay with people. The six are the components
+of its register: description drafting (draft), semantic search (retrieve
+and rank), occupation coding (propose), edit failure explanations
+(explain), commentary drafting (draft), and the public assistant (retrieve
+and rank, with every number verified). The three that stay with people are
+decisions about individual respondents, changes to microdata or estimates,
+and the choice of methodology for a statistic. The
+[Language Models in Statistical Production](/cookbook/language-models-in-production/map)
+cookbook places the production tasks on the GSBPM map in its first chapter
+and gives the three rules that the map check enforces.
+
+**What this does not do.** The boundary names roles. Whether a model
+performs its role well enough is the question of the evaluation suite for
+each task, and the threshold at which a proposal is accepted without review
+is a decision of the methodology unit that the production cookbook covers.
+
+</Recipe>
+
+<Recipe title="1.3 Publish the position and set the review cycle" level="AI-ready" skills="Head of dissemination; the board's secretary" time="Two hours">
+
+**Result:** the policy is public, its adoption is in the decision log, and
+the dates on which it will be reread are known.
+
+Transparency about the use of AI is part of the transparency of methods
+that the Fundamental Principles of Official Statistics require. Users of
+the statistics should be able to read what the organization allows a model
+to do. Publishing the policy also binds the organization to it in a way an
+internal document does not. The review cycle keeps the policy in step with
+practice: a year of incidents, reviews, and new uses changes what the
+policy should say.
+
+1. Publish the policy on the methods or quality section of the website,
+   with its version and date.
+2. Record the adoption in the decision log (chapter 4) as a decision of
+   type `policy`, with the publication as its follow-up.
+3. Set three review triggers: the annual date in the policy, any incident
+   that reached users, and the period before an AI-readiness
+   re-assessment (chapter 8).
+4. At each review, read the policy against the evidence of the period:
+   the register, the decision log, the review outcomes, and the incidents.
+   Change what the evidence contradicts and record the new version.
+
+**Worked example.** The example organization published version 1.0 on its
+methods page and recorded the adoption as decision D001 on 2025-09-15, with
+the follow-up "publish the policy on the methods page" due 2025-09-30 and
+closed. The review date in the policy is 2026-09-15. The incident of
+chapter 4, which did not reach users, did not trigger a review; the
+governance review of chapter 8, run on 2026-01-15, did, and it recorded two
+licence findings as actions for the policy's next reading.
+
+**What this does not do.** Publication makes the policy visible, and the
+review cycle keeps it current. Neither shows that staff know it. A short
+briefing when the policy is adopted, and the task card of the
+[AI assistants](/cookbook/ai-assistants-at-work/tasks) cookbook, are how
+the policy reaches the people it binds.
+
+</Recipe>
+
+## Implementation options
+
+- **Management system standards.** [ISO/IEC 42001](https://www.iso.org/standard/42001) describes an AI management system for organizations that want a certifiable structure. The policy of this chapter is its policy clause; the register, the risk register, and the decision log are its records.
+- **Risk frameworks.** The [NIST AI Risk Management Framework](https://www.nist.gov/itl/ai-risk-management-framework) organizes AI risk work into govern, map, measure, and manage. This chapter is the govern function; chapter 3 is map and measure.
+- **Principles.** The [OECD AI Principles](https://oecd.ai/en/ai-principles) and the [UN Fundamental Principles of Official Statistics](https://unstats.un.org/fpos/) are the two sources the principles section draws on. A statistical organization restates the second in terms of AI; the first is what its government may already have adopted.
+- **Scope choices.** A policy can cover the whole organization or one function. The whole organization is simpler to maintain, because the register, the board, and the statement then have one scope.
+
+## World Bank examples
+
+- The [AI-ready dissemination cookbook](/cookbook/ai-ready-dissemination/govern) gives the dissemination-only version of the policy, with the same seven sections.
+- The [Language Models in Statistical Production](/cookbook/language-models-in-production/map) cookbook gives the GSBPM map of model-assisted tasks that recipe 1.2 summarizes.
+- The program's responsible AI guidance, aligned with the Fundamental Principles, is in development.
+
+## Resources
+
+- [UN Fundamental Principles of Official Statistics](https://unstats.un.org/fpos/): the professional responsibility the principles section restates for AI use.
+- [ISO/IEC 42001](https://www.iso.org/standard/42001): the management system standard the policy and its records fit into.
+- [NIST AI Risk Management Framework](https://www.nist.gov/itl/ai-risk-management-framework): the govern, map, measure, manage structure the chapters of this guide follow.
+- [OECD AI Principles](https://oecd.ai/en/ai-principles): the principles many governments have adopted, which the policy can cite.
+- [Policy of the running example](pathname:///cookbook-files/governance-and-risk/ai_use_policy.md) and [check_policy.py](pathname:///cookbook-files/governance-and-risk/check_policy.py): the filled template and its check.
+
+## Common mistakes
+
+- **A policy of principles without uses.** A policy that says what the organization values and not what staff may do is read once and forgotten.
+- **Permitted uses copied from a vendor.** The uses come from the organization's own tasks. A use nobody has asked for adds a row to the register that nobody owns.
+- **Controls without instruments.** "Outputs are reviewed" is a control only when the register says by whom and the review record shows it happened.
+- **A review date that passes.** The review is what turns a year of practice into a better policy. The checker reports the date; the board's schedule has to hold it.
+
+## Verification
+
+- **Structure check.** The checker passes on the adopted policy with no placeholder left.
+- **Boundary check.** Every component in the register (chapter 2) matches one permitted use, and every prohibited use names something a person could do.
+- **Publication check.** The policy's URL resolves, and decision D001 or its equivalent is in the decision log.
+- **Review check.** The next review date is in the future, and the last review's changes are recorded with their reasons.
+
+## Checklist
+
+<Checklist id="governance-and-risk-position" items={[
+  'Policy written from the template with the seven sections',
+  'Permitted uses specific, each with the person who decides',
+  'Prohibited uses absolute',
+  'Controls tied to the register, the tiers, the board, the suites, and the statement',
+  'Task boundary table agreed with the heads of units',
+  'Approver named and review date set',
+  'Policy published and its adoption in the decision log',
+]} />

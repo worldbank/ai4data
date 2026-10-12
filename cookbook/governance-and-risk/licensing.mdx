@@ -1,0 +1,291 @@
+---
+id: licensing
+title: "6. Licences and terms for data and models"
+sidebar_label: "6. Licensing"
+sidebar_position: 6
+description: How every published product carries a licence that states whether AI systems may use it and under what terms, in a form machines can read, how terms of use for machine clients are written, and how the licences of the models the organization uses are classified.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 6. Licences and terms for data and models
+
+**Question:** What do licences and terms of use need to say for AI?
+
+## Rationale
+
+A licence answers the question a user, a researcher, or an AI developer
+asks before using a product: what may be done with it. For AI the question
+has a new part. A product may be read by an assistant at the time of a
+query, which is use, and it may be included in the data a model is trained
+on, which is a different use with different consequences. A licence that
+is silent on the second leaves the organization's position unknown, and an
+AI developer either assumes permission or stays away. The assessment
+framework's licensing dimension asks whether the licence is stated, whether
+it is attached to each product, whether it is machine-readable, and whether
+it covers AI and machine learning explicitly.
+
+The same question runs the other way. The organization uses models that
+come with licences, and some of those licences restrict who may use the
+model, for what, and how derivatives may be shared. A model whose licence
+was not read is a dependence the organization does not understand. This
+chapter keeps both tables: the licences the organization gives, and the
+licences it has accepted.
+
+## Target state
+
+- Every published product has a licence from a short allowed list, with a URL, stated in the product's record in a machine-readable form.
+- Every licence states whether AI use is allowed, allowed under conditions, or prohibited, and the conditions are written.
+- Terms of use for machine clients cover identification, attribution, fidelity, and the use of the data for AI.
+- Every model the organization uses has a licence class and an allowed-use statement, and the restrictions of restricted licences are noted.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Choose a licence for each product type from the allowed list and state the AI-use position for each. |
+| **AI-ready** | Put the licence and its URL in every catalog record and API response; publish the terms for machine clients; classify every model licence. |
+| **AI-native** | Serve the licence in the structured fields that AI systems read (schema.org, DCAT, Croissant, the MCP server's resources), and run the licence check with every release. |
+
+:::info[Running example]
+The example organization's licence matrix lists eight products. Six are in
+order. The food security report has a licence that is not in its record in
+machine-readable form, and the statistical yearbook has no licence at all.
+The check finds both. The files are
+[licence_matrix.csv](pathname:///cookbook-files/governance-and-risk/licence_matrix.csv),
+[model_licences.csv](pathname:///cookbook-files/governance-and-risk/model_licences.csv),
+and
+[terms_machine_clients.md](pathname:///cookbook-files/governance-and-risk/terms_machine_clients.md).
+:::
+
+## Recipes
+
+<Recipe title="6.1 State the licence and the AI-use terms of every product" level="Foundational" skills="Legal adviser with the head of dissemination" time="One hour per product type; minutes per product after that">
+
+**Result:** the organization has one table that gives, for every published
+product, its licence, the licence's URL, whether AI use is allowed and
+under what terms, and whether the licence is stated in a form machines can
+read.
+
+The matrix uses a short allowed list of licences, because a user who meets
+one of them knows what it means, and a licence written for one product has
+to be read in full by everyone. The list is the open licences the World
+Bank and most statistical organizations use, plus "custom" for the access
+agreements that microdata need. The AI-use column has three values:
+`allowed`, `conditions`, and `prohibited`, and the second and third
+require the terms to be written.
+
+| Column | Meaning |
+|---|---|
+| `product_id`, `product_type`, `title` | The product and its kind: indicator series, microdata file, geospatial file, publication |
+| `licence`, `licence_url` | A licence from the allowed list (CC-BY-4.0, CC0-1.0, CC-BY-SA-4.0, ODC-By-1.0, ODbL-1.0, or custom) and its URL |
+| `ai_use`, `ai_use_terms` | Whether AI systems may use the product (allowed, conditions, prohibited) and the terms |
+| `machine_readable` | Whether the licence is stated in the product's record in a structured field |
+
+```csv file=../../website/static/cookbook-files/governance-and-risk/licence_matrix.csv
+```
+
+1. Decide the licence per product type. Indicator series and
+   publications are usually under an attribution licence; public-use
+   microdata files are usually under a custom agreement that permits
+   analysis and prohibits re-identification and redistribution.
+2. Decide the AI-use position per product type. For public indicator
+   series, "allowed with attribution" is the position that keeps the
+   organization cited. For public-use microdata, "conditions" with the
+   same prohibitions as for any user. For licensed files, "prohibited".
+3. Put the licence identifier and URL in each product's record in the
+   structured field the catalog has: `license` in schema.org, `dct:license`
+   in DCAT, `license` in a Croissant record, the licence field in the API
+   response.
+4. Run the check. It reports a product without a licence, a licence off
+   the list, a missing URL, an AI-use position outside the three values,
+   conditions without terms, and a licence that is not machine-readable.
+
+```bash
+python check_licences.py licence_matrix.csv --models model_licences.csv
+```
+
+```text
+8 products; licences: 1 (none), 4 CC-BY-4.0, 3 custom
+AI use: 4 allowed, 2 conditions, 1 prohibited, 1 unspecified
+machine-readable: 6/8
+4 models; classes: 2 permissive, 1 proprietary-api, 1 restricted
+problem: EX-REP-2025-03: licence is not machine-readable
+problem: EX-YB-2023: no licence
+problem: EX-YB-2023: AI use 'unspecified' is not allowed, conditions, or prohibited
+problem: EX-YB-2023: licence is not machine-readable
+result: FAIL
+```
+
+**Worked example.** The unemployment rate series and the undernourishment
+series are under CC-BY-4.0 with AI use allowed and attribution to the
+organization with the series identifier and the release date. The public
+use file of the labour force survey's second quarter of 2025 is under a
+custom public-use agreement, with AI use allowed under conditions:
+training on the file is allowed, re-identification and redistribution are
+prohibited. The licensed household budget survey file prohibits AI use,
+because its agreement limits use to the approved research purpose. The
+check finds two products to fix: the food security report has its licence
+on the page and not in the record, and the statistical yearbook has no
+licence. The legal adviser assigns CC-BY-4.0 to both, and the catalog
+team adds the structured field; the fix is an action of the governance
+review in chapter 8.
+
+**What this does not do.** The check verifies that each product has a
+reviewed row. Whether a custom licence says what the row claims is the
+legal adviser's reading of its text. And a licence states permission; the
+[ML-ready datasets](/cookbook/ml-ready-datasets/license) cookbook describes
+the disclosure review that decides whether a file may be released for
+training at all.
+
+</Recipe>
+
+<Recipe title="6.2 Write terms of use for machine clients" level="AI-ready" skills="Legal adviser with the API or MCP owner" time="Half a day">
+
+**Result:** the organization has published terms that software, including
+AI assistants and agents, accepts when it retrieves data from the API or
+the MCP server.
+
+The data licence says what may be done with the data. The terms of use say
+how the service may be used to get them, and they are where the
+organization asks machine clients for the two things that keep official
+statistics visible in AI answers: attribution and fidelity. Attribution
+means that a value shown to a person carries the series identifier, the
+reference period, the release date, and the source. Fidelity means that a
+client does not alter a value, a unit, or a period, marks provisional
+values as such, and does not substitute a figure from elsewhere under the
+organization's name.
+
+1. Start from the running example's
+   [terms](pathname:///cookbook-files/governance-and-risk/terms_machine_clients.md)
+   and keep the seven sections: scope, registration, attribution,
+   fidelity, use of the data for AI, limits and changes, contact.
+2. Tie the AI-use section to the licence matrix: training is governed by
+   the licence of each product, as the record states.
+3. Publish the terms with the API documentation and as a resource of the
+   MCP server, so that a client reads them where it connects.
+4. State the notice period for changes and link the deprecation policy.
+
+**Worked example.** The example organization's terms, version 1.0 of
+2025-12-01, require a client identifier in every request, limit anonymous
+access to the public tier, and give registered clients a higher rate limit
+and a contact for notices. A client that presents a value shows the series
+identifier, the period, the release date, and the source URL that came
+with it; a client that generates text attributes it to the organization. A
+client that cannot retrieve a value says so. Training is governed by the
+licence of each product. Endpoints are withdrawn with at least six months'
+notice. The terms are a resource of the MCP server described in the
+[Serving Statistics to AI Agents](/cookbook/serving-statistics-to-agents/access)
+cookbook.
+
+**What this does not do.** Terms bind clients that accept them; a client
+that scrapes the website accepts nothing. The attribution and fidelity
+that the terms ask for are also built into the responses themselves
+(provenance in every response, verified numbers), so that a well-behaved
+client gets them without reading the terms.
+
+</Recipe>
+
+<Recipe title="6.3 Classify the licence of every model the organization uses" level="AI-ready" skills="Data scientist with the legal adviser" time="One hour per model">
+
+**Result:** every model the organization runs or calls has a row with its
+licence, a class, an allowed-use statement, and, for restricted licences,
+the restrictions written out.
+
+Model licences come in three classes. Permissive licences (Apache-2.0,
+MIT) allow internal and commercial use, modification, and redistribution
+with notice. Restricted licences, often called community licences, allow
+use below a threshold of users or revenue, carry an acceptable-use policy,
+and attach their terms to derivatives. Proprietary terms of service govern
+hosted models and say what may be sent and what may be done with outputs.
+The class decides what the organization may do: adapt the model, share an
+adapted model with another statistical organization, or publish outputs.
+
+| Column | Meaning |
+|---|---|
+| `model_id`, `model`, `used_by` | The model and the components that use it |
+| `licence`, `licence_class` | The licence name and its class: permissive, restricted, or proprietary-api |
+| `allowed_use` | What the organization may do under it, in its own words |
+| `restrictions_noted` | The restrictions that matter, written out for restricted and proprietary licences |
+
+```csv file=../../website/static/cookbook-files/governance-and-risk/model_licences.csv
+```
+
+1. For each model in the register and each candidate under evaluation,
+   find the licence text at its source.
+2. Classify it, and write the allowed use in the organization's own
+   words. For a restricted licence, note the threshold, the acceptable-use
+   policy, and the terms for derivatives. For a hosted model, note what
+   may be sent and what may be done with outputs.
+3. Run the licence check with `--models`. It reports a model without a
+   class, without an allowed-use statement, or restricted without its
+   restrictions noted.
+4. A model whose licence does not allow the intended use is not a
+   candidate, whatever its scores.
+
+**Worked example.** The example organization's open-weight 8B model and its
+embedding model are under Apache-2.0 and MIT, permissive, which allows the
+adaptation and the sharing of adapted models with partner organizations
+that chapter 8 of this guide and the roadmap of the program count on. The
+hosted model is under proprietary terms that prohibit personal data in
+inputs and allow publication of outputs with review, which matches the
+component's use on aggregate tables. The 70B candidate is under a custom
+community licence, restricted: internal use is allowed below the user
+threshold, an acceptable-use policy applies, and a redistributed
+derivative carries the licence. The data scientist noted this before the
+candidate entered the suite, as the
+[Small and Open Models](/cookbook/small-and-open-models/candidates)
+cookbook recommends.
+
+**What this does not do.** The class says what the licence allows. Whether
+the model's weights are what they claim to be is the file verification of
+the small models cookbook, and whether the model is good enough is its
+suite.
+
+</Recipe>
+
+## Implementation options
+
+- **Licence identifiers.** The [SPDX licence list](https://spdx.org/licenses/) gives a short identifier for each open licence, which is what the `licence` column and the structured fields carry.
+- **Structured fields.** `license` in [schema.org Dataset](https://schema.org/Dataset), `dct:license` in [DCAT](https://www.w3.org/TR/vocab-dcat-3/), `license` in a [Croissant](https://mlcommons.org/croissant/) record, and the licence field of the API's provenance all take the licence URL.
+- **Custom agreements for microdata.** The access tiers of the [microdata documentation](/cookbook/microdata-documentation/access) cookbook (public use, licensed, secure) each carry their own agreement, and the matrix records the AI-use position per tier.
+- **Responsible AI licences.** [OpenRAIL](https://www.licenses.ai/) licences attach use restrictions to models and derivatives; they are restricted in the classification above.
+
+## World Bank examples
+
+- The [ML-ready datasets](/cookbook/ml-ready-datasets/license) cookbook describes the licence and terms for model training and the disclosure review that precedes a release for training.
+- The [Serving Statistics to AI Agents](/cookbook/serving-statistics-to-agents/access) cookbook describes terms of use for agents, access tiers, and client registration on the MCP server.
+- The World Bank's open data are published under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), with the terms on the [data portal](https://datacatalog.worldbank.org/public-licenses).
+
+## Resources
+
+- [Creative Commons licences](https://creativecommons.org/licenses/), [CC0](https://creativecommons.org/publicdomain/zero/1.0/), and the [Open Data Commons licences](https://opendatacommons.org/licenses/): the allowed list.
+- [SPDX licence list](https://spdx.org/licenses/): the identifiers.
+- [Licence matrix](pathname:///cookbook-files/governance-and-risk/licence_matrix.csv), [model licences](pathname:///cookbook-files/governance-and-risk/model_licences.csv), [terms for machine clients](pathname:///cookbook-files/governance-and-risk/terms_machine_clients.md), and [check_licences.py](pathname:///cookbook-files/governance-and-risk/check_licences.py): the running example's tables, terms, and check.
+
+## Common mistakes
+
+- **A licence on the website and not in the record.** An AI system reads the record. The page is for people.
+- **Silence on AI use.** A licence that says nothing leaves the organization's position unknown and its data either over-used or avoided.
+- **One custom licence per dataset.** Every user reads every one. A short allowed list is what makes a licence mean something.
+- **Model licences read after the evaluation.** A model that scored well under a licence that forbids the use has cost a week of evaluation for nothing.
+
+## Verification
+
+- **Matrix check.** The licence check passes, or its findings are actions in the decision log with dates.
+- **Record check.** For a product picked at random, the licence URL in its catalog record and in its API response equals the matrix.
+- **Terms check.** The terms for machine clients resolve from the API documentation and from the MCP server's resources.
+- **Model check.** Every model in the register has a row in the model licence table with its class.
+
+## Checklist
+
+<Checklist id="governance-and-risk-licensing" items={[
+  'Licence chosen per product type from the allowed list',
+  'AI-use position stated per product with its terms',
+  'Licence URL in every record and API response',
+  'Licence check passes or its findings have dates',
+  'Terms of use for machine clients published with the API and the MCP server',
+  'Every model classified with its allowed use',
+  'Restrictions of restricted licences written out',
+]} />

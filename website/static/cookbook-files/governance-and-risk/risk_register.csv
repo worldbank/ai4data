@@ -1,0 +1,7 @@
+component_id,component,cost_of_error,exposure,reversibility,worst_case,controls_in_place,residual_risk_accepted_by,accepted_on
+C01,Metadata description drafts,2,1,1,A wrong definition is published under the office's name and misleads users of one series,Curator approval of every draft; description check in the release procedure,Head of methodology,2025-09-22
+C02,Catalog semantic search,1,2,1,Users do not find a series that exists and turn to a secondary source,Keyword search stays beside semantic search; retrieval scores on the question set each release,Head of methodology,2025-09-22
+C03,Occupation coding,3,2,3,Systematic miscoding of an occupation group changes published employment by occupation for a quarter,Confidence threshold; re-coded sample each round; agreement by major group reported in the statement of model use,Director General,2025-10-06
+C04,Edit failure explanations,2,2,2,An editor accepts a wrong explanation and imputes a wrong value in a confidential record,Editors decide every case; proposals checked against the rules; sample audit,Head of methodology,2025-10-06
+C05,Release commentary drafts,3,3,2,A wrong figure in the commentary of a release reaches the press,Every number verified by script against the tables; analyst approval; second provider tested,Director General,2025-11-03
+C06,Public statistics assistant,3,3,2,The assistant states a wrong figure to the public with the office's citation,Answers only from retrieved values; every number verified; monthly review sample; switch-off within one hour,Director General,2025-12-01

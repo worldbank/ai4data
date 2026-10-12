@@ -1,0 +1,271 @@
+---
+id: risk
+title: "3. Risk rating of components"
+sidebar_label: "3. Risk"
+sidebar_position: 3
+description: How each AI component is rated on the cost of an error, its exposure, and how reversible a failure is, how the score places it in a tier, and how each tier carries a fixed set of controls and a named person who accepts the residual risk.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 3. Risk rating of components
+
+**Question:** How much could each component cost the organization if it fails?
+
+## Rationale
+
+Not every AI component deserves the same controls. A model that drafts a
+description a curator reads before publication can do limited harm. A
+model that drafts the commentary of a release, or an assistant that quotes
+figures to the public under the organization's name, can put a wrong number
+in front of the press or a ministry. Treating the two alike wastes effort
+on the first and under-protects the second.
+
+A risk rating makes the difference explicit and proportionate. Three
+ratings, each from 1 to 3, describe what an error would cost, how many
+people would see it, and how hard it would be to undo. Their product places
+the component in a tier, and each tier carries a fixed list of controls.
+The rating is a judgment, made by people who know the component; the
+script makes the arithmetic and the consequences visible and keeps the
+register's tier in step with the rating.
+
+## Target state
+
+- Every component in the register has a rating on cost of error, exposure, and reversibility, with its worst case written down.
+- The tier in the register equals the tier the rating gives.
+- The controls the tier requires are in place, and each has evidence.
+- The residual risk of each component is accepted by the role the tier names, on a date.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Rate each component, write its worst case, and record the tier in the register. |
+| **AI-ready** | Put the controls of each tier in place with their evidence; record the acceptance of residual risk; re-rate on each change of model, data, or audience. |
+| **AI-native** | Feed the suite scores and the incident record back into the ratings; report the tiers and their controls to the board each quarter. |
+
+:::info[Running example]
+The example organization's risk register rates its six components. Three
+score 18 and are High tier: occupation coding, release commentary drafts,
+and the public assistant. Edit failure explanations score 8 and are
+Medium. The two dissemination components score 2 and are Low. The files
+are
+[risk_register.csv](pathname:///cookbook-files/governance-and-risk/risk_register.csv)
+and
+[controls_by_tier.csv](pathname:///cookbook-files/governance-and-risk/controls_by_tier.csv).
+:::
+
+## Recipes
+
+<Recipe title="3.1 Rate each component on cost of error, exposure, and reversibility" level="Foundational" skills="The component's owner with the head of methodology" time="Half an hour per component">
+
+**Result:** each component has three ratings, a score, a tier, and a
+written worst case, and the register's tier matches.
+
+The three ratings describe different things, and the product of the three
+is the score because a high rating on any one of them multiplies the
+others. Cost of error asks what the worst plausible error would cost: a
+wrong word in a description, or a wrong figure in a published statistic.
+Exposure asks how many people see the output before a person checks it:
+one curator, a unit, or the public. Reversibility asks how hard the error
+is to undo once it is out: a corrected record, a correction notice, or a
+figure quoted in a parliamentary debate.
+
+| Rating | 1 | 2 | 3 |
+|---|---|---|---|
+| Cost of error | Inconvenience inside the organization | A wrong published element that users rely on | A wrong official figure, or harm to a respondent |
+| Exposure | One reviewer sees the output first | A unit or a sample of users sees it | The public or the press sees it |
+| Reversibility | Undone by editing a record | Undone with a correction notice | Not fully undone once quoted |
+
+The score runs from 1 to 27. A score up to 6 is Low, 7 to 12 Medium, and
+13 or more High.
+
+| Column | Meaning |
+|---|---|
+| `cost_of_error`, `exposure`, `reversibility` | The three ratings, 1 to 3 |
+| `worst_case` | The error the ratings describe, in one sentence |
+| `controls_in_place` | The controls that hold today |
+| `residual_risk_accepted_by`, `accepted_on` | The role that accepted what remains, and when |
+
+```csv file=../../website/static/cookbook-files/governance-and-risk/risk_register.csv
+```
+
+1. For each component, write the worst case first. Ratings made without
+   a worst case in front of the raters drift toward the middle.
+2. Rate the three dimensions against the table. Where the owner and the
+   head of methodology differ, the higher rating stands until the board
+   decides.
+3. Run the script with the register. It computes the scores and tiers,
+   compares them with the register, and lists the controls each tier
+   requires.
+
+```bash
+python risk_score.py risk_register.csv controls_by_tier.csv --register component_register.csv
+```
+
+```text
+id   component                      cost  exp  rev score  tier
+C05  Release commentary drafts         3    3    2    18  High
+C03  Occupation coding                 3    2    3    18  High
+C06  Public statistics assistant       3    3    2    18  High
+C04  Edit failure explanations         2    2    2     8  Medium
+C02  Catalog semantic search           1    2    1     2  Low
+C01  Metadata description drafts       2    1    1     2  Low
+
+controls required:
+  Low (C01, C02):
+    - A row in the register with an owner and an exit plan [Register row]
+    - Human review of outputs that reach a published product [Review record]
+  Medium (C04):
+    - All Low controls [Register row; review record]
+    - An evaluation suite with a required score before each change [Suite report]
+    - A statement of model use with each release that used the component [Statement of model use]
+  High (C03, C05, C06):
+    - All Medium controls [As above]
+    - Residual risk accepted by the Director General in the decision log [Decision log entry]
+    - A switch-off test on record and an incident procedure [Decision log entry; incident report]
+    - A sample of outputs reviewed on a schedule and reported to the board [Review report]
+result: PASS
+```
+
+**Worked example.** The commentary drafts (C05) rate 3 on cost of error, because a wrong figure in a release commentary is a wrong official statement. They rate 3 on exposure, because the commentary goes to the press, and 2 on reversibility, because a correction notice can be issued. The score is
+18 and the tier High. Occupation coding (C03) rates 3 on reversibility,
+because a systematic miscoding changes a published distribution for a
+quarter that cannot be recalled, and 2 on exposure, because the coders see
+the routed share first. The metadata drafts (C01) rate 2, 1, 1: a wrong
+definition misleads users of one series, one curator sees every draft, and
+the record is edited. The script's tiers match the register for all six
+rows.
+
+**What this does not do.** The ratings are the judgment of the people who
+rate; the script does not make them. A rating is reread when the
+component's audience, data, or model changes, and when an incident shows
+that a worst case was underrated.
+
+</Recipe>
+
+<Recipe title="3.2 Apply the controls the tier requires" level="AI-ready" skills="The component's owner; the owners of the suites and the statement" time="From one hour for a Low component to several days for a High one">
+
+**Result:** every component has the controls its tier requires, and for
+each control there is a piece of evidence that it is in place.
+
+The controls table ties each tier to a short list, and each control to the
+evidence that shows it. Low components need a register row and a review
+of what reaches a product. Medium components add an evaluation suite with
+a required score and a statement of model use with each release. High
+components add the acceptance of residual risk at the top, a switch-off
+test and an incident procedure, and a sample of outputs reviewed on a
+schedule and reported to the board.
+
+```csv file=../../website/static/cookbook-files/governance-and-risk/controls_by_tier.csv
+```
+
+1. For each component, take the controls of its tier from the script's
+   output.
+2. For each control, name the evidence and where it lives: the register
+   row, the suite report, the statement, the decision log entry, the
+   review report.
+3. Put the evidence names in the `controls_in_place` column of the risk
+   register, so that the governance review of chapter 8 can find them.
+4. A control that cannot be evidenced is not in place. The component
+   waits, or the board accepts the gap explicitly and gives it a date.
+
+**Worked example.** The commentary drafts (C05) are High tier. Their
+register row and the analyst's approval record cover the Low controls.
+The commentary suite, with its required score and the reference-period
+case added after the incident of chapter 4, covers the suite control, and
+the statement of model use of the labour market report covers the
+statement control. The Director General accepted the residual risk in
+decision D006. The switch-off test is the exit plan "analysts draft from
+the tables", tried when the second provider was tested, and the incident
+procedure is the one that handled I-2025-01. The monthly sample is the
+analyst's number check on every draft, reported to the board each
+quarter.
+
+**What this does not do.** The controls list says what the tier needs;
+the suites and the statement are described in the evaluation and
+production cookbooks. A control's evidence is only as good as the
+measurement behind it, and a suite with a low required score is a weak
+control with strong paperwork.
+
+</Recipe>
+
+<Recipe title="3.3 Record the acceptance of residual risk" level="AI-ready" skills="The role the tier names; the board's secretary records" time="Part of the approval decision">
+
+**Result:** for every component, a named role has accepted what remains
+after the controls, on a date, and the acceptance is in the risk register
+and the decision log.
+
+Controls reduce risk; they do not remove it. A coding model with a
+threshold and a re-coded sample still miscodes some responses. An
+assistant with every number verified can still misread a question. The
+organization decides to run the component anyway, and governance means
+that the decision is taken by someone with the authority to take it and
+is written down. The tier says who: the head of methodology for Low and
+Medium, the Director General for High.
+
+1. At approval (recipe 2.2), the accepting role reads the worst case, the
+   controls, and the suite report.
+2. The role accepts or declines. An acceptance is recorded in the risk
+   register's `residual_risk_accepted_by` and `accepted_on` columns and in
+   the approval decision's text.
+3. A change that moves a component to a higher tier needs a new
+   acceptance by the new role.
+
+**Worked example.** The three High components were accepted by the
+Director General: occupation coding on 2025-10-06 (decision D004), the
+commentary drafts on 2025-11-03 (D006), and the public assistant on
+2025-12-01 (D007). The decision text of each says "residual risk
+accepted". The Medium and Low components were accepted by the head of
+methodology on the dates of their approval. The decision log check of
+chapter 4 verifies that every High-tier approval was decided by the
+Director General.
+
+**What this does not do.** Acceptance is a decision about the known
+worst case. An incident that reveals a worse case than the one written
+down reopens the rating, the controls, and the acceptance; chapter 4
+describes how.
+
+</Recipe>
+
+## Implementation options
+
+- **Scales.** Three ratings on a 1 to 3 scale are enough for a register of a few dozen components. Larger organizations with a risk function can map the ratings onto its scale, as long as the tiers and their controls stay the same.
+- **Frameworks.** The [NIST AI Risk Management Framework](https://www.nist.gov/itl/ai-risk-management-framework) and [ISO/IEC 23894](https://www.iso.org/standard/77304.html) describe AI risk management in general terms. The tiers of this chapter are a proportionate implementation for a statistical organization.
+- **Quality frameworks.** The risk register sits beside the quality management of the [UN NQAF manual](https://unstats.un.org/unsd/methodology/dataquality/) and the [European Statistics Code of Practice](https://ec.europa.eu/eurostat/web/quality/european-statistics-code-of-practice): a wrong official figure is a quality failure, and the rating names it as such.
+
+## World Bank examples
+
+- The [Evaluation Suites](/cookbook/evaluation-suites/inventory) cookbook orders the inventory of components by cost of error, which is the first of the three ratings here.
+- The [Proof-Carrying Numbers](https://arxiv.org/abs/2509.06902) method is the control that keeps the public assistant's exposure rating from being paired with a reversibility of 3: a wrong number is flagged before it is shown.
+
+## Resources
+
+- [NIST AI Risk Management Framework](https://www.nist.gov/itl/ai-risk-management-framework): the map and measure functions this chapter implements.
+- [ISO/IEC 23894](https://www.iso.org/standard/77304.html): guidance on AI risk management that the three ratings and the tiers are compatible with.
+- [Risk register](pathname:///cookbook-files/governance-and-risk/risk_register.csv), [controls by tier](pathname:///cookbook-files/governance-and-risk/controls_by_tier.csv), and [risk_score.py](pathname:///cookbook-files/governance-and-risk/risk_score.py): the running example's ratings, the controls table, and the script.
+
+## Common mistakes
+
+- **Ratings without a worst case.** Raters who have not written the error down rate everything 2.
+- **A tier in the register that drifted from the rating.** The script compares the two; the register is what people read.
+- **Controls without evidence.** A control that exists in a sentence is found missing at the governance review.
+- **Acceptance by the wrong role.** A High-tier component accepted by its own owner has not been accepted.
+
+## Verification
+
+- **Score check.** The script passes with the register: every tier matches, every residual risk is accepted.
+- **Evidence check.** For a High-tier component picked at random, each control's evidence can be opened.
+- **Re-rating check.** A component whose model, data, or audience changed since its rating has a new rating with a date after the change.
+
+## Checklist
+
+<Checklist id="governance-and-risk-risk" items={[
+  'Worst case written for every component',
+  'Three ratings per component on the 1 to 3 scale',
+  'Tier in the register equals the computed tier',
+  'Controls of each tier in place with evidence named',
+  'Residual risk accepted by the role the tier names',
+  'Ratings reread on change of model, data, or audience',
+]} />

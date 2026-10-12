@@ -1,0 +1,5 @@
+component_id,release,gsbpm,measure,value,sample,effect_on_statistics
+C03,EX-REP-2025-02,5.2,Accuracy at four digits on the automatically coded share,0.93,"re-coded sample of 1,250 responses","The automated share changes the distribution of coder workload; the re-coded sample shows no systematic difference by major group at the reported precision"
+C03,EX-REP-2025-02,5.2,Share of responses coded automatically at or above the confidence threshold of 0.80,0.61,"all open-text responses of the round",
+C04,EX-REP-2025-02,5.3,Share of explanations rated usable by editors,0.88,"sample of 120 edit failures","No model output entered a record without an editor's decision"
+C05,EX-REP-2025-02,6.5,Numbers verified against the release table,11 of 11,"the full draft","No figure entered the commentary without verification; one reference-period error was caught before approval (incident I-2025-01)"

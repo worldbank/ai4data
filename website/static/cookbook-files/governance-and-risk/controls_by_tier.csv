@@ -1,0 +1,10 @@
+tier,score_range,control,evidence
+Low,1-6,A row in the register with an owner and an exit plan,Register row
+Low,1-6,Human review of outputs that reach a published product,Review record
+Medium,7-12,All Low controls,Register row; review record
+Medium,7-12,An evaluation suite with a required score before each change,Suite report
+Medium,7-12,A statement of model use with each release that used the component,Statement of model use
+High,13-27,All Medium controls,As above
+High,13-27,Residual risk accepted by the Director General in the decision log,Decision log entry
+High,13-27,A switch-off test on record and an incident procedure,Decision log entry; incident report
+High,13-27,A sample of outputs reviewed on a schedule and reported to the board,Review report

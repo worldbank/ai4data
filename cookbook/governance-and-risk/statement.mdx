@@ -1,0 +1,241 @@
+---
+id: statement
+title: "7. The statement of model use"
+sidebar_label: "7. Statement"
+sidebar_position: 7
+description: How the organization tells the users of a release where models were used, which models, how they performed, who decided, and what the effect on the statistics was, by generating the statement from the register and the evaluation summary and checking it before publication.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 7. The statement of model use
+
+**Question:** How does the organization tell users where models were used?
+
+## Rationale
+
+The Fundamental Principles require that the methods of official
+statistics be documented and published. A model that coded the
+occupations, explained the edit failures, or drafted the commentary of a
+release is part of the method of that release. The statement of model use
+is the section of the release's quality report that says so: where a model
+was used, which model, how it performed on measurement, who decided, and
+what the effect on the statistics was. A user who reads it knows what to
+make of the figures; an auditor who reads it knows where to look.
+
+The statement is generated from two files the organization already maintains, because its content exists there: the register of chapter 2,
+which says what each component is and how it is reviewed, and the
+evaluation summary, which says what each component scored for this
+release. Generating the statement from them keeps it true to the
+register and makes it cheap enough to publish with every release.
+
+## Target state
+
+- Every release that used a model carries a statement of model use with the six sections, in its quality report.
+- The statement is generated from the register and the evaluation summary, so that it cannot name a component the register does not have or a score the suite did not produce.
+- The statement is checked before publication and signed by the head of methodology.
+- The statement is linked from the release's page and from the records of the series it concerns.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Write a statement by hand for one release, with the six sections. |
+| **AI-ready** | Keep the evaluation summary per release; generate and check the statement with every release; link it from the release and the records. |
+| **AI-native** | Produce the evaluation summary from the suites' report cards directly, and publish the statements as data so that a user can read model use across releases. |
+
+:::info[Running example]
+The statement for the labour market report of the second quarter of 2025
+names three components: occupation coding, edit failure explanations, and
+commentary drafts. It is generated from the register and from an
+evaluation summary with four measured rows. The file is
+[evaluation_summary.csv](pathname:///cookbook-files/governance-and-risk/evaluation_summary.csv).
+:::
+
+## Recipes
+
+<Recipe title="7.1 Generate the statement from the register and the evaluation summary" level="AI-ready" skills="Head of methodology; the suite owners supply the rows" time="One hour per release">
+
+**Result:** the statement of model use for a release exists as a Markdown
+file with the six sections, and every sentence in it traces to a row of
+the register or of the evaluation summary.
+
+The evaluation summary is a small table that the owners of the suites
+fill for each release. One row is one measured result: the component, the
+release, the GSBPM sub-process where the model assisted, the measure, its
+value, the sample it was measured on, and, where the suite assessed it,
+the effect on the statistics.
+
+| Column | Meaning |
+|---|---|
+| `component_id`, `release` | The component and the release identifier |
+| `gsbpm` | The sub-process of the production process where the model assisted |
+| `measure`, `value`, `sample` | What was measured, the result, and the sample or population it was measured on |
+| `effect_on_statistics` | The assessed effect on the published figures, or empty |
+
+```csv file=../../website/static/cookbook-files/governance-and-risk/evaluation_summary.csv
+```
+
+1. After the suites have run for the release, each owner adds the rows for
+   their component.
+2. Run the generator with the release identifier. It takes the
+   components with rows for that release, and writes the six sections
+   from the register's purpose, model, provider, transfer, and review
+   columns and from the summary's measures and effects.
+3. Read the statement. The generator writes what the files say; the head
+   of methodology reads it as a user would and corrects the files, never
+   the statement.
+
+```bash
+python statement_of_model_use.py component_register.csv evaluation_summary.csv --release EX-REP-2025-02
+```
+
+```text
+# Statement of model use: EX-REP-2025-02
+
+## Where a model was used
+
+- Occupation coding (GSBPM 5.2): propose ISCO-08 codes for open-text occupation responses.
+- Edit failure explanations (GSBPM 5.3): explain edit failures in plain language for editors.
+- Release commentary drafts (GSBPM 6.5): draft commentary from output tables for analyst approval.
+...
+```
+
+**Worked example.** The statement for the labour market report of the second quarter of 2025 says that a model proposed occupation codes. Their accuracy was 0.93 at four digits on the automatically coded share, measured on a re-coded sample of 1,250 responses, and 61 percent of responses were coded automatically at or above the threshold of 0.80. It
+says that a model explained edit failures, with 88 percent of explanations
+rated usable on a sample of 120, and that editors decided every case. It
+says that a hosted model drafted the commentary from aggregate tables, that
+all eleven numbers were verified, and that one reference-period error was
+caught before approval, with a reference to incident I-2025-01. The effect
+section says that the automated coding changed the distribution of coder
+workload and showed no systematic difference by major group on the
+re-coded sample, and that no model output entered the microdata or the
+estimates without a person's decision.
+
+**What this does not do.** The generator writes what the register and the
+summary contain. A measure that the suite did not produce cannot appear,
+which is the point, and a component that assisted the release without a
+summary row is missing from the statement, which the check of recipe 7.3
+cannot see. The owners' discipline in filling the summary is the control.
+
+</Recipe>
+
+<Recipe title="7.2 Publish the statement with the release and link it from the records" level="Foundational" skills="Head of dissemination" time="Half an hour per release">
+
+**Result:** a user who opens the release, or the record of a series the
+release updated, can reach the statement in one step.
+
+The statement is only useful where a user looks. A release has a page, a
+quality report, and the catalog records of the series it updates, and the
+statement is linked from all three. For the records, the methodology or
+quality field of the record carries the link, which is also where an AI
+system reading the record finds it.
+
+1. Put the statement in the release's quality report as its own section,
+   with the generator's heading.
+2. Link it from the release page beside the methodology note.
+3. Add the link to the methodology field of each series record the
+   release updated, with the release identifier.
+4. Where the organization publishes statements as data (AI-native), add
+   the release to the index of statements.
+
+**Worked example.** The statement for the labour market report of the
+second quarter of 2025 is a section of the report's quality note and is
+linked from the report's page. The records of the unemployment rate, the
+youth unemployment rate, the participation rate, and the employed persons
+series each carry the link in their methodology field, with the release
+identifier. A user who asks the public assistant how the occupations were
+coded receives the statement's link in the answer, because the record
+carries it.
+
+**What this does not do.** Linking makes the statement findable. Whether
+users read it is a question for the monitoring of data use, which the
+[monitoring cookbook](/cookbook/monitoring-data-use/) covers, and the
+organization can count visits to the statement as one of its measures.
+
+</Recipe>
+
+<Recipe title="7.3 Check the statement before publication" level="AI-ready" skills="Head of methodology signs; the secretary runs the check" time="Fifteen minutes per release">
+
+**Result:** the statement has passed a fixed check and has a signature
+before the release goes out.
+
+The check is the one a quality manager would make by eye: are the six
+sections there, does every use name where in the process the model
+assisted, and does the performance section contain at least one measured
+number. The generator's `--check` runs it on the statement it has just
+written, and the production cookbook's own check runs on a statement
+written by hand.
+
+1. Run the generator with `--check`. The check follows the statement in
+   the output.
+2. A failing check sends the owners back to the evaluation summary; the
+   statement is not edited by hand.
+3. The head of methodology signs the statement, and the signature date
+   goes in the quality report.
+
+```bash
+python statement_of_model_use.py component_register.csv evaluation_summary.csv --release EX-REP-2025-02 --check
+```
+
+```text
+...
+check: PASS
+```
+
+**Worked example.** The check on the statement of the second-quarter
+labour market report finds the six sections, three uses each with a GSBPM
+sub-process, and four measured values in the performance section, and
+passes. The head of methodology signed the statement on the day of the
+release. In the governance review of chapter 8 the statement is one of
+the items that pass.
+
+**What this does not do.** The check verifies presence and form. Whether
+the measured performance is good enough is the required score of each
+component's suite, decided before the release, and whether the statement
+is true is the signature.
+
+</Recipe>
+
+## Implementation options
+
+- **Where the statement sits.** As a section of the quality report is the common choice. Organizations that publish quality reports as structured metadata (SDMX reference metadata, the quality fields of DDI) can carry the statement there as well.
+- **Hand-written statements.** An organization that has not yet built the register and the summary can write the statement by hand with the same six sections and check it with the production cookbook's script, which reads any Markdown statement.
+- **Statements as data.** A table of statements across releases, with the components, measures, and values as columns, lets a user and an AI system read model use across time.
+
+## World Bank examples
+
+- The [Language Models in Statistical Production](/cookbook/language-models-in-production/assurance) cookbook gives the statement for the same release written by hand, its check, and the decision points and suites behind it.
+- The [Evaluation Suites](/cookbook/evaluation-suites/) cookbook describes the report cards whose numbers the evaluation summary carries.
+
+## Resources
+
+- [UN National Quality Assurance Frameworks manual](https://unstats.un.org/unsd/methodology/dataquality/): the quality reporting the statement is part of.
+- [European Statistics Code of Practice](https://ec.europa.eu/eurostat/web/quality/european-statistics-code-of-practice): the transparency and sound methodology principles the statement serves.
+- [Evaluation summary](pathname:///cookbook-files/governance-and-risk/evaluation_summary.csv) and [statement_of_model_use.py](pathname:///cookbook-files/governance-and-risk/statement_of_model_use.py): the running example's summary and the generator with its check.
+
+## Common mistakes
+
+- **A statement written from memory.** It names what the writer remembers, which is less than the register knows.
+- **A statement edited after generation.** The next release regenerates it, and the edit is lost; the files are what to correct.
+- **Measures without a sample.** A score without the sample it was measured on cannot be compared across releases.
+- **A statement nobody can find.** It belongs on the release page and in the records as well as in the quality report.
+
+## Verification
+
+- **Generation check.** The generator runs for the latest release and its `--check` passes.
+- **Coverage check.** Every component with a review of "yes" in the production of the release has rows in the evaluation summary for it.
+- **Link check.** The statement resolves from the release page and from a series record the release updated.
+- **Signature check.** The quality report carries the signature and the date.
+
+## Checklist
+
+<Checklist id="governance-and-risk-statement" items={[
+  'Evaluation summary filled by the suite owners for each release',
+  'Statement generated from the register and the summary',
+  'Statement read by the head of methodology; corrections made in the files',
+  'Check passes before publication',
+  'Statement signed and dated',
+  'Statement linked from the release page and the series records',
+]} />

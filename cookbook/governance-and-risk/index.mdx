@@ -1,0 +1,159 @@
+---
+id: index
+title: Practical Guide to Governing AI Use in a Statistical Organization
+sidebar_label: Overview
+sidebar_position: 0
+description: A cookbook for management, policy owners, and legal advisers in national statistical organizations on the instruments that govern every AI component the organization runs, from a written position to the review before a re-assessment.
+---
+
+# Practical Guide to Governing AI Use in a Statistical Organization
+
+**A cookbook for management, policy owners, and legal advisers in national statistical organizations.** Version 0.1 (working draft), October 2026.
+
+:::note[Working draft]
+This guide is a working draft from the AI for Data – Data for AI program. It
+collects practical approaches and open standards. Comments and corrections
+are welcome as [GitHub issues](https://github.com/worldbank/ai4data/issues),
+and the [contributing](./contributing.md) page explains how to propose a
+recipe.
+:::
+
+The other cookbooks of this series describe what a statistical organization
+can do with models: code responses, draft metadata, answer questions, serve
+data to agents. Each of them ends with a chapter on the governance its
+components need. This guide collects that governance in one place and
+widens it to the whole organization. It describes eight instruments that
+together let an organization say, for every AI component it runs, what it
+is allowed to do, who owns it, how much harm it could do and what controls
+that requires, who approved it and why, what the organization depends on
+to run it, under what licence its data and its models are used, how its
+use is reported to users, and whether all of this is in order before an
+AI-readiness assessment.
+
+The instruments are small. The policy is a page; the register, the risk
+register, the decision log, the provider register, the cost record, and
+the licence matrix are tables with a dozen columns; the statement of model
+use is generated from two of them; the review is a script that runs the
+checks of the other chapters. What makes them governance is that they are
+kept, that they refer to each other, and that a board with written terms
+of reference decides from them. A statistical organization that keeps them
+can answer an auditor, a user, or an assessor with documents.
+
+The guide follows the Fundamental Principles of Official Statistics and the
+AI-readiness assessment framework's dimensions on strategy and governance,
+the legal environment, and data licensing. The [standards page](./standards.md)
+lists the management, risk, quality, and licensing standards each chapter
+builds on.
+
+:::tip[What governance is for]
+Every recipe in this guide produces a document or a table that someone
+reads before a decision. None of them makes a decision. The board decides
+whether a component runs; the Director General accepts the residual risk of
+a High-tier component; the legal adviser reads a licence. The instruments
+make sure that the decision is taken by the right person with the facts in
+front of them, and that it can be found afterwards.
+:::
+
+## Prerequisites
+
+The recipes assume the following are in place or can be arranged:
+
+- At least one AI component in use or proposed, and a person in management who will own the AI-use policy.
+- A head of methodology or quality who can keep registers and run short scripts, and a legal adviser who can read licences and contract terms.
+- For the AI-ready level, evaluation suites for the components in the Medium and High tiers (the [Evaluation Suites](/cookbook/evaluation-suites/) cookbook) and the production and dissemination cookbooks' checks that produce the measures the statement of model use reports.
+
+## First steps
+
+For a team with limited time, this sequence gives the most useful result first:
+
+1. Write the AI-use policy from the template and decide the task boundary, following [chapter 1](./position.mdx). This takes a day and a half.
+2. Build the register from an inventory of the components that exist, following [chapter 2](./register.mdx), and rate each one, following [chapter 3](./risk.mdx). This takes an hour per component.
+3. Constitute the board and start the decision log with the policy's adoption and the approval of each existing component, following [chapter 4](./decisions.mdx). This takes a day.
+
+The provider register, the licence matrix, and the statement of model use ([chapters 5](./providers.mdx) to [7](./statement.mdx)) follow over the next weeks, and the review of [chapter 8](./review.mdx) runs before the first board meeting of the next quarter.
+
+## Self-assessment
+
+The [self-assessment](./start-here.mdx) takes about five minutes and places
+an organization's governance of AI use at a level in each chapter.
+
+## Chapters and questions
+
+| Chapter | Question | Practical topics |
+|---|---|---|
+| [1. The organization's position on AI](./position.mdx) | What should the organization's position on AI use state? | Seven-section policy, task boundary, publication, review cycle |
+| [2. The register of AI components](./register.mdx) | Which AI components exist, and who owns each? | Register columns, no row no deployment, scheduled reviews |
+| [3. Risk rating of components](./risk.mdx) | How much could each component cost the organization if it fails? | Three ratings, score and tier, controls per tier, residual risk |
+| [4. Decisions, incidents, and their record](./decisions.mdx) | How are decisions taken and incidents handled? | Board terms of reference, decision log, six-step incident procedure |
+| [5. Dependence on model providers](./providers.mdx) | How does the organization depend on providers without being captured by one? | Provider register, data terms, exit drill, cost record |
+| [6. Licences and terms for data and models](./licensing.mdx) | What do licences and terms of use need to say for AI? | Licence matrix, AI-use position, terms for machine clients, model licence classes |
+| [7. The statement of model use](./statement.mdx) | How does the organization tell users where models were used? | Evaluation summary, generated statement, publication, check |
+| [8. The governance review before a re-assessment](./review.mdx) | Is the governance ready for a re-assessment? | Review script, evidence by assessment question, actions |
+
+## Maturity levels
+
+Each chapter describes three levels. An organization can sit at different
+levels in different chapters, and the first level is a complete, useful
+state on its own.
+
+| Level | Meaning |
+|---|---|
+| **Foundational** | The instrument exists in a form a person can read: a policy, a table, a log, with an owner and a date. |
+| **AI-ready** | The instruments refer to each other and are checked by script before each board meeting and each release, so that a decision starts from their results. |
+| **AI-native** | The instruments are generated and checked automatically from the register and the evaluation suites, and their summaries are published with the statement of model use. |
+
+## Running example
+
+The example organization runs six AI components: metadata description
+drafts, catalog semantic search, occupation coding, edit failure
+explanations, release commentary drafts, and a public statistics
+assistant. Five run on its own server; one runs at a hosted provider on
+aggregate tables. The guide follows the organization from the adoption of
+its policy on 2025-09-15, through the approval of each component, one
+incident caught before publication, the statement of model use of the
+labour market report of the second quarter of 2025, to its governance
+review on 2026-01-15. All components, decisions, dates, and figures are
+invented, and the figures of the running example's series are those of
+the shared example of this series.
+
+## Scope of the examples
+
+The examples are small on purpose: six components, ten decisions, eight
+products, so that a reader can run them in an afternoon and see the shape
+of each check. They are starting points. Each recipe ends with a
+**What this does not do** note that says where the example stops and what
+the full version adds. The scripts check presence, consistency, and
+arithmetic; the judgments (the ratings, the approvals, the licence choices)
+are the organization's.
+
+## Files
+
+| File | Used in |
+|---|---|
+| [ai_use_policy.md](pathname:///cookbook-files/governance-and-risk/ai_use_policy.md) and [check_policy.py](pathname:///cookbook-files/governance-and-risk/check_policy.py) | Chapter 1: the running example's policy and its check |
+| [component_register.csv](pathname:///cookbook-files/governance-and-risk/component_register.csv) and [check_register.py](pathname:///cookbook-files/governance-and-risk/check_register.py) | Chapter 2: the register and its check |
+| [risk_register.csv](pathname:///cookbook-files/governance-and-risk/risk_register.csv), [controls_by_tier.csv](pathname:///cookbook-files/governance-and-risk/controls_by_tier.csv), and [risk_score.py](pathname:///cookbook-files/governance-and-risk/risk_score.py) | Chapter 3: the ratings, the controls per tier, and the scoring script |
+| [board_terms.md](pathname:///cookbook-files/governance-and-risk/board_terms.md), [decision_log.csv](pathname:///cookbook-files/governance-and-risk/decision_log.csv), [incident_report.md](pathname:///cookbook-files/governance-and-risk/incident_report.md), and [check_decision_log.py](pathname:///cookbook-files/governance-and-risk/check_decision_log.py) | Chapter 4: the board's terms, the log, an incident report, and the log check |
+| [providers.csv](pathname:///cookbook-files/governance-and-risk/providers.csv), [cost_record.csv](pathname:///cookbook-files/governance-and-risk/cost_record.csv), and [cost_summary.py](pathname:///cookbook-files/governance-and-risk/cost_summary.py) | Chapter 5: the provider register, the cost record, and the summary |
+| [licence_matrix.csv](pathname:///cookbook-files/governance-and-risk/licence_matrix.csv), [model_licences.csv](pathname:///cookbook-files/governance-and-risk/model_licences.csv), [terms_machine_clients.md](pathname:///cookbook-files/governance-and-risk/terms_machine_clients.md), and [check_licences.py](pathname:///cookbook-files/governance-and-risk/check_licences.py) | Chapter 6: the licence tables, the terms for machine clients, and the check |
+| [evaluation_summary.csv](pathname:///cookbook-files/governance-and-risk/evaluation_summary.csv) and [statement_of_model_use.py](pathname:///cookbook-files/governance-and-risk/statement_of_model_use.py) | Chapter 7: the evaluation summary and the generator with its check |
+| [governance_review.py](pathname:///cookbook-files/governance-and-risk/governance_review.py) | Chapter 8: the review that runs every check and maps the artefacts to assessment questions |
+
+## Related resources
+
+| Resource | Purpose |
+|---|---|
+| This guide | What an organization can do, and why, in a sequence of practical steps. |
+| [AI-readiness assessment framework](/ai-readiness-assessment) | The dimensions and questions the review of chapter 8 maps the artefacts to. |
+| [Operational companion](/ai-readiness-in-practice) | The program resources and evidence per dimension. |
+| [Documentation](/docs/introduction) | How each program method and tool works. |
+| [Code](https://github.com/worldbank/ai4data) | Open-source software to deploy or adapt. |
+
+## Citation
+
+World Bank. 2026. *Practical Guide to Governing AI Use in a Statistical Organization.* Version 0.1. AI for Data – Data for AI.
+https://worldbank.github.io/ai4data/cookbook/governance-and-risk/
+
+## Version history
+
+- **0.1 (October 2026).** First draft.
