@@ -1,0 +1,213 @@
+---
+id: unit
+title: "6. Adoption in a unit"
+sidebar_label: "6. Unit"
+sidebar_position: 6
+description: How a unit adopts assistants together, in a session that works through the card, the tiers, the questions, and the checks on the unit's own tasks, how the unit chooses its assistants, and how prompts and problems flow back into the library and the log.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 6. Adoption in a unit
+
+**Question:** How does a unit adopt assistants together?
+
+## Rationale
+
+The instruments of this guide, a card, a screening script, a library, a
+check, a log, are small, and each is useless alone. A member of staff
+who has the card and no library asks badly; one who has the library and
+no check uses wrong figures; one who checks and does not log leaves the
+unit no way to improve. They are adopted together, by a unit, in a
+session of two hours that works through the unit's own tasks with the
+unit's own texts. The session is also where the assessment framework's
+questions on AI literacy, on productivity tools, and on change management
+get their evidence: a unit that has done the session and keeps the log
+can show both.
+
+Adoption by unit also answers the question that a card cannot: which
+assistants the unit uses. A unit that works on confidential records needs
+the local assistant and little else; a unit that writes for the public
+needs the organization's own assistant and the translation prompt; a
+unit that writes code may use a hosted assistant on its own scripts. The
+choice is made once, with the tiers in view, and written on the unit's
+card.
+
+## Target state
+
+- Every unit has held a session on its own tasks and texts, and every member of staff has the card, the library, and the scripts.
+- Each unit has chosen its assistants per tier and written the choice on its card.
+- Prompts and problems from the units flow into the library and the log each quarter.
+- The sessions and the log are the organization's evidence for the assessment's questions on AI literacy and productivity tools.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Hold the session in each unit; choose the unit's assistants. |
+| **AI-ready** | Repeat the session each year and for new staff; collect prompts and problems each quarter; reread a sample of answers at each session. |
+| **AI-native** | Serve the card, the library, and the checks from the organization's own assistant, so that the session is about the unit's tasks and the tools are already in place. |
+
+:::info[Running example]
+The example organization held sessions in its six units in October and
+November 2025, two hours each, on the units' own texts. The labour
+statistics unit chose the organization's own assistant for its internal
+tier and the local assistant for edit explanations, and proposed the
+`summarize_release` prompt that the library now carries. The log of
+chapter 5 is the two weeks after its session.
+:::
+
+## Recipes
+
+<Recipe title="6.1 Hold the unit session on the unit's own tasks" level="Foundational" skills="The policy owner or a trained colleague leads; the whole unit attends" time="Two hours per unit">
+
+**Result:** every member of the unit has used the card, the screening
+script, a library prompt, and the number check on a text of the unit's
+own, and the unit's questions are written down.
+
+The session is practice, with the guide's instruments and the unit's
+texts. It has five parts of twenty minutes each. The card is read aloud with the tasks that stay with the person. Each person screens a text of their own for the tiers. One library prompt is built on a unit table, and the number check is run on the answer. Each person then records the use they just made in the log. The last twenty
+minutes are for what the unit does that the card does not cover.
+
+1. Ask each member to bring one text they would want summarized or
+   drafted, and one table.
+2. Work through the five parts with the texts the unit brought. The
+   texts that turn out confidential are the lesson of the tiers.
+3. Write down the tasks the unit does that are not on the card, the
+   prompts it would want, and the problems it has had, as the input of
+   recipe 6.3.
+4. Record the session: the unit, the date, the attendance, and the list
+   from step 3. The record is evidence for the assessment.
+
+**Worked example.** The labour statistics unit's session in October 2025
+screened six texts the unit brought; two were confidential because they
+carried respondent details, and the unit saw the screening script find
+them. The unit built the summary question on its second-quarter release
+table, ran the number check on the answer, and found a computed
+difference, which became the "do not compute" constraint of the library's
+prompt. The unit asked for a prompt for commentary drafts, which the
+production cookbook's commentary recipe already covered, and the card
+now points there. The session record lists the unit, the date, nine
+attendees, and the three requests.
+
+**What this does not do.** A session teaches the instruments once. The
+log and the quarterly collection of recipe 6.3 are what keep them in
+use, and the session is repeated for new staff and each year for the
+unit.
+
+</Recipe>
+
+<Recipe title="6.2 Choose the unit's assistants per tier" level="Foundational" skills="The head of unit with the policy owner" time="One hour">
+
+**Result:** the unit's card names which assistant is used for each tier,
+and the choice is in the component register's row.
+
+The organization allows up to three kinds of assistant: the local
+assistant on its own server, its own assistant for internal text, and a
+hosted assistant for public text under a contract. A unit chooses which
+of these it uses, from the texts it works on. The choice is written on
+the unit's card, so that the tier rule becomes a tool name at the desk.
+
+| Unit's texts | Local assistant | Organization's own assistant | Hosted assistant |
+|---|---|---|---|
+| Confidential records in daily work (methodology, microdata) | For the tasks the card allows | For internal text | Not used |
+| Internal drafts and tables (analysis, management) | Where the card allows | The default | For public text only, if at all |
+| Published text and code (dissemination, IT) | Where the card allows | The default | For public text and the unit's own code |
+
+1. List the tiers of the texts the unit works on in a week.
+2. Choose the assistants from the table, and write the choice on the
+   unit's card with the tool names.
+3. Where the unit chooses no hosted assistant, say so on the card; the
+   absence is a rule too.
+
+**Worked example.** The methodology unit of the example organization
+chose the local assistant for edit explanations and variable labels and
+the organization's own assistant for method notes, and no hosted
+assistant, because its texts are rarely public. The dissemination unit
+chose the organization's own assistant as its default and the hosted
+assistant for translation of published text, with the language reviewer
+as the review. The choices are on the units' cards and in the services
+column of the register's everyday-assistants row.
+
+**What this does not do.** The choice names tools for tiers. It does not
+change what the tiers are, and a unit that chooses the hosted assistant
+still screens every text before the paste.
+
+</Recipe>
+
+<Recipe title="6.3 Collect prompts and problems into the library and the log" level="AI-ready" skills="The policy owner with the heads of units" time="Two hours per quarter">
+
+**Result:** each quarter, the requests of the units become prompts in
+the library or rows on the card, the problems become changes to prompts
+or incidents, and a sample of answers has been reread.
+
+A library and a card that do not change are abandoned. The quarterly
+collection is where the units' requests and problems, written down at the
+sessions and found in the logs, become changes. It is also where a sample
+of logged answers is reread by someone other than the reviewer, which is
+the only check on the reviews themselves.
+
+1. Collect the session records and the log summaries of the quarter.
+2. For each requested task, decide whether it joins the card, and with
+   what review; for each requested prompt, write it, check it, and add
+   it to the library.
+3. For each task with many discarded answers, reread three of them and
+   change the prompt or remove the task.
+4. Reread a sample of ten used answers against their sources, and
+   record what the rereading found.
+5. Report the quarter to the board with the register's row: uses,
+   breaches, changes to the card and the library, and the rereading's
+   result.
+
+**Worked example.** In the first quarter after the sessions, the example organization added one prompt to the library, the method note draft, at the methodology unit's request. It pointed the card's commentary task at the production cookbook and changed the summary prompt's constraints after two discarded answers. The rereading of ten used answers found one
+figure attached to the wrong period, which the reviewer had missed; the
+finding went into the session material as the example of why periods are
+read with figures. The quarter's report to the board gave the twenty
+logged uses of the first two weeks and the two breaches, both closed.
+
+**What this does not do.** The collection improves the instruments from
+what the units report. What they do not report, the rereading finds in
+part, and the session's question about uses that were not logged finds the rest.
+
+</Recipe>
+
+## Implementation options
+
+- **Session materials.** The card, the running example's note, the release table, and the scripts are enough; a unit's own texts replace the running example's after the first session.
+- **Trainers.** The policy owner leads the first sessions; a trained colleague per department leads the later ones, which is the training-of-trainers step of a country pathway.
+- **Evidence for the assessment.** Session records, the cards, and the log summaries are the documents for the assessment's questions on AI literacy, productivity tools, adoption in practice, and change management.
+
+## World Bank examples
+
+- The [From Assessment to Pathway](/cookbook/assessment-to-pathway/evidence) cookbook names the session records and the log as evidence rows for the skills dimension.
+- The [governance cookbook](/cookbook/governance-and-risk/register) holds the register row the quarterly report updates.
+
+## Resources
+
+- [Task list](pathname:///cookbook-files/ai-assistants-at-work/task_card.csv), [example note](pathname:///cookbook-files/ai-assistants-at-work/draft_note.txt), [release table](pathname:///cookbook-files/ai-assistants-at-work/release_table.csv), and [prompt library](pathname:///cookbook-files/ai-assistants-at-work/prompt_library.yaml): the session's materials.
+- [AI-readiness assessment framework](/ai-readiness-assessment): the questions on skills and productivity tools the session and the log are evidence for.
+
+## Common mistakes
+
+- **Training by presentation.** A session where nobody pastes a text teaches the rules and not the habit.
+- **One session for the whole organization.** The texts differ by unit, and so do the tiers that matter.
+- **A library that only the policy owner writes.** The prompts staff use are the ones they asked for.
+- **Reviews never reread.** The log says a review happened; only a rereading says it was made.
+
+## Verification
+
+- **Session check.** Every unit has a session record within the last year, and new staff within three months of arrival.
+- **Choice check.** Every unit's card names its assistants per tier.
+- **Collection check.** The last quarter's report to the board exists with the changes and the rereading's result.
+
+## Checklist
+
+<Checklist id="ai-assistants-at-work-unit" items={[
+  'Session held in every unit on its own texts',
+  'Session records kept as evidence',
+  'Assistants chosen per tier and written on each unit\'s card',
+  'Requests and problems collected each quarter',
+  'Sample of used answers reread each quarter',
+  'Quarterly report to the board with the register row',
+]} />

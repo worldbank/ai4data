@@ -1,0 +1,21 @@
+date,unit,role,task_id,tool,data_tier,reviewed_by,outcome
+2025-11-03,Labour statistics,Analyst,T10,internal assistant,internal,Analyst,edited
+2025-11-03,Dissemination,Dissemination officer,T12,internal assistant,public,Dissemination officer,used
+2025-11-04,Metadata,Data curator,T06,internal assistant,internal,Metadata lead,edited
+2025-11-04,Metadata,Data curator,T06,internal assistant,internal,Metadata lead,used
+2025-11-05,Methodology,Methodologist,T08,local assistant,confidential,Editor,used
+2025-11-05,Methodology,Methodologist,T09,internal assistant,internal,Methodologist,edited
+2025-11-06,Labour statistics,Analyst,T11,internal assistant,internal,Analyst,edited
+2025-11-06,Management,Manager,T14,hosted assistant,internal,Manager,used
+2025-11-07,Dissemination,Dissemination officer,T03,hosted assistant,public,Language reviewer,used
+2025-11-07,Dissemination,Dissemination officer,T13,internal assistant,internal,Dissemination lead,used
+2025-11-10,Labour statistics,Analyst,T02,hosted assistant,confidential,Analyst,discarded
+2025-11-10,IT,IT staff,T16,internal assistant,internal,IT staff,used
+2025-11-11,Metadata,Data curator,T07,local assistant,confidential,Data curator,edited
+2025-11-11,Labour statistics,Analyst,T10,internal assistant,internal,Analyst,discarded
+2025-11-12,Management,Manager,T01,internal assistant,internal,Manager,edited
+2025-11-12,Dissemination,Dissemination officer,T12,internal assistant,public,Dissemination officer,edited
+2025-11-13,Methodology,Methodologist,T04,internal assistant,public,Methodologist,used
+2025-11-13,Labour statistics,Analyst,T11,internal assistant,internal,,used
+2025-11-14,Metadata,Data curator,T06,internal assistant,internal,Metadata lead,used
+2025-11-14,Dissemination,Dissemination officer,T03,hosted assistant,public,Language reviewer,edited

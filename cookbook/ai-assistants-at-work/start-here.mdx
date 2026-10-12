@@ -1,0 +1,97 @@
+---
+id: start-here
+title: Self-assessment
+sidebar_label: Self-assessment
+sidebar_position: 1
+description: A five-minute self-assessment that places a unit's practice with AI assistants at a maturity level in each chapter and suggests a reading order.
+---
+
+import SelfAssessment from '@site/src/components/Cookbook/SelfAssessment';
+
+# Self-assessment
+
+Select the statement that best describes the unit today, one per chapter.
+The result shows a level for each chapter and the chapters to read first.
+Answers are stored in this browser only.
+
+<SelfAssessment
+  base="/cookbook/ai-assistants-at-work/"
+  questions={[
+    {
+      id: 'tasks',
+      title: '1. Tasks',
+      question: 'Do staff know which tasks an assistant may help with?',
+      options: [
+        'Staff use assistants as they see fit; nothing is written.',
+        'A task list per role exists with the model\'s role, the tier, and the review, and every member of staff has the card.',
+        'Everyday assistants are a registered component with the card as their review, and the list is reviewed from the log each year.',
+        'Each task on the card has a prompt in the library and a check, and the three describe the same practice.',
+      ],
+    },
+    {
+      id: 'inputs',
+      title: '2. Inputs',
+      question: 'Do staff know what may be pasted?',
+      options: [
+        'Anything that is in front of them.',
+        'The three tiers are on the card, and the screening script is available.',
+        'The organization runs its own assistant for internal text and a local one for confidential tasks, and the tier of every use is logged.',
+        'Inputs are screened automatically at the organization\'s assistant, and confidential markers are blocked.',
+      ],
+    },
+    {
+      id: 'asking',
+      title: '3. Asking',
+      question: 'How are questions put?',
+      options: [
+        'In whatever words come to mind.',
+        'With a source, a format, and constraints; the first five prompts are written.',
+        'The library is in version control with an owner and a check, and questions are built from it.',
+        'The organization\'s own assistant serves the library and writes the question for the task chosen.',
+      ],
+    },
+    {
+      id: 'checking',
+      title: '4. Checking',
+      question: 'How are answers checked?',
+      options: [
+        'They are read for sense.',
+        'Every figure is compared with the source and every claim traced to it; the number check is available.',
+        'The number check runs on every answer with figures, and the review is recorded in the log.',
+        'The organization\'s own assistant marks unverified figures in every answer.',
+      ],
+    },
+    {
+      id: 'record',
+      title: '5. Record',
+      question: 'Is assistant use recorded?',
+      options: [
+        'No.',
+        'A use log exists with the eight columns and has been summarized once.',
+        'The log is summarized monthly and quarterly, breaches are handled as incidents, and everyday assistants are a register row.',
+        'The organization\'s own assistant writes the log automatically.',
+      ],
+    },
+    {
+      id: 'unit',
+      title: '6. Unit',
+      question: 'How was the practice adopted?',
+      options: [
+        'By each person on their own.',
+        'Each unit has held a session on its own texts and chosen its assistants per tier.',
+        'Sessions repeat each year and for new staff; prompts and problems are collected each quarter; a sample of answers is reread.',
+        'The card, the library, and the checks are served from the organization\'s own assistant.',
+      ],
+    },
+  ]}
+/>
+
+## Interpretation of the result
+
+- A **Not yet** result in chapters 1 and 2 comes before anything else:
+  the card and the tiers are what every other habit refers to.
+- Chapters 3 and 4 are taught together in the unit session of chapter 6,
+  and the session is the fastest way from Not yet to Foundational in
+  four chapters at once.
+- Chapter 5 is where the practice becomes governance; its first summary
+  a month after the session is the first evidence the board sees.

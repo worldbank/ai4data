@@ -1,0 +1,18 @@
+Note for the labour statistics unit, 18 August 2025
+
+EMBARGOED until 2025-08-20 09:00. The headline figures for the second
+quarter are provisional and must not leave the unit before the release.
+
+The unemployment rate for 2025-Q2 is 6.1 percent, down from 6.3 percent
+in the first quarter. The participation rate rose to 61.2 percent. The
+commentary draft is attached; please check the youth figure, which the
+first draft had wrong.
+
+Two follow-ups from the data review:
+
+- Household 00231, respondent 2 (national ID 4471-20-88193) reported an
+  income that fails the consistency edit; the enumerator's phone number is
+  +1 555 0147 if we need to call back.
+- The regional office asked that queries go to m.okafor@stats.example.
+
+Can the assistant summarize this note for the Friday meeting?
