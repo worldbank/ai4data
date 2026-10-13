@@ -169,7 +169,7 @@ answer = ask("What share of Kenya's population used the internet in 2025?", INST
 w.show(answer)
 '''),
     md("""
-## 5. An ambiguous question, with and without an instruction
+## 5. The ambiguous question under two sets of instructions
 
 "How connected is Kenya?" can mean internet use, mobile subscriptions, broadband, or something else. Compare what the model does with the basic instructions and with an instruction to ask.
 """),
@@ -205,7 +205,7 @@ Four short briefs took about a thousand tokens. A real collection has thousands 
 
 ## Exercise
 
-Change `INSTRUCTIONS_GROUNDED` so that the answer is a table with one row per country and columns for the indicator, the latest year, the value, and the source. Rerun section 3. With a live key the output changes; in recorded mode the cell returns the recorded answer, so note what you would expect instead.
+Change `INSTRUCTIONS_GROUNDED` so that the answer is a table with one row per country and columns for the indicator, the latest year, the value, and the source. Rerun section 3. With a live key the output changes; in recorded mode the cell returns the recorded answer, so note the expected result instead.
 """),
     md(LINKS),
 ]
@@ -340,7 +340,7 @@ print(len(retriever.chunks), "chunks indexed with", retriever.embedder.backend)
 
 ## Exercise
 
-Write a ninth document, a short brief on Uganda with figures you look up from the World Development Indicators, with the same header fields. Add it to `assets/documents/`, rerun this notebook, and check where its sections rank for the queries above.
+Write a ninth document, a short brief on Uganda with figures looked up from the World Development Indicators, with the same header fields. Add it to `assets/documents/`, rerun this notebook, and check where its sections rank for the queries above.
 """),
     md(LINKS),
 ]
@@ -414,7 +414,7 @@ The answer is faithful to its evidence and wrong for the reader. Nothing in the 
 
 1. **A metadata filter**: exclude documents dated before 2020 for a question about the latest figure.
 2. **A recency weight**: add a bonus to the score for newer documents.
-3. **Query reformulation**: search for what the passage would say ("internet use Kenya 2024") instead of what the user asked.
+3. **Query reformulation**: search for what the passage would say ("internet use Kenya 2024").
 """),
     code('''
 print("1. metadata filter (date >= 2020):")
@@ -558,7 +558,7 @@ w.show(final)
 print("\\ntool result for 2025:", trace[0]["result"]["observations"])
 '''),
     md("""
-Compare with notebook 01, where the model answered the same question from a brief. Here the absence is a fact returned by the tool, which the application can test for, instead of a sentence in the model's answer.
+Compare with notebook 01, where the model answered the same question from a brief. Here the absence is a fact returned by the tool, which the application can test for.
 
 ## 5. Structured output
 
@@ -584,7 +584,7 @@ print(parsed.comparison)
 print(parsed.sources)
 '''),
     md("""
-Validation is what makes the schema a contract. The cell below damages the JSON and shows the error that a downstream program would receive instead of a silently wrong value.
+Validation is what makes the schema a contract. The cell below damages the JSON and shows the error that a downstream program would receive. Without validation it would receive a wrong value and no error.
 """),
     code('''
 from pydantic import ValidationError
@@ -598,7 +598,7 @@ except ValidationError as e:
     md("""
 ## 6. Live data and MCP
 
-The same tool can read the World Bank API instead of the committed file. The cell is guarded because the session must not depend on the network.
+The same tool can read the World Bank API; by default it reads the committed file. The cell is guarded because the session must not depend on the network.
 
 The Model Context Protocol (MCP) is a standard way to expose tools like this one to any client. The program's [Data360 MCP server](https://github.com/worldbank/data360-mcp) exposes search, metadata, and data tools over the World Bank's data platform; a desktop assistant, a chatbot, or this notebook can call them with the same schema idea as `get_indicator`. The slides cover it; the notebooks keep tools local so that they run offline.
 """),
@@ -612,7 +612,7 @@ except Exception as e:
     md("""
 ## Key points
 
-- Numbers come from a tool over authoritative data; the model's memory is for language, not for statistics.
+- Numbers come from a tool over authoritative data; the model's memory is for language.
 - A tool is a function with a description the model can read. The model fills the parameters; the application runs the function and returns the result.
 - Absence of data is a tool result the application can test for.
 - A schema turns the answer into a contract: validated on the way in, readable by other software on the way out.
@@ -718,7 +718,7 @@ w.show(final)
     md("""
 ## 4. A failed call
 
-The model asks for an indicator id that does not exist. The tool returns an error object instead of raising; the model reads it and retries with the right id. Returning errors as data is what lets the loop recover.
+The model asks for an indicator id that does not exist. The tool returns an error object; the model reads it and retries with the right id. Returning errors as data is what lets the loop recover.
 """),
     code('''
 llm.reset()
@@ -764,7 +764,7 @@ The worked example has one shape, so the fixed workflow is the right design for 
 
 ## Exercise
 
-Remove `get_indicator` from `tools` and rerun section 2. Read what the model does without a data tool and whether the instructions stop it from quoting figures from memory. In recorded mode, write down what you expect; with a key, compare.
+Remove `get_indicator` from `tools` and rerun section 2. Read what the model does without a data tool and whether the instructions stop it from quoting figures from memory. In recorded mode, write down the expected behaviour; with a key, compare.
 """),
     md(LINKS),
 ]

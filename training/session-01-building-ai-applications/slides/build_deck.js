@@ -137,12 +137,12 @@ function diagram(s, y, highlight) {
 
 // 2 Objectives
 {
-  const s = slide("CONTENT", "What the session covers and what it leaves you with");
+  const s = slide("CONTENT", "Objectives and format");
   const lw = 6.0;
   text(s, "Two audiences", { x: M, y: 1.45, w: lw, h: 0.4, fontSize: 15, bold: true, color: HEX.navy });
   bullets(s, ["Colleagues who will build AI applications and want each capability added to a working application, with code to rerun", "Colleagues who commission, oversee, or evaluate such applications and need to know what each capability is for and how to tell whether the result is reliable"], { x: M, y: 1.9, w: lw, h: 2.2 });
-  text(s, "Afterwards you can", { x: M, y: 4.2, w: lw, h: 0.4, fontSize: 15, bold: true, color: HEX.navy });
-  bullets(s, ["Name the components of an AI application and the problem each solves", "Choose an architecture for a research or data question and say what evidence would show that it works", "Rerun the six notebooks with your own question and documents"], { x: M, y: 4.65, w: lw, h: 2.0 });
+  text(s, "Afterwards, participants can", { x: M, y: 4.2, w: lw, h: 0.4, fontSize: 15, bold: true, color: HEX.navy });
+  bullets(s, ["Name the components of an AI application and the problem each solves", "Choose an architecture for a research or data question and say what evidence would show that it works", "Rerun the six notebooks with a question and documents of their own"], { x: M, y: 4.65, w: lw, h: 2.0 });
   const rx = M + lw + 0.5;
   card(s, rx, 1.45, W - M - rx, 5.2, "question card");
   text(s, "The one question the session answers", { x: rx + 0.3, y: 1.6, w: W - M - rx - 0.6, h: 0.4, fontSize: 15, bold: true, color: HEX.navy });
@@ -329,7 +329,7 @@ function diagram(s, y, highlight) {
   const s = slide("CONTENT", "Structured outputs and MCP");
   const lw = 6.2;
   text(s, "A schema makes the answer a contract", { x: M, y: 1.45, w: lw, h: 0.4, fontSize: 15, bold: true, color: HEX.navy });
-  text(s, "An answer that another program will store, display, or compare needs a fixed shape. The schema is sent with the request and the response is validated on the way back. A damaged field raises an error instead of a silently wrong value.", { x: M, y: 1.9, w: lw, h: 1.3, fontSize: 13 });
+  text(s, "An answer that another program will store, display, or compare needs a fixed shape. The schema is sent with the request and the response is validated on the way back. A damaged field raises an error, so a wrong value never passes silently.", { x: M, y: 1.9, w: lw, h: 1.3, fontSize: 13 });
   mono(s, "class Observation(BaseModel):\n    indicator: str\n    country: str\n    year: int\n    value: float\n    claim_id: str\n\nclass ComparisonAnswer(BaseModel):\n    countries: list[CountrySummary]\n    comparison: str\n    sources: list[str]", { x: M, y: 3.3, w: lw, h: 2.6 });
   const rx = M + lw + 0.5;
   text(s, "MCP: one server, many clients", { x: rx, y: 1.45, w: W - M - rx, h: 0.4, fontSize: 15, bold: true, color: HEX.navy });
@@ -412,7 +412,7 @@ function diagram(s, y, highlight) {
   mono(s, '<claim id="IT.NET.USER.ZS:KEN:2024" policy="rounded"\n       decimals="1">35.0</claim> percent', { x: M, y: 3.9, w: lw, h: 0.8 });
   text(s, "This is the Proof-Carrying Numbers protocol used in the program's chatbot, reduced to one function in the notebook.", { x: M, y: 4.85, w: lw, h: 0.7, fontSize: 12.5, color: HEX.slate });
   const rx = M + lw + 0.5;
-  mono(s, "✓ verified    35.0  IT.NET.USER.ZS:KEN:2024  record holds 34.9762\n✗ flagged     35.7  IT.NET.USER.ZS:RWA:2024  record holds 31.7033\n✓ verified   2,133  NY.GDP.PCAP.CD:KEN:2024  record holds 2133.46\n· unmarked      70                           no claim tag", { x: rx, y: 2.4, w: W - M - rx, h: 1.5 });
+  mono(s, "✓ verified   35.0  IT.NET.USER.ZS:KEN:2024  holds 34.98\n✗ flagged    35.7  IT.NET.USER.ZS:RWA:2024  holds 31.70\n✓ verified  2,133  NY.GDP.PCAP.CD:KEN:2024  holds 2133.46\n· unmarked     70                           no claim tag", { x: rx, y: 2.4, w: W - M - rx, h: 1.5, fontSize: 10.5 });
   bullets(s, ["Verified: the number matches its record", "Flagged: the model changed a number", "Unmarked: no claim, so no mark, whether or not the number happens to be right. The rule fails closed."], { x: rx, y: 4.05, w: W - M - rx, h: 1.5, fontSize: 13 });
   text(s, "What the check leaves to the reader: whether the record is the right one for the question, whether the method behind it is sound, and whether the sentence around the number interprets it correctly.", { x: M, y: 5.7, w: W - 2 * M, h: 0.8, fontSize: 13 });
   record(["Claim tags name the observation; a verifier compares under a policy", "Verified, flagged, unmarked; fail-closed", "What the check leaves to the reader", "Demonstration: notebook 06, sections 1 and 2"]);

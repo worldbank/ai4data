@@ -20,7 +20,7 @@ Everything the six notebooks share.
 | NY.GDP.MKTP.KD.ZG | GDP growth (annual %) |
 | SP.POP.TOTL | Population, total |
 
-## Documents and what each is for
+## The role of each document
 
 | Id | Title | Role in the session |
 |---|---|---|

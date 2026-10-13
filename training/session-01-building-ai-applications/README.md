@@ -57,7 +57,7 @@ Questions are taken at the notebook transitions as well as at the end. Notebooks
 
 - Python; one model client over an OpenAI-compatible chat API, configured by environment variables (`WORKSHOP_API_KEY`, `WORKSHOP_BASE_URL`, `WORKSHOP_MODEL`); without a key, recorded outputs are used and labelled.
 - Embeddings from a small local sentence-transformer model when it can be downloaded, otherwise TF-IDF; both give the same interface.
-- Pydantic for output schemas; plain Python functions as tools; a hand-written tool loop with a step limit instead of an orchestration framework.
+- Pydantic for output schemas; plain Python functions as tools; a hand-written tool loop with a step limit; no orchestration framework.
 - The indicator tool reads the committed CSV by default and the World Bank API when asked for live data. MCP is introduced on the slides with the Data360 server as the example; the notebooks keep tools as local functions.
 - The verifier follows the Proof-Carrying Numbers tag format used in the program, so that the session connects to the deployed application.
 

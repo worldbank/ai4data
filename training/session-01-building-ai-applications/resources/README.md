@@ -52,7 +52,7 @@ Optional, for better embeddings: `pip install sentence-transformers` (about 90 M
 
 ## Exercises
 
-Each notebook ends with one exercise. In recorded mode some exercises ask for a prediction instead of a result, because a changed prompt has no recorded output. With a key, every exercise runs.
+Each notebook ends with one exercise. In recorded mode some exercises ask for a prediction, because a changed prompt has no recorded output. With a key, every exercise runs.
 
 ## Further reading
 

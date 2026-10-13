@@ -30,7 +30,7 @@ Five minutes at the end of the session, after notebook 06. The demonstration sho
 
 Three choices from the application that connect to the notebooks:
 
-- Tools over the catalog instead of documents in the prompt, for the same reason as notebook 04: numbers come from the data.
+- Tools over the catalog, for the same reason as notebook 04: numbers come from the data.
 - A bounded loop with a trace, as in notebook 05, so that an answer can be inspected.
 - Claim tags and a verifier in the renderer, as in notebook 06, with the Proof-Carrying Numbers packages.
 
