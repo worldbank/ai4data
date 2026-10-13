@@ -48,18 +48,25 @@ Questions are taken at the notebook transitions as well as at the end. Notebooks
 |---|---|---|
 | Worked-example assets: question, documents, indicator data and metadata, evaluation questions, recorded model outputs | `assets/` | Drafted |
 | Six notebooks with explanatory text, runnable code, cached outputs, and one exercise each | `notebooks/` | Drafted; outputs cached in fallback mode |
-| Shared module the notebooks import: model client with recorded fallback, chunking, embeddings with local fallback, retriever, indicator tool, schemas, workflow, verifier, evaluation | `notebooks/workshop.py` | Drafted |
+| Shared module the notebooks import: the worked-example data and tool, a recorded-output chat model, printing and evaluation helpers; the indicator MCP server | `notebooks/workshop.py`, `notebooks/indicator_server.py` | Drafted |
 | Slide deck, about 22 slides, with the outline as reviewable text | `slides/` | Drafted |
 | Data360 Chat demonstration: pretested queries and a fallback | `demo/` | Drafted; queries to pretest on the live application |
 | Participant resources: setup, glossary, evaluation examples, next steps | `resources/` | Drafted |
 
 ## Technical choices
 
-- Python; one model client over an OpenAI-compatible chat API, configured by environment variables (`WORKSHOP_API_KEY`, `WORKSHOP_BASE_URL`, `WORKSHOP_MODEL`); without a key, recorded outputs are used and labelled.
-- Embeddings from a small local sentence-transformer model when it can be downloaded, otherwise TF-IDF; both give the same interface.
-- Pydantic for output schemas; plain Python functions as tools; a hand-written tool loop with a step limit; no orchestration framework.
-- The indicator tool reads the committed CSV by default and the World Bank API when asked for live data. MCP is introduced on the slides with the Data360 server as the example; the notebooks keep tools as local functions.
-- The verifier follows the Proof-Carrying Numbers tag format used in the program, so that the session connects to the deployed application.
+Popular libraries wherever one exists, so that what participants learn transfers to their own work:
+
+| Need | Library |
+|---|---|
+| Documents, splitting, embeddings, vector store, prompts, tools, structured output | LangChain (`langchain-core`, `langchain-text-splitters`, `langchain-huggingface`, `langchain-openai`) |
+| The agent loop, with a recursion limit and a trace | LangGraph, through `langchain.agents.create_agent` |
+| The tool server and client over the Model Context Protocol | FastMCP |
+| Number verification | `pcn-core`, the Python core of the program's Proof-Carrying Numbers |
+| Output schemas | Pydantic |
+| Chat model | `ChatOpenAI` over any OpenAI-compatible API, configured by `WORKSHOP_API_KEY`, `WORKSHOP_BASE_URL`, `WORKSHOP_MODEL` |
+
+What `workshop.py` adds: the worked-example data and the indicator tool over it (the committed CSV by default, the World Bank API on request), a chat model that replays recorded outputs when no key is configured, and printing and evaluation helpers. Embeddings come from a small sentence-transformer model downloaded on first use. Notebook 04 also lists the tools of the public Data360 MCP server and runs one search, guarded so that the session does not depend on the network.
 
 ## Roles
 

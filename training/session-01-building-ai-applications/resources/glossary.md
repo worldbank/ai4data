@@ -20,7 +20,7 @@ Terms as the session uses them, in the order they appear.
 
 **Embedding.** A vector that places a text so that texts with similar meaning are close. Computed by an embedding model; TF-IDF is a word-based substitute.
 
-**Index.** The chunks, their metadata, and their embeddings, held for search.
+**Index.** The chunks, their metadata, and their embeddings, held for search. In LangChain, a vector store such as `InMemoryVectorStore`, Chroma, FAISS, or pgvector.
 
 **Retrieval.** Selecting the chunks that best match a question, by similarity of embeddings, with optional metadata filters and ranking adjustments.
 
@@ -36,11 +36,11 @@ Terms as the session uses them, in the order they appear.
 
 **Schema.** The definition of a shape: fields, types, required values. Pydantic models produce JSON schemas.
 
-**Model Context Protocol (MCP).** A standard for exposing tools, resources, and prompts to AI clients, so that one server serves many clients. The Data360 MCP server is the program's example.
+**Model Context Protocol (MCP).** A standard for exposing tools, resources, and prompts to AI clients, so that one server serves many clients. The session's indicator server is written with FastMCP; the Data360 MCP server is the program's deployed example.
 
 **Workflow.** A sequence of calls written in code, with the model used at fixed points. Predictable and testable.
 
-**Agent.** A loop in which the model chooses which tools to call and when to stop. Adapts to the question; needs a step limit, a trace, and tools that return errors as data.
+**Agent.** A loop in which the model chooses which tools to call and when to stop. Adapts to the question; needs a step limit, a trace, and tools that return errors as data. Built in the session with LangGraph through `create_agent`, bounded by `recursion_limit`.
 
 **Trace.** The record of every tool call and result in a run, kept so that a reviewer can see what the application did.
 

@@ -98,8 +98,8 @@ Notes: Demonstrate the memory answer against the tool, the tool schema, the mode
 ## 11. Structured outputs and MCP
 
 - A schema makes the answer a contract: sent with the request, validated on return
-- MCP: one server, many clients; the Data360 MCP server as the example
-- Notebooks keep tools local; the shape is the same
+- MCP: one server, many clients; the tool served with FastMCP; the Data360 MCP server as the deployed example
+- The notebook lists the Data360 tools and runs one search live
 
 Demonstration: Notebook 04, sections 5 and 6
 

@@ -15,11 +15,11 @@ Six notebooks build one application step by step. Open them in Google Colab from
 | [05 · Workflows and agents](../notebooks/05-workflows-and-agents.ipynb) | Two tools, a fixed workflow and a bounded loop | 20 min |
 | [06 · Making the application trustworthy](../notebooks/06-verification-and-evaluation.ipynb) | Claim verification, an evaluation suite | 20 min |
 
-Every notebook is committed with its outputs, so it can be read without running anything.
+Every notebook is committed with its outputs, so it can be read without running anything. The notebooks are built on LangChain, LangGraph, FastMCP, Pydantic, and the program's `pcn-core`; `notebooks/requirements.txt` lists the versions.
 
 ## Running without a key
 
-The notebooks run in a fresh Colab environment with no API key. Model outputs are then recorded ones, labelled `[recorded output: ...]`. Everything else runs for real: the document index, retrieval, the data tool, the schemas, the tool loop, the verifier, and the evaluation.
+The notebooks run in a fresh Colab environment with no API key. Model outputs are then recorded ones, labelled `[recorded output: ...]`, replayed by a LangChain chat model that stands in for the live one. Everything else runs for real: the vector store, retrieval, the data tool, the MCP server, the schemas, the agent graph, the verifier, and the evaluation.
 
 ## Running with a key
 
@@ -40,15 +40,15 @@ Never write a key into a notebook. The setup cell reads it from the environment.
 ```bash
 git clone https://github.com/avsolatorio/ai4data.git     # replace with the published repository when released
 cd ai4data/training/session-01-building-ai-applications/notebooks
-pip install openai pydantic scikit-learn requests nbformat nbclient ipykernel jupyter
+pip install -r requirements.txt jupyter
 jupyter lab
 ```
 
-Optional, for better embeddings: `pip install sentence-transformers` (about 90 MB of model download on first use).
+The embedding model (about 90 MB) downloads on first use.
 
 ## The shared code
 
-`notebooks/workshop.py` holds everything the notebooks share. Reading it is the shortest route to understanding the application: a model client with a recorded fallback, documents and chunking, an embedder with a local fallback, a retriever, the indicator tool, the output schemas, the tool loop, the verifier, and the evaluation helpers. About 500 lines.
+`notebooks/workshop.py` holds what the libraries do not: the worked-example data and the indicator tool over it, a chat model that replays recorded outputs, the output schemas, the claim-tag parsing that hands numbers to `pcn-core`, and the evaluation helpers. `notebooks/indicator_server.py` is the same tool as a FastMCP server. Together about 450 lines.
 
 ## Exercises
 

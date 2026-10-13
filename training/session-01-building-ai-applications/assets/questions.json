@@ -5,13 +5,41 @@
       "id": "q1",
       "category": "main",
       "question": "How have internet access and economic development evolved in Rwanda and Kenya? Compare the recent available data, summarize the main patterns, and cite the sources.",
-      "expected_documents": ["kenya-digital", "rwanda-digital", "kenya-economy", "rwanda-economy"],
-      "expected_indicators": ["IT.NET.USER.ZS", "NY.GDP.PCAP.CD"],
+      "expected_documents": [
+        "kenya-digital",
+        "rwanda-digital",
+        "kenya-economy",
+        "rwanda-economy"
+      ],
+      "expected_indicators": [
+        "IT.NET.USER.ZS",
+        "NY.GDP.PCAP.CD"
+      ],
       "expected_numbers": [
-        {"indicator": "IT.NET.USER.ZS", "country": "KEN", "year": 2024, "value": 35.0},
-        {"indicator": "IT.NET.USER.ZS", "country": "RWA", "year": 2024, "value": 31.7},
-        {"indicator": "NY.GDP.PCAP.CD", "country": "KEN", "year": 2024, "value": 2133},
-        {"indicator": "NY.GDP.PCAP.CD", "country": "RWA", "year": 2024, "value": 1060}
+        {
+          "indicator": "IT.NET.USER.ZS",
+          "country": "KEN",
+          "year": 2024,
+          "value": 35.0
+        },
+        {
+          "indicator": "IT.NET.USER.ZS",
+          "country": "RWA",
+          "year": 2024,
+          "value": 31.7
+        },
+        {
+          "indicator": "NY.GDP.PCAP.CD",
+          "country": "KEN",
+          "year": 2024,
+          "value": 2133
+        },
+        {
+          "indicator": "NY.GDP.PCAP.CD",
+          "country": "RWA",
+          "year": 2024,
+          "value": 1060
+        }
       ],
       "behaviour": "Reports the latest year for each indicator and country, names the indicators and the source, and compares levels and trends."
     },
@@ -19,17 +47,33 @@
       "id": "q2",
       "category": "factual",
       "question": "What share of Rwanda's population used the internet in 2023?",
-      "expected_documents": ["rwanda-digital"],
-      "expected_indicators": ["IT.NET.USER.ZS"],
-      "expected_numbers": [{"indicator": "IT.NET.USER.ZS", "country": "RWA", "year": 2023, "value": 28.8}],
+      "expected_documents": [
+        "rwanda-digital"
+      ],
+      "expected_indicators": [
+        "IT.NET.USER.ZS"
+      ],
+      "expected_numbers": [
+        {
+          "indicator": "IT.NET.USER.ZS",
+          "country": "RWA",
+          "year": 2023,
+          "value": 28.8
+        }
+      ],
       "behaviour": "Gives 28.8 percent with the indicator name and the source."
     },
     {
       "id": "q3",
       "category": "ambiguous",
       "question": "How connected is Kenya?",
-      "expected_documents": ["kenya-digital"],
-      "expected_indicators": ["IT.NET.USER.ZS", "IT.CEL.SETS.P2"],
+      "expected_documents": [
+        "kenya-digital"
+      ],
+      "expected_indicators": [
+        "IT.NET.USER.ZS",
+        "IT.CEL.SETS.P2"
+      ],
       "expected_numbers": [],
       "behaviour": "Asks which measure is meant, or states the indicator it chose before answering, and distinguishes internet use from mobile subscriptions."
     },
@@ -37,8 +81,12 @@
       "id": "q4",
       "category": "missing-data",
       "question": "What share of Kenya's population used the internet in 2025?",
-      "expected_documents": ["kenya-digital"],
-      "expected_indicators": ["IT.NET.USER.ZS"],
+      "expected_documents": [
+        "kenya-digital"
+      ],
+      "expected_indicators": [
+        "IT.NET.USER.ZS"
+      ],
       "expected_numbers": [],
       "behaviour": "States that no 2025 observation is available and gives the latest available year, 2024, at 35.0 percent."
     },
@@ -46,7 +94,9 @@
       "id": "q5",
       "category": "out-of-scope",
       "question": "How have Kenya's coffee export earnings changed in recent years?",
-      "expected_documents": ["coffee"],
+      "expected_documents": [
+        "coffee"
+      ],
       "expected_indicators": [],
       "expected_numbers": [],
       "behaviour": "States that the available documents describe the sector without figures and that the data tools hold no coffee-export indicator; gives no number."
@@ -55,11 +105,26 @@
       "id": "q6",
       "category": "factual",
       "question": "Which of the two countries had faster GDP growth in 2023?",
-      "expected_documents": ["kenya-economy", "rwanda-economy"],
-      "expected_indicators": ["NY.GDP.MKTP.KD.ZG"],
+      "expected_documents": [
+        "kenya-economy",
+        "rwanda-economy"
+      ],
+      "expected_indicators": [
+        "NY.GDP.MKTP.KD.ZG"
+      ],
       "expected_numbers": [
-        {"indicator": "NY.GDP.MKTP.KD.ZG", "country": "RWA", "year": 2023, "value": 8.6},
-        {"indicator": "NY.GDP.MKTP.KD.ZG", "country": "KEN", "year": 2023, "value": 5.7}
+        {
+          "indicator": "NY.GDP.MKTP.KD.ZG",
+          "country": "RWA",
+          "year": 2023,
+          "value": 8.6
+        },
+        {
+          "indicator": "NY.GDP.MKTP.KD.ZG",
+          "country": "KEN",
+          "year": 2023,
+          "value": 5.7
+        }
       ],
       "behaviour": "Rwanda, 8.6 percent against 5.7 percent, with the source."
     },
@@ -67,7 +132,9 @@
       "id": "q7",
       "category": "definition",
       "question": "How is the internet-users indicator defined, and what should be kept in mind when comparing years?",
-      "expected_documents": ["internet-indicator"],
+      "expected_documents": [
+        "internet-indicator"
+      ],
       "expected_indicators": [],
       "expected_numbers": [],
       "behaviour": "Gives the three-month, any-device definition from the ITU and at least one caveat on comparability."
@@ -75,11 +142,29 @@
     {
       "id": "q8",
       "category": "outdated-evidence",
-      "question": "What is the latest available figure for internet use in Kenya?",
-      "expected_documents": ["kenya-digital"],
-      "expected_indicators": ["IT.NET.USER.ZS"],
-      "expected_numbers": [{"indicator": "IT.NET.USER.ZS", "country": "KEN", "year": 2024, "value": 35.0}],
-      "behaviour": "Gives the 2024 value of 35.0 percent. Quoting 2015 from the 2016 summary is a failure."
+      "question": "What are the latest available figures for internet use in Kenya and Rwanda?",
+      "expected_documents": [
+        "kenya-digital",
+        "rwanda-digital"
+      ],
+      "expected_indicators": [
+        "IT.NET.USER.ZS"
+      ],
+      "expected_numbers": [
+        {
+          "indicator": "IT.NET.USER.ZS",
+          "country": "KEN",
+          "year": 2024,
+          "value": 35.0
+        },
+        {
+          "indicator": "IT.NET.USER.ZS",
+          "country": "RWA",
+          "year": 2024,
+          "value": 31.7
+        }
+      ],
+      "behaviour": "Gives the 2024 values, 35.0 and 31.7 percent. Quoting 2015 values from the 2016 summary is a failure."
     }
   ]
 }

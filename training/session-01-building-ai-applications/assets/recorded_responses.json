@@ -15,13 +15,16 @@
     "content": "\"Connected\" can mean several things, and the supplied material measures two of them. Which do you mean?\n\n- Share of individuals using the internet: 35.0 percent of the population in 2024 [kenya-digital].\n- Mobile cellular subscriptions: 126.5 per 100 people in 2024, a count of subscriptions that can exceed the number of people [kenya-digital].\n\nThe two measures answer different questions. Subscriptions passed one per person around 2020, while internet use stood at about a third of the population in 2024. If you are asking about something else, for example broadband speed or household access, the supplied material does not cover it."
   },
   "nb03_rag_main": {
-    "content": "Internet use. Kenya's share of individuals using the internet reached 35.0 percent of the population in 2024, up from 7.2 percent in 2010 [kenya-digital · Internet use · 2026]. Rwanda's reached 31.7 percent in 2024, up from 8.0 percent in 2010 [rwanda-digital · Internet use · 2026].\n\nEconomic development. Kenya's GDP per capita in current US dollars was 2,133 in 2024, after a dip to 1,943 in 2023 [kenya-economy · GDP per capita · 2026]. Rwanda's was 1,060 in 2024, having passed 1,000 in 2022 [rwanda-economy · GDP per capita · 2026].\n\nPatterns. Kenya has higher levels on both indicators. Rwanda has the faster growth on both, with GDP growth above 7 percent in most years [rwanda-economy · Growth · 2026]. Internet use converged to about a third of the population in both countries by 2024.\n\nSources: the retrieved passages, which reproduce World Development Indicators values for IT.NET.USER.ZS and NY.GDP.PCAP.CD."
+    "content": "Internet use. Rwanda's share of individuals using the internet reached 31.7 percent of the population in 2024, up from 8.0 percent in 2010 [rwanda-digital · Internet use · 2026]. Kenya's reached 35.0 percent in 2024, up from 7.2 percent in 2010 [kenya-digital · Internet use · 2026]. A 2016 summary gives 16.6 percent for Kenya and 12.5 percent for Rwanda in 2015 and expected about 25 percent by 2020 [regional-2016 · intro · 2016]; the later briefs show that expectation was met in Kenya and nearly met in Rwanda.\n\nEconomic development. The supplied passages contain no figures on GDP or economic growth, so that half of the question cannot be answered from them. A passage on mobile money notes that it runs on basic phones and that its use differs from internet use [mobile-money · intro · 2026].\n\nSources: the retrieved passages, which reproduce World Development Indicators values for IT.NET.USER.ZS."
+  },
+  "nb03_rag_two_queries": {
+    "content": "Internet use. Kenya's share of individuals using the internet reached 35.0 percent of the population in 2024, up from 7.2 percent in 2010 [kenya-digital · Internet use · 2026]. Rwanda's reached 31.7 percent in 2024, up from 8.0 percent in 2010 [rwanda-digital · Internet use · 2026].\n\nEconomic development. Kenya's GDP per capita in current US dollars was 2,133 in 2024, after a dip to 1,943 in 2023 [kenya-economy · GDP per capita · 2026]. Rwanda's was 1,060 in 2024, having passed 1,000 in 2022 [rwanda-economy · GDP per capita · 2026]. Rwanda recorded growth above 7 percent in most years [rwanda-economy · Reading the two indicators together · 2026].\n\nPatterns. Kenya has higher levels on both indicators; Rwanda has the faster growth on both. Internet use converged to about a third of the population in both countries by 2024.\n\nSources: the retrieved passages, which reproduce World Development Indicators values for IT.NET.USER.ZS and NY.GDP.PCAP.CD."
   },
   "nb03_rag_outdated": {
-    "content": "According to the retrieved summary, 16.6 percent of Kenya's population used the internet in 2015, up from 7.2 percent in 2010, and the summary notes that the latest available figures are for 2015 [regional-2016 · intro · 2016]. On the trends described there, use was expected to reach about 25 percent by 2020."
+    "content": "Kenya: the latest available figure in the passages is 16.6 percent of the population in 2015, up from 7.2 percent in 2010; the summary notes that later values will be added as released [regional-2016 · intro · 2016]. Rwanda: 31.7 percent in 2024, up from 28.8 percent in 2023 [rwanda-digital · Internet use · 2026]."
   },
-  "nb03_rag_recency": {
-    "content": "The latest available figure is for 2024: 35.0 percent of Kenya's population used the internet, up from 32.1 percent in 2023 [kenya-digital · Internet use · 2026]. The source is the World Development Indicators series IT.NET.USER.ZS, as reproduced in the brief."
+  "nb03_rag_filtered": {
+    "content": "Kenya: 35.0 percent of the population used the internet in 2024, up from 32.1 percent in 2023 [kenya-digital · Internet use · 2026]. Rwanda: 31.7 percent in 2024, up from 28.8 percent in 2023 [rwanda-digital · Internet use · 2026]. Both figures are World Development Indicators values for IT.NET.USER.ZS, as reproduced in the briefs."
   },
   "nb04_from_memory": {
     "content": "Rwanda's GDP per capita in 2023 was approximately 1,000 US dollars (current prices), according to World Bank data. Please verify against the latest World Development Indicators, as figures are revised."
@@ -67,6 +70,25 @@
   "nb04_structured": {
     "content": "{\"question\": \"How have internet access and economic development evolved in Rwanda and Kenya? Compare the recent available data, summarize the main patterns, and cite the sources.\", \"countries\": [{\"country\": \"KEN\", \"internet_latest\": {\"indicator\": \"IT.NET.USER.ZS\", \"country\": \"KEN\", \"year\": 2024, \"value\": 34.9762, \"claim_id\": \"IT.NET.USER.ZS:KEN:2024\"}, \"gdp_per_capita_latest\": {\"indicator\": \"NY.GDP.PCAP.CD\", \"country\": \"KEN\", \"year\": 2024, \"value\": 2133.4619, \"claim_id\": \"NY.GDP.PCAP.CD:KEN:2024\"}, \"trend\": \"Internet use rose from 7.2 percent in 2010 to 35.0 percent in 2024. GDP per capita roughly doubled from 1,092 to 2,133 US dollars, with a dip in 2023.\"}, {\"country\": \"RWA\", \"internet_latest\": {\"indicator\": \"IT.NET.USER.ZS\", \"country\": \"RWA\", \"year\": 2024, \"value\": 31.7033, \"claim_id\": \"IT.NET.USER.ZS:RWA:2024\"}, \"gdp_per_capita_latest\": {\"indicator\": \"NY.GDP.PCAP.CD\", \"country\": \"RWA\", \"year\": 2024, \"value\": 1059.9371, \"claim_id\": \"NY.GDP.PCAP.CD:RWA:2024\"}, \"trend\": \"Internet use rose from 8.0 percent in 2010 to 31.7 percent in 2024. GDP per capita rose from 587 to 1,060 US dollars, passing 1,000 in 2022.\"}], \"comparison\": \"Kenya has the higher level on both indicators and Rwanda the faster growth on both. Internet use in the two countries converged to about a third of the population by 2024, while GDP per capita in Kenya remained about twice Rwanda's.\", \"sources\": [\"World Development Indicators, IT.NET.USER.ZS (ITU)\", \"World Development Indicators, NY.GDP.PCAP.CD (World Bank national accounts)\"], \"caveats\": [\"GDP per capita is in current US dollars, so exchange-rate movements affect it.\", \"The internet-use indicator counts any use in the last three months, from any device.\"]}"
   },
+  "nb04_mcp": [
+    {
+      "tool_calls": [
+        {
+          "id": "call_0",
+          "name": "get_indicator",
+          "arguments": {
+            "indicator": "IT.NET.USER.ZS",
+            "country": "Rwanda",
+            "start": 2022,
+            "end": 2024
+          }
+        }
+      ]
+    },
+    {
+      "content": "Rwanda's share of individuals using the internet was 28.0 percent in 2022, 28.8 percent in 2023, and 31.7 percent in 2024 (World Development Indicators, IT.NET.USER.ZS, through the indicator MCP server)."
+    }
+  ],
   "nb05_compose": {
     "content": "Internet use reached 35.0 percent of the population in Kenya and 31.7 percent in Rwanda in 2024 (World Development Indicators, IT.NET.USER.ZS). GDP per capita in current US dollars was 2,133 in Kenya and 1,060 in Rwanda in the same year (NY.GDP.PCAP.CD). Since 2010, internet use has risen by about 28 percentage points in Kenya and 24 in Rwanda; GDP per capita has roughly doubled in Kenya and risen by about 80 percent in Rwanda. The retrieved briefs attribute Kenya's 2023 dip in dollar GDP per capita to a currency depreciation [kenya-economy · GDP per capita · 2026] and note that Rwanda's growth exceeded 7 percent in most years [rwanda-economy · Growth · 2026]."
   },
@@ -77,8 +99,7 @@
           "id": "call_0",
           "name": "search_documents",
           "arguments": {
-            "query": "internet use and GDP per capita trends Kenya Rwanda",
-            "k": 4
+            "query": "internet use and GDP per capita trends Kenya Rwanda"
           }
         },
         {
@@ -134,8 +155,7 @@
           "id": "call_0",
           "name": "search_documents",
           "arguments": {
-            "query": "Kenya coffee export earnings recent years",
-            "k": 3
+            "query": "Kenya coffee export earnings recent years"
           }
         }
       ]
@@ -177,6 +197,120 @@
       "content": "In 2023, 28.8 percent of Rwanda's population used the internet (World Development Indicators, IT.NET.USER.ZS)."
     }
   ],
+  "nb05_runaway": [
+    {
+      "tool_calls": [
+        {
+          "id": "call_0",
+          "name": "get_indicator",
+          "arguments": {
+            "indicator": "IT.NET.USER.ZS",
+            "country": "Kenya",
+            "start": 2010,
+            "end": 2024
+          }
+        }
+      ]
+    },
+    {
+      "tool_calls": [
+        {
+          "id": "call_1",
+          "name": "get_indicator",
+          "arguments": {
+            "indicator": "IT.NET.USER.ZS",
+            "country": "Kenya",
+            "start": 2010,
+            "end": 2024
+          }
+        }
+      ]
+    },
+    {
+      "tool_calls": [
+        {
+          "id": "call_2",
+          "name": "get_indicator",
+          "arguments": {
+            "indicator": "IT.NET.USER.ZS",
+            "country": "Kenya",
+            "start": 2010,
+            "end": 2024
+          }
+        }
+      ]
+    },
+    {
+      "tool_calls": [
+        {
+          "id": "call_3",
+          "name": "get_indicator",
+          "arguments": {
+            "indicator": "IT.NET.USER.ZS",
+            "country": "Kenya",
+            "start": 2010,
+            "end": 2024
+          }
+        }
+      ]
+    },
+    {
+      "tool_calls": [
+        {
+          "id": "call_4",
+          "name": "get_indicator",
+          "arguments": {
+            "indicator": "IT.NET.USER.ZS",
+            "country": "Kenya",
+            "start": 2010,
+            "end": 2024
+          }
+        }
+      ]
+    },
+    {
+      "tool_calls": [
+        {
+          "id": "call_5",
+          "name": "get_indicator",
+          "arguments": {
+            "indicator": "IT.NET.USER.ZS",
+            "country": "Kenya",
+            "start": 2010,
+            "end": 2024
+          }
+        }
+      ]
+    },
+    {
+      "tool_calls": [
+        {
+          "id": "call_6",
+          "name": "get_indicator",
+          "arguments": {
+            "indicator": "IT.NET.USER.ZS",
+            "country": "Kenya",
+            "start": 2010,
+            "end": 2024
+          }
+        }
+      ]
+    },
+    {
+      "tool_calls": [
+        {
+          "id": "call_7",
+          "name": "get_indicator",
+          "arguments": {
+            "indicator": "IT.NET.USER.ZS",
+            "country": "Kenya",
+            "start": 2010,
+            "end": 2024
+          }
+        }
+      ]
+    }
+  ],
   "nb06_claims_main": {
     "content": "Internet use reached <claim id=\"IT.NET.USER.ZS:KEN:2024\" policy=\"rounded\" decimals=\"1\">35.0</claim> percent of the population in Kenya and <claim id=\"IT.NET.USER.ZS:RWA:2024\" policy=\"rounded\" decimals=\"1\">31.7</claim> percent in Rwanda in 2024, up from <claim id=\"IT.NET.USER.ZS:KEN:2010\" policy=\"rounded\" decimals=\"1\">7.2</claim> and <claim id=\"IT.NET.USER.ZS:RWA:2010\" policy=\"rounded\" decimals=\"1\">8.0</claim> percent in 2010 (World Development Indicators, IT.NET.USER.ZS). GDP per capita in current US dollars was <claim id=\"NY.GDP.PCAP.CD:KEN:2024\" policy=\"rounded\" decimals=\"0\">2,133</claim> in Kenya and <claim id=\"NY.GDP.PCAP.CD:RWA:2024\" policy=\"rounded\" decimals=\"0\">1,060</claim> in Rwanda in 2024, up from <claim id=\"NY.GDP.PCAP.CD:KEN:2010\" policy=\"rounded\" decimals=\"0\">1,092</claim> and <claim id=\"NY.GDP.PCAP.CD:RWA:2010\" policy=\"rounded\" decimals=\"0\">587</claim> in 2010 (NY.GDP.PCAP.CD). Kenya has the higher level on both indicators and Rwanda the faster growth on both; internet use in the two countries converged to about a third of the population."
   },
@@ -205,7 +339,7 @@
     "content": "The indicator counts individuals who used the internet from any location in the last three months, from any device, as a share of the total population; the source is the ITU [internet-indicator · Definition · 2026]. When comparing years, survey-based and estimated values can sit side by side, survey changes can create breaks, and the share is of the whole population including children [internet-indicator · What to keep in mind when comparing countries and years · 2026]."
   },
   "nb06_rag_q8": {
-    "content": "According to the retrieved summary, the latest available figure is 16.6 percent of the population in 2015, up from 7.2 percent in 2010 [regional-2016 · intro · 2016]."
+    "content": "According to the retrieved summary, the latest available figures are 16.6 percent of the population in Kenya and 12.5 percent in Rwanda, both for 2015 [regional-2016 · intro · 2016]."
   },
   "nb06_tools_q1": [
     {
@@ -314,8 +448,7 @@
           "id": "call_0",
           "name": "search_documents",
           "arguments": {
-            "query": "Kenya coffee export earnings",
-            "k": 3
+            "query": "Kenya coffee export earnings"
           }
         }
       ]
@@ -360,8 +493,7 @@
           "id": "call_0",
           "name": "search_documents",
           "arguments": {
-            "query": "definition of the internet users indicator and comparability",
-            "k": 3
+            "query": "definition of the internet users indicator and comparability"
           }
         }
       ]
@@ -382,11 +514,21 @@
             "start": 2020,
             "end": 2025
           }
+        },
+        {
+          "id": "call_1",
+          "name": "get_indicator",
+          "arguments": {
+            "indicator": "IT.NET.USER.ZS",
+            "country": "Rwanda",
+            "start": 2020,
+            "end": 2025
+          }
         }
       ]
     },
     {
-      "content": "The latest available figure is for 2024: <claim id=\"IT.NET.USER.ZS:KEN:2024\" policy=\"rounded\" decimals=\"1\">35.0</claim> percent of Kenya's population used the internet (WDI, IT.NET.USER.ZS)."
+      "content": "The latest available figures are for 2024: <claim id=\"IT.NET.USER.ZS:KEN:2024\" policy=\"rounded\" decimals=\"1\">35.0</claim> percent of the population in Kenya and <claim id=\"IT.NET.USER.ZS:RWA:2024\" policy=\"rounded\" decimals=\"1\">31.7</claim> percent in Rwanda (WDI, IT.NET.USER.ZS)."
     }
   ]
 }

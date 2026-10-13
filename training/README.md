@@ -21,7 +21,8 @@ session-NN-short-name/
 ## Conventions
 
 - **One worked example per session.** Every notebook and every slide of a session uses the same question, the same data, and the same documents, so that what changes between steps is the capability being added.
-- **Runnable without credentials.** Every notebook runs in a fresh Colab environment with no API key. Model calls fall back to recorded outputs that are labelled as such; retrieval falls back to a local method. A live key, when available, is read from the environment and never written into a notebook.
+- **Runnable without credentials.** Every notebook runs in a fresh Colab environment with no API key. Model calls fall back to recorded outputs that are labelled as such; everything else, from the vector store to the MCP server, runs for real. A live key, when available, is read from the environment and never written into a notebook.
+- **Popular libraries over custom code.** Sessions use the libraries participants will meet in their own work (LangChain, LangGraph, FastMCP, Pydantic, and the program's own packages such as `pcn-core`), and write custom code only for what those do not provide.
 - **Real data, labelled.** Statistical values come from a named source with the retrieval date recorded. Documents written for a workshop say so in their header, state where their figures come from, and are never presented as publications.
 - **Cached outputs.** Notebooks are committed with their outputs so that reviewers and participants can read them without running them. The regeneration script reruns them in fallback mode.
 - **No names in the materials.** Authors and reviewers are recorded in the session README under roles until the material is released.

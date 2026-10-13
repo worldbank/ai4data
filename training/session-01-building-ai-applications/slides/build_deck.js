@@ -142,13 +142,13 @@ function diagram(s, y, highlight) {
   text(s, "Two audiences", { x: M, y: 1.45, w: lw, h: 0.4, fontSize: 15, bold: true, color: HEX.navy });
   bullets(s, ["Colleagues who will build AI applications and want each capability added to a working application, with code to rerun", "Colleagues who commission, oversee, or evaluate such applications and need to know what each capability is for and how to tell whether the result is reliable"], { x: M, y: 1.9, w: lw, h: 2.2 });
   text(s, "Afterwards, participants can", { x: M, y: 4.2, w: lw, h: 0.4, fontSize: 15, bold: true, color: HEX.navy });
-  bullets(s, ["Name the components of an AI application and the problem each solves", "Choose an architecture for a research or data question and say what evidence would show that it works", "Rerun the six notebooks with a question and documents of their own"], { x: M, y: 4.65, w: lw, h: 2.0 });
+  bullets(s, ["Name the components of an AI application and the problem each solves", "Choose an architecture for a research or data question and say what evidence would show that it works", "Rerun the six notebooks, built on LangChain, LangGraph, FastMCP, and pcn-core, with a question and documents of their own"], { x: M, y: 4.65, w: lw, h: 2.0 });
   const rx = M + lw + 0.5;
   card(s, rx, 1.45, W - M - rx, 5.2, "question card");
   text(s, "The one question the session answers", { x: rx + 0.3, y: 1.6, w: W - M - rx - 0.6, h: 0.4, fontSize: 15, bold: true, color: HEX.navy });
   text(s, "Given a research or data problem, which application architecture should be built, and what evidence would show that it works?", { x: rx + 0.3, y: 2.1, w: W - M - rx - 0.6, h: 1.4, fontSize: 16 });
   text(s, "Format", { x: rx + 0.3, y: 3.7, w: 4, h: 0.4, fontSize: 15, bold: true, color: HEX.navy });
-  bullets(s, ["37 minutes of slides, 53 of notebook demonstration, then questions", "Six notebooks, one worked example, four planted problems", "Everything runs without an API key; model outputs are then recorded and labelled"], { x: rx + 0.3, y: 4.15, w: W - M - rx - 0.6, h: 2.3 });
+  bullets(s, ["37 minutes of slides, 53 of notebook demonstration, then questions", "Six notebooks, one worked example, four planted problems", "Everything runs without an API key; model outputs are then recorded and labelled. Stack: LangChain, LangGraph, FastMCP, Pydantic, pcn-core"], { x: rx + 0.3, y: 4.15, w: W - M - rx - 0.6, h: 2.3 });
   record(["Two audiences: builders; commissioners and evaluators", "Afterwards: name the components; choose an architecture and the evidence; rerun the notebooks", "The one question: given a research or data problem, which architecture, and what evidence", "Format: 37 min slides, 53 min demonstration, questions; six notebooks; runs without a key"]);
   notes(s, "State the two audiences so that each knows what to listen for. The question at the right is what the session is for; return to it on the last slide.");
 }
@@ -246,7 +246,7 @@ function diagram(s, y, highlight) {
   const cols = [
     ["Metadata is knowledge", "Date, type, country, section. The 2016 summary reads as current; only its date says otherwise. Filters, ranking, and citations all run on metadata."],
     ["Chunk boundaries decide what can be found", "Fixed windows cut through sentences and drop headings. Section chunks keep the title and the heading, so a passage says what it is about."],
-    ["Embeddings place text by meaning", "A vector per chunk; similar meaning, nearby vectors. A small local model in Colab, TF-IDF as the fallback. The index is only as good as the text and metadata it was built from."],
+    ["Embeddings place text by meaning", "A vector per chunk; similar meaning, nearby vectors. A small sentence-transformer model through LangChain, held in a vector store. The index is only as good as the text and metadata it was built from."],
   ];
   const cw = (W - 2 * M - 2 * 0.3) / 3;
   cols.forEach(([h, b], i) => {
@@ -333,7 +333,7 @@ function diagram(s, y, highlight) {
   mono(s, "class Observation(BaseModel):\n    indicator: str\n    country: str\n    year: int\n    value: float\n    claim_id: str\n\nclass ComparisonAnswer(BaseModel):\n    countries: list[CountrySummary]\n    comparison: str\n    sources: list[str]", { x: M, y: 3.3, w: lw, h: 2.6 });
   const rx = M + lw + 0.5;
   text(s, "MCP: one server, many clients", { x: rx, y: 1.45, w: W - M - rx, h: 0.4, fontSize: 15, bold: true, color: HEX.navy });
-  text(s, "The Model Context Protocol is a standard for exposing tools like get_indicator to any AI client. The program's Data360 MCP server exposes search, metadata, and data tools over the World Bank data platform; a desktop assistant, the Data AI Chatbot, or a notebook call the same tools.", { x: rx, y: 1.9, w: W - M - rx, h: 1.7, fontSize: 13 });
+  text(s, "The Model Context Protocol is a standard for exposing tools like get_indicator to any AI client. Notebook 04 serves the tool with FastMCP in a dozen lines and calls it back through the FastMCP client. The program's Data360 MCP server exposes search, metadata, and data tools over the World Bank data platform; a desktop assistant, the Data AI Chatbot, or a notebook call the same tools.", { x: rx, y: 1.9, w: W - M - rx, h: 1.7, fontSize: 13 });
   const parts = ["Data360 MCP server", "search · metadata · data"];
   box(s, rx, 3.7, W - M - rx, 0.6, parts.join("  ·  "), HEX.teal, HEX.white, "mcp server");
   const clients = ["Desktop assistant", "Data AI Chatbot", "A notebook", "An agent"];
@@ -341,8 +341,8 @@ function diagram(s, y, highlight) {
   clients.forEach((c, i) => {
     box(s, rx + i * (cw + 0.15), 4.75, cw, 0.6, c, HEX.tint, HEX.text, "client " + c);
   });
-  text(s, "The notebooks keep tools as local functions so that they run offline; the shape of a tool is the same.", { x: rx, y: 5.5, w: W - M - rx, h: 0.7, fontSize: 12.5, color: HEX.slate });
-  record(["A schema makes the answer a contract: sent with the request, validated on return", "MCP: one server, many clients; the Data360 MCP server as the example", "Notebooks keep tools local; the shape is the same"]);
+  text(s, "The notebook lists the Data360 server's sixteen tools and runs one search live, with a guard for offline sessions.", { x: rx, y: 5.5, w: W - M - rx, h: 0.7, fontSize: 12.5, color: HEX.slate });
+  record(["A schema makes the answer a contract: sent with the request, validated on return", "MCP: one server, many clients; the tool served with FastMCP; the Data360 MCP server as the deployed example", "The notebook lists the Data360 tools and runs one search live"]);
   outline[outline.length - 1].demo = "Notebook 04, sections 5 and 6";
   notes(s, "Demonstrate the structured output and the validation error. Name MCP once with the Data360 server; the demonstration at the end shows it live.");
 }
@@ -374,12 +374,12 @@ function diagram(s, y, highlight) {
   card(s, M, 2.4, lw, 3.0, "fixed card");
   text(s, "A fixed workflow", { x: M + 0.25, y: 2.55, w: lw - 0.5, h: 0.4, fontSize: 15, bold: true, color: HEX.navy });
   text(s, "The order of calls is written in code: search, fetch four series, compose. The model is called once, to write. Every run makes the same calls. Predictable, testable, cheap.", { x: M + 0.25, y: 3.0, w: lw - 0.5, h: 1.3, fontSize: 13 });
-  mono(s, "passages = search(question)\nseries   = [get_indicator(i, c) for i, c in PAIRS]\nanswer   = model(instructions, passages, series)", { x: M + 0.25, y: 4.3, w: lw - 0.5, h: 0.95 });
+  mono(s, "passages = search_documents.invoke({\"query\": question})\nseries   = [indicator_lookup(i, c) for i, c in PAIRS]\nanswer   = (prompt | model).invoke({...})", { x: M + 0.25, y: 4.3, w: lw - 0.5, h: 0.95 });
   card(s, M + lw + 0.4, 2.4, lw, 3.0, "agent card");
   text(s, "A model-directed loop", { x: M + lw + 0.65, y: 2.55, w: lw - 0.5, h: 0.4, fontSize: 15, bold: true, color: HEX.navy });
   text(s, "The tools are offered with their schemas; the model chooses which to call and when to stop. Adapts to questions the designer did not anticipate, and can choose wrongly.", { x: M + lw + 0.65, y: 3.0, w: lw - 0.5, h: 1.3, fontSize: 13 });
-  mono(s, "for step in range(max_steps):\n    reply = model(messages, tools)\n    if not reply.tool_calls: return reply\n    run the calls; append results; record the trace", { x: M + lw + 0.65, y: 4.3, w: lw - 0.5, h: 0.95 });
-  text(s, "Three controls for the loop: a step limit, a trace of every call and result, and tools that return errors as data so that the model can retry. Demonstration: notebook 05, an out-of-scope question, a failed call, and the step limit.", { x: M, y: 5.6, w: W - 2 * M, h: 0.9, fontSize: 13 });
+  mono(s, "agent = create_agent(model, tools, system_prompt=...)\nresult = agent.invoke({\"messages\": [question]},\n                      config={\"recursion_limit\": 10})\n# LangGraph runs the loop; the messages are the trace", { x: M + lw + 0.65, y: 4.3, w: lw - 0.5, h: 0.95 });
+  text(s, "Three controls for the loop: a recursion limit, the message trace of every call and result, and tools that return errors as data so that the model can retry. Demonstration: notebook 05, an out-of-scope question, a failed call, and the limit.", { x: M, y: 5.6, w: W - 2 * M, h: 0.9, fontSize: 13 });
   record(["Fixed workflow: order in code, one model call, predictable", "Model-directed loop: model chooses tools; adapts, can err", "Controls: step limit, trace, errors as data", "Demonstration: notebook 05"]);
   outline[outline.length - 1].demo = "Notebook 05, sections 1 to 5";
   notes(s, "Demonstrate the fixed workflow, then the loop on the same question, then the out-of-scope question, the failed call with retry, and the step limit.");
@@ -410,7 +410,7 @@ function diagram(s, y, highlight) {
   text(s, "Claim tags", { x: M, y: 2.4, w: lw, h: 0.4, fontSize: 15, bold: true, color: HEX.navy });
   text(s, "The model writes each figure inside a tag that names the observation it came from. A verifier compares the number shown with the record under a policy: rounded to the stated decimals, or exact.", { x: M, y: 2.85, w: lw, h: 1.0, fontSize: 13 });
   mono(s, '<claim id="IT.NET.USER.ZS:KEN:2024" policy="rounded"\n       decimals="1">35.0</claim> percent', { x: M, y: 3.9, w: lw, h: 0.8 });
-  text(s, "This is the Proof-Carrying Numbers protocol used in the program's chatbot, reduced to one function in the notebook.", { x: M, y: 4.85, w: lw, h: 0.7, fontSize: 12.5, color: HEX.slate });
+  text(s, "This is the Proof-Carrying Numbers protocol used in the program's chatbot; the notebook compares with the same pcn-core code.", { x: M, y: 4.85, w: lw, h: 0.7, fontSize: 12.5, color: HEX.slate });
   const rx = M + lw + 0.5;
   mono(s, "✓ verified   35.0  IT.NET.USER.ZS:KEN:2024  holds 34.98\n✗ flagged    35.7  IT.NET.USER.ZS:RWA:2024  holds 31.70\n✓ verified  2,133  NY.GDP.PCAP.CD:KEN:2024  holds 2133.46\n· unmarked     70                           no claim tag", { x: rx, y: 2.4, w: W - M - rx, h: 1.5, fontSize: 10.5 });
   bullets(s, ["Verified: the number matches its record", "Flagged: the model changed a number", "Unmarked: no claim, so no mark, whether or not the number happens to be right. The rule fails closed."], { x: rx, y: 4.05, w: W - M - rx, h: 1.5, fontSize: 13 });
@@ -500,7 +500,7 @@ function diagram(s, y, highlight) {
   const s = slide("CONTENT", "Resources and questions");
   const lw = 6.2;
   text(s, "Take home", { x: M, y: 1.45, w: lw, h: 0.4, fontSize: 15, bold: true, color: HEX.navy });
-  bullets(s, ["The six notebooks, with cached outputs; they run in Colab without a key", "The shared module, workshop.py, about 500 lines", "The participant guide, the glossary, the evaluation examples, and next steps by role", "The worked-example assets: data, documents, questions"], { x: M, y: 1.9, w: lw, h: 2.4, fontSize: 13 });
+  bullets(s, ["The six notebooks, with cached outputs; they run in Colab without a key", "The shared module and the FastMCP server, about 450 lines on top of the libraries", "The participant guide, the glossary, the evaluation examples, and next steps by role", "The worked-example assets: data, documents, questions"], { x: M, y: 1.9, w: lw, h: 2.4, fontSize: 13 });
   text(s, "In the program", { x: M, y: 4.3, w: lw, h: 0.4, fontSize: 15, bold: true, color: HEX.navy });
   bullets(s, ["Practical Guide to Serving Official Statistics to AI Agents", "Practical Guide to Evaluation Suites for Statistical AI", "Proof-Carrying Numbers", "Data360 MCP server and the Data AI Chatbot", "The end-to-end reference implementation"], { x: M, y: 4.75, w: lw, h: 2.0, fontSize: 13 });
   const rx = M + lw + 0.5;
