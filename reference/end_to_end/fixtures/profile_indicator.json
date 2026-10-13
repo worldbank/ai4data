@@ -1,0 +1,37 @@
+{
+  "type": "indicator",
+  "schema": "timeseries-schema.json",
+  "id": "series_description.idno",
+  "name": "foundational and AI-ready fields of the indicator schema",
+  "levels": {
+    "foundational": [
+      "series_description.idno",
+      "series_description.name",
+      "series_description.definition_long",
+      "series_description.measurement_unit",
+      "series_description.periodicity",
+      "series_description.time_periods",
+      "series_description.geographic_units",
+      "series_description.sources",
+      "series_description.date_last_update"
+    ],
+    "ai-ready": [
+      "series_description.definition_references",
+      "series_description.license",
+      "series_description.citation_requirement",
+      "series_description.keywords",
+      "series_description.topics"
+    ]
+  },
+  "rules": {
+    "dates": ["series_description.date_last_update"],
+    "periods": ["series_description.time_periods.start", "series_description.time_periods.end"],
+    "period_order": [["series_description.time_periods.start", "series_description.time_periods.end"]],
+    "urls": ["series_description.definition_references.uri", "series_description.license.uri"],
+    "vocabularies": {
+      "series_description.periodicity": ["daily", "weekly", "monthly", "quarterly", "annual", "biennial", "every 3 years", "every 5 years", "irregular"]
+    },
+    "min_words": {"series_description.definition_long": 12},
+    "placeholders": ["series_description.measurement_unit"]
+  }
+}

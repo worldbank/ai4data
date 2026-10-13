@@ -1,0 +1,32 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "identifier": "ED_PRIMARY_NER_PCT",
+  "name": "Net enrolment rate in primary education",
+  "description": "Children of official primary school age who are enrolled in primary education as a share of the population of that age group.",
+  "url": "https://stats.example/series/ED_PRIMARY_NER_PCT",
+  "creator": {
+    "@type": "Organization",
+    "name": "National Statistics Office (example)"
+  },
+  "dateModified": "2025-02-01",
+  "temporalCoverage": "2010/2024",
+  "variableMeasured": {
+    "@type": "PropertyValue",
+    "name": "Net enrolment rate in primary education",
+    "unitText": "% of age group"
+  },
+  "keywords": [
+    "primary education",
+    "enrolment",
+    "school attendance"
+  ],
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "distribution": [
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "text/csv",
+      "contentUrl": "https://stats.example/series/ED_PRIMARY_NER_PCT.csv"
+    }
+  ]
+}

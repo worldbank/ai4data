@@ -1,0 +1,8 @@
+# Libraries the reference implementation uses. Install once with:
+#   pip install -r requirements.txt
+#
+# pcn-core is the Python core of Proof-Carrying Numbers. It is installed from
+# the PCN repository at a pinned commit until the package is published to PyPI.
+jsonschema>=4.18
+mcp[cli]>=1.0
+pcn-core @ git+https://github.com/worldbank/pcn.git@80ffbb369cd203e8cde427df1b5a6ea1de6f7228#subdirectory=python/pcn-core

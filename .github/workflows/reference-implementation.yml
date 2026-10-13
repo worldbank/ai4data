@@ -1,0 +1,39 @@
+name: Reference implementation
+
+# Runs the end-to-end reference implementation (reference/end_to_end) from a
+# clean checkout: lint, the pipeline in both modes, and the tests that check
+# every step's outcome and that the committed sample run is current.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "reference/end_to_end/**"
+      - "tests/test_reference_end_to_end.py"
+      - "tests/fixtures/wb-schemas/**"
+      - ".github/workflows/reference-implementation.yml"
+  pull_request:
+    paths:
+      - "reference/end_to_end/**"
+      - "tests/test_reference_end_to_end.py"
+      - "tests/fixtures/wb-schemas/**"
+      - ".github/workflows/reference-implementation.yml"
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: pip install pytest ruff -r reference/end_to_end/requirements.txt
+      - name: Lint
+        run: ruff check reference/end_to_end tests/test_reference_end_to_end.py
+      - name: Run the pipeline from a clean checkout
+        run: python reference/end_to_end/run.py --out /tmp/e2e
+      - name: Run the pipeline with planted errors (exit status 1 is the expected outcome)
+        run: python reference/end_to_end/run.py --out /tmp/e2e-planted --inject-error || test $? -eq 1
+      - name: Test
+        run: pytest tests/test_reference_end_to_end.py -p no:cacheprovider --noconftest -q
