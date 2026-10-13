@@ -107,7 +107,7 @@ export const resources = {
     title: 'Proof-Carrying Numbers',
     to: '/docs/pcn/',
     kind: 'tools',
-    note: 'Each number in a generated answer is verified against the record it cites or flagged; packages built from the repository',
+    note: 'Each number in a generated answer is verified against the record it cites or flagged; TypeScript packages on npm, Python core in the repository',
   },
   chatbot: {
     title: 'Data AI Chatbot',

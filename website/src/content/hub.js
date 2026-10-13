@@ -112,7 +112,7 @@ export const RELEASE_PRACTICE = [
   {repo: 'data360-mcp', practice: 'Semantic versioning with git tags and GitHub releases; the Python package on PyPI; rollback by installing a prior release.', to: 'https://github.com/worldbank/data360-mcp/releases'},
   {repo: 'metadata-editor', practice: 'Tagged releases with notes; upgrade by replacing the application files and running the installer.', to: 'https://github.com/worldbank/metadata-editor/releases'},
   {repo: 'metadata-schemas', practice: 'Tagged releases of the Python package; the schema files on the main branch are the reference, so pin a commit for validation that must match a catalog.', to: 'https://github.com/worldbank/metadata-schemas/releases'},
-  {repo: 'pcn', practice: 'Package versions in the monorepo with changesets; packages are built from the repository until they are published to npm and PyPI.', to: 'https://github.com/worldbank/pcn'},
+  {repo: 'pcn', practice: 'Changesets in the monorepo; the TypeScript packages are published to npm under the @pcn-js scope with semantic versions; the Python core is installed from the repository at a pinned commit.', to: 'https://github.com/worldbank/pcn'},
   {repo: 'data-ai-chatbot', practice: 'Releases from the repository; Docker Compose files for development and production; the deployment guide covers upgrades.', to: 'https://github.com/worldbank/data-ai-chatbot/releases'},
   {repo: 'ai4data', practice: 'The Python package on PyPI with extras per workstream; the cookbook scripts and the reference implementation are tested in CI on every change.', to: 'https://pypi.org/project/ai4data/'},
 ];

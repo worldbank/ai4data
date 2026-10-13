@@ -346,7 +346,7 @@ export const TOOLS = [
     limits: [
       'Needs a model provider through LiteLLM, a PostgreSQL database, and Redis; it is a full-stack deployment.',
       'The verification marks depend on the MCP server returning claim identifiers with values; a server without them yields unverified numbers.',
-      'The PCN packages are consumed from the PCN repository until they are published to a registry.',
+      'Verification covers the numbers the model tagged; the PCN page says what a mark does and does not mean.',
     ],
     verifies: [
       'Deployment, operations, and security documentation in the repository',
@@ -383,7 +383,7 @@ export const TOOLS = [
     status: 'prototype',
     summary:
       'Indexing and search by meaning over catalog records, and a toolkit that fine-tunes embedding models on structured metadata with permutation-invariant training, reporting Recall@k, MRR, and nDCG.',
-    stack: 'Python 3.11 or later; sentence-transformers, FAISS; a JavaScript search package in the repository',
+    stack: 'Python 3.11 or later; sentence-transformers, FAISS; the @ai4data/search package on npm for in-browser search',
     licence: 'MIT',
     docs: '/docs/data-discoverability/',
     install: '/pift-toolkit/deployment',
@@ -391,7 +391,6 @@ export const TOOLS = [
     releases: null,
     operator: null,
     limits: [
-      'The JavaScript search package lives in the repository and is not yet published to npm.',
       'Fine-tuning needs question sets in the organization’s languages; the cookbooks give the method for building them.',
     ],
     verifies: ['Toolkit documentation on this site', 'Package extras in the repository'],
@@ -404,10 +403,10 @@ export const TOOLS = [
     name: 'Proof-Carrying Numbers',
     area: 'verify',
     kind: 'Protocol and packages',
-    status: 'prototype',
+    status: 'reference',
     summary:
       'Presentation-layer protocol for numeric fidelity: a model emits each number as a claim tag naming its source record, and the renderer verifies the number against the record under a declared policy and draws the mark. TypeScript packages for the core, the UI, and a Data360 preset; a Python core for comparison; a specification with shared fixtures.',
-    stack: 'TypeScript packages (React 18 or later for the UI); Python 3.10 or later for the core',
+    stack: 'TypeScript packages on npm under the @pcn-js scope (React 18 or later for the UI); Python 3.10 or later for the core',
     licence: 'MIT with the World Bank IGO rider',
     docs: '/docs/pcn/',
     install: 'https://github.com/worldbank/pcn/blob/main/docs/integration.md',
@@ -417,10 +416,10 @@ export const TOOLS = [
     limits: [
       'A verified mark means the number matches the record it cites under the stated policy. It says nothing about whether the record, the method behind it, or the interpretation is right.',
       'The application must ingest tool results and render claim tags; PCN does not extract claims from free text on its own.',
-      'The packages are built from the repository; they are not yet on npm or PyPI.',
+      'The TypeScript packages are published on npm; the Python core is installed from the repository until it is published to PyPI.',
       'The Python core compares a token with a claim under a policy; parsing and rendering are in the TypeScript packages.',
     ],
-    verifies: ['Specification and fixtures shared across languages', 'Package tests in the repository', 'Paper with the formal results'],
+    verifies: ['Packages @pcn-js/core, @pcn-js/ui, and @pcn-js/data360 on npm', 'Specification and fixtures shared across languages', 'Package tests in the repository', 'Paper with the formal results'],
     checked: '2026-10-13',
   },
   {

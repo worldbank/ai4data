@@ -50,7 +50,7 @@ Combining dense and sparse retrieval—known as hybrid search—typically outper
 
 ## The @ai4data/search Package
 
-The `@ai4data/search` JavaScript/TypeScript package, in the [`packages/ai4data/search`](https://github.com/worldbank/ai4data/tree/main/packages/ai4data/search) folder of the repository, provides a client-side semantic search library designed for development data portals and web applications. It is not yet published to npm.
+The [`@ai4data/search`](https://www.npmjs.com/package/@ai4data/search) JavaScript/TypeScript package provides a client-side semantic search library designed for development data portals and web applications.
 
 Key features:
 
@@ -69,11 +69,10 @@ const results = await index.search("child mortality under 5", { topK: 10 });
 // Returns: [{ id, title, score, ... }, ...]
 ```
 
-Install from the repository until the package is published:
+Install:
 
 ```bash
-git clone https://github.com/worldbank/ai4data.git
-cd ai4data/packages/ai4data/search && npm install && npm run build
+npm install @ai4data/search
 ```
 
 ---
@@ -120,6 +119,5 @@ An emerging dimension of data discoverability is making datasets accessible to A
 
 - Search by meaning depends on the records. A catalog with missing descriptions ranks poorly however good the embedding model, which is why the [findability chapter](/cookbook/ai-ready-dissemination/find) of the dissemination cookbook comes first.
 - Embedding models trained on English rank queries in other languages worse; multilingual models and fine-tuning on question sets in the organization's languages close part of the gap, and the [PI-FT toolkit](embedding-fine-tuning.md) gives the method.
-- The JavaScript search package lives in the repository and is not yet published to npm; install it from the repository.
 - Retrieval quality is measured with a question set the organization builds; the [evaluation cookbook](/cookbook/evaluation-suites/retrieval) gives the measures and their sample sizes.
 - Status on the [tools catalogue](/tools#semantic-search): prototype.

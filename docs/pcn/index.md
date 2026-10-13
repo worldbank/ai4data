@@ -51,7 +51,7 @@ The [policy reference](https://github.com/worldbank/pcn/blob/main/docs/reference
 | `@pcn-js/data360` | TypeScript | A preset for the Data360 MCP server's data tool, whose results carry `claim_id`, `OBS_VALUE`, `REF_AREA`, and `TIME_PERIOD` |
 | `pcn-core` | Python 3.10 or later | The comparison engine: a claim type, the policy types, and `compare_by_policy` |
 
-The packages are built from the repository and are not yet published to npm or PyPI. The [integration guide](https://github.com/worldbank/pcn/blob/main/docs/integration.md) describes the two integration paths: the Data360 preset for applications that use the Data360 MCP server, and a custom extractor for any other tool result shape. The repository's example chat application shows the preset in use.
+The TypeScript packages are published on npm under the `@pcn-js` scope and are installed with `npm install @pcn-js/core @pcn-js/ui @pcn-js/data360`. The Python core is installed from the repository until it is published to PyPI. The [integration guide](https://github.com/worldbank/pcn/blob/main/docs/integration.md) describes the two integration paths: the Data360 preset for applications that use the Data360 MCP server, and a custom extractor for any other tool result shape. The repository's example chat application shows the preset in use.
 
 ## Where it is used
 
