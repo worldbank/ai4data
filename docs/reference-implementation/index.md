@@ -5,7 +5,7 @@ description: One reproducible run that documents records in the World Bank schem
 
 # End-to-end reference implementation
 
-The reference implementation is one command that runs the pattern the program describes, from a documented record to a verified number in a generated answer. It runs on the cookbook's example organization, needs no model and no network, and is tested in CI from a clean checkout. The code is in the [`reference/end_to_end`](https://github.com/worldbank/ai4data/tree/main/reference/end_to_end) folder of the repository. Its status on the [tools catalogue](/tools#reference-implementation) is deployable.
+The reference implementation is a script that runs six steps on the cookbook's example organization: documentation, validation, publication, agent access over MCP, an answer composed from the tool results, and verification of the numbers in that answer. It needs no model and no network access, and a CI workflow runs it from a clean checkout. The code is in the [`reference/end_to_end`](https://github.com/worldbank/ai4data/tree/main/reference/end_to_end) folder of the repository. Its status on the [tools catalogue](/tools#reference-implementation) is deployable.
 
 ## The six steps
 

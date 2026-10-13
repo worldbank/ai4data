@@ -23,10 +23,11 @@ function Hero() {
           Tools catalogue
         </Heading>
         <p className={styles.heroLede}>
-          Every piece of software and every method the program offers, with
-          what it does, where the code lives, who operates it, the status the
-          repository supports, the installation guide, and the known limits.
-          The status of each entry was checked against its repository on{' '}
+          This page lists the software and the methods of the program. Each
+          entry records what the tool does, where the code is, who operates
+          it, its status, the installation guide, the licence, and the known
+          limits. The status of each entry was checked against its
+          repository on{' '}
           {CHECKED}.
         </p>
         <div className={styles.heroActions}>
@@ -63,11 +64,11 @@ function Statuses() {
             What the statuses mean
           </Heading>
           <p className={styles.lede}>
-            A status describes the software and says nothing about its adoption. A
-            deployable tool can have no deployment outside the World Bank
-            yet, and a method can be in daily use. The status changes only
-            with evidence: a release, a running endpoint, a test suite, or a
-            published package.
+            A status describes the software and makes no statement about
+            its adoption. A deployable tool may have no deployment outside
+            the World Bank, and a method may be in daily use. A status
+            changes when the evidence changes: a release, a running
+            endpoint, a test suite, or a published package.
           </p>
         </div>
         <dl className={styles.statusGrid}>
@@ -246,8 +247,8 @@ function Catalogue() {
             Tools by area and status
           </Heading>
           <p className={styles.lede}>
-            The table lists the entries; the cards below it carry the full
-            record for each. Filters narrow both.
+            The table lists the entries. The cards below it hold the full
+            record of each. The filters apply to both.
           </p>
         </div>
         <Filters area={area} status={status} onArea={setArea} onStatus={setStatus} />
@@ -273,8 +274,8 @@ function InDevelopment() {
             Work in development
           </Heading>
           <p className={styles.lede}>
-            Workstreams the program has announced that have nothing to
-            install or read yet. Each names the material that exists today
+            Workstreams the program has announced for which nothing can be
+            installed or read yet. Each entry names the material that exists
             in its place.
           </p>
         </div>

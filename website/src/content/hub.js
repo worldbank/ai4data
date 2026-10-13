@@ -69,7 +69,7 @@ export const HUB = {
   },
   adopt: {
     start:
-      'Read the status, the installation guide, and the known limits of a tool on the tools page. Install it from the documentation alone, record what blocked you, and file the record as an issue in the tool’s repository.',
+      'Read the status, the installation guide, and the known limits of a tool on the tools page. Install it from the documentation alone, record the blockers, and file the record as an issue in the tool’s repository.',
     tools: [],
     guides: [
       {title: 'Tools catalogue', to: '/tools', note: 'Every tool with its status, stack, licence, operator, installation guide, and known limits.'},

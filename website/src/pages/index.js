@@ -85,10 +85,9 @@ function HubSection() {
             AI readiness in practice
           </Heading>
           <p className={styles.hubLede}>
-            The program&apos;s tools, guides, and cookbooks in one place,
-            organized by what an organization does with them. Each tool
-            states its status: in operation, deployable, prototype, or
-            method.
+            The hub lists the program&apos;s tools, guides, and cookbooks
+            under six areas. The tools catalogue records a status for each
+            tool: in operation, deployable, prototype, or method.
           </p>
         </div>
         <HubGrid compact headingLevel="h3" />

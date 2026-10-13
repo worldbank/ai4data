@@ -30,12 +30,11 @@ function Hero() {
           AI readiness in practice
         </Heading>
         <p className={styles.heroLede}>
-          One place for the program’s tools, guides, and cookbooks, organized
-          by what an organization does with them: assess its readiness,
-          document its data, connect it to software and AI agents, verify
-          what is generated from it, implement the recipes, and adopt the
-          tools. Every tool carries a status that says what the repository
-          shows today.
+          This page lists the program’s tools, guides, and cookbooks under
+          six areas: assessment, documentation, access, verification,
+          implementation, and adoption. Each tool entry links to the tools
+          catalogue, where its status is recorded with the evidence behind
+          it.
         </p>
         <div className={styles.heroActions}>
           <Link className={clsx('button button--md', styles.primary)} to="/tools">
@@ -81,10 +80,12 @@ function Overview() {
             What the hub covers
           </Heading>
           <p className={styles.lede}>
-            The areas follow the order of the work. An assessment names the
-            gaps. Documentation, access, and verification close them. The
-            cookbooks and the reference implementation show the steps, and
-            the adoption area says what to expect from each tool.
+            The areas are listed in the order in which the work is usually
+            done. The assessment identifies the gaps. Documentation, access,
+            and verification address them. The cookbooks and the reference
+            implementation give the steps. The adoption area describes the
+            installation test, the support boundaries, and the release
+            practice of each repository.
           </p>
         </div>
         <HubGrid hrefFor={(id) => `#${id}`} />
@@ -221,10 +222,9 @@ function AdoptSection({area, index}) {
               The installation test
             </Heading>
             <p className={styles.panelLede}>
-              The test of adoption readiness is that a team outside the
-              program can install a tool from its documentation. The record
-              of each test, passed or failed, improves the guide for the
-              next team.
+              A team outside the program installs a tool from its
+              documentation and records the result as an issue. The steps
+              are the same for every tool.
             </p>
             <ol className={styles.steps}>
               {INSTALL_TEST.map((s) => (

@@ -5,7 +5,7 @@ description: What a Model Context Protocol server over a statistical catalog ret
 
 # MCP for official statistics
 
-A Model Context Protocol (MCP) server over official statistics gives every MCP-compatible AI client the same tools: search the catalog, read a record's metadata, fetch values for a series with their unit, period, status, release, and source. The office maintains one server; the clients, from desktop assistants to custom agents, need no integration of their own.
+A Model Context Protocol (MCP) server over official statistics exposes a fixed set of tools to MCP clients: search of the catalog, the metadata of a record, and the values of a series with their unit, period, status, release, and source. The office maintains the server, and each client, from a desktop assistant to a custom agent, calls the same tools.
 
 ## Use cases for a statistical office
 

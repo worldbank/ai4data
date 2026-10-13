@@ -47,21 +47,21 @@ export const AREAS = [
     label: 'Assess',
     title: 'Readiness framework and diagnostics',
     summary:
-      'Where an organization stands on twelve dimensions of AI readiness, which gaps matter first, and how a readiness profile becomes a sequenced plan.',
+      'The assessment framework, its operational companion, and the cookbook that turns a readiness profile into an improvement pathway.',
   },
   {
     id: 'document',
     label: 'Document',
     title: 'Metadata standards, the Editor, and AI-assisted curation',
     summary:
-      'Standards-compliant documentation of indicators, microdata, geospatial data, and documents, with AI assistance for completeness and quality under curator review.',
+      'Documentation of indicators, microdata, geospatial data, and documents in the World Bank schemas, and AI-assisted review and enrichment under curator review.',
   },
   {
     id: 'connect',
     label: 'Connect',
     title: 'MCP and interoperable data access',
     summary:
-      'Access to official statistics by software and AI agents through stable files, APIs, and Model Context Protocol servers, with provenance in every response.',
+      'Access to official statistics by software and AI agents: files at stable addresses, APIs, and Model Context Protocol servers, with provenance in each response.',
   },
   {
     id: 'verify',
@@ -75,14 +75,14 @@ export const AREAS = [
     label: 'Implement',
     title: 'Cookbooks and the reference implementation',
     summary:
-      'Step-by-step guides with tested scripts, and one reproducible pipeline that runs documentation, validation, publication, agent access, and verification end to end.',
+      'The cookbooks with their tested scripts, and the reference implementation that runs documentation, validation, publication, agent access, and verification in one pipeline.',
   },
   {
     id: 'adopt',
     label: 'Adopt',
     title: 'Installation tests, support boundaries, and contribution',
     summary:
-      'What an adopting organization can expect from each tool, how to report an installation test, and where issues and contributions go.',
+      'The installation test, the support boundaries, the release practice of each repository, and where issues and contributions go.',
   },
 ];
 
@@ -476,7 +476,7 @@ export const TOOLS = [
     kind: 'Reproducible pipeline',
     status: 'reference',
     summary:
-      'One command that documents a set of series and a survey in the World Bank schemas, validates them against the pinned schemas and a completeness profile, publishes a catalog with schema.org records, serves it through an MCP server, composes an answer from the tool results, and verifies every number with the PCN engine.',
+      'A script that documents a set of series and a survey in the World Bank schemas, validates them against the pinned schemas and a completeness profile, publishes a catalog with schema.org records, serves it through an MCP server, composes an answer from the tool results, and verifies the numbers in the answer with the PCN engine.',
     stack: 'Python 3.10 or later; jsonschema, mcp, pcn-core',
     licence: 'MIT',
     docs: '/docs/reference-implementation/',
