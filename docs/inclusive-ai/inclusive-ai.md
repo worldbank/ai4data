@@ -77,3 +77,12 @@ The program's approach to inclusive AI is guided by:
 3. **Build for low-connectivity contexts** — Prefer offline-capable or cached components where possible.
 4. **Document for all levels** — Provide both technical documentation for engineers and accessible summaries for non-technical stakeholders.
 5. **Measure inclusion** — Track language coverage, country coverage, and cost profiles of deployed tools.
+
+---
+
+## Limitations
+
+- The model size table above is guidance from the program's own tasks. Each organization measures its tasks with its own evaluation suite before choosing a size; the [small and open models cookbook](/cookbook/small-and-open-models/) gives the comparison method.
+- Cost figures for batch processing are those the providers publish and change with their pricing.
+- Multilingual embedding models cover many languages unevenly, and coverage of a language in a model's training data is rarely documented. A question set in the organization's language is the only measure that holds.
+- Running models locally needs hardware and operations capacity that the [hardware chapter](/cookbook/small-and-open-models/serving) sizes.

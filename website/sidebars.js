@@ -78,12 +78,38 @@ const sidebars = {
     {
       type: 'category',
       label: 'Model Context Protocol (MCP)',
-      items: ['mcp/mcp'],
+      items: ['mcp/mcp', 'mcp/mcp-for-official-statistics'],
+    },
+    {
+      type: 'category',
+      label: 'Proof-Carrying Numbers',
+      items: ['pcn/index'],
     },
     {
       type: 'category',
       label: 'Efficient and Inclusive AI Applications',
       items: ['inclusive-ai/inclusive-ai'],
+    },
+
+    {
+      type: 'html',
+      value: '<div class="sidebarSectionLabel">Implementation</div>',
+      defaultStyle: true,
+    },
+    {
+      type: 'category',
+      label: 'Reference implementation',
+      items: ['reference-implementation/index'],
+    },
+    {
+      type: 'link',
+      label: 'Implementation hub',
+      href: '/hub',
+    },
+    {
+      type: 'link',
+      label: 'Tools catalogue',
+      href: '/tools',
     },
 
     {

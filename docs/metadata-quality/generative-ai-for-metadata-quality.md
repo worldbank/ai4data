@@ -40,7 +40,7 @@ LLMs can draft descriptive metadata fields—titles, descriptions, keyword tags,
 
 ### Semantic Alignment Assessment
 
-Embedding models can assess whether two metadata fields that should be semantically related actually are. For example, an indicator's **name** ("Poverty headcount ratio at $2.15 a day") and its **definition** (the full methodological description) should be semantically consistent. A mismatch—detectable by comparing embedding cosine similarity against a threshold—may indicate that the definition refers to a different poverty line, a different population, or has been incorrectly copied from another indicator.
+Embedding models can assess whether two metadata fields that should be semantically related are. For example, an indicator's **name** ("Poverty headcount ratio at $2.15 a day") and its **definition** (the full methodological description) should be semantically consistent. A mismatch—detectable by comparing embedding cosine similarity against a threshold—may indicate that the definition refers to a different poverty line, a different population, or has been incorrectly copied from another indicator.
 
 ### Controlled Vocabulary Standardization
 
@@ -121,3 +121,12 @@ Generative AI will not replace the need for human expertise in metadata manageme
 ---
 
 *This section is updated as new tools and case studies become available. Contributions and feedback are welcome.*
+
+---
+
+## Limitations
+
+- The workflow is a notebook, and there is no packaged command. Running it on a catalog means adapting the notebook to the catalog's fields.
+- Scores are model judgments. They are calibrated against a sample of curator scores before they are used to prioritize work, and the [assessment chapter](/cookbook/metadata-curation-with-llms/assess) of the curation cookbook gives the agreement measures.
+- The dimensions scored are those a model can judge from the record. Whether a definition is correct for the country or a source is the authoritative one needs a curator.
+- Status on the [tools catalogue](/tools#metadata-quality): method.

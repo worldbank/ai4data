@@ -108,7 +108,7 @@ For national statistical offices (NSOs) and international data organizations, MC
 
 1. **Discoverability at zero marginal cost.** Once a data catalog is published as an MCP server, it becomes queryable by any AI assistant that supports MCP—without additional integration work.
 2. **Provenance and trust.** MCP tools return structured data with metadata, so AI assistants can cite the specific indicator, source, and vintage in their responses—maintaining the traceability expected of official statistics.
-3. **Scalable AI integration.** Rather than negotiating separate integration agreements with each AI platform, a single MCP implementation serves all platforms simultaneously.
+3. **Scalable AI integration.** A single MCP implementation serves every platform that speaks the protocol, so the office negotiates no integration agreements per platform.
 4. **Standardized access control.** The MCP protocol supports authentication and authorization, allowing controlled access to restricted or embargoed datasets.
 
 See [MCP for Official Statistics](mcp-for-official-statistics.md) for use cases specific to NSOs and official data producers.
@@ -117,9 +117,23 @@ See [MCP for Official Statistics](mcp-for-official-statistics.md) for use cases 
 
 ## Getting Started
 
-The MCP ecosystem is growing rapidly. Key resources:
+**Servers and applications from the program**
 
-- [Model Context Protocol specification](https://modelcontextprotocol.io/) — Official protocol documentation
-- [Anthropic MCP announcement](https://www.anthropic.com/news/model-context-protocol) — Context and motivation
-- [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk) — For building MCP servers in Python
-- [Claude Desktop MCP support](https://www.anthropic.com/claude) — Test your server with Claude Desktop
+- [Data360 MCP server](https://github.com/worldbank/data360-mcp): in operation over the World Bank Data360 platform, with a public endpoint, versioned releases on PyPI, and setup guides for three MCP clients. Its status and known limits are on the [tools catalogue](/tools#data360-mcp).
+- [Data AI Chatbot](https://github.com/worldbank/data-ai-chatbot): a self-hostable chat application over any MCP server, with Proof-Carrying Numbers marks on the numbers in its answers.
+- [End-to-end reference implementation](../reference-implementation/index.md): a server over a published catalog, called through the protocol, with the answer verified against the tool results.
+- [Minimal example server](/cookbook/ai-ready-dissemination/retrieve) in the dissemination cookbook, and the full design in the [agents cookbook](/cookbook/serving-statistics-to-agents/).
+
+**Protocol resources**
+
+- [Model Context Protocol specification](https://modelcontextprotocol.io/): the protocol documentation, including its security guidance for authorization.
+- [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk): for building servers and clients in Python.
+
+---
+
+## Limitations
+
+- MCP standardizes how tools are discovered and called. It does not make a catalog complete or an API reliable; the server passes through what they hold, which the completeness and retrieval chapters of the [dissemination cookbook](/cookbook/ai-ready-dissemination/) address first.
+- The protocol carries authorization and the specification gives security guidance, but access control, quotas, and terms are decisions the office makes and enforces at the server. The [access chapter of the agents cookbook](/cookbook/serving-statistics-to-agents/access) gives the design.
+- A server returns data; the quality of an answer depends on the client's model and prompt. The [evaluation chapter](/cookbook/serving-statistics-to-agents/evaluate) measures it.
+- The specification is young and its transports and authorization flows have changed between versions. Servers pin an SDK version and state the protocol version they implement.

@@ -50,7 +50,7 @@ Combining dense and sparse retrieval—known as hybrid search—typically outper
 
 ## The @ai4data/search Package
 
-The [`@ai4data/search`](https://www.npmjs.com/package/@ai4data/search) JavaScript/TypeScript package provides a client-side semantic search library designed for development data portals and web applications.
+The `@ai4data/search` JavaScript/TypeScript package, in the [`packages/ai4data/search`](https://github.com/worldbank/ai4data/tree/main/packages/ai4data/search) folder of the repository, provides a client-side semantic search library designed for development data portals and web applications. It is not yet published to npm.
 
 Key features:
 
@@ -69,10 +69,11 @@ const results = await index.search("child mortality under 5", { topK: 10 });
 // Returns: [{ id, title, score, ... }, ...]
 ```
 
-Install:
+Install from the repository until the package is published:
 
 ```bash
-npm install @ai4data/search
+git clone https://github.com/worldbank/ai4data.git
+cd ai4data/packages/ai4data/search && npm install && npm run build
 ```
 
 ---
@@ -96,7 +97,7 @@ uv pip install ai4data[search]
 
 ## Fine-Tuning Embedding Models for Structured Metadata
 
-Catalogue search quality depends not only on the retrieval architecture above, but on how well the embedding model represents structured records. When metadata is a set of labeled fields rather than a single document, standard fine-tuning can make models sensitive to field order — a problem that surfaces when indexes are rebuilt or federated across systems that serialize records differently.
+Catalogue search quality depends not only on the retrieval architecture above, but on how well the embedding model represents structured records. When a metadata record is a set of labeled fields, standard fine-tuning can make models sensitive to field order, a problem that surfaces when indexes are rebuilt or federated across systems that serialize records differently.
 
 The [Fine-Tuning Embedding Models for Structured Metadata](embedding-fine-tuning.md) subsection documents a permutation-invariant fine-tuning (PI-FT) pipeline (Solatorio et al., 2026): a YAML-driven toolkit for generating training data, fine-tuning a small encoder, evaluating order robustness, and deploying search over structured catalogues.
 
@@ -112,3 +113,13 @@ An emerging dimension of data discoverability is making datasets accessible to A
 
 - Johnson, J., Douze, M., & Jégou, H. (2019). Billion-scale similarity search with GPUs. *IEEE Transactions on Big Data*, 7(3), 535–547.
 - Robertson, S., & Zaragoza, H. (2009). The probabilistic relevance framework: BM25 and beyond. *Foundations and Trends in Information Retrieval*, 3(4), 333–389.
+
+---
+
+## Limitations
+
+- Search by meaning depends on the records. A catalog with missing descriptions ranks poorly however good the embedding model, which is why the [findability chapter](/cookbook/ai-ready-dissemination/find) of the dissemination cookbook comes first.
+- Embedding models trained on English rank queries in other languages worse; multilingual models and fine-tuning on question sets in the organization's languages close part of the gap, and the [PI-FT toolkit](embedding-fine-tuning.md) gives the method.
+- The JavaScript search package lives in the repository and is not yet published to npm; install it from the repository.
+- Retrieval quality is measured with a question set the organization builds; the [evaluation cookbook](/cookbook/evaluation-suites/retrieval) gives the measures and their sample sizes.
+- Status on the [tools catalogue](/tools#semantic-search): prototype.

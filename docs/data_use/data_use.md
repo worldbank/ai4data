@@ -2,7 +2,7 @@
 
 ## Overview
 
-Understanding how development data is actually used—in research, policy documents, program evaluations, and news reporting—is essential for measuring the impact of data programs and for prioritizing future data investments. The Data Use Monitoring workstream applies natural language processing (NLP) to extract and track **mentions of specific datasets** from large document collections.
+Understanding how development data is used, in research, policy documents, program evaluations, and news reporting, is essential for measuring the impact of data programs and for prioritizing future data investments. The Data Use Monitoring workstream applies natural language processing (NLP) to extract and track **mentions of specific datasets** from large document collections.
 
 When a policy report cites the World Development Indicators, a research paper uses DHS survey data, or a government document references a national statistical publication, these references constitute evidence of data use. Systematically extracting and cataloging such references provides insight into which datasets have the most influence, where data gaps exist, and how data quality improvements translate into downstream impact.
 
@@ -116,3 +116,13 @@ Optional harmonization (adds sentence-transformers for semantic matching):
 ```bash
 uv pip install ai4data[harmonization]
 ```
+
+---
+
+## Limitations
+
+- Recall on informal mentions is lower than on formal citations with identifiers. The [monitoring cookbook](/cookbook/monitoring-data-use/) combines citation services, access counts, and mention extraction so that each covers what the others miss.
+- Harmonization needs a dictionary of the organization's dataset names and their variants; without it, mentions are extracted and left unmapped.
+- The extractor reads text. Mentions inside figures, scanned pages without OCR, and tables rendered as images are missed.
+- A mention shows that a dataset was used. Whether the cited figure is current is a separate check.
+- Status on the [tools catalogue](/tools#data-use): prototype.

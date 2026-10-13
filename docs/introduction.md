@@ -1,92 +1,52 @@
 # Introduction
 
-**AI for Data – Data for AI** is a work program under the World Bank's Development Data Group and Office of the Chief Statistician, focused on advancing the use of artificial intelligence (AI) across the development data lifecycle. The program's dual mission is to apply AI to improve data (AI for Data), and to ensure data is optimally structured and documented for AI consumption (Data for AI).
+**AI for Data – Data for AI** is a work program of the World Bank's Development Data Group and Office of the Chief Statistician. It applies AI to the production, curation, and dissemination of development data, and it prepares development data for use by AI systems. Its methods, software, and guidance are published as open resources.
 
----
+## Why the program exists
 
-## The Challenge
+People increasingly put questions about poverty, employment, climate, and food security to AI systems. Whether the answers draw on official statistics depends on whether an AI system can find the data, interpret what a number means, retrieve the authoritative value, and show where it came from. When it cannot, the system falls back on secondary sources that may be outdated or wrong, and official statistics lose influence while remaining the most trusted evidence.
 
-The world produces more data than ever before—yet the gap between available data and actionable insight remains stubbornly wide in development contexts. The World Bank's World Development Indicators (WDI) database alone contains over 1,400 indicators across 217 economies with annual and multi-year time series, while the Microdata Library catalogs thousands of household surveys, censuses, and administrative datasets from low- and middle-income countries. Maintaining the quality, discoverability, and usability of this data is a major institutional challenge.
+Four gaps recur across data producers:
 
-The scale of the problem means that traditional, manual approaches are no longer sufficient. A single metadata curator cannot review thousands of indicator descriptions for accuracy and consistency. A statistical team cannot manually investigate every anomaly flagged in a monitoring dataset. A researcher cannot exhaustively search across fragmented catalogs to find the most relevant data for a policy question.
+- **Metadata is incomplete or inconsistent.** A dataset with a vague title, missing keywords, or a definition that does not match its name does not appear in a search for what it measures.
+- **Context is thin.** Units, classifications, breaks in series, and revisions are often absent from the machine-readable record, so a number is easy to misread.
+- **Data are hard for software to reach.** Many statistics are published in PDF tables and spreadsheets, and where an API exists, each organization has its own.
+- **Answers cannot be traced.** A figure in a generated answer rarely links to the record it came from, so a wrong or outdated value goes unnoticed.
 
-AI offers a path forward—not to replace expert judgment, but to augment it: automating the routine, scaling the expert, and surfacing what matters most for human decision-making.
+The program's position follows the UN Fundamental Principles of Official Statistics: AI supports statistical systems and does not replace them, and a person remains responsible for what an organization publishes.
 
----
+## Three pillars
 
-## Our Approach
+**AI for Data.** AI applied inside the statistical process, under human review: assessment and enrichment of metadata, thematic organization of data dictionaries, detection and explanation of anomalies in time series, extraction of data from documents, search by meaning over catalogs, monitoring of how datasets are used, and verification of the numbers in generated text.
 
-AI for Data – Data for AI brings together expertise, methodologies, and tools to address persistent challenges in data quality, usability, and impact. By strategically integrating AI, the program seeks to make development data more accessible, discoverable, and actionable—especially for users and contexts that have historically been underserved—while improving the efficiency of data curation and production for teams with limited resources.
+**Data for AI.** Development data made usable by AI systems through open standards and infrastructure: the World Bank metadata schemas, the Metadata Editor and the NADA catalog, Model Context Protocol servers over official statistics, and the question-level and concept-level metadata that let a system resolve what a term refers to.
 
-### AI for Data
+**Country capacity.** An assessment framework that scores a national statistical organization on twelve dimensions of AI readiness, an operational companion that maps each dimension to tools and recipes, and a cookbook series that gives the steps.
 
-AI for Data involves applying AI techniques to:
+The [AI-ready data framework](ai-ready-framework.md) defines the attributes of AI-ready data under FAIR and shows which workstream serves each. The [mapping to the GSBPM](gsbpm-mapping.md) places each workstream in the statistical production process.
 
-- **Enhance metadata quality and consistency** — Using LLMs to assess, generate, and enrich metadata fields such as titles, definitions, keywords, and thematic tags.
-- **Improve data discoverability and dissemination** — Building semantic search systems that understand natural language queries and return the most relevant datasets, going beyond simple keyword matching.
-- **Monitor and analyze data use** — Extracting mentions of specific datasets from publications, policy documents, and reports to understand how development data influences research and decisions.
-- **Detect and explain data anomalies** — Combining statistical anomaly detection with LLM-based explanation to flag and categorize unusual patterns in timeseries indicators, supporting data quality assurance at scale.
-- **Optimize user experience** — Integrating AI assistance into data portals, documentation tools, and APIs to help users find, understand, and use data more effectively.
+## Where to go
 
-These activities drive improvements and efficiencies throughout the data lifecycle—from curation and validation to dissemination and real-world impact monitoring.
-
-### Data for AI
-
-Data for AI focuses on making development data **AI-ready**. This means structuring, documenting, and sharing indicators, microdata, and other datasets so they can be reliably consumed, analyzed, and acted upon by AI systems. The program supports adoption of standards and best practices that enable AI models and tools to be built, evaluated, and deployed responsibly for development impact.
-
-Key activities include:
-
-- **Structured metadata standards** — Ensuring metadata conforms to machine-readable schemas that AI systems can reliably parse and interpret.
-- **Model Context Protocol (MCP) integration** — Publishing datasets as MCP-compatible resources so AI assistants can query them directly without bespoke integrations.
-- **AI-ready microdata** — Augmenting microdata catalogs with AI-generated thematic structure, enabling LLMs to navigate and reason over survey variables effectively.
-
----
-
-## What We Do
-
-Through a set of flagship workstreams, the program demonstrates practical, scalable applications of AI in development data:
-
-| Workstream | What it does |
+| Need | Start at |
 |---|---|
-| **Generative AI for Metadata Quality** | LLMs assess and improve metadata completeness, consistency, and semantic alignment across indicator catalogs |
-| **Metadata Augmentation** | Automated thematic tagging and enrichment of microdata data dictionaries using semantic clustering and LLMs |
-| **Anomaly Detection and Explanation** | Statistical detection combined with LLM elicitation to classify and explain unusual patterns in timeseries data |
-| **Data Discoverability** | Semantic search systems enabling natural language queries over development datasets |
-| **Data Use Monitoring** | Extraction of dataset mentions from documents to track the evidence base and policy influence of development data |
-| **Model Context Protocol** | Enabling AI assistants to query official statistics directly via an open standard |
-| **Inclusive AI Applications** | Approaches to extend AI benefits to low-resource contexts and languages |
+| An overview of the tools, guides, and cookbooks by what an organization does with them | The [implementation hub](/hub) |
+| The status, stack, licence, installation guide, and known limits of each tool | The [tools catalogue](/tools) |
+| A score for an organization on twelve dimensions of AI readiness | The [assessment framework](/ai-readiness-assessment) |
+| What to do about a dimension with a low score | The [operational companion](/ai-readiness-in-practice) |
+| Step-by-step guides with tested scripts | The [cookbooks](/cookbook/) |
+| One run that documents, validates, publishes, serves, and verifies | The [end-to-end reference implementation](reference-implementation/index.md) |
+| The method behind one workstream | The workstream pages in the sidebar |
 
-We also foster partnerships within the World Bank and across the global development and AI communities, supporting open-source standards, responsible AI adoption, and capacity building.
+## How this documentation is organized
 
----
+The pages in the **Workstreams** section describe one method each: the problem it addresses, how it works, how to run it, and its limits. Each opens with a summary that needs no technical background. The **Metadata Reviewer** section is the user manual of one tool. The **Implementation** section holds the reference implementation and the pages on Proof-Carrying Numbers and MCP that the hub links to.
 
-## How to Use This Documentation
+For data scientists and engineers, the pipeline pages, the notebooks, and the reference implementation give the code. For curators and data producers, the metadata pages and the cookbooks on documentation and curation give the procedures. For managers, the introduction, the assessment framework, and the governance cookbook give the decisions.
 
-This documentation is organized by workstream and audience:
+## Status of the work
 
-**For data scientists and engineers:** The pipeline chapters, code references, and notebooks provide technical depth. Start with the [Anomaly Detection](anomaly-detection/anomaly-detection.md) or [Metadata Augmentation](metadata-augmentation/index.md) sections, which include step-by-step implementation guides.
+Every tool on the [tools catalogue](/tools) carries one of five statuses, from in operation to in development, with the evidence behind it and the date it was checked. The status describes the software. It makes no claim about adoption outside the World Bank, which the [adoption area of the hub](/hub#adopt) addresses with an installation test any team can run and record.
 
-**For economists and data analysts:** The methodology summaries and motivation sections explain what each tool does and why, without requiring deep technical background. The [Motivation](anomaly/explanation/motivation.md) chapter is a good starting point for understanding LLM-based quality assurance.
+## Contributing and contact
 
-**For data curators and producers:** The [Metadata Quality](metadata-quality/generative-ai-for-metadata-quality.md) and [Augmentation](metadata-augmentation/index.md) sections describe tools that reduce manual effort in metadata management. The [Feedback System](anomaly-detection/feedback-system.md) explains how human review is integrated into AI pipelines.
-
-**For decision-makers and program managers:** The introduction (this page) and workstream overviews provide high-level context. Each section opens with a non-technical summary before going into technical detail.
-
----
-
-## Our Vision
-
-By aligning technical innovation with the principles of openness, quality, and inclusion, **AI for Data – Data for AI** is building a future where development data is easier to find, more meaningful, and more empowering for everyone. AI is not a replacement for the expertise, integrity, and contextual knowledge that define good statistical practice—it is a force multiplier for that expertise, allowing it to reach further, scale higher, and impact more.
-
-## Practical guides
-
-The program publishes its methods as a series of cookbooks for national
-statistical organizations, each organized around the questions a team
-asks and written with recipes, scripts, and a running example. The
-[cookbook landing page](/cookbook/) lists the eleven guides and reading
-paths by role. The [AI-readiness assessment](/ai-readiness-assessment)
-places an organization on twelve dimensions, the
-[operationalizing page](/ai-readiness-in-practice) maps each dimension
-to the recipes that address it, and
-[A modern statistical office](/modern-nso) shows what the destination
-looks like at three maturity levels.
+Issues and contributions go to the [ai4data repository](https://github.com/worldbank/ai4data) and to the repository of each tool. Organizations planning an adoption or a joint implementation can write to the Development Data Group at [ai4data@worldbank.org](mailto:ai4data@worldbank.org).

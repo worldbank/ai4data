@@ -163,7 +163,7 @@ from ai4data.metadata.reviewer import MetadataReviewerClient
 client = MetadataReviewerClient(model_client=your_model_client)
 ```
 
-Any object that conforms to AutoGen's `ChatCompletionClient` interface works. For example, using `AzureOpenAIChatCompletionClient` with a static token instead of a token provider:
+Any object that conforms to AutoGen's `ChatCompletionClient` interface works. For example, using `AzureOpenAIChatCompletionClient` with a static token in place of a token provider:
 
 ```python
 from autogen_ext.models.openai import AzureOpenAIChatCompletionClient
@@ -180,5 +180,12 @@ model_client = AzureOpenAIChatCompletionClient(
 client = MetadataReviewerClient(model_client=model_client)
 ```
 
+---
 
+## Limitations
 
+- The pipeline detects and proposes. Every suggestion needs a curator decision, and the package writes nothing to a catalog; the [metadata curation cookbook](/cookbook/metadata-curation-with-llms/review) gives the review procedure and the decision log.
+- Results depend on the model behind the agents. The same record reviewed with two providers, or with two versions of one model, yields different issue lists, so a calibration sample against curator judgments precedes use on a catalog.
+- The agents read the record they are given. Errors that need outside knowledge, such as a definition that is wrong for the country, are found only when that knowledge is in the record or the prompt.
+- The review board is a standalone HTML prototype shipped beside the package; it reads the pipeline's export and keeps no server-side state.
+- Status on the [tools catalogue](/tools#metadata-reviewer): prototype.

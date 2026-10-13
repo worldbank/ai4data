@@ -51,11 +51,11 @@ The generated variable groups and curated variable assignments are assembled int
 
 **Why clustering before LLM?** Sending all variables to the LLM at once would exceed context limits for large dictionaries and produce poor theme quality (too broad, too generic). Clustering first ensures that each LLM call receives a semantically coherent subset of variables that can be meaningfully summarized in 2–6 words.
 
-**Why sentence-transformers instead of INSTRUCTOR?** Modern general-purpose embedding models (`bge-small`, `MiniLM`) achieve competitive semantic similarity performance on short text (variable labels) without requiring task-specific instruction prefixes. They are also faster, lighter, and easier to deploy. INSTRUCTOR models were used in earlier iterations of this work (in the `llm4data` project) but are no longer necessary.
+**Why general-purpose sentence-transformer models?** Modern general-purpose embedding models (`bge-small`, `MiniLM`) achieve competitive semantic similarity performance on short text (variable labels) without requiring task-specific instruction prefixes. They are also faster, lighter, and easier to deploy. INSTRUCTOR models were used in earlier iterations of this work (in the `llm4data` project) but are no longer necessary.
 
 **Why Ward linkage?** Ward linkage minimizes within-cluster variance, producing compact, well-separated clusters that are semantically coherent. Unlike k-means, it is deterministic and does not require centroid initialization. For semantic embeddings, it consistently outperforms average and complete linkage in producing interpretable clusters.
 
-**Why LLM elicitation rather than cluster labeling heuristics?** Heuristic approaches (e.g., using the most frequent word in a cluster's variable labels) produce labels that are often too technical, too generic, or not meaningful to non-specialist users. LLMs can generate human-readable theme names that accurately reflect the cluster's conceptual content.
+**Why LLM elicitation for group labels?** Heuristic approaches (e.g., using the most frequent word in a cluster's variable labels) produce labels that are often too technical, too generic, or not meaningful to non-specialist users. LLMs can generate human-readable theme names that accurately reflect the cluster's conceptual content.
 
 ---
 
@@ -131,3 +131,13 @@ uv pip install ai4data[metadata]
 
 Requirements: Python ≥ 3.11, sentence-transformers, scikit-learn, litellm, pydantic.
 An API key for your chosen LLM provider must be set as an environment variable (e.g., `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`).
+
+---
+
+## Limitations
+
+- Groups that fail the self-consistency check are kept in the output and flagged, so every output needs review before it enters a catalog.
+- Cluster counts and group quality vary with the embedding model, the dictionary language, and the length of variable labels; short or coded labels cluster poorly without question text.
+- The pipeline proposes variable groups. It does not change variable labels, concepts, or classifications, which the [microdata documentation cookbook](/cookbook/microdata-documentation/concepts) covers.
+- An API key for a model provider is required, or a local model served through a compatible endpoint.
+- Status on the [tools catalogue](/tools#metadata-augmentation): prototype.

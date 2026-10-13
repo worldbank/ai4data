@@ -112,3 +112,13 @@ See the [methodology handbook](../anomaly/explanation/index.md) and the [step-by
 - [Elicitation Pipeline](../anomaly/explanation/elicitation-pipeline.md) — Detailed pipeline, schema reference, code examples
 - [Reviewer Feedback System](feedback-system.md) — Collecting and using reviewer feedback
 - [Timeseries Anomaly Explanation with LLMs](../notebooks/data-anomaly/timeseries-anomaly-explanation-with-llms.md) — Step-by-step implementation notebook
+
+---
+
+## Limitations
+
+- An explanation is a hypothesis with cited evidence. The reviewer decides whether the value is an error, an event, or a revision, and the feedback export is the record of the decision.
+- Evidence quality depends on what the model can retrieve for a country, an indicator, and a period. Sparse contexts produce low-confidence explanations, and the confidence score is the model's own.
+- Detection is outside the package: the pipeline takes anomaly scores from any detector in the canonical format. The choice of detector and threshold decides what is flagged.
+- Batch runs through the providers' asynchronous APIs take hours for large sets, and the pipeline needs an API key for a hosted provider or a local model served through a compatible endpoint.
+- Status on the [tools catalogue](/tools#anomaly): prototype.
