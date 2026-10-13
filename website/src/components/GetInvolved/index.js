@@ -14,6 +14,11 @@ const Cards = [
     to: '/docs/introduction',
   },
   {
+    title: 'Adoption',
+    body: 'Tool statuses, the installation test, and support boundaries.',
+    to: '/hub#adopt',
+  },
+  {
     title: 'Contact',
     body: 'Contact the Development Data Group.',
     to: 'mailto:ai4data@worldbank.org',

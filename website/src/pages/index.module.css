@@ -210,3 +210,42 @@
     display: none;
   }
 }
+
+/* ---------- Implementation hub ---------- */
+
+.hub {
+  padding: 4rem 0 3.5rem;
+  border-top: 1px solid var(--hairline);
+}
+
+.hubHead {
+  max-width: 44rem;
+  margin-bottom: 1.75rem;
+}
+
+.hubTitle {
+  font-size: 1.9rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0.6rem 0 0.6rem;
+}
+
+.hubLede {
+  color: var(--ink-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.hubLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin: 1.25rem 0 0;
+  font-weight: 600;
+}
+
+@media screen and (max-width: 560px) {
+  .hub {
+    padding: 2.75rem 0 2.5rem;
+  }
+}

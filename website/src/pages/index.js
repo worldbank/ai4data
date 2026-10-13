@@ -10,6 +10,7 @@ import ScrollDemo from "@site/src/components/ScrollDemo";
 import HeroVisual from "@site/src/components/HeroVisual";
 import CookbookCta from "@site/src/components/CookbookCta";
 import GetInvolved from "@site/src/components/GetInvolved";
+import HubGrid from "@site/src/components/HubGrid";
 
 import styles from "./index.module.css";
 
@@ -53,15 +54,15 @@ function HomepageHeader() {
             <div className={styles.buttons}>
               <Link
                 className={clsx("button button--lg", styles.primaryButton)}
-                to="/docs/introduction"
+                to="/hub"
               >
-                Documentation
+                Implementation hub
               </Link>
               <Link
                 className={clsx("button button--lg", styles.secondaryButton)}
-                to="https://github.com/worldbank/ai4data"
+                to="/docs/introduction"
               >
-                GitHub repository
+                Documentation
               </Link>
             </div>
           </div>
@@ -71,6 +72,33 @@ function HomepageHeader() {
         </div>
       </div>
     </header>
+  );
+}
+
+function HubSection() {
+  return (
+    <section className={styles.hub}>
+      <div className="container">
+        <div className={styles.hubHead}>
+          <span className="eyebrow">Implementation hub</span>
+          <Heading as="h2" className={styles.hubTitle}>
+            AI readiness in practice
+          </Heading>
+          <p className={styles.hubLede}>
+            The program&apos;s tools, guides, and cookbooks in one place,
+            organized by what an organization does with them. Each tool
+            states its status: in operation, deployable, prototype, or
+            method.
+          </p>
+        </div>
+        <HubGrid compact headingLevel="h3" />
+        <p className={styles.hubLinks}>
+          <Link to="/hub">The hub →</Link>
+          <Link to="/tools">Tools catalogue →</Link>
+          <Link to="/docs/reference-implementation/">Reference implementation →</Link>
+        </p>
+      </div>
+    </section>
   );
 }
 
@@ -110,6 +138,7 @@ export default function Home() {
       <HomepageHeader />
       <main>
         <Challenge />
+        <HubSection />
         <ScrollDemo />
         <Program />
         <CookbookCta />

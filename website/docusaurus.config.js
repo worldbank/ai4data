@@ -121,6 +121,26 @@ const config = {
         },
         items: [
           {
+            type: 'dropdown',
+            label: 'Hub',
+            position: 'left',
+            to: '/hub',
+            items: [
+              {to: '/hub', label: 'AI readiness in practice'},
+              {to: '/hub#assess', label: 'Assess'},
+              {to: '/hub#document', label: 'Document'},
+              {to: '/hub#connect', label: 'Connect'},
+              {to: '/hub#verify', label: 'Verify'},
+              {to: '/hub#implement', label: 'Implement'},
+              {to: '/hub#adopt', label: 'Adopt'},
+            ],
+          },
+          {
+            to: '/tools',
+            label: 'Tools',
+            position: 'left',
+          },
+          {
             to: '/cookbook/',
             label: 'Cookbook',
             position: 'left',
@@ -152,6 +172,9 @@ const config = {
       footer: {
         style: 'dark',
         links: [
+          {label: 'Implementation hub', to: '/hub'},
+          {label: 'Tools', to: '/tools'},
+          {label: 'Reference implementation', to: '/docs/reference-implementation/'},
           {label: 'Cookbook', to: '/cookbook/'},
           {label: 'Introduction', to: '/docs/introduction'},
           {label: 'Partnerships', to: '/docs/partnerships/'},
