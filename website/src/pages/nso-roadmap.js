@@ -4,7 +4,7 @@ import Head from '@docusaurus/Head';
 import Link from '@docusaurus/Link';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
-import {AREAS, CATEGORIES, EXCLUDED, LEVELS, PHASES, RISKS, ROLES} from '@site/src/content/nsoRoadmap';
+import {AREAS, CATEGORIES, EXCLUDED, GATES, LEVELS, PHASES, RISKS, ROLES} from '@site/src/content/nsoRoadmap';
 import styles from './nso-roadmap.module.css';
 
 const LEVEL_BY_ID = Object.fromEntries(LEVELS.map((l) => [l.id, l]));
@@ -57,6 +57,9 @@ function Hero({counts}) {
           </Link>
           <Link className={clsx('button button--md', styles.secondary)} to="#expansions">
             Expansion opportunities
+          </Link>
+          <Link className={clsx('button button--md', styles.secondary)} to="#gates">
+            Readiness gates
           </Link>
           <Link className={clsx('button button--md', styles.secondary)} to="/ai-readiness-in-practice">
             Operational companion
@@ -122,7 +125,7 @@ function Scope() {
             </Heading>
             <ul className={styles.list}>
               <li>The assessment framework that gives the project its components and its results indicators.</li>
-              <li>Open-source tools and reference implementations: the Metadata Editor, NADA, the MCP server, Proof-Carrying Numbers, anomaly detection, and the PI-FT toolkit.</li>
+              <li>Open-source tools at the status stated on the <Link to="/tools">tools page</Link>: the Metadata Editor, NADA, the Data360 MCP server, the chat application, Proof-Carrying Numbers, anomaly detection, the PI-FT toolkit, and the end-to-end reference implementation.</li>
               <li>The cookbook series as the method and the training material of each component.</li>
               <li>Advisory work during assessment, design, and the phase gates.</li>
               <li>Shared resources that the office joins at the end: the Global Question Bank, evaluation suites, and a peer network of offices.</li>
@@ -195,6 +198,67 @@ function Phases() {
             </li>
           ))}
         </ol>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- Readiness gates ---------- */
+
+function Gates() {
+  return (
+    <section className={styles.section} id="gates">
+      <div className="container">
+        <div className={styles.head}>
+          <span className="eyebrow">External adoption</span>
+          <Heading as="h2" className={styles.title}>
+            Readiness gates for inviting other institutions
+          </Heading>
+          <p className={styles.lede}>
+            Three gates separate showing the tools from asking another
+            institution to adopt them, and adoption from presenting an
+            implementation. Each gate is a set of conditions with the
+            evidence that shows it is met. The gates carry no dates; the
+            program passes one when its conditions hold.
+          </p>
+        </div>
+        <ol className={styles.phases}>
+          {GATES.map((g) => (
+            <li key={g.id} className={styles.phase} id={`gate-${g.n}`}>
+              <div className={styles.phaseHead}>
+                <span className={styles.phaseN}>{g.n}</span>
+                <Heading as="h3" className={styles.phaseTitle}>
+                  {g.title}
+                </Heading>
+              </div>
+              <p className={styles.gate}>{g.sufficient}</p>
+              <p className={styles.phaseSummary}>{g.summary}</p>
+              <Heading as="h4" className={styles.blockTitle}>
+                Conditions
+              </Heading>
+              <ul className={styles.list}>
+                {g.conditions.map((t) => (
+                  <li key={t}>{t}</li>
+                ))}
+              </ul>
+              <Heading as="h4" className={styles.blockTitle}>
+                Evidence
+              </Heading>
+              <ul className={styles.list}>
+                {g.evidence.map((t) => (
+                  <li key={t}>{t}</li>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ol>
+        <p className={styles.note}>
+          A tool can pass the second gate while its country adoption is still
+          at a pilot stage, and a pilot can succeed in one country without
+          showing that another institution can deploy the tool alone. The
+          gates keep the two claims apart. The status of each tool against
+          the first two gates is on the <Link to="/tools">tools page</Link>.
+        </p>
       </div>
     </section>
   );
@@ -576,6 +640,7 @@ export default function NsoRoadmap() {
       <main>
         <Scope />
         <Phases />
+        <Gates />
         <Areas selected={selected} onPick={pick} />
         <Expansions />
         <Roles />

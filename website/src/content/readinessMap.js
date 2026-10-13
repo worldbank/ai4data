@@ -35,7 +35,7 @@ export const resources = {
     title: 'NADA catalog',
     to: 'https://nada.ihsn.org/',
     kind: 'tools',
-    note: 'schema.org on every page, keyword and semantic search, REST API, MCP interface, managed access',
+    note: 'Catalog pages with schema.org markup, search, a catalog administration REST API, managed access; MCP access in development',
   },
   metadataQuality: {
     title: 'Generative AI for Metadata Quality',
@@ -105,9 +105,27 @@ export const resources = {
   },
   pcn: {
     title: 'Proof-Carrying Numbers',
-    to: 'https://arxiv.org/abs/2509.06902',
-    kind: 'methods',
-    note: 'Each number in a generated answer is verified against the record or flagged',
+    to: '/docs/pcn/',
+    kind: 'tools',
+    note: 'Each number in a generated answer is verified against the record it cites or flagged; packages built from the repository',
+  },
+  chatbot: {
+    title: 'Data AI Chatbot',
+    to: 'https://github.com/worldbank/data-ai-chatbot',
+    kind: 'reference',
+    note: 'Self-hostable chat application over any MCP server with PCN marks on numbers; the World Bank runs Data360 Chat on it',
+  },
+  referenceImpl: {
+    title: 'End-to-end reference implementation',
+    to: '/docs/reference-implementation/',
+    kind: 'reference',
+    note: 'Documentation, validation, publication, MCP access, and number verification in one tested run',
+  },
+  toolsCatalogue: {
+    title: 'Tools catalogue',
+    to: '/tools',
+    kind: 'guidance',
+    note: 'Every tool with its status, operator, installation guide, and known limits',
   },
   dataUse: {
     title: 'Monitoring of Data Use',
@@ -551,7 +569,7 @@ export const dimensions = [
     short: 'Agent access',
     coverage: 'direct',
     summary:
-      'The program\'s work is concentrated in this dimension: MCP design for official statistics with two servers in operation (Data360 and NADA), grounded answers with every number verified (Proof-Carrying Numbers), evaluation of retrieval and answers, synthetic data for sharing, ML-ready datasets with Croissant records and dataset cards, and small and agentic models for statistical tasks. The cookbook sequences these so that a conversational interface follows findability, retrieval, meaning, and trust.',
+      'The program\'s work is concentrated in this dimension: MCP design for official statistics with the Data360 MCP server in operation and MCP access to NADA catalogs in development, grounded answers with every number verified against its record (Proof-Carrying Numbers), evaluation of retrieval and answers, synthetic data for sharing, ML-ready datasets with Croissant records and dataset cards, and small and agentic models for statistical tasks. The cookbook sequences these so that a conversational interface follows findability, retrieval, meaning, and trust.',
     questions: [
       {id: '2.5.1', topic: 'Generative AI for dissemination', covered: true},
       {id: '2.5.2', topic: 'Model Context Protocol adoption', covered: true},
@@ -560,7 +578,7 @@ export const dimensions = [
       {id: '2.5.5', topic: 'Synthetic data generation and publication', covered: true},
     ],
     support: {tools: 2, methods: 2, recipes: 2, reference: 2, guidance: 2},
-    resources: ['mcpDocs', 'data360Mcp', 'nada', 'pcn', 'synthetic', 'smallAgentic', 'inclusive', 'dataSnapshots'],
+    resources: ['mcpDocs', 'data360Mcp', 'chatbot', 'referenceImpl', 'nada', 'pcn', 'synthetic', 'smallAgentic', 'inclusive', 'dataSnapshots'],
     cookbook: [
       {to: `${CB}retrieve`, label: 'Chapter 2, recipe 2.3: wrap the API as an MCP server (runs on mcp 1.x and 2.x)'},
       {to: `${CB}ask`, label: 'Chapter 4: answer from retrieved records only; monthly review of answers'},

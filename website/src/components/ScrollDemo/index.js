@@ -92,9 +92,11 @@ const Stops = [
         flagged, and numbers without a tag receive no mark.
       </p>
     ),
+    caveat:
+      'A check mark means the number matches the record it cites under the stated policy. It does not say whether the record, the method behind it, or the interpretation is right.',
     link: {
-      to: 'https://arxiv.org/abs/2509.06902',
-      label: 'Proof-Carrying Numbers paper',
+      to: '/docs/pcn/',
+      label: 'Proof-Carrying Numbers',
     },
     Evidence: PcnEvidence,
   },
@@ -222,6 +224,7 @@ export default function ScrollDemo() {
                         {stop.title}
                       </Heading>
                       {stop.body}
+                      {stop.caveat && <p className={styles.stopCaveat}>{stop.caveat}</p>}
                       <div className={styles.stopEvidenceMobile}>
                         <StopEvidence />
                       </div>

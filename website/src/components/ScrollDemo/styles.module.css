@@ -2195,3 +2195,14 @@
     min-height: 2.5rem;
   }
 }
+
+.stopCaveat {
+  margin: 0 0 1rem;
+  padding: 0.7rem 0.9rem;
+  border-left: 3px solid var(--primary);
+  background: var(--surface-1);
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  border-radius: 0 var(--radius) var(--radius) 0;
+}

@@ -96,7 +96,7 @@ export const PHASES = [
       'The second training cycle, which covers model operation, evaluation, and review.',
     ],
     program: [
-      'Reference implementations of the MCP server, Proof-Carrying Numbers, semantic search, and anomaly detection.',
+      'The Data360 MCP server, the Proof-Carrying Numbers packages, the end-to-end reference implementation, semantic search, and anomaly detection, at the status stated on the tools page.',
       'The evaluation suite method and the question sets of the cookbook.',
       'The small and open models guidance for sizing and serving a local model.',
       'Adaptation of models and retrieval to the office\'s languages and records.',
@@ -118,6 +118,68 @@ export const PHASES = [
       'The data-use monitoring method and its reports.',
       'The statement of model use and the governance recipes of the cookbook.',
       'Shared resources that the office joins: the Global Question Bank, evaluation suites, and the peer network of offices.',
+    ],
+  },
+];
+
+// Gates for inviting other institutions to adopt the tools. No dates: a gate
+// is passed when its conditions hold, and the evidence is what shows it.
+export const GATES = [
+  {
+    id: 'demonstrate',
+    n: '1',
+    title: 'Ready to demonstrate',
+    sufficient: 'Sufficient for: a technical exchange with other institutions, with a live walkthrough of the tools.',
+    summary:
+      'The services in operation are stable enough for a walkthrough on live systems, the documentation is public, the known limits of each tool are stated, and the path from an assessment to the tools is explained on one page.',
+    conditions: [
+      'Every tool on the tools page has a status with evidence, an owner repository, and a known-limits list.',
+      'The services in operation have run without an unplanned outage during the preceding review period, as the operator records it.',
+      'The end-to-end reference implementation runs from a clean checkout in CI.',
+      'The implementation hub explains the areas and the order of the work without reference to internal documents.',
+    ],
+    evidence: [
+      'The tools page with its checked dates.',
+      'The CI run of the reference implementation and the cookbook scripts.',
+      'The operator\'s availability record for the services in operation.',
+    ],
+  },
+  {
+    id: 'adopt',
+    n: '2',
+    title: 'Ready for external adoption',
+    sufficient: 'Sufficient for: inviting an institution to become a technical early adopter of a named tool.',
+    summary:
+      'A technical team outside the program has installed or integrated the tool in its own environment from the documentation, run the acceptance tests, and operated it without engineering support from the program beyond answers on the issue tracker.',
+    conditions: [
+      'At least one installation test by an outside team is recorded as an issue, passed or failed, and every blocker it found is fixed or documented.',
+      'The tool has versioned releases with a documented rollback, or a pinned commit with the same effect.',
+      'The tool has a user guide, an installation guide, and a description of its API where it has one.',
+      'Security notes for the deployment exist: what the tool stores, what it sends to a provider, and what access control the adopter must add.',
+    ],
+    evidence: [
+      'The installation test issues, with elapsed time, platform, and blockers.',
+      'The release page or the pinned commit named in the installation guide.',
+      'The deployment and security pages of the tool\'s documentation.',
+    ],
+  },
+  {
+    id: 'showcase',
+    n: '3',
+    title: 'Ready to showcase an implementation',
+    sufficient: 'Sufficient for: presenting the program as a tested approach, with an implementation and a collaboration behind it.',
+    summary:
+      'At least one organization has implemented the recipes and the tools in its own operations with documented results, and at least one institutional collaboration has moved to a technical assessment, an integration test, or an agreed implementation plan.',
+    conditions: [
+      'An implementation with named operational outcomes: records documented, products served, answers verified, with the figures the organization agrees to publish.',
+      'A re-assessment on the framework, compared with the baseline, with the evidence rows that support each changed score.',
+      'Lessons written for the next organization: what the guides lacked, what took longest, what the organization changed in the tools.',
+      'A collaboration with another institution recorded as a plan, a test, or an assessment, with the institution named in the record.',
+    ],
+    evidence: [
+      'The implementation case, published with the organization\'s agreement and nothing it has not approved.',
+      'The two readiness profiles and the evidence register.',
+      'The collaboration record.',
     ],
   },
 ];

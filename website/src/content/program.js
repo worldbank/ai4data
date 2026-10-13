@@ -66,7 +66,7 @@ export const workstreams = {
   },
   pcn: {
     title: 'Proof-Carrying Numbers',
-    to: 'https://arxiv.org/abs/2509.06902',
+    to: '/docs/pcn/',
     description:
       'Checks each number in a chatbot answer against the official record and marks it as verified or flagged.',
     gsbpm: '6.2, 7.2',
@@ -120,6 +120,7 @@ export const workstreams = {
   },
   platforms: {
     title: 'AI-assisted metadata platforms',
+    to: '/tools#metadata-editor',
     description:
       'AI-assisted metadata creation, semantic search, and AI-native APIs in the open-source Metadata Editor and NADA platforms.',
     gsbpm: '7.1',
