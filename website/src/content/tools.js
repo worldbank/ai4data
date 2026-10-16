@@ -178,8 +178,7 @@ export const TOOLS = [
     releases: 'https://github.com/ihsn/nada/releases',
     operator: 'Deployed by the adopting organization. The World Bank Microdata Library runs on NADA.',
     limits: [
-      'The released software has no Model Context Protocol interface; agent access to a NADA catalog is in development.',
-      'Search is keyword-based; search by meaning is added beside the catalog, for example with the PI-FT toolkit.',
+      'The released software has keyword search and a REST API. Semantic search and the Model Context Protocol interface come from NADA AI, listed below, which is being integrated into NADA.',
       'A catalog is as findable as its records are complete; the completeness checks in the cookbooks apply before publication.',
     ],
     verifies: ['Repository and releases', 'Catalog administration API description (OpenAPI) in the repository'],
@@ -327,6 +326,29 @@ export const TOOLS = [
       'Client setup guides for three MCP clients',
     ],
     checked: '2026-10-13',
+  },
+  {
+    id: 'nada-ai',
+    name: 'NADA AI',
+    area: 'connect',
+    kind: 'Python service',
+    status: 'prototype',
+    summary:
+      'Semantic search and a Model Context Protocol server over a NADA catalog: the service ingests the catalog records through the NADA REST API, indexes them with local or hosted embeddings, answers keyword, vector, and hybrid queries, and exposes the catalog to MCP clients through tools, interactive apps, resources, and prompts. It is being integrated into NADA, and its release is tied to the NADA release.',
+    stack: 'Python 3.11 or later; OpenSearch or Qdrant as the index; a local sentence-transformer or a hosted embedding model; Docker files for the index',
+    licence: 'MIT with the World Bank IGO rider',
+    docs: 'https://github.com/avsolatorio/nada-ai#readme',
+    install: 'https://github.com/avsolatorio/nada-ai#readme',
+    repo: 'https://github.com/avsolatorio/nada-ai',
+    releases: null,
+    operator: 'Deployed beside a NADA catalog by the adopting organization until the integrated NADA release.',
+    limits: [
+      'Runs as a separate service beside the catalog and reads it through the REST API until the integration into NADA is released; interfaces may change before then.',
+      'Repository in transfer to a World Bank organization; the link above is the current location.',
+      'Needs a vector index (OpenSearch or Qdrant) and an embedding model, local or hosted.',
+    ],
+    verifies: ['Repository with installation instructions and Docker files', 'The MCP server tool list in the repository'],
+    checked: '2026-10-16',
   },
   {
     id: 'data-ai-chatbot',
@@ -518,7 +540,6 @@ export const TOOLS = [
 // Work announced by the program that has nothing to install or read yet.
 export const IN_DEVELOPMENT = [
   {name: 'AI assistance inside the Metadata Editor', area: 'document', note: 'Enrichment and review in the Editor itself; today the Reviewer and the augmentation package run beside it.'},
-  {name: 'MCP access to NADA catalogs', area: 'connect', note: 'An MCP interface over a NADA catalog; the cookbook example server shows the shape of the tools.'},
   {name: 'Global Question Bank', area: 'document', note: 'Question- and variable-level metadata with multilingual mappings across surveys.'},
   {name: 'Ontologies and knowledge graphs', area: 'document', note: 'Concept links between indicators, variables, and datasets.'},
   {name: 'Responsible AI guidance', area: 'verify', note: 'Guidance for AI use in official statistics under the UN Fundamental Principles; the governance instruments are in the cookbooks.'},

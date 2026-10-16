@@ -209,11 +209,11 @@ The original variables stay published beside it.
 - **Crosswalk:** the script in this chapter; the Metadata Editor's variable list export for each round as input; the reviewed crosswalk published as a related material.
 - **Correspondence tables:** CSV at the foundational level; XKOS with classification URIs where a standard is involved.
 - **Harmonized variables:** DDI Lifecycle reusable variables and questions; a question bank; a harmonized data file with its own record linked to the rounds.
-- **Record links:** the `related_studies` and `related_materials` elements of the schema to link rounds to each other and to the crosswalk.
+- **Record links:** the `series_statement` of each round names the survey series, and the crosswalk is attached to each round's record as an external resource with its URI.
 
 ## World Bank examples
 
-- The [microdata schema](https://github.com/worldbank/metadata-schemas) carries `version_statement`, `related_studies`, and `related_materials`, where breaks and crosswalks are recorded.
+- The [microdata schema](https://github.com/worldbank/metadata-schemas) carries `version_statement` and `series_statement`, where versions and the series a round belongs to are recorded; crosswalks are attached as external resources of the record.
 - The program's Global Question Bank workstream develops reusable question and concept definitions, the basis of harmonization across rounds ([program overview](/)).
 - The [Microdata Library](https://microdata.worldbank.org/) links rounds of the same survey program through its series pages.
 

@@ -21,7 +21,7 @@ catalog, the guide uses that one.
 | [DDI Lifecycle](https://ddialliance.org/ddi-lifecycle) | Reusable questions, concepts, and variables across studies | | Chapters [4](./concepts.mdx), recipe 4.3, and [6](./rounds.mdx), recipe 6.3 |
 | [DDI-CDI](https://ddialliance.org/ddi-cdi) | Data structures and provenance across data types | | Chapter 7: provenance of derived files |
 | [Metadata Editor](https://github.com/worldbank/metadata-editor) | Open-source application for documenting microdata and other types, with templates, validation, and publishing to NADA | Used by the Development Data Group's curators | Chapters 1 and 3 |
-| [NADA](https://nada.ihsn.org/) | Open-source catalog: DDI records, schema.org markup, variable-level search, access types and request workflows, REST API, MCP interface | Runs the [Microdata Library](https://microdata.worldbank.org/) | Chapters 1, 5, and 8 |
+| [NADA](https://nada.ihsn.org/) | Open-source catalog: DDI records, schema.org markup, variable-level search, access types and request workflows, REST API; semantic search and an MCP server through [NADA AI](/tools#nada-ai), which is being integrated into NADA | Runs the [Microdata Library](https://microdata.worldbank.org/) | Chapters 1, 5, and 8 |
 
 ## Concepts and classifications
 

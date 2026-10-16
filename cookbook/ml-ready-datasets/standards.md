@@ -13,7 +13,7 @@ row names where it applies in the guide.
 
 | Standard or tool | What it is | Chapters |
 |---|---|---|
-| [Croissant 1.0](https://docs.mlcommons.org/croissant/docs/croissant-spec.html) | MLCommons format for describing machine-learning datasets in JSON-LD on schema.org: files with checksums, record sets and typed fields, splits. | 3, 6 |
+| [Croissant 1.0](https://docs.mlcommons.org/croissant/docs/croissant-spec.html) | MLCommons format for describing machine-learning datasets in JSON-LD on schema.org: files with checksums, record sets and typed fields, splits. The scripts write 1.0 records, which the validator checks; version 1.1 adds provenance and usage policies. | 3, 6 |
 | [mlcroissant](https://github.com/mlcommons/croissant) | The Python implementation: a validator against the specification and a loader that reads a dataset from its record (Apache 2.0). | 3 |
 | [schema.org Dataset](https://schema.org/Dataset) | The vocabulary Croissant extends; the markup on a dataset page that search engines read. | 3, 7 |
 | [Hugging Face dataset cards](https://huggingface.co/docs/hub/datasets-cards) | The card format repositories render, with a YAML header of licence, language, task, and size. | 4 |

@@ -436,7 +436,7 @@ export const resources = {
     columns: ['Tool', 'Purpose', 'Licence'],
     rows: [
       ['Metadata Editor', 'Documenting every data type in the World Bank schemas; export to schema.org, Croissant, DCAT', 'Open source'],
-      ['NADA', 'The catalog: schema.org markup on catalog pages, search, a catalog administration REST API, managed access; MCP access in development', 'Open source'],
+      ['NADA', 'The catalog: schema.org markup on catalog pages, search, a catalog administration REST API, managed access; semantic search and MCP access through NADA AI, being integrated into NADA', 'Open source'],
       ['SDMX tooling', 'Aggregate data and code lists in the standard the statistical community shares', 'Open standards'],
       ['vLLM, llama.cpp, Ollama', 'Serving open-weight models inside the production network', 'Open source'],
       ['scikit-learn, pandas, scipy', 'Measures, agreement, bootstrap intervals, nearest neighbours in the cookbook scripts', 'Open source'],

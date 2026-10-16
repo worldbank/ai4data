@@ -19,7 +19,7 @@ one.
 | [UN Fundamental Principles of Official Statistics](https://unstats.un.org/fpos/) | Professional independence, confidentiality, and transparency of methods, which the policy restates for AI use and the statement of model use serves | The basis of the Development Data Group's statistical work | Chapters [1](./position.mdx) and [7](./statement.mdx) |
 | [OECD AI Principles](https://oecd.ai/en/ai-principles) | Principles many governments have adopted, which the policy can cite | | Chapter 1 |
 | [ISO/IEC 42001](https://www.iso.org/standard/42001) | An AI management system: policy, records, management review, corrective action | | Chapters 1, [2](./register.mdx), [4](./decisions.mdx), [8](./review.mdx) |
-| [Committee for the Coordination of Statistical Activities](https://unstats.un.org/unsd/ccsa/) | The body that reviews guidance on AI-ready official statistics, which the assessment framework is a companion to | The program works with it | Chapter 8 |
+| [Committee for the Coordination of Statistical Activities](https://unstats.un.org/unsd/ccsa/) | The recommendations for national statistical organizations on AI-ready official statistics, which the assessment framework's questions map to | The framework's questions map to its recommendations | Chapter 8 |
 
 ## Risk and quality
 

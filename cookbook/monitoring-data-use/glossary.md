@@ -83,7 +83,7 @@ description: Terms used in the Practical Guide to Monitoring Data Use.
 
 **Mention.** A reference to a dataset in a document, named or unnamed.
 
-**NADA.** The open-source data catalog from the International Household Survey Network, used for the World Bank Microdata Library. It supports DDI Codebook, Dublin Core, ISO 19115/19139, and IPTC.
+**NADA.** The open-source data catalog from the International Household Survey Network, used for the World Bank Microdata Library. It supports DDI Codebook, Dublin Core, ISO 19115/19139, and IPTC. NADA AI, a service being integrated into NADA, adds semantic search and an MCP server over the catalog.
 
 **Named-entity extraction.** A model that finds spans of text referring to entities of a given type, here dataset mentions, with a confidence.
 

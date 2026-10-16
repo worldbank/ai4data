@@ -16,10 +16,10 @@ it as the reference.
 
 | Standard or resource | Use | World Bank use | In this guide |
 |---|---|---|---|
-| [Model Context Protocol](https://modelcontextprotocol.io/specification/latest) | Open protocol for connecting AI applications to tools, resources, and prompts over JSON-RPC 2.0; the current specification is dated 2026-07-28 | The [Data360 MCP server](https://github.com/worldbank/data360-mcp) and the MCP interface of NADA | Every chapter |
+| [Model Context Protocol](https://modelcontextprotocol.io/specification/latest) | Open protocol for connecting AI applications to tools, resources, and prompts over JSON-RPC 2.0; the current specification is dated 2026-07-28 | The [Data360 MCP server](https://github.com/worldbank/data360-mcp) and [NADA AI](/tools#nada-ai), the MCP server over NADA catalogs | Every chapter |
 | [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk) | Reference implementation (`MCPServer` in version 2, `FastMCP` in version 1) | The dissemination cookbook's server example | Chapters [2](./tools.mdx) and [9](./operate.mdx) |
 | [Data360 MCP server](https://github.com/worldbank/data360-mcp) | A server in operation over the Data360 API with discovery, metadata, data, analysis, and visualization tools and guidance resources; MIT licence with the World Bank IGO rider | | Chapters 1, 2, 4, 6, and 9 |
-| [NADA](https://nada.ihsn.org/) | Catalog with an MCP interface, REST API, and schema.org markup | Runs the [Microdata Library](https://microdata.worldbank.org/) | Chapter 2 |
+| [NADA](https://nada.ihsn.org/) and [NADA AI](/tools#nada-ai) | Catalog with a REST API and schema.org markup; NADA AI, being integrated into NADA, serves it over MCP with semantic search | Runs the [Microdata Library](https://microdata.worldbank.org/) | Chapter 2 |
 | [Model Context Protocol for statistics](/docs/mcp/) | The program's description of a statistics server's architecture and tools | | Chapters 1 and 2 |
 
 ## Data and metadata

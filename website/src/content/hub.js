@@ -33,7 +33,7 @@ export const HUB = {
   connect: {
     start:
       'Publish tidy files at stable addresses with a licence, then an API with provenance in every response, then an MCP server over the API. Connect a client to the Data360 MCP server to see the pattern before building one.',
-    tools: ['data360-mcp', 'data-ai-chatbot', 'mcp-guidance', 'semantic-search'],
+    tools: ['data360-mcp', 'nada-ai', 'data-ai-chatbot', 'mcp-guidance', 'semantic-search'],
     guides: [
       {title: 'Model Context Protocol for statistics', to: '/docs/mcp/', note: 'Architecture, tool design, and the servers in operation.'},
       {title: 'MCP for official statistics', to: '/docs/mcp/mcp-for-official-statistics', note: 'Use cases for statistical offices and what a server over a catalog returns.'},

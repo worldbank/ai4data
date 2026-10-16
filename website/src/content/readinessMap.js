@@ -35,7 +35,7 @@ export const resources = {
     title: 'NADA catalog',
     to: 'https://nada.ihsn.org/',
     kind: 'tools',
-    note: 'Catalog pages with schema.org markup, search, a catalog administration REST API, managed access; MCP access in development',
+    note: 'Catalog pages with schema.org markup, search, a catalog administration REST API, managed access; semantic search and MCP access through NADA AI, being integrated into NADA',
   },
   metadataQuality: {
     title: 'Generative AI for Metadata Quality',
@@ -523,7 +523,7 @@ export const dimensions = [
     short: 'Catalog',
     coverage: 'direct',
     summary:
-      'NADA provides the catalog, with schema.org markup, keyword and semantic search, and managed access; the Microdata Library runs on it with DataCite DOIs. The discoverability work and the PI-FT toolkit improve search by meaning over structured records. The cookbook provides the question sets and measures needed to demonstrate the improvement. Catalog currency (2.3.4) is kept through the versioning recipes: a version and errata per release in the microdata record, corrections propagated from document extraction, and links closed in the catalog from the monitoring of use.',
+      'NADA provides the catalog, with schema.org markup, keyword search, and managed access, and NADA AI adds semantic search and MCP access; the Microdata Library runs on it with DataCite DOIs. The discoverability work and the PI-FT toolkit improve search by meaning over structured records. The cookbook provides the question sets and measures needed to demonstrate the improvement. Catalog currency (2.3.4) is kept through the versioning recipes: a version and errata per release in the microdata record, corrections propagated from document extraction, and links closed in the catalog from the monitoring of use.',
     questions: [
       {id: '2.3.1', topic: 'Status of the data catalog', covered: true},
       {id: '2.3.2', topic: 'Search capabilities', covered: true},
@@ -597,7 +597,7 @@ export const dimensions = [
     short: 'Agent access',
     coverage: 'direct',
     summary:
-      'The program\'s work is concentrated in this dimension: MCP design for official statistics with the Data360 MCP server in operation and MCP access to NADA catalogs in development, grounded answers with every number verified against its record (Proof-Carrying Numbers), evaluation of retrieval and answers, synthetic data for sharing, ML-ready datasets with Croissant records and dataset cards, and small and agentic models for statistical tasks. The cookbook sequences these so that a conversational interface follows findability, retrieval, meaning, and trust.',
+      'The program\'s work is concentrated in this dimension: MCP design for official statistics with the Data360 MCP server in operation and MCP access to NADA catalogs through NADA AI, which is being integrated into NADA, grounded answers with every number verified against its record (Proof-Carrying Numbers), evaluation of retrieval and answers, synthetic data for sharing, ML-ready datasets with Croissant records and dataset cards, and small and agentic models for statistical tasks. The cookbook sequences these so that a conversational interface follows findability, retrieval, meaning, and trust.',
     questions: [
       {id: '2.5.1', topic: 'Generative AI for dissemination', covered: true},
       {id: '2.5.2', topic: 'Model Context Protocol adoption', covered: true},

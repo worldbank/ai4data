@@ -20,7 +20,7 @@ the guide uses that one.
 | [World Bank table schema](https://github.com/worldbank/metadata-schemas) | Record for a statistical table: columns, rows, data sources, definitions, licence, citation, relations | The same catalogs and tools | Chapter [7](./publish.mdx) |
 | [Dublin Core](https://www.dublincore.org/specifications/dublin-core/) | Core metadata elements for documents | The basis of the document schema | Chapter 1 |
 | [Metadata Editor](https://github.com/worldbank/metadata-editor) | Documentation of documents and tables with templates and validation; publishing to NADA | Used by the Development Data Group's curators | Chapters 1 and 7 |
-| [NADA](https://nada.ihsn.org/) | Catalog for documents, tables, microdata, and indicators, with schema.org markup, search, API, and MCP interface | Runs the [Microdata Library](https://microdata.worldbank.org/) | Chapters 1, 7, and 8 |
+| [NADA](https://nada.ihsn.org/) | Catalog for documents, tables, microdata, and indicators, with schema.org markup, search, and a REST API; semantic search and an MCP server through [NADA AI](/tools#nada-ai), which is being integrated into NADA | Runs the [Microdata Library](https://microdata.worldbank.org/) | Chapters 1, 7, and 8 |
 
 ## Layout detection and extraction
 
@@ -41,8 +41,8 @@ the guide uses that one.
 | [CSV on the Web](https://www.w3.org/TR/tabular-data-primer/) | Column types and annotations for tidy files | | Chapters 4 and 7 |
 | [W3C PROV](https://www.w3.org/TR/prov-overview/) | Provenance of derived data (`wasDerivedFrom`) | | Chapter 7 |
 | [schema.org Dataset](https://schema.org/Dataset) | Markup on table pages, with `isBasedOn` and `distribution` | NADA writes schema.org on catalog pages | Chapter 8 |
-| [DataCite](https://schema.datacite.org/) | DOIs for documents and extracted tables | The Microdata Library and Documents and Reports assign DOIs | Chapter 8 |
-| [Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/) | Licence inherited by extracted data | The default for [World Bank datasets](https://www.worldbank.org/en/about/legal/terms-of-use-for-datasets) and publications | Chapter 7 |
+| [DataCite](https://schema.datacite.org/) | DOIs for documents and extracted tables | The Microdata Library assigns DataCite DOIs to datasets, and the Open Knowledge Repository assigns DOIs to publications (prefix 10.1596) | Chapter 8 |
+| [Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/) | Licence inherited by extracted data | The default for [World Bank datasets](https://www.worldbank.org/en/about/legal/terms-of-use-for-datasets); World Bank publications carry CC BY 3.0 IGO | Chapter 7 |
 | SDMX `OBS_STATUS` | The model for a status per value (verified, flagged, estimated) | | Chapter 5 |
 
 ## Corrections

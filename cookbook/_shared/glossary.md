@@ -248,7 +248,7 @@ chapters. Edit terms here; never edit the generated pages.
 
 **Mention.** A reference to a dataset in a document, named or unnamed.
 
-**Metadata Editor.** The World Bank's open-source application for documenting data of all the types in the World Bank schemas, with templates and validation, publishing to NADA, and export to SDMX, schema.org, Croissant, and DCAT.
+**Metadata Editor.** The World Bank's open-source application for documenting data of all the types in the World Bank schemas, with templates and validation, publishing to NADA, and export to SDMX and, for some data types, schema.org, Croissant, and DCAT.
 
 **Method of record.** The documented, reproducible imputation or estimation method the organization applies; a model proposes and explains beside it.
 
@@ -260,7 +260,7 @@ chapters. Edit terms here; never edit the generated pages.
 
 **MRR.** Mean reciprocal rank: 1 when the right item comes first, one half when it comes second, and so on, averaged over the questions.
 
-**NADA.** The open-source data catalog from the International Household Survey Network, used for the World Bank Microdata Library. It supports DDI Codebook, Dublin Core, ISO 19115/19139, and IPTC.
+**NADA.** The open-source data catalog from the International Household Survey Network, used for the World Bank Microdata Library. It supports DDI Codebook, Dublin Core, ISO 19115/19139, and IPTC. NADA AI, a service being integrated into NADA, adds semantic search and an MCP server over the catalog.
 
 **Named-entity extraction.** A model that finds spans of text referring to entities of a given type, here dataset mentions, with a confidence.
 

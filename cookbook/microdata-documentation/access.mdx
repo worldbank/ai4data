@@ -164,21 +164,28 @@ having to read the policy.
 2. Name the tier in the catalog's access type (NADA has public use,
    licensed, and other access types) and make the record's text agree
    with it.
-3. State the licence in the record and on the page. The World Bank's
+3. State the licence in the record and on the page. For open aggregate
+   data the World Bank's
    [terms of use for datasets](https://www.worldbank.org/en/about/legal/terms-of-use-for-datasets)
-   default to CC BY 4.0 for public data. Public use microdata usually
-   carry additional terms (no re-identification), which belong in the
-   restrictions field.
+   default to CC BY 4.0. Public use microdata are released under terms
+   of use, as the
+   [Microdata Library](https://microdata.worldbank.org/index.php/terms-of-use)
+   does: the user agrees not to redistribute the file and not to attempt
+   re-identification. A Creative Commons licence does not allow such
+   conditions, so the licence field of a public use file names the
+   organization's public use terms with their URL, and the restrictions
+   field repeats the conditions.
 4. Put the citation requirement in the form users should copy, with
    the DOI, as in
    [chapter 5 of the dissemination cookbook](/cookbook/ai-ready-dissemination/trust).
 
 **Worked example.** The data access section of the running example's
 record names the tier as "public use file" and gives the download
-address on the catalog. It states the licence as CC BY 4.0 with the
-additional condition "no attempt to re-identify respondents or to link
-the file with other sources", and it gives the citation requirement with
-the DOI. The catalog's
+address on the catalog. It names the organization's public use terms
+of use as the licence, with their URL, repeats the condition "no attempt
+to re-identify respondents or to link the file with other sources" in
+the restrictions field, and gives the citation requirement with the
+DOI. The catalog's
 access type for the study is set to public use, so the download button
 appears after the terms are accepted. The licensed file from the same
 survey is a separate study in the catalog, with the access type
@@ -202,8 +209,8 @@ response.
 2. For each path, confirm that data endpoints serve public use files
    only, that metadata endpoints serve every study (metadata are the
    product that should be found), and that licensed and secure files
-   have no data endpoint. NADA's API and MCP interface follow the access
-   type of each study.
+   have no data endpoint. NADA's API, and the MCP server of NADA AI over
+   it, follow the access type of each study.
 3. Return the licence, the citation requirement, and the restrictions
    with every data response, so that an agent receives the conditions
    with the data
@@ -239,20 +246,20 @@ licence, and the citation requirement is what lets use be traced
 
 - **Access types:** NADA's public use, licensed, data enclave, and external access types, with request workflows for licensed files.
 - **Disclosure control:** sdcMicro (open source) for k-anonymity, local suppression, top-coding, and risk measures; the organization's disclosure control procedures set the thresholds.
-- **Licences:** CC BY 4.0 for open data; public use microdata add use conditions; licensed files use an agreement.
+- **Licences:** CC BY 4.0 for open aggregate data; public use terms of use for public use files; an agreement for licensed files.
 - **Automated access:** the catalog API (OpenAPI-described) and an MCP interface with read-only tools; see [chapter 2 of the dissemination cookbook](/cookbook/ai-ready-dissemination/retrieve).
 
 ## World Bank examples
 
 - The [Microdata Library](https://microdata.worldbank.org/) applies access types per study, with public use files downloadable after agreeing to terms and licensed files by application.
-- NADA manages registered and licensed access requests and exposes records through its API and MCP interface.
+- NADA manages registered and licensed access requests and exposes records through its REST API. NADA AI, the semantic search and MCP service being integrated into NADA, serves the records to agents under the same access types.
 - The dissemination cookbook's [governance chapter](/cookbook/ai-ready-dissemination/govern) covers the AI-use policy and the component register that the automated paths belong in.
 
 ## Resources
 
 - [IHSN anonymization resources](https://ihsn.org/anonymization): the theory guide, the practice guide, and sdcApp, for statistical disclosure control of microdata.
 - [sdcMicro practice guide](https://sdcpractice.readthedocs.io/): the twelve-step workflow with code, risk measures, methods, and information-loss measures; the [sdcMicro package](https://cran.r-project.org/package=sdcMicro) on CRAN.
-- [Creative Commons BY 4.0](https://creativecommons.org/licenses/by/4.0/): the licence for open data; public use microdata add use conditions on top.
+- [Creative Commons BY 4.0](https://creativecommons.org/licenses/by/4.0/): the licence for open aggregate data. Public use files carry terms of use, as the [Microdata Library terms of use](https://microdata.worldbank.org/index.php/terms-of-use) show.
 - [NADA](https://nada.ihsn.org/): access types (public use, licensed, data enclave, external) and the request workflow.
 - [Access policy template](pathname:///cookbook-files/microdata-documentation/access_policy_template.md): the tiers, conditions, and rules for automated clients used in recipe 8.1.
 - [Governance chapter of the dissemination cookbook](/cookbook/ai-ready-dissemination/govern): the AI-use policy and component register the automated paths belong in.

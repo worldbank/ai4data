@@ -228,10 +228,11 @@ assistant connected to the server is asked for the five known values of
 the question set, and each answer matches the CSV file, with the source
 URL quoted.
 
-Two World Bank implementations exist. NADA exposes its catalog to AI
-clients through an MCP interface, so an organization that runs NADA has
-the catalog side of this recipe with the software, next to NADA's REST
-API (documented in OpenAPI). The
+Two World Bank implementations exist. [NADA AI](/tools#nada-ai)
+exposes a NADA catalog to AI clients through an MCP server, beside
+NADA's REST API (documented in OpenAPI); it is being integrated into
+NADA, so an organization that runs NADA will have the catalog side of
+this recipe with the software. The
 [Data360 MCP server](https://github.com/worldbank/data360-mcp) is a
 production example of the data side of this pattern. It exposes
 discovery tools, metadata tools, data tools, and analysis tools over

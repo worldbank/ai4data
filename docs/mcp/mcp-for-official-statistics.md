@@ -32,7 +32,7 @@ The fields follow the SDMX cross-domain concepts so that a client built for one 
 - The [Data360 MCP server](https://github.com/worldbank/data360-mcp) runs over the World Bank Data360 platform with a public endpoint, search with country-coverage checks, metadata, disaggregation, codelist lookup, data, and chart tools. Its [client setup guides](https://github.com/worldbank/data360-mcp/blob/main/docs/mcp_clients_setup.md) cover three MCP clients.
 - The [Data AI Chatbot](https://github.com/worldbank/data-ai-chatbot) is a self-hostable application over any MCP server, with PCN marks on the numbers in its answers.
 - The [dissemination cookbook](/cookbook/ai-ready-dissemination/retrieve) ships a minimal server over two CSV files, and the [end-to-end reference implementation](../reference-implementation/index.md) runs a server over a published catalog and verifies an answer against it.
-- MCP access to NADA catalogs is in development; the released NADA software has a REST API and no MCP interface.
+- [NADA AI](/tools#nada-ai) serves a NADA catalog over MCP with semantic search. It is being integrated into NADA, and its release is tied to the NADA release; the released NADA software has a REST API.
 
 ## Design in full
 
