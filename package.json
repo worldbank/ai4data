@@ -10,7 +10,7 @@
     "packages/ai4data/*"
   ],
   "keywords": ["ai4data", "monorepo"],
-  "author": "Development Data Group <ai4data@worldbank.org>",
+  "author": "Development Data Group <aifordata@worldbank.org>",
   "license": "MIT",
   "repository": {
     "type": "git",

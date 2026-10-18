@@ -49,4 +49,4 @@ Every tool on the [tools catalogue](/tools) carries one of five statuses, from i
 
 ## Contributing and contact
 
-Issues and contributions go to the [ai4data repository](https://github.com/worldbank/ai4data) and to the repository of each tool. Organizations planning an adoption or a joint implementation can write to the Development Data Group at [ai4data@worldbank.org](mailto:ai4data@worldbank.org).
+Issues and contributions go to the [ai4data repository](https://github.com/worldbank/ai4data) and to the repository of each tool. Organizations planning an adoption or a joint implementation can write to the Development Data Group at [aifordata@worldbank.org](mailto:aifordata@worldbank.org).

@@ -21,7 +21,7 @@ const Cards = [
   {
     title: 'Contact',
     body: 'Contact the Development Data Group.',
-    to: 'mailto:ai4data@worldbank.org',
+    to: 'mailto:aifordata@worldbank.org',
   },
 ];
 

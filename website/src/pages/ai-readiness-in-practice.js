@@ -568,7 +568,7 @@ function Closing() {
             <Link className={clsx('button button--md', styles.primary)} to="/cookbook/ai-ready-dissemination/">
               Cookbook
             </Link>
-            <Link className={clsx('button button--md', styles.secondaryOnDark)} to="mailto:ai4data@worldbank.org">
+            <Link className={clsx('button button--md', styles.secondaryOnDark)} to="mailto:aifordata@worldbank.org">
               Contact the program
             </Link>
           </div>

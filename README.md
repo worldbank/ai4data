@@ -145,7 +145,7 @@ The documentation includes:
 
 For questions, issues, or contributions, please contact:
 
-- **Development Data Group**: ai4data@worldbank.org
+- **Development Data Group**: aifordata@worldbank.org
 - **GitHub Issues**: [https://github.com/worldbank/ai4data/issues](https://github.com/worldbank/ai4data/issues)
 
 ## Vision

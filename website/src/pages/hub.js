@@ -310,7 +310,7 @@ function AdoptSection({area, index}) {
         <p className={styles.note}>
           Organizations planning an adoption or a joint implementation can
           write to the Development Data Group at{' '}
-          <a href="mailto:ai4data@worldbank.org">ai4data@worldbank.org</a>.
+          <a href="mailto:aifordata@worldbank.org">aifordata@worldbank.org</a>.
           Reports of installation tests and bugs go to the issue tracker of
           the tool’s repository, where the maintainers read them.
         </p>

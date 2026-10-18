@@ -210,7 +210,7 @@ const config = {
             <a href="https://www.worldbank.org/en/about/unit/unit-dec/dev" class="fb-logo"><img src="/ai4data/img/ddg-logo-dark.png" alt="World Bank Group, Development Data Group"></a>
             <strong>AI for Data - Data for AI</strong>
             <span>A program of the <a href="https://www.worldbank.org/en/about/unit/unit-dec/dev">Office of the WBG Chief Statistician and Development Data Group</a>, World Bank Group.</span>
-            <a href="mailto:ai4data@worldbank.org">ai4data@worldbank.org</a>
+            <a href="mailto:aifordata@worldbank.org">aifordata@worldbank.org</a>
           </div>
           <div class="fb-legal">
             <div>Country borders or names do not necessarily reflect the World Bank Group's official position. All maps are for illustrative purposes and do not imply the expression of any opinion on the part of the World Bank, concerning the legal status of any country or territory or concerning the delimitation of frontiers or boundaries.</div>
