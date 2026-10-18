@@ -156,4 +156,6 @@ The **AI for Data – Data for AI** program reflects the World Bank's commitment
 
 ## License
 
-This project is licensed under the MIT License together with the World Bank IGO Rider. The Rider is purely procedural: it reserves all privileges and immunities enjoyed by the World Bank, without adding restrictions to the MIT permissions. Please review both files before using, distributing or contributing.
+The code in this repository is licensed under the MIT License together with the World Bank IGO Rider, both in [LICENSE](LICENSE). The Rider is procedural: it reserves the privileges and immunities of the World Bank and adds no restriction to the MIT permissions.
+
+The documentation, the cookbooks, and the other text, figures, and website content under `docs/`, `cookbook/`, `research/*/docs/`, and `website/` are licensed under the [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/) unless otherwise specified, as stated in [LICENSE-CONTENT.md](LICENSE-CONTENT.md). The guides and cookbooks are working material of the program; they do not represent official World Bank Group guidance or policy and are not legal advice.
