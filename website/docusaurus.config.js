@@ -102,6 +102,8 @@ const config = {
           ignorePatterns: [
             '/ai4data/nso-roadmap',
             '/ai4data/nso-roadmap/**',
+            '/ai4data/modern-nso',
+            '/ai4data/modern-nso/**',
             ...hiddenCookbooks.map((id) => `/ai4data/cookbook/${id}/**`),
             ...draftCookbooks.flatMap((id) => [`/ai4data/cookbook/${id}/`, `/ai4data/cookbook/${id}/**`]),
           ],
@@ -169,7 +171,6 @@ const config = {
             items: [
               {to: '/ai-readiness-assessment', label: 'Assessment framework'},
               {to: '/ai-readiness-in-practice', label: 'Operationalizing the assessment'},
-              {to: '/modern-nso', label: 'A modern statistical office'},
             ],
           },
           {
@@ -187,7 +188,6 @@ const config = {
             items: [
               {label: 'Introduction', to: '/docs/introduction'},
               {label: 'Partnerships', to: '/docs/partnerships/'},
-              {label: 'A modern statistical office', to: '/modern-nso'},
             ],
           },
           {
@@ -196,6 +196,7 @@ const config = {
               {label: 'AI-readiness assessment', to: '/ai-readiness-assessment'},
               {label: 'Operationalizing the assessment', to: '/ai-readiness-in-practice'},
               {label: 'Roadmap', to: '/nso-roadmap', className: 'footer__link-quiet'},
+              {label: 'A modern statistical office', to: '/modern-nso', className: 'footer__link-quiet'},
             ],
           },
           {
@@ -277,6 +278,12 @@ const config = {
         indexBlog: false,
         indexPages: true,
         docsRouteBasePath: ['/docs', '/pift-toolkit', '/cookbook'],
+        // Unlisted pages and hidden cookbooks stay out of the site search.
+        ignoreFiles: [
+          'modern-nso',
+          'nso-roadmap',
+          ...hiddenCookbooks.map((id) => new RegExp(`^cookbook/${id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(/|$)`)),
+        ],
       }),
     ],
   ],

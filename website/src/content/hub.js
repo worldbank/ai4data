@@ -11,7 +11,6 @@ export const HUB = {
     guides: [
       {title: 'AI-readiness assessment framework', to: '/ai-readiness-assessment', note: 'Two pillars, twelve dimensions, four maturity levels; the pathway for early-stage organizations.'},
       {title: 'Operational companion', to: '/ai-readiness-in-practice', note: 'Resources and evidence per dimension; effort and roles per recipe.'},
-      {title: 'A modern statistical office', to: '/modern-nso', note: 'A day in an office that has implemented the recipes, by role and maturity level.'},
       {title: 'AI-ready data framework', to: '/docs/ai-ready-framework', note: 'The attributes of AI-ready data under FAIR, and how the workstreams map to them.'},
     ],
     cookbooks: ['assessment-to-pathway', 'governance-and-risk'],

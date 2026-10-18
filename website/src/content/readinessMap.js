@@ -316,7 +316,6 @@ export const dimensions = [
       {to: `${CB}`, label: 'The cookbook as training material: recipes with code, scope notes, and tests'},
       {to: `${CB}start-here`, label: 'Self-assessment to place a team and choose a reading order'},
       {to: '/cookbook/#reading-paths', label: 'Reading paths by role across the cookbook series (dissemination lead, microdata curator, methodologist, IT and data science lead, management)'},
-      {to: '/modern-nso#resources', label: 'A modern statistical office: the people and skills table by office size'},
       {to: '/cookbook/small-and-open-models/cost', label: 'Small and Open Models, recipe 7.2: the roles that run models in the office and the skills documented in runbooks'},
     ],
     steps: [
@@ -362,7 +361,6 @@ export const dimensions = [
       {to: '/cookbook/evaluation-suites/questions', label: 'Evaluation Suites, chapter 2: question sets and labels from real queries, with two labellers and versioning'},
       {to: '/cookbook/evaluation-suites/gates', label: 'Evaluation Suites, recipe 7.2: the gate in continuous integration that a change to a component passes before release (development and testing environments)'},
       {to: '/cookbook/small-and-open-models/comparison', label: 'Small and Open Models, chapter 5: every candidate run on the same suite, cost per query, and the frontier (model benchmarking)'},
-      {to: '/modern-nso#resources', label: 'A modern statistical office: the compute table by office size'},
     ],
     steps: [
       {from: 'A', to: 'B', text: 'Adopt the metadata schemas as the interoperability baseline and write a first known-item question set.'},

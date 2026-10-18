@@ -2,6 +2,7 @@ import {useEffect, useMemo, useRef, useState} from 'react';
 import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import Layout from '@theme/Layout';
+import Head from '@docusaurus/Head';
 import Heading from '@theme/Heading';
 import {LEVELS, LEVEL_INTRO, SIZES, dimensionsByUnit, releaseDay, resources, units} from '@site/src/content/modernNso';
 import {isHiddenPath} from '@site/src/content/visibility';
@@ -504,6 +505,9 @@ export default function ModernNso() {
     <Layout
       title="A modern statistical office"
       description="A composite portrait of an AI-ready national statistical organization at three maturity levels: its units, people, tools, AI components, a release day hour by hour, and the people, compute, and tools it takes.">
+      <Head>
+        <meta name="robots" content="noindex, nofollow" />
+      </Head>
       <main className={clsx(styles.page, aiOff && styles.pageOff)}>
         <Hero level={level} setLevel={setLevel} aiOff={aiOff} setAiOff={setAiOff} />
         <div className={styles.sticky}>

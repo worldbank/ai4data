@@ -30,9 +30,6 @@ export default function CookbookCta() {
               <Link className={clsx('button button--md', styles.button)} to="/cookbook/">
                 The cookbooks
               </Link>
-              <Link className={styles.secondary} to="/modern-nso">
-                A modern statistical office →
-              </Link>
             </div>
           </div>
           <div className={styles.groups}>
