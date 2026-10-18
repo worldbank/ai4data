@@ -1,4 +1,4 @@
-import {isHiddenCookbook, isHiddenPath} from './visibility';
+import {isHiddenCookbook, isHiddenPath, isIndexedCookbook} from './visibility';
 
 // Cookbooks listed on the /cookbook landing page. Each cookbook is a folder
 // under /cookbook with its own sidebar in sidebars-cookbook.js. The ids in
@@ -6,6 +6,8 @@ import {isHiddenCookbook, isHiddenPath} from './visibility';
 const allCookbooks = [
   {
     id: 'ai-ready-dissemination',
+    version: '0.1',
+    date: 'October 2026',
     audience: 'National statistical organizations',
     title: 'Practical Guide to AI-Ready Data Dissemination',
     description:
@@ -15,6 +17,8 @@ const allCookbooks = [
   },
   {
     id: 'microdata-documentation',
+    version: '0.1',
+    date: 'October 2026',
     audience: 'Data curators in national statistical organizations',
     title: 'Practical Guide to AI-Ready Microdata Documentation',
     description:
@@ -24,6 +28,8 @@ const allCookbooks = [
   },
   {
     id: 'data-from-documents',
+    version: '0.1',
+    date: 'October 2026',
     audience: 'Dissemination, library, and research data teams',
     title: 'Practical Guide to Extracting Data from Documents',
     description:
@@ -33,6 +39,8 @@ const allCookbooks = [
   },
   {
     id: 'monitoring-data-use',
+    version: '0.1',
+    date: 'October 2026',
     audience: 'Dissemination teams and management in national statistical organizations',
     title: 'Practical Guide to Monitoring Data Use',
     description:
@@ -42,6 +50,8 @@ const allCookbooks = [
   },
   {
     id: 'serving-statistics-to-agents',
+    version: '0.1',
+    date: 'October 2026',
     audience: 'Developers and dissemination teams in national statistical organizations',
     title: 'Practical Guide to Serving Official Statistics to AI Agents',
     description:
@@ -51,6 +61,8 @@ const allCookbooks = [
   },
   {
     id: 'metadata-curation-with-llms',
+    version: '0.1',
+    date: 'October 2026',
     audience: 'Metadata curators and their managers in national statistical organizations',
     title: 'Practical Guide to Metadata Curation with Language Models',
     description:
@@ -60,6 +72,8 @@ const allCookbooks = [
   },
   {
     id: 'evaluation-suites',
+    version: '0.1',
+    date: 'October 2026',
     audience: 'Teams that deploy AI components in national statistical organizations',
     title: 'Practical Guide to Evaluation Suites for Statistical AI',
     description:
@@ -69,6 +83,8 @@ const allCookbooks = [
   },
   {
     id: 'language-models-in-production',
+    version: '0.1',
+    date: 'October 2026',
     audience: 'Methodologists and production managers in national statistical organizations',
     title: 'Practical Guide to Language Models in Statistical Production',
     description:
@@ -78,6 +94,8 @@ const allCookbooks = [
   },
   {
     id: 'synthetic-data-for-sharing',
+    version: '0.1',
+    date: 'October 2026',
     audience: 'Microdata teams and methodologists in national statistical organizations',
     title: 'Practical Guide to Synthetic Data for Sharing',
     description:
@@ -87,6 +105,8 @@ const allCookbooks = [
   },
   {
     id: 'small-and-open-models',
+    version: '0.1',
+    date: 'October 2026',
     audience: 'IT and data science leads in national statistical organizations',
     title: 'Practical Guide to Small and Open Models for Statistical Offices',
     description:
@@ -96,6 +116,8 @@ const allCookbooks = [
   },
   {
     id: 'ml-ready-datasets',
+    version: '0.1',
+    date: 'October 2026',
     audience: 'Data managers and dissemination teams in national statistical organizations',
     title: 'Practical Guide to Publishing ML-Ready Datasets',
     description:
@@ -105,6 +127,8 @@ const allCookbooks = [
   },
   {
     id: 'governance-and-risk',
+    version: '0.1',
+    date: 'October 2026',
     audience: 'Management, policy owners, and legal advisers in national statistical organizations',
     title: 'Practical Guide to Governing AI Use in a Statistical Organization',
     description:
@@ -114,6 +138,8 @@ const allCookbooks = [
   },
   {
     id: 'assessment-to-pathway',
+    version: '0.1',
+    date: 'October 2026',
     audience: 'Management and planning teams in national statistical organizations, and the advisers who support them',
     title: 'Practical Guide from the Readiness Assessment to an Improvement Pathway',
     description:
@@ -123,6 +149,8 @@ const allCookbooks = [
   },
   {
     id: 'ai-assistants-at-work',
+    version: '0.1',
+    date: 'October 2026',
     audience: 'All staff of national statistical organizations, and the managers who set the rules for assistant use',
     title: 'Practical Guide to AI Assistants in Everyday Statistical Work',
     description:
@@ -133,6 +161,23 @@ const allCookbooks = [
 ];
 
 export const cookbooks = allCookbooks.filter((c) => !isHiddenCookbook(c.id));
+
+// The cookbook a page belongs to, from its pathname (with or without the
+// site's base URL), and whether the page is the cookbook's index. Returns
+// null outside the cookbooks and for hidden cookbooks, whose pages are
+// unlisted by the site config. `draft` is true until the cookbook is listed
+// as indexed in website/cookbook-visibility.json.
+export function cookbookPage(pathname) {
+  const m = /\/cookbook\/([^/#?]+)\/?([^#?]*)/.exec(pathname || '');
+  if (!m) {
+    return null;
+  }
+  const entry = allCookbooks.find((c) => c.id === m[1]);
+  if (!entry || isHiddenCookbook(entry.id)) {
+    return null;
+  }
+  return {entry, isIndex: m[2] === '', draft: !isIndexedCookbook(entry.id)};
+}
 
 // The cookbooks grouped by what they are about, in the order a reader meets them.
 const allGroups = [

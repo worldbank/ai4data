@@ -10,9 +10,18 @@ const repoRoot = path.resolve(__dirname, '..');
 
 // Cookbooks that are built but not public. The list is kept in one JSON file
 // read here, by src/content/visibility.js, and by scripts/docs/check_cookbooks.py.
-const hiddenCookbooks = JSON.parse(
+const cookbookVisibility = JSON.parse(
   fs.readFileSync(path.join(__dirname, 'cookbook-visibility.json'), 'utf8'),
-).hidden;
+);
+const hiddenCookbooks = cookbookVisibility.hidden;
+// Visible cookbooks that have not cleared review: listed on the site, open to
+// read, but kept out of the sitemap and tagged noindex by the DocItem/Layout
+// wrapper until they appear under 'indexed'.
+const draftCookbooks = fs
+  .readdirSync(path.join(repoRoot, 'cookbook'), {withFileTypes: true})
+  .filter((d) => d.isDirectory() && !d.name.startsWith('_') && d.name !== 'authoring')
+  .map((d) => d.name)
+  .filter((id) => !hiddenCookbooks.includes(id) && !(cookbookVisibility.indexed || []).includes(id));
 const hiddenCookbookPath = hiddenCookbooks.length
   ? new RegExp(`^cookbook/(${hiddenCookbooks.map((id) => id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})/`)
   : null;
@@ -94,6 +103,7 @@ const config = {
             '/ai4data/nso-roadmap',
             '/ai4data/nso-roadmap/**',
             ...hiddenCookbooks.map((id) => `/ai4data/cookbook/${id}/**`),
+            ...draftCookbooks.flatMap((id) => [`/ai4data/cookbook/${id}/`, `/ai4data/cookbook/${id}/**`]),
           ],
         },
         theme: {
@@ -213,8 +223,9 @@ const config = {
             <a href="mailto:aifordata@worldbank.org">aifordata@worldbank.org</a>
           </div>
           <div class="fb-legal">
+            <div>The guides, cookbooks, and tools on this site are working material of the AI for Data – Data for AI program. They do not represent official World Bank Group guidance or policy and are not legal advice; an organization applies them under its own statistical law, data protection rules, and institutional policies.</div>
             <div>Country borders or names do not necessarily reflect the World Bank Group's official position. All maps are for illustrative purposes and do not imply the expression of any opinion on the part of the World Bank, concerning the legal status of any country or territory or concerning the delimitation of frontiers or boundaries.</div>
-            <div>All content (unless otherwise specified) is subject to the <a href="https://opensource.org/license/mit">MIT License</a>. Copyright © ${new Date().getFullYear()} World Bank Group, <a href="https://www.worldbank.org/en/about/unit/unit-dec/dev">Office of the WBG Chief Statistician &amp; Development Data Group</a>.</div>
+            <div>Code is under the <a href="https://github.com/worldbank/ai4data/blob/main/LICENSE">MIT License with the World Bank IGO rider</a>; text, figures, and other content are under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> unless otherwise specified. Copyright © ${new Date().getFullYear()} World Bank Group, <a href="https://www.worldbank.org/en/about/unit/unit-dec/dev">Office of the WBG Chief Statistician &amp; Development Data Group</a>.</div>
           </div>
         `,
       },

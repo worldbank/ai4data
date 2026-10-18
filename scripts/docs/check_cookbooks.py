@@ -59,6 +59,44 @@ def hidden_cookbooks() -> set[str]:
     return set(json.loads(VISIBILITY.read_text(encoding="utf-8")).get("hidden", []))
 
 
+def indexed_cookbooks() -> set[str]:
+    """Ids listed as indexed (cleared review) in website/cookbook-visibility.json."""
+    if not VISIBILITY.exists():
+        return set()
+    return set(json.loads(VISIBILITY.read_text(encoding="utf-8")).get("indexed", []))
+
+
+VERSION_LINE = re.compile(r"Version (\S+) \(working draft\), ([A-Z][a-z]+ \d{4})\.")
+CARD_VERSION = re.compile(r"id: '([a-z0-9-]+)',\s*version: '([^']+)',\s*date: '([^']+)',")
+
+
+def check_versions(folders: list[Path], rep: Report) -> None:
+    """The version and date on each card match the cookbook's index page.
+
+    The draft banner on every chapter shows the card's version and date, so
+    the two have to agree with the "Version X (working draft), Month YYYY."
+    line of index.mdx.
+    """
+    cards = {m.group(1): (m.group(2), m.group(3)) for m in CARD_VERSION.finditer(CARDS.read_text(encoding="utf-8"))}
+    for folder in folders:
+        index = folder / "index.mdx"
+        if not index.exists():
+            continue
+        m = VERSION_LINE.search(index.read_text(encoding="utf-8"))
+        if not m:
+            rep.error(index, "no 'Version X (working draft), Month YYYY.' line")
+            continue
+        card = cards.get(folder.name)
+        if card is None:
+            rep.error(CARDS, f"card for '{folder.name}' has no version and date")
+        elif card != (m.group(1), m.group(2)):
+            rep.error(
+                CARDS,
+                f"card for '{folder.name}' says version {card[0]}, {card[1]}; "
+                f"index.mdx says version {m.group(1)}, {m.group(2)}",
+            )
+
+
 LEVELS = {"Foundational", "AI-ready", "AI-native"}
 INDEX_SECTIONS = [
     "Prerequisites",
@@ -501,12 +539,20 @@ def main(argv: list[str] | None = None) -> int:
             rep.error(
                 VISIBILITY, f"hidden cookbook '{cid}' has no folder under cookbook/"
             )
+    for cid in sorted(indexed_cookbooks()):
+        if not (COOKBOOK / cid).is_dir():
+            rep.error(
+                VISIBILITY, f"indexed cookbook '{cid}' has no folder under cookbook/"
+            )
+        elif cid in hidden:
+            rep.error(VISIBILITY, f"cookbook '{cid}' is listed as both hidden and indexed")
     maps = {f.name: chapter_map(f) for f in folders}
     for folder in folders:
         check_cookbook(folder, rep)
         check_references(folder, maps, rep, hidden)
     if not args.id:
         check_readiness_map(maps, rep)
+        check_versions(folders, rep)
 
     for w in rep.warnings:
         print(f"warning  {w}")

@@ -4,9 +4,16 @@
 import visibility from '../../cookbook-visibility.json';
 
 export const hiddenCookbooks = visibility.hidden;
+export const indexedCookbooks = visibility.indexed || [];
 
 export function isHiddenCookbook(id) {
   return hiddenCookbooks.includes(id);
+}
+
+// True for a cookbook that has cleared review and may be indexed by search
+// engines. Every other visible cookbook is a working draft.
+export function isIndexedCookbook(id) {
+  return indexedCookbooks.includes(id);
 }
 
 // True for a site path into a hidden cookbook, for example

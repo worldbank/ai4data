@@ -29,6 +29,23 @@
   margin: 0.2rem 0 0.5rem;
 }
 
+/* Working-draft banner at the top of every chapter of an unreviewed cookbook. */
+.draftBanner {
+  margin: 0 0 1.5rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--hairline);
+  border-left: 3px solid var(--primary);
+  border-radius: var(--radius, 6px);
+  background: var(--band);
+  color: var(--ink-muted);
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+
+.draftBanner strong {
+  color: var(--ifm-font-color-base);
+}
+
 .recipeMeta {
   display: flex;
   flex-wrap: wrap;
