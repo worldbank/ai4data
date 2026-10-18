@@ -188,4 +188,4 @@ client = MetadataReviewerClient(model_client=model_client)
 - Results depend on the model behind the agents. The same record reviewed with two providers, or with two versions of one model, yields different issue lists, so a calibration sample against curator judgments precedes use on a catalog.
 - The agents read the record they are given. Errors that need outside knowledge, such as a definition that is wrong for the country, are found only when that knowledge is in the record or the prompt.
 - The review board is a standalone HTML prototype shipped beside the package; it reads the pipeline's export and keeps no server-side state.
-- Status on the [tools catalogue](/tools#metadata-reviewer): prototype.
+- Status on the [tools catalogue](/tools#metadata-reviewer): pre-release.

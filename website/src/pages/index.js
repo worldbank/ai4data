@@ -87,7 +87,7 @@ function HubSection() {
           <p className={styles.hubLede}>
             The hub lists the program&apos;s tools, guides, and cookbooks
             under six areas. The tools catalogue records a status for each
-            tool: in operation, deployable, prototype, or method.
+            tool: in operation, deployable, pre-release, or method.
           </p>
         </div>
         <HubGrid compact headingLevel="h3" />

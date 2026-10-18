@@ -140,4 +140,4 @@ An API key for your chosen LLM provider must be set as an environment variable (
 - Cluster counts and group quality vary with the embedding model, the dictionary language, and the length of variable labels; short or coded labels cluster poorly without question text.
 - The pipeline proposes variable groups. It does not change variable labels, concepts, or classifications, which the [microdata documentation cookbook](/cookbook/microdata-documentation/concepts) covers.
 - An API key for a model provider is required, or a local model served through a compatible endpoint.
-- Status on the [tools catalogue](/tools#metadata-augmentation): prototype.
+- Status on the [tools catalogue](/tools#metadata-augmentation): pre-release.

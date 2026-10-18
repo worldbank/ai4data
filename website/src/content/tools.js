@@ -19,11 +19,11 @@ export const STATUSES = {
     description:
       'Released software with installation instructions, versioned releases or tags, and tests. The adopting organization deploys and operates it.',
   },
-  prototype: {
-    label: 'Prototype',
-    short: 'Prototype',
+  prerelease: {
+    label: 'Pre-release',
+    short: 'Pre-release',
     description:
-      'Software that runs from a repository and is documented, with interfaces that may still change. Packaging for independent deployment is incomplete.',
+      'Working software that runs from its repository, with documentation. A versioned release has not been made, and interfaces may change until it is.',
   },
   method: {
     label: 'Method',
@@ -38,7 +38,7 @@ export const STATUSES = {
   },
 };
 
-export const STATUS_ORDER = ['operation', 'reference', 'prototype', 'method', 'development'];
+export const STATUS_ORDER = ['operation', 'reference', 'prerelease', 'method', 'development'];
 
 // Areas of the implementation hub. The order is the order on the hub page.
 export const AREAS = [
@@ -211,7 +211,7 @@ export const TOOLS = [
     name: 'Metadata Reviewer',
     area: 'document',
     kind: 'Python package',
-    status: 'prototype',
+    status: 'prerelease',
     summary:
       'Five-agent pipeline that scans metadata records for typos, inconsistencies, missing fields, and incorrect content, and returns ranked issues with suggested corrections for a curator to accept or reject.',
     stack: 'Python 3.11 or later; any AutoGen-compatible model client (OpenAI, Azure OpenAI, Anthropic, Ollama)',
@@ -234,7 +234,7 @@ export const TOOLS = [
     name: 'Metadata Augmentation',
     area: 'document',
     kind: 'Python package',
-    status: 'prototype',
+    status: 'prerelease',
     summary:
       'Generates DDI-style variable groups for a data dictionary: embeds variable labels, clusters them, asks a model to curate each group, and checks the result for self-consistency before a curator reviews it.',
     stack: 'Python 3.11 or later; sentence-transformers, scikit-learn, litellm',
@@ -332,7 +332,7 @@ export const TOOLS = [
     name: 'NADA AI',
     area: 'connect',
     kind: 'Python service',
-    status: 'prototype',
+    status: 'prerelease',
     summary:
       'Semantic search and a Model Context Protocol server over a NADA catalog: the service ingests the catalog records through the NADA REST API, indexes them with local or hosted embeddings, answers keyword, vector, and hybrid queries, and exposes the catalog to MCP clients through tools, interactive apps, resources, and prompts. It is being integrated into NADA, and its release is tied to the NADA release.',
     stack: 'Python 3.11 or later; OpenSearch or Qdrant as the index; a local sentence-transformer or a hosted embedding model; Docker files for the index',
@@ -402,7 +402,7 @@ export const TOOLS = [
     name: 'Semantic search and the PI-FT toolkit',
     area: 'connect',
     kind: 'Python package and toolkit',
-    status: 'prototype',
+    status: 'prerelease',
     summary:
       'Indexing and search by meaning over catalog records, and a toolkit that fine-tunes embedding models on structured metadata with permutation-invariant training, reporting Recall@k, MRR, and nDCG.',
     stack: 'Python 3.11 or later; sentence-transformers, FAISS; the @ai4data/search package on npm for in-browser search',
@@ -449,7 +449,7 @@ export const TOOLS = [
     name: 'Anomaly detection and explanation',
     area: 'verify',
     kind: 'Python package and review app',
-    status: 'prototype',
+    status: 'prerelease',
     summary:
       'Takes anomaly scores from any detector on indicator time series, builds the context for each flagged point, elicits a structured explanation from a model with a classification, a confidence, and cited evidence, and exports it to a web application where a reviewer approves, rejects, or corrects it.',
     stack: 'Python 3.11 or later; batch APIs of OpenAI or Gemini; FastAPI review app',
@@ -472,7 +472,7 @@ export const TOOLS = [
     name: 'Monitoring of data use',
     area: 'verify',
     kind: 'Python package',
-    status: 'prototype',
+    status: 'prerelease',
     summary:
       'Extracts dataset mentions from documents with zero-shot named-entity recognition, harmonizes name variants to canonical datasets, and deduplicates them, so that use of a dataset in research and policy documents can be counted.',
     stack: 'Python 3.11 or later; GLiNER, PyMuPDF, RapidFuzz; sentence-transformers optional',

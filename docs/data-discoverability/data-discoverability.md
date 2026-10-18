@@ -120,4 +120,4 @@ An emerging dimension of data discoverability is making datasets accessible to A
 - Search by meaning depends on the records. A catalog with missing descriptions ranks poorly however good the embedding model, which is why the [findability chapter](/cookbook/ai-ready-dissemination/find) of the dissemination cookbook comes first.
 - Embedding models trained on English rank queries in other languages worse; multilingual models and fine-tuning on question sets in the organization's languages close part of the gap, and the [PI-FT toolkit](embedding-fine-tuning.md) gives the method.
 - Retrieval quality is measured with a question set the organization builds; the [evaluation cookbook](/cookbook/evaluation-suites/retrieval) gives the measures and their sample sizes.
-- Status on the [tools catalogue](/tools#semantic-search): prototype.
+- Status on the [tools catalogue](/tools#semantic-search): pre-release.

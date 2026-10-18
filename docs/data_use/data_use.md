@@ -125,4 +125,4 @@ uv pip install ai4data[harmonization]
 - Harmonization needs a dictionary of the organization's dataset names and their variants; without it, mentions are extracted and left unmapped.
 - The extractor reads text. Mentions inside figures, scanned pages without OCR, and tables rendered as images are missed.
 - A mention shows that a dataset was used. Whether the cited figure is current is a separate check.
-- Status on the [tools catalogue](/tools#data-use): prototype.
+- Status on the [tools catalogue](/tools#data-use): pre-release.

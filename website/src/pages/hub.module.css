@@ -245,7 +245,7 @@
   border-color: #c6d7f6;
 }
 
-.st_prototype {
+.st_prerelease {
   background: #fff3e0;
   color: #8a4b00;
   border-color: #f5d7a8;
@@ -275,7 +275,7 @@ html[data-theme='dark'] .st_reference {
   border-color: #244a8a;
 }
 
-html[data-theme='dark'] .st_prototype {
+html[data-theme='dark'] .st_prerelease {
   background: #3e2a0c;
   color: #f1c884;
   border-color: #6b4a16;
