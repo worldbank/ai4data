@@ -172,27 +172,44 @@ const config = {
       footer: {
         style: 'dark',
         links: [
-          {label: 'Implementation hub', to: '/hub'},
-          {label: 'Tools', to: '/tools'},
-          {label: 'Reference implementation', to: '/docs/reference-implementation/'},
-          {label: 'Cookbook', to: '/cookbook/'},
-          {label: 'Introduction', to: '/docs/introduction'},
-          {label: 'Partnerships', to: '/docs/partnerships/'},
-          {label: 'AI-readiness assessment', to: '/ai-readiness-assessment'},
-          {label: 'Operationalizing the assessment', to: '/ai-readiness-in-practice'},
-          {label: 'A modern statistical office', to: '/modern-nso'},
-          {label: 'GitHub', href: 'https://github.com/worldbank/ai4data'},
           {
-            label: 'Issues',
-            href: 'https://github.com/worldbank/ai4data/issues',
+            title: 'Program',
+            items: [
+              {label: 'Introduction', to: '/docs/introduction'},
+              {label: 'Partnerships', to: '/docs/partnerships/'},
+              {label: 'A modern statistical office', to: '/modern-nso'},
+            ],
           },
-          {label: 'Roadmap', to: '/nso-roadmap', className: 'footer__link-quiet'},
+          {
+            title: 'Readiness',
+            items: [
+              {label: 'AI-readiness assessment', to: '/ai-readiness-assessment'},
+              {label: 'Operationalizing the assessment', to: '/ai-readiness-in-practice'},
+              {label: 'Roadmap', to: '/nso-roadmap', className: 'footer__link-quiet'},
+            ],
+          },
+          {
+            title: 'Implementation',
+            items: [
+              {label: 'Implementation hub', to: '/hub'},
+              {label: 'Tools', to: '/tools'},
+              {label: 'Reference implementation', to: '/docs/reference-implementation/'},
+              {label: 'Cookbook', to: '/cookbook/'},
+            ],
+          },
+          {
+            title: 'Repository',
+            items: [
+              {label: 'GitHub', href: 'https://github.com/worldbank/ai4data'},
+              {label: 'Issues', href: 'https://github.com/worldbank/ai4data/issues'},
+            ],
+          },
         ],
         copyright: `
           <div class="fb-brand">
             <a href="https://www.worldbank.org/en/about/unit/unit-dec/dev" class="fb-logo"><img src="/ai4data/img/ddg-logo-dark.png" alt="World Bank Group, Development Data Group"></a>
             <strong>AI for Data - Data for AI</strong>
-            <span><a href="https://www.worldbank.org/en/about/unit/unit-dec/dev">Office of the WBG Chief Statistician &amp; Development Data Group</a> · World Bank Group</span>
+            <span>A program of the <a href="https://www.worldbank.org/en/about/unit/unit-dec/dev">Office of the WBG Chief Statistician and Development Data Group</a>, World Bank Group.</span>
             <a href="mailto:ai4data@worldbank.org">ai4data@worldbank.org</a>
           </div>
           <div class="fb-legal">

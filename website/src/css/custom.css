@@ -235,30 +235,50 @@ div[class*='codeBlockContainer'] {
 .footer a:hover {
   color: #ffffff;
 }
-/* Compact footer: brand block at the left, inline links at the right, one
-   legal block below. The copyright HTML supplies .fb-brand and .fb-legal;
+/* Footer: brand block at the left, link columns at the right, one legal
+   block below. The copyright HTML supplies .fb-brand and .fb-legal;
    display: contents lets them join the container's grid. */
 .footer {
-  padding: 0.7rem 0 0.6rem;
-  font-size: 0.85rem;
+  padding: 2.4rem 0 1.4rem;
+  font-size: 0.86rem;
 }
 .footer .container {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(14rem, 18rem) 1fr;
   grid-template-areas:
     'brand links'
     'legal legal';
-  column-gap: 2rem;
-  row-gap: 0.4rem;
+  column-gap: 2.5rem;
+  row-gap: 1.6rem;
+  align-items: start;
 }
+/* .footer__links is the Infima row; it is laid out as a grid of columns
+   sized to their content, four across on wide screens and two below. */
 .footer__links {
   grid-area: links;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  align-content: flex-start;
-  gap: 0.25rem 1.1rem;
+  display: grid;
+  grid-template-columns: repeat(4, max-content);
+  justify-content: end;
+  gap: 1.4rem 2.6rem;
   margin: 0;
+}
+.footer__col {
+  width: auto;
+  max-width: none;
+  padding: 0;
+  margin: 0;
+}
+.footer__title {
+  margin: 0 0 0.55rem;
+}
+.footer__items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.footer__item {
+  line-height: 1.5;
+  padding: 0.14rem 0;
 }
 .footer__link-item {
   margin: 0;
@@ -273,33 +293,53 @@ div[class*='codeBlockContainer'] {
 .fb-brand {
   grid-area: brand;
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.1rem 1rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
   text-align: left;
+  line-height: 1.5;
 }
 .fb-brand strong {
   color: #ffffff;
   font-weight: 600;
+  font-size: 0.95rem;
 }
 .fb-legal {
   grid-area: legal;
+  display: grid;
+  gap: 0.3rem;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding-top: 0.45rem;
-  font-size: 0.68rem;
-  line-height: 1.4;
+  padding-top: 1rem;
+  font-size: 0.7rem;
+  line-height: 1.5;
   text-align: left;
+  color: #8a929a;
 }
-@media screen and (max-width: 700px) {
+@media screen and (max-width: 1180px) {
+  .footer__links {
+    grid-template-columns: repeat(2, max-content);
+  }
+}
+@media screen and (max-width: 900px) {
+  .footer {
+    padding: 2rem 0 1.2rem;
+  }
   .footer .container {
     grid-template-columns: 1fr;
     grid-template-areas:
       'brand'
       'links'
       'legal';
+    row-gap: 1.4rem;
   }
   .footer__links {
-    justify-content: flex-start;
+    justify-content: start;
+    gap: 1.2rem 2.5rem;
+  }
+}
+@media screen and (max-width: 560px) {
+  .footer__links {
+    grid-template-columns: 1fr;
   }
 }
 /* Unlisted planning page: a low-contrast footer entry only. */
@@ -330,8 +370,11 @@ div[class*='codeBlockContainer'] {
    fixed dark surface, so the dark variant is used in both themes. */
 .footer .fb-logo {
   display: block;
-  flex-basis: 100%;
   margin-bottom: 0.35rem;
+}
+.footer .fb-logo img {
+  height: 38px;
+  width: auto;
 }
 .footer .fb-logo img {
   display: block;
