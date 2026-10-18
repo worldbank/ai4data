@@ -27,8 +27,9 @@
 /* ---------- Layout ---------- */
 
 .track {
-  /* Scroll distance for the pinned stage: one screen-fraction per example. */
-  height: calc(var(--stops) * 60vh + 40vh);
+  /* Scroll distance for the pinned stage: about one screen per example, so
+     the steps inside each example have room, plus the stage's own height. */
+  height: calc(var(--stops) * 110vh + 100vh);
 }
 
 .stage {

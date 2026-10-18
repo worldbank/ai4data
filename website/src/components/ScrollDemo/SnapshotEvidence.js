@@ -1,7 +1,8 @@
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 import clsx from 'clsx';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './styles.module.css';
+import {useStage} from './useStage';
 
 // Page 12 of a World Bank Policy Research Working Paper from the
 // ai4data/data-snapshot dataset (MIT). The page image, the bounding box and
@@ -52,58 +53,23 @@ const JSON_OUT = `{
   }
 }`;
 
-const STEP_MS = 2400;
+// Timed playback: delay before each stage, in ms.
+const TIMINGS = [700, 2400, 2400];
 
-export default function SnapshotEvidence({active = true}) {
-  const [stage, setStage] = useState(0); // 0 = not started, 1..3
-  const [playing, setPlaying] = useState(false);
+export default function SnapshotEvidence({active = true, scrub}) {
   const [run, setRun] = useState(0);
   const [view, setView] = useState('table');
   const pageSrc = useBaseUrl('/img/snapshot/page.webp');
   const snapSrc = useBaseUrl('/img/snapshot/snapshot.webp');
-
-  useEffect(() => {
-    if (!active) {
-      setStage(0);
-      setPlaying(false);
-      return undefined;
-    }
-    const reduce =
-      typeof window !== 'undefined' &&
-      window.matchMedia &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce) {
-      setStage(Stages.length);
-      setPlaying(false);
-      return undefined;
-    }
-    setStage(0);
-    setPlaying(true);
-    return undefined;
-  }, [active, run]);
-
-  useEffect(() => {
-    if (!playing) {
-      return undefined;
-    }
-    const t = setTimeout(
-      () => {
-        setStage((s) => {
-          if (s + 1 >= Stages.length) {
-            setPlaying(false);
-          }
-          return Math.min(s + 1, Stages.length);
-        });
-      },
-      stage === 0 ? 700 : STEP_MS,
-    );
-    return () => clearTimeout(t);
-  }, [playing, stage]);
-
-  const goTo = (s) => {
-    setPlaying(false);
-    setStage(s);
-  };
+  // stage: 0 = not started, 1..3 = step done
+  const {stage, setStage, playing} = useStage({
+    active,
+    scrub,
+    count: Stages.length,
+    timings: TIMINGS,
+    run,
+  });
+  const goTo = setStage;
 
   const [x1, y1, x2, y2] = BBOX;
 
@@ -132,7 +98,7 @@ export default function SnapshotEvidence({active = true}) {
 
       <div className={styles.mrNote} aria-live="polite">
         {stage === 0
-          ? 'A PDF page enters the pipeline. Select a step or press Run.'
+          ? 'A PDF page enters the pipeline. Scroll on, select a step, or press Run.'
           : Stages[stage - 1].note}
       </div>
 

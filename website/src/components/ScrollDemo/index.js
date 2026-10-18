@@ -104,6 +104,35 @@ const Stops = [
 
 const clamp = (x, lo, hi) => Math.min(hi, Math.max(lo, x));
 
+// On small screens the panels are inline under their text. Each one starts
+// when it first scrolls into view.
+function MobileEvidence({Evidence}) {
+  const ref = useRef(null);
+  const [seen, setSeen] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === 'undefined') {
+      return undefined;
+    }
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setSeen(true);
+          obs.disconnect();
+        }
+      },
+      {threshold: 0.3},
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return (
+    <div ref={ref}>
+      <Evidence active={seen} />
+    </div>
+  );
+}
+
 export default function ScrollDemo() {
   const [progress, setProgress] = useState(0);
   const trackRef = useRef(null);
@@ -112,7 +141,9 @@ export default function ScrollDemo() {
   useEffect(() => {
     // Progress is derived from scroll position, so it is identical in both
     // scroll directions. The stage is pinned while the track scrolls past;
-    // progress runs from 0 (first stop) to Stops.length - 1 (last stop).
+    // progress runs from 0 (start of the first stop) to Stops.length (end of
+    // the last stop). The integer part selects the example and the fraction
+    // drives the steps inside it.
     let frame = null;
     const update = () => {
       frame = null;
@@ -125,7 +156,7 @@ export default function ScrollDemo() {
       const rect = track.getBoundingClientRect();
       const total = rect.height - stage.offsetHeight;
       const t = total > 0 ? clamp((stickyTop - rect.top) / total, 0, 1) : 0;
-      setProgress(t * (Stops.length - 1));
+      setProgress(t * Stops.length);
     };
     const onScroll = () => {
       if (frame === null) {
@@ -144,7 +175,8 @@ export default function ScrollDemo() {
     };
   }, []);
 
-  const active = Math.round(progress);
+  const active = Math.min(Stops.length - 1, Math.floor(progress));
+  const scrub = Math.min(1, progress - active);
 
   return (
     <section className={styles.section}>
@@ -156,9 +188,9 @@ export default function ScrollDemo() {
           </Heading>
           <p className={styles.lede}>
             Five examples show the outputs of the program&apos;s tools on real
-            and illustrative inputs. Scroll to step through them; the
-            interactive elements in each panel can be selected. Parts that are
-            illustrations are labeled.
+            and illustrative inputs. Scrolling moves through the examples and
+            through the steps of each one; the interactive elements in each
+            panel can be selected. Parts that are illustrations are labeled.
           </p>
         </div>
 
@@ -199,7 +231,7 @@ export default function ScrollDemo() {
                           )}
                           key={stop.id}
                           aria-hidden={i !== active}>
-                          <Evidence active={i === active} />
+                          <Evidence active={i === active} scrub={i === active ? scrub : 0} />
                         </div>
                       );
                     })}
@@ -226,7 +258,7 @@ export default function ScrollDemo() {
                       {stop.body}
                       {stop.caveat && <p className={styles.stopCaveat}>{stop.caveat}</p>}
                       <div className={styles.stopEvidenceMobile}>
-                        <StopEvidence />
+                        <MobileEvidence Evidence={StopEvidence} />
                       </div>
                       <Link className={styles.stopLink} to={stop.link.to}>
                         {stop.link.label} →

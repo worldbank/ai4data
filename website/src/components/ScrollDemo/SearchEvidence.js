@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 import styles from "./styles.module.css";
+import { schedule, useStage } from "./useStage";
 
 // Semantic search example over real WDI data. The ranking was computed with
 // avsolatorio/GIST-all-MiniLM-L6-v2 (cosine similarity between the full query
@@ -98,11 +99,16 @@ const RESP1 = `← [ ${RESULTS.map(
 const REQ2 = `→ tools/call  get_indicator\n  { "indicator_code": "${RESULTS[0].code}",\n    "country_code": "PHL",\n    "start_year": 2023, "end_year": 2023 }`;
 const RESP2 = `← { "country": "PHL", "year": 2023,\n    "value": 3 }`;
 
-export default function SearchEvidence({ active = true }) {
+// Typing speed per character (ms) and the pause before typing starts.
+const PERSON_MS = 32;
+const AGENT_MS = 13;
+const TYPE_LEAD = 350;
+const RESULT_MS = 170;
+
+export default function SearchEvidence({ active = true, scrub }) {
   const [mode, setMode] = useState("person");
   const [run, setRun] = useState(0);
   const [typed, setTyped] = useState(0); // characters of the current input
-  const [step, setStep] = useState(0);
   const [shown, setShown] = useState(0); // person view: results revealed
   const [sel, setSel] = useState(0);
   const [langKey, setLangKey] = useState("en");
@@ -113,63 +119,63 @@ export default function SearchEvidence({ active = true }) {
 
   // Person steps: 0 typing, 1 waiting, 2 results. Agent steps: 0 typing
   // request 1, 1 waiting, 2 response 1, 3 typing request 2, 4 waiting, 5 done.
+  // Timed playback waits for the typing of each request before moving on.
+  const person = mode === "person";
+  const timings = person
+    ? [TYPE_LEAD + PERSON_MS * lang.query.length + 80, 570]
+    : [
+        TYPE_LEAD + AGENT_MS * REQ1.length + 80,
+        570,
+        900,
+        TYPE_LEAD + AGENT_MS * REQ2.length + 80,
+        520,
+      ];
+  const { stage: step, reduce } = useStage({
+    active,
+    scrub,
+    count: person ? 2 : 5,
+    timings,
+    run,
+    deps: [mode, langKey],
+  });
+
   useEffect(() => {
     setSel(0);
+  }, [active, mode, run, langKey]);
+
+  // The current input types itself once its step is reached.
+  useEffect(() => {
+    const text = step === 0 ? (person ? lang.query : REQ1) : step === 3 ? REQ2 : null;
     if (!active) {
       setTyped(0);
-      setStep(0);
+      return undefined;
+    }
+    if (text === null) {
+      // Past the typing steps the full input stands.
+      setTyped(Number.MAX_SAFE_INTEGER);
+      return undefined;
+    }
+    if (reduce) {
+      setTyped(text.length);
+      return undefined;
+    }
+    setTyped(0);
+    return schedule(text.length, person ? PERSON_MS : AGENT_MS, setTyped, TYPE_LEAD);
+  }, [active, step, person, lang, reduce, run]);
+
+  // Results are revealed one by one once the results step is reached.
+  useEffect(() => {
+    if (!active || !person || step < 2) {
       setShown(0);
       return undefined;
     }
-    const reduce =
-      typeof window !== "undefined" &&
-      window.matchMedia &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) {
-      setStep(mode === "person" ? 2 : 5);
       setShown(RESULTS.length);
-      setTyped(1000);
       return undefined;
     }
-    const timers = [];
-    const at = (ms, fn) => timers.push(setTimeout(fn, ms));
-    setStep(0);
-    setTyped(0);
     setShown(0);
-    if (mode === "person") {
-      const per = 32;
-      for (let i = 1; i <= lang.query.length; i += 1) {
-        at(350 + per * i, () => setTyped(i));
-      }
-      const t = 350 + per * lang.query.length;
-      at(t + 80, () => setStep(1));
-      at(t + 650, () => setStep(2));
-      RESULTS.forEach((_, i) =>
-        at(t + 650 + 170 * (i + 1), () => setShown(i + 1)),
-      );
-    } else {
-      const per = 13;
-      for (let i = 1; i <= REQ1.length; i += 1) {
-        at(350 + per * i, () => setTyped(i));
-      }
-      let t = 350 + per * REQ1.length;
-      at(t + 80, () => setStep(1));
-      t += 650;
-      at(t, () => setStep(2));
-      t += 900;
-      at(t, () => {
-        setStep(3);
-        setTyped(0);
-      });
-      for (let i = 1; i <= REQ2.length; i += 1) {
-        at(t + 40 + per * i, () => setTyped(i));
-      }
-      t += 40 + per * REQ2.length;
-      at(t + 80, () => setStep(4));
-      at(t + 600, () => setStep(5));
-    }
-    return () => timers.forEach(clearTimeout);
-  }, [active, mode, run, langKey]);
+    return schedule(RESULTS.length, RESULT_MS, setShown);
+  }, [active, step, person, reduce, run]);
 
   const handleCopy = async () => {
     try {
