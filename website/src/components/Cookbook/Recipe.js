@@ -1,7 +1,7 @@
 import styles from './styles.module.css';
 
 // A recipe is a task with a defined result. The header shows the maturity
-// level it belongs to, the skills needed, and a rough time estimate.
+// level it belongs to, the skills needed, and an indicative time.
 export default function Recipe({title, level, skills, time, children}) {
   return (
     <section className={styles.recipe}>
@@ -23,7 +23,7 @@ export default function Recipe({title, level, skills, time, children}) {
           )}
           {time && (
             <div>
-              <dt>Time</dt>
+              <dt>Indicative time</dt>
               <dd>{time}</dd>
             </div>
           )}

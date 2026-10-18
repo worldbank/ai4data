@@ -96,7 +96,7 @@ One or two paragraphs that explain the thing the recipe produces, the terms it u
 ```
 
 - The title is an imperative that names the result ("Publish code lists and crosswalks"). Procedures are the one place where the imperative is the standard form.
-- `level` uses the shared vocabulary. `skills` names a role. `time` is a realistic estimate.
+- `level` uses the shared vocabulary. `skills` names a role. `time` is an indicative estimate for a team with the stated skills; the page labels it as indicative.
 - Code is embedded from a file in `website/static/cookbook-files/<cookbook-id>/` with a code-import block, so the page and the download are one file:
 
   ````mdx
