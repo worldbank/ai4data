@@ -109,12 +109,22 @@ def roles_from(skills: str) -> list[str]:
     return found or ["Staff of the unit"]
 
 
+def hidden_cookbooks() -> set[str]:
+    """Ids listed as hidden in website/cookbook-visibility.json; their recipes stay out of the view."""
+    path = REPO / "website" / "cookbook-visibility.json"
+    if not path.exists():
+        return set()
+    return set(json.loads(path.read_text(encoding="utf-8")).get("hidden", []))
+
+
 def chapters_for(link: str) -> list[Path]:
     """The chapter files behind one readiness-map link."""
     m = re.match(r"/cookbook/([^/#]+)/?([^/#]*)", link)
     if not m:
         return []
     cb, slug = m.group(1), m.group(2)
+    if cb in hidden_cookbooks():
+        return []
     root = REPO / "cookbook" / cb
     if slug:
         p = root / f"{slug}.mdx"
