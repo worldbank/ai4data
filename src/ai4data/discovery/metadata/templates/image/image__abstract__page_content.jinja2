@@ -1,0 +1,10 @@
+{%- set img = image_description if image_description is mapping else {} -%}
+{%- set dcmi = img.dcmi if img.dcmi is mapping else {} -%}
+{%- set iptc = img.iptc.photoVideoMetadataIPTC if img.iptc is mapping and img.iptc.photoVideoMetadataIPTC is mapping else {} -%}
+{%- if dcmi.description -%}
+{{ dcmi.description }}
+{%- elif dcmi.caption -%}
+{{ dcmi.caption }}
+{%- elif iptc.description -%}
+{{ iptc.description }}
+{%- endif -%}
