@@ -1,0 +1,12 @@
+legacy_column,schema_field,transform,confidence,status,note
+Code,idno,,1.00,confirmed,
+Indicator name,name,,1.00,confirmed,
+Description,definition_long,,0.95,confirmed,
+Unit,measurement_unit,,0.95,confirmed,
+Frequency,periodicity,codes:A=annual;Q=quarterly;M=monthly,0.90,confirmed,legacy codes
+Start,time_period_start,,0.90,confirmed,
+End,time_period_end,,0.90,confirmed,
+Source agency,sources,split:;,0.85,proposed,model proposed; check whether the field is a list of sources
+Updated,date_last_update,date:%d/%m/%Y,0.90,confirmed,day-first dates
+Tags,keywords,split:;,0.80,proposed,model proposed; free text to be mapped to the vocabulary later
+Notes,,,0.40,proposed,"model could not place it; candidates: series_break, notes, limitation"

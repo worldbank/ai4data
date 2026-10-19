@@ -1,0 +1,168 @@
+---
+id: index
+title: Practical Guide to Publishing ML-Ready Datasets
+sidebar_label: Overview
+sidebar_position: 0
+description: A cookbook for data managers and dissemination teams in national statistical organizations on selecting, shaping, describing, documenting, splitting, licensing, and versioning datasets published for training and evaluating machine-learning models.
+---
+
+# Practical Guide to Publishing ML-Ready Datasets
+
+**A cookbook for data managers and dissemination teams in national statistical organizations.** Version 0.1 (working draft), October 2026.
+
+:::note[Working draft]
+This guide is a working draft from the AI for Data – Data for AI program. It
+collects practical approaches and open standards. It does not
+represent official World Bank Group guidance or policy and is not legal
+advice; an organization applies it under its own statistical law, data
+protection rules, and institutional policies.
+Comments and corrections are welcome as
+[GitHub issues](https://github.com/worldbank/ai4data/issues), and the
+[contributing](./contributing.md) page explains how to propose a recipe.
+:::
+
+A statistical organization produces training data every day without
+calling it that: job descriptions coded by hand, records corrected by
+editors, printed tables transcribed, questions answered from the
+catalog. Each is a pair of an input and a correct output, which is what
+a machine-learning model learns from. Published in the right form,
+these examples let the organization train models for its own tasks,
+let partners build tools that work on its data, and let researchers
+evaluate methods on real official statistics. Published in the wrong
+form, they are microdata under another name, with a licence nobody can
+read by machine and a test set nobody can compare scores on.
+
+An ML-ready dataset is a fixed, versioned set of examples with a
+documented structure, a stated purpose, a split for training and
+testing, a statement of whom the examples represent, and a licence
+that covers model training. This guide is organized around eight
+questions, in the order a release is prepared. The first two settle
+what to publish and in what form: which datasets to publish and for
+what uses, and what form the files take. The next two describe it: how
+a dataset is described so that tools load it, and how it is documented
+for the people who train on it. Two measure and protect it: how its
+coverage and representativeness are measured, and how it is split and
+kept free of leakage. The last two release it: under what licence and
+terms, and how versions, integrity, and use are maintained. Each
+chapter answers one question with recipes, maturity levels, worked
+examples, and a checklist.
+
+The recipes build on the open standards the machine-learning community
+has settled on ([Croissant](https://mlcommons.org/croissant/) for
+loading records, dataset cards for documentation) and on the practices
+the program's other cookbooks establish for catalog records, licences,
+disclosure control, and monitoring of use. The
+[standards page](./standards.md) lists each and where it applies.
+
+:::tip[Three rules for a published dataset]
+Three rules run through the guide: a dataset is a collection of
+examples and never a source of published statistics; its composition
+is measured against the population and stated in its card; and nothing
+that could identify a person or an enterprise is published. A dataset
+that meets the three is a product; one that misses any of them is a
+risk.
+:::
+
+## Prerequisites
+
+The recipes assume the following are in place or can be arranged:
+
+- A task the organization does by hand that produces inputs with correct outputs (coding, editing, transcription, search), and the system that holds them.
+- A data manager with Python, a methodologist who knows the source survey, and the disclosure control unit for the review.
+- A catalog that holds dataset records with a licence field, and the ability to register a DOI.
+
+## First steps
+
+For a team with limited time, this sequence gives the most useful result first:
+
+1. Write the statement of purpose and choose one coding or transcription task to start with, following [chapter 1](./purpose.mdx). This takes half a day.
+2. Lay out the file, write the dictionary, and split by group, following [chapters 2](./shape.mdx) and [6](./splits.mdx). This takes a day.
+3. Run the representativeness report and write the card, following [chapters 5](./represent.mdx) and [4](./document.mdx). This takes a day.
+4. Have the disclosure control unit review the free text and the licence, following [chapter 7](./license.mdx). This takes one to three days.
+5. Generate the Croissant record, build the manifest, register the DOI, and publish, following [chapters 3](./describe.mdx) and [8](./version.mdx). This takes half a day.
+
+## Self-assessment
+
+The [self-assessment](./start-here.mdx) takes about five minutes and places
+a team's practice at a level in each chapter.
+
+## Chapters and questions
+
+| Chapter | Question | Practical topics |
+|---|---|---|
+| [1. Purpose and selection of datasets](./purpose.mdx) | Which datasets should be published for machine learning, and for what uses? | Statement of purpose, candidate tasks, decision record |
+| [2. Form and packaging of the files](./shape.mdx) | What form does an ML-ready dataset take? | Tidy files, dictionary with roles, identifiers and group keys, formats, release layout |
+| [3. Croissant records for loading](./describe.mdx) | How is a dataset described so that tools can load it? | Croissant record from the dictionary, checksums, splits, validation, publication |
+| [4. Dataset cards](./document.mdx) | How is a dataset documented for the people who train models on it? | Twelve sections, machine-readable header, completeness check, review |
+| [5. Coverage and representativeness](./represent.mdx) | How are coverage and representativeness documented and measured? | Benchmarks, weighted and unweighted shares, thin groups, label coverage, error by group |
+| [6. Splits and leakage](./splits.mdx) | How are training, validation, and test splits made and kept stable? | Grouped splits with a recorded seed, time-based test parts, leakage checks, frozen test part |
+| [7. Licence, terms, and privacy](./license.mdx) | Under what licence and terms is a dataset released for model training? | CC BY 4.0, terms for training and attribution, machine-readable licence, disclosure review, free-text screening |
+| [8. Versions, integrity, and use](./version.mdx) | How are versions, integrity, and use maintained over time? | Version policy, manifest of checksums, DOI per version, use tracking |
+
+## Maturity levels
+
+Each chapter describes three levels. A team can sit at different levels in
+different chapters, and the first level is a complete, useful state on its
+own.
+
+| Level | Meaning |
+|---|---|
+| **Foundational** | One dataset from an existing task, as tidy files with a dictionary, a grouped split, a card, a licence, a representativeness report, a Croissant record, and a manifest. |
+| **AI-ready** | Datasets for the main model-assisted tasks, selected by rule, with time-based test parts where rounds exist, validated records, reviewed cards, DOIs per version, and use tracked. |
+| **AI-native** | Datasets produced as a stage of production at each round, with the measured sections of the card, the record, the manifest, and the identifier generated together, and a reference model's error by group published with each version. |
+
+## Running example
+
+The example organization publishes 600 job descriptions from its
+labour force survey with the ISCO-08 code a coder assigned, the
+respondent's region, residence, sex, age group, and education, and the
+survey weight, as a dataset for training and evaluating automatic
+occupation coders. The records are split by household, compared with
+the 2024 census, documented in a card, described in a Croissant
+record, and sealed with a manifest. All records are invented, and the
+file is small on purpose: it is a worked example of the format, and
+its card says so.
+
+## Scope of the examples
+
+The examples are small on purpose: six hundred records, four benchmark
+variables, one release, so that a reader can run them in an afternoon
+and see the shape of each file and each check. They are starting
+points. Each recipe ends with a **What this does not do** note that says
+where the example stops and what the full version adds. The scripts
+here shape, describe, measure, check, and seal a dataset; the training
+of models on it is the subject of the
+[production](/cookbook/language-models-in-production/) and
+[small models](/cookbook/small-and-open-models/) cookbooks.
+
+## Files
+
+| File | Used in |
+|---|---|
+| [lfs_occupation_ml.csv](pathname:///cookbook-files/ml-ready-datasets/lfs_occupation_ml.csv) and [dictionary.csv](pathname:///cookbook-files/ml-ready-datasets/dictionary.csv) | Chapters 2 to 8: the data and its dictionary |
+| [make_splits.py](pathname:///cookbook-files/ml-ready-datasets/make_splits.py) and [splits.csv](pathname:///cookbook-files/ml-ready-datasets/splits.csv) | Chapter 6: grouped, hashed split assignment |
+| [build_croissant.py](pathname:///cookbook-files/ml-ready-datasets/build_croissant.py), [croissant_check.py](pathname:///cookbook-files/ml-ready-datasets/croissant_check.py), and [lfs_occupation_ml.croissant.json](pathname:///cookbook-files/ml-ready-datasets/lfs_occupation_ml.croissant.json) | Chapter 3: the loading record, generated and checked |
+| [dataset_card.md](pathname:///cookbook-files/ml-ready-datasets/dataset_card.md) and [check_dataset_card.py](pathname:///cookbook-files/ml-ready-datasets/check_dataset_card.py) | Chapter 4: the card and its completeness check |
+| [census_benchmarks.csv](pathname:///cookbook-files/ml-ready-datasets/census_benchmarks.csv) and [representativeness_report.py](pathname:///cookbook-files/ml-ready-datasets/representativeness_report.py) | Chapter 5: composition against the population |
+| [release_manifest.py](pathname:///cookbook-files/ml-ready-datasets/release_manifest.py) and [manifest.json](pathname:///cookbook-files/ml-ready-datasets/manifest.json) | Chapter 8: checksums per file, built and verified |
+
+## Related resources
+
+| Resource | Purpose |
+|---|---|
+| This guide | How to select, shape, describe, document, split, license, and version a dataset for model training, in a sequence of practical steps. |
+| [Practical Guide to AI-Ready Dissemination](/cookbook/ai-ready-dissemination/) | The catalog, the licence on every page, and the schema.org markup a dataset page carries. |
+| [Practical Guide to Synthetic Data for Sharing](/cookbook/synthetic-data-for-sharing/) | What to publish when the real records cannot be. |
+| [Practical Guide to Monitoring Data Use](/cookbook/monitoring-data-use/) | Counting downloads and finding citations and mentions of the dataset. |
+| [Code](https://github.com/worldbank/ai4data) | Open-source software to deploy or adapt. |
+
+## Citation
+
+World Bank. 2026. *Practical Guide to Publishing ML-Ready Datasets: A
+cookbook for data managers and dissemination teams in national
+statistical organizations.* Version 0.1. AI for Data – Data for AI.
+https://worldbank.github.io/ai4data/cookbook/ml-ready-datasets/
+
+## Version history
+
+- **0.1 (October 2026).** First draft: eight chapters, recipes, scripts, self-assessment.

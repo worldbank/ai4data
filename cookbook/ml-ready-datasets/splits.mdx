@@ -1,0 +1,260 @@
+---
+id: splits
+title: "6. Splits and leakage"
+sidebar_label: "6. Splits"
+sidebar_position: 7
+description: "Why a dataset is split into training, validation, and test parts, why the split follows groups and time, how leakage between the parts is found, and how the test part is frozen across versions."
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 6. Splits and leakage
+
+**Question:** How are training, validation, and test splits made and kept stable?
+
+## Rationale
+
+A model is trained on some examples and judged on others. If the two
+sets overlap, or if the judged examples resemble the trained ones more
+than new data will, the model's score is too high and nobody finds out
+until it is in use. A dataset therefore comes with a split: a training
+part the model learns from, a validation part the model builder uses
+to choose settings, and a test part that is touched once, at the end,
+to report a score. The publisher makes the split, so that every user
+reports scores on the same test part and the scores can be compared.
+
+Two things make a split honest. The first is that related records stay
+together: two members of one household describe their jobs in similar
+words, and a model tested on one after training on the other has seen
+half the answer. The split therefore follows the group key of
+[chapter 2](./shape.mdx). The second is that the test part is drawn as the model will be used.
+A coder for next year's survey is best tested on a later round than it
+was trained on, so a time-based test part is the right one when the
+dataset spans rounds. Leakage is the name for
+any way the answer reaches the model other than through the features,
+and this chapter's checks look for the common ones.
+
+## Target state
+
+- Every dataset is published with a split assignment by group, in a file the loading record names, and the shares and the leakage check are reported.
+- Where the dataset spans rounds, the test part is the latest round, so that scores reflect use on new data.
+- The test part is frozen: it does not change within a major version, and a change to it is a new major version.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Split by group with a recorded seed; publish the assignment file; run the leakage check. |
+| **AI-ready** | Choose a time-based test part where rounds exist; report the distribution of the main groups per part; freeze the test part under the version policy. |
+| **AI-native** | Add each round's examples to the training part at release and move the test part forward on a stated schedule, with the scores of a reference model reported per version. |
+
+:::info[Running example]
+The 600 records of 344 households are split by household with a
+grouped draw: 69 percent training, 11 percent validation, 20 percent
+test. No household appears in two parts. The Northern Region is a
+fifth of the test part and an eighth of the training part, which the
+card states.
+:::
+
+## Recipes
+
+<Recipe title="6.1 Split by group with a recorded seed" level="Foundational" skills="Python" time="Minutes">
+
+**Result:** a file assigns every record to a part, with all records of
+a group in the same part, and the rule that produced it gives the same
+assignment on every machine and every run.
+
+The script draws whole groups into the test part, then into the
+validation part, with scikit-learn's grouped split and a fixed random
+seed. The same seed gives the same assignment on every run, and a
+different seed gives a different one. The output has one row per
+record:
+
+| Column | Meaning |
+|---|---|
+| `record_id` | The record |
+| `split` | `train`, `validation`, or `test` |
+
+```python file=../../website/static/cookbook-files/ml-ready-datasets/make_splits.py
+```
+
+```bash
+python make_splits.py lfs_occupation_ml.csv --id record_id --group hhid --stratify region --test 0.2 --validation 0.1 -o splits.csv
+```
+
+Output for the running example:
+
+```text
+600 records, 344 groups by 'hhid', seed 1
+  train         416   0.69
+  validation     64   0.11
+  test          120   0.20
+groups in more than one split: 0
+distribution of 'region' per split (share of the split):
+  category           train  validation        test
+  R01                 0.13        0.14        0.20
+  R02                 0.45        0.42        0.47
+  R03                 0.28        0.28        0.16
+  R04                 0.14        0.16        0.17
+splits written to splits.csv
+```
+
+The first lines give the counts and shares of the three parts. The
+leakage line counts the groups that appear in more than one part, which
+has to be zero. The distribution table shows the share of each category
+of the stratifying variable within each part.
+
+1. Run the script with the group key of the dictionary and the shares
+   the organization wants. The shares come out close to the targets,
+   never exact, because whole groups move together.
+2. Read the leakage line. A group in two parts is an error, and the
+   script's exit status says so.
+3. Read the distribution per part. Here the Northern Region is a
+   fifth of the test part and an eighth of the training part, by
+   chance of the draw on a small file. For a small dataset where this
+   matters, draw with another seed, or stratify by hand: split each
+   region's households separately and combine.
+4. Record the seed, the shares, and the script version in the card's
+   composition section, and keep the assignment file in the release.
+
+**Worked example.** The run above puts 416 records in the training
+part, 64 in validation, and 120 in test, with no household in two
+parts. The data manager reads the distribution table and sees that the
+Northern Region is 20 percent of the test part and 13 percent of the
+training part. On 600 records that is the luck of the draw, and the
+card's composition section states it: "Split by household with seed 1;
+the Northern Region is over-represented in the test part relative to
+the training part (20 against 13 percent)". For the full dataset of
+38,000 records the same script with the same seed gives shares within
+a point of each other across the parts, and the note is not needed.
+
+**What this does not do.** A grouped split keeps groups apart. It does
+not balance labels or regions across parts, and it does not know about
+groups the key does not name (two households of one extended family).
+The time-based split of recipe 6.2 addresses a different risk, and the
+checks of recipe 6.3 look for leakage the key cannot prevent.
+
+</Recipe>
+
+<Recipe title="6.2 Use a time-based test part where rounds exist" level="AI-ready" skills="Methodologist" time="An hour">
+
+**Result:** the test part is made of the latest round of the source,
+so that a model's score describes what it will do on the next round.
+
+1. Decide whether the model will be used on later data. A coder for
+   next quarter's survey will. A dataset of a single round has no
+   later data, and the grouped split of recipe 6.1 is the one to use.
+2. Where rounds exist, make the latest round the test part and split
+   the earlier rounds by group between training and validation. The
+   script does this with a time column and a start value:
+
+   ```bash
+   python make_splits.py data.csv --id record_id --group hhid --time-column round --test-from 2025Q2 -o splits.csv
+   ```
+
+3. State in the card which round is the test part and why. A
+   time-based score is usually lower than a random one, because the
+   language and the occupations drift, and the lower score is the
+   honest one.
+4. When a new round arrives, decide by the version policy of
+   [chapter 8](./version.mdx) whether it joins the training part (a
+   minor version) or becomes the new test part (a major version).
+
+**Worked example.** The full dataset spans four rounds, from 2024 Q3 to
+2025 Q2. The methodologist makes the 2025 Q2 round the test part, 9,400
+records, and splits the three earlier rounds by household between
+training and validation. The card says: "The test part is the 2025 Q2 round. Scores on it
+describe a coder trained on earlier rounds and used on a new one." The
+reference model scores 0.88 on this test part, against 0.91 on a random
+grouped split of the same data, and the card reports the lower figure. When the 2025 Q3 round arrives, the owner
+decides that it joins the training part as version 1.1, and that the
+test part moves forward to 2025 Q4 in version 2.0 the following year.
+
+**What this does not do.** A time-based test part measures drift
+between two rounds. It does not measure what a model will do on a
+different survey or a different country, which a dataset from there
+measures.
+
+</Recipe>
+
+<Recipe title="6.3 Check for leakage before release" level="AI-ready" skills="Data scientist" time="Half a day">
+
+**Result:** the organization has evidence that the test part contains
+nothing the training part gives away: no shared groups, no duplicated
+inputs across parts, no feature that encodes the label, and a reference
+score that is plausible.
+
+1. Shared groups: the script's leakage line, which has to read zero.
+2. Duplicated inputs: find records in the test part whose input text
+   also appears, exactly or nearly, in the training part. Identical
+   job descriptions with identical codes across parts are expected in
+   a coding dataset (many people are "primary school teacher"), and the
+   card says how many; identical records with different codes are
+   labelling errors to fix.
+3. Features that encode the label: for each feature, check whether it
+   determines the label on its own (an industry code assigned by the
+   same coder from the same text). Remove it from the features or
+   state it in the card as a feature a user may wish to exclude.
+4. Plausibility: train the reference model of [chapter 5](./represent.mdx)
+   and compare its test score with the agreement between two coders
+   stated in the card. A model that beats the coders has probably seen
+   the answers.
+
+**Worked example.** The leakage line reads zero. The duplicate check
+finds 212 test records whose job title also appears, exactly, in the
+training part, such as "primary school teacher" and "taxi driver", all
+with the same code, and the card states the count. It also finds three
+pairs with the same title and different codes, which the coding
+supervisor reviews and corrects in version 1.0.1. The feature check
+finds no feature that determines the label after the industry code was
+removed in chapter 2. The reference model's test score of 0.88 is below
+the coders' agreement of 0.91, which is what an honest split looks
+like. The four results are written into the card's composition section.
+
+**What this does not do.** The checks find the common leaks. A
+dataset built from a system that orders records by code, or whose
+text fields quote the code, leaks in ways only reading the data finds,
+which is one reason the sample review in the collection process
+exists.
+
+</Recipe>
+
+## Implementation options
+
+- **Assignment:** a grouped random draw with a recorded seed (this chapter); a hash of the group key, which gives the same assignment without a random state; stratified grouped assignment by hand for small datasets.
+- **Test part:** random by group; the latest round; a held-out region or language where the intended use is transfer.
+- **Where the split lives:** an assignment file named in the Croissant record (this chapter); one file per part; a split column in the data file.
+
+## World Bank examples
+
+- The [evaluation cookbook](/cookbook/evaluation-suites/gates) holds out part of each question set for the next gate, the same practice for evaluation data.
+- The [PI-FT toolkit](/pift-toolkit/pipeline) reports retrieval scores on held-out queries, which is the use a published split serves.
+
+## Resources
+
+- [Croissant specification: splits](https://docs.mlcommons.org/croissant/docs/croissant-spec.html): how a split is declared so that loaders can fetch one part.
+- [Datasheets for Datasets](https://arxiv.org/abs/1803.09010): the composition questions on recommended splits and their rationale.
+- [Evaluation suites cookbook, chapter 7](/cookbook/evaluation-suites/gates): held-out sets and the rule that a change must pass.
+
+## Common mistakes
+
+- **A random split of records.** Household members, repeated respondents, and pages of one document end up on both sides.
+- **A test part that changes with every release.** Scores across versions stop being comparable.
+- **A test score above the coders' agreement.** The model has seen the answers, somewhere.
+
+## Verification
+
+- **Assignment.** The file exists, its shares are reported, and the leakage line reads zero.
+- **Time-based part.** Where rounds exist, the card states which round is the test part.
+- **Leakage checks.** The checks have run and been recorded before release, and the reference score is below the coders' agreement.
+
+## Checklist
+
+<Checklist id="ml-ready-datasets-splits" items={[
+  'Split by the group key with a recorded seed and shares',
+  'Assignment file in the release and named in the Croissant record',
+  'No group in two parts; distribution of the main groups per part stated',
+  'Latest round as the test part where rounds exist',
+  'Leakage checks run before release; test part frozen within a major version',
+]} />

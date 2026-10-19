@@ -1,0 +1,232 @@
+/* Recipe */
+
+.recipe {
+  margin: 2rem 0;
+  border: 1px solid var(--hairline);
+  border-left: 4px solid var(--primary);
+  border-radius: var(--radius-lg);
+  background: var(--canvas);
+  overflow: hidden;
+}
+
+.recipeHead {
+  padding: 1rem 1.25rem 0.75rem;
+  background: var(--band);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.recipeKicker {
+  display: block;
+  color: var(--primary);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.recipeTitle {
+  font-size: 1.15rem;
+  margin: 0.2rem 0 0.5rem;
+}
+
+/* Working-draft banner at the top of every chapter of an unreviewed cookbook. */
+.draftBanner {
+  margin: 0 0 1.5rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--hairline);
+  border-left: 3px solid var(--primary);
+  border-radius: var(--radius, 6px);
+  background: var(--band);
+  color: var(--ink-muted);
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+
+.draftBanner strong {
+  color: var(--ifm-font-color-base);
+}
+
+.recipeMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.5rem;
+  margin: 0;
+  font-size: 0.82rem;
+}
+
+.recipeMeta div {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.recipeMeta dt {
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+
+.recipeMeta dd {
+  margin: 0;
+}
+
+.recipeBody {
+  padding: 1rem 1.25rem 0.25rem;
+}
+
+.recipeBody > :last-child {
+  margin-bottom: 1rem;
+}
+
+/* Checklist */
+
+.checklist {
+  margin: 1.5rem 0;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  background: var(--canvas);
+}
+
+.checklistBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--hairline);
+  font-size: 0.85rem;
+}
+
+.checklistCount {
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+
+.checklistActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.smallButton {
+  font: inherit;
+  font-size: 0.8rem;
+  padding: 0.25rem 0.7rem;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: var(--canvas);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.smallButton:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.smallButton:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.checklistItems {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 1rem;
+}
+
+.checklistItem {
+  display: flex;
+  gap: 0.6rem;
+  align-items: baseline;
+  padding: 0.3rem 0;
+  cursor: pointer;
+}
+
+.checklistDone {
+  color: var(--ink-muted);
+  text-decoration: line-through;
+}
+
+.checklistNote {
+  margin: 0;
+  padding: 0.4rem 1rem 0.6rem;
+  color: var(--ink-muted);
+  font-size: 0.78rem;
+}
+
+/* Self-assessment */
+
+.assessment {
+  margin: 1.5rem 0;
+}
+
+.aq {
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  padding: 0.75rem 1rem 0.5rem;
+  margin: 0 0 1rem;
+  background: var(--canvas);
+}
+
+.aqTitle {
+  font-weight: 600;
+  padding: 0 0.3rem;
+}
+
+.aqTitle span {
+  color: var(--primary);
+  margin-right: 0.4rem;
+}
+
+.aqOption {
+  display: grid;
+  grid-template-columns: auto max-content 1fr;
+  gap: 0.6rem;
+  align-items: baseline;
+  padding: 0.3rem 0;
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+
+.aqLevel {
+  color: var(--ink-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  min-width: 7.5rem;
+}
+
+@media screen and (max-width: 600px) {
+  .aqOption {
+    grid-template-columns: auto 1fr;
+  }
+
+  .aqLevel {
+    grid-column: 2;
+    min-width: 0;
+  }
+
+  .aqOption > span:last-child {
+    grid-column: 2;
+  }
+}
+
+.aBar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.88rem;
+  color: var(--ink-muted);
+}
+
+.aResult {
+  margin-top: 1.25rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  background: var(--band);
+}
+
+.aResult table {
+  font-size: 0.9rem;
+}

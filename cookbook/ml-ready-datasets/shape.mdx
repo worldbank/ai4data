@@ -1,0 +1,251 @@
+---
+id: shape
+title: "2. Form and packaging of the files"
+sidebar_label: "2. Form"
+sidebar_position: 3
+description: "The file layout of an ML-ready dataset: one record per row, typed columns described in a dictionary, a stated label and features, identifiers and group keys, open formats, and one folder per release."
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 2. Form and packaging of the files
+
+**Question:** What form does an ML-ready dataset take?
+
+## Rationale
+
+A model-training program reads a dataset without a person present. It
+needs to know which column is the input, which is the answer, what
+type each column has, which code means what, and which records belong
+together. A tidy file answers the first question by its shape: one
+record per row, one variable per column, the same columns in every
+row. A dictionary answers the rest: for each column, its meaning, its
+type, its codes, and its role (identifier, feature, label, group key,
+weight).
+
+The form also decides what can go wrong later. A dataset whose records
+of one household are scattered across files cannot be split by
+household. A dataset whose label is also present, in disguise, among
+the features (an industry code that implies the occupation) trains a
+model that cheats. A dataset whose files are named by date and carry
+no version cannot be cited. The recipes of this chapter settle the
+form once, so that the later chapters have something stable to
+describe.
+
+## Target state
+
+- Every dataset is one or more tidy files in an open format, with a dictionary that gives each column a meaning, a type, its codes, and a role.
+- Identifiers, group keys, features, labels, and weights are named as such, and the label does not leak into the features.
+- Each release is one folder with a fixed set of files, named by the dataset and the version.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Publish one CSV with a dictionary that names the label, the features, the identifier, and the group key. |
+| **AI-ready** | Add Parquet for large files, stable column names across versions, and the role of every column in the dictionary; check leakage between features and label. |
+| **AI-native** | Generate the files and the dictionary from the production system at each release, with the checks of this guide as a pipeline stage. |
+
+:::info[Running example]
+The occupation-coding dataset is one CSV of 600 rows and twelve
+columns, with a dictionary that marks `record_id` as the identifier,
+`hhid` as the group key, `job_title` and `industry_text` as the text
+features, the respondent's characteristics as further features,
+`isco_code` as the label, `isco_major` as a coarser label, and
+`weight` as the survey weight.
+:::
+
+## Recipes
+
+<Recipe title="2.1 Lay out the records and write the dictionary" level="Foundational" skills="Data manager" time="Half a day per dataset">
+
+**Result:** the dataset has a data file with one record per row and a
+dictionary file that says, for every column, what it means, its type,
+and its role.
+
+The data file of the running example has twelve columns. Its
+dictionary has one row per column:
+
+| Column | Meaning |
+|---|---|
+| `name` | The column name in the data file |
+| `label` | A short name in words |
+| `type` | `id`, `categorical`, `numeric`, `integer`, `text`, or `boolean` |
+| `description` | What the column holds, with its codes where it has them |
+| `role` | `id` (identifies a record), `group` (records that must stay together), `feature` (an input to the model), `label` (what the model predicts), or `weight` |
+
+```csv file=../../website/static/cookbook-files/ml-ready-datasets/dictionary.csv
+```
+
+1. Lay out the data as one record per row, with the same columns in
+   every row. Keep codes in the file (`R01`, `2`) and their meanings in
+   the dictionary, as the
+   [dissemination cookbook](/cookbook/ai-ready-dissemination/retrieve)
+   does for published series.
+2. Give every column a row in the dictionary. Name the identifier, the
+   group key, each feature, each label, and the weight.
+3. Write the description so that someone who has never seen the survey
+   can use the column: the codes of a categorical column, the unit of a
+   numeric one, the language of a text one.
+4. Keep the dictionary with the data under version control. The
+   Croissant record of [chapter 3](./describe.mdx) is generated from
+   it.
+
+**Worked example.** The dictionary row for `job_title` reads: label
+"Job title as reported", type `text`, description "The respondent's
+description of the main job, as written by the interviewer, in English
+or French; spelling is not corrected", role `feature`. The row for
+`isco_code` reads: label "ISCO-08 unit group", type `categorical`,
+description "Four-digit ISCO-08 code assigned by a trained coder; 9999
+means not codable", role `label`. The row for `weight` reads: type
+`numeric`, description "Survey weight calibrated to the population aged
+15 and over; corrects population estimates and is not a training
+weight", role `weight`. A data scientist at a partner organization reads
+the twelve rows and knows which columns to feed a model and which one it
+predicts without asking anyone.
+
+**What this does not do.** A dictionary describes columns. It does not
+say how the dataset was made or what it covers, which is the card of
+[chapter 4](./document.mdx), and it does not check the data against
+the description, which the
+[microdata cookbook's dictionary check](/cookbook/microdata-documentation/variables)
+does.
+
+</Recipe>
+
+<Recipe title="2.2 Separate identifiers, group keys, features, labels, and weights" level="Foundational" skills="Methodologist" time="Two hours per dataset">
+
+**Result:** every column has one role, and no column that is a feature
+contains the answer the model is supposed to find.
+
+1. Identifiers: one column that identifies a record, with no meaning
+   of its own. Remove any identifier from the source system that could
+   be looked up elsewhere.
+2. Group key: the unit whose records must stay together when the data
+   are split (the household, the firm, the document, the respondent
+   across waves). A model tested on one member of a household it was
+   trained on another member of has seen part of the answer.
+3. Features: the inputs a model may use. Ask, for each, whether it
+   would be available when the model is used. A coder sees the job
+   description and the industry text; the coder does not see next
+   year's code.
+4. Labels: the answer, and any coarser version of it (the major group
+   of the occupation code). Check that no feature encodes the label: an
+   industry code assigned by the same coder from the same text is not a
+   feature.
+5. Weights: keep the survey weight as a column, name it, and say in the
+   dictionary what it is for. A survey weight corrects population
+   estimates; it is not, by default, a training weight.
+
+**Worked example.** The methodologist assigns the roles for the
+occupation dataset. `record_id` is the identifier, generated for the
+dataset and unrelated to the survey's own identifiers. `hhid` is the
+group key, because two members of a household describe their jobs in
+similar words. The features are `job_title`, `industry_text`, and the
+respondent's region, residence, sex, age group, and education, all of
+which a coder sees. The labels are `isco_code` and `isco_major`. The source file also carried `isic_code`, the industry code assigned by
+the same coder from the same text. The methodologist removes it from
+the features, because a coder who reads "sells vegetables at the
+market" assigns both codes from the same reading, and the industry code
+would hand a model half the answer. The decision is noted in the card.
+
+**What this does not do.** Roles are declared by a person who knows the
+source. Leakage through a subtle path (a record order that follows the
+label, a text field that quotes the code) is found by the split checks
+of [chapter 6](./splits.mdx) and by training a model and looking at
+what it relies on.
+
+</Recipe>
+
+<Recipe title="2.3 Choose the formats and the release layout" level="AI-ready" skills="Data manager; developer" time="Half a day">
+
+**Result:** every release of a dataset is one folder with a fixed set
+of files in open formats, named so that the dataset and the version are
+visible. The later chapters describe, document, and seal that folder.
+
+The release folder of the running example:
+
+| File | What it is |
+|---|---|
+| `lfs_occupation_ml.csv` | The data, one record per row |
+| `dictionary.csv` | The dictionary of recipe 2.1 |
+| `splits.csv` | The split of each record ([chapter 6](./splits.mdx)) |
+| `dataset_card.md` | The card ([chapter 4](./document.mdx)) |
+| `lfs_occupation_ml.croissant.json` | The loading record ([chapter 3](./describe.mdx)) |
+| `manifest.json` | The checksums and the version ([chapter 8](./version.mdx)) |
+
+1. Use CSV (UTF-8, comma, header row, a period as decimal separator)
+   for files up to a few hundred thousand rows, and
+   [Parquet](https://parquet.apache.org/) beside it for large files.
+   Parquet keeps column types and compresses well, and every
+   machine-learning library reads it.
+2. Keep text in one column per text field, with newlines inside a
+   field quoted. Keep images and documents as separate files, with a
+   column that holds the file name.
+3. Name the folder and the files by the dataset identifier and the
+   version (`lfs-occupation-ml/1.0.0/`), and never change a released
+   file in place.
+4. Put the folder under the dataset's catalog page and, where the
+   organization uses one, in a public dataset repository, with the
+   catalog as the authority.
+
+**Worked example.** The release folder `lfs-occupation-ml/1.0.0/` holds
+the six files in the table. The data file is a CSV of 600 rows in
+UTF-8 with a header row, and the two text columns are quoted because
+some job descriptions contain commas. At 600 rows no Parquet file is
+needed, and the card says that one is added when the dataset passes a
+hundred thousand rows. The folder sits at
+`https://stats.example/datasets/lfs-occupation-ml/1.0.0/` under the
+dataset's catalog page, and a copy is uploaded to the organization's
+account on a public dataset repository, whose page links back to the
+catalog as the authority. Once published, the folder is never edited;
+a correction becomes version 1.0.1 in its own folder.
+
+**What this does not do.** The layout fixes the container. The content
+of each file is the subject of its own chapter, and the manifest of
+[chapter 8](./version.mdx) is what proves that a user holds the files
+as released.
+
+</Recipe>
+
+## Implementation options
+
+- **Formats:** CSV for small files; Parquet for large ones; JSON Lines for nested records (one JSON object per line); files on disk for images and documents, referenced by name.
+- **Dictionary:** the CSV of this chapter; a [Frictionless Table Schema](https://datapackage.org/) in JSON; the variable section of a DDI record for datasets derived from microdata.
+- **Column names:** the source survey's names where the dataset derives from one; SDMX concept names for aggregate data.
+
+## World Bank examples
+
+- The program's cookbooks share one layout for tidy files with SDMX column names, from the [dissemination cookbook](/cookbook/ai-ready-dissemination/retrieve) to the [documents cookbook's tidy files](/cookbook/data-from-documents/extract).
+- The [Metadata Editor](https://github.com/worldbank/metadata-editor) exports a variable-level description of a data file that a dictionary can be derived from.
+
+## Resources
+
+- [Apache Parquet](https://parquet.apache.org/): the columnar file format for large tabular datasets.
+- [Data Package standard](https://datapackage.org/): a container format for a dataset's files with a table schema per resource, and the `frictionless` tools that validate it.
+- [Tidy data layout in the dissemination cookbook](/cookbook/ai-ready-dissemination/retrieve): one row per observation, codes in the file, labels in the code lists.
+- [Dictionary check of the microdata cookbook](/cookbook/microdata-documentation/variables): the check that a dictionary is complete and consistent.
+
+## Common mistakes
+
+- **The label among the features.** A model trained on it scores well and fails in use.
+- **Group members in different files.** They cannot be kept together in a split.
+- **Files edited after release.** A citation to version 1.0.0 then points at something else.
+- **Text with unquoted newlines.** The file loads with the wrong number of rows.
+
+## Verification
+
+- **Tidy.** Every row has the same columns, and the file loads with the expected number of rows.
+- **Dictionary.** There is one row per column, and the identifier, group key, label, and weight are named.
+- **Layout.** Each release is one folder with the six files, none of them changed since release.
+
+## Checklist
+
+<Checklist id="ml-ready-datasets-shape" items={[
+  'One record per row, the same columns in every row, codes in the file',
+  'Dictionary with meaning, type, codes, and role for every column',
+  'Identifier, group key, features, labels, and weight named; no feature encodes the label',
+  'Open formats: CSV, Parquet for large files, separate files for images and documents',
+  'One folder per release, named by dataset and version, never edited after release',
+]} />

@@ -1,0 +1,265 @@
+---
+id: editing
+title: "4. Editing, imputation, and anomaly explanation"
+sidebar_label: "4. Editing"
+sidebar_position: 5
+description: How a model supports the processing and analysis phases, by explaining edit failures in plain language, proposing values that the edit rules then check, and drafting explanations of anomalous aggregates with cited evidence, with the editor and the analyst deciding every case.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 4. Editing, imputation, and anomaly explanation
+
+**Question:** Can a model support editing and the explanation of anomalies?
+
+## Rationale
+
+Editing is where records that fail rules are reviewed and corrected,
+and imputation is where missing or rejected values are replaced by
+method. Both are decided by rules and methods the organization owns,
+and both generate text work: an editor reads a failure message and the
+record and decides; an analyst sees an aggregate that moved and asks
+why. A model explains a failure in plain language with the fields that
+caused it, proposes a value that the rules then bound, and drafts an
+explanation of an anomaly from the evidence it is given. The rules
+stay the rules, the imputation method stays the method of record, and
+the editor and the analyst decide; the model saves them the reading.
+
+## Target state
+
+- Edit failures reach editors with a plain-language explanation that names the fields and the rule, drafted by a model and grounded in the record.
+- Model-proposed values are checked against the edit rules before an editor sees them, and nothing is applied without a decision.
+- Anomalous aggregates reach analysts with a drafted explanation that classifies the likely cause and cites evidence, with the analyst's verdict recorded.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Draft plain-language explanations of edit failures for editors; measure whether editors find them right. |
+| **AI-ready** | Propose values checked against the rules; draft anomaly explanations with evidence; record editor and analyst decisions; track acceptance. |
+| **AI-native** | Learn from decisions which failures and anomalies are routine and which need a person; route accordingly; feed verdicts into the anomaly pipeline's explanation classes. |
+
+:::info[Running example]
+Six model-proposed values for records that failed edit rules in the
+labour force survey. Four pass the rules and go to the editor as
+proposals with their reasons; two still fail (hours reported for a
+person outside the labour force, main-job hours above total hours) and
+go back with the rule named. Nothing is applied.
+:::
+
+## Recipes
+
+<Recipe title="4.1 Explain edit failures in plain language" level="Foundational" skills="Editing supervisor; developer" time="One day to set up">
+
+**Result:** every edit failure shown to an editor comes with a
+two-sentence explanation, written by a model from the rule and the
+record, that names the fields involved and a plausible cause.
+
+An edit rule is a condition a record has to satisfy, such as "age is
+between 0 and 110" or "hours worked are reported only for employed
+persons". When a record fails one, the editor sees a rule identifier and
+has to work out what happened. A plain-language explanation saves that
+reading.
+
+1. Give the model the rule (its identifier, the fields it involves, the
+   condition, the message) and the relevant fields of the record. Ask
+   for two sentences: what failed and with which values, and what a
+   plausible cause is. Add the rule that it may cite only fields present
+   in the record.
+2. Show the explanation beside the record in the editing tool. The
+   editor decides as before.
+3. Each round, have editors rate a sample of explanations as right,
+   partly right, or wrong. A wrong explanation points to a problem in
+   the model's instructions or in the rule's wording.
+
+**Worked example.** Record H0009-2 fails rule E04, "hours worked are
+reported only for employed persons". The editor used to see "E04
+failed" and the record. Now the model is given the rule and the fields
+`lfs_status`, `hours`, and `q17b`, and returns: "This person is coded as
+outside the labour force (lfs_status 3) but reports 45 hours of work
+last week. Either the labour force status was derived wrongly from the
+job search answers, or the hours belong to another household member."
+The editor reads it, checks the roster, and finds that the hours were
+keyed against the wrong person. On the round's sample of 150
+explanations, editors rate 132 as right, 14 as partly right, and 4 as
+wrong, and the four wrong ones all concern a rule whose message named
+the wrong field.
+
+**What this does not do.** The explanation says, in words, why the rule
+fired. The editor still judges whether the record or the rule is wrong.
+The rules remain the organization's, written and versioned as before.
+
+</Recipe>
+
+<Recipe title="4.2 Propose values and check them against the rules" level="AI-ready" skills="Python; editing supervisor" time="Half a day to set up; minutes per batch">
+
+**Result:** a record that failed an edit has a value the model proposes
+with a reason, and the value has been checked against every edit rule
+before an editor sees it. Proposals that pass reach the editor as
+suggestions, and proposals that fail go back. Nothing is applied to the
+data without an editor's decision.
+
+The example uses two files. The edit rules file has one rule per row:
+the field it applies to, the type of rule (`range` for an allowed
+interval, `lte` for "no greater than another field", `consistency` for a
+condition on another field), its parameters, and the message. The
+suggestions file has one model proposal per row: the record, the field,
+the current value, the proposed value, the model's reason, and the
+record's other fields that the rules refer to. The script checks each
+proposal against the rules:
+
+```python file=../../website/static/cookbook-files/language-models-in-production/check_suggestions.py
+```
+
+```bash
+python check_suggestions.py edit_rules.csv suggested_values.csv
+```
+
+Output for the running example:
+
+```text
+6 suggestions against 5 rules
+
+H0003-2   age              140 -> 41     to editor as proposal
+H0005-1   hours            120 -> 40     to editor as proposal
+H0007-3   income          -500 -> 500    to editor as proposal  [reason does not cite the record]
+H0009-2   hours             45 -> 45     still fails: E04 (Hours apply only to employed persons)
+H0011-1   hours_main        50 -> 50     still fails: E05 (Hours in the main job cannot exceed total hours)
+H0012-4   income       (empty) -> 1200   to editor as proposal
+
+4 suggestions pass the rules and go to the editor; 2 still fail and go back with the rule named; nothing is applied automatically
+```
+
+Each line shows the record, the field, the current and proposed values,
+and the outcome of the check. A proposal that passes every rule goes to
+the editor. A proposal that still fails names the rule it fails. A note
+in brackets marks a proposal whose reason does not refer to anything in
+the record, which the editor reads with more care.
+
+1. Keep the edit rules in a file the script can read. The file in this
+   chapter is a minimum; most editing systems can export their rules in
+   a similar form.
+2. Ask the model for a proposed value with a reason that cites the
+   record: other fields, the household roster, the respondent's other
+   answers. Run the check.
+3. Show the proposals that pass to editors as suggestions. Send the
+   proposals that fail back to the model with the rule named, or to the
+   editor as a failure without a proposal.
+4. Where the organization fills missing values by a documented method
+   (a donor record, a regression, the median of a cell), that method
+   produces the value and the model only explains it. The method of
+   record does not change because a model is available.
+
+**Worked example.** For record H0003-2, whose age of 140 fails the range rule, the model
+proposes 41. Its reason reads: "the household roster lists this person
+as the spouse of the 43-year-old head, and the first two digits of 140
+transposed give 41, which is consistent with the birth year on the next
+line". The proposal passes every rule and goes to
+the editor, who accepts it. For H0009-2, the model proposes keeping the
+45 hours and changing the labour force status, but the check only
+examines the proposed field, so the proposal still fails E04 and goes
+back with the rule named. For H0012-4, the missing income, the
+organization's method of record is a donor imputation; the donor value
+of 1,200 is produced by that method, and the model's role is only to
+write the sentence that explains to the editor which donor was used and
+why.
+
+**What this does not do.** A value that satisfies every rule can still
+be wrong for that person; the editor's knowledge of the survey is the
+check. The imputation method and its documentation stay the
+organization's.
+
+</Recipe>
+
+<Recipe title="4.3 Draft anomaly explanations with cited evidence" level="AI-ready" skills="Analyst; developer" time="One day to set up">
+
+**Result:** when an aggregate is flagged as unusual, the analyst
+receives a drafted explanation that names the most likely cause and the
+evidence it rests on, and the analyst's verdict on it is recorded.
+
+An anomaly is a value in a series that differs from what its history
+would predict: a jump, a fall, a value out of line with related series.
+Detecting anomalies is a statistical task the organization already
+does. Explaining them is reading: release notes, methodology changes,
+the revisions log, neighbouring periods. A model can do that reading
+and draft the explanation; the analyst judges it.
+
+1. Detect anomalies with the organization's existing methods
+   (thresholds, seasonal residuals, outlier detection). The program's
+   [Anomaly Detection and Explanation](/docs/anomaly-detection/) work
+   keeps detection and explanation as separate steps for this reason.
+2. For each flagged value, give the model the series, the neighbouring
+   periods, the related series, and the known events (release notes,
+   methodology changes, the revisions log). Ask for a fixed-format
+   answer: a cause class (data entry error, methodology change, real
+   change, coverage change, unknown), a confidence, and the evidence
+   cited from the inputs.
+3. The analyst reads the draft with its evidence and records a verdict.
+   The verdicts refine the cause classes and the examples shown to the
+   model.
+4. Publish the confirmed explanations with the release where they
+   matter ([dissemination cookbook, chapter 3](/cookbook/ai-ready-dissemination/understand)).
+
+**Worked example.** The detector flags the youth unemployment rate for
+the second quarter of 2025, which fell from 17.5 to 16.8 percent while
+the overall rate fell by only 0.2 points. The model is given the two
+series, the four previous quarters, the participation rate, the release
+notes, and the revisions log. It returns the cause class "real change"
+with a confidence of 0.7, citing the release note that a public works
+programme for young people started in April and the participation rate
+of the 15 to 24 group, which rose in the same quarter. The analyst
+reads the draft, checks the programme's enrolment figures from the
+ministry, and records the verdict "confirmed: real change; programme
+enrolment of 28,000 accounts for most of the fall". The explanation is
+published with the release as a note on the youth series.
+
+**What this does not do.** An explanation drafted from the evidence
+given cannot reach a cause outside it, such as a field event nobody
+wrote down; the analyst knows those. "Unknown" is a valid class, and
+the analyst's verdict is the record.
+
+</Recipe>
+
+## Implementation options
+
+- **Explanations:** a prompt per rule with the record's fields; shown in the editing tool; rated by editors on a sample.
+- **Proposals:** model proposals checked by the rules script or the editing system's own rule engine; imputation by the method of record with model explanation.
+- **Anomalies:** the organization's detection; model explanation with cause classes and cited evidence; analyst verdicts recorded.
+- **Feedback:** editor ratings and analyst verdicts tracked per round.
+
+## World Bank examples
+
+- [Anomaly Detection and Explanation](/docs/anomaly-detection/) flags unusual values in indicator series and produces structured explanations with classification, confidence, and evidence, with a [feedback system](/docs/anomaly-detection/feedback-system) for analysts' verdicts.
+- The [Metadata Reviewer](/docs/metadata-reviewer/overview) proposes corrections with a current and a suggested value for a reviewer's decision, the same propose-and-decide pattern.
+
+## Resources
+
+- [Anomaly Detection and Explanation](/docs/anomaly-detection/): the program's detection and LLM explanation pipeline with structured outputs.
+- [UNECE Statistical Data Editing](https://unece.org/statistics/statistical-data-editing): methods and practice for editing and imputation, the method of record.
+- [GSBPM sub-processes 5.3 and 5.4](https://unece.org/statistics/modernstats/gsbpm): review and validate; edit and impute.
+- [Edit rules, suggestions, and check](pathname:///cookbook-files/language-models-in-production/check_suggestions.py): the running example.
+
+## Common mistakes
+
+- **Proposals applied without an editor.** A proposal is a suggestion by definition.
+- **Rules left in people's heads.** The check needs them in a file.
+- **An imputation method replaced by a model.** The method of record is documented and reproducible; a model's value is neither.
+- **Anomaly explanations without evidence.** A cause with no cited input is a guess.
+
+## Verification
+
+- **Explanations.** Editors rate a sample each round, and the share rated wrong is tracked.
+- **Proposals.** Every proposal shown to an editor passed the rules, and the log shows no automatic application.
+- **Anomalies.** Every flag has a drafted explanation with cited evidence and a recorded verdict.
+
+## Checklist
+
+<Checklist id="language-models-in-production-editing" items={[
+  'Edit rules in machine-readable form',
+  'Plain-language explanations of failures shown to editors and rated',
+  'Proposed values checked against the rules before editors see them',
+  'Nothing applied without an editor decision; imputation method of record unchanged',
+  'Anomaly explanations with cause class, confidence, and cited evidence',
+  'Editor ratings and analyst verdicts recorded and fed back',
+]} />

@@ -1,0 +1,250 @@
+---
+id: ask
+title: "4. Natural-language access"
+sidebar_label: "4. Ask"
+sidebar_position: 5
+description: How users can ask for statistics in their own words, through a monthly review of failed searches, an assistant that answers only from retrieved records, and a monthly review of its answers.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 4. Natural-language access
+
+**Question:** Can users ask questions in their own words?
+
+## Rationale
+
+:::note[A deeper treatment exists]
+This chapter gives the first steps. The [Serving Statistics to AI Agents](/cookbook/serving-statistics-to-agents/) cookbook covers
+the agent interface, its tools, context, access control, safety, and evaluation in full, with scripts and a running example.
+:::
+
+
+Most users do not know the official names of indicators or the structure
+of a catalog. They type a question, in their own words and often in their
+own language, and they expect an answer. Natural-language interfaces
+reduce the effort of finding and reading statistics, and they are the
+form in which many users already meet AI systems, whether the
+organization offers one or not.
+
+This chapter comes after findability, retrieval, and meaning, because a
+conversational interface depends on all three. The assistant can only find
+what the records describe, can only quote what the API returns, and can
+only explain what the metadata says. A chatbot placed over incomplete
+metadata produces confident answers from poor inputs, and its errors are
+invisible until a user reports them. The recipes therefore start with the
+cheapest form of natural-language access, which is reading what users
+typed into the search box, and build up to an assistant whose answers are
+checked before and after they are shown.
+
+## Target state
+
+- A question returns the relevant series, with the unit, period, and source, in a few seconds.
+- The system says when it has no matching data.
+- Users can ask in the languages they use.
+- The system's role is clear: it finds and explains published statistics and does not create new ones.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Provide search with filters by topic, geography, and period. Add example queries on the search page. Review the logged search terms that returned no results. |
+| **AI-ready** | Add semantic search that matches by meaning ([chapter 1](./find.mdx)). Return structured answers that link to the series pages. Support the main user languages for queries. |
+| **AI-native** | Offer a conversational interface that uses retrieval-augmented generation: it retrieves records and values first, and the language model writes the answer from them. Answers carry citations and numeric checks ([chapter 5](./trust.mdx)). |
+
+:::info[Running example]
+A user asks "Is hunger going down?" The system retrieves
+`FS_UNDERNOURISH_PCT` and its last three values, and the model answers from
+those values only: 8.4% in 2022, 7.9% in 2023, 7.6% in 2024, with the series
+URL. For "What is inflation?" it says that the organization does not publish that
+series.
+:::
+
+## Recipes
+
+<Recipe title="4.1 Review failed searches every month" level="Foundational" skills="Dissemination staff" time="Two hours a month">
+
+**Result:** the organization knows the most common ways users fail to
+find its data, fixes each one at the source, and turns each one into a
+test question.
+
+The search log is the one place where users say, in their own words,
+what they wanted and did not find. Reading it costs two hours a month and
+needs no new software. Every fix it produces improves the search for
+people and for AI systems alike, because both read the same records.
+
+1. Export the search queries that returned zero results, or whose
+   results were not clicked, for the last month.
+2. Group them by intent. Most fall into a few buckets: a synonym the
+   catalog does not use ("jobless"), a language the catalog does not
+   cover, a series the organization does not publish, or a typo.
+3. For synonyms, add the words to the description or a keywords field
+   of the right series. For missing languages, translate the titles of
+   the series involved. For unpublished series, add a page that says so
+   and points to the nearest series.
+4. Add each query with its expected series to the question set
+   ([chapter 6](./evaluate.mdx)). The next monthly score shows whether
+   the fix worked.
+
+**Worked example.** In one month the example organization's search log
+holds 212 queries with no results. Grouped by intent, 80 of them are
+variants of "jobless" and "out of work", which the unemployment record
+never mentions. Thirty are in French, which the catalog does not cover.
+Twenty ask for inflation, which the organization does not publish, and
+the rest are typos and one-word queries nobody can interpret. The
+dissemination officer adds "jobless" and "out of work" to the keywords of
+`LF_UNEMP_PCT`, has the five series titles translated into French, and
+adds a page that says the organization does not publish an inflation rate
+and links to the central bank. The three queries go into the question
+set, and the next month's log has 140 zero-result queries.
+
+**What this does not do.** Zero-result queries show what users looked
+for and did not find. Queries that returned wrong results and were
+clicked anyway are invisible here; the answer review of recipe 4.3 and
+the question set of [chapter 6](./evaluate.mdx) catch those.
+
+</Recipe>
+
+<Recipe title="4.2 Answer from retrieved records only" level="AI-native" skills="Developer with access to a language model and the API from chapter 2" time="One week for a prototype">
+
+**Result:** the organization has an assistant that answers questions
+with values taken from the API, cites the series they come from, and
+declines when no series matches the question.
+
+The pattern is called retrieval-augmented generation: the assistant
+first retrieves the records and values that might answer the question,
+then gives them to the language model with the instruction to use
+nothing else. The model sees data only in step 3 of the flow below.
+The instructions given to the model, as text:
+
+```text
+You answer questions about official statistics published by the organization.
+Use only the records and values provided below. Every number you state
+must appear in the values. Cite the series id and source URL for each
+number. State the unit and the period. If the records do not answer the
+question, say that the organization does not publish a matching series and do
+not estimate. Answer in the language of the question.
+
+Records:
+[series records as JSON]
+
+Values:
+[values as JSON]
+
+Question: [user question]
+```
+
+1. **Retrieve.** Run the question through the catalog search (recipe
+   1.3) and take the top three series.
+2. **Fetch.** Call the API or the MCP tool for the values of those
+   series, with unit, release, and source URL.
+3. **Generate.** Send the question and the retrieved material to the
+   model with the instructions above.
+4. **Verify.** Run the answer through the number check of
+   [chapter 5](./trust.mdx) before showing it. Show flagged numbers as
+   unverified, or remove them.
+5. Log the question, the retrieved records, the answer, and the
+   verification result for the monthly review (recipe 4.3). Where the
+   model calls the data tools itself (through a tool-use API or MCP),
+   the rules above still apply.
+
+**Worked example.** A user asks "Is hunger going down?". The retrieval
+step returns three series, with the prevalence of undernourishment first.
+The fetch step calls the API for its values and receives 8.4 for 2022,
+7.9 for 2023, and 7.6 for 2024, with the unit and the release date of 14
+March 2025. The model receives the instructions, the three records, and
+those values, and writes: "Yes. The prevalence of undernourishment fell
+from 8.4% of the population in 2022 to 7.6% in 2024 (FS_UNDERNOURISH_PCT,
+release of 14 March 2025, https://stats.example/series/FS_UNDERNOURISH_PCT)."
+The verification step finds every number in the retrieved values and
+marks the answer verified. For "What is inflation?" the retrieval step
+returns nothing close, and the model answers that the organization does
+not publish an inflation series.
+
+**What this does not do.** The flow grounds answers in retrieved
+records and cannot answer better than the retrieval. A question whose
+series is outside the top three gets a wrong or declined answer, which
+is why the retrieval scores of [chapter 6](./evaluate.mdx) are tracked
+beside the answer scores.
+
+</Recipe>
+
+<Recipe title="4.3 Review a sample of answers each month" level="AI-native" skills="Subject-matter staff" time="Half a day a month">
+
+**Result:** the organization has a measured error rate for the
+assistant's answers and a list of fixes, where before it had anecdotes.
+
+1. Draw 30 logged answers at random, including some in each language.
+2. Score each against four questions: right series, right numbers,
+   right period and unit, right caveats. Record yes or no for each.
+3. Add every failure to the question set with the expected answer.
+4. Report the four rates each month next to the retrieval scores.
+
+**Worked example.** The subject-matter reviewer draws 30 answers from the
+October log, 20 in English and 10 in French. Twenty-seven name the right
+series. Twenty-six state the right numbers, and the one that does not
+quotes the 2023 undernourishment value as 7.6 where the retrieved value
+was 7.9. Twenty-four state the period and the unit, and the three that do
+not all omit "of the labour force" after the unemployment rate. Twenty-two
+repeat the caveats, with five answers about the latest quarter failing to
+say it is provisional. The reviewer adds the eight failures to the
+question set and asks the developer to strengthen the instruction about
+provisional values. The month's report shows the four rates as 90, 87,
+80, and 73 percent.
+
+**What this does not do.** Thirty answers a month show large error
+rates; a rate below a few percent needs a larger sample to be seen. The
+sample is of logged answers, so questions users did not ask are not
+covered, and the question set of [chapter 6](./evaluate.mdx) supplies
+those.
+
+</Recipe>
+
+## Implementation options
+
+- **Search first:** a good semantic search page already answers many questions and carries lower risk than free-text generation.
+- **Retrieval-augmented generation (RAG):** retrieve metadata and values from the authoritative source, then ask the model to answer only from what was retrieved. Return the retrieved records with the answer.
+- **Tool use:** let the model call the data API or an MCP server for values, so that numbers come from the source.
+- **Multilingual access:** use multilingual embedding models for queries, translate metadata for the priority languages, and test each language separately.
+- **Model choice:** small and open models can handle routing and rephrasing tasks. See [chapter 9](./sustain.mdx).
+
+## World Bank examples
+
+- The [home page examples](/) show a multilingual search over indicator metadata and an assistant that answers through an MCP connection.
+- The [Data360 MCP server](https://github.com/worldbank/data360-mcp) is a working example of the tool-use pattern: the assistant searches indicators, reads metadata and disaggregations, and fetches data through named tools.
+- [Efficient and Inclusive AI Applications](/docs/inclusive-ai/) discusses model choices and language coverage for low-resource settings.
+
+## Resources
+
+- [Efficient and Inclusive AI Applications](/docs/inclusive-ai/): model choice, language coverage, and local deployment for the answer interface.
+- [Model Context Protocol](https://modelcontextprotocol.io/): tool use against the organization's own API, so that values come from the source; the [agents cookbook](/cookbook/serving-statistics-to-agents/) covers it in full.
+- [Sentence Transformers](https://www.sbert.net/) multilingual models: query embeddings for languages the metadata is not written in.
+- [Proof-Carrying Numbers](https://arxiv.org/abs/2509.06902): the verification of numbers in generated answers that [chapter 5](./trust.mdx) applies.
+- [Evaluation questions](pathname:///cookbook-files/ai-ready-dissemination/eval_questions.csv): the question set the monthly review of recipe 4.3 samples from.
+
+## Common mistakes
+
+- **A chatbot as the first AI project.** Without chapters 1, 2, 5, and 6 in place, the errors are invisible until a user reports them.
+- **Letting the model answer from memory.** Models have seen old versions of many statistics. Values must come from the API in the same request.
+- **Testing in one language.** A system that works in English can fail completely in the national language. Score each language.
+- **No refusal path.** A system that always answers will invent a series when none exists.
+
+## Verification
+
+- **Question set.** The question set contains real questions from help-desk and search logs, with questions in each supported language.
+- **No-answer cases.** The set includes questions the organization cannot answer, and the system declines them.
+- **Review sample.** The monthly review of recipe 4.3 has run, and its four rates are reported.
+
+## Checklist
+
+<Checklist id="ask" items={[
+  'Search logs reviewed monthly for failed queries',
+  'Semantic search in place before any chat interface',
+  'Answers generated only from retrieved records and values',
+  'Numbers verified before display',
+  'The interface declines when no matching data exist',
+  'Languages tested one by one',
+  'Question set built from real user questions',
+  'Monthly human review of a sample of answers',
+]} />

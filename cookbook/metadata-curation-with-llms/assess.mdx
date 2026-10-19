@@ -1,0 +1,240 @@
+---
+id: assess
+title: "4. Assessment of quality"
+sidebar_label: "4. Assess"
+sidebar_position: 5
+description: How a model scores every record on completeness, semantic alignment, specificity, and consistency with the same rubric, how the scores are calibrated against curators on a sample, and how they are aggregated into a catalog report that orders the work.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 4. Assessment of quality
+
+**Question:** Can a model assess metadata quality consistently?
+
+## Rationale
+
+A curator can judge a record in a minute; a catalog has thousands. A model
+can score every record on the same dimensions, with the same rubric, and
+return the scores as structured data that can be aggregated. The program's metadata-quality work does this on four dimensions.
+Completeness asks whether the fields are filled. Semantic alignment asks
+whether the name and the definition describe the same thing. Specificity
+asks whether the text is precise enough to be useful. Consistency asks
+whether terms and formats agree across the record.
+The scores are useful when they agree with curators on a sample; without
+that calibration they are opinions at scale.
+
+## Target state
+
+- Every record has scores on fixed dimensions, produced with a fixed rubric and structured output.
+- The scores are calibrated against curator scores on a sample, per dimension, and the calibration is repeated when the model changes.
+- Scores are aggregated into a catalog report each period that drives the work list.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Score the start set with a model on the four dimensions; score the same records by hand; compare. |
+| **AI-ready** | Score the catalog with structured output; calibrate on a sample of 50 to 100 records scored by two curators; report by field and dimension. |
+| **AI-native** | Re-calibrate on every model change; use the scores to order the work list and to measure the completeness gain after decisions are applied. |
+
+:::info[Running example]
+The five records scored by a model and by a curator on the four
+dimensions. The model agrees exactly on 13 of 20 scores and within one
+point on 19; on consistency it scores half a point more leniently than
+the curator, which is flagged for calibration.
+:::
+
+## Recipes
+
+<Recipe title="4.1 Score records on the four dimensions" level="Foundational" skills="Curator with access to a model; Python for the batch" time="One hour to set up; seconds per record">
+
+**Result:** every record has four scores from 1 to 5 with a one-line
+reason each, and the scores tell the curation unit which records need
+work and why.
+
+The four dimensions are completeness (are the fields filled), semantic
+alignment (do the name, the definition, and the unit agree with each
+other), specificity (is the text precise enough to be useful), and
+consistency (does the record agree with related records). A rubric is a
+written scale: one sentence per dimension and per score, so that a 3
+means the same thing for every record. The model reads the record and
+the rubric and returns the scores in a fixed format.
+
+1. Fix the rubric. The program's
+   [metadata-quality notebook](/docs/notebooks/metadata-quality-assessment-with-llm)
+   implements the assessment with such a rubric and a structured output
+   schema.
+2. Send each record with the rubric and ask for a score and a reason
+   per dimension. The reasons are what curators read when they
+   disagree.
+3. Keep the scores with the model, the rubric version, and the date. A
+   change in any of them starts a new series of scores.
+4. Score the start set by hand with the same rubric, for the
+   calibration of recipe 4.2.
+
+**Worked example.** The poverty headcount record scores 4 on
+completeness, with the reason "all required fields filled except
+limitation". It scores 2 on semantic alignment, with the reason "the
+name says national poverty line, the definition describes the
+international line". It scores 4 on specificity. It scores 3 on
+consistency, with the reason "the unit is written as % here and as
+percent in the related series". The
+semantic alignment reason is what the curator acts on, because it names
+a real disagreement between two fields that would send users to the
+wrong figure. The five records' scores are stored with the model name,
+rubric version 1, and the date, and the curator scores the same five by
+hand with the same rubric.
+
+**What this does not do.** Scores describe the record's text. They do
+not describe the truth of its content: a definition that is complete,
+aligned, specific, and consistent can still be wrong, and subject-matter
+review catches that.
+
+</Recipe>
+
+<Recipe title="4.2 Calibrate the scores against curators" level="AI-ready" skills="Two curators; Python" time="One day for 50 records">
+
+**Result:** for each dimension, the unit knows how often the model's
+score agrees with a curator's and in which direction it errs, so that
+the model's scores can be read with the right correction.
+
+The two input files have the same layout: one row per record, with the
+record identifier and the four scores, one file from the model and one
+from a curator. The script compares them dimension by dimension and
+reports the share of exact agreements, the share within one point, and
+the mean difference (positive when the model scores higher than the
+curator):
+
+```python file=../../website/static/cookbook-files/metadata-curation-with-llms/assess_agreement.py
+```
+
+```bash
+python assess_agreement.py model_scores.csv curator_scores.csv
+```
+
+Output for the running example:
+
+```text
+5 records, 4 dimensions
+
+dimension               exact  within 1  mean diff  note
+completeness             0.80      1.00      -0.20  
+semantic_alignment       0.60      1.00      -0.40  
+specificity              0.60      1.00      +0.40  
+consistency              0.60      0.80      +0.60  model more lenient
+
+1 dimension(s) miscalibrated at a mean difference of 0.5 or more
+Scores are compared with the curators' scores as the reference; the curators' own agreement is reported separately.
+```
+
+The table has one row per dimension. "Exact" is the share of records on
+which the model and the curator gave the same score, "within 1" the
+share on which they differed by at most one point, and "mean diff" the
+average difference, positive when the model scores higher. A note marks
+a dimension whose mean difference reaches half a point.
+
+1. Read the mean difference per dimension. Here the model scores
+   consistency more leniently than the curator, so its consistency
+   scores are read with that correction, or the rubric wording for
+   consistency is tightened.
+2. Have two curators score the sample and report their own agreement.
+   The model is compared with a reference only as good as that.
+3. Re-run after any change to the model or the rubric.
+
+**Worked example.** In the run above, the model and the curator agree
+exactly on four of five completeness scores and on three of five for
+each other dimension. On consistency the model scores 0.6 points higher
+on average, and in one case two points higher, which is why that
+dimension is marked. The curator reads the model's consistency reasons
+and finds that it treats a unit written two ways as a minor matter,
+where the rubric calls it a 2. The rubric's wording for consistency is
+tightened to name that case, and the next run agrees within one point on
+every record. A second curator then scores the same five records, and
+the two curators agree exactly on 15 of 20 scores, which is the ceiling
+against which the model's agreement is read.
+
+**What this does not do.** Five records demonstrate; 50 to 100 records
+per calibration are needed, across topics and lengths. Agreement on
+scores does not show agreement on reasons, so a sample of reasons is
+read as well.
+
+</Recipe>
+
+<Recipe title="4.3 Aggregate into a catalog report" level="AI-ready" skills="Python" time="Minutes per period">
+
+**Result:** the unit has a report of the catalog's quality by field,
+dimension, topic, and producing unit, and a work list ordered so that the
+records most used and least good come first.
+
+1. Aggregate the scores by dimension, by the field named in the reasons
+   (missing definition, unit mismatch), by topic, and by producing unit.
+2. Join with use (the [monitoring cookbook](/cookbook/monitoring-data-use/)
+   counts it), so that the work list puts used, low-scoring records
+   first.
+3. Publish the report internally each period, with the calibration note
+   from recipe 4.2 beside it.
+4. After decisions are applied ([chapter 5](./review.mdx)), re-score and
+   report the gain.
+
+**Worked example.** The first quarterly report over the whole catalog of
+340 indicator records shows a mean completeness score of 3.1 and a mean
+semantic alignment score of 3.8. The field most often named in the
+reasons is `definition_long`, missing or thin in 140 records, followed
+by `limitation` in 95. By producing unit, the labour statistics unit's
+records score highest and the agriculture unit's lowest. Joined with use,
+the work list puts 22 records first: used in the top quartile and scored
+below 3 on at least one dimension. After the quarter's decisions are
+applied and the records are re-scored, the mean completeness score of
+those 22 rises from 2.4 to 4.1, and the report shows the gain beside the
+calibration note.
+
+**What this does not do.** A report orders work; it does not do it. The
+drafts of [chapter 3](./draft.mdx) and the reviews of
+[chapter 5](./review.mdx) are the work.
+
+</Recipe>
+
+## Implementation options
+
+- **Dimensions:** the program's four (completeness, semantic alignment, specificity, consistency); others can be added with a rubric.
+- **Structured output:** a JSON schema for the scores and reasons, as in the notebook; validation on return.
+- **Calibration:** two curators on a sample, agreement measured; the script in this chapter for model versus curators.
+- **Reporting:** aggregation by field, dimension, topic, producer; joined with use.
+
+## World Bank examples
+
+- [Generative AI for Metadata Quality](/docs/metadata-quality/generative-ai-for-metadata-quality) and its [notebook](/docs/notebooks/metadata-quality-assessment-with-llm) score indicator records with structured output and aggregate the scores across the catalog.
+- The dissemination cookbook's [completeness check](/cookbook/ai-ready-dissemination/find) is the formal layer under the semantic scores.
+
+## Resources
+
+- [Generative AI for Metadata Quality](/docs/metadata-quality/generative-ai-for-metadata-quality) and its [notebook](/docs/notebooks/metadata-quality-assessment-with-llm): the four dimensions, the rubric, and the structured-output scoring.
+- [Cohen's kappa and inter-rater agreement](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.cohen_kappa_score.html): the agreement measure between curators that bounds the calibration.
+- [Agreement script](pathname:///cookbook-files/metadata-curation-with-llms/assess_agreement.py) with the [model](pathname:///cookbook-files/metadata-curation-with-llms/model_scores.csv) and [curator](pathname:///cookbook-files/metadata-curation-with-llms/curator_scores.csv) scores: the running example's calibration.
+- [Findability chapter of the dissemination cookbook](/cookbook/ai-ready-dissemination/find): the formal completeness check under the semantic scores.
+
+## Common mistakes
+
+- **Scores without a rubric.** The model's 3 and the curator's 3 mean different things.
+- **No calibration.** A systematic bias on one dimension misorders the work list.
+- **Reasons ignored.** A score is a number; the reason is what a curator can act on.
+- **One scoring run.** Scores change with the model; they are a series with a version.
+
+## Verification
+
+- **Rubric.** The rubric is written per dimension and level, and the model and the curators both use it.
+- **Calibration.** Agreement and mean difference per dimension are reported, with the curators' own agreement.
+- **Report.** The report is produced each period with the calibration note, and the work list follows it.
+
+## Checklist
+
+<Checklist id="metadata-curation-with-llms-assess" items={[
+  'Rubric per dimension and score level',
+  'Scores as structured output with reasons',
+  'Scores kept with model, rubric version, and date',
+  'Calibration against two curators on a sample',
+  'Bias per dimension noted and corrected or the rubric tightened',
+  'Catalog report per period joined with use',
+]} />

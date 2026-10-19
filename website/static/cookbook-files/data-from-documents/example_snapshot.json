@@ -1,0 +1,21 @@
+{
+  "document_id": "WB-PRWP-4771",
+  "document_title": "The typology of partial credit guarantee funds around the world",
+  "document_url": "https://documents.worldbank.org/curated/en/937071468314370786/pdf/The-typology-of-partial-credit-guarantee-funds-around-the-world.pdf",
+  "page": 12,
+  "pdf_page": 15,
+  "bbox": [0.266, 0.525, 0.734, 0.781],
+  "class": "Figure",
+  "method": "layout detection (data-snapshot annotation), chart reading by a vision-language model; values are the labels printed on the chart",
+  "title": "Type of guarantee systems",
+  "chart_type": "bar_chart",
+  "categories": ["MUTUAL", "PUBLIC"],
+  "series": [
+    {"name": "HIGH", "values": [15, 7]},
+    {"name": "LOW_MIDDLE", "values": [7, 17]}
+  ],
+  "value_labels_printed": true,
+  "printed_values": [15, 7, 7, 17],
+  "unit": "number of schemes",
+  "note": "The page image, bounding box, and snapshot are from the ai4data/data-snapshot dataset. The structured output is an illustration."
+}

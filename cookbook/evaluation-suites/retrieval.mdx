@@ -1,0 +1,249 @@
+---
+id: retrieval
+title: "3. Measurement of search and retrieval"
+sidebar_label: "3. Retrieval"
+sidebar_position: 4
+description: How search and retrieval over a catalog are measured with Recall@k, MRR, and nDCG, scored by language, phrasing, and question type so that a change's effect on each group is visible, with no-answer questions scored by whether the search declines.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 3. Measurement of search and retrieval
+
+**Question:** How are search and retrieval measured?
+
+## Rationale
+
+Search is the component with the best-established measures and the one
+most often measured wrong. One overall number hides that a change helped
+English paraphrases and broke French official titles; a set without
+no-answer questions cannot tell a search that returns something for
+everything from one that returns the right thing. The measures are
+simple: for a known-item question, is the expected series first
+(Recall@1), on the first page (Recall@k), and how far down is it on
+average (MRR); for graded relevance, nDCG. What makes them useful is
+scoring them per slice and keeping them per version.
+
+## Target state
+
+- Every retrieval run is scored with Recall@1, Recall@k, and MRR on the known-item set, per language, per paraphrase flag, and per question type.
+- Questions with no answer are scored by whether the search declines or surfaces the nearest published series with a note, as the organization decided.
+- Scores are kept per version of the component and of the set, and read with their sample sizes.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Score Recall@k and MRR on the set with the dissemination cookbook's scorer. |
+| **AI-ready** | Score per slice; add nDCG where graded relevance exists; score `NONE` questions separately; keep scores per version. |
+| **AI-native** | Put intervals on every slice ([chapter 9](./reporting.mdx)); gate changes per slice ([chapter 7](./gates.mdx)); grow the set from production. |
+
+:::info[Running example]
+Two runs of the search over ten known-item questions. The second run
+raises Recall@1 from 0.60 to 0.90 overall; per slice it shows that
+paraphrases improved most and that the two French questions went from
+zero to full recall, on two questions, which is direction and not
+evidence.
+:::
+
+## Recipes
+
+<Recipe title="3.1 Score known-item retrieval by slice" level="AI-ready" skills="Python" time="Minutes per run">
+
+**Result:** each version of the search has three scores overall and for
+each slice, with the number of questions behind each score.
+
+Three measures cover search over a catalog. Recall@1 is the share of
+questions for which the expected series came first. Recall@k is the
+share for which it appeared in the first k results (k being the number a
+user sees without scrolling). MRR, the mean reciprocal rank, is the
+average over questions of one divided by the position of the expected
+series: 1 when it is first, 0.5 when second, 0.33 when third. A higher
+value is better for all three.
+
+The example file records two versions of the search, `v1` and `v2`,
+answering the same ten questions. Each row gives the version, the
+question identifier, its language, whether it is a paraphrase, the
+expected series, and the series the search returned in order. The
+script scores each version overall and by slice:
+
+```python file=../../website/static/cookbook-files/evaluation-suites/retrieval_by_slice.py
+```
+
+```bash
+python retrieval_by_slice.py retrieval_runs.csv
+```
+
+Output for the running example:
+
+```text
+20 scored queries, runs: v1, v2
+
+slice            run    n    R@1    R@3    MRR
+all              v1    10   0.60   0.80   0.70
+all              v2    10   0.90   1.00   0.95
+language=en      v1     8   0.75   0.88   0.81
+language=en      v2     8   0.88   1.00   0.94
+language=fr      v1     2   0.00   0.50   0.25
+language=fr      v2     2   1.00   1.00   1.00
+paraphrase=no    v1     5   0.60   0.80   0.70
+paraphrase=no    v2     5   0.80   1.00   0.90
+paraphrase=yes   v1     5   0.60   0.80   0.70
+paraphrase=yes   v2     5   1.00   1.00   1.00
+
+A slice with fewer than thirty queries shows direction; the gate script puts an interval around the difference.
+```
+
+The table has one row per slice and version. The `n` column is the
+number of questions in the slice. R@1 and R@3 are the shares of
+questions whose expected series came first and within the first three,
+and MRR is the mean reciprocal rank. The last line is a reminder about
+small slices.
+
+1. For each version of the search, record the ranked list of series it
+   returns for every question in the set, in the file format above.
+2. Run the script. Read every slice with its number of questions (the
+   `n` column) before reading the overall row. Two French questions
+   going from zero to full recall is a direction to investigate; it is no
+   result.
+3. Set k to the number of results a user sees without scrolling. The
+   dissemination cookbook's [scorer](pathname:///cookbook-files/ai-ready-dissemination/score_retrieval.py)
+   reports the same measures at other values of k.
+4. Record the scores with the question set version and the search
+   version.
+
+**Worked example.** In the run above, version 2 of the search is the
+keyword search with the semantic ranking of the dissemination cookbook
+added. Overall, Recall@1 rises from 0.60 to 0.90. The paraphrase slice
+explains most of it: the five paraphrased questions go from three
+first-place results to five, because "jobless rate" and "how many people
+go hungry" now find their series. The French slice goes from zero to
+two of two, which the developer records as a direction to confirm with
+more French questions. The official-title slice gains one question. The
+scores are filed with set version 1.2 and search version 2.0.
+
+**What this does not do.** These measures assume that each question has
+exactly one expected series. A question that several series could
+answer needs either a graded label (recipe 3.2) or a rule in the
+labelling guide that picks one.
+
+</Recipe>
+
+<Recipe title="3.2 Use graded relevance where several results are acceptable" level="AI-ready" skills="Dissemination staff; Python" time="One day to grade fifty questions">
+
+**Result:** each question that several series could answer has a grade
+for each candidate series, and the score rewards a search that puts the
+best ones first.
+
+Some questions have more than one acceptable answer: a question about
+poverty may be answered by two series that use different poverty lines,
+one better than the other. For these, each candidate gets a grade, and
+the measure nDCG (normalized discounted cumulative gain) rewards a
+search that puts the best-graded series highest. It runs from 0 to 1.
+
+1. For each such question, grade the candidate series: 2 for the best,
+   1 for acceptable, 0 for wrong. The labelling guide of
+   [chapter 2](./questions.mdx) says how to decide.
+2. Compute nDCG with a library such as ranx, or with the
+   [PI-FT pipeline's](/pift-toolkit/pipeline) evaluation step, which
+   reports Recall@k, MRR, and nDCG together.
+3. Keep graded and single-answer questions in the same file, with the
+   grade column empty where it does not apply, and report both measures.
+
+**Worked example.** The question "how many people are poor" has two
+candidate series in the example catalog: the poverty headcount at the
+national poverty line and, in a later release, the headcount at the
+international line. The guide grades the national line 2, because it is
+the figure the organization publishes as its headline, and the
+international line 1. A search that returns the national line first and
+the international line second gets an nDCG of 1.0 for the question. A
+search that returns them in the other order gets 0.92, and a search that
+returns the youth unemployment rate first gets 0.63. The question keeps
+its grades in the file, and the other nine questions keep their single
+expected series.
+
+**What this does not do.** Grading several candidates per question
+multiplies the labelling work. Use it for the question types where it
+matters, such as broad topics, and keep single expected answers for the
+rest.
+
+</Recipe>
+
+<Recipe title="3.3 Score questions with no answer" level="AI-ready" skills="Dissemination staff; Python" time="An hour">
+
+**Result:** the organization has a score for how the search behaves
+when it publishes nothing that answers the question.
+
+A search that is tuned only to find something will find something for
+every question, including the ones that have no answer. The questions
+marked `NONE` in the set exist to catch that.
+
+1. Decide what the search should do for a `NONE` question: return
+   nothing with a message, or return the nearest published series with a
+   note that it is not what was asked. Write the decision into the
+   labelling guide.
+2. Score each `NONE` question as a pass when the search did what was
+   decided, and a fail when it returned an unrelated series as if it
+   were the answer.
+3. Report the `NONE` pass rate beside Recall@k, every time.
+
+**Worked example.** The example organization decides that for a `NONE`
+question the search returns the nearest published series with the
+message "No series matches this question; the closest published series
+is shown". The question "inflation rate" has no answer in the catalog.
+Version 1 of the search returns the unemployment rate with no message,
+which is a fail. Version 2 returns the consumer expenditure series from
+the household budget survey with the message, which is a pass, because
+the search did what was decided. The set has five `NONE` questions, and
+the report shows "NONE pass rate 0.60 (n=5)" beside the Recall@3 of 1.00.
+
+**What this does not do.** The search's behaviour on these questions is
+visible only if the set contains them. [Chapter 2](./questions.mdx)
+puts them in.
+
+</Recipe>
+
+## Implementation options
+
+- **Measures:** Recall@1, Recall@k, MRR for known items; nDCG@k for graded relevance; a `NONE` pass rate.
+- **Scoring:** the scripts in this chapter and in the dissemination cookbook; ranx or the PI-FT pipeline for larger suites and standard formats.
+- **Slices:** language, paraphrase or official title, question type; sample sizes always shown.
+- **Records:** scores per run with set version and component version.
+
+## World Bank examples
+
+- The [PI-FT toolkit](/pift-toolkit/pipeline) reports Recall@k, MRR, and nDCG@k and compares embedding models on the same queries; its [method page](/pift-toolkit/method) describes graded evaluation.
+- [Data Discoverability](/docs/data-discoverability/) evaluates search by meaning over structured records with multilingual queries.
+- The [microdata cookbook](/cookbook/microdata-documentation/navigate) applies the same measures to variable-level search.
+
+## Resources
+
+- [*Introduction to Information Retrieval*, chapter 8](https://nlp.stanford.edu/IR-book/): the definitions of precision, recall, MRR, and nDCG.
+- [ranx](https://github.com/AmenRa/ranx): a Python library for retrieval evaluation with the standard measures and run comparison.
+- [BEIR](https://github.com/beir-cellar/beir) and [MTEB](https://huggingface.co/spaces/mteb/leaderboard): benchmark formats and public scores of embedding models, for a sense of what is achievable.
+- [score_retrieval.py](pathname:///cookbook-files/ai-ready-dissemination/score_retrieval.py) from the dissemination cookbook, and the [slice scorer](pathname:///cookbook-files/evaluation-suites/retrieval_by_slice.py) of this chapter.
+
+## Common mistakes
+
+- **One overall number.** It hides the slice that broke.
+- **k larger than the page.** A result in position 20 counts and no user sees it.
+- **No `NONE` scoring.** A search that always returns something scores well and misleads.
+- **Scores without versions.** A change in the set and a change in the component look the same.
+
+## Verification
+
+- **Slices.** Every run reports per language and paraphrase slice, with sizes.
+- **`NONE`.** The pass rate on no-answer questions is reported beside Recall@k.
+- **Records.** Scores are kept per run with both versions.
+
+## Checklist
+
+<Checklist id="evaluation-suites-retrieval" items={[
+  'Recall@1, Recall@k, MRR scored on the known-item set',
+  'k set from the interface',
+  'Scores per language, paraphrase, and question type with sizes',
+  'Graded relevance and nDCG where several results are acceptable',
+  'NONE questions scored against the decided behaviour',
+  'Scores recorded per run with set and component versions',
+]} />

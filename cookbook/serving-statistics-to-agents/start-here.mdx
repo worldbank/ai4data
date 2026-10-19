@@ -1,0 +1,132 @@
+---
+id: start-here
+title: Self-assessment
+sidebar_label: Self-assessment
+sidebar_position: 1
+description: A five-minute self-assessment that places an organization's agent access at a maturity level in each chapter and suggests a reading order.
+---
+
+import SelfAssessment from '@site/src/components/Cookbook/SelfAssessment';
+
+# Self-assessment
+
+Select the statement that best describes the organization today, one per
+chapter. The result shows a level for each chapter and the chapters to read
+first. Answers are stored in this browser only.
+
+<SelfAssessment
+  base="/cookbook/serving-statistics-to-agents/"
+  questions={[
+    {
+      id: 'purpose',
+      title: '1. Purpose',
+      question: 'How is the scope of agent access defined?',
+      options: [
+        'It is not; agents reach whatever the website exposes.',
+        'The organization has decided which data and which uses agent access is for, and that only public data are in scope.',
+        'Use cases, scope, and success criteria are written, with a question set that represents them.',
+        'The scope is reviewed from the evaluation results and usage, and the question set grows with real questions.',
+      ],
+    },
+    {
+      id: 'tools',
+      title: '2. Tools',
+      question: 'How are the tools designed?',
+      options: [
+        'There is no agent interface; agents scrape pages or call the API ad hoc.',
+        'The API is documented with OpenAPI or SDMX and agents can call it.',
+        'An MCP server offers a small set of read-only tools with documented inputs, structured outputs, and guidance resources, checked against design rules.',
+        'Tools are versioned, their descriptions are tested with models, and the manifest is published.',
+      ],
+    },
+    {
+      id: 'context',
+      title: '3. Context',
+      question: 'What context does the server give the assistant beyond the tools?',
+      options: [
+        'None; the tool descriptions are all there is.',
+        'A guidance resource states what the server provides, how to cite, the licence, the limitations, and when to refuse; code lists are resources.',
+        'Calendar and per-series notes are resources with templates and annotations; prompts cover the common question types; the guidance is checked against the manifest.',
+        'The effect of each guidance change is measured with the question set, and the guidance is versioned with the server.',
+      ],
+    },
+    {
+      id: 'provenance',
+      title: '4. Provenance',
+      question: 'What does a data response carry?',
+      options: [
+        'Values only.',
+        'Values with unit and period.',
+        'Series identifier, unit, observation status, release date, source URL, licence, and citation in every response.',
+        'The same, with version identifiers and freshness, and answers are verified against the responses.',
+      ],
+    },
+    {
+      id: 'access',
+      title: '5. Access',
+      question: 'Who may call the interface, and how much?',
+      options: [
+        'Anyone, without limits.',
+        'Public access with a per-client rate limit; terms of use published.',
+        'Tiers with keys, quotas, accepted terms, and contacts in a registry; limits enforced; the log audited against the registry.',
+        'OAuth-based authorization for user-level access with scopes per tool group; usage per client reported to the monitoring.',
+      ],
+    },
+    {
+      id: 'safety',
+      title: '6. Safety',
+      question: 'How is the interface kept safe?',
+      options: [
+        'No specific measures.',
+        'Only public data are exposed; the server is read-only.',
+        'Access control, rate limits, input validation, output sanitization, and logging are in place; prompt-injection tests run.',
+        'Safety checks run on every change, the server is in the AI component register, and incidents are reviewed.',
+      ],
+    },
+    {
+      id: 'evaluate',
+      title: '7. Evaluate',
+      question: 'How is agent access evaluated?',
+      options: [
+        'It is not.',
+        'A few questions are tried by hand after changes.',
+        'A versioned question set with expected tools, values, and behaviour is run through an agent, and the traces are scored.',
+        'The suite runs on every change, per language, with a reviewed sample, and results are kept with the version.',
+      ],
+    },
+    {
+      id: 'distribute',
+      title: '8. Distribute',
+      question: 'How do users and developers find and connect to the server?',
+      options: [
+        'By asking the team.',
+        'A developer page gives the endpoint, one configuration, the terms, and a contact.',
+        'Configurations for the common assistants are published and tested each release; the server is listed in the registry with a checked listing.',
+        'A package for local use is published beside the endpoint, and the listing and configurations update from the manifest and version.',
+      ],
+    },
+    {
+      id: 'operate',
+      title: '9. Operate',
+      question: 'How is the server operated?',
+      options: [
+        'A prototype on a laptop.',
+        'A hosted server with a stable endpoint and a contact.',
+        'Versioned, monitored, with published client configuration, usage statistics, and a cost estimate.',
+        'Usage feeds monitoring and documentation work; deprecations are announced; the server is listed for clients.',
+      ],
+    },
+  ]}
+/>
+
+## Interpretation of the result
+
+- Chapters 1, 5, and 6 come first: scope, access, and safety are
+  decisions, and they are cheap compared with their cost when skipped.
+- Chapter 2 depends on the API and catalog described in the dissemination
+  cookbook; a server over an undocumented API inherits every gap, and
+  chapter 3 is where the gaps the tools cannot close are stated.
+- Chapter 7 is the gate for publication: a server without an evaluation
+  suite cannot be changed safely.
+- Chapter 8 is the one most often forgotten; a server nobody can configure
+  has no users.

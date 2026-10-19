@@ -51,9 +51,10 @@ to every record.
 - **Customizable behavior** — supply your own agent manifest (YAML)
   and choose how agents are routed via team presets.
 
-- **A companion review tool** — the browser-based **AI Suggestion
-  Review Board** lets a human reviewer triage the detected issues with
-  side-by-side diffs.
+- **Review inside the Metadata Editor** — as an optional add-on to the
+  Editor's service, the reviewer lists its issues and suggested
+  corrections on a project's Issues page, where a curator accepts,
+  rejects, or applies each one.
 
 ## How this manual is organized
 
@@ -62,6 +63,6 @@ to every record.
 - [Quick Start](quick-start.md) is a hands-on walkthrough with a complete worked example.
 - [The Client API](client-api.md) and [Jobs](jobs.md) are the API reference for submission and job lifecycle.
 - [Advanced Usage](advanced-usage.md) covers team presets, custom manifests, and exclusion rules.
-- [AI Suggestion Review Board](review-board.md) documents the companion triage tool.
+- [Reviewing the output](review-board.md) describes the review inside the Metadata Editor and the triage table outside it.
 - [End-to-End Workflow](end-to-end-workflow.md) ties the pieces into a catalogue review cycle.
 - [Troubleshooting & FAQ](troubleshooting.md) and the appendices follow.

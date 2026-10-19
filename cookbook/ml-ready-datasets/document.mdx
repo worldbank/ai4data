@@ -1,0 +1,274 @@
+---
+id: document
+title: "4. Dataset cards"
+sidebar_label: "4. Dataset card"
+sidebar_position: 5
+description: "What a dataset card is, the sections a card for official statistics training data carries, how it is written from the decision record and the measurements, and how its completeness is checked before release."
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 4. Dataset cards
+
+**Question:** How is a dataset documented for the people who train models on it?
+
+## Rationale
+
+A person who trains a model on a dataset needs to know things the
+dictionary and the loading record do not say. Why does the dataset
+exist? How were the examples collected and labelled, and how reliable
+are the labels? What was removed or changed? Whom do the examples
+represent, and whom do they leave out? What is the dataset for, what
+must it never be used for, under which terms, and how is it cited? A dataset card is the one
+document that answers these questions, in a fixed order, on the
+dataset's page. The idea comes from the datasheets proposal of Gebru
+and others (2018) and from the data cards of Pushkarna and others
+(2022); dataset repositories made the card the first thing a user sees.
+
+For a statistical organization the card has two extra duties. It
+states that the dataset is a collection of examples and not a source
+of statistics, so that nobody computes a rate from it. And it carries
+the representativeness report of [chapter 5](./represent.mdx), so that
+a model builder knows which groups the examples cover thinly. A card
+is written by the people who made the dataset and checked for
+completeness by a script, so that no release goes out with a section
+missing.
+
+## Target state
+
+- Every dataset has a card with the twelve sections of this chapter, written from the decision record, the collection notes, and the measurements.
+- The card opens with a machine-readable header (licence, language, task, size) that repositories and catalogs read.
+- The card is checked for completeness on every release, and reviewed by a person for accuracy.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Write the card from the template for one dataset; run the check. |
+| **AI-ready** | Write the representativeness and known-gaps section from the report of chapter 5; publish the card on the dataset page and in the repository; review it with a subject-matter specialist. |
+| **AI-native** | Generate the measured sections of the card at each release from the scripts, and keep the written sections under version control with the data. |
+
+:::info[Running example]
+The card of the occupation-coding dataset says where the job
+descriptions come from, how they were coded and with what agreement
+between coders, what was removed, how the records differ from the
+population, what the dataset is for, what it is not for, its licence,
+its version, and how to cite it.
+:::
+
+## Recipes
+
+<Recipe title="4.1 Write the card from the template" level="Foundational" skills="Dataset owner; methodologist" time="Half a day per dataset">
+
+**Result:** the dataset has a card with a machine-readable header and
+twelve sections, which is its documentation for users.
+
+The card is a Markdown file. It opens with a YAML header (a short
+block of key and value pairs between two lines of three dashes) that
+repositories read for filtering: the licence identifier, the
+languages, the task, the size, and tags. The twelve sections follow.
+The card of the running example:
+
+```md file=../../website/static/cookbook-files/ml-ready-datasets/dataset_card.md
+```
+
+The sections and what each answers:
+
+| Section | What it answers |
+|---|---|
+| Dataset summary | What the dataset is, in one paragraph, including the task it supports |
+| Motivation | Why it was made and for whom |
+| Composition | How many records, which columns, which splits |
+| Collection process | Where the examples come from, how the labels were assigned, and how reliable they are |
+| Preprocessing | What was removed, changed, or anonymized |
+| Representativeness and known gaps | Whom the examples represent, compared with the population, and which groups are thin ([chapter 5](./represent.mdx)) |
+| Intended uses | The uses the dataset was made for |
+| Out-of-scope uses | The uses it must not be put to, including estimation and re-identification |
+| Licence and terms | The licence, the attribution form, and the terms for training ([chapter 7](./license.mdx)) |
+| Versions | The current version, what changed, and what is frozen ([chapter 8](./version.mdx)) |
+| Citation | The citation text with a DOI or URL |
+| Contact | Whom to ask |
+
+1. Fill the header: the licence identifier (`cc-by-4.0`), the
+   languages of the text fields (ISO 639-1 codes), the task
+   (`text-classification` for coding), the size category, and tags.
+2. Write the summary, motivation, and intended and out-of-scope uses
+   from the decision record of [chapter 1](./purpose.mdx).
+3. Write the collection process with the facts a model builder needs:
+   who wrote the inputs, who assigned the labels, with which
+   instrument, and how well two labellers agree. The agreement between
+   coders is the ceiling of what a model can reach.
+4. Write the preprocessing section as a list of what was done to the
+   source records and nothing else. "Spelling was not corrected" is as
+   useful as what was.
+5. Leave the representativeness section for [chapter 5](./represent.mdx)
+   and the licence section for [chapter 7](./license.mdx), and fill
+   them when those chapters are done.
+
+**Worked example.** The collection process section of the running
+example's card reads, in part: "Job descriptions were written by
+interviewers from respondents' answers to the question on the kind of
+work done in the main job in the reference week. Codes were assigned by six trained coders using the ISCO-08 index, with
+a second coder on a tenth of the records. The two coders agreed on 91
+percent of four-digit codes and 97 percent of major groups." The
+preprocessing section lists four things. Employer names were replaced
+by a generic term. Place names below the region were removed. Spelling
+was not corrected. Records coded 9999 were kept. The out-of-scope section opens with "Do
+not estimate the share of any occupation or group from this dataset;
+it is a collection of examples and is not a sample of the population."
+
+**What this does not do.** A card documents. It does not make the
+collection process sound or the labels reliable, and a card that
+overstates either misleads every user. The subject-matter review of
+recipe 4.3 is where accuracy is checked.
+
+</Recipe>
+
+<Recipe title="4.2 Check the card before release" level="Foundational" skills="Python" time="Minutes">
+
+**Result:** a check runs on every release and confirms that the card
+has its header fields and its twelve sections. It also checks four
+statements: that the out-of-scope section lists a use, that the
+representativeness section states a number, that the citation has a DOI
+or a URL, and that the versions section names a version.
+
+The script reads the card and reports each check:
+
+```python file=../../website/static/cookbook-files/ml-ready-datasets/check_dataset_card.py
+```
+
+```bash
+python check_dataset_card.py dataset_card.md
+```
+
+Output for the running example:
+
+```text
+  ok       front matter: license
+  ok       front matter: language
+  ok       front matter: task_categories
+  ok       front matter: pretty_name
+  ok       Dataset summary
+  ok       Motivation
+  ok       Composition
+  ok       Collection process
+  ok       Preprocessing
+  ok       Representativeness and known gaps
+  ok       Intended uses
+  ok       Out-of-scope uses
+  ok       Licence and terms
+  ok       Versions
+  ok       Citation
+  ok       Contact
+  ok       out-of-scope section lists a use
+  ok       representativeness section states a number
+  ok       citation has a DOI or URL
+  ok       versions section names a version
+result: PASS
+```
+
+The first four lines confirm the header fields, the next twelve confirm
+the sections, and the last four confirm the statements. The verdict
+follows.
+
+1. Run the check on the card. A missing section or statement blocks
+   the release.
+2. Add the organization's own rules to the script: a sentence that
+   must appear ("not a source of published statistics"), a maximum
+   age of the benchmark used in the representativeness section, the
+   contact's domain.
+3. Keep the check in the release pipeline with the Croissant check and
+   the manifest.
+
+**Worked example.** The first draft of the card failed the check on two
+lines: the representativeness section was a placeholder with no number,
+because chapter 5 had not yet run, and the citation had no URL. After
+the representativeness report was written in and the citation gained
+the dataset's URL, the check passed. The data manager then added one
+organization-specific rule to the script, which requires the sentence
+"not a source of published statistics" somewhere in the card, and the
+check now fails any card that omits it.
+
+**What this does not do.** The check reads presence. A section that is
+present and wrong passes. Recipe 4.3 is the review for that.
+
+</Recipe>
+
+<Recipe title="4.3 Review the card and keep it current" level="AI-ready" skills="Subject-matter specialist; dataset owner" time="One hour per release">
+
+**Result:** a specialist has confirmed the card's statements against the
+source, and the card is updated with every version of the dataset.
+
+1. Have a specialist who knows the source survey read the collection
+   process, preprocessing, and representativeness sections against the
+   survey's own documentation. Record the review and the date in the
+   versions section.
+2. Regenerate the measured sections (composition, representativeness)
+   from the scripts at each release, so that the numbers in the card
+   are the numbers of the files beside it.
+3. When a user reports something the card did not say (a group the
+   model fails on, a labelling rule they did not know), add it to the
+   known gaps or the collection process. Release the corrected card as
+   a new patch version with the same data.
+4. Keep the card under version control with the data, and publish it
+   on the dataset page, in the repository, and as the description of
+   the catalog record.
+
+**Worked example.** The labour statistician who runs the survey reads
+the card against the survey's documentation and corrects two statements. The coders used index version 4, where the
+card said version 3, and the second-coder sample was an eighth of the
+records, where the card said a tenth. The
+review is recorded in the versions section with her initials and the
+date. Three months after release, a partner reports that the model it
+trained fails on job descriptions in French, which the card had not
+mentioned. The known gaps section gains the sentence "about 12 percent
+of job descriptions are in French, concentrated in the Northern
+Region", and the card is released as version 1.0.1 with the same data.
+
+**What this does not do.** A card can only say what its authors know.
+The representativeness report measures part of the rest, and users'
+findings supply the remainder over time, which is why the card has a
+contact and a version.
+
+</Recipe>
+
+## Implementation options
+
+- **Template:** the twelve sections of this chapter; the Hugging Face dataset card template, which has similar sections and the same header; a datasheet with its question list.
+- **Header:** the YAML keys that repositories read (`license`, `language`, `task_categories`, `size_categories`, `pretty_name`, `tags`).
+- **Where it lives:** the release folder as `dataset_card.md`; the dataset page; the catalog record's description; the repository's README.
+
+## World Bank examples
+
+- The [synthetic data cookbook's synthesis record](/cookbook/synthetic-data-for-sharing/release) is the same idea for synthetic files: a fixed set of sections, checked by a script before release.
+- The [model-use statement of the production cookbook](/cookbook/language-models-in-production/assurance) documents the model side of the same workflow.
+
+## Resources
+
+- [Hugging Face dataset cards](https://huggingface.co/docs/hub/datasets-cards): the card format repositories render, the header keys, and the card template.
+- [Datasheets for Datasets](https://arxiv.org/abs/1803.09010) (Gebru and others, 2018): the questions on motivation, composition, collection, preprocessing, uses, distribution, and maintenance that a card answers.
+- [Data Cards](https://arxiv.org/abs/2204.01075) (Pushkarna and others, 2022): structured summaries of a dataset's essential facts for decisions across its lifecycle.
+- [Metadata Editor](https://github.com/worldbank/metadata-editor): where the catalog record that the card's description feeds is kept.
+
+## Common mistakes
+
+- **A card written once.** Numbers in the card drift from the files; the measured sections are regenerated.
+- **Label reliability unstated.** A model builder cannot tell a model's error from the coders' error.
+- **No out-of-scope section.** Someone computes an employment rate from the examples.
+
+## Verification
+
+- **Completeness.** The check passes on every release.
+- **Accuracy.** A specialist's review is recorded in the versions section.
+- **Currency.** The composition and representativeness numbers match the current files.
+
+## Checklist
+
+<Checklist id="ml-ready-datasets-document" items={[
+  'Card with the YAML header and the twelve sections',
+  'Collection process states who labelled, with which instrument, and the agreement between labellers',
+  'Out-of-scope uses include estimation and re-identification',
+  'Check passes on every release',
+  'Specialist review recorded; measured sections regenerated at each release',
+]} />

@@ -1,0 +1,13 @@
+# robots.txt of a ministry document site (example)
+User-agent: *
+Disallow: /search
+Disallow: /admin/
+Disallow: /api/internal/
+Crawl-delay: 10
+
+User-agent: ai4data-monitor
+Allow: /publications/
+Disallow: /
+Crawl-delay: 5
+
+Sitemap: https://ministry.example.gov/sitemap.xml

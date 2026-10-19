@@ -1,0 +1,13 @@
+dimension,depends_on,why
+1.1,,Strategy and governance come first; every component the pathway adds is approved under them
+1.2,1.1,The legal review is scoped by the strategy and the AI-use policy
+1.3,1.1,Roles and training follow the strategy's choice of components
+1.4,1.3,Infrastructure is sized for the components the staff will run
+1.5,1.1,A budget line follows an approved strategy
+1.6,1.1,Partnerships are governed under the strategy and the policy
+2.1,,Metadata standards are a foundation and depend on nothing in the pathway
+2.2,,Quality control is a foundation and depends on nothing in the pathway
+2.3,2.1,A searchable catalog needs complete records in a standard schema
+2.4,2.1;2.2,An API with provenance needs standard records and status codes
+2.5,2.1;2.2;2.4;2.6;1.1,"Agentic access needs the API, the provenance, the licences, and the governance"
+2.6,,Licensing is a foundation and depends on nothing in the pathway

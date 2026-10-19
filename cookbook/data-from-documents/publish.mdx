@@ -1,0 +1,229 @@
+---
+id: publish
+title: "7. Publication next to the document"
+sidebar_label: "7. Publish"
+sidebar_position: 8
+description: How extracted data are published next to the document they came from, as tidy files under the document's licence, with a record for each table in the World Bank table schema and links in both directions between the document and the data.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 7. Publication next to the document
+
+**Question:** Can the extracted data be published with their provenance?
+
+## Rationale
+
+Extracted and verified data that stay in a working folder help one team.
+Published next to the document, as tidy files with a record of their own,
+they become data that any user or system can retrieve, and the document
+becomes a document with data behind it. The provenance travels with them:
+the page, the bounding box, the method, the verification status, and the
+licence of the source document.
+
+The World Bank table schema exists for exactly this object: a statistical
+table with its columns, rows, sources, definitions, and citation, linked to
+the document it comes from and to the series it reports.
+
+## Target state
+
+- Every verified extraction is published as a tidy file next to the document, under the document's licence, with its status column.
+- Every extracted table has a record in the table schema that links to the document record and to the series it draws on, validated against the schema and a profile.
+- The document record lists the tables extracted from it, so that document and data find each other in both directions.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Publish the tidy files on the document's page with a note on method and licence. |
+| **AI-ready** | Create a table record for each extracted table in the table schema, with `data_sources`, `definitions`, `license`, `citation`, and `relations`, and publish it in the catalog. Add the tables to the document record. |
+| **AI-native** | Serve the extracted data through the catalog API and agent interface with the provenance fields, and register persistent identifiers for extracted tables. |
+
+:::info[Running example]
+The district table becomes `EX-REP-2025-03-T3.1`: a tidy file with 15
+values and their statuses, and a table record that names the report and
+page as its source, maps the prevalence column to `FS_UNDERNOURISH_PCT`,
+carries the report's CC BY 4.0 licence, and relates the table to the
+document record.
+:::
+
+## Recipes
+
+<Recipe title="7.1 Publish the tidy file next to the document" level="Foundational" skills="Web editor" time="Half an hour per document">
+
+**Result:** the data of each table and chart can be downloaded from the
+document's page, with their source and their status, under a stated
+licence.
+
+1. Place the tidy files (recipe 4.3) under the document's URL, named by
+   the document and table identifiers
+   (`/documents/EX-REP-2025-03/tables/T3.1.csv`).
+2. State on the document page that the files were extracted, by what
+   method, with what verification, and under which licence. Extracted
+   data inherit the licence of the document. World Bank publications in
+   the [Open Knowledge Repository](https://openknowledge.worldbank.org/)
+   carry CC BY 3.0 IGO, and World Bank datasets carry
+   [CC BY 4.0](https://www.worldbank.org/en/about/legal/terms-of-use-for-datasets);
+   the example organization publishes its reports under CC BY 4.0.
+3. Keep the `status` column in the published file. A user who sees
+   `estimated` next to a chart value reads it correctly.
+4. Version the files with the document. A corrected value is a new
+   version with an erratum ([chapter 8](./cite.mdx)).
+
+**Worked example.** The page of the 2025 food security report gains a
+section headed "Data from this report". It lists the four tables
+extracted so far, each as a CSV file named by its table number, with
+the file for Table 3.1 at `/documents/EX-REP-2025-03/tables/T3.1.csv`.
+The note above the list reads: "These files were extracted from the
+report's tables by the dissemination unit, verified against the printed
+totals, and reviewed; the status column marks each value as verified or
+estimated. They are published under the report's CC BY 4.0 licence, and
+the citation is given with each file." The section ends with the version
+and the date.
+
+**What this does not do.** A file on a page is findable from the
+document and nowhere else. The table record of recipe 7.2 makes it
+findable from the catalog and from the series.
+
+</Recipe>
+
+<Recipe title="7.2 Describe each extracted table as a table record" level="AI-ready" skills="Data curator; Python for the check" time="Half an hour per table">
+
+**Result:** the extracted table has a catalog record in the World Bank
+table schema, validated against the schema and a profile, and linked to
+the document and to the series.
+
+The record for the district table shows the fields that carry the
+provenance:
+
+| Field | What it holds |
+|---|---|
+| `data_sources` | The document and page, and the series the table reports |
+| `definitions` | Links to the indicator definitions |
+| `license`, `citation` | The licence, and the citation to the document and page |
+| `notes` | The method and the verification |
+| `relations` | The document record, as `isPartOf` |
+| `links` | The tidy file |
+
+```json file=../../website/static/cookbook-files/data-from-documents/table_record.json
+```
+
+The profile names the fields the organization requires at each
+maturity level, with the reason for each:
+
+```json file=../../website/static/cookbook-files/data-from-documents/profile_table.json
+```
+
+1. Write the record, from the extraction's sidecar and the document
+   record.
+2. Validate it against the schema and the profile with the checker from
+   the dissemination cookbook:
+
+   ```bash
+   python check_metadata.py table_record.json profile_table.json --level ai-ready
+   ```
+
+3. Publish the record in the catalog (NADA catalogs tables as a data
+   type) and add the table to the document record's related items.
+
+**Worked example.** The record shown above describes Table 3.1. Its
+`data_sources` names the report and page 24 and the series
+`FS_UNDERNOURISH_PCT`. Its `definitions` field links to the definition
+page of that series. Its `license` is CC BY 4.0, inherited from the
+report, and its `citation` is the form of chapter 8 with the page and
+the table number. The `notes` field says "extracted with pdfplumber;
+verified against the printed totals and the derived prevalence; one
+value corrected", and `relations` names the document record as the
+parent. The checker reports the record valid and complete at the
+AI-ready level, and it is published in the catalog as table 31.
+
+**What this does not do.** The record describes one table. A document
+with 140 tables needs 140 records, which is the case for the pipeline
+at the AI-native level: the record is generated from the extraction's
+sidecar and the document record, and a curator reviews titles and
+definitions.
+
+</Recipe>
+
+<Recipe title="7.3 Link the document record and the data in both directions" level="AI-ready" skills="Data curator" time="Minutes per document">
+
+**Result:** from a document, a user or a system reaches its tables and
+the series behind them, and from a series, the documents that report
+it.
+
+1. In the document record, list the series and surveys in
+   `data_sources` ([chapter 1](./inventory.mdx)) and the extracted
+   tables as related items.
+2. In each table record, relate the document (`relations`, `isPartOf`)
+   and the series (`data_sources`, and `table_columns.dataset` for the
+   column that reports a series).
+3. On the web pages, add the links in schema.org markup: the table's
+   `Dataset` record uses `isBasedOn` for the document and `citation`
+   for the page; the document's record lists the tables under
+   `hasPart`.
+4. In the series record, the documents that use the series come from
+   the [monitoring of data use](/docs/data_use/). The table records
+   close the loop for the organization's own documents.
+
+**Worked example.** A user who opens the catalog page of the 2025 food
+security report sees, under "Tables extracted from this document", the
+four table records. Opening Table 3.1 shows the snapshot, the tidy file,
+and a link to the undernourishment series. A user who starts from the
+series page sees, under "Documents that report this series", the three
+food security reports and the 2023 yearbook. The schema.org block on
+the table page carries `isBasedOn` with the report's URL, and the block
+on the report page carries `hasPart` with the four tables, so that a
+dataset search engine shows the same relations.
+
+**What this does not do.** Links describe relations; they do not
+reconcile values. A document figure and a series value can differ by
+vintage, and [chapter 5, recipe 5.3](./verify.mdx) records which is
+which.
+
+</Recipe>
+
+## Implementation options
+
+- **Files:** tidy CSV with provenance columns, the same layout as the values files in the [dissemination cookbook](/cookbook/ai-ready-dissemination/retrieve); [CSV on the Web](https://www.w3.org/TR/tabular-data-primer/) metadata for the column types.
+- **Records:** the World Bank table schema through the Metadata Editor or JSON; NADA for publication.
+- **Provenance vocabulary:** the record's fields for the common case; [W3C PROV](https://www.w3.org/TR/prov-overview/) (`wasDerivedFrom`) where provenance has to be exchanged as linked data.
+- **Licences:** the document's licence applies; state it in the record and on the page.
+
+## World Bank examples
+
+- The [table schema](https://github.com/worldbank/metadata-schemas) defines `table_description` with columns, rows, data sources, definitions, licence, citation, and relations.
+- NADA catalogs tables and documents as data types next to microdata and indicators, with the links between them.
+- The [Metadata Editor](https://github.com/worldbank/metadata-editor) documents tables with a template and publishes to NADA.
+
+## Resources
+
+- [World Bank table schema](https://github.com/worldbank/metadata-schemas): the record for an extracted table, with sources, definitions, licence, and relations.
+- [CSV on the Web](https://www.w3.org/TR/tabular-data-primer/): a JSON description of a CSV's columns, types, and units published beside the file.
+- [Frictionless Table Schema](https://specs.frictionlessdata.io/table-schema/): a lighter column description, with validation tools, for the same purpose.
+- [W3C PROV](https://www.w3.org/TR/prov-overview/): `wasDerivedFrom` and `wasGeneratedBy` for provenance exchanged as linked data.
+- [Metadata Editor user and practice guide](https://worldbank.github.io/metadata-editor-docs): the table template and publication to NADA.
+
+## Common mistakes
+
+- **Data without the licence.** Extracted data inherit the document's licence; a file without one cannot be reused with confidence.
+- **A record without the page.** "From the Food security report" is not a source; the page and the table number are.
+- **Status column dropped at publication.** The reader loses the difference between a verified value and an estimate.
+- **Document and table records unlinked.** Each is findable alone and neither leads to the other.
+
+## Verification
+
+- **Files.** Every verified extraction can be downloaded from the document page with its status and licence.
+- **Records.** The checker reports every table record valid and complete at the target level.
+- **Links.** From a document page a user reaches its tables and the series, and from a series page the documents.
+
+## Checklist
+
+<Checklist id="data-from-documents-publish" items={[
+  'Tidy files published next to the document with status and licence',
+  'Table record in the table schema for every extracted table',
+  'data_sources, definitions, citation, and relations filled',
+  'Records validated against the schema and the profile',
+  'Document record lists its extracted tables',
+  'schema.org links between document and tables on the pages',
+]} />

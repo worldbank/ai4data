@@ -1,6 +1,6 @@
 # Repository structure
 
-This repository is a **multi-language monorepo**: the Python package, multiple JavaScript/TypeScript libraries under the **@ai4data** npm organization, shared docs, and discovery demos all live in one repo with shared versioning.
+This repository is a **multi-language monorepo**: the Python package, multiple JavaScript/TypeScript libraries under the **@ai4data** npm organization, shared docs, and discovery demos all live in one repo. Each package carries its own version.
 
 ## Layout
 
@@ -41,13 +41,13 @@ All JS/TS libraries are published under the **ai4data** npm organization as scop
 ## Rationale
 
 - **`packages/ai4data/<library>/`** – One directory per npm package; the path mirrors the scope and name (`@ai4data/<library>`).
-- **Root `package.json`** – `"workspaces": ["packages/ai4data/*"]` lets you install, build, and test all JS packages from the root and link them locally.
-- **Single version** – You can use one version (e.g. from git tags) for all @ai4data packages and the Python package when releasing.
+- **Root `package.json`** – `"workspaces": ["packages/ai4data/*"]` installs, builds, and tests all JS packages from the root and links them locally.
+- **Versions** – Each package carries its own version: `ai4data` on PyPI, `@ai4data/search` on npm, and the `@pcn-js` packages on npm are released on their own cadence, and a release tag names the package it applies to.
 
 ## Versioning and releases
 
 - **Python:** PyPI via existing workflow (tag → build → publish).
-- **JavaScript:** Each `packages/ai4data/<library>/` can be published to npm as `@ai4data/<library>`. In CI you can:
+- **JavaScript:** Each `packages/ai4data/<library>/` can be published to npm as `@ai4data/<library>`. In CI:
   - Run `npm install` and `npm run build` (and test) for all workspaces.
   - On release tags, publish changed packages (e.g. with [changesets](https://github.com/changesets/changesets) or a script that runs `npm publish` in each package directory with the right version).
 

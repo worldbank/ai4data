@@ -1,0 +1,51 @@
+name: Cookbook scripts
+
+# Runs the lint, the structure checker, and the tests for the scripts shipped
+# with the cookbooks whenever they, the cookbook text, their tests, or the
+# pinned schema fixtures change.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "website/static/cookbook-files/**"
+      - "cookbook/**"
+      - "scripts/docs/check_cookbooks.py"
+      - "tests/test_cookbook_*.py"
+      - "tests/fixtures/wb-schemas/**"
+      - ".github/workflows/cookbook-scripts.yml"
+  pull_request:
+    paths:
+      - "website/static/cookbook-files/**"
+      - "cookbook/**"
+      - "scripts/docs/check_cookbooks.py"
+      - "tests/test_cookbook_*.py"
+      - "tests/fixtures/wb-schemas/**"
+      - ".github/workflows/cookbook-scripts.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install test dependencies
+        run: pip install pytest ruff -r website/static/cookbook-files/requirements.txt
+      - name: Lint
+        run: ruff check website/static/cookbook-files scripts/docs
+      - name: Check cookbook structure and writing rules
+        run: python scripts/docs/check_cookbooks.py
+      - name: Quoted outputs match the scripts
+        run: for cb in $(ls cookbook | grep -v -e '^_' -e authoring); do python scripts/docs/refresh_cookbook_outputs.py $cb --check | tail -1 | grep -q '^0 block' || exit 1; done
+      - name: Glossary pages match the shared glossary
+        run: python scripts/docs/build_glossaries.py --check
+      - name: Overview tables and landing cards match the chapter files
+        run: python scripts/docs/sync_cookbook_indexes.py --check
+      - name: Running example agrees with its facts file
+        run: python scripts/docs/check_example_facts.py
+      - name: Investment view is up to date
+        run: python scripts/docs/investment_view.py && git diff --exit-code website/src/content/investment.json
+      - name: Test
+        run: pytest tests/test_cookbook_scripts.py tests/test_cookbook_microdata.py tests/test_cookbook_documents.py tests/test_cookbook_datause.py tests/test_cookbook_agents.py tests/test_cookbook_curation.py tests/test_cookbook_evaluation.py tests/test_cookbook_production.py tests/test_cookbook_synthetic.py tests/test_cookbook_small_models.py tests/test_cookbook_ml_ready.py tests/test_cookbook_governance.py tests/test_cookbook_pathway.py tests/test_cookbook_assistants.py -p no:cacheprovider --noconftest -q

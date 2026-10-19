@@ -1,0 +1,248 @@
+---
+id: extraction
+title: "5. Measurement of extraction and classification"
+sidebar_label: "5. Extraction"
+sidebar_position: 6
+description: How extractors and classifiers are measured with precision, recall, and F1 under an exact and a lenient matching rule, how an error taxonomy turns the scores into a list of fixes, and how a confusion matrix shows which classes a classifier mixes up.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 5. Measurement of extraction and classification
+
+**Question:** How are extraction and classification tasks measured?
+
+## Rationale
+
+Extractors find spans in text (dataset mentions, table cells, question
+numbers) and classifiers assign labels (a topic, an occupation code, a
+severity). Both are measured against a labelled sample with precision (how much
+of what it found is right), recall (how much of what is there it found),
+and F1, the average of the two. Both are measured wrong when the
+matching rule is left implicit. An extractor that finds "Labour Force
+Survey" when the label says "Labour Force Survey 2025" is either right or
+wrong depending on the rule. Two rules, exact and lenient, reported together, and an
+error taxonomy that names the kind of each error, turn a score into a
+list of fixes.
+
+## Target state
+
+- Every extractor and classifier has a labelled sample with the matching rule written down, scored under exact and lenient matching.
+- Errors are coded by kind (missed, spurious, boundary, wrong type; for classifiers, the confusion between classes), and the counts point to fixes.
+- Scores are reported per document type and language with sizes, and kept per version.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Label a sample; score precision, recall, and F1 under one stated rule. |
+| **AI-ready** | Score exact and lenient; code the errors; report per document type and language; keep scores per version. |
+| **AI-native** | Grow the sample from production errors ([chapter 8](./production.mdx)); gate changes per slice ([chapter 7](./gates.mdx)); share labelled samples across organizations where the licence allows. |
+
+:::info[Running example]
+Twelve aligned gold and predicted spans from the mention extractor:
+five exact, two boundary errors (a year added, a word dropped), two
+missed, two spurious, and one with the wrong type. Exact F1 is 0.50 and
+lenient F1 0.70, and the taxonomy says where each fix belongs.
+:::
+
+## Recipes
+
+<Recipe title="5.1 Score spans under exact and lenient matching with an error taxonomy" level="AI-ready" skills="Python" time="Minutes per run">
+
+**Result:** the extractor has precision, recall, and F1 under two
+matching rules, and a count of each kind of error with the fix it points
+to.
+
+An extractor marks pieces of text (spans) as mentions of something, for
+example the name of a survey. It is scored against a sample that people
+labelled by hand: precision is the share of what it found that is
+right, recall is the share of what was there that it found, and F1
+combines the two into one number. Whether a found span counts as right
+depends on a rule: "Labour Force Survey" against a label of "Labour
+Force Survey 2025" is right under a lenient rule (the spans overlap and
+have the same type) and wrong under an exact rule. Both rules are
+reported, and the gap between them measures how often the extractor
+gets the boundaries slightly wrong.
+
+The example file aligns, row by row, what the labellers marked (gold)
+with what the extractor found (pred), each with its type. A row with an
+empty prediction is a miss; a row with an empty gold span is a false
+find. The script scores the file and sorts the errors into kinds:
+
+```python file=../../website/static/cookbook-files/evaluation-suites/extraction_scores.py
+```
+
+```bash
+python extraction_scores.py extraction_gold_pred.csv
+```
+
+Output for the running example:
+
+```text
+12 aligned rows
+
+exact span and type            precision 0.50  recall 0.50  F1 0.50  (tp 5, fp 5, fn 5)
+overlapping span, same type    precision 0.70  recall 0.70  F1 0.70  (tp 7, fp 3, fn 3)
+
+error taxonomy: correct 5, boundary 2, missed 2, spurious 2, wrong type 1
+boundary -> span rules; wrong type -> label definitions; spurious -> threshold; missed -> coverage
+```
+
+The two score lines give the measures under each rule, with the counts
+of true positives, false positives, and false negatives behind them. The
+taxonomy line counts the errors by kind, and the last line says which
+part of the system each kind points to.
+
+1. Align the extractor's output with the labelled sample, one row per
+   span. The harness of the [monitoring cookbook](/cookbook/monitoring-data-use/detect)
+   does this for dataset mentions.
+2. Run the script. Read both rules: the gap between exact and lenient
+   is the boundary problem, and the error counts say which fix comes
+   first. Boundary errors point to the extractor's span rules; wrong
+   types to the label definitions; false finds to the confidence
+   threshold; misses to what the training data cover.
+3. Score the subsets of the file by document type and language. The
+   sample has to contain each.
+4. Record the scores and the error counts with the versions.
+
+**Worked example.** In the file above, the extractor found "Labour Force
+Survey" where the labellers marked "Labour Force Survey 2025", and
+"Household Budget Survey 2021 data" where they marked "Household Budget
+Survey 2021". Both are boundary errors: wrong under the exact rule,
+right under the lenient one, and the gap of 0.20 in F1 between the two
+rules is made of them. The two missed spans are both census mentions
+used as sampling frames, which the model has not learned to treat as
+mentions. The two spurious spans are "the survey" and "national data",
+both at low confidence. The one wrong type is a report labelled as a
+dataset. The developer tightens the span rule to include a trailing
+year, raises the threshold to drop the two spurious spans, and adds
+census-as-frame sentences to the training sample.
+
+**What this does not do.** The alignment between labels and output is
+given in the file; producing it from two separate lists is a matching
+step with its own rules. Twelve rows demonstrate the measures; a measure
+to act on needs a few hundred labelled spans.
+
+</Recipe>
+
+<Recipe title="5.2 Measure classifiers with a confusion matrix and per-class scores" level="AI-ready" skills="Python" time="Minutes per run">
+
+**Result:** a component that assigns labels, such as a topic, an
+occupation code, or a severity, has its accuracy overall, its precision
+and recall for each label, and a table of which labels it confuses with
+which.
+
+Overall accuracy hides what matters: a classifier can be right on the
+common labels and wrong on every rare one. The confusion matrix, a
+table with the true label in rows and the assigned label in columns,
+shows which pairs the classifier mixes up.
+
+1. Score accuracy and per-label precision, recall, and F1 with a
+   library (scikit-learn's classification report), and print the
+   confusion matrix.
+2. Read the confusion matrix. The pairs with the most confusions are
+   where the label definitions overlap or the training examples are few.
+   The labelling guide and the training set are the fixes.
+3. For hierarchical codes (ISCO, ISIC), score at each level of the
+   hierarchy. A wrong four-digit code inside the right two-digit group
+   is a smaller error than a wrong group.
+4. Report per language and per document type, and keep the scores with
+   the versions.
+
+**Worked example.** The Metadata Reviewer's categorizer assigns one of
+six categories to each detected issue. On 120 issues with curator-
+confirmed categories, its accuracy is 0.82. The confusion matrix shows
+that 14 of its 22 errors are between "Inconsistency / Conflict" and
+"Factual error", two categories whose definitions in the labelling guide
+overlap, and that the rare category "Excluded field" has a recall of
+0.50 on its four examples. The guide's definitions of the two confused
+categories are rewritten with a contrasting example each, and the
+training sample gains more "Excluded field" cases. On the next run the
+accuracy is 0.89, and the two categories are confused 5 times.
+
+**What this does not do.** Accuracy on a sample full of common labels
+says little about rare ones. Per-label scores, and a sample that
+contains the rare labels, are what show them.
+
+</Recipe>
+
+<Recipe title="5.3 Keep the labelled sample representative" level="AI-ready" skills="Dissemination staff; developer" time="An hour per month">
+
+**Result:** the labelled sample covers the kinds of document and the
+languages the extractor meets in production, grows from the errors found
+there, and has a known agreement between its labellers.
+
+1. Draw the sample in proportion to production by document type and
+   language, with a minimum number from each group.
+2. Label with two people and measure their agreement
+   ([chapter 2](./questions.mdx)). The agreement is the ceiling for the
+   extractor's scores.
+3. Add the errors found in the production review of
+   [chapter 8](./production.mdx) to the sample, marked with their source,
+   so that the sample learns the failure modes.
+4. Keep the sample under version control and record its version with
+   every run.
+
+**Worked example.** Production traffic for the mention extractor is 60
+percent journal articles, 25 percent policy documents, and 15 percent
+news, in English and French at about three to one. The sample of 400
+sentences is drawn in those proportions, with a minimum of 40 from each
+document type and language. Two labellers mark it with an agreement of
+0.88. Each month the production review adds the sentences on which the
+extractor failed, marked "production, 2026-10", so that after a year
+about a third of the sample consists of known failure modes. The sample
+version is recorded with every run, and the first run on version 2.0
+is compared with version 1.0 only on the sentences the two share.
+
+**What this does not do.** A sample that mirrors production cannot
+measure a kind of document that has not entered production yet. A new
+kind of document gets its own labelled set before the extractor is
+trusted on it.
+
+</Recipe>
+
+## Implementation options
+
+- **Span scoring:** the script in this chapter; seqeval or nervaluate for token-level and entity-level schemes; the monitoring cookbook's scorer for mentions.
+- **Classification scoring:** scikit-learn's classification report and confusion matrix; hierarchical scoring per level for coding tasks.
+- **Taxonomy:** missed, spurious, boundary, wrong type for spans; confusion pairs for classes.
+- **Samples:** stratified, double-labelled, versioned, grown from production errors.
+
+## World Bank examples
+
+- [Monitoring of Data Use](/docs/data_use/) measures mention extraction against labelled sentences, with precision and recall per the [monitoring cookbook](/cookbook/monitoring-data-use/detect).
+- The [documents cookbook](/cookbook/data-from-documents/verify) verifies extracted table values against the page, an extraction measure at the cell level.
+- The [Metadata Reviewer](/docs/metadata-reviewer/overview) categorizes issues into six categories, a classifier whose confusions the review board's decisions reveal.
+
+## Resources
+
+- [scikit-learn classification metrics](https://scikit-learn.org/stable/modules/model_evaluation.html): precision, recall, F1, and the confusion matrix with their definitions.
+- [seqeval](https://github.com/chakki-works/seqeval) and [nervaluate](https://github.com/MantisAI/nervaluate): entity-level scoring with exact and partial matching schemes.
+- [CoNLL-2003 shared task](https://www.clips.uantwerpen.be/conll2003/ner/): the origin of the exact-match entity scoring convention.
+- [Extraction sample and scorer](pathname:///cookbook-files/evaluation-suites/extraction_scores.py): the running example; [score_mentions.py](pathname:///cookbook-files/monitoring-data-use/score_mentions.py) from the monitoring cookbook.
+
+## Common mistakes
+
+- **An unstated matching rule.** Two people score the same run differently.
+- **F1 alone.** The taxonomy is what says what to fix.
+- **A sample of easy documents.** Scores that production never reaches.
+- **Rare classes unreported.** The classifier fails on them and the accuracy does not move.
+
+## Verification
+
+- **Rules.** Exact and lenient scores are reported together, with the rule written down.
+- **Taxonomy.** The error counts per kind are reported with each run.
+- **Sample.** The sample is stratified by type and language, labelled by two people, and versioned.
+
+## Checklist
+
+<Checklist id="evaluation-suites-extraction" items={[
+  'Labelled sample with the matching rule written down',
+  'Exact and lenient precision, recall, F1 per run',
+  'Error taxonomy counts with the fix each points to',
+  'Classifiers scored per class with a confusion matrix; hierarchical codes per level',
+  'Scores per document type and language with sizes',
+  'Sample stratified, double-labelled, versioned, grown from production errors',
+]} />

@@ -1,0 +1,8 @@
+[1/6] documentation: 5 series records and 1 survey record loaded from fixtures/
+[2/6] validation at the foundational level: 5 records pass, 1 withheld: LF_UNEMP_PCT (missing at this level: series_description.definition_long)
+[3/6] publication: 5 records and 15 files in catalog/
+[4/6] agent access: 6 tool calls over MCP (stdio), 5 succeeded
+[5/6] answer: 84 words, composed by the template
+[6/6] verification with PCN: 3 verified, 0 flagged, 0 unmarked, against 7 claims
+report: sample_run/clean/report.md
+result: PASS

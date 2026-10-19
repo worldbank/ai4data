@@ -1,0 +1,7 @@
+record_id,field,current_value,suggested_value,reason,lfs_status,hours,hours_main
+H0003-2,age,140,41,Likely a typo; household roster lists this person as the spouse of a 44-year-old head,1,40,40
+H0005-1,hours,120,40,Reported 120 hours; the same respondent reported 40 hours in the main job and no second job,1,120,40
+H0007-3,income,-500,500,Negative income is impossible; the sign is probably an entry error,1,35,35
+H0009-2,hours,45,45,Hours reported for a person outside the labour force; set status or clear hours,3,45,45
+H0011-1,hours_main,50,50,Main-job hours exceed total hours of 40; one of the two is wrong,1,40,50
+H0012-4,income,,1200,Imputed from the median of the occupation and region cell,1,42,42

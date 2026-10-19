@@ -4,7 +4,7 @@ This handbook describes the methodology implemented by the World Bank's Developm
 
 The next section summarizes the methodology in non-technical terms using six steps. The summary is followed by chapters that describe each step in detail, the design choices, and the pipeline implementation.
 
-All decisions, assumptions, and protocols described in this handbook align with World Bank Data Quality standards and internationally accepted practices for official statistics.
+The decisions, assumptions, and protocols described in this handbook are designed with reference to the World Bank's guidance on data quality and to the quality frameworks used in official statistics.
 
 **Please cite this handbook as follows:**
 World Bank. 2025. "Anomaly Explanation Methodology Handbook." AI for Data – Data for AI. Available at [https://worldbank.github.io/ai4data](https://worldbank.github.io/ai4data).

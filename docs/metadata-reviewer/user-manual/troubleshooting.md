@@ -42,14 +42,11 @@ not mid-call. An LLM request already in flight will complete; the next
 agent simply will not start, and the job then settles into the cancelled
 state.
 
-## The review board shows "No valid rows found"
+## The triage table cannot be read back
 
-- Confirm the worksheet has the `ME_project` and `detected_issues` columns
-  (or their accepted aliases).
 - Confirm `detected_issues` contains valid JSON. Building it with
-  `json.dumps(...)` as shown in [Review Board](review-board.md) avoids quoting problems.
-- The board reads the **first** worksheet only; make sure your data is
-  on it.
+  `json.dumps(...)` as shown in [Reviewing the output](review-board.md) avoids quoting problems.
+- Read it back with `json.loads` per row before sorting by `issue_severity`.
 
 ## Can I make results reproducible?
 

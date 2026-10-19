@@ -1,0 +1,220 @@
+---
+id: standardize
+title: "6. Alignment with vocabularies"
+sidebar_label: "6. Standardize"
+sidebar_position: 7
+description: How free-text keywords and topics are aligned with a controlled vocabulary, by building the vocabulary as a SKOS scheme, mapping the catalog's free text to it, reviewing the terms that do not map, and letting a model propose concepts for the rest.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 6. Alignment with vocabularies
+
+**Question:** Can free text be aligned with controlled vocabularies?
+
+## Rationale
+
+Keywords written freely by many curators over many years say the same
+thing in many ways. "Hunger", "food insecurity", and "undernourishment"
+describe one concept, and a user who filters on one of them misses the
+records tagged with the other two. Search, filters, and AI systems all
+treat the three as different, because nothing tells them otherwise.
+
+A controlled vocabulary gives each concept one preferred label, a list
+of the other forms people write, and a web address that identifies it.
+Mapping the catalog's free text to the vocabulary makes the catalog
+consistent for every system that reads it. Most of the mapping is plain
+string matching against the alternates, and it runs in seconds. The
+terms that do not match are where a language model can propose a
+concept for a curator to confirm, and where the vocabulary grows.
+
+## Target state
+
+- Keywords and topics come from a vocabulary with preferred labels, alternates, and URIs, published as a SKOS concept scheme.
+- Free text in the catalog is mapped to the vocabulary, with unmapped terms reviewed each period.
+- Labels exist in each supported language, produced and reviewed as [chapter 7](./translate.mdx) describes.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Build a list of preferred terms from the most frequent keywords; curators consult it. |
+| **AI-ready** | Publish the vocabulary as SKOS with alternates and URIs; map the catalog's free text to it; review unmapped terms; store mapped terms in the records' `keywords` and `topics` with the vocabulary name and URI. |
+| **AI-native** | Let a model propose mappings for unmapped terms with a confidence, confirmed in the board; expose the vocabulary through the catalog; add labels per language through the translation workflow of [chapter 7](./translate.mdx). |
+
+:::info[Running example]
+Fourteen free-text keywords across the five records against a vocabulary
+of ten concepts. Ten map exactly to a preferred label or an alternate,
+two map by similarity, and two ("hunger" and "jobless") are unmapped
+until an alternate is added or a model proposes the concept.
+:::
+
+## Recipes
+
+<Recipe title="6.1 Build the vocabulary" level="Foundational" skills="Curator; subject-matter staff" time="Two days for the first version">
+
+**Result:** the catalog has a list of the concepts it uses for keywords
+and topics, each with one preferred label, a web address that identifies
+it, and the other forms curators have written for it.
+
+A controlled vocabulary turns "poverty rate", "poverty headcount", and
+"poverty incidence" into one filter. Its minimum form is a
+CSV with one row per concept:
+
+| Column | Meaning |
+|---|---|
+| `preferred_label` | The one form used in filters and on pages |
+| `uri` | A stable web address that identifies the concept, under the organization's domain |
+| `alternates` | The other forms curators wrote, separated by `;` |
+
+```csv file=../../website/static/cookbook-files/metadata-curation-with-llms/vocabulary.csv
+```
+
+1. Start from the keywords already in the catalog, ranked by frequency,
+   and from the topic list the catalog uses. Merge synonyms into one
+   concept each.
+2. Give each concept a preferred label, its alternates, and a URI under
+   the organization's domain. Where an international vocabulary covers
+   the concept, record its URI as well.
+3. Publish the scheme as [SKOS](https://www.w3.org/TR/skos-reference/),
+   the web standard for such vocabularies; the CSV is its minimum form.
+   Statistical classifications use [XKOS](https://ddialliance.org/xkos),
+   an extension of SKOS.
+4. Record the vocabulary's name and URI in the records' `keywords` and
+   `topics` fields, which carry a vocabulary and a URI in the World Bank
+   schema.
+
+**Worked example.** The vocabulary of the running example has ten
+concepts. The row for undernourishment has the preferred label
+"Undernourishment", the URI `https://stats.example.org/vocab/undernourishment`,
+and the alternates "prevalence of undernourishment; chronic hunger". Food
+insecurity and malnutrition have rows of their own, because an alternate
+is a synonym of the preferred label and these are related but distinct
+measures. Undernourishment is insufficient dietary energy (SDG indicator
+2.1.1). Food insecurity is limited access to food (SDG indicator 2.1.2).
+Malnutrition covers outcomes such as stunting and wasting (SDG target
+2.2). The row for unemployment has the alternates
+"unemployment rate; unemployment rates; joblessness". The curator
+building it started from the 140 distinct keywords in the catalog,
+ranked by frequency, and merged them into ten concepts in a morning,
+recording the SDG indicator URI beside the undernourishment concept
+because SDG 2.1.1 covers it. The CSV is converted to a SKOS file and
+published at the vocabulary's address.
+
+**What this does not do.** A vocabulary built from existing keywords
+reflects what curators wrote, which may omit what users search for. The
+search logs and the question sets of the dissemination cookbook show
+the user side.
+
+</Recipe>
+
+<Recipe title="6.2 Map free text to the vocabulary" level="AI-ready" skills="Python; curator for the review" time="Minutes to run; an hour per period to review">
+
+**Result:** every free-text keyword in the catalog is either mapped to a
+preferred label of the vocabulary or listed as unmapped for a curator to
+decide.
+
+The input is a file of the keywords as curators wrote them, one row per
+record and keyword (`record_id`, `keyword`). The script matches each
+against the vocabulary's preferred labels and alternates, first exactly
+and then by string similarity, and lists what it could not match:
+
+```python file=../../website/static/cookbook-files/metadata-curation-with-llms/map_vocabulary.py
+```
+
+```bash
+python map_vocabulary.py keywords_freetext.csv vocabulary.csv
+```
+
+Output for the running example (abridged):
+
+```text
+exact   1.00  FS_UNDERNOURISH_PCT     'food insecurity'                  -> Food insecurity
+fuzzy   0.92  LF_UNEMP_PCT            'unemployment rates'               -> Unemployment
+none    0.00  FS_UNDERNOURISH_PCT     'hunger'                           -> -
+14 keywords: exact 10, fuzzy 2, none 2
+unmapped (add an alternate, add a concept, or let a model propose a mapping for review):
+  FS_UNDERNOURISH_PCT: 'hunger'
+  LF_UNEMP_PCT: 'jobless'
+```
+
+Each line shows the match type, the similarity score, the record, the
+keyword as the curator wrote it, and the preferred label it was mapped
+to. An exact match scores 1.00, a fuzzy match scores by string
+similarity, and an unmapped keyword scores zero and appears again in the
+list at the end.
+
+1. Accept exact matches. Check fuzzy matches on a sample; a similarity
+   threshold of 0.85 catches plurals and spelling, and some false
+   friends.
+2. For each unmapped term, decide: add it as an alternate of an existing
+   concept ("hunger" under Undernourishment), add a new concept, or
+   drop it. A language model given the term, its record, and the
+   vocabulary can propose the concept with a confidence, for the curator
+   to confirm in the board.
+3. Write the mapped terms into the records with the vocabulary and URI,
+   through the editor.
+
+**Worked example.** In the run above, "food insecurity" maps exactly to
+Food insecurity, a concept of its own beside Undernourishment, and
+"unemployment rates" maps to Unemployment by similarity with a score of
+0.92, because the alternate is the singular. The curator checks the two
+fuzzy matches and confirms both. For the two unmapped terms, the model
+is given each term, its record, and the vocabulary, and it proposes
+Undernourishment for "hunger" with a confidence of 0.9 and Unemployment
+for "jobless" with 0.95. The curator confirms both in the board, and
+"hunger" and "jobless" are added as alternates. The next run maps all
+fourteen keywords exactly, and the records' `keywords` fields now carry
+the preferred labels with the vocabulary name and URI.
+
+**What this does not do.** String matching maps known forms. Matching by
+meaning (with embeddings) maps more, and a model proposes the rest.
+Both end in a curator's confirmation, because a wrong mapping is a wrong
+filter for every user.
+
+</Recipe>
+
+## Implementation options
+
+- **Vocabulary format:** SKOS for concepts and labels, XKOS for classifications; a CSV with preferred label, URI, and alternates as the working form.
+- **Mapping:** exact and fuzzy string matching (this chapter); embeddings for semantic matching; a model for proposals with a confidence.
+- **Storage:** `keywords` and `topics` with vocabulary and URI in the World Bank schemas; the Metadata Editor's controlled lists.
+- **International vocabularies:** the SDG indicator framework, the classifications of [chapter 4 of the microdata cookbook](/cookbook/microdata-documentation/concepts), and thematic thesauri, as sources of URIs.
+
+## World Bank examples
+
+- [Generative AI for Metadata Quality](/docs/metadata-quality/generative-ai-for-metadata-quality) describes controlled vocabulary standardization as a model task: mapping free-text topic keywords to a vocabulary with a confidence.
+- The World Bank schemas carry `keywords` and `topics` with `vocabulary` and `uri` per entry.
+
+## Resources
+
+- [SKOS](https://www.w3.org/TR/skos-reference/) and the [SKOS primer](https://www.w3.org/TR/skos-primer/): concept schemes, preferred and alternate labels, and how to publish one.
+- [XKOS](https://ddialliance.org/xkos): statistical classifications and correspondences.
+- [Skosmos](https://skosmos.org/): an open-source browser and API for SKOS vocabularies, for publishing the scheme.
+- [UN classifications registry](https://unstats.un.org/unsd/classifications/) and the [SDG indicator framework](https://unstats.un.org/sdgs/indicators/indicators-list/): sources of URIs for concepts the organization reuses.
+- [Vocabulary](pathname:///cookbook-files/metadata-curation-with-llms/vocabulary.csv), [keywords](pathname:///cookbook-files/metadata-curation-with-llms/keywords_freetext.csv), and [mapping script](pathname:///cookbook-files/metadata-curation-with-llms/map_vocabulary.py): the running example.
+
+## Common mistakes
+
+- **A vocabulary nobody uses.** The mapping has to write back into the records, or the list is decoration.
+- **Fuzzy matches accepted blind.** "Employment" and "unemployment" are close strings and opposite concepts.
+- **Dropping unmapped terms.** They are where the vocabulary learns what curators and users say.
+
+## Verification
+
+- **Vocabulary.** Every concept has a preferred label, a URI, and alternates, and the scheme is published as SKOS.
+- **Mapping.** The share of keywords mapped exactly, by similarity, and unmapped is reported each period, and the unmapped terms have been decided.
+- **Records.** The keywords and topics carry the vocabulary and the URI.
+- **Languages.** Labels exist per language with their review status, from chapter 7.
+
+## Checklist
+
+<Checklist id="metadata-curation-with-llms-standardize" items={[
+  'Vocabulary with preferred labels, alternates, and URIs',
+  'Published as a SKOS concept scheme; classifications as XKOS',
+  'Free text mapped; fuzzy matches sampled; unmapped terms decided',
+  'Model proposals for unmapped terms confirmed by a curator',
+  'Mapped terms written to records with vocabulary and URI',
+  'Labels per language through the translation workflow',
+]} />

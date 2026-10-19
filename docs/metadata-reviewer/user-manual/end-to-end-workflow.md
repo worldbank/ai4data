@@ -7,11 +7,11 @@ of records looks like this:
 2. **Submit each record** and collect its results. For many records,
    submit them and wait in turn, or submit a batch and wait on each Job
    handle.
-3. **Assemble a workbook** with one row per record and the issue array
-   as a JSON string ([Review Board](review-board.md)).
-4. **Triage in the review board** — a human opens the workbook, works
-   through projects highest-severity-first, and confirms which
-   suggestions to apply ([Review Board](review-board.md)).
+3. **Assemble a triage table** with one row per record and the issue array
+   as a JSON string ([Reviewing the output](review-board.md)).
+4. **Triage** — a curator works through the records highest-severity-first
+   and confirms which suggestions to apply; inside the Metadata Editor
+   this happens on the project's Issues page.
 5. **Apply accepted fixes** back to your metadata system as a separate
    step, using the key paths in `current_metadata` / `suggested_metadata`
    to target each field.

@@ -1,0 +1,263 @@
+---
+id: evaluate
+title: "7. Evaluation of agent access"
+sidebar_label: "7. Evaluate"
+sidebar_position: 8
+description: How the organization runs its question set through an assistant, logs what the assistant called and answered, scores the traces for tool selection, series, values, citations, refusals, and latency, reviews a sample, and uses the scores to decide whether a change may go live.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 7. Evaluation of agent access
+
+**Question:** How is the interface evaluated?
+
+## Rationale
+
+An agent interface has more ways to fail than an API. The model can call
+the wrong tool, or the right tool with the wrong code. It can read the
+right value and misstate it. It can answer a question it should have
+declined, or answer correctly without a citation. None of these failures
+shows in the server's logs as an error, because from the server's point of
+view every call succeeded.
+
+The only way to see them is to run questions with known answers through an
+assistant, log what it called and what it answered, and score the result.
+The question set of [chapter 1](./purpose.mdx) is the suite. This chapter
+runs it, scores it, and makes the scores the condition for any change to
+go live.
+
+## Target state
+
+- The question set is run through at least one assistant on every change to the server, the tools, the guidance, or the catalog.
+- The traces are scored for tool selection, series, value, citation, and behaviour, per language, and the scores are kept with the version they were measured on.
+- A sample of answers is reviewed by a person for wording, caveats, and the efficiency of the tool calls.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | The first ten questions are tried by hand with an assistant connected to the API or the server, and what went wrong is written down. |
+| **AI-ready** | The question set runs through a harness that logs traces. The traces are scored with the evaluation script, a sample is reviewed, and the results are kept. |
+| **AI-native** | The suite runs on every change, per language and per assistant. Logged real questions are added to it, and publication is gated on the scores. |
+
+:::info[Running example]
+Eight questions run through an assistant connected to the example server.
+Six pass every check. The French question receives an answer that states
+6.3 percent where the quarter's value is 6.1, which the value check flags.
+The regional question receives a regional figure the series does not have,
+which the behaviour check flags, because the assistant should have
+declined.
+:::
+
+## Recipes
+
+<Recipe title="7.1 Run the question set and log the traces" level="AI-ready" skills="Developer" time="One day to set up the harness; minutes per run">
+
+**Result:** for every question in the set, the organization has a record
+of what the assistant did: the tools it called, the series it used, the
+answer it gave, whether it declined, and how long it took.
+
+Such a record is called a trace. A harness is a small program that sends
+each question to an assistant, captures the tool calls and the answer, and
+writes the trace. The traces are kept as a file with one JSON object per
+line, with these fields:
+
+| Field | Meaning |
+|---|---|
+| `question_id` | The question from the set. |
+| `tools_called` | The tools the assistant called, in order. |
+| `series` | The series identifier it used, if any. |
+| `answer` | The final answer text. |
+| `declined` | Whether the assistant declined to answer. |
+| `latency_s` | Seconds from question to answer. |
+
+The traces of the running example:
+
+```json file=../../website/static/cookbook-files/serving-statistics-to-agents/agent_traces.jsonl
+```
+
+1. Connect an assistant to the server. This can be an assistant with
+   tool use or a small harness built on a tool-use API. Load the
+   guidance resource as its instructions, so that the run reflects what
+   a well-configured client sees.
+2. Send each question of the set and log the trace in the form above.
+3. Run with more than one model where the organization can. Tool
+   selection differs between models, and the server's descriptions have
+   to work for the assistants that users bring.
+4. Keep the traces with the date, the server version, the model, and the
+   guidance version, so that a later run can be compared with this one.
+
+**Worked example.** The trace of question `a03`, "What is the unemployment
+rate in the latest quarter?", records two tool calls, `search_series` and
+then `get_observations`, the series `LF_UNEMP_PCT`, and the answer "The
+unemployment rate was 6.1% of the labour force in 2025-Q2; this value is
+provisional. Source: https://stats.example/series/LF_UNEMP_PCT". The
+assistant did not decline, and the answer took 1.9 seconds. Every field
+the scoring script needs is in that one line.
+
+**What this does not do.** The harness runs the organization's questions
+through an assistant the organization controls. Third-party assistants
+that users bring are observed only through the AI visibility check of the
+dissemination cookbook.
+
+</Recipe>
+
+<Recipe title="7.2 Score the traces" level="AI-ready" skills="Python" time="Minutes">
+
+**Result:** five scores per run, for the right tools, the right series,
+the right value, a citation present, and the right behaviour, reported
+per language, with each failure listed so that its cause can be found.
+
+The script compares each trace with the expected columns of the question
+set. A tool check passes when the trace's tool calls include the expected
+tools. A series check passes when the series matches. A value check passes
+when the expected value appears in the answer. A citation check passes
+when the answer contains a source URL. A behaviour check passes when the
+assistant answered or declined as expected.
+
+```python file=../../website/static/cookbook-files/serving-statistics-to-agents/agent_eval.py
+```
+
+It runs with the question set and the traces as arguments:
+
+```bash
+python agent_eval.py agent_questions.csv agent_traces.jsonl
+```
+
+For the running example the output, abridged to the rows that matter, is:
+
+```text
+id   lang  tools  series  value  cite  behave  question
+a01  en    ok     ok      ok     ok    ok      What was the prevalence of undernourishment in 2024?
+a05  fr    ok     ok      FAIL   ok    ok      Quel est le taux de chômage au deuxième trimestre 2025?
+a06  en    ok     -       -      -     ok      What is the inflation rate?
+a07  en    FAIL   -       -      -     FAIL    What is the under-five mortality rate in the Northern Region?
+tools   7/8  0.88
+series  6/6  1.00
+value   4/5  0.80
+cite    6/6  1.00
+behave  7/8  0.88
+```
+
+The table has one row per question with `ok`, `FAIL`, or `-` for each
+check, where `-` means the check does not apply, for example a value check
+on a question that should be declined. The summary lines give each score
+as a fraction and a rate.
+
+1. Read each failure to its cause. In the run above, the French failure
+   is a wrong figure in the answer, which the number check of
+   [chapter 4](./provenance.mdx) also catches. The regional failure is a
+   missing refusal. The guidance resource, and a `list_code_values` call
+   before `get_observations`, are the fixes for it.
+2. Fix the cause, whether it is in the guidance text, a tool
+   description, a code-list check, or a catalog field, and run the set
+   again. The scores show whether the fix worked.
+3. Keep the scores per language and per model with the version.
+
+**Worked example.** Question `a07` asks for the under-five mortality rate
+in the Northern Region. The expected behaviour is `decline`, because the
+series is national only. The trace shows that the assistant called
+`search_series` and `get_observations` without calling
+`list_code_values`, and answered that the rate in the Northern Region was 41 per 1,000
+live births in 2020. That is the national figure, presented as the
+region's; no response contained a regional value. The tool check fails because the
+expected `list_code_values` call is missing, and the behaviour check fails
+because the assistant answered. The fix has two parts: the guidance text
+now says "call list_code_values before asking for a region", and the
+metadata of the series now states that it is published at the national
+level only. In the next run the assistant declines and explains why.
+
+**What this does not do.** The script scores what the trace records.
+Wording, repeated caveats, and the efficiency of the tool calls are judged
+by a reviewer in recipe 7.3. Eight questions demonstrate the method; a
+suite has 30 to 50 per language.
+
+</Recipe>
+
+<Recipe title="7.3 Review a sample and gate changes" level="AI-ready" skills="Subject-matter staff; developer" time="Half a day per run">
+
+**Result:** the organization has a measure of answer quality beyond what
+the script can check, and a rule that no change to the server goes live if
+the scores fall.
+
+A script can confirm that the right number appears in an answer. It cannot
+tell whether the answer repeated the caveat in a way a reader would notice,
+whether it was concise, or whether the assistant called the tools five
+times where two would do. A reviewer reads a sample for those things, and
+the sample includes answers that passed every automated check, because
+those are the ones nobody would otherwise look at.
+
+1. Draw 20 answers from each run, including some that passed every
+   automated check. Score each on a short rubric: right series, right
+   number, period and unit stated, caveats repeated, citation present,
+   nothing invented, and concise.
+2. Add every failure to the question set with the expected answer. The
+   suite grows from its own failures.
+3. Set the gate. A change to the server, the tools, the guidance, or the
+   catalog ships only when the automated scores are at or above the
+   previous run's scores, per language, and the reviewed sample shows no
+   new kind of failure.
+4. Run the suite again after model updates on the assistants the
+   organization operates. A model change is a change like any other.
+
+**Worked example.** In the review of the running example's run, the
+answer to question `a01` passed every automated check. The reviewer
+still marked it down on the rubric, for two reasons. It gave the 2024
+value without the 2023 value that the question's context invited, and
+it repeated the series definition in full where one phrase would do. The reviewer added a note
+to the guidance text asking for the previous value where a trend is
+implied. The answer to `a03` scored full marks: it stated the value, the
+quarter, the unit, the provisional status, and the citation in two
+sentences.
+
+**What this does not do.** A gate holds the line. It does not raise it.
+The scores rise when causes are fixed in the catalog, the API, and the
+guidance, which the dissemination cookbook's chapters cover.
+
+</Recipe>
+
+## Implementation options
+
+- **Harness.** An assistant with tool use connected to the server, or a small program on a tool-use API that logs the calls. The official SDK's client can drive the server directly.
+- **Scores.** Tool selection, series, value, citation, and behaviour, with latency, and the number check over the logged responses.
+- **Review.** A rubric and a sample per run. A language model can grade first, with a person checking a share of its grades, as the dissemination cookbook's evaluation chapter describes.
+- **Gate.** Scores are kept per version, and publication is blocked when they fall below the previous run.
+
+## World Bank examples
+
+- The [dissemination cookbook's evaluation chapter](/cookbook/ai-ready-dissemination/evaluate) provides the question-set method and the retrieval and answer measures that this chapter extends with tool selection and behaviour.
+- [Proof-Carrying Numbers](https://arxiv.org/abs/2509.06902) provides the number verification applied to logged answers.
+
+## Resources
+
+- The [MCP Python SDK client](https://github.com/modelcontextprotocol/python-sdk) drives the server directly in a harness that logs every call.
+- The [evaluation chapter of the dissemination cookbook](/cookbook/ai-ready-dissemination/evaluate) describes the measures, the question-set discipline, and the grader pattern this chapter extends.
+- [Proof-Carrying Numbers](https://arxiv.org/abs/2509.06902) describes the verification of stated numbers against logged responses.
+- The [agent evaluation script](pathname:///cookbook-files/serving-statistics-to-agents/agent_eval.py) and the [traces](pathname:///cookbook-files/serving-statistics-to-agents/agent_traces.jsonl) are the scoring of the running example.
+- [Inspect](https://inspect.ai-safety-institute.org.uk/) is an open-source framework for evaluating language model agents with tool use, suited to larger suites.
+
+## Common mistakes
+
+- **Testing with one model.** Tool selection differs between assistants. The descriptions have to work for several.
+- **Scores without causes.** A failed value and a missing refusal need different fixes. The failure list names them.
+- **A suite that never grows.** Real questions and real failures are the source of new items.
+- **Changes without a re-run.** A one-word change to a tool description changes tool selection.
+
+## Verification
+
+- **Runs.** Traces and scores exist for the current version, per language and per model.
+- **Causes.** Every failure has a recorded cause and either a fix or a decision.
+- **Gate.** The last change shipped with scores at or above the previous run.
+
+## Checklist
+
+<Checklist id="serving-statistics-to-agents-evaluate" items={[
+  'Harness logs traces with tools, series, answer, declined, latency',
+  'Question set run on every change, with more than one model where possible',
+  'Scores for tools, series, value, cite, behave, per language',
+  'Failures read to their cause and fixed at the source',
+  'Sample reviewed on a rubric; failures added to the set',
+  'Publication gated on scores and the reviewed sample',
+]} />

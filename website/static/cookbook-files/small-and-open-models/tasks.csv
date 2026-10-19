@@ -1,0 +1,11 @@
+task,output,reasoning,languages,confidential,volume_per_month,latency
+Occupation coding,code,low,national;en,yes,250000,batch
+Metadata keyword drafting,short text,low,en;fr,no,5000,batch
+Definition drafting,paragraph,medium,en;fr,no,2000,batch
+Edit failure explanation,short text,low,national,yes,40000,batch
+Release commentary drafting,long text,high,national;en;fr,no,40,interactive
+Catalog search embeddings,vector,none,national;en;fr,no,500000,interactive
+Assistant over the catalog,paragraph,high,national;en;fr,no,20000,interactive
+Mention extraction,spans,low,en;fr,no,100000,batch
+Table extraction from scans,structured,medium,national;en,no,30000,batch
+Translation of metadata,paragraph,medium,national;en;fr,no,10000,batch

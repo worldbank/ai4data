@@ -1,0 +1,133 @@
+---
+id: start-here
+title: Self-assessment
+sidebar_label: Self-assessment
+sidebar_position: 1
+description: A five-minute self-assessment that places a document collection at a maturity level in each chapter and suggests a reading order.
+---
+
+import SelfAssessment from '@site/src/components/Cookbook/SelfAssessment';
+
+# Self-assessment
+
+Select the statement that best describes the organization's documents
+today, one per chapter. The result shows a level for each chapter and the
+chapters to read first. Answers are stored in this browser only.
+
+<SelfAssessment
+  base="/cookbook/data-from-documents/"
+  questions={[
+    {
+      id: 'inventory',
+      title: '1. Inventory',
+      question: 'How well does the organization know which documents hold data?',
+      options: [
+        'Documents are on the website or in an archive; nobody has listed which hold tables and figures.',
+        'An inventory lists the documents, their type, pages, and whether they have a text layer.',
+        'Every document has a catalog record in the document schema, with the series and surveys it draws on.',
+        'The inventory is kept current automatically as documents are published, with table and figure counts from layout detection.',
+      ],
+    },
+    {
+      id: 'scanned',
+      title: '2. Scanned',
+      question: 'How are scanned documents read?',
+      options: [
+        'They are not; scans wait, or someone types the tables.',
+        'Scans are marked in the inventory and OCR runs with one engine on the priority documents.',
+        'Engines are tested on the organization\'s own pages per language, every OCR page has a quality score, and pages over the threshold are re-processed or reviewed.',
+        'OCR runs as a pipeline stage with the score as a gate, and corrected pages feed the test set.',
+      ],
+    },
+    {
+      id: 'locate',
+      title: '3. Locate',
+      question: 'How are tables and figures located in documents?',
+      options: [
+        'By a person paging through the document.',
+        'Tables are located from the text layer; figures by hand.',
+        'A layout detection model locates tables and figures with bounding boxes, and detections are reviewed on a sample.',
+        'Detection runs on every new document, is measured against annotated pages, and the model is retrained on the organization\'s own documents.',
+      ],
+    },
+    {
+      id: 'extract',
+      title: '4. Extract',
+      question: 'How are the data extracted?',
+      options: [
+        'Copied by hand into spreadsheets when needed.',
+        'Tables are extracted from the text layer into CSV; charts are read by hand.',
+        'Tables and charts are extracted with tools into tidy files that carry page, bounding box, units, and method.',
+        'Extraction runs as a pipeline with a vision-language model for charts, and every value carries its provenance.',
+      ],
+    },
+    {
+      id: 'verify',
+      title: '5. Verify',
+      question: 'How are extracted values verified?',
+      options: [
+        'They are not; the extraction is trusted.',
+        'A person checks a sample against the page.',
+        'Values are checked against printed labels, totals, and derived rates, and a sample is reviewed; each value carries a status.',
+        'Verification runs in the pipeline, flagged values block publication until corrected, and error rates are reported.',
+      ],
+    },
+    {
+      id: 'series',
+      title: '6. Series',
+      question: 'How are tables from successive documents combined?',
+      options: [
+        'They are not; each extracted table stands alone.',
+        'Tables of one statistic are mapped to a series and combined, with revisions reviewed.',
+        'Every series has a mapping, units and areas are normalized, breaks are recorded, and the series is published as a record with a values file.',
+        'Combination runs as a pipeline stage, with model-proposed mappings and break explanations confirmed by a curator.',
+      ],
+    },
+    {
+      id: 'publish',
+      title: '7. Publish',
+      question: 'How are extracted data published?',
+      options: [
+        'They are not published; they stay in working files.',
+        'Tidy files are published next to the document with the licence of the document.',
+        'Each extracted table has a record in the table schema that links to the document record and to the series it draws on.',
+        'Extracted data are served through the catalog API with provenance, and the document record links to every table extracted from it.',
+      ],
+    },
+    {
+      id: 'cite',
+      title: '8. Cite',
+      question: 'How can extracted data be found and cited?',
+      options: [
+        'Only by finding the document and the page.',
+        'Extracted tables appear in the catalog and in search by their printed titles.',
+        'Each table has a citation to the document and page, schema.org markup, and a stable URL.',
+        'Each value cites its page and bounding box, corrections are logged as errata, and use is monitored.',
+      ],
+    },
+    {
+      id: 'operate',
+      title: '9. Operate',
+      question: 'How does the pipeline run over the backlog?',
+      options: [
+        'Document by document, by hand, when time allows.',
+        'A status log and a manifest order the work and make runs resumable; time per page is measured.',
+        'Stages run as batch jobs with retries; cost per page is measured per stage; batches are monitored; the configuration is versioned.',
+        'Runs are scheduled from the inventory, models are chosen per document type from measurements, and corrections propagate to series and records.',
+      ],
+    },
+  ]}
+/>
+
+## Interpretation of the result
+
+- A **Not yet** result in chapter 1 comes first: an inventory is a day of
+  work and decides where to spend the rest, including how many pages need
+  the OCR of chapter 2.
+- Chapters 3 and 4 depend on each other; a team can start with tables from
+  the text layer (chapter 4, recipe 4.1) before any layout detection.
+- Chapter 5 is the one not to skip: an extracted value that was never
+  checked is a transcription, and the chapter's checks use what the
+  document already offers.
+- Chapter 9 matters once the first fifty documents are done; before that,
+  the measurements it asks for do not exist.

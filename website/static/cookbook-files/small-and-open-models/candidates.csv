@@ -1,0 +1,7 @@
+model,size_b,hosting,suite_score,national_language_score,cost_per_1k_queries,latency_ms_p50,license
+small-3b-q4,3,local,0.86,0.81,0.04,180,Apache-2.0
+mid-8b-q4,8,local,0.91,0.88,0.11,420,Apache-2.0
+mid-14b-q8,14,local,0.93,0.90,0.26,900,open-weight with use restrictions
+large-70b-q4,70,local,0.95,0.92,1.40,2600,open-weight with use restrictions
+hosted-large,,hosted,0.96,0.89,0.90,1100,proprietary terms
+hosted-small,,hosted,0.88,0.79,0.15,350,proprietary terms

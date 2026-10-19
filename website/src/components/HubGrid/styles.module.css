@@ -1,0 +1,74 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.gridCompact {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 1.4rem 1.5rem 1.5rem;
+  background: var(--canvas);
+  color: var(--ink);
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.tile:hover,
+.tile:focus-visible {
+  background: var(--primary-subtle);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.icon {
+  color: var(--primary);
+  margin-bottom: 0.2rem;
+}
+
+.tileTitle {
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.gridCompact .tileTitle {
+  font-size: 1rem;
+}
+
+.tileText {
+  color: var(--ink-muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.gridCompact .tileText {
+  font-size: 0.86rem;
+}
+
+@media screen and (max-width: 1000px) {
+  .gridCompact {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .grid,
+  .gridCompact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tile {
+    padding: 1.1rem 1rem 1.2rem;
+  }
+}

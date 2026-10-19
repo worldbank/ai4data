@@ -1,0 +1,251 @@
+---
+id: rounds
+title: "6. Comparability across survey rounds"
+sidebar_label: "6. Rounds"
+sidebar_position: 7
+description: How variables can be followed across survey rounds, through a crosswalk between the dictionaries of successive rounds, correspondence tables for recoded variables, and harmonized variables with their comparability stated, so that a trend question gets a correct answer.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 6. Comparability across survey rounds
+
+**Question:** Can variables be followed across survey rounds and related surveys?
+
+## Rationale
+
+The most common question asked of a repeated survey is a trend: has
+unemployment risen since last year, has the share of children in school
+changed. Answering it needs the same variable in two rounds, with the same
+meaning and the same codes, or a documented correspondence where they
+differ. Each round is documented separately, and the differences between
+rounds (a renamed variable, a recoded education question, a dropped item)
+are what a user, or an AI system, has to know before comparing. Undocumented,
+these differences produce confident wrong trends.
+
+A crosswalk between rounds is a short table, cheap to produce from two
+dictionaries, and it is the piece of documentation that most directly
+prevents the wrong answer.
+
+## Target state
+
+- Every pair of successive rounds has a crosswalk: which variables are the same, recoded, renamed, dropped, or new, with the breaks in series marked.
+- Code lists that changed have a correspondence table, and the series the organization publishes state which rounds are comparable.
+- Variables that measure the same concept carry the same name across rounds, or a harmonized name is published beside the original.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Produce a crosswalk between the latest two rounds and publish it with the study records. |
+| **AI-ready** | Keep crosswalks for every pair of rounds; publish correspondence tables for recoded variables; record breaks in the `version_statement` and the quality statement; link related studies in the records. |
+| **AI-native** | Maintain harmonized variables across rounds with reusable definitions (DDI Lifecycle or a question bank), so that a search for a concept returns the variable in every round with its comparability stated. |
+
+:::info[Running example]
+The dictionaries of `EX-LFS-2024-Q4` and `EX-LFS-2025-Q2`. Twelve
+variables are the same; the education variable was recoded from four
+national levels to six ISCED levels; the job search variable was renamed;
+a second-job item was dropped; an informality flag and a job search methods
+item are new. The crosswalk records each, and the education recoding gets a
+correspondence table.
+:::
+
+## Recipes
+
+<Recipe title="6.1 Draft the crosswalk between two rounds" level="Foundational" skills="Data curator; Python" time="Minutes to run; an hour to review">
+
+**Result:** the curator has a table that says, for every variable of two
+survey rounds, whether it is the same, renamed, recoded, dropped, or new,
+and that names the breaks between the rounds.
+
+A crosswalk is that table. The script compares the two rounds'
+dictionaries by name, label, question, and code list, and writes one
+row per variable with its status:
+
+```python file=../../website/static/cookbook-files/microdata-documentation/compare_rounds.py
+```
+
+```bash
+python compare_rounds.py lfs_2024q4_dictionary.csv lfs_2025q2_dictionary.csv round_crosswalk.csv
+```
+
+Output for the running example:
+
+```text
+warning: lfs_2025q2_dictionary.csv lists 'hours' 2 times; first occurrence used
+16 variables in lfs_2024q4_dictionary.csv, 17 in lfs_2025q2_dictionary.csv
+same      12  hhid, pid, region, urban, sex, age, lfs_status, occupation, industry, hours, income, weight
+recoded    2  relationship, educ
+renamed    1  looked_work
+dropped    1  secondjob
+new        2  informal, q17b
+crosswalk written to round_crosswalk.csv
+```
+
+The first line is a warning about the duplicated name in the later
+dictionary, which is one of the planted defects. The lines that follow
+count the variables by status and list them, and the crosswalk file
+holds one row per variable with the same status and the matching name
+in each round.
+
+1. Run the script on the two dictionaries and read the crosswalk
+   ([round_crosswalk.csv](pathname:///cookbook-files/microdata-documentation/round_crosswalk.csv)).
+   Here the warning on the duplicated name is the planted defect of
+   [chapter 3](./variables.mdx). The "recoded" row for `relationship`
+   is the missing code list of the later round, a defect; the row for
+   `educ` is a real recoding.
+2. Review every row that is not "same": confirm the renamed match,
+   decide whether a recoded variable is comparable after a
+   correspondence (recipe 6.2) or is a break, and note why a variable
+   was dropped.
+3. Publish the reviewed crosswalk with the later round's record (as a
+   related material or a documentation file) and state the breaks in
+   its version statement and quality statement
+   ([chapter 7](./fitness.mdx)).
+
+**Worked example.** The curator reviews the five rows that are not
+"same". The "renamed" row matches `looked_work` in the earlier round to
+`q17b` in the later one, by identical question text, and the curator
+confirms it. The "recoded" row for `educ` is a real recoding from four
+national levels to six ISCED levels, and goes to recipe 6.2. The
+"recoded" row for `relationship` turns out to be the missing code list of
+the later round, a defect that chapter 3 repaired, and after the repair
+the row becomes "same". The "dropped" row for `secondjob` is annotated
+"item removed from the questionnaire in 2025; no replacement". The two
+"new" rows are annotated as additions. The version statement of the
+later record gains the sentence "The education variable is not comparable
+with earlier rounds below the three-level aggregation".
+
+**What this does not do.** The script compares names, labels,
+questions, and code lists. A variable whose codes stayed and whose
+question wording changed is "same" to the script and may be a break.
+The methodologist's review of question wording across rounds is the
+check.
+
+</Recipe>
+
+<Recipe title="6.2 Publish a correspondence table for a recoded variable" level="AI-ready" skills="Subject-matter statistician; classification specialist" time="Half a day per variable">
+
+**Result:** the recoded variable has a table that maps each code of the
+earlier round's list to the codes of the later round's list, with the
+relation stated, so that a user can produce a comparable series.
+
+1. For each recoded variable, list the old codes and the new codes and
+   state the relation of each pair: exact, old splits into several new,
+   several old merge into one new, or no correspondence. In the
+   running example, old `2=Secondary` splits into new `2=Lower
+   secondary` and `3=Upper secondary`. Old `3=Tertiary` corresponds to
+   new `4=Post-secondary non-tertiary` and `5=Tertiary` only
+   approximately, which is a break at the fine level and comparable at
+   the coarse level.
+2. Publish the table as a file with the record and, where the codes
+   follow a standard classification, as an
+   [XKOS](https://ddialliance.org/xkos) correspondence with the
+   classification's URIs ([chapter 4](./concepts.mdx)).
+3. State in the record which level of aggregation is comparable across
+   the two rounds, so that a published series can say "comparable at
+   three education levels from 2024".
+
+**Worked example.** The correspondence table for `educ` has six rows.
+Old `0=None` maps exactly to new `0=Less than primary`. Old `1=Primary`
+maps exactly to new `1=Primary`. Old `2=Secondary` splits into new
+`2=Lower secondary` and `3=Upper secondary`. Old `3=Tertiary` maps
+approximately to new `4=Post-secondary non-tertiary` and `5=Tertiary`
+together. The table states that the two rounds are comparable at three
+levels, none or primary, secondary, and post-secondary, and the published
+series on educational attainment adds that sentence to its metadata. A
+user who wants six levels for 2025 can have them, and the record tells
+them that no comparable six-level figure exists for 2024.
+
+**What this does not do.** A correspondence makes codes comparable. It
+does not make estimates comparable when the sample design or the
+question wording also changed; the quality statement names those
+changes.
+
+</Recipe>
+
+<Recipe title="6.3 Harmonize variable names and definitions across rounds" level="AI-native" skills="Methodologist; data curator" time="One to two weeks for a survey program">
+
+**Result:** each concept that is measured in every round has one
+harmonized variable, defined once. The round-specific variables are
+mapped to it, and the comparability of each round is stated.
+
+1. Choose the concepts that users follow over time (labour force
+   status, education level, hours, income) and define a harmonized
+   variable for each: name, definition, code list, and the rounds in
+   which it is comparable.
+2. Map every round's variable to the harmonized one through the
+   crosswalks and correspondence tables. Where a round is not
+   comparable, say so in the mapping.
+3. Hold the definitions as reusable objects (DDI Lifecycle, or the
+   question bank of [chapter 4](./concepts.mdx), recipe 4.3) and
+   reference them from each round's record, so that a concept search
+   returns the variable in every round with its comparability.
+4. Publish the harmonized file or the mapping. The
+   [IPUMS International](https://international.ipums.org/international/)
+   documentation is the reference example of harmonized variables with
+   per-sample comparability notes.
+
+**Worked example.** The methodologist defines the harmonized variable
+`lfs_status_icls19` with three codes and the definition from the 19th
+ICLS resolution. The 2024 Q4 round maps to it without change. The 2025
+Q2 round maps to it as well, with the note that the sampling frame
+changed in 2025 Q1 and that the quality statement of chapter 7 describes
+the effect. The 2019 round, which used the 13th ICLS definition, is
+marked "not comparable: earlier definition of employment", and its
+variable is mapped with that flag. A search for "labour force status"
+now returns the variable in all three rounds, with the 2019 flag visible,
+and the original variables remain published beside the harmonized file.
+
+**What this does not do.** Harmonization is a methodological decision
+per concept, and a harmonized variable hides the detail of each round.
+The original variables stay published beside it.
+
+</Recipe>
+
+## Implementation options
+
+- **Crosswalk:** the script in this chapter; the Metadata Editor's variable list export for each round as input; the reviewed crosswalk published as a related material.
+- **Correspondence tables:** CSV at the foundational level; XKOS with classification URIs where a standard is involved.
+- **Harmonized variables:** DDI Lifecycle reusable variables and questions; a question bank; a harmonized data file with its own record linked to the rounds.
+- **Record links:** the `series_statement` of each round names the survey series, and the crosswalk is attached to each round's record as an external resource with its URI.
+
+## World Bank examples
+
+- The [microdata schema](https://github.com/worldbank/metadata-schemas) carries `version_statement` and `series_statement`, where versions and the series a round belongs to are recorded; crosswalks are attached as external resources of the record.
+- The program's Global Question Bank workstream develops reusable question and concept definitions, the basis of harmonization across rounds ([program overview](/)).
+- The [Microdata Library](https://microdata.worldbank.org/) links rounds of the same survey program through its series pages.
+
+## Resources
+
+- [DDI Lifecycle 3.3](https://ddialliance.org/Specification/DDI-Lifecycle/3.3/): reusable variables, questions, and concepts across studies, the standard form of harmonized definitions.
+- [XKOS](https://ddialliance.org/xkos): correspondence tables between classifications and code lists.
+- [IPUMS International](https://international.ipums.org/international/): harmonized census and survey variables with per-sample comparability notes, the reference example for recipe 6.3.
+- [ILO harmonized labour force indicators (ILOSTAT)](https://ilostat.ilo.org/): comparability notes on labour force concepts across countries and rounds, for the labour force example.
+- [UN classifications registry](https://unstats.un.org/unsd/classifications/): the current versions of ISCED, ISCO, ISIC, and their correspondence tables between versions.
+
+## Common mistakes
+
+- **Comparing by name.** Same name, different codes, wrong trend.
+- **Breaks in the methodology report only.** The record and the crosswalk are what users and systems read.
+- **One crosswalk for the whole program.** Each pair of rounds has its own; changes accumulate.
+- **Harmonized variables that replace the originals.** Users who need the detail lose it.
+
+## Verification
+
+- **Crosswalk.** A reviewed crosswalk exists for every pair of successive rounds and is published with the later record.
+- **Correspondence.** Every recoded variable has a table and a stated comparable level.
+- **Record.** The breaks appear in `version_statement` and in the quality statement, and the rounds are linked.
+- **Trend test.** A question that asks for a trend across the two rounds is answered with the comparability stated (the question sets of [chapter 5](./navigate.mdx)).
+
+## Checklist
+
+<Checklist id="microdata-documentation-rounds" items={[
+  'Crosswalk drafted and reviewed for the latest two rounds',
+  'Breaks stated in the later record',
+  'Correspondence table for each recoded variable',
+  'Comparable aggregation level stated per series',
+  'Rounds linked through related studies and materials',
+  'Harmonized variables defined and mapped where users follow trends',
+]} />

@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.css';
+import {useStage} from './useStage';
 
 // Worked example from docs/anomaly/explanation/elicitation-pipeline.md.
 // Series: WDI NY.GDP.MKTP.KD.ZG, Nigeria (values from the WDI API). The
@@ -58,34 +59,20 @@ const STATUS_LABEL = {
 // 4 evidence shown.
 const PHASE_MS = [300, 1100, 900, 900];
 
-export default function AnomalyEvidence({active = true}) {
-  const [phase, setPhase] = useState(0);
+export default function AnomalyEvidence({active = true, scrub}) {
   const [run, setRun] = useState(0);
   const [claim, setClaim] = useState('price');
   const [hover, setHover] = useState(null);
+  const {stage: phase} = useStage({
+    active,
+    scrub,
+    count: PHASE_MS.length,
+    timings: PHASE_MS,
+    run,
+  });
 
   useEffect(() => {
     setClaim('price');
-    if (!active) {
-      setPhase(0);
-      return undefined;
-    }
-    const reduce =
-      typeof window !== 'undefined' &&
-      window.matchMedia &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce) {
-      setPhase(4);
-      return undefined;
-    }
-    setPhase(0);
-    const timers = [];
-    let t = 0;
-    PHASE_MS.forEach((ms, i) => {
-      t += ms;
-      timers.push(setTimeout(() => setPhase(i + 1), t));
-    });
-    return () => timers.forEach(clearTimeout);
   }, [active, run]);
 
   const current = CLAIMS.find((c) => c.id === claim);
@@ -260,17 +247,24 @@ export default function AnomalyEvidence({active = true}) {
 
 function ClaimButton({n, claim, selected, onSelect}) {
   return (
-    <button
-      type="button"
+    <span
+      role="button"
+      tabIndex={0}
       className={clsx(
         styles.anClaim,
         styles[`anClaim_${claim.status}`],
         selected && styles.anClaimSel,
       )}
       aria-pressed={selected}
-      onClick={() => onSelect(claim.id)}>
+      onClick={() => onSelect(claim.id)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onSelect(claim.id);
+        }
+      }}>
       {claim.text}
       <sup className={styles.anClaimN}>{n}</sup>
-    </button>
+    </span>
   );
 }

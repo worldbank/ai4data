@@ -8,7 +8,7 @@ description = "AI for Data - Data for AI"
 readme = { file = "README.md", content-type = "text/markdown" }
 license = { file = "LICENSE" }
 keywords = ["ai4data", "data4ai"]
-authors = [{ name = "Development Data Group", email = "ai4data@worldbank.org" }]
+authors = [{ name = "Development Data Group", email = "aifordata@worldbank.org" }]
 classifiers = [
 	"Programming Language :: Python :: 3",
 	"Programming Language :: Python :: 3.11",
@@ -211,6 +211,7 @@ addopts = [
 
 [dependency-groups]
 dev = [
+	"jsonschema>=4.18",  # cookbook check_metadata.py tests
     "ipykernel>=7.1.0",
     "pytest>=7.4.0",
     "pytest-cov>=4.1.0",

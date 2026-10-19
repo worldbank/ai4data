@@ -1,11 +1,13 @@
 import {useEffect, useState} from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.css';
+import {schedule, useStage} from './useStage';
 
 // Simulated chatbot for the PCN example (arXiv:2509.06902): Philippines GDP
-// growth, 2024, World Development Indicators. The official record is what the
-// application compares the model's tagged number against.
-const OFFICIAL = 5.69201612823412;
+// growth, 2024, World Development Indicators (NY.GDP.MKTP.KD.ZG, API data
+// updated 2026-10-08). The official record is what the application compares
+// the model's tagged number against.
+const OFFICIAL = 5.71474526128652;
 const RECORD_ID = '0328';
 const PAYLOAD = {
   claim_id: RECORD_ID,
@@ -47,41 +49,40 @@ function outcomeFor(c) {
       };
 }
 
-// phase: idle -> typing -> streaming -> done. Verification is instant, so the
-// verdict shows as soon as the number appears.
-export default function PcnEvidence({active = true}) {
+// Stages: 0 idle, 1 the assistant is typing, 2 the answer streams in and
+// then stands. Verification is instant, so the verdict shows as soon as the
+// number appears. The words stream on a short timer once stage 2 is reached.
+const TIMINGS = [0, 800];
+const WORD_MS = 110;
+
+export default function PcnEvidence({active = true, scrub}) {
   const [caseKey, setCaseKey] = useState('match');
   const [run, setRun] = useState(0);
-  const [phase, setPhase] = useState('idle');
   const [shown, setShown] = useState(0);
+  const {stage, reduce} = useStage({
+    active,
+    scrub,
+    count: 2,
+    timings: TIMINGS,
+    run,
+  });
+  const phase = stage === 0 ? 'idle' : stage === 1 ? 'typing' : 'streaming';
 
   const c = Cases.find((x) => x.key === caseKey);
   const outcome = outcomeFor(c);
 
   useEffect(() => {
-    if (!active) {
-      setPhase('idle');
+    if (stage < 2) {
       setShown(0);
       return undefined;
     }
-    const reduce =
-      typeof window !== 'undefined' &&
-      window.matchMedia &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduce) {
       setShown(WORDS.length);
-      setPhase('done');
       return undefined;
     }
-    const timers = [];
-    const at = (ms, fn) => timers.push(setTimeout(fn, ms));
     setShown(0);
-    setPhase('typing');
-    at(800, () => setPhase('streaming'));
-    WORDS.forEach((_, i) => at(800 + 110 * (i + 1), () => setShown(i + 1)));
-    at(800 + 110 * WORDS.length, () => setPhase('done'));
-    return () => timers.forEach(clearTimeout);
-  }, [active, caseKey, run]);
+    return schedule(WORDS.length, WORD_MS, setShown);
+  }, [stage, reduce, caseKey, run]);
 
   const numValue = `${c.value.toFixed(1)}%`;
   // The verdict applies from the moment the number is on screen.
@@ -150,7 +151,8 @@ export default function PcnEvidence({active = true}) {
                         <span
                           className={styles.pcnProof}
                           tabIndex={0}
-                          aria-describedby="pcn-proof-card">
+                          aria-describedby="pcn-proof-card"
+                          onClick={(e) => e.currentTarget.focus()}>
                           {num}
                           <span
                             className={styles.pcnBadgeOk}
@@ -214,7 +216,7 @@ export default function PcnEvidence({active = true}) {
             {outcome.status === 'verified' && (
               <span className={styles.pcnHint}>
                 {' '}
-                Hover over the number to see the source record.
+                Hover over or tap the number to see the source record.
               </span>
             )}
           </>

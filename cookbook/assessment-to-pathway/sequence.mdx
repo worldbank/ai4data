@@ -1,0 +1,204 @@
+---
+id: sequence
+title: "3. The order of the work"
+sidebar_label: "3. Sequence"
+sidebar_position: 3
+description: How the dimensions with a gap are ordered into waves by what each depends on, so that a catalog is built on standard records and an API before an agent interface, and how the order is checked against the framework's pathway for early-stage organizations.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 3. The order of the work
+
+**Question:** In what order should the dimensions be addressed?
+
+## Rationale
+
+The dimensions of the assessment depend on one another. A searchable
+catalog needs complete records in a standard schema, so dimension 2.3
+depends on 2.1. An API that carries provenance needs status codes and a
+revisions log, so 2.4 depends on 2.2 as well. Agentic access needs the
+API, the licences, and the governance that approves a High-tier
+component, so 2.5 depends on 2.1, 2.2, 2.4, 2.6, and 1.1. In pillar I,
+the legal review, the staffing, the budget line, and the partnerships all
+follow the strategy. An organization that starts an MCP pilot before its
+API exists, or a legal review before it knows which components it wants,
+spends the cycle waiting.
+
+The sequence turns the dependencies into waves. A wave is a set of
+dimensions that can be worked in parallel because everything they depend
+on is either already at target or in an earlier wave. The framework's own
+pathway for early-stage organizations gives the same order: the four
+foundations first, then the frontier. The script checks that the waves
+respect it.
+
+## Target state
+
+- The dependencies between dimensions are written down with a reason each.
+- The dimensions with a gap are placed in waves, and no dimension is in a wave before its dependencies.
+- The foundations are in the first two waves or already at target.
+- The wave of each dimension is in the pathway document and in the board's approval.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Write the dependency table and compute the waves. |
+| **AI-ready** | Approve the waves with the targets; move a dimension to a later wave only by a recorded decision. |
+| **AI-native** | Feed the evidence register's status back into the waves each quarter, so that a dimension whose dependency slipped is re-planned. |
+
+:::info[Running example]
+The example organization's nine dimensions with a gap fall into three
+waves: strategy, quality control, licensing, and metadata standards
+first; the legal environment, the API, the catalog, and skills second;
+agentic access third. All five foundations are in the first two waves.
+The file is
+[dependencies.csv](pathname:///cookbook-files/assessment-to-pathway/dependencies.csv).
+:::
+
+## Recipes
+
+<Recipe title="3.1 Write the dependencies between dimensions" level="Foundational" skills="The planning team with the heads of methodology and IT" time="Two hours">
+
+**Result:** a table with one row per dimension that names the dimensions
+it depends on and why.
+
+The dependencies are mostly the same for every organization, because they
+follow from what the dimensions are. The table of the running example is
+a starting point; an organization edits the rows where its situation
+differs, for example when its legal review is already done or when a
+partnership supplies the API.
+
+| Column | Meaning |
+|---|---|
+| `dimension` | The dimension number |
+| `depends_on` | The dimensions it depends on, separated by semicolons, or empty |
+| `why` | The reason, in one sentence |
+
+```csv file=../../website/static/cookbook-files/assessment-to-pathway/dependencies.csv
+```
+
+1. Start from the running example's table.
+2. For each row, ask whether the dependency holds for the organization:
+   a dimension already at target is not a constraint, and a dimension the
+   organization will reach through a partner is a different row.
+3. Keep the reasons. A dependency without a reason is argued about at
+   every board meeting.
+
+**Worked example.** The example organization kept the running example's
+rows as they stand. Its three foundations without dependencies (2.1, 2.2,
+2.6) and its strategy (1.1) depend on nothing in the pathway. Its API
+(2.4) depends on metadata standards and quality control, its catalog
+(2.3) on metadata standards, and its agentic access (2.5) on four
+foundations and the strategy. In pillar I, the legal environment, skills,
+funding, and partnerships depend on the strategy, and the technical
+environment on skills, because the server is sized for the components the
+staff will run.
+
+**What this does not do.** Dependencies say what has to come first. They
+do not say how long each step takes, which is the effort estimate of
+chapter 4, and an organization with a large team can run two waves at
+once where its staff allow.
+
+</Recipe>
+
+<Recipe title="3.2 Place the dimensions in waves" level="Foundational" skills="A planning officer who can run a Python script" time="Fifteen minutes">
+
+**Result:** the dimensions with a gap are ordered into waves, each
+dimension after its dependencies, with the foundations check reported.
+
+The script places a dimension in the first wave in which all its
+dependencies with a gap are already placed. Within a wave it orders by
+gap and then by questions below target, so that the largest work starts
+first. It then reports whether the framework's foundations are in the
+first two waves or already at target.
+
+1. Run the sequence with the score file, the targets, and the
+   dependencies.
+2. Read the waves. A dimension listed "after" others waits for them; the
+   effort estimate of chapter 4 says how long.
+3. Where a wave is larger than the organization's staff can carry, split
+   it by a recorded decision, keeping the order inside the wave.
+
+```bash
+python sequence_plan.py question_scores.csv targets.csv dependencies.csv
+```
+
+```text
+wave 1:
+  1.1  Strategy and governance                      B -> C  (gap 1, 5 questions below target)
+  2.2  Quality control procedures                   B -> C  (gap 1, 5 questions below target)
+  2.6  Data licensing                               B -> C  (gap 1, 4 questions below target)
+  2.1  Metadata standards and classifications       B -> C  (gap 1, 3 questions below target)
+wave 2:
+  1.2  Legal environment                            B -> C  (gap 1, 6 questions below target)  after 1.1
+  2.4  API access                                   B -> C  (gap 1, 5 questions below target)  after 2.1, 2.2
+  2.3  Searchable data catalog                      B -> C  (gap 1, 4 questions below target)  after 2.1
+  1.3  Skills and capacity                          A -> B  (gap 1, 3 questions below target)  after 1.1
+wave 3:
+  2.5  Agentic AI access and generative AI for diss A -> B  (gap 1, 5 questions below target)  after 2.1, 2.2, 2.4, 2.6, 1.1
+
+foundations in the first two waves or already at target: 5 of 5
+  2.2 quality control
+  2.1 metadata standards
+  2.3 searchable catalog
+  2.4 API access
+  2.6 licensing
+result: PASS
+```
+
+**Worked example.** The first wave holds the four dimensions that depend
+on nothing: strategy and governance, quality control, licensing, and
+metadata standards. The second holds the legal environment and skills,
+which wait for the strategy, and the API and the catalog, which wait for
+the records and the status codes. The third holds agentic access alone,
+after four foundations and the strategy. The legal environment has the
+largest gap of all nine dimensions and still comes in the second wave,
+because the legal review is scoped by the components the strategy
+chooses. All five foundations are in the first two waves.
+
+**What this does not do.** The waves order dimensions. Inside a
+dimension the recipes have their own order, which the cookbook of that
+dimension gives, and the effort estimate places them in the waves.
+
+</Recipe>
+
+## Implementation options
+
+- **Dependencies at question level.** A finer table can name which questions depend on which; the dimension table is enough for a pathway and easier to approve.
+- **Parallel waves.** An organization with separate dissemination and methodology teams can run the pillar II and pillar I dimensions of a wave in parallel; the script's waves are the minimum order, and the schedule is set in the pathway document.
+- **Partner-supplied dimensions.** Where a regional partner supplies the API or the catalog, the dependency row names the partner and the dimension leaves the organization's waves.
+
+## World Bank examples
+
+- The [operational companion](/ai-readiness-in-practice) records, under each pillar II dimension, the dimensions a step depends on, which is the source of the running example's table.
+- The framework's pathway for early-stage organizations, summarized on the [assessment page](/ai-readiness-assessment), names the four foundations the script checks.
+
+## Resources
+
+- [Dependencies of the running example](pathname:///cookbook-files/assessment-to-pathway/dependencies.csv) and [sequence_plan.py](pathname:///cookbook-files/assessment-to-pathway/sequence_plan.py): the table and the script.
+
+## Common mistakes
+
+- **Ordering by gap alone.** The largest gap is often the one that depends on the most.
+- **An agent interface in the first wave.** It is the most visible dimension and the last the foundations allow.
+- **Dependencies argued at every meeting.** The reason column settles them once.
+- **Waves read as a schedule.** A wave says what can start; the effort estimate says when it ends.
+
+## Verification
+
+- **Sequence check.** The script passes with no cycle, and every "after" names dimensions in earlier waves.
+- **Foundations check.** The script reports all five foundations in the first two waves or at target.
+- **Approval check.** The waves are in the pathway document the board approved.
+
+## Checklist
+
+<Checklist id="assessment-to-pathway-sequence" items={[
+  'Dependency table written with a reason per row',
+  'Rows edited for the organization\'s own situation',
+  'Waves computed and read',
+  'Foundations in the first two waves',
+  'Large waves split by a recorded decision',
+  'Waves approved with the targets',
+]} />

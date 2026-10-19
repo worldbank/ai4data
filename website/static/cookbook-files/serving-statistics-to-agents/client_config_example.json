@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "statistics-example": {
+      "url": "https://stats.example/mcp",
+      "transport": "streamable-http",
+      "headers": {"Authorization": "Bearer <token issued by the organization>"}
+    }
+  }
+}

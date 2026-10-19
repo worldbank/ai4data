@@ -1,0 +1,6 @@
+record_id,completeness,semantic_alignment,specificity,consistency
+PV_HEADCOUNT_NPL_PCT,4,2,3,4
+HE_U5_MORT_RATE,4,4,4,4
+LF_UNEMP_PCT,2,3,2,3
+FS_UNDERNOURISH_PCT,4,4,3,4
+ED_PRIMARY_NER_PCT,5,4,4,5

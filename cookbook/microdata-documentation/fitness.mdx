@@ -1,0 +1,218 @@
+---
+id: fitness
+title: "7. Fitness for use"
+sidebar_label: "7. Fitness"
+sidebar_position: 8
+description: How users and AI systems can judge whether the data fit a purpose, through the sampling design, the weights, and the response rate in the record, a quality statement in machine-readable fields, and a version and errata log for every release.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 7. Fitness for use
+
+**Question:** Can AI judge whether the data fit a purpose?
+
+## Rationale
+
+A survey can be well documented at the variable level and still be
+misused. Results are computed without the weights, and every estimate is
+wrong by the sampling fractions. A regional figure is reported from a
+sample that was designed to be reliable at the national level only. An
+old version of the file is used after a correction, and two analysts get
+different answers from what they think is the same survey.
+
+Human analysts learn these limits from the methodology report, if they
+read it. AI systems and most users read the record. The limits therefore
+have to be in the record, in fields a catalog displays and a system can
+quote: the design, the weights and how to apply them, the response rate,
+the known issues, the version, and the errata. This chapter fills those
+fields.
+
+## Target state
+
+- The study record states the sampling design, the weights and their use, the response rate, and the data appraisal.
+- Known quality issues, comparability limits, and the domains for which estimates are reliable are stated in fields a system can read.
+- Each release has a version; corrections are recorded as errata, and superseded versions remain citable.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Document sampling, weights, and response rate in the study record's method section. State known issues in the notes. |
+| **AI-ready** | Fill the quality fields of the schema: `quality_statement`, `data_appraisal`, `sampling_deviation`, `data_checks` per file. Version every release and publish errata. |
+| **AI-native** | Compute and publish quality indicators per release (response rates by domain, design effects, coverage), log changes between versions, and expose quality fields through the catalog API so that answers can repeat the caveats. |
+
+:::info[Running example]
+`EX-LFS-2025-Q2` documents a two-stage stratified sample of 6,000
+households, calibrated weights, and a 91 percent household response rate.
+The recipes add the quality statement, a known-issues field, and a version
+and errata log.
+:::
+
+## Recipes
+
+<Recipe title="7.1 Document the design, the weights, and the response" level="Foundational" skills="Survey methodologist" time="Half a day per survey">
+
+**Result:** a user or a system can tell from the record alone how the
+sample was drawn, which weight to use for which estimate, and how
+complete the response was.
+
+1. Sampling. In the record's sampling procedure field, state the
+   stages, the stratification, the frame, and the sample size, as in
+   the running example. Record deviations from the design in the
+   sampling deviation field.
+2. Weights. In the weight field, name the weight variables, what each
+   is calibrated to, and which estimates each applies to (person-level
+   estimates use `weight`; household-level estimates use the household
+   weight). Mark the weight variables as weights in the dictionary.
+3. Response. In the response rate field, give the household and
+   individual response rates and the definition used. Add sampling
+   error information in the sampling error estimates field.
+4. Domains. State the domains for which estimates are reliable
+   (national; urban and rural; regions) in the quality statement, so
+   that a system does not report a district estimate from a regional
+   design.
+
+**Worked example.** The sampling procedure field of the running example
+reads: "Two-stage stratified sample. Strata: four regions by urban and
+rural. First stage: 300 enumeration areas selected with probability
+proportional to size from the 2014 census frame. Second stage: 20
+households per area, systematic selection; 6,000 households in all."
+The weight field reads: "`weight` is the person-level weight, calibrated
+to population projections by region, sex, and five-year age group; use it
+for all person-level estimates. `hhweight` is the household-level
+weight." The response rate field reads "Household response rate 91
+percent, computed as responding households over eligible households."
+The quality statement names the national level and the four regions as
+the domains with reliable estimates.
+
+**What this does not do.** The record states the rules; it does not
+apply them. Whether a downstream system uses the weights is a property
+of that system, which is why the API and agent interfaces of the
+dissemination cookbook return the weight variable with the data.
+
+</Recipe>
+
+<Recipe title="7.2 Publish a quality statement in machine-readable fields" level="AI-ready" skills="Survey methodologist; data curator" time="Half a day per survey">
+
+**Result:** the known limits of the data are in fields of the record
+that a catalog displays and an AI system can quote, so that a user finds
+them without opening a PDF.
+
+1. Fill the quality statement fields: the standards the survey complies
+   with, a compliance description, and any other quality statement.
+2. Fill the data appraisal field with the known issues: coverage gaps,
+   item non-response on sensitive variables, comparability breaks with
+   earlier rounds, and the variables affected.
+3. Per data file, record the processing checks in `data_checks` and
+   the treatment of missing data in `missing_data`.
+4. Where a value-level flag is needed (imputed values, edited values),
+   add a flag variable to the file and document it like any other
+   variable.
+
+**Worked example.** The data appraisal field of the running example
+reads: "Item non-response on `income` is 14 percent, concentrated among
+self-employed respondents; income estimates for the self-employed should
+be treated with caution. The sampling frame changed in 2025 Q1, so
+regional estimates are not directly comparable with rounds before 2025.
+The education variable follows ISCED 2011 from this round; see the
+correspondence table for earlier rounds." The `data_checks` field of the
+file lists the range and consistency checks run before release. The
+`missing_data` field says that `-8` and `-9` are left as codes and that
+no imputation was done. An assistant asked about the income of the
+self-employed quotes the first sentence with the figure.
+
+**What this does not do.** A quality statement written once goes stale.
+Recipe 7.3 ties it to versions, and the AI-native level computes
+indicators per release so that the statement reflects the data as
+released.
+
+</Recipe>
+
+<Recipe title="7.3 Version each release and publish errata" level="AI-ready" skills="Data curator" time="One hour per release">
+
+**Result:** every release of the data is identified by a version, every
+correction is recorded, and a user or a system can tell which version an
+analysis used.
+
+1. Give each release a version in the record's version statement
+   (version, date, responsible unit, notes) and change the version when
+   the data or the documentation change.
+2. Keep superseded versions available and citable. The DOI of the study
+   resolves to the current version, and each version is listed on the
+   study page.
+3. Publish errata as a dated list of corrections: the variable, the
+   cases or values affected, the change, and the version in which it
+   applies. Put the list in the study record's notes and on the study
+   page.
+4. Log the changes between versions (new variables, recoded values,
+   corrected weights) in the version notes, so that a system comparing
+   two versions can see what changed.
+
+**Worked example.** The running example's record has two versions.
+Version 1.0, dated 20 August 2025, is the first release. Version 1.1,
+dated 3 October 2025, has the note "Corrected `hhweight` for 42
+households in region R03 whose weights had been duplicated; household
+estimates for R03 change by less than 0.5 percent. Added value labels to
+`relationship`." The errata list on the study page carries the same
+correction with the variable, the cases affected, and the version. The
+DOI resolves to version 1.1, and the page lists version 1.0 with its own
+download. A user who cites version 1.0 can still obtain it, and a user
+who computes a household estimate for R03 can see why it differs from a
+colleague's.
+
+**What this does not do.** Versioning the documentation does not
+version the file. The data file for each version has to be kept,
+named, and checksummed, and the `data_files` section holds the version
+per file.
+
+</Recipe>
+
+## Implementation options
+
+- **Schema fields:** DDI Codebook and the World Bank schema have fields for sampling, weights, response rates, sampling error, data appraisal, quality statements, processing checks, and versions; use them before inventing new ones.
+- **Quality frameworks:** the organization's quality assurance framework and the [Fundamental Principles of Official Statistics](https://unstats.un.org/fpos/) set what is reported; the schema holds it.
+- **Provenance:** [W3C PROV](https://www.w3.org/TR/prov-overview/) for derived files; the schema's provenance block for harvested records.
+- **Versioning:** DataCite supports versioned DOIs; a catalog lists versions on the study page.
+
+## World Bank examples
+
+- The [microdata schema](https://github.com/worldbank/metadata-schemas) carries `quality_statement`, `data_appraisal`, `sampling_deviation`, `response_rate`, `sampling_error_estimates`, `data_checks`, and `version_statement`.
+- [Anomaly Detection and Explanation](/docs/anomaly-detection/) classifies unusual values and cites evidence, which supports the data checks recorded per file.
+- The [Microdata Library](https://microdata.worldbank.org/) lists versions and access conditions on each study page.
+
+## Resources
+
+- [UN National Quality Assurance Frameworks manual](https://unstats.un.org/unsd/methodology/dataquality/): the quality dimensions a quality statement reports.
+- [DDI Codebook 2.5](https://ddialliance.org/Specification/DDI-Codebook/2.5/): `sampProc`, `weight`, `respRate`, `EstSmpErr`, `dataAppr`, and `verStmt`.
+- [W3C PROV](https://www.w3.org/TR/prov-overview/): provenance of derived and harmonized files.
+- [DataCite metadata schema](https://schema.datacite.org/): versioned DOIs and the `relatedIdentifier` links between versions.
+- [Anomaly Detection and Explanation](/docs/anomaly-detection/): the program's method for finding and explaining unusual values, for the data checks recorded per file.
+
+## Common mistakes
+
+- **Weights documented in the report only.** A system that reads the record does not know which weight to use.
+- **Reliable domains left implicit.** Regional estimates from a national design appear in answers unless the record says they are unreliable.
+- **Corrections without a version change.** Two users with the "same" file get different results and cannot tell why.
+- **Quality statements copied between rounds.** Each round's issues are its own.
+
+## Verification
+
+- **Fields filled.** The quality fields of the profile are present at the AI-ready level.
+- **Weight test.** A known estimate reproduced from the file with the documented weight matches the published figure.
+- **Version test.** The DOI resolves to the current version, and the study page lists the earlier ones.
+- **Caveat test.** An assistant asked for an estimate the record marks as unreliable repeats the caveat in its answer.
+
+## Checklist
+
+<Checklist id="microdata-documentation-fitness" items={[
+  'Sampling design and deviations in the record',
+  'Weights named, with their calibration and use',
+  'Response rates with definitions',
+  'Reliable domains stated',
+  'Quality statement and data appraisal filled',
+  'Processing checks and missing-data treatment per file',
+  'Version per release, with notes on changes',
+  'Errata published and dated; superseded versions citable',
+]} />

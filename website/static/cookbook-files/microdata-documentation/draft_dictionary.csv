@@ -1,0 +1,19 @@
+name,label,type,universe,question,values,missing,concept,n,n_missing,range
+hhid,,categorical,,,H0001=;H0002=;H0003=;H0004=;H0005=;H0006=;H0007=;H0008=;H0009=;H0010=;H0011=;H0012=,,,41,0,
+pid,,categorical,,,1=;2=;3=;4=;5=,,,41,0,
+region,,categorical,,,R01=;R02=,,,41,0,
+urban,,categorical,,,1=;2=,,,41,0,
+sex,,categorical,,,1=;2=,,,41,0,
+age,,numeric,,,,,,41,0,2 to 77
+relationship,,categorical,,,1=;2=;3=;4=,,,41,0,
+educ,,categorical,,,0=;1=;2=;3=;4=;5=,-9,,41,15,
+lfs_status,,categorical,,,1=;2=;3=,,,41,8,
+occupation,,categorical,,,11=;21=;52=;61=;92=,-9,,41,27,
+industry,,categorical,,,1=;10=;47=;85=,-8,,41,24,
+hours,,numeric,,,,,,41,22,9 to 70
+income,,numeric,,,,,,41,26,75 to 2975
+informal,,categorical,,,1=;2=,,,41,22,
+jobsearch,,categorical,,,1=;2=,-9,,41,29,
+q17b,,categorical,,,1=;2=;3=;4=;5=,,,41,36,
+hours_main,,numeric,,,,,,41,22,4 to 65
+weight,,numeric,,,,,,41,0,198.9 to 1349.3

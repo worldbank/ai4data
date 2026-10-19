@@ -1,0 +1,305 @@
+---
+id: retrieve
+title: "2. Retrieval of data by software"
+sidebar_label: "2. Retrieve"
+sidebar_position: 3
+description: How software, including AI systems, can retrieve the organization's data reliably, through open file formats at stable addresses, a documented API, and an agent interface built on the Model Context Protocol.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 2. Retrieval of data by software
+
+**Question:** Can AI retrieve our data reliably?
+
+## Rationale
+
+An AI system that cannot reach the numbers will use whatever it can
+reach. That may be an outdated table in a PDF, a copy of the figures on a
+third-party site, or a value it remembers from its training data, and the
+system presents all three with the same confidence as the official
+figure. Reliable retrieval means that the authoritative values are
+available in a form that software can request directly, by series, area,
+and period, and receive together with their unit, their period, and their
+source.
+
+The most common barrier is data that only a person can get at: tables
+inside PDFs, scanned pages, and web interfaces that require clicking
+through forms. The second most common is data that software can reach but
+cannot rely on, because the file layout changes with every release or the
+address changes with every website redesign. This chapter addresses both,
+in three steps that build on one another: files, an API, and an agent
+interface over the API.
+
+## Target state
+
+- Data are available in open, structured formats.
+- Every series, dataset, and release has a stable identifier that does not change when a page is redesigned.
+- A documented interface lets software request a specific series, geography, and period.
+- Responses include the values together with their unit, period, and source.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Publish data as CSV or another open format in addition to Excel and PDF. Use one tidy layout per file, with one header row and consistent codes. Keep download URLs stable. |
+| **AI-ready** | Provide a documented REST API with an OpenAPI description. Support filtering by series, geography, and period. Return units, period, and a source URL with the values. Publish a bulk download. State the terms of use and rate limits. |
+| **AI-native** | Expose an MCP server so AI assistants can discover and call data tools through a standard protocol. Return provenance with every response. Document which tools are read-only. |
+
+:::info[Running example]
+The example organization publishes its values as one tidy CSV whose columns are
+SDMX cross-domain concepts, describes a three-endpoint API in OpenAPI, and
+wraps the same data in an MCP server with two read-only tools.
+:::
+
+## Recipes
+
+<Recipe title="2.1 Publish tidy CSV files at stable URLs" level="Foundational" skills="Data manager" time="One day to set the convention, then part of each release">
+
+**Result:** every series is published as one file, in a layout that any
+tool can read, at a web address that stays the same from one release to
+the next.
+
+A tidy file has one row per observation and the same columns for every
+series. The column names come from the SDMX standard for exchanging
+statistical data, so that the file maps directly to SDMX tools:
+
+| Column | Meaning |
+|---|---|
+| `SERIES` | The series identifier |
+| `REF_AREA` | The area the value refers to, as a code (`NAT` for national) |
+| `TIME_PERIOD` | The period, as an ISO date or an SDMX period (`2023`, `2025-Q1`) |
+| `OBS_VALUE` | The value |
+| `OBS_STATUS` | The status code: `A` normal, `P` provisional, `B` break in series, `E` estimated |
+| `UNIT_MEASURE` | The unit |
+| `RELEASE` | The date of the release the value comes from |
+| `SOURCE_URL` | The page of the series |
+
+```csv file=../../website/static/cookbook-files/ai-ready-dissemination/example_values.csv
+```
+
+1. Use one row per observation and the columns above, named after the
+   SDMX cross-domain concepts of the
+   [Content-Oriented Guidelines](https://sdmx.org/guidelines/). The
+   [SDMX-CSV](https://sdmx.org/) format uses the same names.
+2. Keep codes in the file (`NAT`, `2025-Q1`) and put the labels in the
+   code lists ([chapter 3](./understand.mdx)). Use UTF-8, a period as
+   the decimal separator, and ISO 8601 dates and SDMX period formats.
+3. Fill `OBS_STATUS` from the SDMX observation status code list. The
+   example marks the latest quarter of unemployment as provisional.
+4. Publish each series at a predictable path, for example
+   `/series/FS_UNDERNOURISH_PCT/data.csv`, and the whole catalog as one
+   bulk file. When a new release replaces the file, the URL stays the
+   same and the `RELEASE` column changes.
+5. Offices that run an SDMX web service can publish SDMX-CSV from it
+   directly. For files outside SDMX, describe the columns once with a
+   [Frictionless table schema](https://specs.frictionlessdata.io/table-schema/)
+   or [CSV on the Web](https://www.w3.org/TR/tabular-data-primer/)
+   metadata, so that tools know the column types.
+
+**Worked example.** The example organization's values file has one row
+per observation. The row for the prevalence of undernourishment in 2024
+reads `FS_UNDERNOURISH_PCT,NAT,2024,7.6,A,% of population,2025-03-14,https://stats.example/series/FS_UNDERNOURISH_PCT`.
+The row for the unemployment rate in the second quarter of 2025 carries
+the status `P`, because the quarter is provisional. The file for the
+undernourishment series lives at
+`https://stats.example/series/FS_UNDERNOURISH_PCT/data.csv`. When the
+2025 figure is published the following March, the same address serves
+the new file, the `RELEASE` column changes to the new date, and every
+script that downloads the file keeps working.
+
+**What this does not do.** A tidy file at a stable URL serves one
+series. A catalog of hundreds needs the bulk file and the API of recipe
+2.2 for selection by area and period. The example has five columns;
+each added dimension (sex, age group) is a column with its own code
+list in [chapter 3](./understand.mdx).
+
+</Recipe>
+
+<Recipe title="2.2 Describe the API with OpenAPI" level="AI-ready" skills="Backend developer" time="One to two days for an existing API">
+
+**Result:** the API has a machine-readable description that developers
+and AI systems can read, and every data response carries the unit, the
+period, and the source in the same place.
+
+An API (application programming interface) is the address at which a
+program asks for data and gets it back in a structured form. OpenAPI is
+the standard way to describe one: which addresses exist, what
+parameters they take, and what they return. The minimal description
+below has three endpoints: list series, get one series, get
+observations. Series records use the field names of the World Bank
+indicator schema and data responses use SDMX concept names, so the API
+speaks the same vocabulary as the files:
+
+```yaml file=../../website/static/cookbook-files/ai-ready-dissemination/openapi_minimal.yaml
+```
+
+A data response then looks like this, with the series, the unit, the
+release, and the source at the top and a status on each observation:
+
+```json
+{
+  "SERIES": "FS_UNDERNOURISH_PCT",
+  "UNIT_MEASURE": "% of population",
+  "RELEASE": "2025-03-14",
+  "SOURCE_URL": "https://stats.example/series/FS_UNDERNOURISH_PCT",
+  "observations": [
+    {"REF_AREA": "NAT", "TIME_PERIOD": "2023", "OBS_VALUE": 7.9, "OBS_STATUS": "A"},
+    {"REF_AREA": "NAT", "TIME_PERIOD": "2024", "OBS_VALUE": 7.6, "OBS_STATUS": "A"}
+  ]
+}
+```
+
+Offices that run an SDMX web service already have a documented
+interface: the [SDMX REST API](https://sdmx.org/) specification, with
+SDMX-ML, SDMX-JSON, and SDMX-CSV responses. The World Bank publishes
+the World Development Indicators this way through its
+[SDMX API](https://datahelpdesk.worldbank.org/knowledgebase/articles/1886701-sdmx-api-queries).
+The steps below are for an organization with a custom REST API.
+
+1. Start from the minimal description and extend it to the API's own
+   endpoints.
+2. Make every data response carry `SERIES`, `UNIT_MEASURE`, `RELEASE`,
+   and `SOURCE_URL` at the top level and `OBS_STATUS` on each
+   observation, as above.
+3. Publish the description at a stable URL (for example
+   `/api/v1/openapi.yaml`) and render it with any OpenAPI viewer.
+4. State the terms of use, the rate limit, and a contact in the `info`
+   block.
+5. Test: a colleague who did not build the API retrieves one known
+   value using only the description.
+
+**Worked example.** The example organization's description has three
+endpoints. `GET /series` lists the five series with their names and
+units. `GET /series/{idno}` returns one series record, and
+`GET /series/{idno}/observations` returns values, filtered by the query
+parameters `area`, `from`, and `to`. The colleague who tests it reads
+the description, forms the request
+`/series/FS_UNDERNOURISH_PCT/observations?area=NAT&from=2023&to=2024`,
+and receives the response shown above, with the two values of 7.9 and
+7.6 and the release date. The `info` block states a limit of 60
+requests a minute and the address of the data team.
+
+**What this does not do.** The minimal description covers three
+endpoints and leaves out authentication, pagination beyond a limit
+parameter, and bulk queries. An SDMX web service covers those through
+the standard; a custom API adds them as the
+[agents cookbook](/cookbook/serving-statistics-to-agents/access)
+describes for access control.
+
+</Recipe>
+
+<Recipe title="2.3 Wrap the API as an MCP server" level="AI-native" skills="Python developer" time="One day for a prototype; a week to harden">
+
+**Result:** any AI client that speaks the Model Context Protocol can
+search the catalog and fetch values through two read-only tools, and
+every response it receives carries its source.
+
+The Model Context Protocol (MCP) is the open standard by which AI
+assistants call external tools. An MCP server offers a small set of
+named operations (tools) with descriptions the assistant reads. The
+example server below offers two: search the catalog, and get the values
+of a series. It reads the two CSV files of the running example; in
+production the tool bodies call the API of recipe 2.2:
+
+```python file=../../website/static/cookbook-files/ai-ready-dissemination/mcp_server_example.py
+```
+
+1. Install the SDK (`pip install "mcp[cli]"`) and run
+   `mcp dev mcp_server_example.py` to try the tools in the inspector.
+2. Keep the tools read-only and limit them to published data. Tool
+   descriptions are read by the model, so write them as documentation.
+3. Return the unit, the release, and the source URL in every response
+   so that the client can cite them ([chapter 5](./trust.mdx)).
+4. Connect an AI assistant to the server and ask for five known values.
+   Compare each with the CSV.
+5. Before public deployment, add authentication, rate limits, and
+   logging, and run the governance checks of
+   [chapter 8](./govern.mdx).
+
+**Worked example.** The developer runs the example server in the
+inspector and calls `search_catalog` with the query "hunger". The tool
+returns the undernourishment series, because the word appears in its
+keywords. The developer then calls `get_values` with the identifier
+`FS_UNDERNOURISH_PCT` and receives the three values for 2022 to 2024,
+with the unit, the release date of 14 March 2025, and the source URL. An
+assistant connected to the server is asked for the five known values of
+the question set, and each answer matches the CSV file, with the source
+URL quoted.
+
+Two World Bank implementations exist. [NADA AI](/tools#nada-ai)
+exposes a NADA catalog to AI clients through an MCP server, beside
+NADA's REST API (documented in OpenAPI); it is being integrated into
+NADA, so an organization that runs NADA will have the catalog side of
+this recipe with the software. The
+[Data360 MCP server](https://github.com/worldbank/data360-mcp) is a
+production example of the data side of this pattern. It exposes
+discovery tools, metadata tools, data tools, and analysis tools over
+the Data360 API, and the program's [MCP page](/docs/mcp/) describes
+the architecture and the tools an MCP server for official statistics
+can expose.
+
+**What this does not do.** The example reads two CSV files and matches
+words. A production server calls the organization's API, paginates
+large responses, returns the structure (code lists, dimensions) so that
+the client can form valid requests, handles disaggregations, caches,
+and runs behind authentication and rate limits. The
+[agents cookbook](/cookbook/serving-statistics-to-agents/) covers all
+of that.
+
+</Recipe>
+
+## Implementation options
+
+- **Formats:** SDMX-CSV or SDMX-JSON for aggregate data; CSV with SDMX concept names and a table schema where SDMX tooling is not in place; Parquet for large files.
+- **APIs:** the [SDMX REST API](https://sdmx.org/) for statistical data (the World Bank serves WDI this way), or a REST API described by [OpenAPI](https://www.openapis.org/), as the [Data360 API](https://data360.worldbank.org/en/api) is. Many organizations already run one of these.
+- **Identifiers:** persistent URLs, DOIs, or SDMX structure identifiers. Choose one scheme and keep it unchanged across site redesigns.
+- **Agent interface:** the [Model Context Protocol](https://modelcontextprotocol.io/) is an open standard. A single MCP server can serve any compatible AI client. It wraps the API that already exists and does not replace it.
+- **Documents:** when data exist only in PDFs, extraction tools can recover tables and figures. Publish the extracted data next to the document, and mark them as extracted.
+
+## World Bank examples
+
+- The [World Development Indicators SDMX API](https://datahelpdesk.worldbank.org/knowledgebase/articles/1886701-sdmx-api-queries) serves WDI through the SDMX 2.1 REST interface, and the [Data360 API](https://data360.worldbank.org/en/api) serves indicator search, metadata, and data.
+- The [Data360 MCP server](https://github.com/worldbank/data360-mcp) exposes Data360 to AI clients through the Model Context Protocol.
+- [Model Context Protocol for AI-centric data dissemination](/docs/mcp/) describes the architecture and the tools an MCP server for official statistics can expose.
+- [Data Snapshots](https://arxiv.org/abs/2606.06242) covers layout detection models that locate figures and tables in PDF documents so that the data inside them can be extracted. The [home page](/) shows an example.
+
+## Resources
+
+- [SDMX](https://sdmx.org/) standards and the [SDMX REST API](https://github.com/sdmx-twg/sdmx-rest): the exchange format and the API for aggregate statistics; [sdmx-csv](https://github.com/sdmx-twg/sdmx-csv) for the file form.
+- [OpenAPI](https://www.openapis.org/) and [Swagger UI](https://swagger.io/tools/swagger-ui/): describing a REST API and publishing its documentation from the description.
+- [CSV on the Web](https://www.w3.org/TR/tabular-data-primer/) and [Frictionless Table Schema](https://specs.frictionlessdata.io/table-schema/): column descriptions published beside a CSV file.
+- [Model Context Protocol](https://modelcontextprotocol.io/) and the [Python SDK](https://github.com/modelcontextprotocol/python-sdk): the agent interface standard and its server library; the [agents cookbook](/cookbook/serving-statistics-to-agents/) covers the full design.
+- [Data360 MCP server](https://github.com/worldbank/data360-mcp): a server in operation over a statistical API.
+- [Example values file](pathname:///cookbook-files/ai-ready-dissemination/example_values.csv), [OpenAPI description](pathname:///cookbook-files/ai-ready-dissemination/openapi_minimal.yaml), and [MCP server example](pathname:///cookbook-files/ai-ready-dissemination/mcp_server_example.py): the running example's files.
+
+## Common mistakes
+
+- **Publishing a PDF and calling it open data.** A table in a PDF cannot be requested by series and period. Publish the CSV next to it.
+- **Wide layouts with one column per year.** Every release changes the columns. One row per observation keeps the schema stable.
+- **Labels where codes belong.** "Q1 2025", "2025 Q1", and "2025-Q1" are three strings for one period. Codes in the file, labels in the code list.
+- **Changing identifiers in a redesign.** Every citation and integration breaks. Keep identifiers and redirect old URLs.
+- **An MCP server before an API.** The agent interface is a thin layer; the API and the data behind it are the work.
+
+## Verification
+
+- **Direct request.** Someone who did not build the API retrieves a known value with a single call written from the documentation alone.
+- **Stability.** The same identifiers requested a month later still resolve.
+- **Completeness of response.** Every response includes the unit, the period, and the source.
+- **Agent check.** Where an MCP server exists, an assistant asked for five known values returns the official figures.
+
+## Checklist
+
+<Checklist id="retrieve" items={[
+  'Open, tidy file formats available for each dataset',
+  'Columns and status codes follow SDMX cross-domain concepts and code lists',
+  'Stable identifiers and download URLs',
+  'Table schema published for CSV files outside SDMX',
+  'Documented API with an OpenAPI or SDMX description',
+  'Responses include unit, period, and source',
+  'Bulk download available',
+  'Terms of use and rate limits published',
+  'Data in PDFs also published in structured form',
+  'Agent interface (MCP) evaluated for the highest-demand datasets',
+]} />

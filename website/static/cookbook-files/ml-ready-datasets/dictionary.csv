@@ -1,0 +1,13 @@
+name,label,type,description,role
+record_id,Record identifier,id,Unique identifier of the record; no meaning,id
+hhid,Household identifier,id,Identifier of the household the person belongs to; records of one household must stay in one split,group
+region,Region,categorical,"Region of residence: R01 Northern, R02 Central, R03 Southern, R04 Eastern",feature
+urban,Urban or rural,categorical,"1 urban, 0 rural",feature
+sex,Sex,categorical,"1 male, 2 female",feature
+age_group,Age group,categorical,"15-24, 25-54, 55-64",feature
+educ,Education level,categorical,ISCED 2011 level 0 to 5 (6 and above collapsed into 5),feature
+job_title,Job description,text,"The respondent's description of their main job, as recorded by the interviewer",feature
+industry_text,Industry description,text,The respondent's description of the activity of the establishment,feature
+isco_code,Occupation code,text,ISCO-08 unit group (four digits) assigned by a trained coder; the label to predict,label
+isco_major,Occupation major group,categorical,First digit of isco_code; a coarser label,label
+weight,Survey weight,numeric,"Person weight calibrated to the population; use for population estimates, never as a training sample weight without a stated reason",weight

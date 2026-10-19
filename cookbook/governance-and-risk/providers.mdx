@@ -1,0 +1,255 @@
+---
+id: providers
+title: "5. Dependence on model providers"
+sidebar_label: "5. Providers"
+sidebar_position: 5
+description: How the organization records what it depends on each model provider for, under what data terms, with what second option, and at what cost, and how it tests an exit plan once so that a change of provider is a change of configuration.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 5. Dependence on model providers
+
+**Question:** How does the organization depend on providers without being captured by one?
+
+## Rationale
+
+Every model comes from somewhere. An open-weight model was downloaded from
+a repository under a licence; a hosted model is reached through an API
+under a contract. In both cases the organization depends on a provider for
+the model's continued availability, its terms, and its price. Dependence
+is not a problem; capture is. An organization is captured when a
+provider's change of terms or price, or its disappearance, would stop a
+component and the organization has no tested way to replace it.
+
+Three instruments keep dependence from becoming capture. A provider
+register says what the organization gets from each provider and under what
+data terms. A tested exit plan says that the component has run on a second
+option and what it scored. A cost record says what each component costs
+month by month, so that a rise is seen before it is a problem.
+
+## Target state
+
+- Every provider the organization depends on has a row with its services, the components that use them, its data terms, its contract end, a second option, and an exit plan.
+- Every exit plan has been tested once, on the component's evaluation suite, with the date and the result recorded.
+- The cost of every component is recorded monthly, and the board sees the hosted share and the rises.
+- No confidential data reach a hosted provider, and the data terms of each hosted provider exclude retention and training on the organization's inputs.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Write the provider register and the exit plan of each component; read the data terms of every hosted provider. |
+| **AI-ready** | Test each exit plan once on the suite and record it; keep the cost record monthly and report it to the board. |
+| **AI-native** | Keep prompts, suites, and indexes provider-neutral in version control so that a switch is a configuration change; re-test the exit plans each year and on each contract renewal. |
+
+:::info[Running example]
+The example organization has two providers: its own model server (P01),
+which runs an open-weight language model and an embedding model for five
+components, and a hosted provider (P02) that drafts commentary from
+aggregate tables for one. Both exit plans have been tested. The cost
+record covers October to December 2025. The files are
+[providers.csv](pathname:///cookbook-files/governance-and-risk/providers.csv)
+and
+[cost_record.csv](pathname:///cookbook-files/governance-and-risk/cost_record.csv).
+:::
+
+## Recipes
+
+<Recipe title="5.1 Keep a provider register with data terms and an exit plan" level="Foundational" skills="Head of IT with the legal adviser" time="One hour per provider">
+
+**Result:** the organization has one table that says, for each provider,
+what it supplies, which components use it, what happens to the data sent
+to it, when the contract ends, what the second option is, and how a switch
+would be made.
+
+The register's most important column is the data terms. A hosted
+provider's terms say whether inputs are retained, whether they are used to
+train the provider's models, and where they are processed. The policy of
+chapter 1 permits only public data at external services, and even public
+data should not be retained or trained on without the organization's
+agreement, because the organization's prompts describe its methods.
+
+| Column | Meaning |
+|---|---|
+| `provider_id`, `provider`, `kind` | The identifier, the name, and whether the provider is local (the organization's own server) or hosted |
+| `service`, `components` | What the provider supplies and the components that use it |
+| `data_terms` | What happens to data sent to the provider, from the contract or the licence |
+| `contract_end` | When the contract ends; empty for the organization's own server |
+| `second_option`, `second_option_tested_on` | The alternative and the date it was tested |
+| `exit_plan` | How the switch would be made |
+
+```csv file=../../website/static/cookbook-files/governance-and-risk/providers.csv
+```
+
+1. List every provider, including the organization's own server, which
+   depends on the licences of the models it runs (chapter 6).
+2. For each hosted provider, copy the data terms from the contract into
+   the row in the organization's own words, and have the legal adviser
+   confirm them.
+3. Name a second option for each provider. For an open-weight model it
+   is another open-weight model of similar size; for a hosted provider it
+   is another provider or a local model.
+4. Write the exit plan as the steps a developer would take, and name
+   what has to be in version control for the steps to work: prompts,
+   suites, indexes, configuration.
+
+**Worked example.** The example organization's own server (P01) runs an open-weight language model and an embedding model for five components, and no data leave the organization. Its second option is another open-weight model of similar size, tested on 2025-12-10. Its exit plan is to swap the model file, with prompts, suites, and indexes in version control. The hosted provider (P02) drafts commentary for one component. The contract says that inputs are not retained or used for training, that only aggregate tables are sent, and that it ends on 2026-06-30. The second option is another provider, tested on the commentary suite on 2025-12-18, and the exit plan is to switch the endpoint and the key, with the suite gating the change.
+
+**What this does not do.** The register records the terms the provider
+agreed to. Whether the provider keeps them is a matter of contract and
+audit, which is why confidential data do not go to a hosted provider at
+all.
+
+</Recipe>
+
+<Recipe title="5.2 Test the exit plan once" level="AI-ready" skills="Data scientist or developer; the component's owner reads the result" time="One day per component">
+
+**Result:** each component has run on its second option, its suite has
+scored the result, and the date and the score are recorded.
+
+An exit plan that has never been tried is a sentence. The test is a drill:
+the component is pointed at the second option, its evaluation suite runs,
+and the score is compared with the current one. The drill shows three
+things at once: that the switch can be made, how long it takes, and what
+the organization would lose or gain in quality. A drill that fails is the
+most useful result, because it is cheaper to learn now that the prompts
+are tied to one provider than during an outage.
+
+1. Put the component's prompts, suite, and configuration in version
+   control if they are not there, so that the drill starts from a known
+   state.
+2. Switch the component to the second option in a test environment and
+   run the suite.
+3. Record the date, the time the switch took, and the score beside the
+   current score, in the provider register and in the component's
+   evaluation report.
+4. Where the score falls below the required score, the exit plan is not
+   yet a plan; the owner decides whether to adapt the prompts or name a
+   different second option.
+
+**Worked example.** The commentary drafts (C05) were switched to the
+second hosted provider on 2025-12-18, as the follow-up of decision D006
+required. The switch took an afternoon, because the prompts and the
+suite were already in version control. The commentary suite scored the
+second provider at the required score, with all numbers verified on the
+test drafts, and the date went into the provider register. The organization's own server (P01) was drilled on 2025-12-10 by swapping the language model file for another open-weight model and running the coding and explanation suites. The coding suite scored lower at four digits, and the owner noted that a switch would need a re-coded sample before the threshold is reused.
+
+**What this does not do.** One drill shows that a switch was possible on
+one day. Models and providers change, and the drill is repeated each year
+and at each contract renewal. The
+[Small and Open Models](/cookbook/small-and-open-models/candidates)
+cookbook describes how candidates are chosen and compared.
+
+</Recipe>
+
+<Recipe title="5.3 Keep the cost record" level="AI-ready" skills="Head of IT; the board reads the summary" time="One hour a month">
+
+**Result:** the organization knows what each component costs each month,
+what share goes to hosted providers, and which costs are rising.
+
+Cost is the slow form of capture. A component that was cheap at approval
+can become expensive as its use grows or as a provider changes its prices,
+and an organization that does not see the rise finds it in a budget
+overrun. The record is one row per component and month, and the summary
+script prints what the board needs: cost by month with the change, the
+hosted share, and the rises above one half.
+
+| Column | Meaning |
+|---|---|
+| `component_id`, `month`, `provider_id` | The component, the month, and the provider |
+| `requests` | The number of requests or jobs in the month |
+| `cost_usd` | The cost in the month, in a currency the organization chooses |
+
+```csv file=../../website/static/cookbook-files/governance-and-risk/cost_record.csv
+```
+
+1. Record each component's requests and cost at the end of each month.
+   For the organization's own server, the cost is the server's monthly
+   cost shared by use.
+2. Run the summary and put it in the board's papers.
+
+```bash
+python cost_summary.py cost_record.csv providers.csv
+```
+
+```text
+cost per component (USD):
+  id    2025-10  2025-11  2025-12   change
+  C01        42       40       43   +8%
+  C02        61       63       72   +14%
+  C03       180        0        0   
+  C04        38       12        0   -100%
+  C05         0        9       31   +244%
+  C06         0        0       96   
+
+share of cost at hosted providers:
+  2025-10: 0 of 321 (0%)
+  2025-11: 9 of 124 (7%)
+  2025-12: 31 of 242 (13%)
+
+requests at hosted providers by component:
+  C05: 60
+
+cost rose by more than half from the previous month:
+  C05: +244%
+```
+
+**Worked example.** The summary for October to December 2025 shows the
+shape of the example organization's use. Occupation coding (C03) cost 180
+in October, when the quarter's round was coded, and nothing after, because
+coding runs once per round. The edit explanations (C04) fell to nothing as
+the round's editing finished. The commentary drafts (C05), the only hosted
+component, rose from 9 to 31 as the December release and the second-provider
+drill added requests; the rise is flagged, and the owner's explanation goes
+in the papers. The hosted share of cost rose from nothing to 13 percent,
+which the board noted as acceptable while the component's data stay
+aggregate.
+
+**What this does not do.** The record counts provider and server costs.
+Staff time, which is the largest cost of every component, is not in it;
+the investment view of the [operational companion](/ai-readiness-in-practice)
+gives it per recipe.
+
+</Recipe>
+
+## Implementation options
+
+- **Provider-neutral components.** An abstraction layer between the component and the model API, with prompts and configuration in version control, makes a switch a configuration change. The [Efficient and Inclusive AI](/docs/inclusive-ai/) workstream describes provider-agnostic configuration.
+- **Local first for confidential data.** The organization's own server is the only provider for confidential inputs; a hosted provider is an option for public inputs only. The [Small and Open Models](/cookbook/small-and-open-models/serving) cookbook sizes the server.
+- **Contract clauses.** No retention of inputs, no training on inputs, processing in a stated jurisdiction, notice before a change of model version, and an export of the organization's data on termination.
+
+## World Bank examples
+
+- The [Efficient and Inclusive AI](/docs/inclusive-ai/) workstream describes provider-agnostic configuration and batch inference costs that the cost record can compare with.
+- The [Small and Open Models](/cookbook/small-and-open-models/cost) cookbook gives the cost of running and sustaining a local model, which is the P01 row of the cost record.
+
+## Resources
+
+- [Open Source AI Definition](https://opensource.org/ai/open-source-ai-definition): what an open model does and does not give the organization, for the choice of second options.
+- [Provider register](pathname:///cookbook-files/governance-and-risk/providers.csv), [cost record](pathname:///cookbook-files/governance-and-risk/cost_record.csv), and [cost_summary.py](pathname:///cookbook-files/governance-and-risk/cost_summary.py): the running example's instruments and the summary.
+
+## Common mistakes
+
+- **Data terms assumed from the marketing page.** The contract, read by the legal adviser, is the source of the row.
+- **An exit plan with no drill.** The afternoon the drill takes is the cheapest insurance the organization buys.
+- **Prompts written for one provider.** A prompt that depends on one model's quirks is a dependence the register does not show until the drill fails.
+- **Cost seen once a year.** A monthly record shows the rise while it is small.
+
+## Verification
+
+- **Register check.** Every component's provider has a row, and every hosted row has data terms confirmed by the legal adviser.
+- **Drill check.** Every provider's second option has a test date within the last year and a recorded score.
+- **Cost check.** The summary runs on the current record, and every rise above one half has an explanation in the board's papers.
+
+## Checklist
+
+<Checklist id="governance-and-risk-providers" items={[
+  'Provider register with data terms, contract end, second option, and exit plan',
+  'Data terms of each hosted provider confirmed from the contract',
+  'Prompts, suites, and configuration in version control',
+  'Exit plan of each component tested once, with date and score',
+  'Cost record kept monthly',
+  'Cost summary in the board papers with rises explained',
+]} />

@@ -1,0 +1,7 @@
+document_id,next_stage,retry,ocr,pages,tables,data_sources,reason
+EX-REP-2024-03,layout,,,58,12,2,feeds 2 data source(s)
+EX-REP-2025-03,verify,yes,,64,14,2,retry after failure; feeds 2 data source(s)
+EX-CEN-2014-01,text,yes,yes,220,96,1,retry after failure; OCR needed; feeds 1 data source(s)
+EX-REP-2025-01,extract,,,32,18,1,feeds 1 data source(s)
+EX-REP-2025-02,text,,,33,18,1,feeds 1 data source(s)
+EX-YB-2023,text,,,310,142,1,feeds 1 data source(s)

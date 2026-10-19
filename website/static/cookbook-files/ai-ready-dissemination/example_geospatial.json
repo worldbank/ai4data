@@ -1,0 +1,36 @@
+{
+  "idno": "EX-ADMIN2-2024",
+  "description": {
+    "idno": "EX-ADMIN2-2024",
+    "language": "eng",
+    "dateStamp": "2024-11-15",
+    "metadataStandardName": "ISO 19115:2003/19139",
+    "dataSetURI": "https://stats.example/geospatial/EX-ADMIN2-2024",
+    "contact": [
+      {"organisationName": "National Statistics Office (example), Geospatial unit", "role": "pointOfContact"}
+    ],
+    "referenceSystemInfo": [{"code": "4326", "codeSpace": "EPSG"}],
+    "identificationInfo": {
+      "citation": {"title": "Administrative boundaries, level 2 (districts), 2024 edition"},
+      "abstract": "Polygon boundaries of the 48 districts used for the 2024 census and for all statistics published at district level. Boundaries follow the gazette of 3 March 2024; two districts were split from their parents in that gazette and carry new codes.",
+      "topicCategory": ["boundaries"],
+      "language": ["eng"],
+      "descriptiveKeywords": [{"keyword": "administrative boundaries"}, {"keyword": "districts"}],
+      "extent": {
+        "geographicElement": [
+          {
+            "geographicBoundingBox": {
+              "westBoundLongitude": 30.0,
+              "eastBoundLongitude": 36.0,
+              "southBoundLatitude": -4.0,
+              "northBoundLatitude": 2.0
+            }
+          }
+        ]
+      }
+    },
+    "distributionInfo": {
+      "distributionFormat": [{"name": "GeoPackage", "version": "1.3"}, {"name": "GeoJSON"}]
+    }
+  }
+}

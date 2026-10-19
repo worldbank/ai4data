@@ -1,0 +1,13 @@
+source,dataset_id,dataset_doi,citing_id,citing_title,citing_year,relation
+datacite,EX-HBS-2021,10.12345/ex-hbs-2021,10.1000/jrd.2024.0871,Rural poverty and food security in Example country,2024,IsCitedBy
+crossref,EX-HBS-2021,10.12345/ex-hbs-2021,10.1000/JRD.2024.0871,Rural poverty and food security in Example country,2024,references
+openalex,EX-HBS-2021,10.12345/ex-hbs-2021,10.1000/jrd.2024.0871,Rural poverty and food security in Example country,2024,referenced_works
+openalex,EX-HBS-2021,10.12345/ex-hbs-2021,10.1000/wp.2023.0142,Child nutrition outcomes: evidence from household surveys,2023,referenced_works
+text-mining,EX-HBS-2021,10.12345/ex-hbs-2021,10.1000/wp.2023.0142,Child nutrition outcomes: evidence from household surveys,2023,mention
+text-mining,EX-HBS-2021,10.12345/ex-hbs-2021,D02,National nutrition strategy 2025 to 2030,2025,mention
+datacite,EX-LFS,10.12345/ex-lfs-2025-q2,10.1000/lab.2025.0033,Youth employment after the pandemic,2025,IsCitedBy
+openalex,EX-LFS,10.12345/ex-lfs-2025-q2,10.1000/lab.2025.0033,Youth employment after the pandemic,2025,referenced_works
+openalex,EX-LFS,10.12345/ex-lfs-2025-q2,10.1000/econ.2025.0910,Informality and wages in Example country,2025,referenced_works
+crossref,EX-CEN-2014,10.12345/ex-cen-2014,10.1000/dem.2022.0456,Urbanization and fertility: a census-based analysis,2022,references
+text-mining,EX-CEN-2014,10.12345/ex-cen-2014,10.1000/dem.2022.0456,Urbanization and fertility: a census-based analysis,2022,mention
+text-mining,FS_UNDERNOURISH_PCT,,D06,Regional food security outlook 2025,2025,mention

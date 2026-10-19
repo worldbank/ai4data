@@ -1,0 +1,226 @@
+---
+id: report
+title: "8. Reporting of use"
+sidebar_label: "8. Report"
+sidebar_position: 9
+description: How use is reported so that management can read it, with the documents that mention and use each dataset by year and type, access statistics and an AI visibility check beside them, and the coverage and recall figures that say how much the numbers leave out.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 8. Reporting of use
+
+**Question:** Can use be reported and interpreted?
+
+## Rationale
+
+A use report answers the questions management asks: which products are
+used, by whom, for what, and whether that is changing. It also carries the
+caveats without which the numbers mislead: which sources were covered, what
+share of known uses the collection contained, and what the extractor's
+recall was. Combined with access statistics (downloads and API calls,
+counted the way the research data community counts them) and with a check
+of how AI systems answer, it gives a rounded picture of use.
+
+## Target state
+
+- A report per period gives, for each dataset, the documents that mention and that use it, by year, document type, and source, with co-use.
+- Access statistics are counted following the COUNTER Code of Practice for Research Data and reported next to the mentions.
+- AI systems' answers are checked with a fixed question set on a schedule.
+- Every report states its coverage and the extractor's recall.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Publish a list of documents that cite each flagship dataset, updated each quarter. |
+| **AI-ready** | Produce the use report from harmonized mentions and the documents table. Add COUNTER-aligned access statistics and the AI visibility check. State coverage and recall. |
+| **AI-native** | Publish the report with the data, show "used in" on each dataset page from the results, and track trends across periods with a stable scope. |
+
+:::info[Running example]
+Across six documents, the household budget survey is used in two, the
+labour force survey in one, the undernourishment indicator in one, and
+the unemployment indicator in one; the food security report is mentioned
+in two without being used. Two documents also use other
+organizations' data alongside.
+:::
+
+## Recipes
+
+<Recipe title="8.1 Produce the use report" level="AI-ready" skills="Python" time="Minutes per run">
+
+**Result:** for each dataset, the organization knows how many documents
+mention it and how many use it, by year and by document type, and which
+other datasets it is used alongside.
+
+The script reads the harmonized mentions of [chapter 7](./harmonize.mdx)
+and the documents table of [chapter 4](./collect.mdx), and counts by
+the rules of [chapter 1](./define.mdx):
+
+```python file=../../website/static/cookbook-files/monitoring-data-use/use_report.py
+```
+
+```bash
+python use_report.py harmonized.jsonl documents.csv
+```
+
+Output for the running example (abridged):
+
+```text
+6 documents, 12 mentions, 5 datasets of the organization mentioned
+dataset                mentioned in  used in  by year / by type
+EX-HBS-2021                       2        2  2023: 1, 2024: 1 / journal article: 1, working paper: 1
+EX-LFS                            1        1  2025: 1 / news article: 1
+...
+other organizations' data mentioned alongside (co-use):
+  'Demographic and Health Survey 2016': 1 document(s)
+  'World Development Indicators': 1 document(s)
+```
+
+The first line gives the totals. The table has one row per dataset of
+the organization, with the count of documents that mention it, the
+count that use it in the sense of the typology, and the breakdown by
+year and by document type. The last block lists the other
+organizations' datasets found in the same documents.
+
+1. Run the report on the harmonized mentions.
+2. Report documents as the unit and mentions as the secondary figure.
+   Separate mentioned from used: a report cited as context is a
+   different fact from a survey the analysis rests on.
+3. Keep the scope stable between periods. A change in sources is a
+   break, and is marked as one.
+
+**Worked example.** In the run above, the household budget survey is
+mentioned in two documents and used in both: a 2023 journal article that
+builds its poverty analysis on the survey and a 2024 working paper that
+uses its consumption module. The food security report is mentioned in
+two documents and used in none, because both cite it as background. The
+dissemination lead reads the two facts differently. The survey has
+research users who depend on its documentation; the report is a
+reference that policy documents point to. Both findings go into the
+decisions of chapter 9 with the figures beside them.
+
+**What this does not do.** The counts cover the collected documents.
+Recipe 8.3 adds the caveats that make them interpretable, and the
+report is never read without them.
+
+</Recipe>
+
+<Recipe title="8.2 Add access statistics, citation counts, and the AI visibility check" level="AI-ready" skills="Web analyst; dissemination officer" time="One day to set up; two hours per period">
+
+**Result:** the report shows, side by side for each dataset, the
+downloads and API calls, the identifier citations, the mentions in
+documents, and a record of how AI assistants answer the questions the
+data answer.
+
+1. Take the access counts of [chapter 2](./access.mdx) (regular and
+   machine requests per dataset and month) and the citation counts of
+   [chapter 3](./citations.mdx) (unique citing documents per dataset,
+   with the sources that found them).
+2. Run the AI visibility check from the
+   [dissemination cookbook](/cookbook/ai-ready-dissemination/monitor-use):
+   a fixed set of questions asked of two or three assistants each
+   month, recording whether the organization is cited, whether the
+   figure is right, and whether the link resolves.
+3. Present the four measures side by side per dataset, each with its
+   unit (requests, citing documents, documents with mentions, answers)
+   and its caveat. They answer different questions and move
+   differently.
+
+**Worked example.** The quarterly report has one row per dataset. For
+the labour force survey, the access columns show 1,840 regular requests
+and 6,200 machine requests in the quarter. The citation column shows 3
+citing documents found through its DOI. The mention column shows 1
+document in the collection. The AI visibility column shows 7 of 10
+questions answered with the organization cited. The household budget
+survey's row shows 420 regular requests, no machine requests, 5 citing
+documents, 2 documents with mentions, and 4 of 10 questions cited. The lead notes that the labour force survey is fetched by
+machines far more than it is cited, while the budget survey is cited far
+more than it is downloaded. Neither fact would be visible from one
+column alone.
+
+**What this does not do.** Downloads count files, citations count
+reference lists, mentions count documents, and the AI check samples
+answers. None is a count of users or of decisions influenced, and the
+report says so.
+
+</Recipe>
+
+<Recipe title="8.3 State coverage and recall with every count" level="Foundational" skills="Dissemination officer" time="Part of each report">
+
+**Result:** every number in the report is read with the two facts that
+bound it: how much of the known literature the collection contains, and
+how much of what is in the collection the extractor finds.
+
+1. Coverage: the share of the reference list of known uses that the
+   collection contained, per source type ([chapter 4](./collect.mdx)).
+2. Recall: the extractor's recall on the labelled sample, per document
+   type and language ([chapter 6](./detect.mdx)).
+3. Match rate: the share of mentions resolved to an identifier
+   ([chapter 7](./harmonize.mdx)).
+4. Print the three with the counts. When comparing periods, note any
+   change in sources, model, or threshold.
+
+**Worked example.** The report's caveat box reads: "Coverage: the
+collection contains 31 of the 40 research uses on the reference list
+(78 percent) and 12 of the 25 policy uses (48 percent). Recall: the
+extractor finds 84 percent of the mentions in the labelled sample for
+English journal articles and 61 percent for French policy documents.
+Match rate: 83 percent of mentions were resolved to an identifier.
+Compared with the previous quarter, one source was added (the national
+research repository). The counts for research use are therefore not
+comparable with the previous period." A reader who sees "used in 2
+documents" for the budget survey knows that the true figure is higher,
+and roughly how much higher.
+
+**What this does not do.** Coverage and recall bound the counts from
+below; they do not estimate the true total. An estimate of total use
+needs a sampling design over sources, which is a larger exercise than
+this guide covers.
+
+</Recipe>
+
+## Implementation options
+
+- **Use report:** the script in this chapter from harmonized mentions; a dashboard once the pipeline runs on a schedule.
+- **Access statistics:** COUNTER Code of Practice for Research Data; DataCite citation events for datasets with DOIs.
+- **AI visibility:** the fixed question set and log from the dissemination cookbook.
+- **Publication:** "used in" lists on dataset pages, as the Microdata Library's citations pages show.
+
+## World Bank examples
+
+- The [Microdata Library](https://microdata.worldbank.org/citations) publishes the citations of each study.
+- [Monitoring of Data Use](/docs/data_use/) names impact measurement, gap analysis, evidence-base tracking, and catalog enrichment as the downstream uses of harmonized mentions.
+
+## Resources
+
+- [COUNTER Code of Practice for Research Data](https://coprd.countermetrics.org/): the access counting rules behind the figures in recipe 8.2.
+- [Make Data Count](https://makedatacount.org/): guidance for repositories on presenting usage and citation metrics together.
+- [Microdata Library citations](https://microdata.worldbank.org/citations): a published "used in" list per study, the form recipe 8.1's output takes on a dataset page.
+- [Monitoring chapter of the dissemination cookbook](/cookbook/ai-ready-dissemination/monitor-use): the AI visibility question set and log.
+- [Use report script](pathname:///cookbook-files/monitoring-data-use/use_report.py): the per-dataset report by year and document type.
+
+## Common mistakes
+
+- **A count without coverage.** It reads as a total and is an undercount of unknown size.
+- **Mentions and downloads added together.** They count different things.
+- **A rise after adding a source.** Growth or scope change; the report has to say which.
+- **Reports nobody acts on.** Chapter 9 is the reason the report exists.
+
+## Verification
+
+- **Report.** The report is produced each period from the harmonized mentions and the documents table, and its figures can be reproduced from the files.
+- **Caveats.** Coverage, recall, and match rate are stated in the report.
+- **Access statistics.** Machine and regular access are separated, following the Code of Practice.
+
+## Checklist
+
+<Checklist id="monitoring-data-use-report" items={[
+  'Use report per dataset: mentioned, used, by year, type, source',
+  'Co-use with other organizations\' data reported',
+  'Downloads and API calls counted per the COUNTER Code of Practice for Research Data',
+  'AI visibility check run on a schedule',
+  'Coverage, recall, and match rate stated with every count',
+  'Scope stable across periods; changes marked as breaks',
+]} />

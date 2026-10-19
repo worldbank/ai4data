@@ -14,9 +14,14 @@ const Cards = [
     to: '/docs/introduction',
   },
   {
+    title: 'Adoption',
+    body: 'Tool statuses, the installation test, and support boundaries.',
+    to: '/hub#adopt',
+  },
+  {
     title: 'Contact',
-    body: 'Reach the Development Data Group directly.',
-    to: 'mailto:ai4data@worldbank.org',
+    body: 'Contact the Development Data Group.',
+    to: 'mailto:aifordata@worldbank.org',
   },
 ];
 
@@ -25,9 +30,9 @@ export default function GetInvolved() {
     <section className={styles.section}>
       <div className="container">
         <div className={styles.head}>
-          <span className="eyebrow">Get Involved</span>
+          <span className="eyebrow">Participation</span>
           <Heading as="h2" className={styles.title}>
-            Contribute and contact
+            Contributions and contact
           </Heading>
         </div>
         <div className={styles.grid}>

@@ -1,0 +1,121 @@
+---
+id: start-here
+title: Self-assessment
+sidebar_label: Self-assessment
+sidebar_position: 1
+description: A five-minute self-assessment that places a survey's documentation at a maturity level in each chapter and suggests a reading order.
+---
+
+import SelfAssessment from '@site/src/components/Cookbook/SelfAssessment';
+
+# Self-assessment
+
+Select the statement that best describes the documentation of one survey
+today, one per chapter. The result shows a level for each chapter and the
+chapters to read first. Answers are stored in this browser only.
+
+<SelfAssessment
+  base="/cookbook/microdata-documentation/"
+  questions={[
+    {
+      id: 'find',
+      title: '1. Find',
+      question: 'How is the survey described at the study level?',
+      options: [
+        'A title and a report; no structured record.',
+        'A study record with abstract, dates, coverage, universe, and sampling, in a catalog.',
+        'The record follows DDI Codebook in the World Bank schema, has a DOI, and is published with schema.org markup.',
+        'The record is kept current with versions, and its variables are searchable across surveys.',
+      ],
+    },
+    {
+      id: 'produce',
+      title: '2. Produce',
+      question: 'How is documentation produced for a survey that has data files but no record?',
+      options: [
+        'By hand, from scratch, when someone asks for the survey.',
+        'A dictionary is drafted from the data file and labelled files are imported into the editor; the backlog is listed.',
+        'Question text and code lists are recovered from questionnaires and codebooks with their source, and the backlog is ordered by use and gaps.',
+        'Draft, import, recovery, and checks run as a pipeline on every new file before a curator sees it.',
+      ],
+    },
+    {
+      id: 'variables',
+      title: '3. Variables',
+      question: 'How are the variables documented?',
+      options: [
+        'Variable names only, or labels for some variables.',
+        'Every variable has a label, a type, value codes with labels, and missing-value codes.',
+        'The dictionary is in the DDI-based schema with universes and question text, and it is checked before release.',
+        'Variables carry concepts, derivations, and summary statistics, and the check runs on every release.',
+      ],
+    },
+    {
+      id: 'concepts',
+      title: '4. Concepts',
+      question: 'How are variables linked to concepts and classifications?',
+      options: [
+        'Not linked; classifications are described in the report, if at all.',
+        'The questionnaire is published and the main classifications are named in the documentation.',
+        'A concept map links variables to classifications (ISCED, ISCO, ISIC) with versions, and question text is attached to each variable.',
+        'Concepts are reused across surveys with harmonized names and a question bank.',
+      ],
+    },
+    {
+      id: 'navigate',
+      title: '5. Navigate',
+      question: 'How does a user find a variable among hundreds?',
+      options: [
+        'By reading the data dictionary from top to bottom.',
+        'Variables are grouped into themes in the catalog and can be searched by keyword.',
+        'Variable search works by meaning and across surveys, and it is scored with a question set.',
+        'Thematic groups are generated and reviewed for every new survey, and the search is re-scored on each change.',
+      ],
+    },
+    {
+      id: 'rounds',
+      title: '6. Rounds',
+      question: 'How are differences between survey rounds documented?',
+      options: [
+        'They are not; users compare variables by name.',
+        'A crosswalk between the latest two rounds is published with the record.',
+        'Every pair of rounds has a crosswalk; recoded variables have correspondence tables; breaks are stated in the record.',
+        'Harmonized variables with reusable definitions span the rounds, and a concept search returns each round with its comparability.',
+      ],
+    },
+    {
+      id: 'fitness',
+      title: '7. Fitness',
+      question: 'How can a user judge whether the data fit a purpose?',
+      options: [
+        'From the report, if it describes the design.',
+        'Sampling, weights, response rates, and known issues are in the study record.',
+        'Quality information is in machine-readable fields, with versions and errata.',
+        'Quality indicators are computed and published with each release, and changes are logged.',
+      ],
+    },
+    {
+      id: 'access',
+      title: '8. Access',
+      question: 'How are the access conditions stated and applied?',
+      options: [
+        'Access is by request, with conditions decided case by case.',
+        'A written policy defines access tiers and the disclosure control for each.',
+        'Each record states its tier, licence, citation requirement, and restrictions in machine-readable fields.',
+        'Automated clients receive the conditions with the metadata, and only public use files are exposed to them.',
+      ],
+    },
+  ]}
+/>
+
+## Interpretation of the result
+
+- A **Not yet** or **Foundational** result in chapters 1 to 3 comes first:
+  study-level and variable-level documentation are what every later chapter
+  reads, and chapter 2 is where that documentation comes from when the
+  files exist and the records do not.
+- Chapter 8 can start at any time; the access policy is a one-day task that
+  makes the rest safe to publish.
+- Chapters 4 to 6 give the largest gains for users once chapter 3 is at
+  AI-ready, because concept links, thematic groups, and crosswalks turn a
+  long dictionary into something searchable and comparable.

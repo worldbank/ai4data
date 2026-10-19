@@ -1,0 +1,107 @@
+---
+id: start-here
+title: Self-assessment
+sidebar_label: Self-assessment
+sidebar_position: 1
+description: A five-minute self-assessment that places an organization's capacity to run small and open models at a maturity level in each chapter and suggests a reading order.
+---
+
+import SelfAssessment from '@site/src/components/Cookbook/SelfAssessment';
+
+# Self-assessment
+
+Select the statement that best describes the organization today, one per
+chapter. The result shows a level for each chapter and the chapters to
+read first. Answers are stored in this browser only.
+
+<SelfAssessment
+  base="/cookbook/small-and-open-models/"
+  questions={[
+    {
+      id: 'when',
+      title: '1. When',
+      question: 'How is the model for a task chosen?',
+      options: [
+        'One model for everything, or whatever a tool uses.',
+        'A written rule gives a first choice per task from its properties; confidential tasks are local.',
+        'Every first choice is tested against its comparison on the suite and recorded in the register.',
+        'Choices are revisited on releases and volume changes, and routed by the frontier.',
+      ],
+    },
+    {
+      id: 'candidates',
+      title: '2. Candidates',
+      question: 'How are candidate models selected?',
+      options: [
+        'By reputation.',
+        'Two or three per size class from named sources, with licences read and classified.',
+        'Model cards checked, digests recorded, shortlist kept in a registry with licence classes.',
+        'The shortlist is reviewed on each notable release; the organization\'s own models carry cards.',
+      ],
+    },
+    {
+      id: 'serving',
+      title: '3. Serving',
+      question: 'How are models run?',
+      options: [
+        'On someone\'s laptop, or not at all.',
+        'A small quantized model on an existing machine, with throughput measured.',
+        'A sized, isolated server inside the network with a batching stack; measurements recorded per model.',
+        'A shared service with quotas, monitoring, and capacity planning from demand.',
+      ],
+    },
+    {
+      id: 'adaptation',
+      title: '4. Adaptation',
+      question: 'How are models adapted?',
+      options: [
+        'Ad hoc prompts.',
+        'Versioned prompts with the task\'s context, tested on the suite.',
+        'Retrieval over the organization\'s material scored separately; fine-tuning on labelled data with cards and gates.',
+        'Retraining from recorded decisions; adaptations compared on the frontier at each release.',
+      ],
+    },
+    {
+      id: 'comparison',
+      title: '5. Comparison',
+      question: 'How are models compared?',
+      options: [
+        'On public benchmarks, or not at all.',
+        'The first choice and its comparison on the suite; chosen by the required score.',
+        'Every candidate on the suite per language; cost per query measured; the frontier drawn; the cheapest passing model chosen.',
+        'The frontier is redrawn on each release and published on the report card; tasks routed by it.',
+      ],
+    },
+    {
+      id: 'security',
+      title: '6. Security',
+      question: 'How are models kept secure and current?',
+      options: [
+        'Downloaded when needed.',
+        'Source and digests recorded; verified before loading; safe formats only.',
+        'Lock files under version control; signatures verified where available; updates gated; server isolated.',
+        'Verification automated in deployment; an internal registry reviewed on schedule.',
+      ],
+    },
+    {
+      id: 'cost',
+      title: '7. Cost',
+      question: 'Is the capacity costed and staffed?',
+      options: [
+        'Nobody has done the arithmetic.',
+        'A three-year estimate against hosted use; one named person runs the deployment.',
+        'Cost per query measured per task; roles staffed with runbooks and a second person; renewals planned; one shared server.',
+        'Infrastructure, test sets, and models shared across organizations; cost and capacity reported yearly.',
+      ],
+    },
+  ]}
+/>
+
+## Interpretation of the result
+
+- Chapters 1 and 2 first: the rule and the shortlist are a week of
+  work and decide where every other chapter spends effort.
+- Chapter 6 before any production use: a verified, isolated server is
+  the difference between an open model and an open door.
+- Chapter 7 is where the decision to go local is made or unmade; the
+  arithmetic is short and the staffing question is the real one.

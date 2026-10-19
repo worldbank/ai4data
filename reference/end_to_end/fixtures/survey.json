@@ -1,0 +1,41 @@
+{
+  "study_desc": {
+    "title_statement": {
+      "idno": "EX-LFS-2025-Q2",
+      "title": "Labour Force Survey 2025, Quarter 2",
+      "identifiers": [{"type": "doi", "identifier": "10.00000/example.lfs.2025q2"}]
+    },
+    "authoring_entity": [{"name": "National Statistics Office (example)"}],
+    "version_statement": {"version": "1.0", "version_date": "2025-08-20"},
+    "distribution_statement": {
+      "contact": [{"name": "Microdata unit", "email": "microdata@stats.example"}]
+    },
+    "study_info": {
+      "abstract": "Quarterly household survey that measures employment, unemployment, hours worked, earnings, and informality for the resident population aged 15 and over. The second quarter of 2025 covers April to June and follows the same questionnaire as the first quarter, with an added module on job search methods. Results are published as the unemployment rate series LF_UNEMP_PCT.",
+      "coll_dates": [{"start": "2025-04-01", "end": "2025-06-30"}],
+      "nation": [{"name": "Example country", "abbreviation": "EX"}],
+      "geog_coverage": "National, urban and rural",
+      "universe": "Resident population aged 15 and over living in private households",
+      "analysis_unit": "Individual; household",
+      "keywords": [{"keyword": "employment"}, {"keyword": "unemployment"}, {"keyword": "informal work"}],
+      "topics": [{"topic": "Labour"}]
+    },
+    "method": {
+      "data_collection": {
+        "sampling_procedure": "Two-stage stratified sample of 6,000 households: enumeration areas drawn with probability proportional to size within urban and rural strata of each region, then 12 households per area by systematic sampling from a fresh listing.",
+        "coll_mode": "Computer-assisted personal interview",
+        "weight": "Design weights adjusted for non-response and calibrated to population projections by region, sex, and five-year age group."
+      },
+      "analysis_info": {"response_rate": "91 percent of sampled households"}
+    },
+    "data_access": {
+      "dataset_availability": {
+        "access_place_url": "https://stats.example/microdata/EX-LFS-2025-Q2"
+      },
+      "dataset_use": {
+        "cit_req": "National Statistics Office (example). Labour Force Survey 2025, Quarter 2 (EX-LFS-2025-Q2), public use file, version 1.0.",
+        "restrictions": "Public use file. Direct identifiers removed; region and age top-coded. Users agree not to attempt re-identification."
+      }
+    }
+  }
+}

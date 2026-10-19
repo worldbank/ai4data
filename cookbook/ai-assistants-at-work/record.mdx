@@ -1,0 +1,238 @@
+---
+id: record
+title: "5. Recording assistant use"
+sidebar_label: "5. Record"
+sidebar_position: 5
+description: How everyday assistant use is recorded in a log with the task, the tool, the data tier, the reviewer, and the outcome, how the log is summarized for the unit and the governance board, and how everyday assistants become one row of the component register.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 5. Recording assistant use
+
+**Question:** How is assistant use recorded?
+
+## Rationale
+
+Everyday assistant use is the part of an organization's AI use that
+nobody sees. Production components have registers, suites, and
+statements; a summary written at a desk has nothing, and when the
+governance board asks how assistants are used, or an incident asks what
+was pasted where, the answer is a guess. A use log turns the guess into
+a count. It is a small table that a member of staff fills in a few
+seconds after each use, and it is what makes the card's rules
+observable.
+
+The log serves three readers. The unit reads it to see which tasks staff
+use an assistant for, how often, and with what outcome, which is where
+the card and the library are improved. The policy owner reads it for the
+uses that broke a rule: confidential text at an assistant that is not
+local, internal text at a hosted service. The board reads its summary as
+the measure of one row of the component register, the one that says
+"everyday assistants".
+
+## Target state
+
+- Every use of an assistant for a task on the card is one row in the log, with the task, the tool, the tier, the reviewer, and the outcome.
+- The log is summarized each month for the unit and each quarter for the board.
+- The uses that broke a tier rule are found by the summary and handled as incidents.
+- Everyday assistants are a row of the component register, with the card as their review and the log as their measure.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Start the log with the columns below; summarize it once. |
+| **AI-ready** | Summarize the log monthly and quarterly; register everyday assistants as a component; handle tier breaches as incidents. |
+| **AI-native** | Write the log from the organization's own assistant automatically, with the tier from the screening and the outcome from the person's one click. |
+
+:::info[Running example]
+The example organization's log holds twenty uses by six units over two
+weeks in November 2025. Fourteen were on the organization's own
+assistant, two on the local assistant, four on a hosted assistant. The
+summary found two uses that broke a tier rule, one of them a confidential
+text at a hosted assistant. The file is
+[use_log.csv](pathname:///cookbook-files/ai-assistants-at-work/use_log.csv).
+:::
+
+## Recipes
+
+<Recipe title="5.1 Keep the use log" level="Foundational" skills="Every member of staff; the unit's head keeps the file" time="A few seconds per use">
+
+**Result:** the unit has a table with one row per assistant use, filled
+at the time of use.
+
+The log is a CSV with eight columns. Its rows are short because the
+values are codes from the card and the tiers; a row takes a few seconds,
+which is the condition for it to be filled. The log records tasks on the
+card; a use for a task that is not on the card is recorded too, with the
+task written in words, because it is the request for a new row.
+
+| Column | Meaning |
+|---|---|
+| `date`, `unit`, `role` | When, where, and by which role |
+| `task_id` | The task from the card |
+| `tool` | local assistant, internal assistant (the organization's own), or hosted assistant |
+| `data_tier` | The tier of the text entered: public, internal, or confidential |
+| `reviewed_by` | The role that made the review on the card |
+| `outcome` | used, edited, or discarded |
+
+```csv file=../../website/static/cookbook-files/ai-assistants-at-work/use_log.csv
+```
+
+1. Keep one log per unit, in a shared file the unit can write to, with
+   the head of unit as its owner.
+2. Record a use after the check of chapter 4, with the reviewer and the
+   outcome.
+3. Record discarded answers. They are the measure of the prompts.
+
+**Worked example.** The labour statistics unit's rows in November include
+two commentary drafts (one edited, one discarded), two script reviews,
+and one summary of a note that an analyst discarded after pasting it into
+a hosted assistant, which the summary of recipe 5.2 flagged. The metadata
+unit's rows are four description drafts, three used and one edited, and
+one variable label proposed on the local assistant.
+
+**What this does not do.** The log records what staff record. Uses that
+were not logged are the subject of the unit session of chapter 6, where
+staff say what they used and did not log, and the share logged is the
+unit's own estimate.
+
+</Recipe>
+
+<Recipe title="5.2 Summarize the log for the unit and the board" level="AI-ready" skills="The head of unit; the policy owner reads the breaches" time="Fifteen minutes per month">
+
+**Result:** the unit sees its uses by task, tool, tier, and outcome,
+with the share reviewed, and the uses that broke a tier rule are listed.
+
+The summary script reads the log with the task card and prints the
+counts. It flags a use whose tier was confidential at any tool other than
+the local assistant, and a use whose tier was internal at a hosted
+assistant, because those are the two rules of chapter 2 the log can
+check. It also flags a task not on the card.
+
+1. Run the summary at the end of each month for the unit and each
+   quarter for the board.
+2. Read the breaches first. Each is an incident of the governance
+   cookbook's procedure, handled by its owner, with the text's reach
+   assessed.
+3. Read the outcomes by task. A task with many discarded answers goes to
+   the unit session.
+
+```bash
+python use_summary.py use_log.csv task_card.csv
+```
+
+```text
+20 uses, 6 units, 2025-11-03 to 2025-11-14
+by task:
+  T01    1  Draft or shorten an email or a memo
+  T02    1  Summarize a published report or a meeting note
+  T03    2  Translate a published text between the organizatio
+  T04    1  Explain a term or a method in plain language
+  T06    3  Draft a missing description or keywords for a cata
+  T07    1  Propose a variable label from a questionnaire text
+  T08    1  Explain why a record failed an edit rule
+  T09    1  Draft a method note from a specification
+  T10    2  Draft commentary from a published or embargoed tab
+  T11    2  Write or review a script in Python or R
+  T12    2  Draft a user-facing answer from published values
+  T13    1  Classify incoming user requests by topic
+  T14    1  Draft an agenda or minutes from notes
+  T16    1  Explain a log message or an error
+by tool: 4 hosted assistant, 14 internal assistant, 2 local assistant
+by tier: 3 confidential, 12 internal, 5 public
+reviewed by a named person: 19 of 20
+outcomes: 2 discarded, 8 edited, 10 used
+problem: 2025-11-06 Management T14: internal text at a hosted assistant
+problem: 2025-11-10 Labour statistics T02: confidential text at a hosted assistant
+result: FAIL
+```
+
+**Worked example.** The summary of the two November weeks found twenty
+uses, nineteen with a named reviewer, and two breaches. A manager had
+drafted minutes from internal notes at a hosted assistant, and an analyst
+had pasted a note with respondent details into a hosted assistant for a
+summary and discarded the answer. The policy owner opened an incident for
+the second, assessed that the note had reached a provider whose contract
+excludes retention, recorded it, and added the screening script to the
+unit's desktop. The first was handled at the unit session as a reminder
+of the tiers. The one use without a reviewer was a script review the
+analyst had run and not recorded as reviewed, corrected in the log.
+
+**What this does not do.** The summary counts the log. The use that was
+not logged, and the review that was recorded and not made, are found by
+the session of chapter 6, which rereads a sample of answers.
+
+</Recipe>
+
+<Recipe title="5.3 Register everyday assistants as a component" level="AI-ready" skills="The owner of the AI-use policy" time="One hour">
+
+**Result:** everyday assistants are one row of the component register,
+with the card as their human review, the log as their measure, and a
+review date.
+
+The governance cookbook's register lists every AI component the
+organization runs, with an owner, a model, the data it sees, its review,
+its risk tier, and its exit plan. Everyday assistants are a component in
+that sense, with a difference: the model is whichever assistant the card
+allows for each tier, and the human review is the card itself. One row
+holds them, so that the board sees everyday use beside the production
+components and the review date brings the log's summary to the board.
+
+1. Add a row to the register with "everyday assistants" as the component and the policy owner as the owner. Its model or service is the three assistants (local, the organization's own, hosted), its data are the tiers from the card, and its human review is "the task card's review per task".
+2. Rate the risk: the cost of error is that of the tasks the card
+   allows, the exposure is one person at a time, and the reversibility is
+   high while the review holds.
+3. Set the review date at six months, and bring the log's summary to
+   the review.
+
+**Worked example.** The example organization's register has the row C07, "everyday assistants", owned by the head of methodology. Its services are the local assistant, the organization's own assistant, and the allowed hosted assistant; its data run from public to confidential by tier; its review is the card. It has a Low risk tier and a review date in May 2026.
+Its exit plan is to withdraw the hosted assistant's allowance and keep
+the organization's own.
+
+**What this does not do.** The row makes everyday use visible to the
+board. It does not govern each use; the card, the tiers, the questions,
+and the checks do that, and the log is where it shows.
+
+</Recipe>
+
+## Implementation options
+
+- **Automatic logging.** The organization's own assistant can write the row itself: the task from the prompt chosen, the tier from the screening, the reviewer from the login, and the outcome from one click on the answer.
+- **Privacy of the log.** The log names roles and units, and the organization decides whether individual logins are recorded; the summary needs neither.
+- **Incident handling.** A tier breach follows the six steps of the [governance cookbook](/cookbook/governance-and-risk/decisions), with the assessment of what the text reached as the main step.
+
+## World Bank examples
+
+- The [governance cookbook](/cookbook/governance-and-risk/register) gives the component register the everyday assistants join.
+- The [Monitoring Data Use](/cookbook/monitoring-data-use/) cookbook is the outward counterpart: use of the organization's data by others, where this chapter records use of assistants by the organization.
+
+## Resources
+
+- [Use log of the running example](pathname:///cookbook-files/ai-assistants-at-work/use_log.csv) and [use_summary.py](pathname:///cookbook-files/ai-assistants-at-work/use_summary.py): the log and the summary.
+
+## Common mistakes
+
+- **A log that takes a minute per row.** It is not filled; a row takes seconds or the log is empty.
+- **Discarded answers left out.** They are the only measure of a bad prompt.
+- **Breaches read as blame.** A breach is an incident with a cause, usually a missing script on a desktop, and the log is what found it.
+- **Everyday use outside the register.** The board then governs production and not the most common use of AI in the building.
+
+## Verification
+
+- **Log check.** The summary runs on the current log, and every breach has an incident entry.
+- **Coverage check.** At the unit session, staff estimate the share of uses logged, and the estimate is recorded.
+- **Register check.** The everyday assistants row exists with the card as its review and a review date.
+
+## Checklist
+
+<Checklist id="ai-assistants-at-work-record" items={[
+  'Use log started per unit with the eight columns',
+  'Rows recorded after the check with reviewer and outcome',
+  'Summary run monthly for the unit',
+  'Summary run quarterly for the board',
+  'Tier breaches handled as incidents',
+  'Everyday assistants registered as a component',
+]} />

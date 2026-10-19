@@ -1,0 +1,155 @@
+---
+id: index
+title: Practical Guide to AI Assistants in Everyday Statistical Work
+sidebar_label: Overview
+sidebar_position: 0
+description: A cookbook for all staff of national statistical organizations, and the managers who set the rules for assistant use, on using a general AI assistant for everyday tasks under the organization's rules, with a card, a screening script, a prompt library, a number check, and a use log.
+---
+
+# Practical Guide to AI Assistants in Everyday Statistical Work
+
+**A cookbook for all staff of national statistical organizations, and the managers who set the rules for assistant use.** Version 0.1 (working draft), October 2026.
+
+:::note[Working draft]
+This guide is a working draft from the AI for Data – Data for AI program. It
+collects practical approaches and open standards. It does not
+represent official World Bank Group guidance or policy and is not legal
+advice; an organization applies it under its own statistical law, data
+protection rules, and institutional policies.
+Comments and corrections are welcome as
+[GitHub issues](https://github.com/worldbank/ai4data/issues), and the
+[contributing](./contributing.md) page explains how to propose a recipe.
+:::
+
+The other cookbooks of this series are written for the people who build
+and run AI components: developers, curators, methodologists, dissemination
+teams. This one is written for everyone else, and for those people when
+they are not building anything: the member of staff with a general AI
+assistant open in a browser tab, a note to summarize, a table to turn into
+a paragraph, an email to shorten, a script to review. These uses are the
+most common use of AI in a statistical organization and the least
+governed, and the AI-use policy covers them in a line. This guide is what
+that line means at a desk.
+
+It is organized around six questions a member of staff asks. Which tasks
+may an assistant help with, and which stay with me? What may I paste into
+it? How do I ask so that I can check the answer? How do I check the
+answer before I use it? How do I record that I used it? And, for the head
+of a unit, how does the unit adopt assistants together? Each question has
+a small instrument: a one-page card per role, a screening script for the
+text before the paste, a prompt library with the source, the format, and
+the constraints written in, a script that checks every figure against the
+source, a use log and its summary, and a two-hour session that puts them
+together on the unit's own texts.
+
+The guide follows the organization's AI-use policy and the data tiers it
+sets, and it ties everyday use to the governance of the
+[governance cookbook](/cookbook/governance-and-risk/): everyday assistants
+are one row of the component register, the card is their review, and the
+log is their measure. The [standards page](./standards.md) lists the
+sources each chapter builds on.
+
+:::tip[The habit this guide teaches]
+Before the paste, the tier. Before the question, the source. After the
+answer, the check. After the use, the row. Four habits of a few seconds
+each, which together let a statistical organization use assistants for
+everyday work without a figure it cannot vouch for leaving a desk.
+:::
+
+## Prerequisites
+
+The recipes assume the following are in place or can be arranged:
+
+- An AI-use policy with the three data tiers (public, internal, confidential) and an owner, from the [governance cookbook](/cookbook/governance-and-risk/position).
+- At least one assistant the organization allows: its own assistant for internal text, under a contract or on its own server, and, for the confidential tasks it allows, a local assistant on its own server.
+- For the AI-ready level, a component register and a decision log where everyday assistants are registered and tier breaches are handled.
+
+## First steps
+
+For a team with limited time, this sequence gives the most useful result first:
+
+1. Agree the task list with the heads of units and print the cards, following [chapter 1](./tasks.mdx). This takes half a day.
+2. Put the screening script and the three tiers in front of staff, following [chapter 2](./inputs.mdx). This takes an hour.
+3. Hold the first unit session with the card, the script, one library prompt, and the number check, following [chapter 6](./unit.mdx) with [chapters 3](./asking.mdx) and [4](./checking.mdx). This takes two hours per unit.
+
+The use log of [chapter 5](./record.mdx) starts at the first session, and its first summary a month later is where the card and the library are improved.
+
+## Self-assessment
+
+The [self-assessment](./start-here.mdx) takes about five minutes and places
+a unit's practice with assistants at a level in each chapter.
+
+## Chapters and questions
+
+| Chapter | Question | Practical topics |
+|---|---|---|
+| [1. Tasks an assistant may help with](./tasks.mdx) | Which everyday tasks may an assistant help with, and which stay with the person? | Task list per role, model roles, reviews, one-page card, tasks that stay with the person |
+| [2. What may be entered into an assistant](./inputs.mdx) | What may be entered into an assistant? | Three tiers, screening script, identifier and embargo markers, local assistant |
+| [3. Asking so that the answer can be checked](./asking.mdx) | How is a question put so that the answer can be checked? | Source, format, constraints; prompt library; library check |
+| [4. Checking an answer before use](./checking.mdx) | How is an answer checked before it is used? | Number check against the source, claims traced to the source, review recorded |
+| [5. Recording assistant use](./record.mdx) | How is assistant use recorded? | Use log, monthly and quarterly summary, tier breaches as incidents, register row |
+| [6. Adoption in a unit](./unit.mdx) | How does a unit adopt assistants together? | Two-hour session on the unit's texts, assistants per tier, quarterly collection |
+
+## Maturity levels
+
+Each chapter describes three levels. An organization can sit at different
+levels in different chapters, and the first level is a complete, useful
+state on its own.
+
+| Level | Meaning |
+|---|---|
+| **Foundational** | The card, the tiers, the three-part question, the check, and the log exist and have been taught once. |
+| **AI-ready** | The organization runs its own assistant and a local one, the library and the log are kept and summarized, and everyday assistants are a registered component. |
+| **AI-native** | The organization's own assistant serves the library, screens inputs, checks figures, and writes the log, so that the habits are built into the tool. |
+
+## Running example
+
+An analyst in the labour statistics unit of the example organization
+wants a summary of a unit note and of the second-quarter 2025 labour
+market table for a Friday briefing. The note carries an embargo, the
+provisional unemployment figures, and a respondent's identifiers, and
+the assistant's summary of the table carries one wrong figure and one
+computed difference. The guide follows the analyst through the card, the
+screening, the library's question, the number check, and the log row,
+and follows the unit through its session and the first quarter's
+collection. The figures of the table are those of the shared example of
+this series; the note, the answer, and the log are invented.
+
+## Scope of the examples
+
+The examples are small on purpose: one note, one table, five prompts,
+twenty log rows, so that a reader can run them in an afternoon and see
+the shape of each check. They are starting points. Each recipe ends with
+a **What this does not do** note that says where the example stops and
+what the full version adds. The scripts find markers, fill templates,
+compare figures, and count rows; the judgments, which task, which tier,
+which claim, are the person's.
+
+## Files
+
+| File | Used in |
+|---|---|
+| [task_card.csv](pathname:///cookbook-files/ai-assistants-at-work/task_card.csv) and [task_card.py](pathname:///cookbook-files/ai-assistants-at-work/task_card.py) | Chapter 1: the task list and the card printer |
+| [draft_note.txt](pathname:///cookbook-files/ai-assistants-at-work/draft_note.txt) and [screen_input.py](pathname:///cookbook-files/ai-assistants-at-work/screen_input.py) | Chapter 2: the note with planted markers and the screening script |
+| [prompt_library.yaml](pathname:///cookbook-files/ai-assistants-at-work/prompt_library.yaml), [build_prompt.py](pathname:///cookbook-files/ai-assistants-at-work/build_prompt.py), and [library_check.py](pathname:///cookbook-files/ai-assistants-at-work/library_check.py) | Chapter 3: the library, the builder, and the check |
+| [release_table.csv](pathname:///cookbook-files/ai-assistants-at-work/release_table.csv), [assistant_answer.md](pathname:///cookbook-files/ai-assistants-at-work/assistant_answer.md), and [check_numbers.py](pathname:///cookbook-files/ai-assistants-at-work/check_numbers.py) | Chapters 3 and 4: the source table, the answer with two planted errors, and the number check |
+| [use_log.csv](pathname:///cookbook-files/ai-assistants-at-work/use_log.csv) and [use_summary.py](pathname:///cookbook-files/ai-assistants-at-work/use_summary.py) | Chapter 5: the log and the summary |
+
+## Related resources
+
+| Resource | Purpose |
+|---|---|
+| This guide | What an organization can do, and why, in a sequence of practical steps. |
+| [Governance cookbook](/cookbook/governance-and-risk/) | The AI-use policy, the tiers, the register, and the incident procedure the everyday rules follow. |
+| [Small and Open Models](/cookbook/small-and-open-models/) | The local model server behind the local assistant. |
+| [Documentation](/docs/introduction) | How each program method and tool works. |
+| [Code](https://github.com/worldbank/ai4data) | Open-source software to deploy or adapt. |
+
+## Citation
+
+World Bank. 2026. *Practical Guide to AI Assistants in Everyday Statistical Work.* Version 0.1. AI for Data – Data for AI.
+https://worldbank.github.io/ai4data/cookbook/ai-assistants-at-work/
+
+## Version history
+
+- **0.1 (October 2026).** First draft.

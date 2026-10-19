@@ -1,0 +1,19 @@
+old_name,new_name,status,note
+hhid,hhid,same,
+pid,pid,same,
+region,region,same,
+urban,urban,same,
+sex,sex,same,
+age,age,same,
+relationship,relationship,recoded,codes missing in lfs_2025q2_dictionary.csv
+educ,educ,recoded,codes changed: 0=None;1=Primary;2=Secondary;3=Tertiary -> 0=None;1=Primary;2=Lower secondary;3=Upper secondary;4=Post-secondary non-tertiary;5=Tertiary
+lfs_status,lfs_status,same,
+occupation,occupation,same,
+industry,industry,same,
+hours,hours,same,
+income,income,same,
+secondjob,,dropped,
+looked_work,jobsearch,renamed,matched on label
+weight,weight,same,
+,informal,new,
+,q17b,new,

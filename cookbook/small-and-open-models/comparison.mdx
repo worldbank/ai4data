@@ -1,0 +1,268 @@
+---
+id: comparison
+title: "5. Comparison with larger models"
+sidebar_label: "5. Comparison"
+sidebar_position: 6
+description: How the candidates are compared with larger models on the organization's own suite, how the cost-quality frontier is drawn for a task, and how the cheapest model that meets the required scores overall and on the national language is chosen.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 5. Comparison with larger models
+
+**Question:** How do they compare with larger models on the organization's suite?
+
+## Rationale
+
+The question is never whether a small model is as good as a large one
+in general; it is whether it meets the organization's required score on
+the organization's task, on the organization's questions, in the
+organization's languages, and what that costs. The suite answers the
+first part and the measured cost the second, and the two together draw
+a frontier: the models that no other model beats on both score and
+cost. The choice is the cheapest model on the frontier that passes the
+required scores, with the national language scored on its own, because
+that is where small models most often fall short and where public
+benchmarks say least.
+
+## Target state
+
+- Every candidate is run through the task's suite with the same questions, prompts, and adaptations recorded, and scored overall and per language.
+- Cost per query is measured per candidate (hosted prices or local server and staff time) and the frontier is drawn.
+- The choice is the cheapest frontier model that meets the required scores, recorded with the frontier and the date; it is revisited on each model release.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Run the first choice and its comparison on the suite; choose by the required score. |
+| **AI-ready** | Run every shortlisted candidate; measure cost per query; draw the frontier; score the national language separately; record the decision. |
+| **AI-native** | Re-run the frontier on each notable release; route tasks by the frontier; publish the frontier in the report card. |
+
+:::info[Running example]
+Six candidates for the coding task on the organization's suite. Four
+are on the frontier. With a required score of 0.90 overall and 0.85 on
+the national language, the cheapest passing model is the mid-sized
+8-billion local model at 0.11 per thousand queries, against 0.90 for the
+best-scoring hosted model: an 88 percent saving per query for a
+two-point difference the required score does not need.
+:::
+
+## Recipes
+
+<Recipe title="5.1 Run every candidate on the suite under the same conditions" level="Foundational" skills="Developer" time="Half a day per candidate">
+
+**Result:** each candidate model has a score on the organization's own
+test questions, overall and for each language, with the conditions of
+the run written down.
+
+The suite is the set of test questions with known answers that the
+[evaluation cookbook](/cookbook/evaluation-suites/) describes for each
+kind of task: coding responses with the codes coders gave, questions
+with the series they should return, and so on. Every candidate answers
+the same questions under the same conditions, so that the differences
+between the scores come from the models and from nothing else.
+
+1. Take the task's question set from the evaluation cookbook, in the
+   same version for every candidate.
+2. Give every candidate the same prompt and the same retrieval where
+   the comparison is meant to be fair. Where they differ on purpose (a
+   fine-tuned small model against a prompted large one), write down
+   that they differ; that is a fair comparison of two systems the
+   organization could deploy, as long as the record says so.
+3. Score each candidate overall and for each language separately. The
+   national language has its own row, because that is where small
+   models most often fall short.
+4. Record the scores with the model's version, the prompt and index
+   versions, and the date.
+
+**Worked example.** The six candidates for the coding task all answer the same 3,200
+responses of suite version 2.1 with prompt version 2 and the same
+retrieved index entries. The one exception is the fine-tuned small
+model, which uses the prompt without examples because it learned the
+conventions, and the record says so. The scores overall run from 0.86
+for the small prompt-only model to 0.96 for the hosted large model. On
+the national language the order changes: the hosted large model scores
+0.89 and the local 14-billion model 0.90, while the hosted small model
+drops to 0.79, because its training covered the language thinly. The
+scores are filed with the versions and the date.
+
+**What this does not do.** The scores are the organization's own, on
+its own questions and languages. Another organization's catalog and
+users give other scores, which is why public leaderboards only shortlist
+and the suite decides.
+
+</Recipe>
+
+<Recipe title="5.2 Measure cost per query and draw the frontier" level="AI-ready" skills="Developer; finance" time="Half a day">
+
+**Result:** each candidate's cost per thousand requests is set beside
+its score, and the cheapest candidate that meets the organization's
+required score is known.
+
+With a score and a cost for each candidate, the choice is a simple
+comparison. A candidate is dominated when another candidate scores at
+least as well and costs no more; the candidates that are not dominated
+form the cost-quality frontier. The organization has already set the
+score a task needs ([evaluation cookbook, chapter 1](/cookbook/evaluation-suites/inventory));
+the choice is the cheapest candidate on the frontier that meets it.
+
+The example file below lists six candidates for the coding task. Each
+row is one model, and the columns are:
+
+| Column | Meaning |
+|---|---|
+| `model` | The candidate's name |
+| `size_b` | Its size in billions of parameters |
+| `hosting` | `local` (on the organization's own server) or `provider` |
+| `suite_score`, `national_language_score` | Its score on the evaluation suite overall and on the national language |
+| `cost_per_1k_queries` | Its cost per thousand requests |
+| `latency_ms_p50` | Its typical response time in milliseconds |
+| `license` | Its licence class |
+
+The figures are illustrative.
+
+```csv file=../../website/static/cookbook-files/small-and-open-models/candidates.csv
+```
+
+The script below finds the frontier and the cheapest candidate that
+meets the required scores:
+
+```python file=../../website/static/cookbook-files/small-and-open-models/cost_frontier.py
+```
+
+```bash
+python cost_frontier.py candidates.csv --required 0.90 --required-national 0.85
+```
+
+Output for the running example:
+
+```text
+6 candidates; 4 on the cost-quality frontier
+
+model          hosting  score national  cost/1k  p50 ms  frontier licence
+small-3b-q4    local     0.86     0.81     0.04     180  yes      Apache-2.0
+mid-8b-q4      local     0.91     0.88     0.11     420  yes      Apache-2.0
+hosted-small   hosted    0.88     0.79     0.15     350           proprietary terms
+mid-14b-q8     local     0.93     0.90     0.26     900  yes      open-weight with use restrictions
+hosted-large   hosted    0.96     0.89     0.90    1100  yes      proprietary terms
+large-70b-q4   local     0.95     0.92     1.40    2600           open-weight with use restrictions
+
+cheapest candidate meeting 0.90 overall and 0.85 national: mid-8b-q4 at 0.11 per 1,000 queries
+best-scoring candidate: hosted-large at 0.90; choosing the cheapest passing model saves 88% per query
+```
+
+The table has one row per candidate with its scores, its cost per
+thousand queries, its median latency, whether it is on the frontier,
+and its licence class. The two lines after it name the cheapest
+candidate that meets the required scores and the saving against the
+best-scoring one.
+
+1. Measure the cost per thousand requests. For a hosted model, multiply
+   the tokens per request by the provider's current prices. For a local
+   model, divide the server's cost per hour by the measured requests per
+   hour ([chapter 3](./serving.mdx)) and add the staff share from
+   [chapter 7](./cost.mdx).
+2. Run the script with the required scores from the task's inventory.
+3. Read the result. The candidates off the frontier leave the
+   shortlist. The cheapest passing candidate is the choice, and the
+   saving against the best-scoring candidate is what the organization
+   keeps by setting a required score and holding to it.
+4. Record the frontier, the choice, and the date with the task.
+
+**Worked example.** In the run above, the hosted small model and the
+large local model are off the frontier: the first scores less than the
+local mid-sized model and costs more, and the second scores less than
+the hosted large model and costs more. Of the four frontier models, the
+small local model fails the required scores, the mid-sized local model
+passes both, and the two larger models pass at higher cost. The choice
+is the mid-sized local model at 0.11 per thousand queries. At 250,000
+responses a month that is about 28 a month against 225 for the hosted
+large model, for a two-point difference the required score does not
+need. The frontier, the choice, and the date go into the register.
+
+**What this does not do.** A frontier drawn from list prices and one
+test run is a sketch. The measured cost after a month in production
+replaces it, and every price change or model release moves it.
+
+</Recipe>
+
+<Recipe title="5.3 Revisit the frontier on each release and route by it" level="AI-native" skills="Developer" time="Half a day per release">
+
+**Result:** the choice of model for each task stays current as models
+and prices change, and each task is served by the model its frontier
+names.
+
+1. When a notable model is released or a price changes, add the new
+   candidate, run the suite, and draw the frontier again.
+2. If the choice changes, treat the switch as a change the suite has to
+   pass ([evaluation cookbook, chapter 7](/cookbook/evaluation-suites/gates)),
+   then deploy it with the versions recorded.
+3. Where several tasks share one service, route each task to its own
+   chosen model. A gateway that maps task to model makes the switch a
+   configuration change.
+4. Publish the frontier for each task on its report card
+   ([evaluation cookbook, chapter 9](/cookbook/evaluation-suites/reporting)).
+
+**Worked example.** Six months later a new small open model is
+released with the national language in its training data. It is
+imported, verified, carded, and run on the suite, where it scores 0.91
+overall and 0.87 on the national language at 0.05 per thousand queries.
+It joins the frontier below the mid-sized model and passes the required
+scores, so the choice changes. The switch runs through the gate of the
+evaluation cookbook, which finds no slice regressed, and the gateway's
+routing table is changed so that the coding task calls the new model
+while the editing task stays on the mid-sized one. The coding task's
+report card shows the new frontier with the date.
+
+**What this does not do.** Routing by the frontier lowers cost at the
+required score; it never lowers the score. A task whose cheapest passing
+model is still expensive is a task to re-examine (its prompt, its
+retrieval, its scope); the required score stays.
+
+</Recipe>
+
+## Implementation options
+
+- **Suite:** the task's question set and scorers from the evaluation cookbook; the same conditions per candidate; per-language scores.
+- **Cost:** hosted prices times measured tokens; local server cost divided by measured throughput plus staff share.
+- **Frontier:** the script in this chapter; the required scores from the inventory.
+- **Routing:** a gateway mapping task to model; changes gated and versioned.
+
+## World Bank examples
+
+- [Efficient and Inclusive AI Applications](/docs/inclusive-ai/) compares model sizes by task accuracy, the comparison this chapter formalizes with cost.
+- The [PI-FT toolkit](/pift-toolkit/pipeline) compares several embedding models on the same queries and reports the measures side by side.
+- The [dissemination cookbook's sustainability chapter](/cookbook/ai-ready-dissemination/sustain) chooses the smallest model that passes the suite, with the scores of every model tried kept.
+
+## Resources
+
+- [Evaluation suites cookbook](/cookbook/evaluation-suites/): the suites, the required scores, the gates, and the report cards the comparison uses.
+- [lm-evaluation-harness](https://github.com/EleutherAI/lm-evaluation-harness) (MIT): a framework for running public benchmarks across model backends, for shortlisting before the suite.
+- [MTEB](https://huggingface.co/spaces/mteb/leaderboard): public embedding benchmarks with per-language tasks, for shortlisting embedding candidates.
+- [Candidates and frontier script](pathname:///cookbook-files/small-and-open-models/cost_frontier.py): the running example.
+
+## Common mistakes
+
+- **Comparing on public benchmarks.** They are not the organization's task or language.
+- **One overall score.** The national language is where small models fail quietly.
+- **The best model chosen by habit.** The cheapest passing model is the choice; the saving is real.
+- **Frontier drawn once.** Models and prices change each quarter.
+
+## Verification
+
+- **Scores.** Every candidate is scored on the same suite version, per language, with the conditions recorded.
+- **Frontier.** The frontier is drawn with measured costs, the choice is the cheapest passing model, and both are recorded with the date.
+- **Revisits.** The frontier was redrawn on the last notable release, and the routing matches it.
+
+## Checklist
+
+<Checklist id="small-and-open-models-comparison" items={[
+  'Every candidate run on the same suite version under recorded conditions',
+  'Scores per language with the national language on its own row',
+  'Cost per query measured per candidate',
+  'Frontier drawn; dominated candidates dropped',
+  'Cheapest passing model chosen against the required scores; recorded',
+  'Frontier revisited on each release; routing follows it',
+]} />

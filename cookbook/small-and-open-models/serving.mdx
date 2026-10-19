@@ -1,0 +1,249 @@
+---
+id: serving
+title: "3. Hardware and serving"
+sidebar_label: "3. Serving"
+sidebar_position: 4
+description: How the models are run, from an estimate of the memory a model needs at its quantization, context, and concurrency, through the choice of a serving stack for the use, to a test run that measures throughput and memory on the organization's own hardware.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 3. Hardware and serving
+
+**Question:** How are the models run?
+
+## Rationale
+
+An open-weight model is a file the organization runs, and running it
+is an infrastructure question with known answers. Memory decides what
+fits: the weights at their quantization, plus the key-value cache that
+grows with context length and the number of concurrent requests, plus
+a margin. Throughput decides what a job costs and how long it takes.
+The serving stack decides how much of this the organization has to
+manage: a single-machine runtime for one analyst, a batching server for
+production jobs, a shared service for the organization. The estimate in
+this chapter sizes a test; the test's measurements size the purchase.
+
+## Target state
+
+- Hardware is sized from the candidate models' memory and the expected concurrency, confirmed by a test run's measured memory and throughput.
+- A serving stack is chosen for the use (workstation, batch server, shared service) with batching, quantization, and access control.
+- Throughput and memory are measured and recorded per model and configuration, and the figures feed the cost estimates of [chapter 7](./cost.mdx).
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Run a small quantized model on an existing machine with a single-machine runtime; measure throughput. |
+| **AI-ready** | Size and procure a GPU server from the estimate and a test; serve with a batching server inside the network; record measurements per model. |
+| **AI-native** | Run a shared model service with quotas per unit, monitoring, and capacity planning from measured demand. |
+
+:::info[Running example]
+A 7-billion-parameter model at 4-bit quantization with grouped-query
+attention, serving eight concurrent sequences of 4,096 tokens: 3.5 GB of
+weights, 4.3 GB of cache, 9 GB with the margin, which fits a 24 GB GPU
+with room for a second model. The same model for seventy billion
+parameters does not fit the card at any concurrency, and the estimate
+says by how much.
+:::
+
+## Recipes
+
+<Recipe title="3.1 Estimate memory and check the fit" level="Foundational" skills="Infrastructure; data scientist" time="Minutes per configuration">
+
+**Result:** the organization has an estimate of how much memory a model
+needs on its hardware, and a yes-or-no answer to whether it fits.
+
+A model needs memory for two things. The first is its weights, the
+numbers it learned: a model with 7 billion parameters stored at 4 bits
+each needs about 3.5 GB. The second is working memory for each request,
+which grows with the length of the text the model reads (its context)
+and the number of requests served at once (concurrency). The script
+below adds the two, with a margin, and compares the total with the
+memory of the graphics card or the system.
+
+The inputs come from two places. The model's configuration file (a
+small file published with the weights) gives the number of parameters,
+layers, hidden size, and the attention variant. The task gives the
+context length and the concurrency.
+
+```python file=../../website/static/cookbook-files/small-and-open-models/hardware_sizing.py
+```
+
+```bash
+python hardware_sizing.py --params-b 7 --bits 4 --layers 32 --hidden 4096 \
+    --kv-heads-ratio 0.25 --context 4096 --concurrency 8 --gpu-gb 24
+```
+
+Output for the running example:
+
+```text
+7B parameters at 4 bits: weights 3.5 GB
+KV cache for 8 x 4096 tokens: 4.3 GB (131 KB per token)
+total with 15% margin: 9.0 GB
+GPU 24 GB: fits
+
+Measure throughput and memory on a test run before procurement; the estimate sizes the test.
+```
+
+The first line gives the memory of the weights at the chosen precision.
+The second gives the working memory for the stated context and
+concurrency, with the per-token figure the estimate rests on. The third
+adds a margin, and the fourth compares the total with the card.
+
+1. Read the parameters, layers, hidden size, and attention variant from
+   the model's configuration file. Read the bits per weight from the
+   weights file chosen (16 for the original, 8 or 4 for a quantized
+   version, which stores the weights at lower precision to save memory).
+2. Set the context and the concurrency from the task. A batch coding
+   job reads short texts and can serve many at once; an assistant reads
+   long contexts and serves few.
+3. Run the estimate for each candidate and configuration. When the
+   total does not fit, the output says what to reduce: the concurrency,
+   or the bits per weight.
+4. Keep the estimates with the candidates.
+
+**Worked example.** The run above is the mid-sized candidate at 4 bits
+for the coding job, which reads short responses and can serve eight at
+once: 9 GB in all, which fits the 24 GB card with room for the embedding
+model beside it. The same script for the 14-billion candidate at 8 bits
+gives 14 GB of weights and 8.6 GB of cache, 26 GB with the margin, which
+does not fit; at 4 bits it gives 16 GB and fits. For the large local
+model at 4 bits the weights alone are 35 GB, and the output says that
+no concurrency fits the card. The three estimates go into the registry,
+and the test run of recipe 3.3 is planned for the two that fit.
+
+**What this does not do.** The estimate uses standard formulas and a
+margin. The real figure depends on the serving software and on how it
+batches requests, which recipe 3.3 measures on a test run.
+
+</Recipe>
+
+<Recipe title="3.2 Choose the serving stack for the use" level="Foundational" skills="Infrastructure" time="Half a day">
+
+**Result:** the software that will run the model has been chosen for
+how the model will be used, with the features the organization needs.
+
+The serving stack is the program that loads the model and answers
+requests. Three kinds exist, from simplest to most demanding to run:
+
+| Use | Stack | What it gives |
+|---|---|---|
+| One analyst on one machine | llama.cpp or Ollama | Runs on a CPU or a small graphics card with quantized model files; no server to administer |
+| Production batch jobs | vLLM, or llama.cpp in server mode | Serves many requests at once with high throughput; an API inside the network |
+| A shared service for the whole organization | vLLM behind a gateway | Quotas per unit, authentication, logging, several models |
+| Embeddings for search at scale | A dedicated embedding server, or the same stack | Encodes many texts at once for the search index of the dissemination cookbook |
+
+1. Match the use to a row. Start one row below the ambition and move up
+   when the measured demand justifies it.
+2. For tasks on confidential data, put the server inside the production
+   network ([production cookbook, chapter 6](/cookbook/language-models-in-production/running)),
+   limit access to the accounts of the jobs that call it, and log
+   requests without their content.
+3. Record the version of the stack together with the version of the
+   model ([chapter 6](./security.mdx)); the two are upgraded together.
+
+**Worked example.** The example organization starts on the second row.
+Its coding and extraction jobs run in batch overnight, so a batching
+server inside the production network is the right size, and the shared
+service of the third row waits until two more units have measured
+demand. The data scientist who tries candidates on her workstation uses
+the first row's runtime with quantized files and no server at all. The
+chosen server is installed on the machine inside the production
+network, accepts connections only from the coding job's account and the
+editing tool, and logs the caller, the model version, and the timing of
+each request without the response content. Its version is written
+beside the model's in the register.
+
+**What this does not do.** The stack serves the model. The prompts, the
+retrieval, and the checks around it belong to the task's own cookbook,
+and a change of stack is a change the evaluation suite has to pass.
+
+</Recipe>
+
+<Recipe title="3.3 Measure throughput and memory on a test run" level="AI-ready" skills="Infrastructure; data scientist" time="Half a day per candidate">
+
+**Result:** each model has measured figures on the organization's own
+hardware: how many tokens per second it processes, how long a request
+takes, and how much memory it uses at peak.
+
+Tokens are the units in which a model reads and writes text, roughly
+three quarters of a word each. Throughput in tokens per second decides
+how long a batch job takes and what it costs; peak memory decides what
+hardware to buy. Both are measured, because the estimate of recipe 3.1
+cannot know the serving software's behaviour.
+
+1. Run each candidate on the target hardware with real inputs from the
+   task (a thousand records of the coding task, or a hundred questions
+   of the assistant) at the planned concurrency.
+2. Record: tokens per second read and written; the time per request at
+   the median and at the 95th percentile for interactive uses; the peak
+   memory; and any failures.
+3. Compare with the estimate of recipe 3.1 and note the difference, so
+   that the next estimate uses a better margin.
+4. Use the measured throughput in the batch cost estimates of the
+   [production cookbook](/cookbook/language-models-in-production/running)
+   and in the cost comparison of [chapter 7](./cost.mdx). Size any
+   purchase from the measured peak memory and the planned concurrency.
+
+**Worked example.** The mid-sized candidate is run on the 24 GB card
+with a thousand real coding responses at a concurrency of eight. It
+processes 900 tokens per second read and 110 written, answers a request
+in 420 milliseconds at the median and 1.1 seconds at the 95th
+percentile, and peaks at 10.4 GB of memory, against the estimate of
+9 GB. The small candidate reaches 2,100 tokens per second and peaks at
+5.1 GB. The margin in the estimator is raised from 15 to 20 percent.
+The two throughput figures go into the batch cost estimate of the
+production cookbook and the frontier of chapter 5, and the purchase of
+a second card is sized from the measured peak and the expected demand
+of two more units.
+
+**What this does not do.** A test run measures one model in one
+configuration. Production adds other models, other units, and growth,
+which the capacity plan of [chapter 7](./cost.mdx) covers.
+
+</Recipe>
+
+## Implementation options
+
+- **Runtimes:** llama.cpp and Ollama for single machines and GGUF models; vLLM for batching servers and shared services; a gateway for quotas and authentication.
+- **Quantization:** 4-bit for most small and mid-sized models with a suite check; 8-bit where the suite shows a loss.
+- **Hardware:** a 24 GB GPU for models up to about 14 billion parameters at 4 bits with moderate concurrency; CPU serving for small batch jobs without a deadline; larger cards or several for large models.
+- **Measurement:** throughput, latency percentiles, peak memory per model and configuration, recorded.
+
+## World Bank examples
+
+- [Efficient and Inclusive AI Applications](/docs/inclusive-ai/) shows locally hosted open-weight models with provider-agnostic configuration and batch inference.
+- The [production cookbook's running chapter](/cookbook/language-models-in-production/running) places the model server inside the production network with pinned versions and batch manifests.
+
+## Resources
+
+- [vLLM](https://github.com/vllm-project/vllm): a batching inference server for GPU deployments with an OpenAI-compatible API.
+- [llama.cpp](https://github.com/ggml-org/llama.cpp) and [Ollama](https://ollama.com/): single-machine runtimes with quantized GGUF models, for workstations and small servers.
+- [Hugging Face safetensors](https://github.com/huggingface/safetensors): the weights format that loads safely and is digested in chapter 6.
+- [Sizing estimator](pathname:///cookbook-files/small-and-open-models/hardware_sizing.py): the running example.
+
+## Common mistakes
+
+- **Procurement from the estimate.** Measure first; the test run is cheap.
+- **Context and concurrency ignored.** The cache is the part that grows.
+- **A shared service before the demand.** Start one row lower.
+- **A server anyone can call.** Access control and logging from the first day.
+
+## Verification
+
+- **Estimates.** Every candidate and configuration has an estimate, with the fit stated.
+- **Stack.** The stack is chosen for the use, runs inside the network for confidential tasks, and is pinned.
+- **Measurements.** Throughput, latency, and peak memory are recorded per model on the target hardware.
+
+## Checklist
+
+<Checklist id="small-and-open-models-serving" items={[
+  'Memory estimated per candidate at the planned quantization, context, and concurrency',
+  'Serving stack chosen for the use with batching, access control, and logging',
+  'Server inside the production network for confidential tasks',
+  'Throughput, latency percentiles, and peak memory measured on a test run',
+  'Measurements recorded and used for cost and procurement',
+  'Stack and model versions pinned together',
+]} />

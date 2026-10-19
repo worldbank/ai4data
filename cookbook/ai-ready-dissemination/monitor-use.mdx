@@ -1,0 +1,233 @@
+---
+id: monitor-use
+title: "7. Monitoring of data use"
+sidebar_label: "7. Monitor use"
+sidebar_position: 8
+description: How the organization can see where its data are used, through a table of the names people use for each dataset, a search for mentions in publications, and a monthly check of how AI assistants cite its statistics.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 7. Monitoring of data use
+
+**Question:** Can we see how our data are used, including by AI systems?
+
+## Rationale
+
+:::note[A deeper treatment exists]
+This chapter gives the first steps. The [Monitoring Data Use](/cookbook/monitoring-data-use/) cookbook covers
+access counts, citation services, document collection, mention extraction, and the use report in full, with scripts and a running example.
+:::
+
+
+Download counts show only part of data use. A file downloaded once may be
+cited in a hundred papers, and a number read from a web page is never
+downloaded at all. Statistics are cited in research papers, policy
+documents, news stories, and, increasingly, in the answers of AI systems,
+which read the organization's pages and repeat its figures without a
+download that anyone can count.
+
+Knowing where and how the data appear helps an organization in three
+ways. It shows which datasets matter to users, so that documentation
+effort goes where it counts. It finds misuse, such as an old figure quoted
+as current. And it gives the organization evidence of the value of its
+work. This chapter starts with the step that makes everything else
+possible, a list of the names people use for each dataset, and ends with
+a monthly check of what AI assistants say.
+
+## Target state
+
+- Datasets have consistent names and identifiers, which makes mentions easier to match.
+- The organization tracks mentions in publications and reports as well as downloads.
+- It checks how AI systems describe its statistics, and corrects the source material when answers are wrong.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Publish a recommended citation and a persistent identifier (a DataCite DOI where possible) for each dataset. Keep web and API logs, and count views and downloads following the COUNTER Code of Practice for Research Data, which separates machine access from regular access. |
+| **AI-ready** | Search publication sources for dataset names and identifiers on a schedule. Keep a table of dataset name variants and acronyms. Review a sample of results by hand. |
+| **AI-native** | Extract dataset mentions from documents with a named-entity model, harmonize variants to canonical identifiers, and report use by dataset, topic, and geography. Periodically ask AI systems a fixed set of questions and record how they cite or misquote the organization. |
+
+:::info[Running example]
+The organization's labour force survey is cited as "LFS", "the labour survey",
+and "Labour Force Survey 2025" in reports. The name table in recipe 7.1 maps
+all three to one identifier, and the monthly AI check in recipe 7.3 records
+whether assistants cite the organization when asked for the unemployment rate.
+:::
+
+## Recipes
+
+<Recipe title="7.1 Publish a canonical name table" level="Foundational" skills="Dissemination staff" time="Half a day">
+
+**Result:** the organization has one list of the names people use for
+each dataset. The list makes mentions in documents matchable, and it
+tells users what to write when they cite the data.
+
+The table has one row per dataset, with the identifier, the official
+name, the acronym, and the other forms found in documents, separated by
+`;`:
+
+```csv
+canonical_id,canonical_name,acronym,variants
+LFS,Labour Force Survey,LFS,labour survey;labor force survey;LFS 2025;quarterly labour survey
+HBS,Household Budget Survey,HBS,household survey;budget survey;HBS 2021
+```
+
+1. Start from the datasets with the most downloads.
+2. Add variants as they are found in documents (recipe 7.2 produces
+   them).
+3. Publish the table with the recommended citation and the DOI from
+   [chapter 5](./trust.mdx), and use the canonical name everywhere the
+   organization writes. A DOI makes citations countable: DataCite
+   collects citations of DOIs from the literature, which gives a second
+   source of use next to text mining.
+
+**Worked example.** The example organization starts its table with the
+labour force survey and the household budget survey, its two most
+downloaded datasets. For the labour force survey it lists the acronym
+"LFS" and four variants it has seen in reports: "labour survey", "labor
+force survey" with the American spelling, "LFS 2025", and "quarterly
+labour survey". The dissemination officer publishes the table beside the
+citation page, with the DOI of each dataset. Three months later, the
+extraction of recipe 7.2 finds "the national employment survey" used for
+the same dataset in two ministry reports, and the variant is added.
+
+**What this does not do.** The table makes mentions matchable and finds
+none. The extraction of recipe 7.2 and the
+[monitoring cookbook](/cookbook/monitoring-data-use/) use it, and the
+variants column grows from what they find.
+
+</Recipe>
+
+<Recipe title="7.2 Find mentions in publications" level="AI-ready" skills="Analyst; Python for the automated version" time="One day a quarter by hand; one week to automate">
+
+**Result:** the organization has a list of the documents that use each
+dataset, by year and type of document, and it knows how accurate the list
+is.
+
+1. By hand: search a few sources (a national research repository, a
+   publications database, the government's document site) for each
+   canonical name and acronym once a quarter. Record the document, the
+   year, the type, and the dataset.
+2. Automated: run a zero-shot named-entity model over the text of
+   collected documents with labels such as "dataset" and "survey". Such
+   a model finds names of a given kind in text without training on the
+   organization's documents. Match the found names to the canonical
+   table by string similarity. The program's
+   [Monitoring of Data Use](/docs/data_use/) page documents this
+   pipeline with GLiNER and its harmonization step, and the
+   [monitoring cookbook](/cookbook/monitoring-data-use/) gives the full
+   workflow.
+3. Measure: label 50 documents by hand and compute the precision and
+   recall of the extraction. Report use counts with that accuracy next
+   to them.
+
+**Worked example.** In the first quarter the analyst searches the
+national research repository and the government document site for each
+canonical name and acronym, and records 46 documents that use the labour
+force survey and 18 that use the household budget survey. In the second
+quarter the developer runs the zero-shot extraction over 300 collected
+documents. It finds 71 mentions of the labour force survey, 60 of which
+the matching step maps to the canonical identifier. The analyst labels 50
+documents by hand and finds that the extraction has a precision of 0.88
+and a recall of 0.79 on them. The quarterly report gives the counts with
+those two figures beside them.
+
+**What this does not do.** Hand search finds what the searcher thinks
+to look for; the extraction finds what the collected documents contain.
+Neither sees documents nobody collected, and the accuracy measured in
+step 3 holds for the labelled documents' types and languages.
+
+</Recipe>
+
+<Recipe title="7.3 Run a monthly AI visibility check" level="AI-native" skills="Dissemination staff" time="Two hours a month">
+
+**Result:** the organization has a record, built up month by month, of
+whether AI assistants cite it, quote the right numbers, and link to the
+right page.
+
+The record is a CSV with one row per question per assistant per month:
+
+```csv
+date,assistant,question_id,cites_office,number_correct,link_resolves,notes
+2026-10-01,assistant A,q04,yes,yes,yes,
+2026-10-01,assistant B,q04,no,no,,quoted a 2023 figure from a third-party site
+```
+
+1. Fix ten questions that users ask about the organization's main
+   indicators, in the national language and in English.
+2. Each month, ask the same questions to two or three widely used
+   assistants and record the answers in the form above.
+3. When a number is wrong, check first whether the organization's own
+   page and API show the current value clearly
+   ([chapters 1](./find.mdx), [2](./retrieve.mdx), and
+   [5](./trust.mdx)). Most fixes are on the organization's side.
+4. Treat the results as a sample that changes month to month. Report
+   trends over several months, and avoid conclusions from one run.
+
+**Worked example.** In October the dissemination officer asks two
+assistants the ten questions. For "What is the unemployment rate?",
+assistant A cites the organization, quotes 6.1 percent for the second
+quarter of 2025, and links to the series page. Assistant B quotes a
+figure from the previous year, attributes it to a news site, and gives no
+link. The officer records both rows, then checks the organization's own
+page and finds that the current value is shown in a chart image with the
+release date in a footnote. The page is changed to state the value and
+the release date in text at the top. In December, assistant B quotes the
+current figure and links to the page. Three months of rows show the
+change, where one month would have shown only noise.
+
+**What this does not do.** Ten questions to two or three assistants
+sample what assistants said in one month, and assistants change without
+notice. Trends over several months are the evidence; a single run is an
+anecdote.
+
+</Recipe>
+
+## Implementation options
+
+- **Citation design:** one canonical dataset name, a short acronym, and a persistent identifier (DataCite DOI) reduce ambiguity and make citations countable.
+- **Usage counts:** the [COUNTER Code of Practice for Research Data](https://coprd.countermetrics.org/), developed with [Make Data Count](https://makedatacount.org/), gives rules for logging views and downloads, filtering repeated requests, and reporting machine access separately from regular access. Following it makes an organization's counts comparable with those of data repositories.
+- **Log analysis:** user-agent strings and request patterns identify many crawlers and automated clients. Record them in a separate category and report human and automated use separately.
+- **Mention extraction:** zero-shot named-entity models can find dataset mentions in PDF and web text. A matching step maps variants such as an acronym and a full title to one identifier.
+- **AI visibility check:** a fixed set of questions run against several assistants, repeated on a schedule.
+
+## World Bank examples
+
+- [Monitoring of Data Use](/docs/data_use/) documents dataset-mention extraction with GLiNER, harmonization of name variants, and structured output.
+
+## Resources
+
+- [Practical Guide to Monitoring Data Use](/cookbook/monitoring-data-use/): the full workflow this chapter summarizes, from access statistics and identifier citations to mention extraction and reporting.
+- [COUNTER Code of Practice for Research Data](https://coprd.countermetrics.org/) and [Make Data Count](https://makedatacount.org/): the counting rules and the metrics initiative.
+- [DataCite Event Data guide](https://support.datacite.org/docs/eventdata-guide) and [OpenAlex](https://help.openalex.org/): citation events for datasets with DOIs.
+- [Monitoring of Data Use](/docs/data_use/): the program's mention extraction with GLiNER and harmonization of name variants.
+- [Canonical names table](pathname:///cookbook-files/monitoring-data-use/canonical_names.csv) from the monitoring cookbook: the template for recipe 7.1.
+
+## Common mistakes
+
+- **Counting downloads as use.** Downloads include crawlers, test scripts, and repeat visits. Separate them and add mentions.
+- **One name per dataset.** Reports use acronyms and informal names. The variants table is the matching key.
+- **Reading one AI check as a trend.** Assistant answers vary between runs. Several months of the same questions make a trend.
+- **Blaming the assistant.** When an assistant quotes an old figure, the current one was often hard to find or retrieve. Fix the source first.
+
+## Verification
+
+- **Extraction accuracy.** A sample of documents is labelled by hand, and the precision and recall of the extraction are measured on it.
+- **Harmonization accuracy.** A sample of matched variants is checked against the canonical identifier.
+- **Repeatability.** The AI visibility check is run twice in one week, and the difference between the runs is known before conclusions are drawn.
+
+## Checklist
+
+<Checklist id="monitor-use" items={[
+  'Canonical dataset names, acronyms, and identifiers published',
+  'Recommended citation and DOI published',
+  'Views and downloads counted following the COUNTER Code of Practice for Research Data',
+  'Automated clients separated in access logs',
+  'Publication mentions searched on a schedule',
+  'Extraction and matching accuracy measured on a labeled sample',
+  'Fixed question set for the monthly AI visibility check',
+  'Results reported as trends over several months',
+]} />

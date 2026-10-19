@@ -1,0 +1,6 @@
+rule_id,field,rule,parameters,message
+E01,age,range,0;110,Age must be between 0 and 110
+E02,hours,range,0;98,Hours worked must be between 0 and 98
+E03,income,range,0;50000,Monthly income must be between 0 and 50000
+E04,hours,consistency,lfs_status==1,Hours apply only to employed persons
+E05,hours_main,lte,hours,Hours in the main job cannot exceed total hours

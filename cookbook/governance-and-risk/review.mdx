@@ -1,0 +1,242 @@
+---
+id: review
+title: "8. The governance review before a re-assessment"
+sidebar_label: "8. Review"
+sidebar_position: 8
+description: How the organization runs every governance check in one pass, maps each artefact to the questions of the AI-readiness assessment it is evidence for, compiles the evidence pack, and records the actions for the next cycle.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 8. The governance review before a re-assessment
+
+**Question:** Is the governance ready for a re-assessment?
+
+## Rationale
+
+The AI-readiness assessment framework scores an organization's strategy
+and governance, its legal environment, and its data licensing among its
+twelve dimensions. The questions it asks under those dimensions are
+answered by artefacts: a policy, a register, a risk register, a decision
+log, an incident procedure, a provider register, a licence matrix, a
+statement of model use. An organization that has followed this guide has
+them. The review is where it checks that they are in order and assembles
+them as evidence, so that the assessment can read documents where it would otherwise hear accounts.
+
+The review is also the organization's own look at a year of governance. A
+check that fails, a follow-up that is overdue, a licence that is missing,
+are findings whether or not an assessment is coming, and the actions they
+produce are the governance work of the next cycle.
+
+## Target state
+
+- Every governance check runs in one pass, and each artefact's result is known.
+- Each artefact is mapped to the assessment questions it is evidence for, and the questions this guide does not cover are known.
+- The evidence pack exists as a list of artefacts with their locations and dates.
+- The findings of the review are actions in the decision log with owners and due dates.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Run the review once by hand: open each artefact and note whether it exists and is current. |
+| **AI-ready** | Run the review script before each board meeting and before a re-assessment; compile the evidence pack; record the actions. |
+| **AI-native** | Run the review in continuous integration on every change to the governance files, and publish the review's summary with the statement of model use. |
+
+:::info[Running example]
+The example organization ran its governance review on 2026-01-15 against
+the statement of the second-quarter labour market report. Ten of eleven
+items were in order; the licence matrix failed on two products. The script
+is
+[governance_review.py](pathname:///cookbook-files/governance-and-risk/governance_review.py).
+:::
+
+## Recipes
+
+<Recipe title="8.1 Run the governance review" level="AI-ready" skills="Head of methodology; the board reads the result" time="Half a day, most of it reading">
+
+**Result:** one table that says, for each governance artefact, whether its
+check passed or the document is present, and which assessment questions
+it is evidence for.
+
+The review script runs the checks of chapters 1 to 7 on the files in a
+folder and lists the documents that have no check. Each line names the
+assessment questions the artefact answers, using the framework's
+numbering: 1.1 for strategy and governance, 1.2 for the legal
+environment, 1.5 for funding and resources, and 2.6 for data licensing.
+The script reads nothing for meaning; a document that exists and a check
+that passes are what it reports, and the people in the review read the
+rest.
+
+1. Put the current versions of the artefacts in one folder, with the file
+   names of this guide.
+2. Run the review with the date and the latest release.
+
+```bash
+python governance_review.py . --as-of 2026-01-15 --release EX-REP-2025-02
+```
+
+```text
+governance review as of 2026-01-15
+artefact                           result   evidence for questions
+AI-use policy                      PASS     1.1.1, 1.1.4, 1.2.7
+Component register                 PASS     1.1.2, 1.1.3, 1.2.7
+Risk register                      PASS     1.1.3
+Decision log                       PASS     1.1.2, 1.2.7
+Licence matrix and model licences  FAIL     1.2.5, 2.6.1, 2.6.2, 2.6.3, 2.6.4
+Statement of model use             PASS     1.1.4, 1.2.7
+Board terms of reference           present  1.1.2
+Incident report                    present  1.1.3, 1.2.7
+Provider register                  present  1.2.5, 1.5.4
+Cost record                        present  1.5.4
+Terms of use for machine clients   present  2.6.4
+
+10 of 11 items in order
+result: FAIL
+```
+
+3. For each FAIL, run the artefact's own check to read the findings.
+4. Read the artefacts that are only "present" for currency: the terms of
+   reference against the board's actual membership, the incident report
+   against the log, the provider register's test dates, the cost record's
+   last month.
+
+**Worked example.** On 2026-01-15 the example organization's review found
+ten of eleven items in order. The licence check failed on two products:
+the food security report's licence was on the page and not in its record,
+and the statistical yearbook had no licence. The reading of the "present"
+documents found the provider register's drills within the year, the cost
+record complete to December, and the board's membership as the terms
+state. The decision log check, which passed, listed two overdue follow-ups
+on High-tier components; the review took them as findings although the
+check did not fail on them.
+
+**What this does not do.** The review checks the artefacts this guide
+maintains. The assessment also asks about an AI strategy, change
+management, the legal framework for AI, and access to public and private
+data, which are decisions and documents of the organization and its
+government; recipe 8.2 names them so that the gap is known.
+
+</Recipe>
+
+<Recipe title="8.2 Compile the evidence pack for the assessment" level="AI-ready" skills="Head of methodology; the assessment's coordinator" time="One day">
+
+**Result:** a list, by assessment question, of the artefact that answers
+it, where it is, and its date, and a list of the questions this guide does
+not answer.
+
+The evidence pack turns the review's table into the form the assessment
+uses: one line per question. Most questions of the governance and legal
+dimensions and all four of the licensing dimension have an artefact in
+this guide. The remainder are named so that the organization knows what
+it has to produce elsewhere.
+
+| Assessment question | Evidence from this guide | Outside this guide |
+|---|---|---|
+| 1.1.1 AI strategy | The policy's scope and principles; the task boundary | A strategy document that places AI in the organization's plan |
+| 1.1.2 Governance and oversight | The board's terms of reference; the decision log | |
+| 1.1.3 AI risk management | The risk register with tiers and controls; the incident report | |
+| 1.1.4 Ethical guidelines and principles | The policy's principles and prohibited uses; the statement of model use | |
+| 1.1.5 Change management | | The organization's change and training plan; see the [AI assistants](/cookbook/ai-assistants-at-work/unit) cookbook for a unit's adoption |
+| 1.2.1 to 1.2.4 Legal frameworks and data access | | The statistics act and the data protection rules, reviewed by the legal adviser |
+| 1.2.5 Third-party data and intellectual property | The provider register's data terms; the model licence table | |
+| 1.2.6 Open-source publication of code | | The organization's repository and its licence |
+| 1.2.7 Accountability for AI-generated outputs | The policy's roles; the decision log; the statement of model use; the incident report | |
+| 1.5.4 Tracking value and return | The cost record and the review outcomes | The organization's budget lines |
+| 2.6.1 to 2.6.4 Data licensing | The licence matrix; the terms for machine clients | |
+
+1. For each question with evidence, write the artefact's location (the
+   repository path or the published URL) and the date of its last check.
+2. For each question without evidence, name the owner of the document
+   that would answer it and the date it is expected.
+3. Attach the review's table and the artefacts' own check outputs.
+
+**Worked example.** The example organization's pack lists ten artefacts with their dates. The policy was published on 2025-09-15 and checked on 2026-01-15. The register, the risk register, and the decision log were checked on the same day, and the board's terms of reference date from 2025-09-15. The incident report I-2025-01 was closed on 2025-12-05. The provider register records drills on 2025-12-10 and 2025-12-18, and the cost record runs to December 2025. The licence matrix was checked on 2026-01-15 with two findings and their actions. The terms for machine clients are version 1.0 of 2025-12-01, and the statement of model use of the second-quarter labour market report was signed on release. Outside
+the guide it names the AI strategy document, owned by the Director
+General's office, and the legal review of the statistics act, owned by
+the legal adviser, both expected before the re-assessment.
+
+**What this does not do.** The pack is evidence; the assessment's scoring
+is the assessor's reading of it against the framework's maturity levels.
+The [assessment to pathway](/cookbook/assessment-to-pathway/evidence)
+cookbook describes the evidence register across all twelve dimensions.
+
+</Recipe>
+
+<Recipe title="8.3 Record the actions for the next cycle" level="Foundational" skills="The board's secretary" time="One hour">
+
+**Result:** every finding of the review is an action in the decision log
+with an owner and a due date, and the next review date is set.
+
+A review that ends in a table and no action has described the
+organization. The findings become decisions of type `review` with a
+follow-up, so that the next decision log check reports them until they
+are closed, and the next review starts from them.
+
+1. For each failed check, one action per finding: what will be fixed, by
+   which role, by when.
+2. For each overdue follow-up the log check listed, a new due date or a
+   closure.
+3. For each question outside the guide, an action naming the document
+   and its owner.
+4. Set the date of the next review: before the next board meeting, and in
+   any case before the re-assessment.
+
+**Worked example.** The review of 2026-01-15 produced four actions. The
+legal adviser assigns a licence to the statistical yearbook and the
+catalog team adds the structured licence field to it and to the food
+security report, due 2026-02-15. The head of methodology reports the
+occupation coding agreement by major group at the January board, closing
+the follow-up of decision D004. The head of dissemination brings the
+first monthly review of the public assistant to the same meeting, closing
+the follow-up of decision D007. The Director General's office drafts the
+AI strategy document before the re-assessment. The next review is set for
+the April board meeting.
+
+**What this does not do.** Actions are promises with dates. The decision
+log check of chapter 4 is what keeps them visible, and the board's
+schedule is what closes them.
+
+</Recipe>
+
+## Implementation options
+
+- **Continuous integration.** The governance files in a repository with the review script as a check on every change turn the review into a gate: a register row without an approval cannot be merged.
+- **Scope of the review.** The script reviews this guide's artefacts. An organization with a wider governance function can add its own documents to the list with the questions they answer.
+- **Assessment alignment.** The question numbers follow the AI-readiness assessment framework; an organization that uses another framework maps the artefacts to its own questions in the same table.
+
+## World Bank examples
+
+- The [AI-readiness assessment framework](/ai-readiness-assessment) defines the dimensions and questions the review maps to.
+- The [operational companion](/ai-readiness-in-practice) lists, per dimension, the program resources and the evidence each produces, of which this guide's artefacts are the governance part.
+
+## Resources
+
+- [ISO/IEC 42001](https://www.iso.org/standard/42001): the internal audit and management review that this review implements for AI use.
+- [governance_review.py](pathname:///cookbook-files/governance-and-risk/governance_review.py): the review script.
+
+## Common mistakes
+
+- **A review that reads only the table.** The "present" documents can be stale; the review reads them.
+- **Findings without actions.** The review repeats the same finding next year.
+- **Evidence assembled on the assessment's eve.** The pack is cheap when the review runs each quarter, and expensive when it is the first look in a year.
+- **Questions outside the guide forgotten.** The strategy document and the legal review take longer than any check.
+
+## Verification
+
+- **Review check.** The script runs on the current folder, and every FAIL has an action with a date.
+- **Pack check.** Every question of dimensions 1.1, 1.2, and 2.6 has either an artefact with a location and a date or an action with an owner.
+- **Cycle check.** The next review date is set and is before the next board meeting.
+
+## Checklist
+
+<Checklist id="governance-and-risk-review" items={[
+  'Review script run on the current artefacts',
+  'Findings of each failed check read from its own output',
+  'Present documents read for currency',
+  'Evidence pack compiled by assessment question',
+  'Questions outside the guide named with owners',
+  'Actions in the decision log with owners and due dates',
+  'Next review date set',
+]} />

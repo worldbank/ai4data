@@ -1,0 +1,248 @@
+---
+id: operate
+title: "9. Operation at scale"
+sidebar_label: "9. Operate"
+sidebar_position: 10
+description: How the pipeline runs over the whole backlog, with a work manifest that resumes where the last run stopped, a measured cost and time per page for each stage, model and hardware choices made from those measurements, monitoring of every run, and corrections that flow back to the published data.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 9. Operation at scale
+
+**Question:** Can the pipeline run over the whole backlog?
+
+## Rationale
+
+The recipes of the earlier chapters work on one document. A backlog is
+thousands of documents and hundreds of thousands of pages, and the
+questions change. What runs first? What does it cost per page? What
+happens when a stage fails on page 4,000? How does a correction found in
+month six reach the series published in month two? A pipeline that is resumable,
+measured, and monitored turns the backlog into a plan with a date; one
+that is not turns into a half-processed archive nobody trusts.
+
+## Target state
+
+- The pipeline runs in stages (text, layout, extract, verify, publish) with a status per document and stage, and a run picks up where the last stopped.
+- Cost and time per page are measured per stage, and the plan for the backlog follows from them.
+- Model and hardware choices are made per stage from the measurements, with local models where documents cannot leave the organization.
+- Failures, quality scores, and review rates are monitored, and corrections flow back to the published data.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Keep a status log per document and stage; build the manifest from it; measure time per page on the first batch. |
+| **AI-ready** | Run stages as batch jobs with retries; measure cost per page per stage; monitor quality scores and review rates per batch; version the pipeline configuration. |
+| **AI-native** | Schedule runs from the inventory automatically; choose models per document type from measured accuracy and cost; route failures and low scores to review queues; propagate corrections to series and records. |
+
+:::info[Running example]
+The eight documents of the inventory with their processing log: two are
+published, one failed verification, the census report failed OCR. The
+manifest schedules six documents, starting with the ones that feed the
+most data sources, puts the 220-page OCR job early so that it runs while
+the rest is reviewed, and counts 621 pages to lay out and 286 tables to
+extract.
+:::
+
+## Recipes
+
+<Recipe title="9.1 Build a resumable work manifest" level="Foundational" skills="Developer" time="Half a day to set up; seconds per run">
+
+**Result:** every run starts from a list that says what to do next for
+each document. The list skips what is done, retries what failed, and
+orders the work by a written rule.
+
+The pipeline has stages (text, OCR, layout, extraction, publication),
+and a document can be at any of them. The processing log records one
+row per document and stage, with its status (`done`, `failed`, or
+`pending`) and the date. The manifest is built from the inventory and
+the log before each run, with one row per document still to process:
+
+| Column | Meaning |
+|---|---|
+| `document_id` | The document |
+| `next_stage` | The stage to run next |
+| `retry` | Marked when the stage failed last time |
+| `ocr` | Marked when the document needs OCR |
+| `pages`, `tables`, `data_sources` | The size of the work and how many series the document feeds |
+| `reason` | Why the document sits where it does in the order |
+
+```python file=../../website/static/cookbook-files/data-from-documents/build_manifest.py
+```
+
+```bash
+python build_manifest.py document_inventory.csv processing_status.csv -o manifest.csv
+```
+
+Output for the running example:
+
+```text
+8 documents in the inventory, 2 published and skipped, 6 in the manifest
+pages to OCR 220, pages to lay out 621, tables to extract 286, retries 2
+```
+
+The first line counts the documents and says how many were skipped as
+finished. The second line sums the work that remains, by stage, and
+counts the stages that are being retried after a failure.
+
+1. Keep the processing log
+   ([processing_status.csv](pathname:///cookbook-files/data-from-documents/processing_status.csv)).
+   Every stage writes to it.
+2. Build the manifest before each run and read it
+   ([manifest.csv](pathname:///cookbook-files/data-from-documents/manifest.csv)).
+3. Write the priority rule once (here: documents that feed data sources
+   first, then OCR need, then size) and change it in the script, so
+   that the order is explainable.
+4. Run each stage on its part of the manifest. A stage that fails
+   writes `failed`, and the next manifest retries it, with a retry
+   limit after which the document goes to a person.
+
+**Worked example.** The manifest for the running example has six rows.
+The 2025 food security report, whose verification stage failed because
+of the flagged value, is first, with `retry` marked and the reason
+"feeds 2 data sources; retry". The census report is second, with `ocr`
+marked and the reason "220 pages to OCR; start early". The yearbook is
+third with 142 tables, and the two labour market reports and the
+bulletin follow by size. The two published documents do not appear.
+When the OCR job for the census report fails at page 140 because the
+server ran out of disk space, the log records `failed`, and the next
+manifest schedules the OCR stage again with the retry count at one.
+
+**What this does not do.** The manifest orders and counts. The stages
+are the scripts and tools of the earlier chapters, run as jobs. Cost
+per page comes from recipe 9.2.
+
+</Recipe>
+
+<Recipe title="9.2 Measure cost and time per page and plan the backlog" level="AI-ready" skills="Developer; head of the unit" time="One batch to measure; an hour to plan">
+
+**Result:** the organization knows the cost and the time per page for
+each stage, measured on its own documents and hardware, and it has a
+plan for the backlog with a date.
+
+1. Run the first batch (fifty documents) with timing per stage and
+   page, and with the model calls counted (vision-language models for
+   charts, language models for break explanations): seconds per page
+   and, for hosted models, tokens per page.
+2. Add the review time: the sample review of [chapter 5](./verify.mdx)
+   and the flagged values, in minutes per table. Review is usually the
+   largest cost and the one the quality scores reduce.
+3. Compute the backlog: pages per stage from the manifest, times the
+   measured rates, plus review. Compare hosted and local models for the
+   stages that use them
+   ([Efficient and Inclusive AI](/docs/inclusive-ai/)).
+4. Publish the plan internally (documents per month, cost per month,
+   the date the backlog ends) and re-measure every quarter, because
+   models, hardware, and the error rate change.
+
+**Worked example.** On the first batch of fifty reports, OCR takes 4
+seconds a page on the unit's server, layout detection 2 seconds a page,
+and table extraction 6 seconds a table. Chart reading with a hosted
+vision-language model costs about 0.8 cents per chart in tokens. The
+review of the sample and the flagged values takes 3 minutes per table on
+average, which at the unit's staff cost is twenty times the cost of
+every automated stage together. The backlog of 1,900 documents, 110,000
+pages, and 9,400 tables therefore comes to about 470 hours of review and
+a few days of machine time. With one reviewer at half time, the plan
+ends in fourteen months, and the head of the unit uses that figure to
+argue for a second reviewer.
+
+**What this does not do.** A plan from fifty documents of one type
+generalizes to that type. Census volumes and bulletins differ in pages,
+tables, and scan quality, and are measured per type.
+
+</Recipe>
+
+<Recipe title="9.3 Monitor the runs and propagate corrections" level="AI-ready" skills="Developer; dissemination officer" time="One day to set up; an hour per week">
+
+**Result:** each run reports its failures, its quality scores, and its
+review rates, and a correction found after publication reaches every
+series and record derived from the document.
+
+1. After each run, report per batch: documents processed per stage,
+   failures and retries, the distribution of OCR scores
+   ([chapter 2](./scanned.mdx)), the share of values flagged
+   ([chapter 5](./verify.mdx)), and the review error rate. A rise in any
+   of them after a model or engine change is the signal to stop and
+   look.
+2. Keep the pipeline configuration (engine, model, versions,
+   thresholds) under version control and record it with each batch, so
+   that a result can be reproduced and a change can be traced.
+3. When a correction is found (a wrong value in a published table),
+   record it in the corrections log of [chapter 8](./cite.mdx) and fix
+   the tidy file. Then re-run the series combination of
+   [chapter 6](./series.mdx) and republish the series and the records
+   with a new version. The source recorded per value is what makes the
+   affected series findable.
+4. Route low-score pages and flagged values to review queues with the
+   page image beside the value, as the
+   [Metadata Reviewer's board](/docs/metadata-reviewer/user-manual/review-board)
+   does for metadata.
+
+**Worked example.** The report for the third batch shows 48 documents
+processed, 2 OCR failures retried, a median OCR garble rate of 1.2
+percent, 3.1 percent of values flagged, and a review error rate of 1.5
+per hundred values. The fourth batch, run after the OCR engine was
+upgraded, shows the flagged share rising to 7.8 percent. The developer
+stops the run, finds that the new engine version reads the digit 1 as
+7 on one typeface, and pins the previous version until the engine's
+authors fix it. When the Western Region correction of chapter 8 is
+recorded, the source stored with each value shows that it feeds the
+regional population series and one table record, and both are
+republished as new versions in the same afternoon.
+
+**What this does not do.** Monitoring reports; people decide. The
+thresholds and the stop rule are the unit's, and the corrections log is
+public because the citation chapter requires it.
+
+</Recipe>
+
+## Implementation options
+
+- **Orchestration:** a manifest and shell or Python jobs at the foundational level; a workflow tool (Prefect, Airflow, or a queue) with retries at scale; one named job per stage.
+- **Status:** a CSV log or a small database with document, stage, status, date, and configuration version.
+- **Models:** hosted models with batch endpoints for cost, or local open-weight models where documents are confidential; the choice per stage from measured accuracy and cost.
+- **Monitoring:** a per-batch report; thresholds from the test sets of chapters 2 and 5; a review queue with page images.
+
+## World Bank examples
+
+- The program's [Data Snapshots](https://arxiv.org/abs/2606.06242) pipeline processes document collections in batches with the detections stored as a dataset.
+- [Efficient and Inclusive AI](/docs/inclusive-ai/) measures model size against task accuracy and describes batch processing and local deployment.
+- The [Monitoring of Data Use](/docs/data_use/) pipeline parses large document corpora with the same stage structure.
+
+## Resources
+
+- [Prefect](https://www.prefect.io/) and [Apache Airflow](https://airflow.apache.org/): open-source workflow orchestration with retries, scheduling, and run logs, for the AI-ready level.
+- [PDF/A (ISO 19005)](https://www.pdfa.org/resource/iso-19005-pdfa/): the archival PDF format the OCR stage writes, so that the text layer stays with the document.
+- [Efficient and Inclusive AI](/docs/inclusive-ai/): the program's measurements of model size, cost, and local deployment.
+- [Corrections and citation chapter](./cite.mdx): the public corrections log that recipe 9.3 feeds.
+- [Governance chapter of the dissemination cookbook](/cookbook/ai-ready-dissemination/govern): the AI component register where the pipeline's models are recorded.
+
+## Common mistakes
+
+- **Running the backlog in inventory order.** Use and OCR need order it; the rule is written down.
+- **No status log.** A failed run at page 4,000 starts over.
+- **Cost estimated from the vendor's price list.** Review time dominates; measure on the organization's documents.
+- **Corrections fixed in one file.** A value feeds series and records; provenance finds them all.
+
+## Verification
+
+- **Manifest.** A run after an interruption schedules only the unfinished stages.
+- **Measurements.** The time and cost per page per stage are recorded per document type, with the review time.
+- **Monitoring.** The per-batch report exists, and a threshold breach has stopped a run at least once in testing.
+- **Corrections.** A test correction reaches the series file, the record version, and the corrections log.
+
+## Checklist
+
+<Checklist id="data-from-documents-operate" items={[
+  'Processing log per document and stage; manifest built from it',
+  'Priority rule written and implemented',
+  'Time and cost per page measured per stage and document type',
+  'Backlog plan with a date, re-measured quarterly',
+  'Pipeline configuration versioned and recorded per batch',
+  'Per-batch monitoring with thresholds and review queues',
+  'Corrections propagate to series, records, and the public log',
+]} />

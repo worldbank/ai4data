@@ -1,0 +1,14 @@
+POPULATION AND HOUSING CENSUS 2014 MAIN REPORT
+Tab1e 4.2 Population by region, sex and urban-rural residence, 2014
+Region          Total       Male        Female      Urban       Rural
+Northern        1,284,310   631,2O5     653,105     412,880     871,430
+Central         2,106,944   1,039,517   1,067,427   1,203,118   903,826
+Southern        98O,775     482,310     498,465     301,224     679,551
+Eastern         l,412,006   697,431     714,575     388,902     1,023,104
+Total           5,784,035   2,850,463   2,933,572   2,306,124   3,477,911
+Note: Figures exclude the institutional popu1ation enumerated separately.
+Source: National Statistical Organization, 2014 Population and Housing Census.
+~~ 48 ~~
+Tbe census night was 14 to 15 August 2014. Enumeration lasted twelve days
+in rural areas and ten days in urban areas. Households absent on the census
+nigbt were revisited twice before being recorded as not enumerated.

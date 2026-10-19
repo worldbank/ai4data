@@ -1,0 +1,41 @@
+{
+  "@context": "https://schema.org/",
+  "@type": "Dataset",
+  "@id": "https://stats.example/series/FS_UNDERNOURISH_PCT",
+  "identifier": "FS_UNDERNOURISH_PCT",
+  "name": "Prevalence of undernourishment",
+  "description": "Share of the population whose habitual food consumption is insufficient to provide the dietary energy levels required to maintain a normal active and healthy life. Three-year average.",
+  "url": "https://stats.example/series/FS_UNDERNOURISH_PCT",
+  "keywords": ["food security", "undernourishment", "hunger", "SDG 2.1.1"],
+  "inLanguage": "en",
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "isAccessibleForFree": true,
+  "temporalCoverage": "2010/2024",
+  "spatialCoverage": {
+    "@type": "Place",
+    "name": "National and regional"
+  },
+  "variableMeasured": {
+    "@type": "PropertyValue",
+    "name": "Prevalence of undernourishment",
+    "unitText": "% of population"
+  },
+  "dateModified": "2025-03-14",
+  "publisher": {
+    "@type": "Organization",
+    "name": "National Statistics Office (example)",
+    "url": "https://stats.example/"
+  },
+  "distribution": [
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "text/csv",
+      "contentUrl": "https://stats.example/api/v1/series/FS_UNDERNOURISH_PCT/data.csv"
+    },
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "application/json",
+      "contentUrl": "https://stats.example/api/v1/series/FS_UNDERNOURISH_PCT/data.json"
+    }
+  ]
+}

@@ -1,0 +1,256 @@
+---
+id: draft
+title: "3. Drafting of fields"
+sidebar_label: "3. Draft"
+sidebar_position: 4
+description: How a model drafts missing fields that a curator will accept, with a prompt that gives it the record and the schema's definition of the field, structured output marked as a draft, checks before review, and an acceptance rate that measures the result.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 3. Drafting of fields
+
+**Question:** Can a model draft fields that a curator will accept?
+
+## Rationale
+
+A missing definition is the most common gap in a catalog and the most
+costly for AI systems, which read the definition to find and interpret
+the series. Writing one from scratch takes a curator twenty minutes or
+more, and a catalog may have hundreds missing. A model can draft one in
+seconds from what the record already says, which is the name, the unit,
+the source, and the method note, and from the schema's own definition of
+what the field should hold.
+
+A draft is useful under three conditions. It has to be grounded in the
+record, so that it states nothing the record does not support. It has
+to be written in the catalog's style, so that a curator can accept it
+without rewriting. And it has to be marked as a draft until a curator
+decides, so that it never reaches the public catalog by accident.
+Whether the drafts are useful is a question with a measurable answer,
+which is the share of them that curators accept or edit, and this
+chapter ends with that measure.
+
+## Target state
+
+- Drafts are produced with a fixed prompt that includes the record, the schema's definition of the field, the catalog's style rules, and an instruction to use only what the record supports.
+- Drafts are structured output, validated against the schema, and carry a draft status until a decision.
+- The acceptance rate per field is measured and reported.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Draft one field (the definition) for the start set with a fixed prompt; review every draft. |
+| **AI-ready** | Draft the fields the typology allows, as structured output checked against the schema and the profile; measure acceptance per field. |
+| **AI-native** | Run drafting over the catalog in batches with templates per field, and gate prompt changes on the acceptance rate of a held-out set. |
+
+:::info[Running example]
+`LF_UNEMP_PCT` has no definition. The model drafts one from the name, the
+unit (% of labour force), the periodicity, and the source (labour force
+survey), and the draft is marked as such. The curator accepts it with one
+edit.
+:::
+
+## Recipes
+
+<Recipe title="3.1 Draft a missing field from the record and the schema" level="Foundational" skills="Curator with access to a model" time="One hour to set up; seconds per record">
+
+**Result:** every empty field of a record has a draft written by a model
+from what the record already says, in the catalog's style, and marked as
+a draft so that no one mistakes it for reviewed text.
+
+The model is given four things and asked for one. The four are the
+schema's definition of the field (what `definition_long` is supposed to
+hold), the record as it is, the catalog's style rules, and the
+instruction to answer in a fixed form. That fixed form is structured
+output: a small JSON object a script can read, with `null` when the
+record gives the model nothing to work from. The one thing it returns is the draft, with the
+list of record fields it relied on. The prompt for the running
+example's definition reads, as text:
+
+```text
+Field: definition_long. The schema defines it as the full definition of
+the series: what is measured, for whom, how it is expressed.
+Record: name "Unemployment rate"; measurement_unit "% of labour force";
+periodicity quarterly; sources "Labour force survey"; methodology (empty).
+Rules: two sentences; state the population and the ratio; use only what
+the record and the named source support; return JSON
+{"definition_long": ..., "based_on": [...]} or {"definition_long": null}.
+```
+
+1. Build the prompt from the four parts above. The field definitions
+   come from the
+   [World Bank indicator schema](https://github.com/worldbank/metadata-schemas).
+2. Ask for structured output, so that the draft can be validated and
+   the grounding read. A draft that relied on nothing is a draft to
+   drop.
+3. Write the draft into the record with a draft status and its source
+   ("model draft, [model], [date]"), never into the published field.
+4. Send the draft to the review board ([chapter 5](./review.mdx)).
+
+**Worked example.** For the prompt shown above, the model returns
+`{"definition_long": "Share of the labour force that is without work,
+available for work, and seeking work during the reference period,
+measured quarterly from the labour force survey. Expressed as a
+percentage of the labour force.", "based_on": ["name",
+"measurement_unit", "periodicity", "sources"]}`. The draft states the
+population and the ratio and names the source, as the rules asked. It
+does not state an age threshold, because the record gives none. The
+curator later edits one phrase, changing "seeking work" to "actively
+looking for work", which is the catalog's standard wording, and records
+the decision as `edit`.
+
+**What this does not do.** A draft grounded in a thin record is thin.
+The model cannot know the age threshold or the ICLS definition from
+this record, and a draft that states them is inventing. The instruction
+to use only what the record supports, and the curator, catch that.
+
+</Recipe>
+
+<Recipe title="3.2 Check drafts before review" level="AI-ready" skills="Python" time="Half a day to set up">
+
+**Result:** drafts that fail the formal checks are held back, and only
+the rest reach the curator. A draft fails when it has the wrong length,
+repeats the name, or states a fact the record does not contain.
+
+1. Validate the record with the draft in place against the schema and
+   the completeness profile, with the
+   [metadata checker](/cookbook/ai-ready-dissemination/find). The draft
+   must fit the field's type and length rules and must not repeat the
+   name.
+2. Check grounding: every number, year, and classification named in the
+   draft appears in the record or the named source. A draft that adds
+   facts is returned to the model with the rule, or dropped.
+3. Check style: register, length, and the organization's terms (the
+   vocabulary of [chapter 6](./standardize.mdx)) for keywords and
+   topics.
+4. Pass only drafts that clear the checks. Log the rest with the
+   reason; those reasons are the first entries in the error taxonomy of
+   [chapter 8](./improve.mdx).
+
+**Worked example.** Of ten drafts in the first batch, eight pass the
+checks. One draft of a keywords field is held back because two of its
+five terms are not in the vocabulary, and it is returned to the model
+with the vocabulary attached. One draft of a definition for the
+under-five mortality rate is held back by the grounding check because it
+states "per 1,000 live births, as defined by the UN Inter-agency Group",
+and the record names no such group. The draft is dropped, the reason
+"invented fact: attribution not in the record" is logged, and the
+curator writes the definition's source line by hand. The two reasons
+become the first two classes of the error taxonomy.
+
+**What this does not do.** Formal checks catch form. A draft that is
+well-formed and wrong in substance (a plausible but incorrect ratio) is
+the curator's to catch, which is why no draft skips review.
+
+</Recipe>
+
+<Recipe title="3.3 Measure acceptance per field" level="AI-ready" skills="Python" time="Minutes per period">
+
+**Result:** for each field, the organization knows the share of drafts
+the curators accepted, edited, or rejected, and the reasons for the
+rejections, so that it knows where drafting works and where it does not.
+
+The measurement uses two files. The suggestions file has one line per
+model suggestion, with the record, the field, the current text, the
+suggested text, and the model's confidence. The decisions file has one
+row per suggestion, with the curator's decision (`accept`, `edit`,
+`reject`), the final text where edited, the reason, the reviewer, and
+the date. The script joins the two and reports the rates:
+
+```python file=../../website/static/cookbook-files/metadata-curation-with-llms/score_suggestions.py
+```
+
+```bash
+python score_suggestions.py suggestions_example.jsonl decisions_example.csv
+```
+
+Output for the running example (abridged):
+
+```text
+10 suggestions, 10 decided, 0 undecided
+by field                       n  accept  edit  reject   rate
+keywords                       3       2     1       0   1.00
+definition_long                2       1     1       0   1.00
+measurement_unit               1       0     0       1   0.00
+...
+rejected, with reasons:
+  HE_U5_MORT_RATE/measurement_unit (reviewer): The unit is correct; the values are per 1,000 as stated. Flag was wrong.
+```
+
+The first line counts the suggestions and the decisions. The table has
+one row per field, with the counts of each decision and the rate, which
+is the share accepted or edited. The list at the end gives the reason
+recorded for every rejection, with the reviewer.
+
+1. Read the rate per field. Here drafts of keywords and definitions
+   were accepted or edited, and the one unit suggestion was rejected
+   because the flag itself was wrong.
+2. Read the edits. A high edit rate where the final text differs a lot
+   from the draft means curators are rewriting, which is a prompt or
+   style problem.
+3. Keep the rates per period and per model ([chapter 8](./improve.mdx)).
+
+**Worked example.** In the run above, the three keyword drafts were all
+accepted or edited, and the two definition drafts were both kept, one
+as written and one with the edit described in recipe 3.1. The single
+rejection is a flag on the unit of the under-five mortality rate, which
+the model had suspected of disagreeing with the values. The reviewer
+checked the values, found them stated per 1,000 as the unit says, and
+rejected the flag with the reason shown. The head of the unit reads the
+table as: drafting of keywords and definitions can be scaled to the
+next hundred records, and the unit-against-values check needs its
+prompt looked at before it runs again.
+
+**What this does not do.** Ten decisions give a demonstration; a
+measure needs a period's worth. The script counts curator decisions. A
+second curator's decisions on the same drafts show how consistent the
+curators are, which bounds how much the rate can mean.
+
+</Recipe>
+
+## Implementation options
+
+- **Prompting:** a fixed prompt per field with the schema definition, the record, style rules, and structured output; the program's metadata-quality notebook shows structured output with a schema.
+- **Models:** hosted or local through a provider-agnostic client; small models for short fields (keywords), larger ones for definitions ([Efficient and Inclusive AI](/docs/inclusive-ai/)).
+- **Checks:** the metadata checker; a grounding check on numbers and names; the vocabulary for keywords.
+- **Status:** a draft flag or note in the record until a decision; the Metadata Editor holds the record.
+
+## World Bank examples
+
+- [Generative AI for Metadata Quality](/docs/metadata-quality/generative-ai-for-metadata-quality) describes automated field generation from minimal inputs and the risk of plausible but incorrect text.
+- [Metadata Augmentation](/docs/metadata-augmentation/) drafts DDI-style variable groups with a model and a self-consistency check, the same pattern at the variable level.
+
+## Resources
+
+- [World Bank metadata schemas](https://github.com/worldbank/metadata-schemas): the field definitions (`definition_long`, `measurement_unit`, `keywords`) a drafting prompt quotes.
+- [Metadata quality assessment notebook](/docs/notebooks/metadata-quality-assessment-with-llm): structured output with a JSON schema, the pattern a drafting prompt follows.
+- [Metadata Augmentation](/docs/metadata-augmentation/): model drafting of variable groups with a self-consistency check, the same pattern at the variable level.
+- [Metadata checker](pathname:///cookbook-files/ai-ready-dissemination/check_metadata.py) from the dissemination cookbook: schema and profile validation of a record with its drafts.
+- [Suggestions and decisions files](pathname:///cookbook-files/metadata-curation-with-llms/suggestions_example.jsonl): the running example's drafts and the curator's decisions, with the [acceptance script](pathname:///cookbook-files/metadata-curation-with-llms/score_suggestions.py).
+
+## Common mistakes
+
+- **Prompts without the schema.** The model guesses what the field is for; the schema says.
+- **Drafts written straight into the field.** Unreviewed text is published the next time the catalog exports.
+- **Drafts that add facts.** A plausible threshold or classification not in the record is an error with the organization's name on it.
+- **Acceptance measured once.** Rates change with the model and the prompt; they are tracked per period.
+
+## Verification
+
+- **Grounding.** A sample of drafts checked against the record shows no added facts.
+- **Checks.** Every draft that reached review passed the schema and style checks.
+- **Acceptance.** The rates per field are reported for the period with the rejection reasons.
+
+## Checklist
+
+<Checklist id="metadata-curation-with-llms-draft" items={[
+  'Fixed prompt per field with the schema definition and style rules',
+  'Structured output with the record fields the draft relied on',
+  'Draft status and source recorded until a decision',
+  'Schema, grounding, and style checks before review',
+  'Acceptance rate per field and source measured each period',
+  'Rejections logged with reasons',
+]} />

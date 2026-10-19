@@ -1,0 +1,55 @@
+{
+  "type": "table",
+  "name": "recommended table profile",
+  "description": "Recommended fields of the World Bank table schema for a table extracted from a document, with the reason each field matters. The schema itself requires only table_description.title_statement.idno and .title.",
+  "levels": {
+    "foundational": [
+      "table_description.title_statement.idno",
+      "table_description.title_statement.title",
+      "table_description.table_columns",
+      "table_description.data_sources",
+      "table_description.time_periods",
+      "metadata_information.production_date"
+    ],
+    "ai-ready": [
+      "table_description.table_rows",
+      "table_description.definitions",
+      "table_description.ref_country",
+      "table_description.license",
+      "table_description.citation",
+      "table_description.notes",
+      "table_description.relations"
+    ],
+    "ai-native": [
+      "table_description.identifiers",
+      "table_description.links"
+    ]
+  },
+  "fields": {
+    "table_description.title_statement.idno": "The identifier of the extracted table, which includes the document identifier and the table number.",
+    "table_description.title_statement.title": "The title as printed, so that a search for the printed title finds the data.",
+    "table_description.table_columns": "Column labels with units; the meaning of the values.",
+    "table_description.data_sources": "The document, page, and the series or survey the table was built from; the provenance an answer cites.",
+    "table_description.time_periods": "The reference period of the values.",
+    "metadata_information.production_date": "When the extraction was made; freshness relative to the document.",
+    "table_description.table_rows": "Row labels, so that a value can be addressed by row and column.",
+    "table_description.definitions": "Definitions of the measures, linked to the indicator definitions where they exist.",
+    "table_description.ref_country": "Country coverage.",
+    "table_description.license": "The licence of the source document applies to the extracted data; state it.",
+    "table_description.citation": "The citation to the document and page that users and systems should copy.",
+    "table_description.notes": "Extraction method and verification status.",
+    "table_description.relations": "The link to the document record (isPartOf), so that document and data find each other.",
+    "table_description.identifiers": "A DOI or persistent identifier for the extracted table.",
+    "table_description.links": "The tidy file and the snapshot image."
+  },
+  "rules": {
+    "id": "table_description.title_statement.idno",
+    "dates": ["metadata_information.production_date"],
+    "periods": ["table_description.time_periods.from", "table_description.time_periods.to"],
+    "period_order": [["table_description.time_periods.from", "table_description.time_periods.to"]],
+    "urls": ["table_description.data_sources.uri", "table_description.license.uri", "table_description.definitions.uri", "table_description.links.uri"],
+    "min_words": {},
+    "not_equal": [],
+    "placeholders": ["table_description.table_columns.label"]
+  }
+}

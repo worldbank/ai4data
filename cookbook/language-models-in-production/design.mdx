@@ -1,0 +1,235 @@
+---
+id: design
+title: "2. Questionnaire and concept work"
+sidebar_label: "2. Design"
+sidebar_position: 3
+description: How a model assists the design phase, by flagging question wording against a written checklist, proposing matches to the question bank, and drafting variable descriptions and questionnaire translations, with the methodologist deciding every case.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 2. Questionnaire and concept work
+
+**Question:** Can a model assist the design of questionnaires and the harmonization of concepts?
+
+## Rationale
+
+Design work is text work: question wording, answer categories,
+definitions, the mapping of a new question to concepts other surveys
+already measure. A model reads a draft questionnaire and flags the questions that ask
+two things at once, use a term respondents will not know, or lack a
+reference period. It proposes which question in the question bank a new
+question matches. It drafts a variable description from the question
+and the categories. All of this is what a careful
+reviewer does, and the model does it to every question, fast, with
+false positives the methodologist dismisses in seconds. The decisions
+stay with the methodologist, and the questionnaire still goes to
+cognitive testing with respondents.
+
+## Target state
+
+- Draft questionnaires are reviewed by a model against a written checklist of wording problems before the methodologist's review, with every flag decided.
+- New questions are matched to the question bank by model proposal with a confidence, confirmed by the methodologist.
+- Variable descriptions and translations are drafted from the questionnaire and reviewed, with the same rules as the curation cookbook.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Run a model over a draft questionnaire with the wording checklist; the methodologist reads the flags. |
+| **AI-ready** | Match new questions to the question bank with proposals and confidences; draft variable descriptions; record acceptance rates per check. |
+| **AI-native** | Run the review on every questionnaire version with the acceptance rates tracked; feed cognitive test findings back into the checklist; maintain the question bank with model-proposed links under review. |
+
+:::info[Running example]
+The labour force questionnaire of the example organization has a draft
+question on hours worked last week in the main and in other jobs that
+the model flags as asking two things at once; a new question on
+job search methods that the model matches to a question bank entry with
+a confidence of 0.86; and variable descriptions drafted for both. The
+methodologist splits the first question, confirms the match, and edits
+one description.
+:::
+
+## Recipes
+
+<Recipe title="2.1 Flag wording problems against a written checklist" level="Foundational" skills="Methodologist; access to a model" time="An hour per questionnaire">
+
+**Result:** every question in a draft questionnaire has the model's
+verdict against each rule of the organization's wording checklist, with
+a reason, and the methodologist's decision on each flag.
+
+Most organizations already have a checklist for reviewing
+questionnaires: one concept per question, a reference period stated,
+words respondents know, answer categories that cover every case and
+do not overlap, no leading wording, a "don't know" option where it is
+needed. A model can apply that checklist to every question in minutes.
+The methodologist reads the flags and decides; false alarms take
+seconds to dismiss.
+
+1. Write the checklist as a numbered list of explicit rules, one
+   sentence each.
+2. Send each question, with its answer categories and the checklist, to
+   the model. Ask it to answer in a fixed format: for each rule, "pass"
+   or "flag", a reason, and a suggested rewording where it flags.
+3. The methodologist reads the flags and decides. Record the decisions:
+   the share of flags accepted per rule shows which rules the model
+   applies well.
+4. Keep cognitive testing with respondents. The model reads a question
+   as text; respondents hear it in an interview.
+
+**Worked example.** The draft question reads "How many hours did [NAME]
+work last week in the main job and in other jobs?". Against rule 1 of
+the checklist, "one concept per question", the model returns "flag:
+asks for hours in the main job and in other jobs in one question; a
+respondent with two jobs cannot answer with one number", and suggests
+two questions. Against rule 2, "reference period stated", it returns
+"pass: last week". Against rule 5, "answer categories cover every
+case", it returns "flag: no option for a person who did not work last
+week", which the methodologist dismisses because the routing already
+skips such persons. The methodologist accepts the first flag and splits
+the question. Across the 62 questions, the model raises 19 flags, of
+which the methodologist accepts 11, and the acceptance per rule is
+recorded.
+
+**What this does not do.** A checklist review finds what the checklist
+names. Cultural and linguistic problems in the language of the
+interview are found by native speakers and by testing. A rewording the
+model suggests is a draft for the methodologist to accept or discard.
+
+</Recipe>
+
+<Recipe title="2.2 Match new questions to the question bank" level="AI-ready" skills="Methodologist; developer" time="Half a day to set up; minutes per questionnaire">
+
+**Result:** each new question in a questionnaire has been matched to
+the questions in the organization's question bank that measure the same
+concept, each with the model's confidence and reason, and the
+methodologist has confirmed or rejected each match.
+
+A question bank is the organization's collection of questions already
+used in its surveys, each tied to the concept it measures. Reusing a
+question keeps surveys comparable. Finding the right entry by hand in a
+bank of thousands is slow; a search by meaning finds the candidates, and
+the model judges each one.
+
+1. Represent each entry of the question bank as text: the wording, the
+   concept, the answer categories, and the surveys that use it. The
+   program's Global Question Bank workstream builds such a bank across
+   countries and languages ([program overview](/)).
+2. For each new question, retrieve the nearest entries by meaning
+   (using embeddings, the numeric representations search by meaning
+   relies on). Ask the model to judge each candidate: the same concept;
+   the same concept with a different reference period or categories; or
+   a different concept. Ask for a confidence and a reason.
+3. The methodologist confirms or rejects each proposal. A confirmed
+   match links the new variable to the concept
+   ([microdata cookbook, chapter 4](/cookbook/microdata-documentation/concepts))
+   and inherits its definition.
+4. Track the share of proposals confirmed at each level of confidence.
+   Stop showing proposals below the level at which few are confirmed.
+
+**Worked example.** The new question "In the last four weeks, which of
+the following did [NAME] do to find work?" with eight answer categories
+is sent to the matcher. The search by meaning returns three candidates
+from the bank. The model judges the first, a question from the 2019
+labour force survey with the same wording and seven categories, as
+"same concept, different categories" with a confidence of 0.86, and
+notes that the new question adds "used an online platform". It judges
+the second, a question about whether the person looked for work at all,
+as a different concept. The methodologist confirms the first match, the
+new variable inherits the concept "job search methods" and its
+definition, and the comparability note records the added category.
+
+**What this does not do.** A match says that two questions measure the
+same concept. It does not make their data comparable; that depends on
+the survey mode, the population, and the categories
+([microdata cookbook, chapter 6](/cookbook/microdata-documentation/rounds)).
+
+</Recipe>
+
+<Recipe title="2.3 Draft variable descriptions and translations from the questionnaire" level="AI-ready" skills="Methodologist; data curator" time="Minutes per variable; review time">
+
+**Result:** every variable has a drafted label, description, and
+universe written from its question and categories, and the
+questionnaire has drafted translations. Each draft is checked by script
+and reviewed by a person before use.
+
+1. For each variable, give the model the question text, the answer
+   categories, and the routing (who is asked the question). Ask for the
+   label, the description, and the universe in a fixed format, with the
+   rule to state only what the questionnaire supports. The
+   [curation cookbook's drafting chapter](/cookbook/metadata-curation-with-llms/draft)
+   describes the drafting and checking workflow in full.
+2. Draft the questionnaire's translations with the organization's
+   glossary of terms, then run the translation checks of the
+   [curation cookbook](/cookbook/metadata-curation-with-llms/translate):
+   numbers preserved, nothing left untranslated, nothing dropped. A
+   native speaker reviews every translation, and the translation used in
+   the field is tested with respondents.
+3. Record the source and status of each draft in the metadata; the
+   Metadata Editor holds the result.
+
+**Worked example.** For the split question on hours in the main job,
+the model is given the wording, the categories (a number of hours), and
+the routing ("asked of persons who worked at least one hour last week").
+It returns the label "Hours worked last week in the main job" and the
+description "Number of hours the respondent worked in the main job
+during the reference week, as reported". The universe it returns is
+"Employed persons aged 15 and over who worked at least one hour in the
+reference week". The methodologist edits the description to add "including paid
+overtime", which the interviewer instructions mention and the model was
+not shown. The French translation of the questionnaire is drafted with
+the glossary, passes the number and length checks, and goes to the
+French-speaking statistician, who corrects four terms before the
+questionnaire is tested with respondents.
+
+**What this does not do.** A description drafted from the questionnaire
+describes the question. Derived variables (computed after collection)
+have no question; the methodologist documents them from the derivation.
+No draft is published without review.
+
+</Recipe>
+
+## Implementation options
+
+- **Checklist review:** the organization's review rules as structured prompts; per-rule pass or flag with reasons; decisions recorded.
+- **Question bank matching:** embeddings for candidates, a model judgement per candidate with confidence; the Global Question Bank as the shared bank.
+- **Drafting:** the curation cookbook's drafting and translation workflows and checks.
+- **Testing:** cognitive and pilot testing unchanged.
+
+## World Bank examples
+
+- The program's Global Question Bank workstream develops multilingual semantic mappings of survey questions and variables across surveys and countries ([GSBPM mapping](/docs/gsbpm-mapping), sub-process 2.2).
+- [Metadata Augmentation](/docs/metadata-augmentation/) groups variables with model curation, a design-phase use of the same methods.
+- The [curation cookbook](/cookbook/metadata-curation-with-llms/) sets the drafting, review, and translation rules this chapter reuses.
+
+## Resources
+
+- [Cross-Cultural Survey Guidelines](https://ccsg.isr.umich.edu/): questionnaire design, translation, and testing practice the checklist draws on.
+- [DDI Lifecycle 3.3](https://ddialliance.org/Specification/DDI-Lifecycle/3.3/): reusable questions and concepts, the form of a question bank.
+- [Drafting](/cookbook/metadata-curation-with-llms/draft) and [translation](/cookbook/metadata-curation-with-llms/translate) chapters of the curation cookbook: the workflows and checks for recipe 2.3.
+- [Concepts chapter of the microdata cookbook](/cookbook/microdata-documentation/concepts): linking variables to concepts and classifications.
+
+## Common mistakes
+
+- **Rewordings accepted as written.** They are drafts; the methodologist and the respondents decide.
+- **Cognitive testing skipped.** The model reads text; respondents hear questions.
+- **A match taken as comparability.** Same concept, different data, until the design says otherwise.
+- **Flags without decisions.** Without recorded decisions, nobody knows which rules the model applies well.
+
+## Verification
+
+- **Review.** Every question in the latest draft has its flags decided and recorded.
+- **Matching.** Every new question has a confirmed or rejected proposal, and the acceptance per confidence band is known.
+- **Drafts.** Every variable description and translation carries its source and status, and none has been published unreviewed.
+
+## Checklist
+
+<Checklist id="language-models-in-production-design" items={[
+  'Wording checklist written as explicit rules',
+  'Model flags per question decided and recorded',
+  'Question bank matches proposed with confidence and confirmed',
+  'Variable descriptions drafted from the questionnaire and reviewed',
+  'Translations drafted with the glossary, checked, and reviewed by native speakers',
+  'Cognitive and pilot testing kept',
+]} />

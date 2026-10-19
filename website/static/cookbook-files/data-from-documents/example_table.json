@@ -1,0 +1,26 @@
+{
+  "document_id": "EX-REP-2025-03",
+  "document_title": "Food security report 2025",
+  "document_url": "https://stats.example/documents/EX-REP-2025-03.pdf",
+  "page": 24,
+  "pdf_page": 26,
+  "bbox": [0.08, 0.21, 0.92, 0.52],
+  "class": "Table",
+  "method": "text-layer extraction (PyMuPDF), header and footnote reviewed by a person",
+  "title": "Table 3.1 Undernourishment by district, 2024",
+  "columns": ["District", "Population (thousands)", "Undernourished (thousands)", "Prevalence (%)"],
+  "rows": [
+    ["Northern Region", 1240, 118, 9.5],
+    ["Central Region", 2110, 141, 6.7],
+    ["Eastern Region", 860, 79, 8.2],
+    ["Western Region", 1430, 96, 6.7],
+    ["National", 5640, 434, 7.7]
+  ],
+  "total_row": "National",
+  "derived": {
+    "Prevalence (%)": {"numerator": "Undernourished (thousands)", "denominator": "Population (thousands)", "scale": 100}
+  },
+  "units": {"Population (thousands)": "thousands of persons", "Undernourished (thousands)": "thousands of persons", "Prevalence (%)": "% of population"},
+  "footnote": "Three-year average centred on 2024. Source: FS_UNDERNOURISH_PCT and household budget survey.",
+  "note": "Fictional table. One value is planted as an extraction error so that the verification recipe has something to find."
+}

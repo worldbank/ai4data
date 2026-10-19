@@ -1,0 +1,253 @@
+---
+id: security
+title: "6. Provenance, updates, and isolation"
+sidebar_label: "6. Security"
+sidebar_position: 7
+description: How the models are kept secure and current, by treating model weights as software from outside with a recorded source, verified digests, and safe formats, by updating models through the suite's gate, and by isolating the serving environment from the data and the network it does not need.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 6. Provenance, updates, and isolation
+
+**Question:** How are the models kept secure and current?
+
+## Rationale
+
+A model is a large file downloaded from the internet and executed
+inside the organization's network on its most sensitive data. It deserves the care given to any software from outside. That means a
+recorded source, a verified digest, a safe file format that cannot
+execute code on load, a signature where the publisher provides one, and
+a lock file that says exactly which files the server loads. Updates arrive often,
+and each one is a change: it goes through the suite's gate like a
+prompt change, with the old version kept until the new one passes. The
+server itself runs with the access it needs and no more: the model
+directory read-only, the network limited to the jobs that call it, the
+logs without the confidential content.
+
+## Target state
+
+- Every model in use has a lock file with its source, version, and the digest of each file, verified before every load.
+- Weights are stored in safe formats; signatures are verified where the publisher signs; the import path is documented.
+- Updates are gated by the suite with the previous version kept; the serving environment is isolated from what it does not need.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Record source and digests for the models in use; verify before loading; use safe formats. |
+| **AI-ready** | Keep lock files under version control; verify signatures where available; gate updates with the suite; isolate the server. |
+| **AI-native** | Automate verification in the deployment pipeline; keep an internal registry of approved models; review the registry on a schedule. |
+
+:::info[Running example]
+The organization's lock file for its fine-tuned coder lists three
+files with their digests and the import source. On a test directory
+with one file altered and one file added, the verification reports the
+altered file as a mismatch and the added file as unlisted, and refuses
+to pass. The server loads nothing until the lock verifies.
+:::
+
+## Recipes
+
+<Recipe title="6.1 Record provenance and verify digests before every load" level="Foundational" skills="Infrastructure; Python" time="An hour per model">
+
+**Result:** each model has a lock file that records where it came from
+and a fingerprint of each of its files, and a check runs before the
+server loads the files and stops the server if any file differs.
+
+A model is a set of large files downloaded from the internet. Before
+they run on the organization's data, the organization needs to know
+that the files in use are the ones it reviewed. A digest (a SHA-256
+fingerprint, a string that changes if a single byte of the file
+changes) answers that. The lock file below records, for one model, its
+identifier, version, source, and the digest of each file:
+
+```json file=../../website/static/cookbook-files/small-and-open-models/model_lock.json
+```
+
+The script below computes the digest of every file in a model directory
+and compares it with the lock file. It reports files that match, files
+that differ, files that are missing, and files present in the directory
+that the lock file does not list:
+
+```python file=../../website/static/cookbook-files/small-and-open-models/verify_model_files.py
+```
+
+```bash
+python verify_model_files.py model_lock.json /path/to/model-dir
+```
+
+Output for the running example, run on a test directory in which one
+file was altered and one file was added:
+
+```text
+example-org/stats-coder-3b 1.2.0 from internal registry, imported from the base model's publisher on 2026-09-10
+
+  ok       config.json
+  ok       tokenizer.json
+  MISMATCH model.safetensors: expected 9a129038d9a0..., found 03f359d3fb9f...
+  unlisted extra.bin (not loaded)
+
+2 verified, 1 mismatched, 0 missing, 1 unlisted
+```
+
+The first line names the model and its import source. Each line that
+follows gives one file's status, with the expected and the found digest
+for a mismatch. The last line counts the outcomes, and any mismatch or
+missing file makes the script exit with a failure.
+
+1. When a model is imported, record its source (publisher, address,
+   date), its version, its licence class ([chapter 2](./candidates.mdx)),
+   and the digest of each file. Store the files in the organization's
+   own registry (an internal file store). The server never downloads
+   from the internet at start-up.
+2. Run the verification as the first step of every deployment and every
+   restart. A mismatch stops the start.
+3. Use only weight formats that cannot run code when loaded
+   (`safetensors`, GGUF). Refuse formats that can.
+4. Where the publisher signs its releases, verify the signature at
+   import and record it in the lock file.
+
+**Worked example.** When the mid-sized model is imported, the engineer
+downloads its three files from the publisher's hub page, verifies the
+publisher's signature, computes the digests, and writes the lock file
+with the source address, the version tag, the licence class, and the
+date. The files go into the organization's internal registry, and the
+server's start-up script runs the verification against that directory.
+In the test shown above, the engineer altered one byte of the weights
+file and added a stray file to a copy of the directory; the check
+reports the mismatch and the unlisted file and exits with a failure, so
+the server does not start. The server is then pointed at the clean
+directory, the check passes, and the model loads.
+
+**What this does not do.** A matching digest proves that the files are
+the ones recorded. Whether the recorded files deserve trust was decided
+at import, by reading the publisher, the licence, and the model card. A
+model the organization fine-tuned is locked the same way, with the
+organization as its publisher.
+
+</Recipe>
+
+<Recipe title="6.2 Update models through the suite's gate" level="AI-ready" skills="Developer" time="Part of each update">
+
+**Result:** a new version of a model reaches production only after it
+has passed the task's test questions, and the previous version is kept
+ready and the switch is recorded.
+
+Publishers release new versions often. Each one is a change like a
+change of prompt: it can improve one task and quietly break another.
+
+1. Treat every new version (a publisher's release, a new fine-tune, a
+   new quantization) as a new candidate: import it, verify it, write its
+   card, and read its licence again.
+2. Run the suite and redraw the frontier ([chapter 5](./comparison.mdx)).
+   The comparison rule of the [evaluation cookbook](/cookbook/evaluation-suites/gates)
+   decides.
+3. Deploy with the previous version kept ready to restore for an agreed
+   period. Record the switch in the AI component register with the lock
+   file version.
+4. Update the serving stack together with the model; a stack update is
+   also a change the suite has to pass.
+
+**Worked example.** The publisher of the mid-sized model releases
+version 2.1 with a changed tokenizer. The engineer imports it as a new
+candidate, verifies it, writes its card from the publisher's, and reads
+the licence again, which is unchanged. The suite scores 0.92 overall,
+up one point, and 0.86 on the national language, down two points. The
+gate's verdict is REVIEW for the national language slice, and the
+dissemination lead reads the failed questions, finds that the new
+tokenizer splits a common prefix differently, and holds the update. Two
+weeks later a point release fixes it, the suite passes on every slice,
+and version 2.1.1 is deployed with version 2.0 kept ready for a month
+and the switch recorded in the register.
+
+**What this does not do.** The suite measures what its questions cover.
+A new version that changes something the questions do not cover (how it
+phrases a refusal, for example) is caught by the production review of
+the evaluation cookbook, and the kept previous version is the remedy.
+
+</Recipe>
+
+<Recipe title="6.3 Isolate the serving environment" level="AI-ready" skills="Infrastructure; security" time="One day">
+
+**Result:** the model server can read its own files and answer the jobs
+that call it, and it can do nothing else.
+
+A server that runs on confidential data is a target. Limiting what it
+can reach limits what a compromise could do.
+
+1. Run the server under its own service account, with the model
+   directory read-only and no access to any data store. The jobs that
+   call the server send it the inputs it needs.
+2. Restrict the network: accept connections only from the addresses of
+   the jobs and the gateway; allow no outbound connections, so that a
+   compromised server can neither send data out nor fetch anything.
+3. Log each request with the caller, the model version, the timing, and
+   the token counts. Log the content only where it is not confidential,
+   and state how long logs are kept.
+4. Keep the server's software dependencies pinned and scanned like any
+   other service, and rebuild it from its definition when something
+   changes; a server patched in place drifts from its definition.
+
+**Worked example.** The server runs as the account `modelserve`, which
+can read the model directory and nothing else; it has no credentials
+for the survey database or the catalog. The firewall allows inbound
+connections from the coding job's host and the editing tool's host on
+one port, and no outbound connections at all, which the engineer
+confirms by trying to fetch a web page from the server and failing. The
+log records the caller, the model version, the timing, and the token
+counts, and nothing of the request's content, because the coding
+responses are confidential. The server is built from a definition file
+in version control, and when a library is updated the image is rebuilt and redeployed; nothing is patched in place.
+
+**What this does not do.** Isolation limits what a compromised server
+can do. The inputs it receives are the responsibility of the jobs that
+send them (prompt injection, the hiding of instructions inside content,
+is covered by the [dissemination cookbook's governance chapter](/cookbook/ai-ready-dissemination/govern)),
+and the outputs are checked by the workflows that use them.
+
+</Recipe>
+
+## Implementation options
+
+- **Provenance:** lock files with source, version, digests, licence class; an internal registry for approved models; signature verification where available.
+- **Formats:** safetensors and GGUF; no formats that execute code on load.
+- **Updates:** candidate workflow, suite gate, rollback period, pinned stack.
+- **Isolation:** service accounts, read-only weights, inbound-only network, content-free logging for confidential tasks, pinned and rebuilt environments.
+
+## World Bank examples
+
+- The [production cookbook's running chapter](/cookbook/language-models-in-production/running) pins model, server, and prompt versions and records them per job.
+- The [agents cookbook's safety chapter](/cookbook/serving-statistics-to-agents/safety) applies the same isolation and logging principles to a public-facing server.
+
+## Resources
+
+- [Hugging Face safetensors](https://github.com/huggingface/safetensors): the weights format that loads without executing code.
+- [Sigstore model transparency](https://github.com/sigstore/model-transparency): signing and verifying model files, for publishers that sign and for the organization's own models.
+- [OWASP Top 10 for LLM applications](https://owasp.org/www-project-top-10-for-large-language-model-applications/): supply chain and other risks of model deployments.
+- [Lock file and verification script](pathname:///cookbook-files/small-and-open-models/verify_model_files.py): the running example.
+
+## Common mistakes
+
+- **Models downloaded at start-up.** The registry holds what was reviewed; the server loads from it.
+- **Formats that execute on load.** A weights file becomes code.
+- **Updates applied because they are newer.** The suite decides; the old version stays until it does.
+- **A server with the data store's credentials.** It needs none.
+
+## Verification
+
+- **Provenance.** Every model in use has a lock file, the verification runs at every start, and it has stopped a mismatch in testing.
+- **Updates.** The last update has a gate decision and a kept previous version.
+- **Isolation.** The server account cannot read data stores, outbound network is blocked, and the logs omit confidential content.
+
+## Checklist
+
+<Checklist id="small-and-open-models-security" items={[
+  'Lock file per model with source, version, digests, licence class',
+  'Digests verified before every load; mismatches stop the start',
+  'Safe weight formats only; signatures verified where available',
+  'Internal registry of approved models',
+  'Updates gated by the suite with a rollback period',
+  'Server isolated: read-only weights, limited network, content-free logs where confidential',
+]} />

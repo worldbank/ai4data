@@ -1,0 +1,3 @@
+provider_id,provider,kind,service,components,data_terms,contract_end,second_option,second_option_tested_on,exit_plan
+P01,Internal model server,local,Open-weight 8B model and multilingual embedding model on the office's GPU server,C01;C02;C03;C04;C06,No data leave the office,,Another open-weight model of similar size,2025-12-10,"Swap the model file; prompts, suites, and indexes are in version control"
+P02,Provider A,hosted,Hosted language model through an API,C05,Inputs are not retained or used for training under the contract; only aggregate tables are sent,2026-06-30,Provider B (tested on the commentary suite),2025-12-18,Switch the API endpoint and key; the commentary suite gates the change

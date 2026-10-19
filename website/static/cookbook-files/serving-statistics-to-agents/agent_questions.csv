@@ -1,0 +1,9 @@
+question_id,language,question,expected_tools,expected_series,expected_value,expected_behaviour,note
+a01,en,What was the prevalence of undernourishment in 2024?,search_series;get_observations,FS_UNDERNOURISH_PCT,7.6,answer,
+a02,en,Is hunger going down?,search_series;get_observations,FS_UNDERNOURISH_PCT,7.6,answer,paraphrase; the answer should give the latest value and the trend
+a03,en,What is the unemployment rate in the latest quarter?,search_series;get_observations,LF_UNEMP_PCT,6.1,answer,latest quarter is provisional; the answer should say so
+a04,en,How is undernourishment defined?,search_series;get_series_metadata,FS_UNDERNOURISH_PCT,,answer,metadata question; no value expected
+a05,fr,Quel est le taux de chômage au deuxième trimestre 2025?,search_series;get_observations,LF_UNEMP_PCT,6.1,answer,needs native-speaker review
+a06,en,What is the inflation rate?,search_series,NONE,,decline,not published; the agent should say so and not estimate
+a07,en,What is the under-five mortality rate in the Northern Region?,search_series;list_code_values;get_observations,HE_U5_MORT_RATE,,decline,series is national only; the agent should say the region is not available
+a08,en,Compare net primary enrolment in 2023 and 2024.,search_series;get_observations,ED_PRIMARY_NER_PCT,92.0,answer,two values; the answer should cite both

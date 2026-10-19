@@ -1,0 +1,275 @@
+---
+id: variables
+title: "3. Interpretation of variables"
+sidebar_label: "3. Variables"
+sidebar_position: 4
+description: How to make every variable of a data file interpretable, through a data dictionary with labels, value codes, missing-value codes, universes, and question text, a check that runs before each release, and a conversion into the DDI-based schema.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 3. Interpretation of variables
+
+**Question:** Can AI interpret the variables?
+
+## Rationale
+
+A data file is a grid of codes. The meaning of each column lives in the
+data dictionary: the label, the type, the value codes and their labels, the
+codes that mean "missing", the universe the variable applies to, and the
+question that produced it. A person reading the file with the questionnaire
+open can reconstruct some of this. Software cannot. An AI system given a
+file in which `relationship` has values 1 to 8 and no labels will either
+refuse to use it or invent the labels.
+
+The dictionary is also the input to everything in the later chapters.
+Concept links, thematic groups, variable search, and quality statements
+all attach to variables, and each of them is only as good as the
+dictionary row it attaches to. This chapter builds the dictionary, checks
+it, and converts it into the schema the catalog stores.
+
+## Target state
+
+- Every variable has a label that adds information to the name, a type, and a universe.
+- Every categorical variable has value codes with labels; every numeric variable states its missing-value codes.
+- Every collected variable carries its question text; every derived variable carries its derivation.
+- The dictionary is stored in the World Bank microdata schema (`variables` and `data_files`) and checked before each release.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Produce a data dictionary with one row per variable: file, name, label, type, value codes, missing codes. Publish it with the data. |
+| **AI-ready** | Add universe and question text. Run the dictionary check before release and fix every error. Convert the dictionary into the schema's `variables` section and validate the study record. |
+| **AI-native** | Add concepts ([chapter 4](./concepts.mdx)), derivations, and summary statistics per variable. Run the check in the release pipeline, and use AI-assisted review for label and description quality. |
+
+:::info[Running example]
+The dictionary of `EX-LFS-2025-Q2` has 18 variables and five planted
+defects. Recipe 3.1 finds them, recipe 3.2 converts the repaired dictionary
+into the schema and validates the study record at the AI-ready level.
+:::
+
+## Recipes
+
+<Recipe title="3.1 Check the data dictionary before release" level="Foundational" skills="Data curator; Python" time="One hour the first time; minutes on each release">
+
+**Result:** the curator has a list of the variables that software or a
+user would misread, each with the reason, and the share of variables that
+have each field filled.
+
+The dictionary is a CSV with one row per variable:
+
+| Column | Meaning |
+|---|---|
+| `file_id`, `name` | The data file and the variable name |
+| `label` | What the variable measures, in words |
+| `type` | `numeric`, `categorical`, or `string` |
+| `universe` | Whom the variable applies to ("Employed persons aged 15 and over") |
+| `question` | The question text as asked |
+| `values` | The codes and their labels, as `code=label;code=label` |
+| `missing` | The codes that mean a missing or inapplicable answer, as `code;code`, or `none` |
+| `concept` | The concept the variable measures ([chapter 4](./concepts.mdx)) |
+
+```csv file=../../website/static/cookbook-files/microdata-documentation/lfs_2025q2_dictionary.csv
+```
+
+The check reads the dictionary and reports what is missing or
+inconsistent:
+
+```python file=../../website/static/cookbook-files/microdata-documentation/check_dictionary.py
+```
+
+Output for the running example (abridged):
+
+```text
+18 variables in 1 file(s)
+  label        17 of 18   94%
+  values       10 of 18   56%
+  missing       7 of 18   39%
+  concept       5 of 18   28%
+warning  F1/income: numeric variable without a missing-value statement
+error    F1/hours: name appears 2 times
+error    F1/relationship: categorical variable without value labels
+error    F1/informal: label repeats the name ('informal')
+error    F1/q17b: no label
+4 error(s), 10 warning(s)
+```
+
+The first block reports, for each field, how many variables have it
+filled. The lines that follow are the findings. An error is something
+that will cause a misreading, such as a categorical variable without
+value labels. A warning is something a curator should decide, such as a
+numeric variable with no statement about missing codes.
+
+1. Export the dictionary in the form above.
+2. Run the check.
+3. Fix every error before release. Here: label `q17b`, give `informal`
+   a label that says what it measures, add the value codes of
+   `relationship`, and rename the second `hours` (the main-job
+   variable). Decide on the warnings: `income` has no missing code
+   because none is used, and that is worth stating as `none`.
+4. Keep the check in the release procedure and keep its output with the
+   release.
+
+**Worked example.** The run above is the running example. The curator
+reads the four errors in order. The variable `q17b` gets the label "Looked
+for work in the last four weeks", taken from the question text recovered
+in chapter 2. The variable `informal` gets the label "Informal employment
+in main job". The variable `relationship` gets its eight value labels from
+the questionnaire, from `1=Head` to `8=Other relative`. The second
+`hours` variable, which measures hours in the main job only, is renamed
+`hours_main`. For the warning on `income`, the curator confirms with the
+processing team that no missing code is used and writes `none`. The
+check runs again and reports zero errors and nine warnings, each of which
+has a recorded decision.
+
+**What this does not do.** The check reads the dictionary alone. It
+does not verify that the value labels match the codes in the data, that
+the universe matches the skip pattern in the questionnaire, or that
+labels are correct. A data-side check (frequency tables against the
+value codes) and a questionnaire review add those.
+
+</Recipe>
+
+<Recipe title="3.2 Convert the dictionary into the DDI-based schema" level="AI-ready" skills="Python" time="One hour">
+
+**Result:** the study record has its `data_files` and `variables`
+sections filled from the dictionary, so that it is complete at the
+AI-ready level and can be imported into NADA or the Metadata Editor.
+
+The converter maps each dictionary column to the corresponding field of
+the schema (the label to `var_label`, the question to
+`var_qstn_qstnlit`, the codes to `var_catgry`) and merges the result
+into the study record:
+
+```python file=../../website/static/cookbook-files/microdata-documentation/dictionary_to_ddi.py
+```
+
+```bash
+python dictionary_to_ddi.py lfs_2025q2_dictionary.csv --study example_microdata.json -o study_with_variables.json
+```
+
+1. Run the converter on the repaired dictionary.
+2. Validate the merged record against the schema and the profile:
+
+   ```bash
+   python check_metadata.py study_with_variables.json profile_microdata.json --level ai-ready
+   ```
+
+   For the running example the merged record is valid against the
+   schema and complete at the AI-ready level. The two fields the study
+   record lacked in [chapter 1](./find.mdx) were `data_files` and
+   `variables`.
+3. Import the record into the catalog. The variables appear on the
+   study page with their labels, value codes, universes, and question
+   text, and the catalog's variable search indexes them.
+
+**Worked example.** The converter reads the repaired dictionary of 18
+rows and writes one `variables` entry per row. The row for `relationship`
+becomes an entry with `var_label` set to "Relationship to household head",
+eight `var_catgry` entries from the value codes, `var_universe` set to
+"All household members", and `var_qstn_qstnlit` set to the question text.
+The `data_files` section gains one entry for the file, with its
+identifier, name, and case count of 41. The validation at the AI-ready
+level reports the record valid and complete, where the same record
+without these two sections had failed on both in chapter 1.
+
+**What this does not do.** The converter maps the dictionary's columns
+to DDI fields and nothing more. Summary statistics and category
+frequencies need the data file; the Metadata Editor computes them on
+import. Interval types, formats, and locations in fixed-width files are
+left for the curator to add where they apply.
+
+</Recipe>
+
+<Recipe title="3.3 Document missing codes, universes, and derivations" level="AI-ready" skills="Subject-matter statistician" time="Two to four hours per survey">
+
+**Result:** for every variable, a user or a system can tell which codes
+are not values, whom the variable applies to, and how a derived variable
+was computed.
+
+1. Missing codes. List every code that marks a missing, inapplicable,
+   refused, or unknown response, and give each its own label
+   (`-8 = Not applicable`, `-9 = Missing`). In the schema they are
+   categories with a note; in the CSV they are the `missing` column. A
+   numeric variable that uses no missing code states `none`.
+2. Universes. Write the universe as the population the question was
+   asked of, in the terms of the questionnaire ("Employed persons aged
+   15 and over"). A universe explains why a variable has fewer cases
+   than the file. Without it, a system reads the gap as missing data.
+3. Derivations. For each derived variable (`lfs_status`, `informal`),
+   state the inputs and the rule in `var_derivation`, and name the
+   standard the rule follows (the ICLS resolution for labour force
+   status).
+4. Record the questionnaire version and the skip pattern that each
+   universe depends on, so that a change in the questionnaire shows up
+   as a change in the dictionary.
+
+**Worked example.** The derived variable `lfs_status` takes the values
+1 = Employed, 2 = Unemployed, and 3 = Outside the labour force. Its
+`var_derivation` entry reads: "Employed if hours in the reference week
+are greater than zero or the person has a job to return to (questions
+14 and 15). Unemployed if not employed, looked for work in the last four
+weeks (question 17b), and available to start within two weeks (question
+18). Otherwise outside the labour force. Follows the 19th ICLS
+resolution."
+The universe of `hours` is "Employed persons aged 15 and over", which
+explains why 27 of the 41 records have a value. The questionnaire version
+is recorded as v2, and the skip pattern from question 14 is noted beside
+the universe.
+
+**What this does not do.** This recipe documents the rules. It does not
+verify them against the data. A consistency check (for example, that
+`lfs_status` equals 1 for every case with positive `hours`) belongs to
+the data quality procedures of [chapter 7](./fitness.mdx).
+
+</Recipe>
+
+## Implementation options
+
+- **DDI Codebook** holds variable-level documentation: label, text, question, universe, categories, derivation, concepts, and summary statistics. The World Bank schema is its JSON form.
+- **The Metadata Editor** builds the dictionary from the data file (names, types, frequencies) and lets the curator add the rest; it exports the schema and publishes to NADA.
+- **Statistical software exports.** SPSS, Stata, and R files carry labels and value labels, which the Metadata Editor and DDI tools read; a dictionary CSV as in this chapter is the portable form.
+- **DDI Lifecycle** adds reusable questions and concepts for organizations that manage questionnaires centrally ([chapter 4](./concepts.mdx)).
+
+## World Bank examples
+
+- The [microdata schema](https://github.com/worldbank/metadata-schemas) defines `variables` (with `var_catgry`, `var_universe`, `var_qstn_qstnlit`, `var_derivation`, `var_concept`, `var_sumstat`) and `data_files`.
+- [Metadata Augmentation](/docs/metadata-augmentation/) reads dictionaries in CSV, JSON, or from a NADA catalog, and its adapters map source columns to a canonical form, which is the same step as recipe 3.2.
+- The [Metadata Reviewer](/docs/metadata-reviewer/overview) reviews label and description text with a curator in the loop.
+
+## Resources
+
+- [DDI Codebook 2.5 variable elements](https://ddialliance.org/Specification/DDI-Codebook/2.5/): `var`, `labl`, `catgry`, `universe`, `qstn`, `derivation`, `concept`, `sumStat`.
+- [Metadata Editor user and practice guide](https://worldbank.github.io/metadata-editor-docs): the variable-level screens, frequencies, and validation.
+- [World Bank metadata schemas](https://github.com/worldbank/metadata-schemas): the microdata schema (`variables`, `data_files`) and the Python library for building records.
+- [pyreadstat](https://github.com/Roche/pyreadstat): reads labelled Stata, SPSS, and SAS files for checks outside the editor.
+- [Metadata Augmentation](/docs/metadata-augmentation/): the program's dictionary adapters and variable grouping, which read the dictionary form used here.
+
+## Common mistakes
+
+- **Labels that repeat the name.** `informal` labelled "informal" tells a system nothing; "Informal employment in main job" does.
+- **Missing codes left as values.** A `-9` without a label becomes a negative age in any computation.
+- **Universes in footnotes.** A system reads fields; a footnote is invisible to it. The universe belongs in the variable record.
+- **Dictionaries that drift from the file.** A dictionary edited by hand after the file changed is wrong in ways no check detects; regenerate it from the file and add the curated fields.
+
+## Verification
+
+- **Dictionary check.** The check reports zero errors, and every warning has a recorded decision.
+- **Schema check.** The merged study record is valid and complete at the AI-ready level.
+- **Data check.** Every value in a categorical variable appears in its value codes, and every negative value in a numeric variable is a documented missing code.
+- **Interpretation questions.** For ten variables, an assistant asked for the meaning of a code and the universe answers in agreement with the dictionary.
+
+## Checklist
+
+<Checklist id="microdata-documentation-variables" items={[
+  'One dictionary row per variable, regenerated from the file',
+  'Every variable labelled with more than its name',
+  'Value codes with labels for every categorical variable',
+  'Missing-value codes listed and labelled; "none" stated where none apply',
+  'Universe for every variable',
+  'Question text for collected variables; derivation for derived ones',
+  'Dictionary check run with zero errors before release',
+  'Study record complete at the AI-ready level after conversion',
+]} />

@@ -1,0 +1,242 @@
+---
+id: purpose
+title: "1. Purpose and selection of datasets"
+sidebar_label: "1. Purpose"
+sidebar_position: 2
+description: "What an ML-ready dataset is and how it differs from an AI-ready catalog, which of the organization's data are candidates for publication as training and evaluation data, and how the decision to publish each one is recorded."
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 1. Purpose and selection of datasets
+
+**Question:** Which datasets should be published for machine learning, and for what uses?
+
+## Rationale
+
+A machine-learning model learns from examples. A model that assigns occupation codes learns from job descriptions
+that a coder has already coded. A model that reads scanned tables learns
+from pages that a person has already transcribed. A model that answers
+questions about statistics is evaluated on questions whose answers are
+known. A
+statistical organization produces such examples every day as a
+by-product of its work, and most of them never leave the building.
+Published in the right form, they let the organization train its own
+models, let partners build tools that work on the organization's data,
+and let researchers evaluate methods on real official statistics.
+
+An ML-ready dataset is a dataset packaged so that it can be loaded,
+understood, and used for training or evaluation without a
+conversation with its producer. It differs from an AI-ready catalog in
+what it is for. The catalog (the
+[dissemination cookbook](/cookbook/ai-ready-dissemination/)) makes
+published statistics findable and retrievable by AI systems at the
+moment a question is asked. An ML-ready dataset is a fixed, versioned
+set of examples with a documented structure, a stated purpose, splits
+for training and testing, and a licence that covers model training.
+The program's AI-ready data attributes name three properties for
+training data beyond the foundational ones: integrative (linkable
+across datasets), quantity (enough for the task), and diversity and
+representativeness (the examples cover the population they will be
+used on). This guide is about publishing datasets that have those
+properties and say so.
+
+## Target state
+
+- The organization has a written statement of what it publishes as ML-ready datasets, for which uses, and under which conditions.
+- Candidate datasets are identified from the organization's own tasks and from demand, and the decision to publish each is recorded with its intended uses.
+- Every published dataset has a named owner and a place in the catalog beside the organization's other products.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Write the statement; publish one dataset from an existing coding or transcription task, with its card and record. |
+| **AI-ready** | Publish datasets for the main model-assisted tasks, each selected by a written rule, with splits, a Croissant record, a representativeness report, and a manifest. |
+| **AI-native** | Produce ML-ready datasets as a stage of production: each round of a survey adds coded examples to a versioned dataset with its documentation regenerated. |
+
+:::info[Running example]
+The example organization codes the occupations of its labour force
+survey by hand. It wants a model that proposes codes, and it wants
+partners who use ISCO-08 to be able to build and compare such models.
+It publishes 600 coded job descriptions with the respondent's region,
+sex, age group, education, and weight, as a worked example of the
+format. All records are invented. The chapters of this guide select,
+shape, describe, document, split, license, and version that dataset.
+:::
+
+## Recipes
+
+<Recipe title="1.1 Write the statement of purpose" level="Foundational" skills="Head of dissemination; methodologist" time="Half a day">
+
+**Result:** the organization has a short, approved statement of what it
+publishes as ML-ready datasets, what they may be used for, and what
+they may not be used for.
+
+The statement sets expectations for users and for staff. It is
+published with the organization's data policy and repeated, in short,
+in every dataset card.
+
+1. State the purpose: datasets for training and evaluating models on
+   the organization's own tasks (coding, extraction, search, question
+   answering), published so that the organization, its partners, and
+   researchers work on the same examples.
+2. State the conditions. At minimum:
+   - no record that could identify a person or an enterprise is
+     published; datasets are built from public use data, from
+     aggregates, or from synthetic data
+     ([synthetic data cookbook](/cookbook/synthetic-data-for-sharing/));
+   - every dataset has a card, a loading record, a representativeness
+     report, a licence, and a version;
+   - no dataset is a source of published statistics. A dataset is a
+     collection of examples, and its composition is stated in the card.
+3. Name who approves a publication: the owner of the source data and
+   the disclosure control unit.
+4. Publish the statement and link it from every dataset page.
+
+**Worked example.** The example organization's statement opens with its purpose. The
+office publishes datasets of examples from its own work, such as coded
+survey responses and transcribed tables, so that models for its tasks
+can be trained and compared on real official statistics. Its conditions
+follow. Every dataset is built from a public use file, from aggregates,
+or from synthetic data. Every dataset is released with a card, a
+loading record, a representativeness report, a licence, and a version.
+No dataset is a source of published statistics. The owner of the source data and the head of the
+disclosure control unit approve each publication. The statement is
+published as an annex to the data policy, and every dataset card
+repeats its three conditions in its out-of-scope section.
+
+**What this does not do.** A statement sets the rules. Whether a
+particular dataset meets them is decided dataset by dataset in the
+later chapters, and recorded in its card.
+
+</Recipe>
+
+<Recipe title="1.2 List the candidate datasets from the organization's tasks" level="Foundational" skills="Methodologist; production managers" time="One day">
+
+**Result:** the organization has a list of the datasets it could
+publish, each with the task it serves, the source it comes from, the
+number of examples, and the disclosure question it raises.
+
+Most candidates come from work the organization already does by hand.
+Each such task produces pairs of an input and a correct output, which
+is what a model learns from:
+
+| Task the organization does | Examples it produces | Source |
+|---|---|---|
+| Occupation and industry coding | Job description with its code | Labour force survey, census |
+| Editing and imputation | Record before and after an editor's decision | Processing systems |
+| Transcription of printed tables | Page image with its transcribed table | Document archive ([documents cookbook](/cookbook/data-from-documents/)) |
+| Search for a series | Question with the series it refers to | Search logs, help desk ([evaluation cookbook](/cookbook/evaluation-suites/)) |
+| Metadata curation | Record with the curator's corrections | Catalog ([curation cookbook](/cookbook/metadata-curation-with-llms/)) |
+| Translation of labels | Label with its reviewed translation | Multilingual catalog |
+
+1. Walk through the production process with the people who run it
+   and list every task of this kind, with the system that holds the
+   examples.
+2. For each, count the examples and note the disclosure question. A
+   job description is free text written by a respondent and can
+   identify a person; a question from a search log can contain a name.
+3. Order the list by the value of a model for the task (the
+   [production cookbook](/cookbook/language-models-in-production/map)
+   maps the tasks) and by demand from partners.
+4. Choose one to start with. A coding task with a few thousand coded
+   examples and a clear disclosure treatment is the usual first choice.
+
+**Worked example.** The walk through production yields six candidates.
+Occupation coding has about 38,000 coded job descriptions over four
+rounds, with the disclosure question that a description can name an
+employer. Industry coding has the same records. Editing has 12,000
+before-and-after pairs, with the question that the full record is
+confidential. Table transcription has 1,900 verified tables from the
+documents cookbook, with no disclosure question at all, because the
+pages are published. Catalog search has 410 questions with their
+series. Translation has 2,300 reviewed label pairs. The list is ordered
+with occupation coding first, because a coding model is wanted and
+partners have asked for it, and transcription second. The 600-record
+extract in this guide stands in for the first.
+
+**What this does not do.** The list says what could be published. The
+disclosure control unit decides what can be, dataset by dataset
+([chapter 7](./license.mdx)), and the representativeness report of
+[chapter 5](./represent.mdx) says what the examples cover.
+
+</Recipe>
+
+<Recipe title="1.3 Record the decision to publish" level="AI-ready" skills="Dataset owner" time="One hour per dataset">
+
+**Result:** each dataset the organization publishes has a record of
+why it is published, for which uses, from which source, under whose
+ownership, and with which approvals. The record becomes the first part
+of the dataset's card.
+
+1. Write the intended uses in the users' terms: training a coder for
+   surveys that use ISCO-08; benchmarking coding models; teaching.
+2. Write the out-of-scope uses: estimating population figures from the
+   examples; identifying respondents; any use the licence excludes.
+3. Name the owner (a unit and a contact), the source data and its
+   round, and the approvals (data owner, disclosure control).
+4. File the record with the dataset's documentation. The card of
+   [chapter 4](./document.mdx) carries the same content for users.
+
+**Worked example.** The decision record for the occupation-coding
+dataset lists as intended uses: training an automatic coder for surveys
+that use ISCO-08, comparing coding models on a common test part, and
+teaching occupation coding. Its out-of-scope uses are estimating
+employment or occupation shares from the examples, identifying
+respondents or employers, and any use the licence excludes. The owner
+is the labour statistics unit, with the coding supervisor as contact.
+The source is the public use file of the 2025 Q2 labour force survey,
+with the job descriptions screened as chapter 7 describes. The
+approvals are the head of the labour statistics unit and the head of
+the disclosure control unit, with the dates. The record is filed in the
+dataset's folder.
+
+**What this does not do.** A decision record is not a release. The
+release happens when the files, the card, the loading record, the
+licence, and the manifest of the later chapters exist and have been
+checked.
+
+</Recipe>
+
+## Implementation options
+
+- **Scope of the statement:** training and evaluation data for the organization's own tasks; benchmark datasets for the community; both.
+- **Sources of examples:** by-products of production (coding, editing, transcription), curated collections (question sets, labelled samples), synthetic data where the real records cannot be published.
+- **Where datasets live:** the organization's catalog as a data type of its own; a public repository for machine-learning datasets in addition, with the catalog record as the authority.
+
+## World Bank examples
+
+- The program's [Data Snapshots](https://arxiv.org/abs/2606.06242) dataset publishes annotated pages from institutional documents for layout detection, with the annotation format and licence the [documents cookbook](/cookbook/data-from-documents/locate) describes.
+- The [PI-FT toolkit](/pift-toolkit/pipeline) fine-tunes retrieval models on structured records and reports evaluation results, which is the use an ML-ready catalog extract serves.
+- The program's classification and coding workstream develops automatic occupation and industry coding, the task of the running example.
+
+## Resources
+
+- [AI-ready data attributes](/docs/ai-ready-framework): the program's framework, including the attributes for training data (integrative, quantity, diversity and representativeness).
+- [Datasheets for Datasets](https://arxiv.org/abs/1803.09010) (Gebru and others, 2018): the paper that set the questions a dataset's documentation answers, including motivation and intended uses.
+- [Practical Guide to Synthetic Data for Sharing](/cookbook/synthetic-data-for-sharing/): what to publish when the real records cannot be.
+- [Practical Guide to Language Models in Statistical Production](/cookbook/language-models-in-production/): the tasks whose examples become datasets.
+
+## Common mistakes
+
+- **Publishing an extract of microdata as "training data".** An ML-ready dataset has a task, a label, and a card; an extract without them is microdata under another name, with microdata's disclosure risk.
+- **Starting with the largest dataset.** Start with the task where a model is wanted and the examples are clean.
+- **No owner.** A dataset without an owner is never updated and never withdrawn.
+
+## Verification
+
+- **Statement.** The statement is approved and linked from every dataset page.
+- **Candidate list.** The list exists with counts and disclosure notes, ordered by value and demand.
+- **Decision record.** Each published dataset has a decision record with its uses, source, owner, and approvals.
+
+## Checklist
+
+<Checklist id="ml-ready-datasets-purpose" items={[
+  'Statement of purpose and conditions approved and published',
+  'Candidate datasets listed from the organization\'s tasks, with counts and disclosure notes',
+  'One dataset chosen to start with',
+  'Decision record per dataset: uses, out-of-scope uses, source, owner, approvals',
+  'No dataset built from records that could identify a person or an enterprise',
+]} />

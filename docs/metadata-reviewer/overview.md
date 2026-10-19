@@ -2,7 +2,7 @@
 
 `MetadataReviewerClient` uses a multi-agent LLM pipeline to scan dataset series metadata for quality issues: incorrect content, inconsistencies, typos, missing fields, and more. It returns a ranked list of detected issues with suggested corrections.
 
-For installation, API usage, the review board, and troubleshooting, see the **[Metadata Reviewer User Manual](user-manual/index.md)**.
+For installation, API usage, and troubleshooting, see the **[Metadata Reviewer User Manual](user-manual/index.md)**. The reviewer is also available inside the [Metadata Editor](https://worldbank.github.io/metadata-editor-docs/) as an optional add-on to its FastAPI service, where it adds AI-generated issues with suggested corrections to a project's Issues page; the [Editor's installation guide](https://worldbank.github.io/metadata-editor-docs/tech_installation_metadata_reviewer.html) describes the setup.
 
 ---
 
@@ -163,7 +163,7 @@ from ai4data.metadata.reviewer import MetadataReviewerClient
 client = MetadataReviewerClient(model_client=your_model_client)
 ```
 
-Any object that conforms to AutoGen's `ChatCompletionClient` interface works. For example, using `AzureOpenAIChatCompletionClient` with a static token instead of a token provider:
+Any object that conforms to AutoGen's `ChatCompletionClient` interface works. For example, using `AzureOpenAIChatCompletionClient` with a static token in place of a token provider:
 
 ```python
 from autogen_ext.models.openai import AzureOpenAIChatCompletionClient
@@ -180,5 +180,12 @@ model_client = AzureOpenAIChatCompletionClient(
 client = MetadataReviewerClient(model_client=model_client)
 ```
 
+---
 
+## Limitations
 
+- The pipeline detects and proposes. Every suggestion needs a curator decision, and the package writes nothing to a catalog; the [metadata curation cookbook](/cookbook/metadata-curation-with-llms/review) gives the review procedure and the decision log.
+- Results depend on the model behind the agents. The same record reviewed with two providers, or with two versions of one model, yields different issue lists, so a calibration sample against curator judgments precedes use on a catalog.
+- The agents read the record they are given. Errors that need outside knowledge, such as a definition that is wrong for the country, are found only when that knowledge is in the record or the prompt.
+- The package has no review interface of its own. Inside the Metadata Editor, the issues are reviewed on the project's Issues page; outside it, the output is a JSON array to triage in the organization's own tools.
+- Status on the [tools catalogue](/tools#metadata-reviewer): pre-release.

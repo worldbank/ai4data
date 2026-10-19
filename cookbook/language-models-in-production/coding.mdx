@@ -1,0 +1,283 @@
+---
+id: coding
+title: "3. Coding of open text"
+sidebar_label: "3. Coding"
+sidebar_position: 4
+description: How open-text responses such as occupation and industry are coded to standard classifications with a model, how accuracy is measured at each level of the classification, how a confidence threshold decides what is coded automatically and what goes to coders, and how a re-coded sample keeps the measurement honest.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 3. Coding of open text
+
+**Question:** Can open-text responses be coded to classifications with a model?
+
+## Rationale
+
+Coding is the production task where language models pay off first.
+Every survey collects open text that has to become a code: "drives a
+taxi in the city" becomes ISCO-08 8322, "sells vegetables at the market"
+becomes 5211, an activity description becomes an ISIC division. Coders
+do this by reading, and a model reads the same text with the
+classification's index and definitions in front of it. The model is not
+right every time, and it knows when it is unsure: its confidence
+separates the responses it codes as well as a coder from the ones a
+coder should see. The production rule is a threshold, set from measured
+accuracy, that decides the automated share, with a sample re-coded by
+staff every round to keep the measurement current.
+
+## Target state
+
+- Open-text fields are coded by a model with the classification's structure and index as context, returning a code and a confidence.
+- Accuracy is measured per level of the hierarchy against coder-assigned codes on a labelled sample, per language and survey.
+- A confidence threshold set from the measurements decides the automated share; the rest goes to coders; a sample of the automated share is re-coded each round and reported.
+- The classification version and the model version are recorded with every coded file.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Use a model to propose codes that coders accept or change; measure accuracy against the coders' final codes. |
+| **AI-ready** | Set the threshold from the accuracy curve; automate the share above it; re-code a sample each round; report the rule and the results in the quality report. |
+| **AI-native** | Retrain or re-prompt from coder corrections; run coding as a pipeline stage on a local model; maintain the index with the new descriptions coders see. |
+
+:::info[Running example]
+Twenty occupation responses coded by a model and by a coder. The model
+is right at the unit group level for fifteen; above a confidence of
+0.80 it codes fourteen of twenty with every one right, and the six
+below the threshold, including "helps at home" and "builds houses", go
+to a coder.
+:::
+
+## Recipes
+
+<Recipe title="3.1 Code with the classification as context" level="Foundational" skills="Developer; coding supervisor" time="One day to set up">
+
+**Result:** every open-text response has a classification code and a
+confidence score, produced by a model that was given the
+classification's own structure, definitions, and index.
+
+A classification such as ISCO-08 comes with three things a coder uses:
+the hierarchy of groups with their titles, the definition of each
+group, and an alphabetical index of job titles with their codes. A
+model given the same three things codes the way a coder does: it finds
+the candidate groups for a response and chooses among them. Without
+them, it guesses from general knowledge, which is how errors arise.
+
+1. Prepare the classification as reference material in the survey's
+   language: the hierarchy with group titles and definitions, and the
+   index of titles
+   ([ISCO-08](https://ilostat.ilo.org/methods/concepts-and-definitions/classification-occupation/),
+   [ISIC Rev. 4](https://unstats.un.org/unsd/classifications/Econ/isic)).
+2. For each response, find the candidate groups by searching the index
+   and the definitions (by keyword and by meaning). Then ask the model
+   to choose among the candidates and return, in a fixed format, the
+   code, a confidence between 0 and 1, and the index entry or
+   definition it relied on.
+3. Give the model the related fields a coder would look at: the
+   industry for an occupation, the person's education and employment
+   status. "Manager" in a bank and "manager" in a shop have different
+   codes.
+4. Run the model on the organization's own server where the responses
+   are confidential ([chapter 6](./running.mdx)).
+
+**Worked example.** The response "drives a taxi in the city" is coded as
+follows. The index search returns three candidates: 8322 (car, taxi and
+van drivers), 8321 (motorcycle drivers), and 8331 (bus and tram
+drivers). The model is given the three candidates with their definitions
+and the related fields, which say the respondent is self-employed in the
+transport industry. It returns 8322 with a confidence of 0.96 and the
+index entry "taxi driver" as what it relied on. The response "helps at
+home" returns candidates from domestic work and from family workers, and
+the model returns 5322 with a confidence of 0.35, because nothing in the
+response or the related fields says whether the help is paid. The low
+confidence sends it to a coder.
+
+**What this does not do.** A model with the index codes well what the
+index covers. Local occupations and new activities that the index lacks
+are the cases it gets wrong, which is why coders' corrections are fed
+back into the index (recipe 3.3) and why "other" and "not codable"
+remain valid answers.
+
+</Recipe>
+
+<Recipe title="3.2 Measure accuracy by level and set the threshold" level="AI-ready" skills="Coding supervisor; Python" time="One day for the labelled sample; minutes per run">
+
+**Result:** the organization knows the model's accuracy at each level
+of the classification, and it has a table that shows, for each
+confidence threshold, what share of responses the model would code on
+its own and how accurate those codes would be. It chooses its threshold
+from that table.
+
+ISCO-08 codes have four digits, from the broad major group (first
+digit) to the detailed unit group (all four). A model that gets the
+first two digits right and the last two wrong has made a smaller error
+than one that is wrong at the first digit, so accuracy is measured at
+each level. The confidence the model returns is what makes a production
+rule possible: responses the model is sure about are accepted as coded,
+and the rest go to a coder.
+
+The example file has twenty responses with the code a coder gave
+(`gold_code`), the code the model gave (`model_code`), and the model's
+confidence. The script measures accuracy at each level and tabulates the
+threshold trade-off:
+
+```python file=../../website/static/cookbook-files/language-models-in-production/coding_eval.py
+```
+
+```bash
+python coding_eval.py occupation_coding.csv --levels 1 2 3 4
+```
+
+Output for the running example:
+
+```text
+20 responses
+
+accuracy by level
+  1-digit 0.85 (17/20)
+  2-digit 0.85 (17/20)
+  3-digit 0.75 (15/20)
+  4-digit 0.75 (15/20)
+
+auto-coding rule: code automatically at or above the threshold, route the rest to coders
+threshold auto-coded accuracy (4-digit) to coders
+     0.00       1.00               0.75      0.00
+     0.50       0.90               0.78      0.10
+     0.60       0.80               0.88      0.20
+     0.80       0.70               1.00      0.30
+     0.90       0.55               1.00      0.45
+
+errors (gold -> model, confidence):
+  r04 'nurse at the district hospital': 2221 -> 3221 (0.62)
+  r05 'grows maize and keeps goats': 6111 -> 6121 (0.58)
+  r09 'builds houses': 7111 -> 9313 (0.55)
+  r14 'helps at home': 9999 -> 5322 (0.35)
+  r16 'secretary in a ministry': 4120 -> 4110 (0.66)
+```
+
+The first block gives accuracy at each level of the code. The threshold
+table says, for each threshold, what share of responses would be coded
+automatically, how accurate those codes would be at four digits, and
+what share would go to coders. The error list names each response the
+model got wrong, with the coder's code, the model's code, and the
+model's confidence.
+
+1. Build the labelled sample: a few thousand responses per survey and
+   language, coded by experienced coders. Have a second coder code part
+   of the sample, so that the coders' own agreement is known
+   ([evaluation cookbook, chapter 2](/cookbook/evaluation-suites/questions)).
+2. Run the model on the sample and run the script. Read the accuracy by
+   level, then the threshold table.
+3. Choose the threshold at which the accuracy of the automatically
+   coded share matches the coders' own agreement. In the example, a
+   threshold of 0.80 codes seventy percent of responses with no errors
+   on these twenty, a figure that thirty responses would already change.
+4. Record the threshold, the accuracy, and the sample with the survey's
+   quality documentation ([chapter 7](./assurance.mdx)).
+
+**Worked example.** The five errors in the run above all have a
+confidence below 0.70, and the fourteen responses above 0.80 are all
+right. The coding supervisor reads the errors. The nurse coded as an associate
+professional, the farmer who also keeps goats coded as a livestock
+producer, and the house builder coded as a labourer are all cases where
+the response could support either code. The model's confidence said so. On the full sample of 3,200 responses the curve has
+the same shape, and at a threshold of 0.80 the automated share is 68
+percent with an accuracy of 0.91 at four digits, which matches the
+coders' own agreement of 0.91. The threshold is set at 0.80 for English
+responses; for French, where the index is thinner, the same accuracy is
+reached only at 0.85, and that threshold is set separately.
+
+**What this does not do.** Twenty responses draw the shape of the
+curve; thousands are needed to set a threshold. Accuracy differs by
+language, by survey, and by major group, and where the differences
+matter the threshold is set separately for each.
+
+</Recipe>
+
+<Recipe title="3.3 Run the production rule with a re-coded sample" level="AI-ready" skills="Coding supervisor; developer" time="Part of each round">
+
+**Result:** each survey round is coded by the rule. The model's codes
+are accepted above the threshold and go to coders below it, a random
+sample of the accepted codes is re-coded by staff to measure them, and
+the coders' corrections improve the next round.
+
+1. Code every response. Accept the codes at or above the threshold.
+   Send the rest to coders, showing the model's candidates as
+   suggestions; accepting or changing a suggestion is faster than coding
+   from nothing.
+2. Each round, draw a random sample of the automatically coded
+   responses (a few percent, and at least a few hundred) and have coders
+   re-code it without seeing the model's code. Report the agreement at
+   each level and for each major group.
+3. Feed the coders' corrections back: new job descriptions and their
+   codes go into the index and into the examples the model is shown; a
+   fall in the re-coded agreement triggers a review of the threshold.
+4. Record, with each coded file, the version of the classification, the
+   version of the model, the threshold, and the share coded
+   automatically.
+
+**Worked example.** The second quarter of 2025 has 9,400 occupation
+responses. At the threshold of 0.80, 6,400 are accepted from the model
+and 3,000 go to the six coders, who see the model's three candidates
+beside each response and finish in four days where the previous round
+took eleven. The supervisor draws 400 of the 6,400 at random, and two
+coders re-code them blind. Agreement with the model is 0.92 at four
+digits and 0.97 at two, with the lowest major-group agreement in
+agriculture at 0.86. Thirty-one new job descriptions from the coders'
+work, such as "boda boda rider" for motorcycle taxi driver, are added to
+the index. The coded file records ISCO-08, index version 4, the model
+version, the threshold of 0.80, and the automated share of 68 percent.
+
+**What this does not do.** The re-coded sample measures the
+automatically coded share. The share coded by coders has the coders'
+own error rate, which is measured in the same way. A change in the
+model, in the classification's version, or in the survey's question
+wording restarts the measurement of recipe 3.2.
+
+</Recipe>
+
+## Implementation options
+
+- **Context:** the classification's hierarchy, definitions, and index; related fields; the survey's language.
+- **Method:** retrieval of candidates plus a model choice with confidence; a fine-tuned classifier where the labelled sample is large; dedicated coding tools where they exist for the classification.
+- **Rule:** a threshold per survey and language from the accuracy curve; a re-coded sample per round.
+- **Records:** classification and model versions, threshold, automated share, sample agreement with every coded file.
+
+## World Bank examples
+
+- The program's statistical classification and coding workstream develops AI-assisted coding of survey responses against standard classifications with human review ([GSBPM mapping](/docs/gsbpm-mapping), sub-process 5.2).
+- [Metadata Augmentation](/docs/metadata-augmentation/) assigns variables to thematic groups with a model and a self-consistency check, the same choose-among-candidates pattern.
+
+## Resources
+
+- [ISCO-08 on ILOSTAT](https://ilostat.ilo.org/methods/concepts-and-definitions/classification-occupation/): the structure, definitions, and index of the occupation classification.
+- [ISIC Rev. 4](https://unstats.un.org/unsd/classifications/Econ/isic) and the [UN classifications registry](https://unstats.un.org/unsd/classifications/): the activity classification and the correspondence tables between versions.
+- [CASCOT](https://warwick.ac.uk/fac/soc/ier/software/cascot/): a long-standing coding tool for occupation and industry text, a reference for the index-based approach and the confidence rule.
+- [Extraction and classification chapter of the evaluation cookbook](/cookbook/evaluation-suites/extraction): per-class scores, confusion, and hierarchical scoring for coding.
+- [Coded sample and evaluation script](pathname:///cookbook-files/language-models-in-production/coding_eval.py): the running example.
+
+## Common mistakes
+
+- **Coding without the index.** The model guesses from general knowledge; the index is the standard.
+- **One threshold for every language.** Accuracy differs; measure per language.
+- **No re-coded sample.** The automated share's accuracy drifts unseen.
+- **Corrections not fed back.** Coders fix the same local occupation every round.
+
+## Verification
+
+- **Context.** The classification version and the index in use are recorded, and the model returns the entry it relied on.
+- **Measurement.** Accuracy by level is measured per survey and language on a sample with known coder agreement.
+- **Rule.** The threshold and the automated share are recorded per round, and the re-coded sample's agreement is reported.
+
+## Checklist
+
+<Checklist id="language-models-in-production-coding" items={[
+  'Classification hierarchy, definitions, and index as model context',
+  'Related fields given to the model',
+  'Labelled sample with coder agreement; accuracy by level',
+  'Threshold set from the accuracy curve per survey and language',
+  'Re-coded sample each round with agreement reported',
+  'Coder corrections fed to the index; versions recorded with coded files',
+]} />

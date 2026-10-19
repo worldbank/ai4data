@@ -10,7 +10,7 @@ Data discoverability underpins one of the foundational pillars of AI-ready data 
 
 Keyword-based search—matching query terms to document text—works well when users know the exact terminology used in a catalog. In practice, development data users often do not:
 
-- A researcher searching for "household consumption poverty" may not know that the World Bank uses "poverty headcount ratio at $2.15 a day (2017 PPP)" as the canonical indicator name.
+- A researcher searching for "household consumption poverty" may not know that the World Bank uses "poverty headcount ratio at $3.00 a day (2021 PPP)" as the canonical indicator name.
 - A policy analyst looking for "school attendance" may not anticipate that the same concept appears under "net enrollment rate," "attendance ratio," or "out-of-school children" depending on the source.
 - A data engineer querying for "malaria burden" will miss indicators titled "incidence of malaria (per 1,000 population at risk)" unless they know the precise phrasing.
 
@@ -54,20 +54,30 @@ The [`@ai4data/search`](https://www.npmjs.com/package/@ai4data/search) JavaScrip
 
 Key features:
 
-- **HNSW index** for approximate nearest-neighbor semantic search (powered by [`hnswlib-wasm`](https://github.com/nicholaswmin/hnswlib-wasm))
+- **HNSW index** for approximate nearest-neighbor semantic search, implemented in the package (`src/engine/hnsw-engine.ts`)
 - **BM25 lexical search** for keyword fallback and hybrid ranking
 - **Web Worker support** — Search runs in a background thread to avoid blocking the main UI thread
 - **Pre-built indices** — Indices can be precomputed server-side and served as static assets, enabling instant in-browser search without a backend
 
 ```typescript
-import { SearchIndex } from "@ai4data/search";
+import { SearchClient } from "@ai4data/search";
 
-const index = new SearchIndex();
-await index.load("https://example.org/indicators-index.bin");
+const client = new SearchClient("https://example.org/data/indicators/manifest.json");
 
-const results = await index.search("child mortality under 5", { topK: 10 });
-// Returns: [{ id, title, score, ... }, ...]
+client.on("index_ready", () => {
+  client.search("child mortality under 5", { topK: 10, mode: "hybrid" });
+});
+
+client.on("results", ({ data, stats }) => {
+  console.log(data);  // SearchResult[]
+  console.log(stats); // SearchStats | null
+});
+
+// Clean up when done
+client.destroy();
 ```
+
+The client loads a prebuilt index described by `manifest.json` and runs the search in a Web Worker; results arrive through events. The [package README](https://github.com/worldbank/ai4data/tree/main/packages/ai4data/search#readme) documents the manifest, the index files, and the options.
 
 Install:
 
@@ -96,7 +106,7 @@ uv pip install ai4data[search]
 
 ## Fine-Tuning Embedding Models for Structured Metadata
 
-Catalogue search quality depends not only on the retrieval architecture above, but on how well the embedding model represents structured records. When metadata is a set of labeled fields rather than a single document, standard fine-tuning can make models sensitive to field order — a problem that surfaces when indexes are rebuilt or federated across systems that serialize records differently.
+Catalogue search quality depends not only on the retrieval architecture above, but on how well the embedding model represents structured records. When a metadata record is a set of labeled fields, standard fine-tuning can make models sensitive to field order, a problem that surfaces when indexes are rebuilt or federated across systems that serialize records differently.
 
 The [Fine-Tuning Embedding Models for Structured Metadata](embedding-fine-tuning.md) subsection documents a permutation-invariant fine-tuning (PI-FT) pipeline (Solatorio et al., 2026): a YAML-driven toolkit for generating training data, fine-tuning a small encoder, evaluating order robustness, and deploying search over structured catalogues.
 
@@ -112,3 +122,12 @@ An emerging dimension of data discoverability is making datasets accessible to A
 
 - Johnson, J., Douze, M., & Jégou, H. (2019). Billion-scale similarity search with GPUs. *IEEE Transactions on Big Data*, 7(3), 535–547.
 - Robertson, S., & Zaragoza, H. (2009). The probabilistic relevance framework: BM25 and beyond. *Foundations and Trends in Information Retrieval*, 3(4), 333–389.
+
+---
+
+## Limitations
+
+- Search by meaning depends on the records. A catalog with missing descriptions ranks poorly however good the embedding model, which is why the [findability chapter](/cookbook/ai-ready-dissemination/find) of the dissemination cookbook comes first.
+- Embedding models trained on English rank queries in other languages worse; multilingual models and fine-tuning on question sets in the organization's languages close part of the gap, and the [PI-FT toolkit](embedding-fine-tuning.md) gives the method.
+- Retrieval quality is measured with a question set the organization builds; the [evaluation cookbook](/cookbook/evaluation-suites/retrieval) gives the measures and their sample sizes.
+- Status on the [tools catalogue](/tools#semantic-search): pre-release.

@@ -1,0 +1,260 @@
+---
+id: access
+title: "2. Access statistics"
+sidebar_label: "2. Access"
+sidebar_position: 3
+description: How views, downloads, and API calls are counted per dataset in a way that can be compared over time and with other repositories, following the COUNTER Code of Practice for Research Data, with robots excluded, repeated requests filtered, and machine access reported separately.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 2. Access statistics
+
+**Question:** Can downloads and API calls be counted consistently?
+
+## Rationale
+
+Access statistics are the first evidence of use an organization has and
+the easiest to get wrong. Raw server logs count crawlers, repeated clicks,
+failed requests, and a script that fetches a file every hour as if each
+were a user. Two catalogs that count differently cannot be compared, and a
+figure that rises when a crawler visits cannot be interpreted. The
+research data community resolved this with the COUNTER Code of Practice
+for Research Data: exclude robots, filter double-clicks, count successful
+requests only, and report regular (human) and machine access separately.
+An organization that counts this way gets figures that are comparable
+with other repositories and stable enough to read over time.
+
+API and agent-interface calls are a second stream with the same rules and
+a different meaning: a machine that fetches a series each day is one
+integration, which the use report presents as such.
+
+## Target state
+
+- Every access path (catalog pages, downloads, the API, the agent interface) logs requests with a timestamp, the dataset, the action, a client identifier, the user agent, and the status.
+- Counts follow the Code of Practice: robots excluded, double-clicks filtered, successful requests only, regular and machine access separate.
+- Counts are produced per dataset and month, kept as a series, and published beside the mention counts.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Enable logging on every access path with the fields above. Count with the script of this chapter each month. |
+| **AI-ready** | Use a maintained robot list and a client identifier better than a hashed address; report regular and machine counts per dataset in the use report; keep the counts as a series. |
+| **AI-native** | Report usage to a shared service (DataCite usage reports for datasets with DOIs); attribute machine access to registered integrations and agents; feed the counts to the prioritization of [chapter 9](./act.mdx). |
+
+:::info[Running example]
+Thirty log rows for the organization's datasets over September and
+October: browser views and downloads, an API client that polls a series,
+an agent interface, two crawlers, and a user who clicked a download twice.
+The count excludes the crawler rows, the double-clicks, and a failed
+request, and reports regular and machine requests per dataset and month.
+:::
+
+## Recipes
+
+<Recipe title="2.1 Log every access path with the fields the count needs" level="Foundational" skills="Web administrator; developer" time="One day">
+
+**Result:** the organization has one log, or several with the same
+fields, that records every request to catalog pages, downloads, the API,
+and the agent interface, with enough in each row to count it correctly
+later.
+
+1. Record per request: the timestamp, the dataset identifier (resolved
+   from the URL or the API parameter), the action (`view`, `download`,
+   `api`), a client identifier, the user agent (the browser or program
+   that made the request), and the HTTP status. The client identifier
+   is a session identifier or a salted hash of the address, never the
+   address itself.
+2. Resolve the dataset identifier at logging time. A URL alone is hard
+   to map later when pages move.
+3. Identify the organization's own agents and integrations by user
+   agent (the agent interface of the
+   [agents cookbook](/cookbook/serving-statistics-to-agents/) sends
+   one), so that they are counted as machine access and attributed.
+4. State the retention and the privacy rule for the log in the
+   organization's data protection documentation. The hashed identifier
+   and a short retention are usually enough.
+
+**Worked example.** The example organization's catalog, API gateway, and
+agent interface each write to their own log, and a nightly job merges
+them into one file with the six fields. A row from the catalog reads
+`2026-09-14T10:22:05Z, EX-HBS-2021, download, 3f9a…, Mozilla/5.0 …, 200`.
+A row from the agent interface reads
+`2026-09-14T10:22:41Z, FS_UNDERNOURISH_PCT, api, k-7f3a, statistics-example-mcp/1.0, 200`,
+with the client key in place of a hashed address and the server's own
+user agent, so that the request is counted as machine access and
+attributed to the registered client. The data protection documentation
+states that the hashed addresses are kept for 13 months.
+
+**What this does not do.** A log counts requests. A page view by a user
+who then reads the methodology is one view; a researcher who downloads
+once and uses the file for a year is one download. The use report says
+what each count means.
+
+</Recipe>
+
+<Recipe title="2.2 Count per dataset with the Code of Practice rules" level="Foundational" skills="Python" time="Minutes per month">
+
+**Result:** the organization knows the number of requests per dataset
+and month, split into regular requests from people and machine requests
+from programs, with robots, double-clicks, and failed requests excluded
+and the exclusions reported.
+
+The COUNTER Code of Practice for Research Data is the shared set of
+rules under which repositories count usage, so that one repository's
+figures mean the same as another's. The script applies its main rules
+to the access log. The log has one row per request:
+
+| Column | Meaning |
+|---|---|
+| `timestamp` | When the request was made |
+| `dataset_id` | The dataset requested |
+| `action` | `view`, `download`, or `api` |
+| `ip_hash` | The hashed client address, used only to group requests |
+| `user_agent` | The browser or program, used to recognize robots and machine clients |
+| `status` | The HTTP status; failed requests are excluded |
+
+```python file=../../website/static/cookbook-files/monitoring-data-use/count_access.py
+```
+
+```bash
+python count_access.py access_log.csv
+```
+
+Output for the running example:
+
+```text
+30 log rows; excluded: robots 4, double-clicks 6, failed requests 1
+
+dataset                month     regular  views downl.  machine  api  clients
+EX-CEN-2014            2026-09         1      1      0        0    0        1
+EX-HBS-2021            2026-09         4      3      1        1    0        4
+EX-HBS-2021            2026-10         1      0      1        0    0        1
+EX-LFS                 2026-09         3      1      2        0    0        2
+EX-LFS                 2026-10         1      0      1        0    0        1
+FS_UNDERNOURISH_PCT    2026-09         2      1      1        3    3        3
+LF_UNEMP_PCT           2026-09         2      1      1        1    1        2
+
+Regular and machine requests are reported separately; neither counts users or uses.
+```
+
+The first line says how many rows the log had and how many were
+excluded under each rule. The table has one row per dataset and month.
+The regular columns count requests from people, split into views and
+downloads; the machine columns count requests from programs; and the
+last column counts the distinct clients behind the regular requests.
+
+1. Run the count on each month's log and keep the output as a series
+   per dataset.
+2. Read the exclusions. A jump in robot requests is a crawler to add to
+   the list; a jump in double-clicks is a page that makes users click
+   twice.
+3. Read regular and machine counts separately. Here the three API
+   requests on the undernourishment series in September are one client
+   polling, and the two downloads of the labour force survey are two
+   people.
+4. Replace the script's short robot list with a maintained one (the
+   Code points to the COUNTER robots list) and the hashed address with
+   a session identifier where the catalog has one.
+
+**Worked example.** In the run above, the four excluded robot rows are
+two visits each from two crawlers that announce themselves in their user
+agents. The six double-clicks are the same user fetching the same file
+within the Code's thirty-second window, which the rule counts once. The
+failed request is a download that returned a 404. For the
+undernourishment series in September, the three API requests come from
+one client, `k-7f3a`, polling once a day, and the two regular requests
+are one page view and one download from two different people. The
+officer reads the September line for the labour force survey as "two
+people downloaded the file", which is a different fact from "three
+requests".
+
+**What this does not do.** The count is as good as the client
+identifier and the robot list. Shared networks merge clients; new
+crawlers are counted until the list catches up; a machine that imitates
+a browser is counted as regular. The figures are indicators with a
+stated method, and the method is what makes them comparable.
+
+</Recipe>
+
+<Recipe title="2.3 Report usage to a shared service and present it with the other measures" level="AI-ready" skills="Catalog administrator" time="One day to set up">
+
+**Result:** other services can show the usage counts beside the
+dataset's DOI, and the use report presents access counts, citation
+counts, and mention counts side by side, each with its meaning.
+
+1. For datasets with DataCite DOIs, send monthly usage reports in the
+   Code of Practice format to DataCite's usage reports service, so that
+   the counts appear with the DOI's metadata and in the Make Data Count
+   tools.
+2. Present the counts in the use report ([chapter 8](./report.mdx))
+   with the citation counts of [chapter 3](./citations.mdx) and the
+   mention counts of [chapter 7](./harmonize.mdx), each with its unit
+   (requests, citing documents, documents with mentions) and its
+   caveat.
+3. Keep the series. A change in counting method is a break, recorded
+   like any other.
+
+**Worked example.** The household budget survey has a DataCite DOI. Each
+month the catalog administrator sends its counts in the Code of Practice
+format to DataCite's usage reports service, and the counts appear with
+the DOI's metadata. In the quarterly use report, the survey's row shows
+420 regular requests, 0 machine requests, 5 citing documents, and 2
+documents with mentions. In the same report the unemployment rate shows
+2 regular requests, 6,200 machine requests, no identifier citations
+because it has no DOI, and 1 document with a mention. The lead reads the
+two rows as a survey used by a few researchers who publish, and an
+indicator consumed by integrations and quoted in the press.
+
+**What this does not do.** Shared reporting makes the figures visible
+and comparable; it does not interpret them. A dataset with few
+downloads and many citations is used by a few people who publish, and
+the report says that.
+
+</Recipe>
+
+## Implementation options
+
+- **Logging:** web server logs with the dataset resolved at request time; catalog application logs (NADA logs downloads per study); API gateway logs for the API and agent interface.
+- **Counting:** the script in this chapter; Matomo or another self-hosted analytics tool with bot filtering for page views; the catalog's own statistics module for downloads.
+- **Robot lists:** the COUNTER-maintained list; the user agents of the organization's own agents added as machine clients.
+- **Shared reporting:** DataCite usage reports for DOIs; the Make Data Count guidance for repositories.
+
+## World Bank examples
+
+- The [Microdata Library](https://microdata.worldbank.org/) records downloads per study behind its access conditions, which is the download count the citations list complements.
+- The agent interface of the [serving statistics to agents cookbook](/cookbook/serving-statistics-to-agents/operate) logs tool calls per series, the machine stream of this chapter.
+
+## Resources
+
+- [COUNTER Code of Practice for Research Data](https://coprd.countermetrics.org/): the counting rules (robots, double-clicks, regular and machine access) and the report format.
+- [Make Data Count](https://makedatacount.org/): the initiative behind the Code and the open data metrics tools; the [Data Citation Corpus](https://makedatacount.org/data-citation/) complements the access counts with citations.
+- [DataCite Event Data guide](https://support.datacite.org/docs/eventdata-guide): how usage and citation events are recorded for DOIs.
+- [Matomo](https://matomo.org/): open-source, self-hosted web analytics with bot filtering, for page views where a full log pipeline is too much.
+- [RFC 9309 (robots.txt)](https://www.rfc-editor.org/rfc/rfc9309): what well-behaved crawlers declare, which is what the robot list keys on.
+
+## Common mistakes
+
+- **Raw hits as downloads.** Crawlers and double-clicks inflate them, differently each month.
+- **Machine access hidden in the total.** A polling script becomes a thousand users.
+- **Addresses stored in clear.** A hashed identifier counts as well and keeps the log out of the personal data register.
+- **Counts without method.** A figure comparable with nothing, including last year's.
+
+## Verification
+
+- **Log.** Every access path produces rows with all six fields, and the dataset identifier resolves for a sample of URLs.
+- **Count.** The exclusions are reported with the counts, and a known crawler's visit does not change the regular count.
+- **Series.** Counts per dataset and month exist for every month since logging began, with method changes recorded.
+
+## Checklist
+
+<Checklist id="monitoring-data-use-access" items={[
+  'All access paths logged with timestamp, dataset, action, client, user agent, status',
+  'Robots excluded with a maintained list; own agents identified',
+  'Double-click filter and successful-request rule applied',
+  'Regular and machine requests reported separately per dataset and month',
+  'Counts kept as a series with method changes recorded',
+  'Usage reported to DataCite for datasets with DOIs',
+]} />

@@ -1,0 +1,255 @@
+---
+id: risk
+title: "4. Measurement of disclosure risk"
+sidebar_label: "4. Risk"
+sidebar_position: 5
+description: How the disclosure risk of a synthetic file is measured, through checks for copied records, records too close to real ones, and attribute inference, how the disclosure control unit sets the limits, and what is done when a check fails.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 4. Measurement of disclosure risk
+
+**Question:** How is the disclosure risk of synthetic data measured?
+
+## Rationale
+
+A synthetic file contains no real record, which is true only if the
+synthesizer did not copy any. Methods copy in different ways: a tree
+with a leaf of one person reproduces that person; a generator trained
+too long memorizes training records; a crude sampler that draws real
+values column by column reassembles real rows by chance. Beyond copies,
+a file can reveal attributes: if everyone in the synthetic file with a
+given region, sex, age, and education has a high income, the file says
+something about the real people with those characteristics. The checks
+are specific: exact copies, closest-record distance compared with a
+baseline, and attribute inference compared with a baseline; the
+disclosure control unit sets the limits, and a failed check sends the
+file back to the method.
+
+## Target state
+
+- Every synthetic file is checked for exact copies, closest-record distance against the real-to-real baseline, and attribute inference against the majority baseline, before release.
+- The disclosure control unit sets the limits per check and reviews the results, and the review is recorded with a date in the synthesis record.
+- A failed check changes the method or its parameters; no file with copies is released.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Run the risk report; remove nothing by hand; a file with copies goes back to the method. |
+| **AI-ready** | Set limits per check with the disclosure control unit; add the organization's sensitive attributes and quasi-identifiers; record the review. |
+| **AI-native** | Add membership inference tests and, where the method supports it, formal privacy accounting; run the checks as a pipeline stage; re-check at every synthesis. |
+
+:::info[Running example]
+The crude synthesis of chapter 2 produced fifteen exact copies of real
+records among 300: two planted to show the check, and thirteen
+reassembled by chance from real values drawn column by column. The
+closest-record distances are smaller than between two halves of the real
+file, which confirms the copying; the attribute inference of income band
+is below the majority baseline, which is the one check the file passes.
+The file goes back to the method.
+:::
+
+## Recipes
+
+<Recipe title="4.1 Run the risk report" level="Foundational" skills="Python; disclosure control unit for the limits" time="Minutes per file">
+
+**Result:** the synthetic file has been through three checks: whether
+any synthetic record is an exact copy of a real one, whether synthetic
+records sit suspiciously close to real ones, and whether the file
+reveals a sensitive attribute of real people.
+
+The checks use two ideas. Quasi-identifiers are the variables an
+attacker could know about a person from elsewhere (region, sex, age,
+education); a sensitive attribute is what they want to learn (income).
+The script reads the real and the synthetic file and reports three
+things. First, exact copies. Second, for each synthetic record, the
+distance to the closest real record on the quasi-identifiers. The same
+distance between two halves of the real file is printed beside it as the
+baseline, because real people also resemble each other. Third, how well
+the income band of real people can be guessed from their
+quasi-identifiers by looking up the most similar synthetic record. The
+accuracy of guessing the most common band for everyone is the baseline
+for that:
+
+```python file=../../website/static/cookbook-files/synthetic-data-for-sharing/risk_report.py
+```
+
+```bash
+python risk_report.py real_sample.csv synthetic_sample.csv --quasi region sex age educ --sensitive income
+```
+
+Output for the running example:
+
+```text
+real 300 rows, synthetic 300 rows
+
+exact copies: 15 synthetic record(s) identical to a real record (rows 1, 2, 18, 26, 37, 63, 70, 87, 177, 186, 205, 214, 262, 265, 292)
+
+closest record distance on the quasi-identifiers (0 = identical)
+  synthetic to real:      median 0.008, share at 0: 0.18
+  real half to other half: median 0.012, share at 0: 0.12
+  a synthetic file much closer to the real one than the real halves are to each other has copied records
+
+attribute inference of income band from the quasi-identifiers through the synthetic file
+  nearest-neighbour accuracy 0.42 vs majority baseline 0.56
+  an accuracy far above the baseline means the synthetic file reveals the attribute for people like the quasi-identifiers; the disclosure control unit sets the limit
+```
+
+The first block lists the exact copies by row. The second gives the
+closest-record distance for the synthetic file and, beside it, the same
+distance between two halves of the real file. The third gives the
+accuracy with which a sensitive attribute can be inferred through the
+synthetic file, beside the accuracy of guessing the most common value.
+
+1. Run the report where the real file is. Set the quasi-identifiers and
+   the sensitive attributes as the disclosure control unit defines them
+   for the survey.
+2. Exact copies: any number above zero fails. The fix is in the method
+   (a larger minimum leaf size, more smoothing, a stricter stopping
+   rule). Deleting the copies by hand leaves the near-copies in place.
+3. Closest-record distance: compare the synthetic-to-real figures with
+   the real-half-to-half ones. A synthetic file markedly closer to the
+   real file than the real halves are to each other has copied in part.
+4. Attribute inference: compare the accuracy with the majority
+   baseline. The disclosure control unit sets how far above the
+   baseline is acceptable for each sensitive attribute.
+
+**Worked example.** The run above is the crude synthesis of chapter 2.
+Fifteen synthetic records are identical to real ones, which fails the
+first check outright. The closest-record distances confirm the problem:
+18 percent of synthetic records sit at distance zero from a real one,
+where only 12 percent of the real file's halves do. The attribute
+inference accuracy of 0.42 is below the majority baseline of 0.56, so
+the file does not reveal income bands, which is the one check it
+passes. The methodologist does not delete the fifteen records. The file
+goes back to chapter 2, and the sequential CART synthesis with a minimum
+leaf size of 10 produces a file with no exact copies and a share at
+distance zero of 0.11, which is in line with the baseline.
+
+**What this does not do.** These three checks catch copying and simple
+inference. A membership inference test (can an attacker tell that a
+given person was in the real file?) and formal privacy guarantees are
+the subject of recipe 4.3, and the unit decides which the release tier
+requires.
+
+</Recipe>
+
+<Recipe title="4.2 Set the limits and record the review" level="AI-ready" skills="Disclosure control unit; methodologist" time="Half a day per survey">
+
+**Result:** each check has a written limit, set by the disclosure
+control unit for the survey's synthetic files, and each file has a
+recorded review against the limits.
+
+1. Set the limits with the unit. At minimum:
+   - no exact copies;
+   - closest-record distances no nearer than the real baseline by more
+     than a stated margin;
+   - attribute inference no more than a stated amount above the
+     baseline for each sensitive attribute;
+   - any rule specific to the survey, for example no synthetic record
+     in a small area with a rare combination that occurs once in the
+     real file.
+2. Record the limits in the survey's disclosure control documentation
+   ([microdata cookbook, chapter 8](/cookbook/microdata-documentation/access)).
+3. Review each file's report against the limits. Record the reviewer,
+   the date, and the decision in the synthesis record.
+
+**Worked example.** The disclosure control unit sets the limits for the
+labour force survey's synthetic files in a one-page note. For the open tier there are four limits. There are no exact copies. The
+share of synthetic records at distance zero from a real record is no
+more than 1.2 times the real-to-real share. The inference accuracy for
+income band is no more than 5 points above the majority baseline. And
+no synthetic record falls in a region-by-occupation cell that holds a
+single real person. For the registered tier the
+margins are wider. The sequential file's report is reviewed against the
+open-tier limits on 2026-10-06 by the unit's head, who records "passes
+all four; released to the open tier" in the synthesis record.
+
+**What this does not do.** The limits are the unit's judgement for the
+release tier: open download, registered users, or partners. A stricter
+tier has stricter limits, and a file that fails the open tier can still
+be released to a narrower one.
+
+</Recipe>
+
+<Recipe title="4.3 Add membership inference and formal methods where the tier requires" level="AI-native" skills="Data scientist; disclosure control unit" time="One to two weeks to set up">
+
+**Result:** every file released openly has a membership inference test
+with its measured result and, where the method supports it, a formal
+privacy guarantee with its parameter recorded.
+
+1. Membership inference: train a classifier to tell records that were
+   in the real file from real records that were held out, using only
+   the synthetic file as its information. Report how much better than
+   chance it does. A large advantage fails the file.
+2. Where the organization uses a differentially private synthesizer (a
+   method with a mathematical bound on what any output can reveal about
+   any one record), record the privacy parameter and its accounting.
+   The utility report shows what the guarantee cost.
+3. Keep the tests with the file's record and run them again at every
+   synthesis.
+
+**Worked example.** Before the open release, the data scientist holds out 1,000 real
+records that were not used in the synthesis. A classifier is trained on
+features derived from the synthetic file to separate the 8,400 training
+records from the 1,000 held-out ones, and its accuracy is measured on a
+balanced test set. The classifier reaches 0.52, where
+chance is 0.50, which the unit's note defines as no measurable
+advantage. The result is recorded with the file. For a later survey
+synthesized with a differentially private method, the record carries
+the privacy parameter, and the utility report shows that the regional
+employment rates moved by two more points than with the ordinary
+method, which is the cost of the guarantee.
+
+**What this does not do.** Formal guarantees cover what they define.
+They do not replace the purpose statement, the label, and the terms of
+use, which address misuse, a different risk from disclosure.
+
+</Recipe>
+
+## Implementation options
+
+- **Checks:** the script in this chapter; synthpop's disclosure measures; SDMetrics privacy metrics; membership inference with a held-out set.
+- **Limits:** per check and per release tier, set by the disclosure control unit.
+- **Fixes:** method parameters (leaf size, smoothing, stopping rule, model size); narrower tier; never deletion of copies.
+- **Formal methods:** differentially private synthesizers where the tier requires, with the parameter recorded.
+
+## World Bank examples
+
+- [REaLTabFormer](https://github.com/worldbank/REaLTabFormer) includes a distance-to-closest-record stopping criterion that limits memorization during training, the closest-record check applied at training time.
+- The [microdata cookbook's access chapter](/cookbook/microdata-documentation/access) and the [sdcMicro practice guide](https://sdcpractice.readthedocs.io/) set the disclosure control practice the unit applies.
+
+## Resources
+
+- [sdcMicro practice guide](https://sdcpractice.readthedocs.io/): the risk measures and the workflow of the disclosure control unit.
+- [synthpop disclosure measures](https://cran.r-project.org/package=synthpop): identity and attribute disclosure measures for synthetic data.
+- [SDMetrics privacy metrics](https://github.com/sdv-dev/SDMetrics): distance-to-closest-record and inference metrics with reports.
+- [Membership inference attacks (Shokri et al., 2017)](https://arxiv.org/abs/1610.05820): the test recipe 4.3 describes.
+- [Risk report script](pathname:///cookbook-files/synthetic-data-for-sharing/risk_report.py): the running example.
+
+## Common mistakes
+
+- **Copies deleted by hand.** The near-copies remain; fix the method.
+- **No baseline.** Closest-record distances mean nothing without the real-to-real comparison.
+- **Limits set by the synthesis team.** The disclosure control unit sets them.
+- **"Synthetic, therefore safe."** The checks exist because it is not automatic.
+
+## Verification
+
+- **Report.** Every file has the three checks, run with the survey's quasi-identifiers and sensitive attributes.
+- **Limits.** The limits are recorded per survey and tier, and the review against them is recorded with the reviewer and the date.
+- **Fixes.** A failed file shows a method change in its record, and never a manual edit.
+
+## Checklist
+
+<Checklist id="synthetic-data-for-sharing-risk" items={[
+  'Exact copies checked; zero required',
+  'Closest-record distance compared with the real-to-real baseline',
+  'Attribute inference compared with the majority baseline per sensitive attribute',
+  'Limits set by the disclosure control unit per tier and recorded',
+  'Review with reviewer and date in the synthesis record',
+  'Failed checks fixed in the method; the file is never edited by hand',
+]} />

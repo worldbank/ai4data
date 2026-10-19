@@ -1,0 +1,37 @@
+[
+  {
+    "idno": "FS_UNDERNOURISH_PCT",
+    "type": "indicator",
+    "name": "Prevalence of undernourishment",
+    "record": "records/FS_UNDERNOURISH_PCT.json",
+    "values": "values/FS_UNDERNOURISH_PCT.csv"
+  },
+  {
+    "idno": "ED_PRIMARY_NER_PCT",
+    "type": "indicator",
+    "name": "Net enrolment rate in primary education",
+    "record": "records/ED_PRIMARY_NER_PCT.json",
+    "values": "values/ED_PRIMARY_NER_PCT.csv"
+  },
+  {
+    "idno": "HE_U5_MORT_RATE",
+    "type": "indicator",
+    "name": "Under-five mortality rate",
+    "record": "records/HE_U5_MORT_RATE.json",
+    "values": "values/HE_U5_MORT_RATE.csv"
+  },
+  {
+    "idno": "PV_HEADCOUNT_NPL_PCT",
+    "type": "indicator",
+    "name": "Poverty headcount ratio at national poverty line",
+    "record": "records/PV_HEADCOUNT_NPL_PCT.json",
+    "values": "values/PV_HEADCOUNT_NPL_PCT.csv"
+  },
+  {
+    "idno": "EX-LFS-2025-Q2",
+    "type": "microdata",
+    "name": "Labour Force Survey 2025, Quarter 2",
+    "record": "records/EX-LFS-2025-Q2.json",
+    "values": null
+  }
+]

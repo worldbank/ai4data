@@ -1,0 +1,114 @@
+---
+id: start-here
+title: Self-assessment
+sidebar_label: Self-assessment
+sidebar_position: 1
+description: A five-minute self-assessment that places an organization's planning from the readiness assessment at a maturity level in each chapter and suggests a reading order.
+---
+
+import SelfAssessment from '@site/src/components/Cookbook/SelfAssessment';
+
+# Self-assessment
+
+Select the statement that best describes the organization today, one per
+chapter. The result shows a level for each chapter and the chapters to read
+first. Answers are stored in this browser only.
+
+This page assesses the planning practice. The
+[AI-readiness assessment framework](/ai-readiness-assessment) assesses the
+organization itself, and chapter 1 of this guide starts from its result.
+
+<SelfAssessment
+  base="/cookbook/assessment-to-pathway/"
+  questions={[
+    {
+      id: 'profile',
+      title: '1. Profile',
+      question: 'How is the assessment result read?',
+      options: [
+        'The overall score and the pillar scores are known; the question-level answers are in the assessor\'s files.',
+        'The answers are in one score file, the profile is computed by script, and each dimension has been read with its questions.',
+        'The score file is under version control with the notes, and the profile is the first step of every planning cycle.',
+        'The answers come from the assessment platform\'s export, and the profile is published with the pathway.',
+      ],
+    },
+    {
+      id: 'targets',
+      title: '2. Targets',
+      question: 'How are target levels set?',
+      options: [
+        'Targets are not set; the organization works on what comes up.',
+        'Every dimension has a target for the cycle with a reason, and the gap table has been run.',
+        'The targets are approved by the board with the gap table in the papers and reviewed at the end of each cycle.',
+        'Targets are set from the previous cycle\'s evidence and the peer network\'s experience, and published with the pathway.',
+      ],
+    },
+    {
+      id: 'sequence',
+      title: '3. Sequence',
+      question: 'How is the order of the work decided?',
+      options: [
+        'By which unit asks first.',
+        'The dependencies are written down and the waves are computed.',
+        'The waves are approved with the targets, and a dimension moves to a later wave only by a recorded decision.',
+        'The evidence register\'s status feeds back into the waves each quarter.',
+      ],
+    },
+    {
+      id: 'effort',
+      title: '4. Effort',
+      question: 'How is the effort of the pathway known?',
+      options: [
+        'It is not estimated.',
+        'The recipe effort table is filled from the cookbooks and the estimate has been run.',
+        'The estimate is approved with the targets and the waves, and actual days are recorded against it.',
+        'Estimates are made from the previous cycle\'s actual days and shared with the peer network.',
+      ],
+    },
+    {
+      id: 'pathway',
+      title: '5. Pathway',
+      question: 'Is there a pathway document?',
+      options: [
+        'There is a list of intentions in a presentation.',
+        'The document is generated from the tables, with the narrative and the dates added, and approved.',
+        'The document is regenerated at each quarter\'s board meeting with the register\'s status, and every version is kept.',
+        'The pathway or its summary is published with the statement of model use and shared with the peer network.',
+      ],
+    },
+    {
+      id: 'evidence',
+      title: '6. Evidence',
+      question: 'Is the evidence for each question planned?',
+      options: [
+        'Evidence is assembled when the assessment asks for it.',
+        'The register covers the first wave\'s questions and has been checked.',
+        'The register covers every question below target, is checked each quarter with the date, and its overdue rows go to the board.',
+        'Each row links to the document\'s location, and the evidence pack is generated from the register.',
+      ],
+    },
+    {
+      id: 'reassess',
+      title: '7. Re-assess',
+      question: 'How is progress measured?',
+      options: [
+        'A re-assessment is not planned.',
+        'A re-assessment on the same version is scheduled, with the evidence pack, and the profiles are compared.',
+        'The questions that moved down and the targets missed are read with owners, and the next cycle\'s targets start from the comparison.',
+        'The comparison is published with the pathway and contributed to the peer network\'s evidence base.',
+      ],
+    },
+  ]}
+/>
+
+## Interpretation of the result
+
+- A **Not yet** or **Foundational** result in chapters 1 and 2 comes before
+  anything else: the profile and the targets are what every later step
+  computes from.
+- Chapters 3 and 4 take an hour once the tables exist, and chapter 5 is
+  the day that turns them into a decision.
+- Chapter 6 is worth starting in the first month of the pathway, because
+  the quarterly check is where a slipping wave is seen in time.
+- Chapter 7 is read at the start of the cycle, so that the re-assessment
+  is scheduled and its version fixed before the work begins.

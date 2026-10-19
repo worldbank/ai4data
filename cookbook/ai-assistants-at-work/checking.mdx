@@ -1,0 +1,223 @@
+---
+id: checking
+title: "4. Checking an answer before use"
+sidebar_label: "4. Checking"
+sidebar_position: 4
+description: How an answer from an assistant is checked before it is used, with every figure compared against the source by script, every claim traced to the sentence it rests on, and the review recorded as the card requires.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 4. Checking an answer before use
+
+**Question:** How is an answer checked before it is used?
+
+## Rationale
+
+An assistant's answer reads as finished. It is fluent, confident, and
+usually right, which is what makes the wrong parts dangerous: a figure
+that is almost the one in the table, a difference computed from two
+figures that are both right, a claim that sounds like the source and is
+not in it. In a statistical organization a wrong figure that reaches a
+briefing, a record, or a user carries the organization's name. The
+review on the card is where the organization's responsibility for its
+numbers meets everyday work.
+
+The check has two parts, and the first is a script. Every number in the
+answer is compared with the source, and a number that is not in the
+source is flagged, whatever the sentence around it says. The second part
+is a person's reading: every claim is traced to the sentence of the
+source it rests on, and a claim without one is removed. The review is then
+recorded, so that the use log of chapter 5 shows who checked what.
+
+## Target state
+
+- No figure from an assistant is used before it is compared with the source.
+- No claim from an assistant is used before it is traced to the source.
+- The check takes less time than writing the answer would have, because the question of chapter 3 made the answer checkable.
+- The review is recorded with the use.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Teach the two-part check with the card; make the number check available. |
+| **AI-ready** | Run the number check on every answer with figures; record the review in the use log. |
+| **AI-native** | Run the number check inside the organization's own assistant, so that an answer with an unverified figure is shown with the figure marked. |
+
+:::info[Running example]
+The assistant's summary of the second-quarter labour market table had
+eight numbers. Six were in the table. One, the number of employed
+persons, was off by nine thousand, and one was a difference the assistant
+computed although the question said not to. The script found both; the
+analyst corrected the first and removed the second. The file is
+[assistant_answer.md](pathname:///cookbook-files/ai-assistants-at-work/assistant_answer.md).
+:::
+
+## Recipes
+
+<Recipe title="4.1 Check every figure against the source" level="Foundational" skills="Every member of staff" time="A minute per answer">
+
+**Result:** every number in the answer is marked verified or unverified
+against the source table, and no unverified number is used.
+
+The script extracts the numbers from the answer, leaving out reference
+periods, years, and the ages in unit text, and looks each one up among
+the values and the previous values of the source table. A number that is
+in the table is verified; one that is not is unverified, whether it is a
+wrong figure, a computed difference, or a figure from memory. The script
+does not decide whether a verified figure is attached to the right
+series; the person's reading does that.
+
+1. Save the answer as a text file and run the script with the source
+   table.
+2. For each unverified number, find the sentence and decide: correct the
+   figure from the table, remove the sentence, or, where the number is
+   right and the table is not its source, add the source to the use
+   log's note.
+3. Read the verified figures in their sentences to see that each is
+   attached to the right series and period.
+
+```bash
+python check_numbers.py assistant_answer.md release_table.csv
+```
+
+```text
+       6.1  verified
+       6.3  verified
+      16.8  verified
+      17.5  verified
+      61.2  verified
+     4,321  UNVERIFIED
+     4,268  verified
+       0.3  UNVERIFIED
+8 numbers; 6 verified, 2 unverified
+problem: 4,321 is not a value or a previous value in the table
+problem: 0.3 is not a value or a previous value in the table
+result: FAIL
+```
+
+**Worked example.** The summary stated the number of employed persons as
+4,321 thousand; the table says 4,312. The two figures differ by one
+transposed digit, and a reader who did not have the table in front of
+them would not have noticed. The summary also said that unemployment fell
+by 0.3 points over the quarter, which is a difference the question said
+not to compute, and which is wrong: the table gives 6.1 after 6.3. The
+analyst corrected the first figure and removed the last sentence, ran the
+script again, and used the summary with eight numbers verified.
+
+**What this does not do.** The script checks figures against one table.
+An answer that draws on several sources is checked against each, and a
+claim in words is the reading of recipe 4.2.
+
+</Recipe>
+
+<Recipe title="4.2 Trace every claim to the source" level="Foundational" skills="Every member of staff" time="A few minutes per answer">
+
+**Result:** every claim in the answer rests on a sentence of the source
+that the person has found, and the claims that rest on nothing are
+removed.
+
+A claim is a sentence that says something the figures do not say by
+themselves: that a fall is the largest since a year, that growth was
+concentrated in a sector, that a method changed. An assistant produces
+claims readily, and most are plausible. The check is to find, for each,
+the sentence of the source it rests on. Where the source is a table, a
+claim beyond the figures rests on nothing, and it goes.
+
+1. Read the answer sentence by sentence and mark each as a figure, a
+   claim, or wording.
+2. For each claim, find the sentence of the source. Where the source is a
+   table, the claim has to be a reading of a figure in it, with no
+   comparison the table does not contain.
+3. Remove the claims that rest on nothing. Do not soften them; a claim
+   with "may" in front of it is still a claim.
+4. Read the wording for anything the organization would not say in its
+   own name: a judgment, a cause, a recommendation.
+
+**Worked example.** After the figures were corrected, the analyst read
+the summary's six sentences. Five were figures with their periods. One
+was a claim, that unemployment "therefore fell", and it was a reading of
+two figures in the table and was kept with the computed difference
+removed. An earlier draft from a different question had said that the
+fall was "the lowest level since 2019", which the table did not contain;
+it was removed, and the question was rewritten with the constraint that
+the library's prompt now carries.
+
+**What this does not do.** The reading finds claims the source does not
+support. Whether a supported claim is the right thing to say in a
+briefing is the analyst's judgment, which no check replaces.
+
+</Recipe>
+
+<Recipe title="4.3 Record the review" level="AI-ready" skills="Every member of staff" time="A few seconds per answer">
+
+**Result:** the use log says, for each answer that was used, who checked
+it and what happened to it.
+
+The review on the card is a control only when it leaves a trace. The
+trace is a row in the use log of chapter 5: the task, the tool, the tier,
+the person who reviewed, and the outcome, which is one of used, edited,
+or discarded. The outcome is the measure the unit session reads: a task
+whose answers are mostly discarded has a prompt problem or is not a task
+for an assistant.
+
+1. After the check, add the row to the use log with the reviewer's role
+   and the outcome.
+2. Where an unverified figure or an unsupported claim was found, say so
+   in the outcome as "edited" and, where the organization keeps notes,
+   in a note.
+3. Where the answer was not usable, record "discarded"; it is the most
+   useful row the log has.
+
+**Worked example.** The analyst recorded the summary as task T10, on the
+organization's own assistant, internal tier, reviewed by the analyst,
+outcome "edited", with the note "one figure corrected, one computed
+difference removed". The row is one of the twenty in the running
+example's log.
+
+**What this does not do.** The row records that a review happened and
+what it found. It does not say whether the review was good, and the unit
+session of chapter 6 is where a sample of answers is reread.
+
+</Recipe>
+
+## Implementation options
+
+- **Several sources.** An answer drawn from a report and a table is checked against both; the script runs once per table, and the claims are traced to the report.
+- **Inside the assistant.** The organization's own assistant can run the number check on each answer and mark unverified figures in the interface, which is what Proof-Carrying Numbers do for the public assistant.
+- **Translations and code.** A translation is checked by a speaker of the target language against the original, and a script review by running the script; the two-part check applies with the figure check replaced by the test.
+
+## World Bank examples
+
+- The [Proof-Carrying Numbers](https://arxiv.org/abs/2509.06902) method checks each number in a generated answer against the official record and marks it; the script of recipe 4.1 is its everyday form.
+- The [Language Models in Statistical Production](/cookbook/language-models-in-production/commentary) cookbook gives the number and claim check of a release commentary, with the analyst's approval as the decision point.
+
+## Resources
+
+- [Assistant's answer](pathname:///cookbook-files/ai-assistants-at-work/assistant_answer.md), [release table](pathname:///cookbook-files/ai-assistants-at-work/release_table.csv), and [check_numbers.py](pathname:///cookbook-files/ai-assistants-at-work/check_numbers.py): the answer with two planted errors, the source, and the script.
+
+## Common mistakes
+
+- **Reading the answer for sense alone.** A transposed digit makes sense, and only the check finds it.
+- **Trusting a computed difference.** The two figures are right and the difference is wrong often enough to forbid it in the question.
+- **Keeping a plausible claim.** "The lowest since 2019" is the kind of sentence an assistant adds and a table cannot support.
+- **A review that leaves no trace.** The card's control exists only in the log.
+
+## Verification
+
+- **Script check.** The script finds the two planted errors in the running example's answer.
+- **Reading check.** A member of staff picked at random can show, for an answer they used, the source sentence of each claim.
+- **Log check.** Every use with figures in the log has a reviewer and an outcome.
+
+## Checklist
+
+<Checklist id="ai-assistants-at-work-checking" items={[
+  'Two-part check taught with the card',
+  'Number check available where staff work',
+  'Every figure checked before use',
+  'Every claim traced to the source',
+  'Unsupported claims removed',
+  'Review recorded in the use log',
+]} />

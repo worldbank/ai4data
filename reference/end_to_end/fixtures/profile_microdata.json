@@ -1,0 +1,39 @@
+{
+  "type": "microdata",
+  "schema": "microdata-schema.json",
+  "id": "study_desc.title_statement.idno",
+  "name": "foundational and AI-ready fields of the microdata schema",
+  "levels": {
+    "foundational": [
+      "study_desc.title_statement.idno",
+      "study_desc.title_statement.title",
+      "study_desc.authoring_entity",
+      "study_desc.study_info.abstract",
+      "study_desc.study_info.coll_dates",
+      "study_desc.study_info.nation",
+      "study_desc.study_info.universe",
+      "study_desc.study_info.analysis_unit",
+      "study_desc.method.data_collection.sampling_procedure",
+      "study_desc.data_access.dataset_use.cit_req",
+      "study_desc.distribution_statement.contact"
+    ],
+    "ai-ready": [
+      "study_desc.title_statement.identifiers",
+      "study_desc.study_info.keywords",
+      "study_desc.study_info.topics",
+      "study_desc.study_info.geog_coverage",
+      "study_desc.method.data_collection.coll_mode",
+      "study_desc.method.data_collection.weight",
+      "study_desc.data_access.dataset_use.restrictions",
+      "study_desc.data_access.dataset_availability.access_place_url",
+      "study_desc.version_statement.version"
+    ]
+  },
+  "rules": {
+    "dates": ["study_desc.study_info.coll_dates.start", "study_desc.study_info.coll_dates.end", "study_desc.version_statement.version_date"],
+    "period_order": [["study_desc.study_info.coll_dates.start", "study_desc.study_info.coll_dates.end"]],
+    "urls": ["study_desc.data_access.dataset_availability.access_place_url"],
+    "min_words": {"study_desc.study_info.abstract": 20},
+    "placeholders": ["study_desc.study_info.universe", "study_desc.study_info.analysis_unit"]
+  }
+}

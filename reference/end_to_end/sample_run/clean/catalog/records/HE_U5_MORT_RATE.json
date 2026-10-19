@@ -1,0 +1,57 @@
+{
+  "series_description": {
+    "idno": "HE_U5_MORT_RATE",
+    "name": "Under-five mortality rate",
+    "definition_long": "Probability that a child born in a given year dies before reaching age five. Expressed per 1000 live births.",
+    "measurement_unit": "deaths per 1000 live births",
+    "periodicity": "every 5 years",
+    "time_periods": [
+      {
+        "start": "2010",
+        "end": "2020"
+      }
+    ],
+    "geographic_units": [
+      {
+        "name": "national",
+        "type": "country"
+      }
+    ],
+    "sources": [
+      {
+        "name": "Demographic and health survey",
+        "organization": "National Statistics Office (example)"
+      }
+    ],
+    "date_last_update": "2022-11-30",
+    "definition_references": [
+      {
+        "source": "Methods note",
+        "uri": "https://stats.example/def/HE_U5_MORT_RATE"
+      }
+    ],
+    "license": [
+      {
+        "name": "CC BY 4.0",
+        "uri": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    ],
+    "citation_requirement": "National Statistics Office (example), Under-five mortality rate (HE_U5_MORT_RATE), release of 2022-11-30.",
+    "keywords": [
+      {
+        "name": "child mortality"
+      },
+      {
+        "name": "under-five"
+      },
+      {
+        "name": "child health"
+      }
+    ],
+    "topics": [
+      {
+        "name": "Health"
+      }
+    ]
+  }
+}

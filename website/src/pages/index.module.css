@@ -141,3 +141,111 @@
   color: var(--primary);
   text-decoration: underline;
 }
+
+/* Development Data Group logo above the hero eyebrow. */
+.logoLockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.75rem;
+  padding: 1rem 1.75rem;
+  margin-bottom: 1.6rem;
+  background: #fff;
+  border: 1px solid rgba(15, 35, 70, 0.08);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(10, 30, 70, 0.1);
+  max-width: 100%;
+}
+
+[data-theme="dark"] .logoLockup {
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+}
+
+.lockupItem {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.lockupDivider {
+  width: 1px;
+  align-self: stretch;
+  background: rgba(15, 35, 70, 0.18);
+}
+
+.lockupDdg {
+  display: block;
+  height: 62px;
+  width: auto;
+  max-width: 100%;
+}
+
+.lockupProgram {
+  display: block;
+  height: 62px;
+  width: auto;
+  max-width: 100%;
+}
+
+@media screen and (max-width: 996px) {
+  .logoLockup {
+    gap: 1.1rem;
+    padding: 0.8rem 1.1rem;
+  }
+
+  .lockupDdg,
+  .lockupProgram {
+    height: 46px;
+  }
+}
+
+@media screen and (max-width: 520px) {
+  .logoLockup {
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 0.75rem;
+  }
+
+  .lockupDivider {
+    display: none;
+  }
+}
+
+/* ---------- Implementation hub ---------- */
+
+.hub {
+  padding: 4rem 0 3.5rem;
+  border-top: 1px solid var(--hairline);
+}
+
+.hubHead {
+  max-width: 44rem;
+  margin-bottom: 1.75rem;
+}
+
+.hubTitle {
+  font-size: 1.9rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0.6rem 0 0.6rem;
+}
+
+.hubLede {
+  color: var(--ink-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.hubLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin: 1.25rem 0 0;
+  font-weight: 600;
+}
+
+@media screen and (max-width: 560px) {
+  .hub {
+    padding: 2.75rem 0 2.5rem;
+  }
+}

@@ -1,0 +1,101 @@
+---
+id: index
+title: {{TITLE}}
+sidebar_label: Overview
+sidebar_position: 0
+description: {{DESCRIPTION}}
+---
+
+{/* Overview page. Keep the section order; the checker verifies the headings. */}
+
+# {{TITLE}}
+
+**{{SUBTITLE}}** Version 0.1 (working draft), {{DATE}}.
+
+:::note[Working draft]
+This guide is a working draft from the AI for Data – Data for AI program. It
+collects practical approaches and open standards. It does not
+represent official World Bank Group guidance or policy and is not legal
+advice; an organization applies it under its own statistical law, data
+protection rules, and institutional policies.
+Comments and corrections are welcome as
+[GitHub issues](https://github.com/worldbank/ai4data/issues), and the
+[contributing](./contributing.md) page explains how to propose a recipe.
+:::
+
+{/* Introduction: the problem, the organizing questions, the standards the recipes build on. Two or three paragraphs. */}
+
+{{INTRO}}
+
+## Prerequisites
+
+The recipes assume the following are in place or can be arranged:
+
+- {/* Data or systems the cookbook works on. */}
+- {/* People and skills, at the foundational level. */}
+- {/* What the AI-ready and AI-native levels add. */}
+
+## First steps
+
+For a team with limited time, this sequence gives the most useful result first:
+
+1. {/* First step with chapter link and time. */}
+2. {/* Second step. */}
+3. {/* Third step. */}
+
+{/* One sentence on what comes after. */}
+
+## Chapters and questions
+
+| Chapter | Question | Practical topics |
+|---|---|---|
+{{CHAPTER_ROWS}}
+
+## Maturity levels
+
+Each chapter describes three levels. An organization can sit at different
+levels in different chapters, and the first level is a complete, useful
+state on its own.
+
+| Level | Meaning |
+|---|---|
+| **Foundational** | The practice exists in a form a person can use and a crawler can read. |
+| **AI-ready** | The practice is structured, identified, and accessible through documented interfaces, so that software, including AI systems, can use it without manual steps. |
+| **AI-native** | The practice offers AI-oriented interfaces or methods, with provenance and verification built in. |
+
+## Running example
+
+{/* One small fictional case that every chapter uses. Say that the data are invented. */}
+
+The recipes use one small, fictional example so that each chapter picks up
+where the previous one ends. All values are invented.
+
+## Scope of the examples
+
+The examples are small on purpose, so that a reader can run them in an
+afternoon and see the shape of each check. They are starting points. Each
+recipe ends with a **What this does not do** note that says where the
+example stops and what the full version adds.
+
+## Files
+
+| File | Used in |
+|---|---|
+{/* One row per downloadable file in website/static/cookbook-files/{{ID}}/ */}
+
+## Related resources
+
+| Resource | Purpose |
+|---|---|
+| This guide | What an organization can do, and why, in a sequence of practical steps. |
+| [Documentation](/docs/introduction) | How each program method and tool works. |
+| [Code](https://github.com/worldbank/ai4data) | Open-source software to deploy or adapt. |
+
+## Citation
+
+World Bank. {{YEAR}}. *{{TITLE}}.* Version 0.1. AI for Data – Data for AI.
+https://worldbank.github.io/ai4data/cookbook/{{ID}}/
+
+## Version history
+
+- **0.1 ({{DATE}}).** First draft.

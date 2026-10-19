@@ -1,0 +1,212 @@
+---
+id: profile
+title: "1. Reading a readiness profile"
+sidebar_label: "1. Profile"
+sidebar_position: 1
+description: How the question-level answers of an AI-readiness assessment become a profile of twelve dimension levels, two pillar averages, and an overall score, and how a planning team reads the profile for the dimensions and questions that matter.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 1. Reading a readiness profile
+
+**Question:** What does the readiness profile say about the organization?
+
+## Rationale
+
+An AI-readiness assessment ends with sixty-nine answers, one per
+question, each on a four-level scale from A to D. The answers are the
+assessment's substance, and the profile is the summary that lets a
+planning team see them at once: an average and a level for each of the
+twelve dimensions, an average for each of the two pillars, and one
+overall score. The framework is explicit that the output is a map of
+where the organization stands and where it needs to go, and that low
+scores on frontier dimensions are expected for most organizations.
+
+Reading the profile well means two things. The first is to read the
+dimension level with the questions behind it, because a dimension at B
+with two questions at A and three at C needs different work from one with
+five questions at B. The second is to resist the overall score. The
+framework encourages organizations to look at dimension-level scores
+directly to identify areas for action, and the planning recipes of this
+guide never use the overall score for a decision.
+
+## Target state
+
+- The question-level answers are in one file with a score per question, the dimension, and the assessor's note.
+- The profile is computed by script from the file, so that the levels and averages are reproducible.
+- The planning team can name, for each dimension, the questions that hold it at its level.
+- The profile is dated and tied to the framework version that produced it.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Enter the answers in the score file, compute the profile, and read the dimensions with their questions. |
+| **AI-ready** | Keep the score file under version control with the assessor's notes, and compute the profile as the first step of every planning cycle. |
+| **AI-native** | Take the answers from the assessment platform's export directly, and publish the profile with the pathway document. |
+
+:::info[Running example]
+The example organization was assessed on 2025-06-20. Its answers give an
+overall score of 25.6 of 100, with both pillars at B. Two dimensions are
+at A: skills and capacity, and agentic AI access. Twenty-four of the
+sixty-nine questions were answered A. The file is
+[question_scores.csv](pathname:///cookbook-files/assessment-to-pathway/question_scores.csv).
+:::
+
+## Recipes
+
+<Recipe title="1.1 Compute the profile from the question scores" level="Foundational" skills="A planning officer who can run a Python script" time="One hour">
+
+**Result:** the organization has its readiness profile as a table it can
+reproduce: for each dimension the number of questions, the average, and
+the level; for each pillar the average; and the overall score.
+
+The score file has one row per question. The answers A to D carry the
+values 0 to 3, as the framework's scoring annex states. A question that
+does not apply, for example because the gateway question placed the
+organization outside the AI-maturity questions, is marked NA and left out
+of the averages.
+
+| Column | Meaning |
+|---|---|
+| `question_id`, `dimension`, `pillar` | The question's number, its dimension, and its pillar |
+| `dimension_name`, `topic` | The dimension's name and the question's topic |
+| `score` | 0 for A, 1 for B, 2 for C, 3 for D, or NA |
+| `note` | The assessor's note, where the answer needs context |
+
+```csv file=../../website/static/cookbook-files/assessment-to-pathway/question_scores.csv
+```
+
+1. Enter the answers from the assessment form or its export, one row per
+   question, with the assessor's notes where they exist.
+2. Run the profile script. A dimension's average is the unweighted mean
+   of its applicable questions, a pillar's average the mean of its six
+   dimensions, and the overall score the mean of the two pillars scaled
+   to 100.
+3. Read the level letter as the level nearest the average: A below 0.5,
+   B to 1.5, C to 2.5, D above. This is the convention of this guide for
+   planning; the framework's own scripts are the reference for the
+   published index.
+
+```bash
+python readiness_profile.py question_scores.csv
+```
+
+```text
+dim   dimension                                          q   avg  level  at A
+1.1   Strategy and governance                            5  0.60  B      2
+1.2   Legal environment                                  7  0.86  B      2
+1.3   Skills and capacity                                5  0.40  A      3
+1.4   Technical environment                             11  1.00  B      2
+1.5   Funding and resources                              5  0.80  B      2
+1.6   Partnerships                                       4  0.75  B      2
+2.1   Metadata standards and classifications             5  1.40  B      0
+2.2   Quality control procedures                         7  1.14  B      1
+2.3   Searchable data catalog                            6  1.17  B      1
+2.4   API access                                         5  0.60  B      2
+2.5   Agentic AI access and generative AI for dissemin   5  0.00  A      5
+2.6   Data licensing                                     4  0.50  B      2
+
+pillar 1: average 0.73 (B)
+pillar 2: average 0.80 (B)
+overall: 25.6 of 100
+questions scored A: 24 of 69
+```
+
+**Worked example.** The example organization's profile places ten
+dimensions at B and two at A. The "at A" column shows where the A answers
+sit: all five questions of agentic AI access, three of the five skills
+questions, and two questions in most of the other dimensions. Metadata
+standards is the strongest dimension, with an average of 1.40 and no
+question at A, because the organization already uses the Metadata Editor
+and a standard schema for its microdata. The overall score of 25.6 says
+the organization is early-stage, which the framework describes as the
+expected starting point.
+
+**What this does not do.** The script computes what the answers say. It
+does not judge the answers, and an assessment answered without evidence
+produces a profile that the re-assessment of chapter 7 will contradict.
+
+</Recipe>
+
+<Recipe title="1.2 Read each dimension with its questions and notes" level="Foundational" skills="The planning team with the heads of the units assessed" time="Half a day">
+
+**Result:** for each dimension, the planning team can say which questions
+hold it at its level and what the assessor's notes say is missing.
+
+A dimension level is an average, and averages hide shape. The framework's
+four-step logic calls the second step "diagnose": for each priority
+dimension, review the question-level responses and notes to identify the
+specific practices, tools, or policies that are missing. This recipe is
+that step, done for every dimension before targets are set, so that the
+targets of chapter 2 are set with the questions in view.
+
+1. For each dimension, list the questions with their score and note,
+   lowest first.
+2. For each question at A or B, write one sentence on what the next
+   level's response option describes. The framework's reference guide
+   gives the four options per question; the sentence is the gap in the
+   organization's own words.
+3. Mark the questions whose answer the organization disputes or cannot
+   evidence, so that the re-assessment starts from an agreed baseline.
+4. Keep the list with the score file; it is the first page of the
+   pathway document.
+
+**Worked example.** For strategy and governance, the example organization's
+two A answers are AI risk management (no risk register for AI components)
+and change management (no plan). The three B answers say that AI is
+mentioned in the ICT plan without a strategy, that oversight is informal,
+and that ethics principles are cited without being adopted. The next
+level for each is a document: a risk register with tiers, a change and
+training plan, an AI strategy, a board with terms of reference, and
+adopted principles. For agentic access, all five answers are A, and the
+team notes that the next level for each depends on an API that does not
+yet exist, which is what the sequence of chapter 3 makes explicit.
+
+**What this does not do.** Reading the questions says what is missing. It
+does not say what the organization should aim for or in what order; those
+are the decisions of chapters 2 and 3.
+
+</Recipe>
+
+## Implementation options
+
+- **Scoring source.** The framework's assessment platform computes scores automatically through its API; the script of this chapter reproduces the published rule so that a planning team can work from a CSV export or from answers entered by hand.
+- **Visualization.** The framework suggests a radar chart of dimension scores. A bar per dimension with the number of questions at each level shows the shape the recipe reads.
+- **Versioning.** The score file carries the framework version in its name or a header line, because scores across versions are not comparable.
+
+## World Bank examples
+
+- The [AI-readiness assessment framework](/ai-readiness-assessment) describes the twelve dimensions, the four levels, and the readiness profile.
+- The [operational companion](/ai-readiness-in-practice) lists, per dimension, the questions a program resource addresses, which the reading of recipe 1.2 can use to see what is available for each gap.
+
+## Resources
+
+- [AI-readiness assessment framework](/ai-readiness-assessment): the dimensions, questions, levels, and scoring the profile follows.
+- [Question scores of the running example](pathname:///cookbook-files/assessment-to-pathway/question_scores.csv) and [readiness_profile.py](pathname:///cookbook-files/assessment-to-pathway/readiness_profile.py): the file and the script.
+
+## Common mistakes
+
+- **Planning from the overall score.** It compresses sixty-nine answers into one number and hides the two dimensions at A.
+- **Reading a dimension level without its questions.** Two dimensions at B can need entirely different work.
+- **Treating low scores on frontier dimensions as failures.** The framework expects them for most organizations; the sequence puts them last.
+- **Losing the assessor's notes.** The notes say why an answer was given, and the re-assessment needs them.
+
+## Verification
+
+- **Reproduction check.** The script's averages equal the assessment platform's dimension scores, where the platform was used.
+- **Reading check.** For a dimension picked at random, the planning team can name its lowest questions and the next level's response option for each.
+- **Baseline check.** The disputed answers, if any, are marked in the file.
+
+## Checklist
+
+<Checklist id="assessment-to-pathway-profile" items={[
+  'Answers entered one per question with notes',
+  'Profile computed by script and dated',
+  'Framework version recorded with the file',
+  'Each dimension read with its questions, lowest first',
+  'Next level described in one sentence per question at A or B',
+  'Disputed answers marked',
+]} />

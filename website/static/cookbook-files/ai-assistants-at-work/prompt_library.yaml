@@ -1,0 +1,86 @@
+# Prompt library of the example organization. Each prompt names its
+# purpose, the highest data tier it may be used with, the review the
+# person makes, and a template with placeholders in braces. The template
+# always has three parts: the source the assistant must use, the format
+# of the answer, and the constraints.
+version: "1.0"
+owner: Head of methodology
+prompts:
+  - id: summarize_release
+    purpose: Summarize a release table in plain language for a briefing
+    data_tier: internal
+    review: Every figure in the summary is checked against the table with check_numbers.py
+    placeholders: [table, audience]
+    template: |
+      Source: use only the table below. Do not use any figure from memory.
+
+      {table}
+
+      Task: write a summary of this table for {audience}, in at most five sentences.
+
+      Format: plain sentences, one figure per sentence, each figure followed by its reference period in parentheses.
+
+      Constraints: quote figures exactly as they appear in the table, with the unit. Mark a value whose status is P as provisional. Do not compute differences or growth rates. If a figure the summary needs is not in the table, write "not in the table".
+  - id: draft_description
+    purpose: Draft a catalog description for an indicator from its definition and method note
+    data_tier: internal
+    review: The curator approves the draft before it enters the record
+    placeholders: [indicator, definition, method]
+    template: |
+      Source: the definition and the method note below.
+
+      Indicator: {indicator}
+      Definition: {definition}
+      Method: {method}
+
+      Task: draft a description of the indicator for a catalog record, in two or three sentences, for a user who has not seen the definition.
+
+      Format: plain sentences; no bullet points; no figures.
+
+      Constraints: use only what the definition and the method note say. Do not add a purpose, a comparison, or a claim about quality.
+  - id: explain_edit_rule
+    purpose: Explain why a record failed an edit rule, for an editor
+    data_tier: confidential
+    review: The editor decides the case; the explanation is never attached to the record
+    placeholders: [rule, record]
+    template: |
+      Source: the edit rule and the record below. This text stays on the organization's own server.
+
+      Rule: {rule}
+      Record: {record}
+
+      Task: explain in plain language which condition of the rule the record fails and which fields are involved.
+
+      Format: two or three sentences.
+
+      Constraints: do not propose a corrected value. Do not say whether the record is right or wrong; say what the rule checks and what the record contains.
+  - id: translate_published
+    purpose: Translate a published text between the organization's languages
+    data_tier: public
+    review: A speaker of the target language reads the translation before it is used
+    placeholders: [language, text]
+    template: |
+      Source: the text below, which is published.
+
+      {text}
+
+      Task: translate the text into {language}.
+
+      Format: keep the paragraphs, headings, and figures of the original in the same order.
+
+      Constraints: keep every figure, unit, and reference period exactly as in the original. Keep the organization's name and the names of series untranslated. Where a term has an established translation in official statistics, use it.
+  - id: review_script
+    purpose: Review a script for errors and unclear names
+    data_tier: internal
+    review: The analyst runs the script on test data and reads the diff before any change is kept
+    placeholders: [language, script]
+    template: |
+      Source: the {language} script below.
+
+      {script}
+
+      Task: list the errors you find and the names that are unclear, one per line, with the line number.
+
+      Format: a list; no rewritten script.
+
+      Constraints: do not change the method the script implements. Do not add dependencies. Where you are not sure a line is an error, say so.

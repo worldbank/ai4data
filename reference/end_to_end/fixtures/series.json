@@ -1,0 +1,86 @@
+[
+  {
+    "series_description": {
+      "idno": "FS_UNDERNOURISH_PCT",
+      "name": "Prevalence of undernourishment",
+      "definition_long": "Share of the population whose habitual food consumption is insufficient to provide the dietary energy levels required to maintain a normal active and healthy life. Three-year average.",
+      "measurement_unit": "% of population",
+      "periodicity": "annual",
+      "time_periods": [{"start": "2010", "end": "2024"}],
+      "geographic_units": [{"name": "national", "type": "country"}, {"name": "region", "type": "subnational"}],
+      "sources": [{"name": "Food balance sheets and household budget survey", "organization": "National Statistics Office (example)"}],
+      "date_last_update": "2025-03-14",
+      "definition_references": [{"source": "Methods note", "uri": "https://stats.example/def/FS_UNDERNOURISH_PCT"}],
+      "license": [{"name": "CC BY 4.0", "uri": "https://creativecommons.org/licenses/by/4.0/"}],
+      "citation_requirement": "National Statistics Office (example), Prevalence of undernourishment (FS_UNDERNOURISH_PCT), release of 2025-03-14.",
+      "keywords": [{"name": "food security"}, {"name": "hunger"}, {"name": "dietary energy"}],
+      "topics": [{"name": "Food security"}]
+    }
+  },
+  {
+    "series_description": {
+      "idno": "ED_PRIMARY_NER_PCT",
+      "name": "Net enrolment rate in primary education",
+      "definition_long": "Children of official primary school age who are enrolled in primary education as a share of the population of that age group.",
+      "measurement_unit": "% of age group",
+      "periodicity": "annual",
+      "time_periods": [{"start": "2010", "end": "2024"}],
+      "geographic_units": [{"name": "national", "type": "country"}, {"name": "region", "type": "subnational"}],
+      "sources": [{"name": "School census", "organization": "Ministry of Education (example)"}],
+      "date_last_update": "2025-02-01",
+      "definition_references": [{"source": "Methods note", "uri": "https://stats.example/def/ED_PRIMARY_NER_PCT"}],
+      "license": [{"name": "CC BY 4.0", "uri": "https://creativecommons.org/licenses/by/4.0/"}],
+      "citation_requirement": "National Statistics Office (example), Net enrolment rate in primary education (ED_PRIMARY_NER_PCT), release of 2025-02-01.",
+      "keywords": [{"name": "primary education"}, {"name": "enrolment"}, {"name": "school attendance"}],
+      "topics": [{"name": "Education"}]
+    }
+  },
+  {
+    "series_description": {
+      "idno": "HE_U5_MORT_RATE",
+      "name": "Under-five mortality rate",
+      "definition_long": "Probability that a child born in a given year dies before reaching age five. Expressed per 1000 live births.",
+      "measurement_unit": "deaths per 1000 live births",
+      "periodicity": "every 5 years",
+      "time_periods": [{"start": "2010", "end": "2020"}],
+      "geographic_units": [{"name": "national", "type": "country"}],
+      "sources": [{"name": "Demographic and health survey", "organization": "National Statistics Office (example)"}],
+      "date_last_update": "2022-11-30",
+      "definition_references": [{"source": "Methods note", "uri": "https://stats.example/def/HE_U5_MORT_RATE"}],
+      "license": [{"name": "CC BY 4.0", "uri": "https://creativecommons.org/licenses/by/4.0/"}],
+      "citation_requirement": "National Statistics Office (example), Under-five mortality rate (HE_U5_MORT_RATE), release of 2022-11-30.",
+      "keywords": [{"name": "child mortality"}, {"name": "under-five"}, {"name": "child health"}],
+      "topics": [{"name": "Health"}]
+    }
+  },
+  {
+    "series_description": {
+      "idno": "LF_UNEMP_PCT",
+      "name": "Unemployment rate",
+      "measurement_unit": "% of labour force",
+      "periodicity": "quarterly",
+      "time_periods": [{"start": "2015-Q1", "end": "2025-Q2"}],
+      "geographic_units": [{"name": "national", "type": "country"}],
+      "sources": [{"name": "Labour force survey", "organization": "National Statistics Office (example)"}],
+      "date_last_update": "2025-08-20"
+    }
+  },
+  {
+    "series_description": {
+      "idno": "PV_HEADCOUNT_NPL_PCT",
+      "name": "Poverty headcount ratio at national poverty line",
+      "definition_long": "Share of the population living below the national poverty line. Based on household consumption per adult equivalent.",
+      "measurement_unit": "% of population",
+      "periodicity": "every 3 years",
+      "time_periods": [{"start": "2012", "end": "2021"}],
+      "geographic_units": [{"name": "national", "type": "country"}, {"name": "region", "type": "subnational"}],
+      "sources": [{"name": "Household budget survey", "organization": "National Statistics Office (example)"}],
+      "date_last_update": "2023-06-10",
+      "definition_references": [{"source": "Methods note", "uri": "https://stats.example/def/PV_HEADCOUNT_NPL_PCT"}],
+      "license": [{"name": "CC BY 4.0", "uri": "https://creativecommons.org/licenses/by/4.0/"}],
+      "citation_requirement": "National Statistics Office (example), Poverty headcount ratio at national poverty line (PV_HEADCOUNT_NPL_PCT), release of 2023-06-10.",
+      "keywords": [{"name": "poverty"}, {"name": "national poverty line"}, {"name": "consumption"}],
+      "topics": [{"name": "Poverty"}]
+    }
+  }
+]

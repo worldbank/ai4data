@@ -1,0 +1,11 @@
+record_id,field,decision,final_text,reason,reviewer,date
+LF_UNEMP_PCT,definition_long,edit,"Share of the labour force aged 15 and over that is without work, available for work, and seeking work during the reference week, as a percentage of the labour force. Source: quarterly labour force survey.",Added the age threshold from the survey documentation; the draft could not know it,curator-a,2026-09-14
+LF_UNEMP_PCT,keywords,accept,,,curator-a,2026-09-14
+FS_UNDERNOURISH_PCT,keywords,edit,undernourishment; food insecurity,Dropped hunger: outside the vocabulary,curator-a,2026-09-14
+PV_HEADCOUNT_NPL_PCT,keywords,accept,,,curator-a,2026-09-14
+PV_HEADCOUNT_NPL_PCT,name,accept,,,curator-b,2026-09-15
+HE_U5_MORT_RATE,measurement_unit,reject,,"The unit is correct; the values are per 1,000 as stated. Flag was wrong.",curator-b,2026-09-15
+PV_HEADCOUNT_NPL_PCT,definition_long,accept,,,curator-b,2026-09-15
+FS_UNDERNOURISH_PCT,topics,accept,,,curator-a,2026-09-15
+ED_PRIMARY_NER_PCT,topics,edit,Education,Children is not a topic in the list,curator-a,2026-09-15
+ED_PRIMARY_NER_PCT,periodicity,accept,,,curator-a,2026-09-15

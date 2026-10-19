@@ -57,13 +57,17 @@ export default function Program() {
           </p>
           <p className={styles.lede}>
             The program builds on the FAIR principles and extends them for AI
-            systems as consumers of data. Browse the workstreams by pillar or
-            by the AI-ready dimension they improve. The program also develops
+            systems as consumers of data. The workstreams can be viewed by pillar
+            or by the AI-ready dimension they improve. The program also develops
             an{' '}
             <Link to="/ai-readiness-assessment">
               AI-readiness assessment framework
             </Link>{' '}
-            for national statistical organizations.
+            for national statistical organizations. A{' '}
+            <Link to="/ai-readiness-in-practice">
+              companion page
+            </Link>{' '}
+            maps each of its dimensions to the workstreams.
           </p>
         </div>
 
@@ -154,7 +158,7 @@ export default function Program() {
         <p className={styles.note}>
           GSBPM tags show where a workstream applies in the Generic Statistical
           Business Process Model.{' '}
-          <Link to="/docs/gsbpm-mapping">See the full mapping →</Link>
+          <Link to="/docs/gsbpm-mapping">Full mapping →</Link>
         </p>
       </div>
     </section>

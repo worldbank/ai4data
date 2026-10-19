@@ -1,0 +1,209 @@
+---
+id: cite
+title: "8. Findability and citation"
+sidebar_label: "8. Cite"
+sidebar_position: 9
+description: How extracted tables are found and cited, through catalog records under their printed titles, a citation format that names the document, the page, and the table, a log of corrections, and monitoring of where the data are used.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 8. Findability and citation
+
+**Question:** Can the data be found and cited back to the page?
+
+## Rationale
+
+The point of extraction is reuse. A user who searches for "undernourishment
+by district 2024" should find the table, open its data, and cite it as the
+report, the page, and the table number. An AI system that answers a
+question from the table should cite the same page. Findability makes the
+first possible; a citation that reaches the page and the bounding box makes
+the second verifiable.
+
+Extracted data also age. A document is corrected, a series is revised, an
+extraction error is found. The record of corrections, and the monitoring of
+where the data are used, are what keep extracted data trustworthy after
+publication.
+
+## Target state
+
+- Extracted tables appear in the catalog and in search under their printed titles and their subjects.
+- Every table has a citation to the document, page, and table number, and a stable URL; every value can be traced to a page and a bounding box.
+- Corrections are recorded as errata with versions, and the use of extracted data is monitored.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Publish the table titles in the document's page and the site search. Give a citation format for extracted data. |
+| **AI-ready** | Catalog the table records with schema.org markup and stable URLs. Cite to the page and table number, with the document's DOI where it has one. Log corrections as errata. |
+| **AI-native** | Serve extracted data through the catalog API and agent interface with page and bounding box per value; register DOIs for extracted tables; monitor mentions of the tables and the document. |
+
+:::info[Running example]
+`EX-REP-2025-03-T3.1` is found by a search for its printed title and by
+the subject "undernourishment". Its citation names the report, page 24, and
+the table number, and its tidy file traces every value to page 24 and the
+bounding box.
+:::
+
+## Recipes
+
+<Recipe title="8.1 Make extracted tables findable" level="AI-ready" skills="Catalog administrator" time="Part of publication">
+
+**Result:** a search for a table's printed title, or for its subject,
+returns the table record and its data.
+
+1. Publish the table records in the catalog ([chapter 7](./publish.mdx)),
+   with the printed title, the subject keywords, and the series the
+   table reports. NADA indexes tables with the other data types.
+2. Add schema.org `Dataset` markup to the table's page, with `isBasedOn`
+   pointing to the document and `distribution` pointing to the tidy
+   file, as in
+   [recipe 1.2 of the dissemination cookbook](/cookbook/ai-ready-dissemination/find).
+3. Add the tables to the known-item question set of the dissemination
+   cookbook ([chapter 6](/cookbook/ai-ready-dissemination/evaluate)), so
+   that search over extracted data is scored with the rest.
+
+**Worked example.** After the four table records are published, the
+catalog administrator searches the catalog for "undernourishment by
+district" and gets Table 3.1 first. A search for "hunger by region"
+returns nothing, because neither word is in the record, so the
+administrator adds "hunger" and "region" to the table's keywords, which
+the series record already carries. Two questions, "undernourishment by
+district 2024" and "which region has the most hunger", go into the
+known-item question set with the table as the expected result, and the
+next scoring run reports both found in the top five.
+
+**What this does not do.** Findability by title serves users who know
+roughly what they want. Users who ask a question in their own words are
+served by search by meaning over the records, which the dissemination
+cookbook covers.
+
+</Recipe>
+
+<Recipe title="8.2 Cite to the document, the page, and the table" level="Foundational" skills="Dissemination officer" time="One hour to set the format">
+
+**Result:** the organization has one citation format for extracted data,
+and the same format is used in the record, on the page, and by systems
+that quote the data.
+
+The format names the organization, the year, the document, the table,
+the page, and the document's address with a page fragment that opens
+the PDF at the right page:
+
+```text
+National Statistics Office (example). 2025. Food security report 2025,
+Table 3.1, page 24. https://stats.example/documents/EX-REP-2025-03.pdf#page=26
+```
+
+1. Set the format as above.
+2. Put the citation in the table record (`citation`) and on the table's
+   page, and add the DOI of the document where it has one.
+3. For a single value, the tidy file's `page` and `bbox` columns are the
+   citation at value level. A system that quotes the value can show the
+   snapshot, which is what the home page's example does.
+4. Use the PDF page number in URLs (`#page=26`) and the printed page
+   number in the citation text. They differ, and both are in the
+   records.
+
+**Worked example.** The citation of Table 3.1 is the one shown above.
+Its printed page is 24, and its PDF page is 26, because the report has
+two unnumbered pages of front matter, so the URL fragment reads
+`#page=26` while the text reads "page 24". When an assistant answers
+"What was the prevalence of undernourishment in the Eastern Region in
+2024?" from the tidy file, it quotes 9.2 percent and gives that
+citation. The interface shows the snapshot of the table beside the
+answer, because the tidy file's `page` and `bbox` columns point to it.
+
+**What this does not do.** A citation to a page does not freeze the
+document. If the document is corrected, the citation needs the version,
+which recipe 8.3 records.
+
+</Recipe>
+
+<Recipe title="8.3 Log corrections and monitor use" level="AI-ready" skills="Dissemination officer" time="Ongoing">
+
+**Result:** every correction to extracted data is dated and versioned,
+superseded files stay available, and the organization can see where its
+extracted data are used.
+
+1. When a value is corrected after publication (an extraction error, a
+   document erratum, a series revision), publish a new version of the
+   tidy file and the record, keep the old one, and log the change:
+   table, value, old and new, reason, date.
+2. State on the table's page which version is current and list the
+   errata, as the series pages do in the
+   [dissemination cookbook](/cookbook/ai-ready-dissemination/trust).
+3. Monitor mentions of the document and its tables with the program's
+   [Monitoring of Data Use](/docs/data_use/), and run the monthly check
+   of how AI systems answer questions the tables answer
+   ([chapter 7 of the dissemination cookbook](/cookbook/ai-ready-dissemination/monitor-use)).
+4. When an AI system quotes an old or wrong figure from the document,
+   check first whether the table record and the tidy file are findable
+   and current. Most fixes are on the organization's side.
+
+**Worked example.** In November a reader reports that the Western
+Region's population in Table 3.1 is printed as 1,430 thousand in the
+report but as 1,340 in the tidy file. The reviewer confirms the
+transposition against page 24, publishes version 1.1 of the file and
+the record, keeps version 1.0, and adds the entry "T3.1, Western Region,
+Population (thousands): 1340 corrected to 1430; transposed digits;
+2026-11-12" to the corrections log on the table's page. The monthly AI
+visibility check, which asks two assistants for the Eastern Region's
+prevalence, shows one assistant citing the report and page and the
+other quoting the national figure without a source. The table record's
+keywords are extended, and the check is repeated the next month.
+
+**What this does not do.** Monitoring finds mentions of the document
+and the tables by name. Values quoted without attribution are not
+traceable, which is the reason the citation format and the page-level
+provenance exist.
+
+</Recipe>
+
+## Implementation options
+
+- **Findability:** catalog records with schema.org markup; the site search index; the question set of the dissemination cookbook.
+- **Citation:** a fixed format with page and table number; the document's DOI; a DataCite DOI for the extracted table where the organization registers them.
+- **Versioning:** versioned files and records with errata; superseded versions kept.
+- **Monitoring:** mention extraction over publications and the AI visibility check from the dissemination cookbook.
+
+## World Bank examples
+
+- The program's [home page](/) shows a value cited to its page and snapshot, which is the value-level citation of this chapter.
+- [Monitoring of Data Use](/docs/data_use/) extracts dataset mentions from documents and harmonizes name variants, which finds where extracted tables are reused.
+- [Proof-Carrying Numbers](https://arxiv.org/abs/2509.06902) verifies numbers in generated answers against the record, which an extracted table joins once catalogued.
+
+## Resources
+
+- [schema.org Dataset](https://schema.org/Dataset) and [Google's dataset structured-data guide](https://developers.google.com/search/docs/appearance/structured-data/dataset): the markup a catalog page carries so that an extracted table is found.
+- [DataCite](https://datacite.org/): DOI registration for the extracted tables where the organization registers them; the metadata schema's `relatedIdentifier` links the table to the document.
+- [Findability chapter of the dissemination cookbook](/cookbook/ai-ready-dissemination/find): the question set and the AI visibility check applied to extracted tables.
+- [Monitoring of Data Use cookbook](/cookbook/monitoring-data-use/): mention extraction over publications, which finds citations of the extracted tables.
+
+## Common mistakes
+
+- **Citing the document without the page.** A 300-page yearbook is not a source for one number.
+- **Correcting silently.** Two users with the "same" file get different values.
+- **PDF page and printed page confused.** They differ by the front matter; the records hold both.
+- **Extracted data invisible to search.** A file on a page without a record is found only through the document.
+
+## Verification
+
+- **Search.** A query for a table's printed title returns the table record.
+- **Citation.** Every table record has a citation with the page and the table number, and the URL with the page fragment opens the right page.
+- **Errata.** Every correction after publication appears in the log with a version.
+- **Use.** Mentions of the document and its tables are counted each month.
+
+## Checklist
+
+<Checklist id="data-from-documents-cite" items={[
+  'Table records in the catalog with printed titles and subjects',
+  'schema.org markup on table pages with isBasedOn and distribution',
+  'Citation format with document, page, and table number',
+  'PDF page and printed page both recorded',
+  'Corrections versioned and logged as errata; old versions kept',
+  'Mentions of the document and its tables monitored',
+]} />

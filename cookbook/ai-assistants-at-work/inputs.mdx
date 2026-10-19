@@ -1,0 +1,249 @@
+---
+id: inputs
+title: "2. What may be entered into an assistant"
+sidebar_label: "2. Inputs"
+sidebar_position: 2
+description: How a member of staff decides, before pasting, whether a text is public, internal, or confidential, how a screening script catches the markers that decide the tier, and why confidential text goes only to a local assistant.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 2. What may be entered into an assistant
+
+**Question:** What may be entered into an assistant?
+
+## Rationale
+
+The most common breach of an AI-use policy is a paste. A note that
+contains a respondent's record, an embargoed figure, or a colleague's
+phone number is pasted into an assistant to be summarized, and the text
+has left the organization before anyone thinks about it. The person meant
+no harm; the note was in front of them and the assistant was open. The
+rule that prevents it has to be as quick as the paste.
+
+The rule is a tier. Public text, which the organization has published,
+may go to any assistant the organization allows. Internal text, which
+includes drafts, embargoed material, and anything marked for the
+organization only, may go to the organization's own assistant and to no
+external service. Confidential text, which includes anything at the level
+of a respondent, a household, a business, or a member of staff, and any
+identifier, may go only to a local assistant on the organization's own
+server, and only for the tasks the card allows. The screening script of
+this chapter finds the markers that decide the tier, so that the decision
+takes a second.
+
+## Target state
+
+- Every member of staff knows the three tiers and can place a text in one before pasting.
+- Internal text goes only to the organization's own assistant; confidential text only to the local assistant, and only for the tasks the card allows.
+- A screening script is available where staff paste, and the policy says that a confidential text is not pasted at all until the records and identifiers are removed.
+- The organization runs a local assistant for the confidential tasks it allows, or allows none.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Teach the three tiers with the card; make the screening script available. |
+| **AI-ready** | Run the organization's own assistant for internal text and a local assistant for confidential tasks; log the tier of every use. |
+| **AI-native** | Screen inputs automatically at the organization's assistant, and block confidential markers before the text reaches a model. |
+
+:::info[Running example]
+An analyst of the example organization wanted an assistant to summarize a
+unit note for the Friday meeting. The note carried an embargo line, the
+provisional unemployment figures for the second quarter of 2025, a
+respondent's national identity number, a phone number, and an email
+address. The screening script placed it in the confidential tier and the
+analyst used the local assistant on a version with the records removed.
+The file is
+[draft_note.txt](pathname:///cookbook-files/ai-assistants-at-work/draft_note.txt).
+:::
+
+## Recipes
+
+<Recipe title="2.1 Place the text in a tier before pasting" level="Foundational" skills="Every member of staff" time="A few seconds per paste">
+
+**Result:** the person knows, before the text leaves the desk, which tier
+it is in and which assistant, if any, may receive it.
+
+The three tiers are the AI-use policy's data classification applied to a
+paste. The test is a question each: has the organization published this?
+Is it marked as a draft, embargoed, or for the organization only? Does it
+contain anything about a person, a household, a business, or a record,
+or any identifier?
+
+| Tier | What it contains | Where it may go |
+|---|---|---|
+| Public | Text the organization has published, in the form it was published | Any assistant the organization allows |
+| Internal | Drafts, embargoed figures, meeting notes, internal procedures, unpublished tables | The organization's own assistant only |
+| Confidential | Anything at the level of a respondent, household, business, or member of staff; identifiers, contact details, record values | The local assistant only, for the tasks the card allows, and after the identifiers are removed where the task permits |
+
+1. Ask the three questions in order. The first "yes" to the confidential
+   question decides; a text with any confidential element is confidential
+   as a whole.
+2. For a confidential text, remove the records and identifiers if the
+   task can be done without them, and screen again. A summary of a note
+   rarely needs the identifiers that make it confidential.
+3. For an internal text, use the organization's own assistant. If the
+   organization has none, the task waits or is done without an assistant.
+4. For a public text, use the assistant the card names for the task.
+
+**Worked example.** The analyst's note was for the organization only, so
+it was at least internal, and it contained a national identity number, a
+phone number, and an email address, so it was confidential. The task, a
+summary for a meeting, did not need the identifiers. The analyst removed
+the two follow-up items that carried them, which left an internal text
+with the embargoed figures, and used the organization's own assistant on
+that version. Nothing left the organization.
+
+**What this does not do.** The tiers decide where a text may go. Whether
+the task may be done with an assistant at all is the card of chapter 1,
+and a confidential task the card does not allow is not done with an
+assistant on any server.
+
+</Recipe>
+
+<Recipe title="2.2 Screen the text for the markers that decide the tier" level="Foundational" skills="Every member of staff; a developer puts the script where staff paste" time="A few seconds per text">
+
+**Result:** the markers that make a text confidential or internal are
+listed with their line numbers, and the text's tier and the advice that
+follows from it are printed.
+
+The script looks for the markers that decide the tier. Confidential
+markers are identifiers and record references: a national identity
+number pattern, a household or respondent reference, a phone number, an
+email address, a name attached to a record. Internal markers are the
+words the organization uses for unpublished material: embargo,
+provisional, unpublished, draft, restricted. A confidential marker makes
+the text confidential; an internal marker alone makes it internal; a text
+with neither is public, provided the person has asked the first question
+of recipe 2.1.
+
+1. Run the script on the text before pasting it. It exits with a failure
+   when the text is confidential, so that a habit or a tool can stop the
+   paste.
+2. Read the lines it names. Where the task can be done without them,
+   remove them and run the script again.
+3. Add the organization's own identifier patterns and internal words to
+   the script; the ones it ships with are the running example's.
+
+```bash
+python screen_input.py draft_note.txt
+```
+
+```text
+confidential markers:
+  line 13: national identity number: 4471-20-88193
+  line 13: household or respondent reference: Household 00231
+  line 13: household or respondent reference: respondent 2
+  line 15: phone number: +1 555 0147
+  line 16: email address: m.okafor@stats.example
+internal markers:
+  line 3: embargo: EMBARGOED
+  line 4: unpublished or provisional: provisional
+  line 4: unpublished or provisional: before the release
+  line 8: draft: draft
+  line 9: draft: draft
+  line 4: internal or restricted: must not leave
+tier: confidential
+advice: do not enter this text into any assistant outside the organization; use the local assistant, or remove the records and identifiers first
+```
+
+**Worked example.** The script found five confidential markers in the
+analyst's note, all in the two follow-up items: a national identity
+number, a household and a respondent reference, a phone number, and an
+email address. It found six internal markers: the embargo line, the
+words provisional and "before the release", two mentions of a draft, and
+"must not leave". The tier was confidential. With the two follow-up items
+removed, a second run found no confidential marker and the same internal
+ones, and placed the text in the internal tier, which the organization's
+own assistant may receive.
+
+**What this does not do.** The script finds the markers it knows. A text
+that describes a person in words without an identifier is still
+confidential, and the person who pastes it is the one who knows that;
+the script is the second check, and recipe 2.1 is the first.
+
+</Recipe>
+
+<Recipe title="2.3 Run a local assistant for the confidential tasks the card allows" level="AI-ready" skills="IT lead with a data scientist" time="Two to five days to set up">
+
+**Result:** the organization has an assistant on its own server, with no
+data leaving the organization, for the tasks the card allows on
+confidential text.
+
+Some everyday tasks are worth doing with an assistant and cannot be done
+on public or internal text: explaining why a record failed an edit rule,
+proposing a variable label from the wording of a question. These need a
+model that runs where the data are. An open-weight model on the
+organization's own server, with a chat interface that staff reach on the
+internal network, is that assistant. The [Small and Open Models](/cookbook/small-and-open-models/serving)
+cookbook sizes and runs the server; this recipe says what the everyday
+use of it needs.
+
+1. Run an open-weight model on the organization's server, behind the
+   internal network, with no connection to an external service.
+2. Put a chat interface on it that staff reach with their usual login,
+   and mark it as the local assistant on every card.
+3. Register the local assistant as a component in the register of the
+   governance cookbook, with the card as its human review and the use
+   log as its measure.
+4. Keep the confidential tasks on the card to the ones the local
+   assistant is for, and say on the interface itself which tasks they
+   are.
+
+**Worked example.** The example organization runs an open-weight 8B model
+on its GPU server for its production components and put a chat interface
+on it for staff, reached from the internal network with the usual login.
+The card names it the local assistant for two tasks: edit failure
+explanations for methodologists and variable labels for curators. The
+interface's start page shows the two tasks and the three tiers. The
+assistant is row C07 of the component register, with the card as its
+review and the use log of chapter 5 as its measure.
+
+**What this does not do.** A local assistant keeps the text inside the
+organization. It does not make a confidential task allowed; the card
+does that, and a task that is not on the card is not done on the local
+assistant either.
+
+</Recipe>
+
+## Implementation options
+
+- **Where the script runs.** As a command for staff who use a terminal; as a check inside the organization's own assistant, run on the pasted text before it reaches the model; as a browser extension for the hosted assistant the organization allows.
+- **Identifier patterns.** The national identity number pattern, the phone format, and the internal words differ per organization and are the first thing to edit in the script.
+- **The organization's own assistant.** A hosted model under a contract that excludes retention and training, reached through the organization's own interface, serves the internal tier; the [governance cookbook](/cookbook/governance-and-risk/providers) covers the contract terms.
+
+## World Bank examples
+
+- The [Small and Open Models](/cookbook/small-and-open-models/serving) cookbook sizes and runs the local model server.
+- The [Efficient and Inclusive AI](/docs/inclusive-ai/) workstream describes provider-agnostic configuration for the organization's own assistant.
+
+## Resources
+
+- [Example note](pathname:///cookbook-files/ai-assistants-at-work/draft_note.txt) and [screen_input.py](pathname:///cookbook-files/ai-assistants-at-work/screen_input.py): the text and the screening script.
+- [sdcMicro practice guide](https://sdcpractice.readthedocs.io/): what makes a record identifying, for the organization's own patterns.
+
+## Common mistakes
+
+- **Pasting the whole note.** The summary rarely needs the identifiers; removing two lines turns a confidential text into an internal one.
+- **Treating embargoed figures as public because they will be published.** They are internal until the release time.
+- **A local assistant without a card.** It keeps the text inside and allows every task, which the card does not.
+- **Patterns left as shipped.** The script knows the running example's identifiers until the organization's own are added.
+
+## Verification
+
+- **Tier check.** Five members of staff picked at random place a sample text in the same tier.
+- **Script check.** The script finds the planted markers in the running example's note and the organization's own identifier pattern in a test text.
+- **Flow check.** The local assistant has no route to an external service, and the organization's own assistant's contract excludes retention and training.
+
+## Checklist
+
+<Checklist id="ai-assistants-at-work-inputs" items={[
+  'Three tiers on the card and in the AI-use policy',
+  'Screening script available where staff paste',
+  'Organization\'s own identifier patterns added',
+  'Organization\'s own assistant for internal text',
+  'Local assistant for the confidential tasks the card allows',
+  'Local assistant registered as a component',
+]} />

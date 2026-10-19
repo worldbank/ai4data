@@ -1,0 +1,231 @@
+---
+id: harmonize
+title: "7. Harmonization of mentions"
+sidebar_label: "7. Harmonize"
+sidebar_position: 8
+description: How the many ways a dataset is named in documents are matched to one canonical identifier, by exact, phrase, fuzzy, and semantic matching, with editions distinguished, other organizations' data kept as co-use, and the unmatched mentions reviewed by a person.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 7. Harmonization of mentions
+
+**Question:** Can mentions be matched to the datasets they refer to?
+
+## Rationale
+
+"Household Budget Survey 2021", "HBS", "the budget survey", and "the
+household survey of 2021" are one dataset. A count by mention text
+spreads that one survey's use over a dozen rows and hides it, so that
+the most used dataset in the collection can look like four minor ones.
+Harmonization maps each mention to a canonical identifier, with a match
+type and a score that say how the match was made and how sure it is,
+and it leaves what it cannot match for a person to review.
+
+The review is where the names table of [chapter 1](./define.mdx) grows.
+Every variant a reviewer confirms is matched automatically from then
+on, so the share of mentions that need a person falls with each run.
+
+## Target state
+
+- Every mention carries a dataset identifier, a match type, and a score, or is marked unmatched.
+- Editions and vintages are distinguished where the typology needs it (the 2021 survey from the 2016 one).
+- Other organizations' datasets found alongside are kept as co-use, and unmatched mentions are reviewed on a schedule.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Match mentions to the canonical names and acronyms exactly; review the rest by hand. |
+| **AI-ready** | Match by exact, phrase, and fuzzy rules against the table with variants. Review unmatched and low-score matches each run and add variants. Track other organizations' data as co-use. |
+| **AI-native** | Add semantic matching and clustering (the program's harmonization step) for new variants, distinguish editions, and feed confirmed variants back to the table automatically. |
+
+:::info[Running example]
+Of the twelve mentions, string matching resolves ten to the organization's
+datasets: eight exactly and two by a phrase inside the mention. The two unmatched mentions are other organizations' data (the
+Demographic and Health Survey and the World Development Indicators), which
+the report keeps as co-use.
+:::
+
+## Recipes
+
+<Recipe title="7.1 Match mentions to canonical names" level="AI-ready" skills="Python" time="One hour; minutes per run">
+
+**Result:** every mention is assigned to a dataset identifier where
+that is possible, with the kind of match and a score, and the unmatched
+mentions are listed for review.
+
+The matcher reads the mentions of [chapter 6](./detect.mdx) and the
+names table of [chapter 1](./define.mdx). It tries an exact match
+against the names and variants first, then a match where the mention
+contains a name, then a fuzzy match by string similarity:
+
+```python file=../../website/static/cookbook-files/monitoring-data-use/harmonize_mentions.py
+```
+
+```bash
+python harmonize_mentions.py mentions_example.jsonl canonical_names.csv -o harmonized.jsonl
+```
+
+Output for the running example (abridged):
+
+```text
+exact      1.00  D01  'Household Budget Survey 2021'                         -> EX-HBS-2021
+exact      1.00  D01  'HBS'                                                  -> EX-HBS-2021
+contains   0.63  D03  'the labour survey'                                    -> EX-LFS
+none       0.00  D04  'Demographic and Health Survey 2016'                   -> -
+exact      1.00  D05  'unemployment rate from the LFS'                       -> LF_UNEMP_PCT
+none       0.00  D06  'World Development Indicators'                         -> -
+12 mentions: exact 8, contains 2, fuzzy 0, none 2
+```
+
+Each line shows the match type, the score, the document, the mention as
+written, and the identifier it was matched to. An exact match scores
+1.00. A "contains" match, where the mention holds a known name inside a
+longer phrase, scores by the share of the mention the name covers. A
+mention that matches nothing is marked `none` and goes to review.
+
+1. Run the matcher.
+2. Read the match types. Exact matches are safe; "contains" and fuzzy
+   matches are checked on a sample; unmatched mentions go to recipe
+   7.3.
+3. For large collections, use the program's harmonization step, which
+   adds matching by meaning (sentence embeddings) and clusters mentions
+   before matching. Run this script as the baseline, to see what string
+   rules alone resolve.
+
+**Worked example.** In the run above, "Household Budget Survey 2021" and
+"HBS" match the canonical name and the acronym of `EX-HBS-2021` exactly.
+"The labour survey" contains the variant "labour survey", which the
+names table lists for the labour force survey, so it matches `EX-LFS` by
+containment with a score of 0.63, and the dissemination officer confirms
+it on the sample check. "Unemployment rate from the LFS" matches the
+indicator `LF_UNEMP_PCT` exactly, because the names table lists that
+phrase as a variant. The two mentions that match nothing name the
+Demographic and Health Survey and the World Development Indicators,
+which belong to other organizations and go to recipe 7.2.
+
+**What this does not do.** String matching resolves known variants. A
+new way of naming a dataset is unmatched until a person adds it. The
+matching by meaning in the program's pipeline narrows that gap and
+still ends in review.
+
+</Recipe>
+
+<Recipe title="7.2 Distinguish editions and track other organizations' data" level="AI-ready" skills="Dissemination officer" time="Part of each review">
+
+**Result:** uses are counted at the right level, either the survey
+series or one specific round of it, and the other datasets that the
+organization's data are used with are recorded as co-use.
+
+1. Decide per dataset whether to count at the series level (the Labour
+   Force Survey) or the edition level (the 2021 Household Budget
+   Survey). Give both levels identifiers in the names table, with the
+   edition as a child of the series.
+2. Match a mention with a year to the edition, and a mention without one
+   to the series. Report both levels.
+3. Keep unmatched mentions of other organizations' datasets as
+   **co-use**: which external data the organization's data are used
+   with. This informs partnerships and the gap analysis of
+   [chapter 9](./act.mdx).
+4. When another organization's dataset recurs, add it to a separate
+   table with its own canonical name, so that co-use is counted
+   consistently.
+
+**Worked example.** The names table gives the labour force survey the
+series identifier `EX-LFS` and the rounds the identifiers
+`EX-LFS-2024-Q4`, `EX-LFS-2025-Q1`, and `EX-LFS-2025-Q2`, each with
+`EX-LFS` as its parent. The mention "the labour survey" in a news
+article carries no year and is counted at the series level. A working
+paper that writes "the 2025 Q2 round of the Labour Force Survey" is
+matched to `EX-LFS-2025-Q2` and counted at both levels. The two
+unmatched mentions from recipe 7.1 are recorded as co-use: the
+household budget survey was used alongside the Demographic and Health
+Survey in one paper, and the unemployment rate alongside the World
+Development Indicators in another. Both external datasets are added to
+the co-use table with their own canonical names.
+
+**What this does not do.** Editions distinguished by a year in the text
+are the easy case. A mention that names the series while the analysis
+used one round is resolved only by reading the methods section, which
+the review sample does.
+
+</Recipe>
+
+<Recipe title="7.3 Review unmatched and low-score matches" level="AI-ready" skills="Dissemination officer" time="One hour per run">
+
+**Result:** every unmatched or uncertain mention has been decided by a
+person, and the names table has been extended with the variants that
+were confirmed.
+
+1. List the unmatched mentions and the "contains" and fuzzy matches
+   below a chosen score. The matcher prints both.
+2. For each, decide: a variant of the organization's dataset (add it to
+   the table), another organization's dataset (co-use), or a false
+   positive from extraction (add the sentence to the labelled sample as
+   a negative example).
+3. Re-run the matcher. The mentions now match exactly.
+4. Keep the decisions with the date and the person. Disagreements
+   between reviewers refine the rules.
+
+**Worked example.** The review queue after the run holds the two
+unmatched mentions and the one "contains" match. The officer marks the
+Demographic and Health Survey and the World Development Indicators as
+other organizations' data, confirms "the labour survey" as a variant of
+the labour force survey, and adds "labour survey" to the variants
+column of `EX-LFS` with the date and her initials. In a later run, a
+mention of "the quarterly jobs survey" is unmatched; the officer reads
+the sentence, finds that it refers to the labour force survey, and adds
+that variant too. After the matcher runs again, both match exactly, and
+the next run's queue is shorter.
+
+**What this does not do.** Review resolves the mentions found. It does
+not raise the extractor's recall; misses are addressed through the
+labelled sample in [chapter 6](./detect.mdx).
+
+</Recipe>
+
+## Implementation options
+
+- **String rules:** exact, phrase containment, and similarity ratio (difflib in this guide; RapidFuzz in the program's pipeline).
+- **Semantic matching:** sentence embeddings and clustering, as in the program's `harmonize_datasets` step, for variants that string rules miss.
+- **Identifiers:** series and edition identifiers from the catalog; DOIs where registered.
+- **Review:** a queue of unmatched and low-score matches per run, with decisions recorded.
+
+## World Bank examples
+
+- [Monitoring of Data Use](/docs/data_use/) harmonizes mentions with fuzzy matching (RapidFuzz) and semantic similarity (sentence-transformers), mapping variants to canonical identifiers with a confidence.
+- The dissemination cookbook's [monitoring chapter](/cookbook/ai-ready-dissemination/monitor-use) places the names table with variants at the AI-ready level.
+
+## Resources
+
+- [RapidFuzz](https://github.com/rapidfuzz/RapidFuzz): fast string similarity for the production version of the matching in this chapter.
+- [Sentence Transformers](https://www.sbert.net/): embeddings for semantic matching of variants that string rules miss, as in the program's `harmonize_datasets`.
+- [Monitoring of Data Use](/docs/data_use/): the harmonization step of the program's pipeline and its outputs.
+- [Metadata Reviewer review board](/docs/metadata-reviewer/user-manual/review-board): the review pattern for the unmatched and low-score queue.
+- [SKOS](https://www.w3.org/TR/skos-reference/): preferred and alternate labels, the standard form of a canonical names table with variants.
+
+## Common mistakes
+
+- **Matching too eagerly.** A low fuzzy threshold matches "food security report" to the organization's report when the sentence meant any country's; the review sample catches it.
+- **Discarding unmatched mentions.** They are the co-use signal and the source of new variants.
+- **One level for all datasets.** A quarterly survey and a decennial census need different levels of counting.
+- **Review without a record.** The same decision is made again next run.
+
+## Verification
+
+- **Match rate.** The share of mentions matched, by type, is reported per run, and the unmatched mentions have been reviewed.
+- **Sample check.** A sample of phrase and fuzzy matches has been confirmed by a person, and the error rate is recorded.
+- **Table growth.** The number of variants added per run is tracked, and it falls over time as the table matures.
+
+## Checklist
+
+<Checklist id="monitoring-data-use-harmonize" items={[
+  'Every mention has an identifier, match type, and score, or is unmatched',
+  'Phrase and fuzzy matches checked on a sample',
+  'Series and edition levels decided per dataset',
+  'Other organizations\' datasets tracked as co-use',
+  'Unmatched and low-score mentions reviewed each run',
+  'Confirmed variants added to the names table with date and reviewer',
+]} />

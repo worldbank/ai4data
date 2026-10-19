@@ -1,0 +1,131 @@
+---
+id: start-here
+title: Self-assessment
+sidebar_label: Self-assessment
+sidebar_position: 1
+description: A five-minute self-assessment that places an organization's monitoring of data use at a maturity level in each chapter and suggests a reading order.
+---
+
+import SelfAssessment from '@site/src/components/Cookbook/SelfAssessment';
+
+# Self-assessment
+
+Select the statement that best describes the organization today, one per
+chapter. The result shows a level for each chapter and the chapters to read
+first. Answers are stored in this browser only.
+
+<SelfAssessment
+  base="/cookbook/monitoring-data-use/"
+  questions={[
+    {
+      id: 'define',
+      title: '1. Define',
+      question: 'How is use of the data defined and named?',
+      options: [
+        'Use means downloads; datasets are referred to by whatever name a document uses.',
+        'A written definition distinguishes mention from use; each dataset has one canonical name and acronym.',
+        'A typology of use (primary, secondary, background) and a canonical names table with variants and identifiers are maintained.',
+        'The names table is the one the catalog and the recommended citations use, and it is updated from the monitoring results.',
+      ],
+    },
+    {
+      id: 'access',
+      title: '2. Access',
+      question: 'How are downloads and API calls counted?',
+      options: [
+        'From raw server hits, or not at all.',
+        'Every access path is logged with dataset, action, client, user agent, and status, and counted monthly with robots and double-clicks excluded.',
+        'Counts follow the COUNTER Code of Practice for Research Data with regular and machine access separate, kept as a series per dataset.',
+        'Usage is reported to DataCite for datasets with DOIs, machine access is attributed to registered integrations, and counts feed prioritization.',
+      ],
+    },
+    {
+      id: 'citations',
+      title: '3. Citations',
+      question: 'How are formal citations counted?',
+      options: [
+        'Datasets have no DOIs; citations are not counted.',
+        'The main datasets have DOIs and a citation format; citations are looked up by hand.',
+        'Citation events are collected from DataCite, Crossref, and OpenAlex on a schedule and merged per dataset.',
+        'Identifier citations are compared with text-mined mentions each run, and one-source documents feed the collection and the DOI backlog.',
+      ],
+    },
+    {
+      id: 'collect',
+      title: '4. Collect (research)',
+      question: 'How are documents that may use the data collected?',
+      options: [
+        'They are not collected; mentions come to the organization\'s attention by chance.',
+        'A few sources are searched by hand each quarter.',
+        'Listed sources are collected on a schedule with document metadata (year, type, source) and a text layer.',
+        'Collection runs automatically within the terms of each source, with coverage measured against a reference list.',
+      ],
+    },
+    {
+      id: 'collect-web',
+      title: '5. Collect (web)',
+      question: 'How are policy, news, and web documents collected?',
+      options: [
+        'By hand, when someone notices a mention.',
+        'Government sites and news archives are searched by hand each quarter for the canonical names.',
+        'Document lists, feeds, and exports are collected on a schedule; crawling runs within robots.txt, identified and rate-limited; news and web datasets add breadth; coverage is measured.',
+        'Collection runs automatically with the robots check as a gate, and coverage per source type is tracked over time.',
+      ],
+    },
+    {
+      id: 'detect',
+      title: '6. Detect',
+      question: 'How are mentions found in documents?',
+      options: [
+        'By reading, or by searching for the exact dataset name.',
+        'Keyword search for the canonical names and acronyms.',
+        'A named-entity extractor finds mentions, with precision and recall measured on a labelled sample.',
+        'Extraction runs in a pipeline, thresholds are tuned on the sample, and the sample grows with each review.',
+      ],
+    },
+    {
+      id: 'harmonize',
+      title: '7. Harmonize',
+      question: 'How are mentions matched to datasets?',
+      options: [
+        'They are not; counts are by mention text.',
+        'Exact matches to the canonical names and acronyms.',
+        'Variants, acronyms, and near matches are resolved to identifiers, with unmatched mentions reviewed and the table updated.',
+        'Semantic matching and clustering resolve new variants, editions are distinguished, and other organizations\' data are tracked as co-use.',
+      ],
+    },
+    {
+      id: 'report',
+      title: '8. Report',
+      question: 'How is use reported?',
+      options: [
+        'Download counts, if anything.',
+        'A list of documents that cite each dataset.',
+        'Use per dataset by year and document type, with access statistics and the coverage and recall caveats stated.',
+        'Reports include AI systems\' answers, trends over time, and are published with the data.',
+      ],
+    },
+    {
+      id: 'act',
+      title: '9. Act',
+      question: 'How do the results change what the organization does?',
+      options: [
+        'They do not.',
+        'Results inform occasional decisions about which products to continue.',
+        'Documentation and dissemination work is prioritized by use; misquotes are followed up.',
+        'Document records and series pages link to each other from the results, and corrections flow back to the catalog.',
+      ],
+    },
+  ]}
+/>
+
+## Interpretation of the result
+
+- Chapter 1 first: without a canonical names table, detection and
+  harmonization measure noise.
+- Chapters 2 and 3 are the cheapest evidence: logging and DOIs take days
+  and the counts arrive every month after that.
+- Chapters 4 to 6 can start small; a few sources and a labelled sample of
+  a hundred sentences give the first real numbers.
+- Chapter 9 is where the value is realized; a report that changes nothing is
+  a cost.

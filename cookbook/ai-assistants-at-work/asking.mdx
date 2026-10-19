@@ -1,0 +1,241 @@
+---
+id: asking
+title: "3. Asking so that the answer can be checked"
+sidebar_label: "3. Asking"
+sidebar_position: 3
+description: How a question to an assistant names its source, its format, and its constraints so that the answer can be checked against something, how a prompt library makes the good question the easy one, and how the library is kept valid.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 3. Asking so that the answer can be checked
+
+**Question:** How is a question put so that the answer can be checked?
+
+## Rationale
+
+An assistant answers the question it is asked. Asked to "summarize the
+labour market", it writes a summary from whatever it knows, with figures
+from memory and claims from nowhere, and the person who reads it has no
+way to check it, because it cites no source. Asked to summarize a table
+that is pasted in, using only that table, with one figure per sentence
+and the period beside each, it writes a summary that can be checked line
+by line against the table. The difference is in the question.
+
+A good question has three parts. The source says what the assistant may
+use, and it is usually pasted in. The format says what shape the answer
+takes, so that it can be checked and used without rewriting. The
+constraints say what the assistant must not do: compute, guess, add,
+decide. A statistical organization writes these questions once, for the
+tasks on the card, and keeps them in a library, so that the good question
+is the one that takes the least effort.
+
+## Target state
+
+- Every task on the card that staff use often has a prompt in the library, with its source, format, and constraints.
+- Each prompt names its data tier and the review that follows it, so that the rule travels with the question.
+- Staff fill a prompt from the library in place of writing one from scratch.
+- The library is owned, versioned, and checked.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Teach the three parts; write the first five prompts for the most used tasks. |
+| **AI-ready** | Keep the library in version control with an owner, check it, and build prompts from it with the script; add prompts from the unit sessions. |
+| **AI-native** | Serve the library from the organization's own assistant, so that a task is chosen and the question is written by the interface. |
+
+:::info[Running example]
+The example organization's library has five prompts: summarize a release
+table, draft a catalog description, explain an edit rule (confidential,
+local assistant only), translate a published text, and review a script.
+Each has a source, a task, a format, and constraints, and names its data
+tier and its review. The file is
+[prompt_library.yaml](pathname:///cookbook-files/ai-assistants-at-work/prompt_library.yaml).
+:::
+
+## Recipes
+
+<Recipe title="3.1 Ask with a source, a format, and constraints" level="Foundational" skills="Every member of staff" time="A minute per question">
+
+**Result:** the question names what the assistant may use, what shape the
+answer takes, and what it must not do, so that the answer can be checked
+against the source.
+
+The three parts are written in that order because the assistant reads
+them in that order. The source comes first and is pasted in full where
+possible, with the instruction to use nothing else. The task comes next,
+in one sentence. The format says how the answer is laid out, and it is
+chosen so that the check of chapter 4 is easy: one figure per sentence,
+the period beside each figure, a list with line numbers. The constraints
+close the question, and the most useful one in a statistical organization
+is "do not compute": an assistant that is allowed to subtract two figures
+will sometimes subtract them wrongly.
+
+1. Paste the source and say that it is the only source. For a table,
+   paste the table; for a document, paste the passage.
+2. State the task in one sentence, with the audience.
+3. State the format so that the answer can be checked: figures one per
+   sentence with their period, claims with the sentence of the source
+   they rest on, lists with line numbers.
+4. State the constraints: no figures from memory, no computed
+   differences, no added claims, and "say so" where the source does not
+   contain what the task needs.
+
+**Worked example.** The analyst of the running example asked for a summary
+of the second-quarter labour market table for the Friday briefing. The
+question pasted the four-row table and said it was the only source. It
+asked for at most five sentences, one figure per sentence with its
+period in parentheses and provisional values marked. Its constraints said to quote figures exactly with their unit, to leave differences and growth rates uncomputed, and to write "not in the table" where a figure was missing.
+The answer that came back is the subject of chapter 4.
+
+**What this does not do.** A well-formed question makes the answer
+checkable. It does not make it right, and the check of chapter 4 is still
+made on every answer that is used.
+
+</Recipe>
+
+<Recipe title="3.2 Build the question from the prompt library" level="AI-ready" skills="Every member of staff; the policy owner keeps the library" time="A few seconds per question">
+
+**Result:** a question for a task on the card is produced from the
+library with the person's values filled in, and it carries the task's
+data tier and review in its header.
+
+The library holds one prompt per task that staff use often. A prompt has
+an identifier, a purpose, the data tier it may be used with, the review
+that follows it, the placeholders the person fills, and the template with
+the three parts. The build script fills the template; a value that is a
+path to a file is replaced by the file's contents, so that a table or a
+script is passed by name.
+
+| Field | Meaning |
+|---|---|
+| `id`, `purpose` | The prompt's name and what it is for |
+| `data_tier` | The highest tier the prompt may be used with |
+| `review` | What the person checks afterwards, from the card |
+| `placeholders` | The values the person supplies |
+| `template` | The question, with the source, the task, the format, and the constraints |
+
+```yaml file=../../website/static/cookbook-files/ai-assistants-at-work/prompt_library.yaml
+```
+
+1. Choose the prompt for the task.
+2. Run the build script with the values. The header names the data
+   tier, which says which assistant may receive the question, and the
+   review.
+3. Paste the question into the assistant the tier allows.
+
+```bash
+python build_prompt.py prompt_library.yaml --prompt summarize_release --var table=release_table.csv --var "audience=the Friday briefing"
+```
+
+```text
+prompt: summarize_release (data tier: internal)
+review: Every figure in the summary is checked against the table with check_numbers.py
+------------------------------------------------------------
+Source: use only the table below. Do not use any figure from memory.
+
+series,period,value,previous_value,unit,status
+LF_UNEMP_PCT,2025-Q2,6.1,6.3,% of labour force,P
+LF_UNEMP_PCT_YOUTH,2025-Q2,16.8,17.5,% of labour force aged 15-24,P
+LF_PART_RATE,2025-Q2,61.2,60.9,% of population aged 15+,P
+LF_EMPLOYED,2025-Q2,4312,4268,thousands,P
+
+Task: write a summary of this table for the Friday briefing, in at most five sentences.
+
+Format: plain sentences, one figure per sentence, each figure followed by its reference period in parentheses.
+
+Constraints: quote figures exactly as they appear in the table, with the unit. Mark a value whose status is P as provisional. Do not compute differences or growth rates. If a figure the summary needs is not in the table, write "not in the table".
+```
+
+**Worked example.** The analyst built the question from the
+`summarize_release` prompt with the release table as the source and "the
+Friday briefing" as the audience. The header said internal, because the
+table was embargoed until the release, so the analyst used the
+organization's own assistant. The review line said that every figure
+would be checked with the script of chapter 4, which is what the analyst
+did next.
+
+**What this does not do.** The library makes the good question the easy
+one. A task without a prompt is asked by the three parts of recipe 3.1,
+and the unit session of chapter 6 is where it gets a prompt.
+
+</Recipe>
+
+<Recipe title="3.3 Keep the library valid" level="AI-ready" skills="The owner of the library; a developer runs the check in version control" time="Fifteen minutes per change">
+
+**Result:** every prompt in the library has the fields a prompt needs,
+its placeholders match its template, and its template has the three
+parts.
+
+A library grows from the unit sessions, and a prompt added in a hurry
+misses a tier or a review, or lists a placeholder the template does not
+use. The check reads the library against a schema and reports what is
+missing, so that the library stays something staff can rely on.
+
+1. Run the check after every change to the library.
+2. Keep the library in version control with the policy owner as its
+   owner and a version number in the file.
+3. A prompt that fails the check is not in the library until it passes.
+
+```bash
+python library_check.py prompt_library.yaml
+```
+
+```text
+5 prompts; tiers: 1 confidential, 3 internal, 1 public
+result: PASS
+```
+
+**Worked example.** The example organization's library passed the check
+with five prompts: one confidential (the edit rule explanation, local
+assistant only), three internal, one public. When a methodologist
+proposed a sixth prompt at a unit session, for drafting a method note,
+the first version listed a placeholder `references` that its template did
+not use, and the check reported it before the prompt was merged.
+
+**What this does not do.** The check verifies the shape of a prompt. Whether
+a prompt produces answers that pass the check of chapter 4 is learned from
+use, and the unit session is where a prompt is changed for that reason.
+
+</Recipe>
+
+## Implementation options
+
+- **Library format.** YAML in version control is what the scripts read. An organization's own assistant can hold the same prompts as templates in its interface.
+- **Prompts per language.** A prompt is written in the language staff work in, and the translation prompt names the organization's languages.
+- **Relation to production prompts.** Production components have their prompts in their own repositories with evaluation suites; the library here is for everyday work, and a prompt that becomes a production step moves out of it.
+
+## World Bank examples
+
+- The [Language Models in Statistical Production](/cookbook/language-models-in-production/commentary) cookbook gives the commentary-drafting prompt with the number and claim check that the `summarize_release` prompt is an everyday version of.
+- The [Proof-Carrying Numbers](https://arxiv.org/abs/2509.06902) method is the production form of "quote figures exactly and mark what is not in the source".
+
+## Resources
+
+- [Prompt library of the running example](pathname:///cookbook-files/ai-assistants-at-work/prompt_library.yaml), [build_prompt.py](pathname:///cookbook-files/ai-assistants-at-work/build_prompt.py), and [library_check.py](pathname:///cookbook-files/ai-assistants-at-work/library_check.py): the library, the builder, and the check.
+
+## Common mistakes
+
+- **A question without a source.** The assistant answers from memory, and the answer cannot be checked.
+- **Letting the assistant compute.** A difference between two figures is the most common wrong number in a summary.
+- **A format that cannot be checked.** A flowing paragraph with figures mixed into claims takes longer to check than to write.
+- **Prompts kept in personal notes.** The good question stays with one person, and the library is where it serves the unit.
+
+## Verification
+
+- **Question check.** A question picked from the log has a source, a format, and constraints.
+- **Library check.** The check passes on the current library.
+- **Use check.** The use log of chapter 5 shows the library's prompts in use for the tasks they were written for.
+
+## Checklist
+
+<Checklist id="ai-assistants-at-work-asking" items={[
+  'Three parts taught with the card',
+  'Prompts for the five most used tasks',
+  'Data tier and review on every prompt',
+  'Library in version control with an owner',
+  'Library check run after every change',
+  'Prompts added from the unit sessions',
+]} />

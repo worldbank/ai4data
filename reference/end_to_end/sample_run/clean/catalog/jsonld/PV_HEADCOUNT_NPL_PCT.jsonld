@@ -1,0 +1,32 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "identifier": "PV_HEADCOUNT_NPL_PCT",
+  "name": "Poverty headcount ratio at national poverty line",
+  "description": "Share of the population living below the national poverty line. Based on household consumption per adult equivalent.",
+  "url": "https://stats.example/series/PV_HEADCOUNT_NPL_PCT",
+  "creator": {
+    "@type": "Organization",
+    "name": "National Statistics Office (example)"
+  },
+  "dateModified": "2023-06-10",
+  "temporalCoverage": "2012/2021",
+  "variableMeasured": {
+    "@type": "PropertyValue",
+    "name": "Poverty headcount ratio at national poverty line",
+    "unitText": "% of population"
+  },
+  "keywords": [
+    "poverty",
+    "national poverty line",
+    "consumption"
+  ],
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "distribution": [
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "text/csv",
+      "contentUrl": "https://stats.example/series/PV_HEADCOUNT_NPL_PCT.csv"
+    }
+  ]
+}

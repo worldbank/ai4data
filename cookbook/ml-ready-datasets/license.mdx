@@ -1,0 +1,236 @@
+---
+id: license
+title: "7. Licence, terms, and privacy"
+sidebar_label: "7. Licence"
+sidebar_position: 8
+description: "Which licence to put on a dataset published for model training, what the terms say about attribution by models and about re-identification, how the licence is made machine-readable, and what the disclosure control unit checks before release."
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 7. Licence, terms, and privacy
+
+**Question:** Under what licence and terms is a dataset released for model training?
+
+:::caution[Legal review]
+The licences and terms in this chapter are examples of practice. They are not legal advice.
+The organization's legal office and its disclosure control unit confirm the licence, the
+terms, and the release of any dataset under the organization's statistical law and data
+protection rules.
+:::
+
+## Rationale
+
+A licence says what a user may do with a dataset. For training data
+the question that matters is whether training a model, and
+distributing the model, is allowed and under what conditions. The
+open licences statistical organizations already use (Creative Commons
+Attribution 4.0 is the World Bank's default) permit copying,
+transformation, and redistribution with attribution, and a model is a
+transformation. Creative Commons has said that its licences do not
+restrict uses that copyright law already allows, such as text and data
+mining where a law permits it, and do not add rights where it does
+not. The practical consequence is that a statistical organization
+states, in plain words beside the licence, that training is permitted
+and how attribution is to be given by a model, so that no user has to
+guess.
+
+The other question is privacy. A training dataset is built from
+records, and records can identify people. The rules of the microdata
+access policy apply unchanged: a dataset is built from a public use
+file, from aggregates, or from synthetic data, and the disclosure
+control unit reviews it before release. Free text is the part that
+needs most care, because a job description can name an employer or a
+place. The recipes of this chapter choose the licence, write the terms,
+make both machine-readable, and record the privacy review.
+
+## Target state
+
+- Every dataset carries an open licence, stated as a URL in the record, the card, and the loading record, with a plain statement that training and evaluation are permitted.
+- The terms state the attribution form for publications and model cards, and prohibit re-identification.
+- The disclosure control unit has reviewed the dataset, including its free text, and the review is recorded in the card.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Choose the licence; write the terms; record the privacy review in the card. |
+| **AI-ready** | Put the licence URL in the Croissant record and the catalog record; add the free-text screening to the release checks; state the attribution form for model cards. |
+| **AI-native** | Track models that cite the dataset ([chapter 8](./version.mdx)) and review the terms yearly against what the organization sees in use. |
+
+:::info[Running example]
+The occupation-coding dataset is published under CC BY 4.0 with a
+statement that training and evaluation are permitted, the attribution
+form to use in a model card, and the prohibition of re-identification.
+Its job descriptions were screened for names, employers, and places
+before release, and the review is recorded in the card.
+:::
+
+## Recipes
+
+<Recipe title="7.1 Choose the licence and write the terms" level="Foundational" skills="Dissemination lead; legal" time="Half a day">
+
+**Result:** the dataset has a licence and a short terms text that says,
+in words a model builder reads, what the licence permits and what the
+organization asks in return.
+
+1. Choose the licence. CC BY 4.0 is the default for the organization's
+   open data, and a training dataset is open data. A licence that
+   restricts commercial use or derivatives restricts models too, and
+   the organization chooses it only on purpose.
+2. Write the terms, in the card's licence section:
+   - training and evaluating models on the data is permitted;
+   - attribution is given in the form of the citation, in any
+     publication, model card, or product that used the data;
+   - re-identification of any person or enterprise is prohibited, and
+     so is linking the data to other data for that purpose;
+   - the organization asks that models trained on the data cite it in
+     their model card.
+3. Where the organization's legal counsel wants a specific statement
+   on machine-learning use beyond the licence, write it as a separate
+   terms document and link it. The licence itself stays a standard one
+   that tools recognize.
+4. Record the decision in the AI-use policy of the organization
+   ([dissemination cookbook, chapter 8](/cookbook/ai-ready-dissemination/govern)).
+
+**Worked example.** The licence section of the running example's card
+reads: "This dataset is published under the Creative Commons
+Attribution 4.0 licence. Training and evaluating models on it is
+permitted. Please attribute it as 'National Statistics Office (example),
+LFS occupation coding, version 1.0.0' in any publication, model card, or
+product that used it. Any attempt to identify a respondent or an
+employer, including by linking these records to other data, is
+prohibited. Models trained on this dataset are asked to cite it in
+their model card." Legal counsel reviewed the four sentences and asked
+for no separate terms document, and the decision is recorded in the
+AI-use policy under datasets for model training.
+
+**What this does not do.** A licence grants rights it has, and the
+terms ask for behaviour. Neither is enforced by the files. The use
+tracking of [chapter 8](./version.mdx) shows whether attribution
+happens, and the organization's monitoring of answers shows what
+models say.
+
+</Recipe>
+
+<Recipe title="7.2 Make the licence and the terms machine-readable" level="AI-ready" skills="Catalog administrator; developer" time="An hour">
+
+**Result:** every system that reads the dataset's records reads the
+same licence, in the Croissant record, the card's header, the catalog
+record, and the dataset page.
+
+1. In the Croissant record, the `license` property is the licence's
+   URL (`https://creativecommons.org/licenses/by/4.0/`). The check of
+   [chapter 3](./describe.mdx) warns when it is a name.
+2. In the card's header, the licence identifier repositories use
+   (`cc-by-4.0`). In the card's text, the full statement of recipe 7.1.
+3. In the catalog record, the licence field of the World Bank schema,
+   and in the schema.org markup of the dataset page, the `license`
+   property with the same URL
+   ([dissemination cookbook, chapter 5](/cookbook/ai-ready-dissemination/trust)).
+4. Where the terms go beyond the licence, give them a stable URL and
+   link it from the card and the record's description.
+
+**Worked example.** The Croissant record's `license` property holds
+`https://creativecommons.org/licenses/by/4.0/`, and the check of chapter
+3 reports no warning. The card's header holds `license: cc-by-4.0`,
+which the public repository reads and shows as a filter. The catalog
+record's licence field holds the same URL, and the dataset page's
+schema.org block carries it as the `license` property. A developer who
+fetches the record, the page, or the repository listing gets the same
+answer, and a search for datasets under CC BY 4.0 finds the dataset in
+all three places.
+
+**What this does not do.** Machine-readable licensing tells tools what
+the licence is. It does not tell them what the terms ask; the terms are
+read by people, which is why the card carries them in plain words.
+
+</Recipe>
+
+<Recipe title="7.3 Review the dataset for disclosure before release" level="Foundational" skills="Disclosure control unit; dataset owner" time="One to three days per dataset">
+
+**Result:** a recorded review confirms that the dataset can be published
+under the chosen tier, the free text has been screened, and the
+treatment of the source records is stated in the card.
+
+1. Establish the source. A dataset built from a public use file
+   inherits its disclosure control
+   ([microdata cookbook, chapter 8](/cookbook/microdata-documentation/access)).
+   A dataset built from the full file is a new product and gets a new
+   review, with the key variables, the uniqueness measures, and the
+   recoding the unit requires.
+2. Screen the free text. Search every text field for names, employers,
+   addresses, phone numbers, and places below the published geography,
+   with a list of patterns and a sample read by a person. Remove or
+   generalize what is found ("works at [employer]" becomes "works at a
+   bank"), and count the records changed.
+3. Decide whether the dataset can be fully open. Where it cannot,
+   publish a synthetic dataset built as the
+   [synthetic data cookbook](/cookbook/synthetic-data-for-sharing/)
+   describes, labelled as synthetic, or publish under a registered-user
+   tier with the terms of the access policy.
+4. Record the review in the card's preprocessing and licence sections:
+   what was removed, what was generalized, how many records changed,
+   who reviewed, and when.
+
+**Worked example.** The source is the public use file of the 2025 Q2
+survey, so the records already have direct identifiers removed and
+geography coarsened to the region. The free-text screening runs a list
+of patterns for capitalized names, company suffixes, phone numbers, and
+place names below the region over the 600 job descriptions and flags
+41. A reviewer reads all 41 and the 60 unflagged descriptions drawn at
+random, finds 23 employer names such as "at the Central Hospital" and 4
+place names, and generalizes them to "at a hospital" and removes the
+places; 27 records change. The disclosure control unit's head reviews
+the screened file, approves open publication, and the card's
+preprocessing section records the counts, the reviewer, and the date.
+
+**What this does not do.** A review makes a release defensible under a
+stated threshold. The terms' prohibition of re-identification and the
+tier's conditions remain part of the protection, and a dataset of free
+text is reviewed again when a new version adds records.
+
+</Recipe>
+
+## Implementation options
+
+- **Licences:** CC BY 4.0 (the default); CC0 where attribution is not required; a registered-user tier with terms where the data cannot be fully open. Licences written for AI artefacts (the RAIL family) restrict uses of models and are a choice for models, seldom for data.
+- **Terms:** a paragraph in the card; a separate terms page linked from the card and the record.
+- **Privacy:** public use file as source; synthetic data; free-text screening by patterns and sample reading; a registered tier.
+
+## World Bank examples
+
+- The World Bank's [terms of use for datasets](https://www.worldbank.org/en/about/legal/terms-of-use-for-datasets) default to CC BY 4.0, with the licence in the schema's `license` field and on every page.
+- The [microdata cookbook's access chapter](/cookbook/microdata-documentation/access) gives the tiers, the disclosure control workflow, and the rules for automated and AI clients that a training dataset inherits.
+
+## Resources
+
+- [Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/): the licence text and its machine-readable URL.
+- [Understanding CC licenses and generative AI](https://creativecommons.org/2023/08/18/understanding-cc-licenses-and-generative-ai/) (Creative Commons, 2023): what the licences do and do not say about training.
+- [Responsible AI Licenses](https://www.licenses.ai/): the RAIL family, for comparison when the organization considers use restrictions.
+- [sdcMicro practice guide](https://sdcpractice.readthedocs.io/): the disclosure control workflow the unit applies to a new product.
+- [Microdata cookbook, chapter 8](/cookbook/microdata-documentation/access): the access policy with tiers and the rules for AI clients.
+
+## Common mistakes
+
+- **A licence as a name only.** Tools cannot resolve it; the check warns.
+- **Terms that forbid training.** They defeat the purpose of the dataset; a restriction the organization wants is written as a condition, with legal advice.
+- **Free text unscreened.** A job description that names the employer identifies the respondent.
+- **The full file as source "because it is anonymized".** A new product gets a new review.
+
+## Verification
+
+- **Licence.** The same URL appears in the Croissant record, the card header, the catalog record, and the page markup.
+- **Terms.** The four statements of recipe 7.1 are present in the card.
+- **Review.** The review is recorded in the card with the reviewer, the date, and the count of records changed.
+
+## Checklist
+
+<Checklist id="ml-ready-datasets-license" items={[
+  'Open licence chosen on purpose; CC BY 4.0 by default',
+  'Terms state that training is permitted, the attribution form, and the prohibition of re-identification',
+  'Licence URL in the Croissant record, identifier in the card header, field in the catalog record',
+  'Source is a public use file, aggregates, or synthetic data, or a new disclosure review was done',
+  'Free text screened; the review recorded in the card',
+]} />

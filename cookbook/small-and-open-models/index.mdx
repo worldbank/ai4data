@@ -1,0 +1,157 @@
+---
+id: index
+title: Practical Guide to Small and Open Models for Statistical Offices
+sidebar_label: Overview
+sidebar_position: 0
+description: A cookbook for IT and data science leads in national statistical organizations on when a small or open-weight model is enough, which models are candidates, how they are run, adapted, compared, secured, and paid for.
+---
+
+# Practical Guide to Small and Open Models for Statistical Offices
+
+**A cookbook for IT and data science leads in national statistical organizations.** Version 0.1 (working draft), October 2026.
+
+:::note[Working draft]
+This guide is a working draft from the AI for Data – Data for AI program. It
+collects practical approaches and open standards. It does not
+represent official World Bank Group guidance or policy and is not legal
+advice; an organization applies it under its own statistical law, data
+protection rules, and institutional policies.
+Comments and corrections are welcome as
+[GitHub issues](https://github.com/worldbank/ai4data/issues), and the
+[contributing](./contributing.md) page explains how to propose a recipe.
+:::
+
+The tasks the other cookbooks give to language models are mostly narrow:
+code a response, extract a span, embed a query, draft a short field,
+explain a rule. Narrow tasks are where small models with the right
+context do as well as large ones, and open-weight models that the
+organization downloads and runs are where confidential data can be
+processed at all. Together they make language model assistance
+affordable and lawful for a statistical organization: a server inside
+the network, models whose licences were read and whose files were
+verified, adapted to the organization's data, compared with larger
+models on the organization's own suite, and chosen by the cheapest
+model that passes.
+
+This guide is organized around seven questions. The first two are about
+choosing: when a small or open model is enough, and which models are
+candidates and under which licences. The next three are about making
+them work: how they are run, how they are adapted to the organization's
+tasks, and how they compare with larger models on the organization's
+own suite. The last two are about keeping them: how they are kept secure
+and current, and what they cost and how the capacity is sustained. Each
+chapter answers one question with recipes, maturity levels, worked
+examples, and a checklist.
+
+The recipes build on the program's
+[Efficient and Inclusive AI Applications](/docs/inclusive-ai/) work,
+which measures model sizes against task accuracy and shows local
+deployment, on the [PI-FT toolkit](/pift-toolkit/pipeline) for
+fine-tuning embedding models, and on the evaluation and production
+practice of the other cookbooks. The [standards page](./standards.md)
+lists each and where it applies.
+
+:::tip[The cheapest model that passes the suite]
+Every choice in this guide ends at the same rule: the model for a task is
+the cheapest one, on hardware the organization controls where the data
+require it, that meets the required score on the organization's own
+suite, in the organization's languages. Size, openness, and hosting are
+means to that rule.
+:::
+
+## Prerequisites
+
+The recipes assume the following are in place or can be arranged:
+
+- At least one narrow task that uses or could use a language model (coding, extraction, embeddings, drafting) with its question set from the evaluation suites cookbook.
+- A data scientist or developer with Python and a machine with a GPU or a modern CPU, and someone who can read a licence.
+- For the AI-ready level, a server inside the production network and a person to run it; for the AI-native level, a shared service and a budget line.
+
+## First steps
+
+For a team with limited time, this sequence gives the most useful result first:
+
+1. Describe the tasks and apply the rule of [chapter 1](./when.mdx). This takes two hours, and it says which tasks start small.
+2. Shortlist two candidates for one narrow task, read their licences, and check their cards, following [chapter 2](./candidates.mdx). This takes a day.
+3. Run one of them on an existing machine and measure its throughput, following [chapter 3](./serving.mdx), then run the task's suite as [chapter 5](./comparison.mdx) describes. This takes a day.
+4. Lock the model files and isolate the server before anything depends on it ([chapter 6](./security.mdx)) (half a day).
+
+Fine-tuning ([chapter 4](./adaptation.mdx)) and the cost and staffing plan ([chapter 7](./cost.mdx)) follow once the first task runs on a small model and passes.
+
+## Self-assessment
+
+The [self-assessment](./start-here.mdx) takes about five minutes and places
+an organization's model capacity at a level in each chapter.
+
+## Chapters and questions
+
+| Chapter | Question | Practical topics |
+|---|---|---|
+| [1. Tasks a small or open model can serve](./when.mdx) | When is a small or open model enough? | Task properties, the decision rule, size against openness, confidentiality |
+| [2. Candidate models and licences](./candidates.mdx) | Which models are candidates, and under which licences? | Sources, shortlist, licence classes, model cards, digests |
+| [3. Hardware and serving](./serving.mdx) | How are the models run? | Memory estimate, serving stacks, quantization, test-run measurements |
+| [4. Prompting, retrieval, and fine-tuning](./adaptation.mdx) | How are the models adapted to the organization's tasks? | Prompts with context, retrieval over the catalog, fine-tuning on decisions, gates |
+| [5. Comparison with larger models](./comparison.mdx) | How do they compare with larger models on the organization's suite? | Suite runs per candidate, cost per query, the frontier, the national language |
+| [6. Provenance, updates, and isolation](./security.mdx) | How are the models kept secure and current? | Lock files and digests, safe formats, gated updates, isolated serving |
+| [7. Cost, skills, and sustainability](./cost.mdx) | What do they cost, and how is the capacity sustained? | Three-year cost, roles and runbooks, shared infrastructure and assets |
+
+## Maturity levels
+
+Each chapter describes three levels. An organization can sit at different
+levels in different chapters, and the first level is a complete, useful
+state on its own.
+
+| Level | Meaning |
+|---|---|
+| **Foundational** | One small open model runs on an existing machine for one narrow task, with its licence read, its files verified, and its score on the suite known. |
+| **AI-ready** | A sized and isolated server serves the organization's narrow tasks with versioned prompts and adaptations, every candidate compared on the suite and the frontier, updates gated, and costs measured. |
+| **AI-native** | A shared model service with a registry, routing by the frontier, retraining from recorded decisions, and infrastructure and assets shared across organizations. |
+
+## Running example
+
+The example organization's ten model-assisted tasks, a model card for
+its own fine-tuned coder, a sizing of a 7-billion-parameter model on a
+24 GB GPU, six candidates on the coding suite with their costs, and a
+lock file verified against a test directory with an altered file. All
+figures are invented and the model names are placeholders.
+
+## Scope of the examples
+
+The examples are small on purpose: ten tasks, six candidates, one card,
+one lock file, so that a reader can run them in an afternoon and see the
+shape of each decision. They are starting points. Each recipe ends with
+a **What this does not do** note that says where the example stops and
+what the full version adds. The models themselves are whatever the
+organization shortlists; the scripts here decide, size, compare, verify,
+and cost.
+
+## Files
+
+| File | Used in |
+|---|---|
+| [tasks.csv](pathname:///cookbook-files/small-and-open-models/tasks.csv) and [task_fit.py](pathname:///cookbook-files/small-and-open-models/task_fit.py) | Chapter 1: the task list and the decision rule |
+| [model_card_example.json](pathname:///cookbook-files/small-and-open-models/model_card_example.json) and [model_card_check.py](pathname:///cookbook-files/small-and-open-models/model_card_check.py) | Chapter 2: a model card and its check |
+| [hardware_sizing.py](pathname:///cookbook-files/small-and-open-models/hardware_sizing.py) | Chapter 3: memory estimate and fit |
+| [candidates.csv](pathname:///cookbook-files/small-and-open-models/candidates.csv) and [cost_frontier.py](pathname:///cookbook-files/small-and-open-models/cost_frontier.py) | Chapters 5 and 7: candidates with scores and costs, and the frontier |
+| [model_lock.json](pathname:///cookbook-files/small-and-open-models/model_lock.json) and [verify_model_files.py](pathname:///cookbook-files/small-and-open-models/verify_model_files.py) | Chapter 6: the lock file and the verification |
+
+## Related resources
+
+| Resource | Purpose |
+|---|---|
+| This guide | How to choose, run, adapt, compare, secure, and pay for small and open models, in a sequence of practical steps. |
+| [Efficient and Inclusive AI Applications](/docs/inclusive-ai/) | The program's measurements of model size against task accuracy and its deployment guidance. |
+| [Practical Guide to Evaluation Suites for Statistical AI](/cookbook/evaluation-suites/) | The suites, gates, and report cards every comparison uses. |
+| [Practical Guide to Language Models in Statistical Production](/cookbook/language-models-in-production/) | Where the models run inside production and how their use is documented. |
+| [Code](https://github.com/worldbank/ai4data) | Open-source software to deploy or adapt. |
+
+## Citation
+
+World Bank. 2026. *Practical Guide to Small and Open Models for
+Statistical Offices: A cookbook for IT and data science leads in
+national statistical organizations.* Version 0.1. AI for Data – Data
+for AI. https://worldbank.github.io/ai4data/cookbook/small-and-open-models/
+
+## Version history
+
+- **0.1 (October 2026).** First draft: seven chapters, recipes, scripts, self-assessment.

@@ -1,0 +1,168 @@
+---
+id: index
+title: Practical Guide to AI-Ready Microdata Documentation
+sidebar_label: Overview
+sidebar_position: 0
+description: A cookbook for data curators in national statistical organizations whose survey and administrative microdata should be found, interpreted, and used correctly by people and AI systems.
+---
+
+# Practical Guide to AI-Ready Microdata Documentation
+
+**A cookbook for data curators in national statistical organizations.** Version 0.1 (working draft), October 2026.
+
+:::note[Working draft]
+This guide is a working draft from the AI for Data – Data for AI program. It
+collects practical approaches and open standards. It does not
+represent official World Bank Group guidance or policy and is not legal
+advice; an organization applies it under its own statistical law, data
+protection rules, and institutional policies.
+Comments and corrections are welcome as
+[GitHub issues](https://github.com/worldbank/ai4data/issues), and the
+[contributing](./contributing.md) page explains how to propose a recipe.
+:::
+
+Microdata are the most detailed products a statistical organization holds:
+household surveys, censuses, establishment surveys, and administrative
+registers, with hundreds of variables each. They are also the hardest for
+software to use correctly. A value of `2` in a column named `q7` means
+nothing without the label, the value codes, the universe, and the question
+that produced it. An AI system that reads an undocumented file will guess,
+and a user who relies on the answer will not know that it guessed.
+
+This guide is organized around eight questions that a curator can ask
+about the documentation of a survey. The first two are about getting
+started: whether people and AI can find the survey, and whether its
+documentation can be produced from the files the organization already
+has. The next three are about meaning: whether AI can interpret the
+variables, relate them to concepts and classifications, and find the
+right variable among hundreds. The last three are about use over time
+and under conditions: whether a variable can be followed across survey
+rounds, whether the data fit a purpose, and whether the data can be
+obtained under the stated conditions. Each chapter answers one question
+with recipes, maturity levels, worked examples, and a checklist.
+
+The recipes build on the DDI Codebook standard as implemented in the
+[World Bank microdata schema](https://github.com/worldbank/metadata-schemas),
+which the [Metadata Editor](https://github.com/worldbank/metadata-editor)
+and [NADA](https://nada.ihsn.org/) use. A record produced with these recipes
+can be published in NADA, exchanged with the World Bank Microdata Library,
+and read by any DDI-aware tool. The [standards page](./standards.md) lists
+each standard and where it applies.
+
+:::tip[Documentation before AI]
+The highest-value steps in this guide are documentation practice: complete
+labels, value codes, universes, question text, and access conditions. They
+serve every user. The AI methods in chapters 5 and 6 (thematic grouping,
+semantic search, assisted review) work on that documentation and have
+nothing to work with without it.
+:::
+
+## Prerequisites
+
+The recipes assume the following are in place or can be arranged:
+
+- Survey data files in a statistical format (Stata, SPSS, CSV) and their questionnaires, for at least one survey.
+- A data curator who can use the Metadata Editor or a spreadsheet, and a person who can run a Python script for the checks.
+- For the AI-ready level, a catalog that stores DDI records (NADA or an equivalent) and the right to register DOIs; for the AI-native level, a developer with Python.
+
+## First steps
+
+For a team with limited time, this sequence gives the most useful result first:
+
+1. Adopt the access policy with tiers of [chapter 8](./access.mdx). It takes a day, and it makes every later publication safe.
+2. Take the most requested survey, draft its dictionary from the data file as [chapter 2](./produce.mdx) describes, and run the dictionary check of [chapter 3](./variables.mdx). This takes a day, and the errors the check finds are the first work list.
+3. Write the study record and publish it in the catalog with a persistent identifier, following [chapter 1](./find.mdx). This takes half a day.
+4. Attach the question text and the classifications used, following [chapter 4](./concepts.mdx), and document the design and the weights, following [chapter 7](./fitness.mdx).
+
+Variable-level search and thematic groups ([chapter 5](./navigate.mdx)) and crosswalks between rounds ([chapter 6](./rounds.mdx)) build on that documentation and come after it.
+
+## Self-assessment
+
+The [self-assessment](./start-here.mdx) takes about five minutes and places
+a survey's documentation at a level in each chapter.
+
+## Chapters and questions
+
+| Chapter | Question | Practical topics |
+|---|---|---|
+| [1. Findability of surveys](./find.mdx) | Can people and AI find the survey? | Study-level record, DDI, catalog, DOI, schema.org |
+| [2. Documentation from existing files](./produce.mdx) | Can documentation be produced from the files the organization already has? | Draft dictionary from the data file, import with labels, question recovery, backlog |
+| [3. Interpretation of variables](./variables.mdx) | Can AI interpret the variables? | Labels, value codes, missing codes, universes, data dictionary checks, DDI variables |
+| [4. Questions, concepts, and classifications](./concepts.mdx) | Can AI relate questions to concepts and standards? | Question text, concept maps, ISCED, ISCO, ISIC, harmonized names |
+| [5. Navigation of large dictionaries](./navigate.mdx) | Can AI find the right variable among hundreds? | Variable groups, thematic grouping, variable-level search, evaluation |
+| [6. Comparability across survey rounds](./rounds.mdx) | Can variables be followed across survey rounds and related surveys? | Crosswalks, breaks in series, correspondence tables, harmonized variables |
+| [7. Fitness for use](./fitness.mdx) | Can AI judge whether the data fit a purpose? | Design, weights, response rates, quality statements, versions, errata |
+| [8. Access under the right conditions](./access.mdx) | Can AI access the data under the stated conditions? | Access tiers, disclosure control, licences, citation, automated access |
+
+## Maturity levels
+
+Each chapter describes three levels. A survey can sit at different levels in
+different chapters, and the first level is a complete, useful state on its
+own.
+
+| Level | Meaning |
+|---|---|
+| **Foundational** | The documentation exists in a form a person can use and a crawler can read. |
+| **AI-ready** | The documentation is structured in a published schema, identified, and accessible through documented interfaces, so that software, including AI systems, can use it without manual steps. |
+| **AI-native** | The documentation supports AI-oriented access: variable-level semantic search, concept links, and machine-readable conditions, with provenance and verification built in. |
+
+## Running example
+
+The recipes use the Labour Force Survey 2025, Quarter 2 (`EX-LFS-2025-Q2`)
+of a fictional national statistical organization, the same survey as in the
+[dissemination cookbook](/cookbook/ai-ready-dissemination/). Its study
+record is complete; its data dictionary has 18 variables, and five defects
+are planted in it: a variable without a label, a label that repeats the
+name, a categorical variable without value codes, a duplicated name, and a
+numeric variable without a missing-value statement. The recipes find them,
+repair them, and convert the dictionary into the DDI-based schema. A
+41-record extract of the data file and the dictionary of the previous
+round (`EX-LFS-2024-Q4`) serve the chapters on producing documentation and
+on comparability. All values are invented.
+
+## Scope of the examples
+
+The examples are small on purpose: one survey, 18 variables, 13 test
+questions, so that a reader can run them in an afternoon and see the shape
+of each check. They are starting points. Each recipe ends with a **What
+this does not do** note that says where the example stops and what the
+full version adds.
+
+## Files
+
+| File | Used in |
+|---|---|
+| [lfs_2025q2_dictionary.csv](pathname:///cookbook-files/microdata-documentation/lfs_2025q2_dictionary.csv) | The running example's data dictionary, with planted defects |
+| [lfs_2025q2_sample.csv](pathname:///cookbook-files/microdata-documentation/lfs_2025q2_sample.csv) | Chapter 2: a 41-record extract of the data file, without labels |
+| [profile_datafile.py](pathname:///cookbook-files/microdata-documentation/profile_datafile.py) and [draft_dictionary.csv](pathname:///cookbook-files/microdata-documentation/draft_dictionary.csv) | Chapter 2: draft dictionary from the data file, and its output |
+| [check_dictionary.py](pathname:///cookbook-files/microdata-documentation/check_dictionary.py) | Chapter 3: data dictionary check |
+| [dictionary_to_ddi.py](pathname:///cookbook-files/microdata-documentation/dictionary_to_ddi.py) | Chapter 3: conversion to the World Bank microdata schema (DDI) |
+| [concept_map.csv](pathname:///cookbook-files/microdata-documentation/concept_map.csv) | Chapter 4: variables mapped to concepts and classifications |
+| [variable_questions.csv](pathname:///cookbook-files/microdata-documentation/variable_questions.csv) | Chapter 5: known-variable question set |
+| [score_variable_search.py](pathname:///cookbook-files/microdata-documentation/score_variable_search.py) | Chapter 5: variable search scoring |
+| [lfs_2024q4_dictionary.csv](pathname:///cookbook-files/microdata-documentation/lfs_2024q4_dictionary.csv) | Chapter 6: the previous round's dictionary |
+| [compare_rounds.py](pathname:///cookbook-files/microdata-documentation/compare_rounds.py) and [round_crosswalk.csv](pathname:///cookbook-files/microdata-documentation/round_crosswalk.csv) | Chapter 6: crosswalk between rounds, and its output |
+| [access_policy_template.md](pathname:///cookbook-files/microdata-documentation/access_policy_template.md) | Chapter 8: access policy with tiers and rules for automated clients |
+| [example_microdata.json](pathname:///cookbook-files/ai-ready-dissemination/example_microdata.json) | The study record, from the dissemination cookbook |
+| [check_metadata.py](pathname:///cookbook-files/ai-ready-dissemination/check_metadata.py) and [profile_microdata.json](pathname:///cookbook-files/ai-ready-dissemination/profile_microdata.json) | Chapters 1 and 3: validation against the schema and the completeness profile, from the dissemination cookbook |
+
+## Related resources
+
+| Resource | Purpose |
+|---|---|
+| This guide | What a curator can do, and why, in a sequence of practical steps. |
+| [Practical Guide to AI-Ready Data Dissemination](/cookbook/ai-ready-dissemination/) | The dissemination system around the microdata: catalog, APIs, trust, evaluation, governance. |
+| [Metadata Augmentation](/docs/metadata-augmentation/) | The program's method for grouping variables into themes. |
+| [Operationalizing the AI-readiness assessment](/ai-readiness-in-practice) | Where microdata documentation sits in the assessment's dimensions. |
+| [Code](https://github.com/worldbank/ai4data) | Open-source software to deploy or adapt. |
+
+## Citation
+
+World Bank. 2026. *Practical Guide to AI-Ready Microdata Documentation: A
+cookbook for data curators in national statistical organizations.* Version
+0.1. AI for Data – Data for AI.
+https://worldbank.github.io/ai4data/cookbook/microdata-documentation/
+
+## Version history
+
+- **0.1 (October 2026).** First draft: six chapters, recipes, scripts, self-assessment.
