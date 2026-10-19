@@ -42,7 +42,9 @@
 - Coding: the automated share changes the distribution of coder workload,
   not the classification; the re-coded sample shows no systematic
   difference by major group at the reported precision.
-- No model output entered the microdata or the estimates without a
+- Automatically coded responses entered the microdata under the rule the
+  methodology unit approved, with the re-coded sample as the check on
+  it; model proposals for edits and the commentary entered only after a
   person's decision.
 
 ## Contact

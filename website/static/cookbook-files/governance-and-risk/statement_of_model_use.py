@@ -78,7 +78,8 @@ def build(reg: pd.DataFrame, ev: pd.DataFrame, release: str, contact: str) -> st
             f"- {comps.loc[r['component_id'], 'component']}: {r['effect_on_statistics'].rstrip('.')}."
         )
     out.append(
-        "- No model output entered the microdata or the estimates without a person's decision."
+        "- Automatically accepted outputs entered the statistics under rules the owners approved, "
+        "with the measured checks reported above; every other model output entered only after a person's decision."
     )
     out += ["", "## Contact", "", contact, ""]
     return "\n".join(out)

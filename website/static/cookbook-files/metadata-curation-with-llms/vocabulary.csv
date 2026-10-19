@@ -4,6 +4,8 @@ Unemployment,https://stats.example.org/vocab/unemployment,unemployment rate;unem
 Labour force,https://stats.example.org/vocab/labour-force,labor force;labour market;economically active population
 Under-five mortality,https://stats.example.org/vocab/under-five-mortality,child mortality;u5 mortality;under-5 mortality rate
 Health,https://stats.example.org/vocab/health,health outcomes;health status
-Undernourishment,https://stats.example.org/vocab/undernourishment,food insecurity;prevalence of undernourishment;malnutrition
+Undernourishment,https://stats.example.org/vocab/undernourishment,prevalence of undernourishment;chronic hunger
+Food insecurity,https://stats.example.org/vocab/food-insecurity,severe food insecurity;moderate or severe food insecurity
+Malnutrition,https://stats.example.org/vocab/malnutrition,undernutrition;stunting;wasting
 Food security,https://stats.example.org/vocab/food-security,food supply;dietary energy
 Education,https://stats.example.org/vocab/education,schooling;enrolment;enrollment

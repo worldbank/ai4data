@@ -45,7 +45,7 @@ concept for a curator to confirm, and where the vocabulary grows.
 
 :::info[Running example]
 Fourteen free-text keywords across the five records against a vocabulary
-of eight concepts. Ten map exactly to a preferred label or an alternate,
+of ten concepts. Ten map exactly to a preferred label or an alternate,
 two map by similarity, and two ("hunger" and "jobless") are unmapped
 until an alternate is added or a model proposes the concept.
 :::
@@ -85,14 +85,19 @@ CSV with one row per concept:
    `topics` fields, which carry a vocabulary and a URI in the World Bank
    schema.
 
-**Worked example.** The vocabulary of the running example has eight
+**Worked example.** The vocabulary of the running example has ten
 concepts. The row for undernourishment has the preferred label
-"Undernourishment", the URI `https://stats.example/vocab/undernourishment`,
-and the alternates "food insecurity; prevalence of undernourishment;
-undernutrition". The row for unemployment has the alternates
+"Undernourishment", the URI `https://stats.example.org/vocab/undernourishment`,
+and the alternates "prevalence of undernourishment; chronic hunger". Food
+insecurity and malnutrition have rows of their own, because an alternate
+is a synonym of the preferred label and these are related but distinct
+measures. Undernourishment is insufficient dietary energy (SDG indicator
+2.1.1). Food insecurity is limited access to food (SDG indicator 2.1.2).
+Malnutrition covers outcomes such as stunting and wasting (SDG target
+2.2). The row for unemployment has the alternates
 "unemployment rate; unemployment rates; joblessness". The curator
 building it started from the 140 distinct keywords in the catalog,
-ranked by frequency, and merged them into eight concepts in a morning,
+ranked by frequency, and merged them into ten concepts in a morning,
 recording the SDG indicator URI beside the undernourishment concept
 because SDG 2.1.1 covers it. The CSV is converted to a SKOS file and
 published at the vocabulary's address.
@@ -125,7 +130,7 @@ python map_vocabulary.py keywords_freetext.csv vocabulary.csv
 Output for the running example (abridged):
 
 ```text
-exact   1.00  FS_UNDERNOURISH_PCT     'food insecurity'                  -> Undernourishment
+exact   1.00  FS_UNDERNOURISH_PCT     'food insecurity'                  -> Food insecurity
 fuzzy   0.92  LF_UNEMP_PCT            'unemployment rates'               -> Unemployment
 none    0.00  FS_UNDERNOURISH_PCT     'hunger'                           -> -
 14 keywords: exact 10, fuzzy 2, none 2
@@ -152,7 +157,7 @@ list at the end.
    through the editor.
 
 **Worked example.** In the run above, "food insecurity" maps exactly to
-Undernourishment because it is listed as an alternate, and
+Food insecurity, a concept of its own beside Undernourishment, and
 "unemployment rates" maps to Unemployment by similarity with a score of
 0.92, because the alternate is the singular. The curator checks the two
 fuzzy matches and confirms both. For the two unmapped terms, the model

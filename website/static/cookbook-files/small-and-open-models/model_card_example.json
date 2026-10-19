@@ -2,7 +2,7 @@
   "model_id": "example-org/stats-coder-3b",
   "base_model": "an open-weight 3B instruction model",
   "version": "1.2.0",
-  "weights_sha256": "9f1c7a0b3e5d2c4f6a8b0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a",
+  "weights_sha256": "9a129038d9a00aed0cf6a7ea059ca50a813449061ab87848cf1a13eafdf33b2c",
   "license": "Apache-2.0",
   "license_url": "https://www.apache.org/licenses/LICENSE-2.0",
   "languages": ["en", "fr", "sw"],
