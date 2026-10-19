@@ -349,4 +349,5 @@ groups = {g.vgid: g.txt for g in result.variable_groups}
 - [BAAI/bge-small-en-v1.5](https://huggingface.co/BAAI/bge-small-en-v1.5) — Default embedding model
 - [LiteLLM documentation](https://docs.litellm.ai/) — LLM provider configuration
 - [NADA microdata catalog](https://nada.ihsn.org/) — Source format for NSO microdata
-- Reimert, R., & de Leeuw, J. (2022). "AgglomerativeClustering and Ward Linkage in sklearn." *scikit-learn documentation*.
+- scikit-learn developers. *AgglomerativeClustering*. https://scikit-learn.org/stable/modules/generated/sklearn.cluster.AgglomerativeClustering.html
+- Pedregosa, F. et al. (2011). "Scikit-learn: Machine Learning in Python." *Journal of Machine Learning Research*, 12, 2825–2830.

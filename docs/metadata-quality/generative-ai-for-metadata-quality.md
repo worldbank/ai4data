@@ -40,7 +40,7 @@ LLMs can draft descriptive metadata fields—titles, descriptions, keyword tags,
 
 ### Semantic Alignment Assessment
 
-Embedding models can assess whether two metadata fields that should be semantically related are. For example, an indicator's **name** ("Poverty headcount ratio at $2.15 a day") and its **definition** (the full methodological description) should be semantically consistent. A mismatch—detectable by comparing embedding cosine similarity against a threshold—may indicate that the definition refers to a different poverty line, a different population, or has been incorrectly copied from another indicator.
+Embedding models can assess whether two metadata fields that should be semantically related are. For example, an indicator's **name** ("Poverty headcount ratio at $3.00 a day") and its **definition** (the full methodological description) should be semantically consistent. A mismatch—detectable by comparing embedding cosine similarity against a threshold—may indicate that the definition refers to a different poverty line, a different population, or has been incorrectly copied from another indicator.
 
 ### Controlled Vocabulary Standardization
 

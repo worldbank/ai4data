@@ -32,9 +32,9 @@ The key design choice is **elicitation**. We do not ask the LLM for creative nar
 
 **OpenAI Structured Outputs** (OpenAI, 2024) and **Gemini Structured Output** (Google AI, 2024) support JSON Schema enforcement so that responses are type-safe, parseable, and reliable. Schema adherence reduces hallucination and format errors.
 
-**World Bank Data Quality Standards** (World Bank, 2024) stress traceability, verifiability, and transparent documentation. The guidelines require that explanations reference well-documented events when available.
+The World Bank's guidance on data quality and effectiveness (World Bank, 2024) describes traceability, verifiability, and transparent documentation as properties of usable data. The pipeline is designed with reference to them: every explanation cites its evidence and states how verifiable that evidence is.
 
-By constraining outputs to a rigid taxonomy (`data_error`, `external_driver`, `measurement_system_update`, `insufficient_data`) and requiring evidence strength and verifiability levels, we ensure that explanations are actionable for reviewers and downstream systems.
+By constraining outputs to a fixed taxonomy (`data_error`, `external_driver`, `measurement_system_update`, `modeling_artifact`, `insufficient_data`) and requiring evidence strength and verifiability levels, we ensure that explanations are actionable for reviewers and downstream systems.
 
 ---
 
@@ -65,7 +65,7 @@ Elicitation combines the breadth of LLM world-knowledge with the structure neede
 The design draws on several lines of research and practice:
 
 - **Faithful explanation and attribution.** Work on faithfulness in language model explanations (e.g., OpenAI, 2024) motivates strict schema enforcement to reduce hallucination and post-hoc rationalization.
-- **UN Data Quality Assessment Framework (DQAF).** The UN Statistics Division's quality framework emphasizes traceability, coherence, and timeliness as dimensions of statistical data quality. The pipeline's classification taxonomy and verifiability levels are designed to produce outputs that speak directly to these dimensions.
+- **Data quality frameworks for official statistics.** The IMF's Data Quality Assessment Framework (DQAF) and the UN Statistics Division's National Quality Assurance Framework (NQAF) name accuracy, coherence, and timeliness among the dimensions of statistical data quality. The pipeline's classification taxonomy and verifiability levels are designed with reference to these dimensions.
 - **LLMs for data quality.** Narayan et al. (2022) demonstrated that foundation models can perform data wrangling tasks—entity matching, error detection, data transformation—with surprising effectiveness even without task-specific fine-tuning, suggesting that LLM world-knowledge is broadly applicable to data quality tasks.
 - **World Bank statistical review processes.** Internal review protocols for the WDI and Scorecard databases involve indicator-level sign-off by country economists and thematic experts, providing a well-understood human review target for the automated pipeline to support.
 
@@ -77,4 +77,5 @@ The design draws on several lines of research and practice:
 - [Google AI: Structured outputs (Gemini)](https://ai.google.dev/gemini-api/docs/structured-output)
 - [World Bank: Data Quality and Effectiveness](https://datahelpdesk.worldbank.org/knowledgebase/articles/906534-data-quality-and-effectiveness)
 - Narayan, A. et al. (2022). "Can Foundation Models Wrangle Your Data?" *Proceedings of VLDB*, 16(4).
-- UN Statistics Division. *Data Quality Assessment Framework (DQAF)*. https://unstats.un.org/unsd/methodology/dataquality/
+- International Monetary Fund. *Data Quality Assessment Framework (DQAF)*. https://dsbb.imf.org/dqrs/DQAF
+- UN Statistics Division. *National Quality Assurance Frameworks (NQAF)*. https://unstats.un.org/unsd/methodology/dataquality/

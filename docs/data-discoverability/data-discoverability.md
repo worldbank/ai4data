@@ -10,7 +10,7 @@ Data discoverability underpins one of the foundational pillars of AI-ready data 
 
 Keyword-based search—matching query terms to document text—works well when users know the exact terminology used in a catalog. In practice, development data users often do not:
 
-- A researcher searching for "household consumption poverty" may not know that the World Bank uses "poverty headcount ratio at $2.15 a day (2017 PPP)" as the canonical indicator name.
+- A researcher searching for "household consumption poverty" may not know that the World Bank uses "poverty headcount ratio at $3.00 a day (2021 PPP)" as the canonical indicator name.
 - A policy analyst looking for "school attendance" may not anticipate that the same concept appears under "net enrollment rate," "attendance ratio," or "out-of-school children" depending on the source.
 - A data engineer querying for "malaria burden" will miss indicators titled "incidence of malaria (per 1,000 population at risk)" unless they know the precise phrasing.
 
@@ -54,20 +54,30 @@ The [`@ai4data/search`](https://www.npmjs.com/package/@ai4data/search) JavaScrip
 
 Key features:
 
-- **HNSW index** for approximate nearest-neighbor semantic search (powered by [`hnswlib-wasm`](https://github.com/nicholaswmin/hnswlib-wasm))
+- **HNSW index** for approximate nearest-neighbor semantic search, implemented in the package (`src/engine/hnsw-engine.ts`)
 - **BM25 lexical search** for keyword fallback and hybrid ranking
 - **Web Worker support** — Search runs in a background thread to avoid blocking the main UI thread
 - **Pre-built indices** — Indices can be precomputed server-side and served as static assets, enabling instant in-browser search without a backend
 
 ```typescript
-import { SearchIndex } from "@ai4data/search";
+import { SearchClient } from "@ai4data/search";
 
-const index = new SearchIndex();
-await index.load("https://example.org/indicators-index.bin");
+const client = new SearchClient("https://example.org/data/indicators/manifest.json");
 
-const results = await index.search("child mortality under 5", { topK: 10 });
-// Returns: [{ id, title, score, ... }, ...]
+client.on("index_ready", () => {
+  client.search("child mortality under 5", { topK: 10, mode: "hybrid" });
+});
+
+client.on("results", ({ data, stats }) => {
+  console.log(data);  // SearchResult[]
+  console.log(stats); // SearchStats | null
+});
+
+// Clean up when done
+client.destroy();
 ```
+
+The client loads a prebuilt index described by `manifest.json` and runs the search in a Web Worker; results arrive through events. The [package README](https://github.com/worldbank/ai4data/tree/main/packages/ai4data/search#readme) documents the manifest, the index files, and the options.
 
 Install:
 

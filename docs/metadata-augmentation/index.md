@@ -2,7 +2,7 @@
 
 This section describes the methodology implemented by the World Bank's Development Data Group for **automatically generating DDI-style variable groups** for data dictionary variables in microdata and administrative datasets. The approach uses semantic clustering and LLM-elicited curation to organize hundreds or thousands of survey variables into meaningful groups—without manual labeling.
 
-The methodology is implemented in the `ai4data.metadata.augmentation` package. A step-by-step notebook is provided: Microdata Theme Generation with LLMs.
+The methodology is implemented in the `ai4data.metadata.augmentation` package.
 
 **Please cite this methodology as follows:**
 World Bank. 2025. "Metadata Augmentation Methodology." AI for Data – Data for AI. Available at [https://worldbank.github.io/ai4data](https://worldbank.github.io/ai4data).
