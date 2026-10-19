@@ -1,0 +1,9 @@
+document_id,title,year,type,pages,text_layer,tables,figures,extracted,data_sources
+EX-REP-2025-03,Food security report 2025,2025,report,64,yes,14,9,partial,FS_UNDERNOURISH_PCT;EX-HBS-2021
+EX-REP-2024-03,Food security report 2024,2024,report,58,yes,12,8,no,FS_UNDERNOURISH_PCT;EX-HBS-2021
+EX-REP-2025-01,Labour market report 2025 Q1,2025,report,32,yes,18,6,no,EX-LFS-2025-Q1
+EX-REP-2025-02,Labour market report 2025 Q2,2025,report,33,yes,18,6,no,EX-LFS-2025-Q2
+EX-BUL-2025-06,Statistical bulletin June 2025,2025,bulletin,12,yes,9,4,yes,LF_UNEMP_PCT;FS_UNDERNOURISH_PCT
+EX-CEN-2014-01,Population and housing census 2014 main report,2014,census report,220,no,96,31,no,EX-CEN-2014
+EX-YB-2023,Statistical yearbook 2023,2023,yearbook,310,yes,142,22,no,various
+EX-MET-2021-02,Household budget survey 2021 methodology,2021,methodological note,40,yes,6,2,yes,EX-HBS-2021

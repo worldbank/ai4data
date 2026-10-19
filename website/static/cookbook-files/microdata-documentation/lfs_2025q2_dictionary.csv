@@ -1,0 +1,19 @@
+file_id,name,label,type,universe,question,values,missing,concept
+F1,hhid,Household identifier,string,All households,,,,
+F1,pid,Person identifier within household,string,All persons,,,,
+F1,region,Region of residence,categorical,All persons,,R01=Northern Region;R02=Central Region,,
+F1,urban,Urban or rural area,categorical,All persons,,1=Urban;2=Rural,,
+F1,sex,Sex of the person,categorical,All persons,Q3. Sex of [NAME],1=Male;2=Female,,Sex
+F1,age,Age in completed years,numeric,All persons,Q4. How old was [NAME] at last birthday?,,-9,
+F1,relationship,Relationship to household head,categorical,All persons,Q5. What is [NAME]'s relationship to the head of household?,,,
+F1,educ,Highest level of education completed,categorical,Persons aged 5 and over,Q7. What is the highest level of education [NAME] has completed?,0=None;1=Primary;2=Lower secondary;3=Upper secondary;4=Post-secondary non-tertiary;5=Tertiary,-9,ISCED 2011 level
+F1,lfs_status,Labour force status,categorical,Persons aged 15 and over,Derived from Q10 to Q16,1=Employed;2=Unemployed;3=Outside the labour force,,Labour force status (ICLS 19)
+F1,occupation,Occupation in main job,categorical,Employed persons aged 15 and over,Q12. What kind of work does [NAME] do in the main job?,11=Chief executives and senior officials;21=Science and engineering professionals;52=Sales workers;61=Market-oriented skilled agricultural workers;92=Agricultural labourers,-8;-9,ISCO-08 sub-major group
+F1,industry,Industry of main job,categorical,Employed persons aged 15 and over,Q13. What does the business where [NAME] works mainly do?,01=Crop and animal production;10=Manufacture of food products;47=Retail trade;85=Education,-8;-9,ISIC Rev.4 division
+F1,hours,Hours worked last week in all jobs,numeric,Employed persons aged 15 and over,Q14. How many hours did [NAME] work last week in all jobs?,,-9,
+F1,income,Monthly income from main job,numeric,Employed persons aged 15 and over,Q15. What was [NAME]'s income from the main job last month?,,,
+F1,informal,informal,categorical,Employed persons aged 15 and over,Derived from Q12 and Q13,1=Yes;2=No,,
+F1,jobsearch,Looked for work in the last four weeks,categorical,Persons aged 15 and over not employed,Q16. Did [NAME] look for work in the last four weeks?,1=Yes;2=No,-9,
+F1,q17b,,categorical,Persons who looked for work,Q17b. Which methods did [NAME] use to look for work?,1=Employment office;2=Friends and relatives;3=Direct application;4=Online platform;5=Other,,
+F1,hours,Hours worked last week in main job,numeric,Employed persons aged 15 and over,Q14a. How many hours did [NAME] work last week in the main job?,,-9,
+F1,weight,Calibrated person weight,numeric,All persons,Design weight adjusted for non-response and calibrated to population projections,,,

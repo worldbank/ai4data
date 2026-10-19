@@ -1,0 +1,245 @@
+---
+id: production
+title: "8. Evaluation in production"
+sidebar_label: "8. Production"
+sidebar_position: 9
+description: How a deployed component is evaluated over time, by sampling the logged traffic into a monthly review that covers every language and kind of question and includes every failure, by watching the scores and the traffic mix for drift, by re-running the suite on a schedule, and by feeding production failures back into the set.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 8. Evaluation in production
+
+**Question:** How is a deployed component evaluated over time?
+
+## Rationale
+
+The suite measures the component on the questions the organization
+wrote. Production measures it on the questions users ask, which drift:
+a new release brings new questions, a news event brings a topic the set
+lacks, a model update behind a hosted API changes answers without any
+change on the organization's side. Production evaluation does five things. It samples the logged traffic
+each month so that every language and intent is covered and failures
+are oversampled. It reviews the sample with the rubric. It monitors the
+scores and the traffic mix for drift. It re-runs the suite on a schedule
+to catch silent changes. And it feeds every failure found back into the
+set.
+
+## Target state
+
+- Logged traffic is sampled each month, stratified by language and intent with a minimum per stratum, with declined and down-rated queries always included and reported separately.
+- The sample is reviewed with the rubric and the scores are tracked over time, with thresholds that trigger a look.
+- The suite is re-run on a schedule against the deployed component, so that a silent model or index change is caught.
+- Failures found in production enter the question set with their source.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Review a random sample of logged answers each month with the rubric. |
+| **AI-ready** | Stratify the sample; include failures; track scores and the traffic mix over time with thresholds; re-run the suite monthly; add failures to the set. |
+| **AI-native** | Automate the sampling, the drift checks, and the scheduled re-runs; route threshold breaches to the gate's review process; report production scores on the report card. |
+
+:::info[Running example]
+Twenty-four logged queries in a month across three languages and four
+intents. The sample of sixteen includes the six queries the assistant
+declined or users rated down, and ten drawn by stratum so that every
+language and intent appears; the error rate of each part is reported
+separately.
+:::
+
+## Recipes
+
+<Recipe title="8.1 Draw the monthly review sample from traffic" level="AI-ready" skills="Python; dissemination staff for the review" time="Minutes to draw; half a day to review">
+
+**Result:** each month, the organization has a sample of real questions
+that users asked, ready for a reader to score with the rubric. The
+sample represents every language and every kind of question, and it
+includes every question the system declined or a user rated badly.
+
+The test set contains the questions the organization wrote. Real users
+ask other things, and what they ask changes. A monthly sample of the
+logged questions, read with the rubric of [chapter 4](./answers.mdx),
+is how the organization sees the system as its users see it.
+
+The example log has twenty-four questions from one month. Each row
+gives the question's identifier, time, language, kind (a value, a
+definition, a trend, a comparison), whether the system answered, and
+any rating the user gave. The script draws the sample in two parts: all
+of the questions that were declined or rated down, and a share of the
+rest spread across languages and kinds:
+
+```python file=../../website/static/cookbook-files/evaluation-suites/sample_traffic.py
+```
+
+```bash
+python sample_traffic.py traffic_log.csv --size 12 --min-per-stratum 1 -o review_sample.csv
+```
+
+Output for the running example:
+
+```text
+24 logged queries -> sample of 16: 6 declined or rated down (always included), 10 drawn by stratum
+by stratum: en/comparison 1, en/definition 1, en/trend 2, en/value 6, es/definition 1, es/trend 1, es/value 1, fr/comparison 1, fr/definition 1, fr/value 1
+report the error rate of the stratified part and of the flagged part separately
+```
+
+The first line counts the logged queries and the two parts of the
+sample. The second lists how many questions were drawn from each
+combination of language and kind, and the last line is the rule for
+reporting them.
+
+1. Log each question with its language, its kind (from the assistant's
+   own classification or a simple rule), whether it was answered, and
+   any user rating. The answer log of [chapter 4](./answers.mdx) holds
+   the rest.
+2. Draw the sample each month, with a fixed random seed and a size the
+   readers can handle (thirty to fifty). Score it with the rubric.
+   Report the two parts separately: the spread part estimates the
+   month's error rate; the declined-and-rated-down part shows the kinds
+   of failure.
+3. Add every failed question to the test set with the source
+   "production" and the month ([chapter 2](./questions.mdx)).
+
+**Worked example.** The reader scores the sixteen sampled questions. Of
+the ten drawn by stratum, nine pass the rubric and one, a Spanish trend
+question, gives the right values with the wrong years, which makes the
+month's estimated error rate one in ten with a wide interval. Of the six
+declined or down-rated questions, two were declined correctly because
+they asked for district data, three were rated down because the answer
+was correct and long, and one was rated down because the assistant
+quoted a 2023 value as current. The last one and the Spanish trend
+question go into the set with the source "production, 2026-10". The
+three long answers go to the developer as a style issue, and the
+report shows the two parts of the sample separately.
+
+**What this does not do.** The spread part estimates the error rate
+with the uncertainty of its size. The declined-and-rated-down part is
+chosen on purpose and says nothing about rates. A kind of question the
+classifier does not recognize is absent from the spread until a reader
+notices it.
+
+</Recipe>
+
+<Recipe title="8.2 Monitor drift in scores and in the traffic mix" level="AI-ready" skills="Developer; dissemination staff" time="Half a day to set up; minutes per month">
+
+**Result:** the organization keeps a month-by-month record of the
+review scores and of what users ask, with agreed limits that trigger a
+closer look when either one moves.
+
+1. Track each month: the review score on each rubric question; the
+   share of questions declined; the share rated down; and the mix of
+   questions by language and kind.
+2. After the first few months, set limits: a score that falls by more
+   than its usual month-to-month movement; a new kind of question above a
+   few percent of traffic; a language whose share doubles. Name the
+   person who looks when a limit is crossed.
+3. When a limit is crossed, draw an extra sample for that slice and run
+   the test suite against the live system ([chapter 7](./gates.mdx)). A
+   fall in score with no change on the organization's side points to a
+   change at the model provider or in the catalog.
+4. Report the monthly series on the report card ([chapter 9](./reporting.mdx)).
+
+**Worked example.** After six months the review score on the caveat
+question has moved between 0.80 and 0.90 each month, so the limit is
+set at a fall below 0.75. The share of French questions has been about
+20 percent, and the limit is set at 40. In the seventh month the share
+of comparison questions rises from 5 to 14 percent, after a newspaper
+publishes a regional ranking from the data. The limit of "a new kind above a few percent" is crossed. The
+dissemination lead draws an extra sample of fifteen comparison questions
+and finds that the assistant compares regions correctly but never
+states that the regional values are provisional. The caveat rule in the
+guidance text is extended to comparisons.
+
+**What this does not do.** Limits catch changes in what is measured. A
+new kind of failure that leaves the scores flat (a wrong caveat the
+rubric does not ask about) is found only by readers, which is why the
+sample is read and not only scored.
+
+</Recipe>
+
+<Recipe title="8.3 Re-run the suite on a schedule against the deployed component" level="AI-ready" skills="Developer" time="One hour to set up; minutes per run">
+
+**Result:** the test suite runs against the live system on a fixed
+schedule, so that a change in its behaviour that nobody at the
+organization made is noticed and traced.
+
+A system that uses a model from a provider can change without any
+change on the organization's side: the provider updates the model. A
+scheduled run of the same questions is how that is noticed.
+
+1. Schedule the suite against the live system, monthly, or weekly for a
+   public assistant, with the current version of the question set.
+2. Compare each run with the previous one as in [chapter 7](./gates.mdx).
+   A BLOCKED or REVIEW verdict when nothing was deployed points to a
+   change elsewhere (the provider's model, the catalog, a software
+   dependency) and starts the same review.
+3. Where the provider allows it, fix the model version in the settings,
+   and record the version each run saw in the AI component register of
+   the [dissemination cookbook](/cookbook/ai-ready-dissemination/govern).
+4. Keep the scheduled runs with the gate runs, so that the system's
+   history is one series.
+
+**Worked example.** The assistant's suite runs every Monday morning
+against the live endpoint. In the second week of January the comparison
+with the previous Monday gives a REVIEW verdict: numeric accuracy
+unchanged, but the no-answer slice fell from five of five to three of
+five. Nothing was deployed. The developer finds that the model provider
+had released a new version two days earlier, and that the new version
+answers the inflation question with a figure drawn from its training
+data. The organization pins the previous model version in its settings,
+records both versions in the component register, and adds the two
+failed questions to the set. The Monday runs continue in the same
+series as the gate runs, so that the dip is visible in the history.
+
+**What this does not do.** A scheduled run catches changes in the
+system; the traffic sample of recipe 8.1 catches changes in the users.
+Both are needed, and both feed the same question set.
+
+</Recipe>
+
+## Implementation options
+
+- **Sampling:** the script in this chapter; strata by language and intent; failures always included; a fixed seed.
+- **Drift:** a monthly series per rubric question and per traffic share; thresholds from the first months; a named person.
+- **Scheduled runs:** the suite against production on a schedule; comparison with the last run; model versions pinned and recorded.
+- **Feedback:** failures into the set with source; thresholds reviewed per period.
+
+## World Bank examples
+
+- The [dissemination cookbook's monitoring chapter](/cookbook/ai-ready-dissemination/monitor-use) runs a monthly AI visibility check, a scheduled run against systems the organization does not control.
+- The [agents cookbook](/cookbook/serving-statistics-to-agents/operate) counts usage per tool and client from the server log, the traffic the sample is drawn from.
+- The [monitoring cookbook](/cookbook/monitoring-data-use/access) counts access with the same care about sampling and robots.
+
+## Resources
+
+- [Stratified sampling](https://en.wikipedia.org/wiki/Stratified_sampling): the design behind the review sample; any survey methods text covers the estimates and their variance.
+- [NIST AI RMF: Measure and Manage](https://www.nist.gov/itl/ai-risk-management-framework): the monitoring functions the production evaluation fulfils.
+- [Traffic log and sampler](pathname:///cookbook-files/evaluation-suites/sample_traffic.py): the running example.
+- [Operation chapter of the agents cookbook](/cookbook/serving-statistics-to-agents/operate): usage statistics and versioning for a deployed interface.
+
+## Common mistakes
+
+- **Reviewing only the complaints.** They show failure modes, never rates; draw the stratified part.
+- **No scheduled run.** A hosted model changes and the first sign is a user.
+- **Failures reviewed and forgotten.** Every one goes into the set with its source.
+- **Thresholds nobody owns.** A crossed threshold with no named person is a log line.
+
+## Verification
+
+- **Sample.** The sample is drawn each month with every language and intent, the failures are included, and both parts are reported.
+- **Series.** The review scores and the traffic mix are tracked monthly, with thresholds and an owner.
+- **Scheduled run.** The suite ran against production on schedule, and the model version is recorded.
+- **Feedback.** The set's changelog shows production failures added each month.
+
+## Checklist
+
+<Checklist id="evaluation-suites-production" items={[
+  'Queries logged with language, intent, outcome, and rating',
+  'Monthly stratified sample with failures included and reported separately',
+  'Review with the rubric; scores tracked per month',
+  'Thresholds on scores and traffic mix with a named owner',
+  'Suite re-run on schedule against production; model versions recorded',
+  'Production failures added to the set with their source',
+]} />

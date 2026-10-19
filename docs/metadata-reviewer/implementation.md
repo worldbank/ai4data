@@ -33,7 +33,7 @@ Each run passes the metadata record through five agents in sequence. The table b
 | **secondary** | Raw metadata record | JSON array of candidate issues (same schema) | Independent re-scan. Does NOT rely on primary's output. Surfaces issues the primary may have missed. |
 | **critic** | Combined candidate list from primary and secondary | Filtered JSON array | Removes issues matching general, field-level, and data-state exclusion rules (see below). No speculation; only unambiguous issues pass. |
 | **categorizer** | Critic's filtered list | Same array with `issue_category` added | Assigns one of six exact category strings. Does not add or remove findings; only annotates. Tie-breaker rules applied in fixed order. |
-| **severity_scorer** | Categorizer's annotated list | Final array with `issue_severity` (integer 1–5) added | Assigns severity based on impact, not category alone. Down-weights issues matching exclusion classes to severity 1. Terminates with "DONE" to signal pipeline end. |
+| **severity_scorer** | Categorizer's annotated list | Final array with `issue_severity` (integer 1–5) added | Assigns severity by impact; the category alone does not decide it. Down-weights issues matching exclusion classes to severity 1. Terminates with "TERMINATE" to signal pipeline end. |
 
 Candidates accumulate through the primary and secondary passes. The critic applies a defined filter that removes noise. The categorizer annotates surviving issues without altering them. The severity scorer closes the pipeline with an impact-based score and the termination signal.
 
@@ -115,7 +115,7 @@ agents_manifest:
   - name: severity_scorer
     system_message: |
       Assign issue_severity (1–5) to each finding based on impact.
-      Output a JSON array. Print a final line: DONE
+      Output a JSON array. Print a final line: TERMINATE
 ```
 
 To use it:

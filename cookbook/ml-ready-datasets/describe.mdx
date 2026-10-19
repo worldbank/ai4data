@@ -1,0 +1,303 @@
+---
+id: describe
+title: "3. Croissant records for loading"
+sidebar_label: "3. Croissant"
+sidebar_position: 4
+description: "How a Croissant record describes a dataset's files, fields, and splits so that machine-learning tools load it without custom code, how to generate one from the dictionary, and how to check it."
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 3. Croissant records for loading
+
+**Question:** How is a dataset described so that tools can load it?
+
+## Rationale
+
+A catalog record tells a person what a dataset is. A loading record
+tells a program how to read it: which files, in which format, with
+which checksum; which fields each file holds, of which type; which
+field is the record's key; and which records belong to which split.
+[Croissant](https://mlcommons.org/croissant/) is the format the
+machine-learning community has agreed on for this. It is a JSON-LD
+document (JSON with a vocabulary, so that each key has a defined
+meaning) built on schema.org, which means that a Croissant record is
+also a schema.org `Dataset` record that search engines read. Dataset
+repositories such as Hugging Face and Kaggle publish a Croissant record
+for every dataset, and loading libraries read one to fetch and parse
+the files.
+
+For a statistical organization, Croissant is the bridge between the
+catalog and the training script. The catalog record stays the
+authority for what the dataset is; the Croissant record, generated
+from the same dictionary, says how to load it. A record has four
+layers: the dataset's metadata (name, description, licence, URL,
+version, citation), its resources (the files, each with a checksum),
+its structure (record sets and their fields), and machine-learning
+semantics (splits, labels). This chapter generates the first three
+layers and the splits from the files of [chapter 2](./shape.mdx) and
+[chapter 6](./splits.mdx), and checks the result.
+
+## Target state
+
+- Every published dataset has a Croissant record beside its files, generated from the dictionary, with a checksum for every file and a typed field for every column.
+- The record names the splits, so that a loader can fetch the training part and leave the test part alone.
+- The record is checked on every release, and validated with the reference validator before publication.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Generate a Croissant record for one dataset from its dictionary and check it. |
+| **AI-ready** | Add the splits to the record, validate with mlcroissant, and publish the record on the dataset page and in the catalog. |
+| **AI-native** | Generate and validate the record as a pipeline stage at each release; register datasets in a public repository that reads Croissant. |
+
+:::info[Running example]
+The occupation-coding dataset's record names two files (the data and
+the splits, each with its SHA-256), a record set of twelve typed fields
+generated from the dictionary, a record set that enumerates the three
+split names, and a record set that joins each record to its split.
+:::
+
+## Recipes
+
+<Recipe title="3.1 Generate the record from the dictionary" level="Foundational" skills="Python" time="Minutes">
+
+**Result:** the dataset has a Croissant record, written from the data
+file, the dictionary, and the dataset's metadata, with a checksum for
+each file and a typed field for each column.
+
+The script reads the data file and the dictionary and takes the
+dataset-level metadata as arguments. It writes the file list with
+SHA-256 checksums (a fingerprint of the file's content that changes if
+one byte changes), one field per dictionary row with its type, and,
+when the splits file is given, the split record sets:
+
+```python file=../../website/static/cookbook-files/ml-ready-datasets/build_croissant.py
+```
+
+```bash
+python build_croissant.py lfs_occupation_ml.csv dictionary.csv \
+    --name "LFS occupation coding (example)" \
+    --description "Job descriptions from the labour force survey with ISCO-08 codes assigned by trained coders, for training and evaluating automatic occupation coders." \
+    --url https://stats.example/datasets/lfs-occupation-ml \
+    --license https://creativecommons.org/licenses/by/4.0/ \
+    --version 1.0.0 --date-published 2026-10-09 \
+    --cite-as "National Statistics Office (example). 2026. LFS occupation coding (example), version 1.0.0. https://stats.example/datasets/lfs-occupation-ml" \
+    --splits splits.csv -o lfs_occupation_ml.croissant.json
+```
+
+Output for the running example:
+
+```text
+lfs_occupation_ml.croissant.json: 2 file(s), 3 record set(s), 12 field(s)
+```
+
+The start of the record it writes, with the four dataset-level parts
+that every record carries:
+
+```json
+{
+  "@context": { "...": "the Croissant vocabulary" },
+  "@type": "sc:Dataset",
+  "conformsTo": "http://mlcommons.org/croissant/1.0",
+  "name": "LFS occupation coding (example)",
+  "description": "Job descriptions from the labour force survey with ISCO-08 codes ...",
+  "url": "https://stats.example/datasets/lfs-occupation-ml",
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "version": "1.0.0",
+  "datePublished": "2026-10-09",
+  "citeAs": "National Statistics Office (example). 2026. ...",
+  "distribution": [
+    {
+      "@type": "cr:FileObject",
+      "@id": "data-file",
+      "name": "lfs_occupation_ml.csv",
+      "contentUrl": "lfs_occupation_ml.csv",
+      "encodingFormat": "text/csv",
+      "sha256": "e6b0b1fd..."
+    }
+  ],
+  "recordSet": [ { "@id": "records", "field": [ "... one per column ..." ] } ]
+}
+```
+
+1. Run the script with the dataset's metadata. The name, URL, licence,
+   version, and citation are the same as in the card and the catalog
+   record.
+2. Read the record once. Each field's description comes from the
+   dictionary, with its role appended, so that a loader's user sees
+   which field is the label.
+3. Keep the record in the release folder. It is regenerated whenever
+   the data, the dictionary, or the splits change, because the
+   checksums change.
+
+**Worked example.** The command above writes the record for the
+occupation dataset. Its `distribution` lists the data file and the
+splits file with their SHA-256 digests. Its first record set, `records`, has twelve fields, one per dictionary
+row. The field for `isco_code` has the type `sc:Text` and a source that
+names the data file and the column. Its description reads "Four-digit
+ISCO-08 code assigned by a trained coder; 9999 means not codable (role:
+label)". Its second record set
+enumerates the three split names, and its third joins each `record_id`
+to its split through the splits file. A partner's loading script reads
+the record, fetches the two files, checks the digests, and asks for the
+training part by name.
+
+**What this does not do.** The script writes the structural layers for
+a CSV dataset with one record set. Datasets with several files that
+join (images and their annotations), nested fields, or data types
+beyond text and numbers (bounding boxes, image references) need fields
+the script does not write; the Croissant specification and the
+mlcroissant examples show them.
+
+</Recipe>
+
+<Recipe title="3.2 Check the record and validate it" level="Foundational" skills="Python" time="Minutes">
+
+**Result:** a check runs on every release and confirms that the record
+has every part a loader needs, that every field's source names a file
+in the record, and that the checksums match the files on disk.
+
+The script reads the record and the files beside it:
+
+```python file=../../website/static/cookbook-files/ml-ready-datasets/croissant_check.py
+```
+
+```bash
+python croissant_check.py lfs_occupation_ml.croissant.json
+```
+
+Output for the running example:
+
+```text
+lfs_occupation_ml.croissant.json: LFS occupation coding (example) version 1.0.0; 2 file(s), 3 record set(s), 15 field(s)
+0 error(s), 0 warning(s)
+```
+
+The same check on a folder in which the splits file was edited after
+the record was written:
+
+```text
+lfs_occupation_ml.croissant.json: LFS occupation coding (example) version 1.0.0; 2 file(s), 3 record set(s), 15 field(s)
+  error    file splits-file: sha256 does not match splits.csv
+1 error(s), 0 warning(s)
+```
+
+1. Run the check in the release folder. An error blocks the release.
+2. Validate the record with the reference implementation before the
+   first publication and after any change to the generator. It checks
+   the record against the full specification, which the script does
+   not:
+
+   ```bash
+   pip install mlcroissant
+   mlcroissant validate --jsonld lfs_occupation_ml.croissant.json
+   ```
+
+   For the running example the validator reports no error.
+3. Load the dataset from the record and read a few records, to confirm
+   that the fields and the splits come through:
+
+   ```python
+   import mlcroissant as mlc
+
+   ds = mlc.Dataset(jsonld="lfs_occupation_ml.croissant.json")
+   records = list(ds.records(record_set="records"))       # 600 records
+   splits = list(ds.records(record_set="record_splits"))  # 600 rows: record, split
+   ```
+
+**Worked example.** The second output above is what happened when the
+data manager corrected one split assignment by hand in the splits file
+after the record had been written. The check reports that the digest of
+the splits file no longer matches, and the release is blocked. The
+manager regenerates the record with the build script, which recomputes
+the digest, and the check passes. The reference validator is then run
+once, reports no error, and the loading test returns 600 records and
+600 split rows, with the `isco_code` field holding the four-digit codes.
+
+**What this does not do.** The check reads structure and checksums. It
+does not judge whether the description is accurate or the licence is
+right, which the card review of [chapter 4](./document.mdx) and the
+licence decision of [chapter 7](./license.mdx) do.
+
+</Recipe>
+
+<Recipe title="3.3 Publish the record where loaders look" level="AI-ready" skills="Catalog administrator; developer" time="Half a day">
+
+**Result:** the Croissant record is found by the tools and the people
+that look for it, on the dataset's page, in the catalog's API, and in
+the dataset repositories the organization uses.
+
+1. Put the record in the release folder beside the files, and link it
+   from the dataset page with a line that says what it is.
+2. Embed the record in the dataset page as a `script` element of type
+   `application/ld+json`. Because a Croissant record is a schema.org
+   `Dataset` record, this is the same markup the
+   [dissemination cookbook](/cookbook/ai-ready-dissemination/find)
+   puts on series pages, with the loading information added.
+3. Where the organization publishes the dataset in a public repository
+   such as Hugging Face, upload the files and the card; the repository
+   generates its own Croissant record from them, and the organization's
+   record on the catalog page stays the authority.
+4. Register the record's URL in the catalog record (the Metadata
+   Editor exports Croissant from a documented dataset, and the field
+   for the link exists in the schema).
+
+**Worked example.** The dataset page at the catalog embeds the record
+as a `script` element of type `application/ld+json`, so that a dataset
+search engine reads the same name, description, licence, and files as a
+loader does. The page also offers the record as a file with the sentence
+"Loading record (Croissant): tools such as mlcroissant read this file
+to fetch and parse the dataset". The catalog record's link field points
+to it. On the public repository, the uploaded files and card produce
+the repository's own Croissant record, and the organization's page
+states that the catalog's record is the authority.
+
+**What this does not do.** Publication makes the record findable.
+Whether loaders use it is seen when a partner loads the dataset
+without asking a question, which the organization learns from support
+requests and from the use tracking of [chapter 8](./version.mdx).
+
+</Recipe>
+
+## Implementation options
+
+- **Generating the record:** the script of this chapter from a dictionary; the Metadata Editor's export; a repository's automatic generation from uploaded files; mlcroissant's Python API for datasets with several files.
+- **Validation:** the structural check of this chapter on every release; mlcroissant's validator before publication.
+- **Where it lives:** the release folder, the dataset page as JSON-LD, the catalog record's link, the repository.
+
+## World Bank examples
+
+- The [Metadata Editor](https://github.com/worldbank/metadata-editor) exports Croissant, schema.org, and DCAT from one documented record, which keeps the loading record and the catalog record in step.
+- The program's [standards and metadata work](/docs/ai-ready-framework) lists Croissant with DDI, SDMX, DCAT, and schema.org as the formats an AI-ready catalog emits.
+
+## Resources
+
+- [Croissant specification, version 1.0](https://docs.mlcommons.org/croissant/docs/croissant-spec.html): the four layers, the properties of files, fields, and splits, with examples.
+- [mlcroissant](https://github.com/mlcommons/croissant): the Python implementation, with a validator and a loader (`pip install mlcroissant`, Apache 2.0).
+- [Croissant on the Hugging Face Hub](https://huggingface.co/docs/datasets-server/croissant): the Hub's automatic Croissant record for every dataset and the endpoint that serves it, as an example of what repositories generate.
+- [schema.org Dataset](https://schema.org/Dataset): the vocabulary Croissant extends, and the markup search engines read.
+
+## Common mistakes
+
+- **A record written by hand and never regenerated.** Its checksums stop matching the files at the first correction.
+- **A licence as a name.** A URL is what tools resolve; "CC BY 4.0" as text is a warning in the check.
+- **Splits described only in the card.** A loader that reads the record cannot find them; the split record sets are what it reads.
+
+## Verification
+
+- **Record.** The record is generated from the dictionary, present in the release folder, and its checksums match.
+- **Validation.** The record passes the structural check on every release and the reference validator before publication.
+- **Loading.** The dataset loads from the record with the reference library, and the label field holds the codes.
+
+## Checklist
+
+<Checklist id="ml-ready-datasets-describe" items={[
+  'Croissant record generated from the dictionary with a checksum per file',
+  'Fields typed, with the role of each visible in its description',
+  'Splits in the record as record sets',
+  'Structural check passes; mlcroissant validation passed before publication',
+  'Record on the dataset page as JSON-LD and linked from the catalog record',
+]} />

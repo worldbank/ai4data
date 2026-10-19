@@ -1,0 +1,233 @@
+---
+id: purpose
+title: "1. Purpose and scope of agent access"
+sidebar_label: "1. Purpose"
+sidebar_position: 2
+description: How an organization decides what an AI agent may do with its statistics, which data are in scope, what a correct answer looks like, and how a set of test questions records those decisions.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 1. Purpose and scope of agent access
+
+**Question:** What should an agent be able to do with the data?
+
+## Rationale
+
+An agent interface is a commitment. Once it exists, the organization's
+figures are served to software that will quote them, under the
+organization's name, to people the organization never sees. The decisions
+that shape everything else are therefore made before any code is written.
+
+There are three of them. The first is which uses the interface serves.
+Finding a series, reading its definition, fetching its values, and
+comparing two periods are the common ones. Computing a growth rate or
+ranking regions is a different kind of use, because it produces a figure
+the organization never published. The second decision is which data are in
+scope. Public data only is the usual answer, and even then the products
+have to be named. The third is what counts as a correct answer: the right
+series, the right value, the caveat that the record carries, a citation,
+and a refusal when the data do not exist.
+
+A set of test questions written at this stage records those decisions in a
+form a machine can check. It becomes the evaluation suite of
+[chapter 7](./evaluate.mdx), and it keeps the design honest, because every
+tool and every piece of guidance can be judged by whether the questions
+are answered correctly.
+
+## Target state
+
+- The uses the interface serves are written down, together with the uses it does not serve.
+- The scope is public data only, with the products named. Confidential and embargoed data are excluded by design, which means the interface has no path to them at all.
+- The success criteria are written as checks that can be applied to an answer: series, value, caveat, citation, and refusal.
+- A question set of real questions, in each supported language, records the expected tools, series, values, and behaviour for every question.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | The uses and the scope are decided and written down. Ten questions with expected answers exist, and the team has confirmed that the API and the catalog can answer them. |
+| **AI-ready** | The success criteria are written. The question set has 30 to 50 questions per language, including questions the assistant should decline, and it is kept in version control. |
+| **AI-native** | The question set grows from the questions users ask and from the AI visibility check. The scope is reviewed against usage every period. |
+
+:::info[Running example]
+The example organization decides to serve its five published series to
+agents for four uses: finding a series, reading its definition, fetching
+values for a period, and comparing two periods. Eight questions record
+that scope. Two of them are questions an agent should decline: one asks
+for an inflation rate the organization does not publish, and one asks for
+a regional value of a series that exists only at the national level.
+:::
+
+## Recipes
+
+<Recipe title="1.1 Decide the uses and the scope" level="Foundational" skills="Dissemination lead; developer" time="Half a day">
+
+**Result:** the organization has a one-page statement that says what the
+agent interface is for, which data it exposes, and what it does not do.
+Every later chapter refers back to it.
+
+An agent interface lets an AI assistant call the organization's data
+directly, through a small set of operations called tools. A tool is
+something like "search for a series", "read the metadata of a series", or
+"fetch the values of a series for a period". The scope statement decides
+which operations exist and which data they can reach. It is a short
+document, but it settles arguments that otherwise surface late, when a
+developer has already built a tool nobody wanted or exposed a product that
+should have stayed behind a licence.
+
+1. List the uses in the assistant's terms, because the assistant is the
+   one that will perform them. The usual list is: search for a series by
+   meaning, read a series' definition and caveats, fetch values for an
+   area and a period, resolve a place name to a code, and list what is
+   available. Analysis, such as growth rates or rankings, is a separate
+   decision. The Data360 server offers analysis as separate tools, and
+   the simplest server leaves it to the client.
+2. Set the scope to public data only, and name the products that are in
+   scope at launch. Microdata are a special case: the interface may serve
+   their metadata, so that an assistant can tell a user that a survey
+   exists and how to apply for it, but it never serves the data
+   ([chapter 8 of the microdata cookbook](/cookbook/microdata-documentation/access)).
+3. State what the interface does not do. It does not estimate, forecast,
+   or combine series into new figures. The assistant reports what the
+   organization publishes, and the statement says so in those words.
+4. Confirm that the API and the catalog can support the uses. For each
+   use, the team needs a series record with a definition and a unit,
+   values by area and period, and code lists. Where something is
+   missing, the [dissemination cookbook](/cookbook/ai-ready-dissemination/)
+   covers how to put it in place.
+
+**Worked example.** The example organization's statement fits on one page.
+Its uses are the four listed above. Its scope is the five published series
+(unemployment rate, prevalence of undernourishment, under-five mortality
+rate, poverty headcount ratio, and net enrolment rate in primary education)
+at the national level, and for the unemployment rate at the regional level
+as well. The labour force survey microdata are in scope for metadata only.
+The statement says that the interface does not compute growth rates,
+rankings, or forecasts, and that regional values exist only where the
+catalog has them. The developer confirmed that the API returns each series
+by code, area, and period, and that the catalog record of each series
+carries its definition and unit.
+
+**What this does not do.** The scope statement is a decision. The tools of
+[chapter 2](./tools.mdx) enforce it, and the safety checks of
+[chapter 6](./safety.mdx) verify that nothing outside it is reachable.
+
+</Recipe>
+
+<Recipe title="1.2 Write the success criteria and the question set" level="AI-ready" skills="Dissemination officer; speakers of each supported language" time="One day for the first 30 questions">
+
+**Result:** the organization has a file of test questions. For each
+question, the file says which tools an assistant should call, which series
+and value it should return, and whether it should answer or decline. This
+file is the measure of the whole interface, from the first prototype to
+every later change.
+
+The success criteria say what a correct answer contains. They are written
+first, because the question set encodes them. A correct answer rests on
+the right series and states the right value within rounding. It gives the
+period and the unit. It repeats the caveat when the record has one, for
+example that the value is provisional or that the series has a break. It
+cites the source URL and the release date. And where the data are not
+published, or not available at the level the user asked for, the correct
+answer is a refusal that says so.
+
+The question set is a CSV file with one row per question. Its columns
+carry the expected answer in the form a script can check:
+
+| Column | Meaning |
+|---|---|
+| `question_id`, `language`, `question` | The question as a user would type it, and its language. |
+| `expected_tools` | The tools a correct run calls, separated by `;`. |
+| `expected_series` | The series identifier the answer should rest on. |
+| `expected_value` | The value the answer should state, where the question has one. |
+| `expected_behaviour` | `answer`, or `decline` when the data are not published or not available at the level asked. |
+| `note` | Where the question came from, or a flag for review. |
+
+The question set of the running example:
+
+```csv file=../../website/static/cookbook-files/serving-statistics-to-agents/agent_questions.csv
+```
+
+1. Write the criteria for a correct answer, as listed above, in the
+   organization's own words. They become the columns of the file and the
+   checks of the evaluation script.
+2. Collect questions from the places where users already ask them: the
+   search logs of the website, help-desk tickets, and the AI visibility
+   check of the dissemination cookbook. Add paraphrases of the same
+   question, because users rarely use the series name. Add questions in
+   each supported language.
+3. Add questions the assistant should decline. At least a fifth of the
+   set should be questions about data the organization does not publish,
+   or about a level of detail the series does not have. Without them, an
+   interface that answers everything confidently scores well.
+4. For each question, fill the expected columns. A question that asks
+   for a definition has no expected value; it is a metadata question,
+   and the expected tool is the metadata tool.
+5. Keep the file in version control. It is the evaluation suite of
+   [chapter 7](./evaluate.mdx), and every change to it is a change to
+   the definition of success.
+
+**Worked example.** Question `a03` in the file asks "What is the
+unemployment rate in the latest quarter?". The expected tools are
+`search_series` and `get_observations`, the expected series is
+`LF_UNEMP_PCT`, and the expected value is 6.1. The note says that the
+latest quarter is provisional and that a correct answer says so. Question
+`a02`, "Is hunger going down?", is a paraphrase: it never names the series,
+and the expected answer rests on `FS_UNDERNOURISH_PCT`, whose value fell
+from 8.4 in 2022 to 7.6 in 2024. Question `a06` asks for the inflation
+rate, which the organization does not publish, so its expected behaviour
+is `decline`. Question `a07` asks for the under-five mortality rate in
+the Northern Region. The series exists only at the national level, so the
+expected behaviour is `decline` as well, and a correct answer says why.
+
+**What this does not do.** Eight questions describe the scope, and that is
+enough to design against. A measure needs 30 to 50 questions per language.
+The questions in languages other than English are marked for review by a
+native speaker in the file.
+
+</Recipe>
+
+## Implementation options
+
+- **Uses.** The four core uses above are the usual starting point. Analysis and visualization tools are an explicit addition; the Data360 server's `data360_summarize_data`, `data360_rank_countries`, and `data360_get_viz_spec` are examples of what such an addition looks like.
+- **Scope.** Public data are served, metadata are served for everything in the catalog, and confidential data are never reachable. The AI-use policy of the dissemination cookbook is where the decision is recorded.
+- **Question set.** The file uses the same format as the dissemination cookbook's known-item question set, extended with the expected tools and the expected behaviour.
+
+## World Bank examples
+
+- The [Data360 MCP server](https://github.com/worldbank/data360-mcp) scopes its tools to discovery, metadata, data retrieval, analysis, and visualization over public indicators, and guides the agent with a system-prompt resource.
+- The program's [MCP page](/docs/mcp/) describes the uses an MCP server for development data serves.
+
+## Resources
+
+- [Model Context Protocol](https://modelcontextprotocol.io/) is the specification. Its concepts (hosts, clients, servers; tools, resources, prompts) are the vocabulary of the scope decision.
+- [Model Context Protocol for statistics](/docs/mcp/) is the program's note on what agent access to official statistics should and should not do.
+- [Data360 MCP server](https://github.com/worldbank/data360-mcp) is a server in operation over a statistical catalog. Its use cases and tool set are a reference for the scope decision.
+- The [AI-use policy template](pathname:///cookbook-files/ai-ready-dissemination/ai_use_policy_template.md) from the dissemination cookbook is where the scope decision is recorded.
+- The [question set](pathname:///cookbook-files/serving-statistics-to-agents/agent_questions.csv) of the running example has eight questions with their expected tools, series, values, and behaviour.
+
+## Common mistakes
+
+- **Scope by omission.** Whatever the API exposes is in scope unless the server restricts it. Licensed data behind a reachable endpoint are a breach, even if nobody intended to serve them.
+- **Tools before questions.** Without a question set, the tools are designed around the developer's guesses about what users ask.
+- **Analysis in the server by default.** Derived figures carry the organization's name. Offering them is a deliberate addition with its own checks, never a side effect.
+- **One language.** Questions arrive in the national language as well as in English. A set that has only one of them measures only half of the interface.
+
+## Verification
+
+- **Scope.** The statement names the products, the uses, and the exclusions, and the AI-use policy refers to it.
+- **Question set.** There are at least 30 questions per language with expected tools, series, values, and behaviour, and at least a fifth of them are questions to decline or metadata questions.
+- **Coverage.** Every use in the statement is represented by at least one question.
+
+## Checklist
+
+<Checklist id="serving-statistics-to-agents-purpose" items={[
+  'Uses listed, with what the interface does not do',
+  'Scope: public data only; products named; microdata metadata only',
+  'Success criteria written as checks on an answer',
+  'Question set with expected tools, series, values, and behaviour',
+  'Questions to decline and metadata questions included',
+  'Each supported language covered and reviewed by a speaker',
+]} />

@@ -12,9 +12,15 @@ from ..processors.document import load_pdf
 from .document_fetch import cache_download_pdf
 from .filters import (
     DocumentFilterFacets,
+    FilterFacets,
     GeospatialFilterFacets,
+    ImageFilterFacets,
+    IndicatorDbFilterFacets,
     IndicatorFilterFacets,
     MicrodataFilterFacets,
+    ScriptFilterFacets,
+    TableFilterFacets,
+    VideoFilterFacets,
 )
 from .templates.render import get_searchpath, render_embedding_content
 
@@ -455,6 +461,86 @@ class MicrodataMetadata(Metadata):
         return langdocs
 
 
+class TemplatedMetadata(Metadata):
+    """Metadata indexed purely from its per-field embedding templates (title / abstract, ...)."""
+
+    metadata_type: str
+    collection_fields: list[str]
+    facets_class: type[FilterFacets]
+
+    def __init__(self, **kwargs):
+        super().__init__(
+            metadata_type=self.metadata_type,
+            collection_fields=self.collection_fields,
+            **kwargs,
+        )
+
+    def get_payload(self) -> dict:
+        """
+        Retrieve the payload for the metadata that will be used for filtering.
+
+        Returns:
+            dict: The payload.
+        """
+        return self.facets_class.from_metadata(self.metadata).model_dump()
+
+    def get_langdocs(self) -> list[LangchainDocument]:
+        """
+        Retrieve the LangChain documents for the metadata, one per non-empty collection field.
+
+        Returns:
+            list: A list of LangChain documents.
+        """
+        langdocs = []
+
+        for field in self.collection_fields:
+            if field not in self.available_fields:
+                continue
+
+            field_doc = self.build_metadata_langdoc(field)
+
+            if field_doc is not None:
+                langdocs.append(field_doc)
+
+        return langdocs
+
+
+class IndicatorDbMetadata(TemplatedMetadata):
+    metadata_type = "indicator-db"
+    collection_fields = ["title", "sub_title", "abstract"]
+    facets_class = IndicatorDbFilterFacets
+
+
+class TableMetadata(TemplatedMetadata):
+    metadata_type = "table"
+    collection_fields = ["title", "sub_title", "abstract"]
+    facets_class = TableFilterFacets
+
+
+class ScriptMetadata(TemplatedMetadata):
+    metadata_type = "script"
+    collection_fields = ["title", "sub_title", "abstract"]
+    facets_class = ScriptFilterFacets
+
+
+class ImageMetadata(TemplatedMetadata):
+    metadata_type = "image"
+    collection_fields = ["title", "abstract"]
+    facets_class = ImageFilterFacets
+
+
+class VideoMetadata(TemplatedMetadata):
+    metadata_type = "video"
+    collection_fields = ["title", "abstract"]
+    facets_class = VideoFilterFacets
+
+
+_TEMPLATED_METADATA_BY_TYPE: dict[str, type[TemplatedMetadata]] = {
+    cls.metadata_type: cls
+    for cls in (IndicatorDbMetadata, TableMetadata, ScriptMetadata, ImageMetadata, VideoMetadata)
+}
+
+
 class MetadataLoader:
     def __init__(
         self,
@@ -513,6 +599,10 @@ class MetadataLoader:
             )
         elif self.type == "microdata":
             return MicrodataMetadata(metadata=self.metadata, searchpath=self.searchpath)
+        elif self.type in _TEMPLATED_METADATA_BY_TYPE:
+            return _TEMPLATED_METADATA_BY_TYPE[self.type](
+                metadata=self.metadata, searchpath=self.searchpath
+            )
         else:
             raise ValueError(f"Type {self.type} not supported")
 

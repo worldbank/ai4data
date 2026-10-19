@@ -1,0 +1,9 @@
+product_id,product_type,title,licence,licence_url,ai_use,ai_use_terms,machine_readable
+LF_UNEMP_PCT,indicator series,Unemployment rate,CC-BY-4.0,https://creativecommons.org/licenses/by/4.0/,allowed,Attribution to the National Statistics Office with the series identifier and release date,yes
+FS_UNDERNOURISH_PCT,indicator series,Prevalence of undernourishment,CC-BY-4.0,https://creativecommons.org/licenses/by/4.0/,allowed,Attribution to the National Statistics Office with the series identifier and release date,yes
+EX-LFS-2025-Q2,public use microdata file,"Labour Force Survey, second quarter 2025",custom,https://stats.example/terms/public-use-file,conditions,Training a model on the file is allowed; re-identification and re-distribution of the file are prohibited,yes
+EX-HBS-2021,licensed microdata file,Household Budget Survey 2021,custom,https://stats.example/terms/licensed-file,prohibited,Use is limited to the approved research purpose; no model training,yes
+EX-CEN-2014,public use microdata file,Population and Housing Census 2014,custom,https://stats.example/terms/public-use-file,conditions,Training a model on the file is allowed; re-identification and re-distribution of the file are prohibited,yes
+EX-ADMIN2-2024,geospatial file,"Administrative boundaries, level 2, 2024 edition",CC-BY-4.0,https://creativecommons.org/licenses/by/4.0/,allowed,Attribution to the National Statistics Office,yes
+EX-REP-2025-03,publication,Food security report 2025,CC-BY-4.0,https://creativecommons.org/licenses/by/4.0/,allowed,Attribution to the National Statistics Office,no
+EX-YB-2023,publication,Statistical yearbook 2023,,,unspecified,,no

@@ -1,0 +1,6 @@
+url,source,document_type
+https://ministry.example.gov/publications/strategy-2025.pdf,ministry of health,policy document
+https://ministry.example.gov/publications/,ministry of health,document list
+https://ministry.example.gov/search?q=nutrition,ministry of health,search page
+https://ministry.example.gov/news/2025/09/budget-speech,ministry of health,news
+https://ministry.example.gov/api/internal/documents.json,ministry of health,internal API

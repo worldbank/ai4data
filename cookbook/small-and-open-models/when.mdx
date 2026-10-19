@@ -1,0 +1,283 @@
+---
+id: when
+title: "1. Tasks a small or open model can serve"
+sidebar_label: "1. When"
+sidebar_position: 2
+description: When a small or open-weight model is the first choice for a task, decided by a written rule from the task's output, reasoning depth, languages, confidentiality, volume, and latency, together with the comparison each choice is tested against.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 1. Tasks a small or open model can serve
+
+**Question:** When is a small or open model enough?
+
+## Rationale
+
+Most of what a statistical organization asks of a language model is
+narrow: assign a code, extract spans, embed a query, draft a short
+field, explain a rule failure. These are tasks where a small model with
+the right context does as well as a large one, at a fraction of the
+cost, on hardware the organization owns, with the data never leaving
+it. Some tasks are not narrow: a long commentary with judgement, an
+assistant that answers open questions in several languages. The rule
+in this chapter separates the two from the task's shape, names the
+first choice, and names the comparison the suite will test it against;
+the suite decides, and the rule only says where to start.
+
+Two properties of a model matter independently. Size (parameters)
+drives cost, latency, and hardware. Openness (whether the weights can
+be downloaded and run) drives where the model can run and therefore
+which data it can see. A small open model is cheap and local; a large
+open model is local and expensive; a hosted model is neither local nor
+owned, whatever its size.
+
+## Target state
+
+- Every task that uses a model has a recorded first choice (size and hosting) from the written rule, with the reasons, and a comparison it is tested against.
+- Tasks on confidential text run only on models the organization runs.
+- The choice is revised when the suite's results or the task's volume change.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Apply the rule to the list of tasks; run the first choice for one narrow task on a local small model. |
+| **AI-ready** | Test every first choice against its comparison on the suite ([chapter 5](./comparison.mdx)); record the decision per task in the AI component register. |
+| **AI-native** | Revisit the choices on each model release and each change in volume; route tasks between models by the measured cost-quality frontier. |
+
+:::info[Running example]
+The example organization lists ten tasks across its cookbooks. The rule
+starts six on a small open model run locally (coding, keywords, edit
+explanations, embeddings, mention extraction, table extraction), two on
+a mid-sized open model (definition drafting, translation), and two on a
+large model (release commentary, the public assistant), each with a
+comparison to test.
+:::
+
+## Recipes
+
+<Recipe title="1.1 Describe each task by the properties that decide" level="Foundational" skills="Developer; task owners" time="Two hours">
+
+**Result:** the organization has a short table, one row per task, that
+records the six facts about each task which decide what kind of model
+it needs.
+
+Whether a task needs a large model or can be done by a small one that
+runs on the organization's own computer depends on a few properties of
+the task, and on nothing else. They are: what the model has to produce,
+how much judgement that takes, in which languages, whether the input is
+confidential, how many times a month it runs, and whether someone waits
+for the answer. Writing these down for every task is the first step,
+because the rest of this guide reads them.
+
+The example file below lists ten tasks that appear in the other
+cookbooks. Each row is one task; the columns are:
+
+| Column | Meaning | Values |
+|---|---|---|
+| `output` | What the model has to produce | `code` (a classification code), `spans` (pieces of text marked in a document), `vector` (a numeric representation used by search, called an embedding), `short text`, `paragraph`, `long text`, `structured` (a filled form or table) |
+| `reasoning` | How much judgement the task takes | `none` (a lookup), `low` (one clear decision), `medium` (several facts combined), `high` (interpretation, as in commentary) |
+| `languages` | The languages the input and output come in, separated by `;` | `national` stands for the national language |
+| `confidential` | Whether the input may contain confidential data | `yes` or `no` |
+| `volume_per_month` | How many items the task handles in a month | A number |
+| `latency` | Whether someone waits for the answer | `batch` (run overnight) or `interactive` (a person waits) |
+
+```csv file=../../website/static/cookbook-files/small-and-open-models/tasks.csv
+```
+
+1. List every task that uses a language model today or is planned to.
+   The other cookbooks already list most of them: the
+   [production map](/cookbook/language-models-in-production/map), the
+   [curation typology](/cookbook/metadata-curation-with-llms/scope), and
+   the [AI component register](/cookbook/ai-ready-dissemination/govern)
+   of the dissemination cookbook.
+2. Fill the six columns for each task with the task's owner. Where the
+   owner is unsure about `reasoning`, choose the higher value; the
+   evaluation later shows whether a smaller model is enough.
+3. Keep the table in the AI component register, so that it is updated
+   when a task is added or its volume changes.
+
+**Worked example.** The row for occupation coding reads: output `code`,
+reasoning `low`, languages `national;en`, confidential `yes`, volume
+250,000 a month, latency `batch`. The labour statistics unit filled it
+in ten minutes, and the one discussion was about reasoning, where the
+coding supervisor argued for `medium` because of ambiguous responses and
+the developer for `low` because the model chooses among retrieved
+candidates. They chose `low` and noted that the suite would show
+whether that was right. The row for release commentary reads: output
+`long text`, reasoning `high`, languages `national;en`, confidential
+`no`, volume 12 a month, latency `interactive`. The ten rows go into
+the register beside the existing columns.
+
+**What this does not do.** The table describes the tasks; it does not
+decide anything yet. Recipe 1.2 reads it and proposes a starting model
+for each task, and only the evaluation of [chapter 5](./comparison.mdx)
+decides.
+
+</Recipe>
+
+<Recipe title="1.2 Apply the rule and record the first choice and the comparison" level="Foundational" skills="Python" time="Minutes">
+
+**Result:** each task has a proposed starting model, which may be small
+or large and local or hosted, a second model to compare it with, and the
+reason for the proposal, all written down.
+
+The decision rule in this recipe is short. Confidential text goes only
+to a model the organization runs itself. A task whose output is a code,
+a span, a vector, a short text, or a structured object, and that needs
+little judgement, starts with a small model run locally. A task that
+produces a paragraph with some judgement starts with a mid-sized open
+model. A task that produces long text or needs high judgement starts
+with a large model. High volume favours a local model because each call
+costs nothing beyond the server. The rule only says where to start: each
+proposal is paired with a comparison model, and the two are tested on
+the organization's own questions in [chapter 5](./comparison.mdx).
+
+The script below applies the rule to the task table of recipe 1.1 and
+prints one line per task with the proposal, the comparison, and the
+reasons:
+
+```python file=../../website/static/cookbook-files/small-and-open-models/task_fit.py
+```
+
+```bash
+python task_fit.py tasks.csv
+```
+
+Output for the running example:
+
+```text
+10 tasks
+
+task                             first choice                   compare with             reasons
+Occupation coding                small open model, local        mid-sized open model     confidential text stays on local open weights; code output with low reasoning suits a small model; 250,000 per month favours local on cost; national language: test coverage on the suite
+Metadata keyword drafting        small open model, local        mid-sized open model     short text output with low reasoning suits a small model
+Definition drafting              mid-sized open model, local    large hosted model       paragraph output with medium reasoning
+Edit failure explanation         small open model, local        mid-sized open model     confidential text stays on local open weights; short text output with low reasoning suits a small model; national language: test coverage on the suite
+Release commentary drafting      large hosted model             mid-sized open model     long text output with high reasoning starts large; national language: test coverage on the suite
+Catalog search embeddings        small open model, local        mid-sized open model     vector output with none reasoning suits a small model; 500,000 per month favours local on cost; national language: test coverage on the suite
+Assistant over the catalog       large hosted model             mid-sized open model     paragraph output with high reasoning starts large; national language: test coverage on the suite
+Mention extraction               small open model, local        mid-sized open model     spans output with low reasoning suits a small model; 100,000 per month favours local on cost
+Table extraction from scans      small open model, local        mid-sized open model     structured output with medium reasoning suits a small model; national language: test coverage on the suite
+Translation of metadata          mid-sized open model, local    large hosted model       paragraph output with medium reasoning; national language: test coverage on the suite
+
+6 of 10 tasks start with a small open model; every first choice is tested against its comparison on the suite
+```
+
+The table has one line per task with the proposal, the model it is to
+be compared with, and the reasons that decided it, each reason naming
+the property it came from. The last line counts the tasks that start
+small.
+
+1. Run the script on the task table. Read the `reasons` column: it
+   names the properties that decided each proposal.
+2. Where the organization disagrees with a proposal, change the rule in
+   the script and note why. The rule belongs to the organization.
+3. Record the proposal and the comparison for each task in the AI
+   component register. They are the two candidates that
+   [chapter 5](./comparison.mdx) tests.
+
+**Worked example.** For occupation coding the script proposes a small
+open model run locally, for three reasons it prints: the text is
+confidential, the output is a code with low reasoning, and the volume
+of 250,000 a month favours local serving on cost. It adds that the
+national language has to be covered on the suite, because small models
+most often fall short there. The comparison is a mid-sized open model.
+For the public assistant it proposes a large hosted model, because the
+output is a paragraph with high reasoning, with a mid-sized open model
+as the comparison. The head of IT disagrees with one proposal, table
+extraction from scans, where the organization's scans are in a script
+the small models handle badly, and changes the rule so that `structured`
+output with `medium` reasoning starts mid-sized, with the reason noted.
+
+**What this does not do.** The rule is a starting point. A small model
+that passes the organization's test questions is the right choice even
+where the rule proposed a larger one, and a larger model is the right
+choice where the small one fails on the national language.
+
+</Recipe>
+
+<Recipe title="1.3 Separate size from openness in the decision" level="Foundational" skills="Head of IT; data protection officer" time="One hour">
+
+**Result:** the AI-use policy carries one written rule: confidential
+and unpublished inputs are processed only by models the organization
+runs itself.
+
+Two properties of a model are easy to confuse. Size (how many
+parameters it has) decides cost, speed, and the hardware it needs.
+Openness (whether the model's weights can be downloaded and run) decides
+where it can run, and therefore which data it may see. A model that runs
+on the organization's own server never sends data to a provider. That
+holds for a large open model as much as for a small one, and it does not
+hold for a small model accessed through a provider's service.
+
+1. Add the rule to the AI-use policy: confidential microdata,
+   unpublished records, and respondents' free text are processed only by
+   open-weight models run on the organization's infrastructure, or by a
+   private deployment under a contract that keeps the data under the
+   organization's control.
+2. State in the policy that the rule is about where the model runs, not
+   its size.
+3. Check the task table of recipe 1.1: every task marked confidential
+   has a local proposal.
+
+**Worked example.** The data protection officer adds two sentences to the AI-use policy.
+The first says that confidential microdata, unpublished records, and
+respondents' free text are processed only by open-weight models running
+on the organization's own servers, or under a contract that keeps the
+data under the organization's control. The second says that the size of
+the model is irrelevant to this rule. A unit later proposes a small model offered
+through a provider's service for coding, on the grounds that it is
+small and cheap. The rule settles it in a sentence: the model is small
+and the data would still leave the building. The check of the task table
+shows that all four confidential tasks have local proposals.
+
+**What this does not do.** Running a model locally removes the transfer
+of data to a provider. The server still needs access control, logging,
+and the isolation described in [chapter 6](./security.mdx).
+
+</Recipe>
+
+## Implementation options
+
+- **Rule:** the script in this chapter, adapted; the AI component register as the record.
+- **Properties:** output form, reasoning, languages, confidentiality, volume, latency.
+- **Hosting:** local open weights for confidential inputs; hosted models for public inputs where the comparison favours them.
+
+## World Bank examples
+
+- [Efficient and Inclusive AI Applications](/docs/inclusive-ai/) compares model sizes by task and shows provider-agnostic configuration with locally hosted open-weight models.
+- The program's Small and Agentic AI workstream develops small language models for statistical processes ([GSBPM mapping](/docs/gsbpm-mapping)).
+
+## Resources
+
+- [Efficient and Inclusive AI Applications](/docs/inclusive-ai/): the program's measurements of task accuracy against model size.
+- [Sustainability chapter of the dissemination cookbook](/cookbook/ai-ready-dissemination/sustain): choosing the smallest model that passes the suite.
+- [Task list and rule](pathname:///cookbook-files/small-and-open-models/task_fit.py): the running example.
+- [AI component register](pathname:///cookbook-files/ai-ready-dissemination/ai_component_register.csv): where the choices are recorded.
+
+## Common mistakes
+
+- **One model for everything.** Coding does not need the model that commentary needs.
+- **Size confused with openness.** The confidentiality rule is about where the model runs.
+- **The rule treated as the decision.** The suite decides.
+- **Choices never revisited.** Small models improve quickly; test again each year.
+
+## Verification
+
+- **List.** Every model-assisted task has the six properties recorded.
+- **Choices.** Every task has a first choice, a comparison, and the reasons in the register.
+- **Confidentiality.** Every confidential task's choice is local.
+
+## Checklist
+
+<Checklist id="small-and-open-models-when" items={[
+  'Tasks described by output, reasoning, languages, confidentiality, volume, latency',
+  'First choice and comparison recorded per task with reasons',
+  'Confidential inputs restricted to models the organization runs',
+  'Rule kept as the organization\'s own and changed with a reason',
+  'Choices handed to the suite for the decision',
+  'Choices revisited on model releases and volume changes',
+]} />

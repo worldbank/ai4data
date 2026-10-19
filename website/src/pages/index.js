@@ -3,26 +3,50 @@ import Link from "@docusaurus/Link";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Layout from "@theme/Layout";
 import Heading from "@theme/Heading";
+import useBaseUrl from "@docusaurus/useBaseUrl";
 import Challenge from "@site/src/components/Challenge";
 import Program from "@site/src/components/Program";
 import ScrollDemo from "@site/src/components/ScrollDemo";
 import HeroVisual from "@site/src/components/HeroVisual";
+import CookbookCta from "@site/src/components/CookbookCta";
 import GetInvolved from "@site/src/components/GetInvolved";
+import HubGrid from "@site/src/components/HubGrid";
 
 import styles from "./index.module.css";
 
+const DDG_URL = "https://www.worldbank.org/en/about/unit/unit-dec/dev";
+
 function HomepageHeader() {
   const { siteConfig } = useDocusaurusContext();
+  const ddgLogo = useBaseUrl("/img/ddg-logo.png");
+  const programLogo = useBaseUrl("/img/program-logo.png");
   return (
     <header className={styles.heroBanner}>
       <div className="container">
         <div className={styles.heroGrid}>
           <div className={styles.heroInner}>
-            <Link className={clsx("eyebrow", styles.eyebrowLink)} to="https://www.worldbank.org/en/about/unit/unit-dec/dev">
+            <div className={styles.logoLockup}>
+              <Link className={styles.lockupItem} to={DDG_URL}>
+                <img
+                  src={ddgLogo}
+                  alt="World Bank Group, Development Data Group"
+                  className={styles.lockupDdg}
+                />
+              </Link>
+              <span className={styles.lockupDivider} aria-hidden="true" />
+              <span className={styles.lockupItem}>
+                <img
+                  src={programLogo}
+                  alt="AI for Data, Data for AI"
+                  className={styles.lockupProgram}
+                />
+              </span>
+            </div>
+            <Link className={clsx("eyebrow", styles.eyebrowLink)} to={DDG_URL}>
               Office of the WBG Chief Statistician &amp; Development Data Group
             </Link>
             <Heading as="h1" className={styles.heroTitle}>
-              Making development data <strong>AI-ready.</strong>
+              <strong>AI-ready</strong> development data
             </Heading>
             <p className={styles.heroSubtitle}>
               {siteConfig.tagline}
@@ -30,15 +54,15 @@ function HomepageHeader() {
             <div className={styles.buttons}>
               <Link
                 className={clsx("button button--lg", styles.primaryButton)}
-                to="/docs/introduction"
+                to="/hub"
               >
-                Read the Documentation
+                Implementation hub
               </Link>
               <Link
                 className={clsx("button button--lg", styles.secondaryButton)}
-                to="https://github.com/worldbank/ai4data"
+                to="/docs/introduction"
               >
-                View on GitHub
+                Documentation
               </Link>
             </div>
           </div>
@@ -48,6 +72,32 @@ function HomepageHeader() {
         </div>
       </div>
     </header>
+  );
+}
+
+function HubSection() {
+  return (
+    <section className={styles.hub}>
+      <div className="container">
+        <div className={styles.hubHead}>
+          <span className="eyebrow">Implementation hub</span>
+          <Heading as="h2" className={styles.hubTitle}>
+            AI readiness in practice
+          </Heading>
+          <p className={styles.hubLede}>
+            The hub lists the program&apos;s tools, guides, and cookbooks
+            under six areas. The tools catalogue records a status for each
+            tool: in operation, deployable, pre-release, or method.
+          </p>
+        </div>
+        <HubGrid compact headingLevel="h3" />
+        <p className={styles.hubLinks}>
+          <Link to="/hub">The hub →</Link>
+          <Link to="/tools">Tools catalogue →</Link>
+          <Link to="/docs/reference-implementation/">Reference implementation →</Link>
+        </p>
+      </div>
+    </section>
   );
 }
 
@@ -69,7 +119,7 @@ function ClosingCta() {
             className={clsx("button button--md", styles.closingButtonPrimary)}
             to="https://github.com/worldbank/ai4data"
           >
-            Explore the Repository
+            Repository
           </Link>
         </div>
       </div>
@@ -87,8 +137,10 @@ export default function Home() {
       <HomepageHeader />
       <main>
         <Challenge />
+        <HubSection />
         <ScrollDemo />
         <Program />
+        <CookbookCta />
         <GetInvolved />
         <ClosingCta />
       </main>

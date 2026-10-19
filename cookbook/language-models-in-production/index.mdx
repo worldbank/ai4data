@@ -1,0 +1,164 @@
+---
+id: index
+title: Practical Guide to Language Models in Statistical Production
+sidebar_label: Overview
+sidebar_position: 0
+description: A cookbook for methodologists and production managers in national statistical organizations on where language models can assist each phase of statistical production, with the controls that keep the statistics official.
+---
+
+# Practical Guide to Language Models in Statistical Production
+
+**A cookbook for methodologists and production managers in national statistical organizations.** Version 0.1 (working draft), October 2026.
+
+:::note[Working draft]
+This guide is a working draft from the AI for Data – Data for AI program. It
+collects practical approaches and open standards. It does not
+represent official World Bank Group guidance or policy and is not legal
+advice; an organization applies it under its own statistical law, data
+protection rules, and institutional policies.
+Comments and corrections are welcome as
+[GitHub issues](https://github.com/worldbank/ai4data/issues), and the
+[contributing](./contributing.md) page explains how to propose a recipe.
+:::
+
+The other cookbooks of this series concern dissemination: how data and
+metadata are found, understood, served, and used. This guide concerns
+production: the phases in which statistics are designed, collected,
+processed, and analysed before anything is published. Language models
+assist several of those phases well. They read a draft questionnaire
+and flag the questions that ask two things at once; they code "sells
+vegetables at the market" to an occupation group; they explain in plain
+language why a record failed an edit rule; they draft the commentary of
+a release from its tables. Each of these is text work that production
+staff do by reading, and a model does the reading at scale. What makes
+the result official is the same as for any method: defined points of
+human decision, measured performance, pinned versions, and a statement
+in the quality report.
+
+This guide is organized around seven questions. The first asks where
+in the production process a model can assist and where it should not.
+The next four follow the phases of production: whether a model can
+assist questionnaire and concept work, whether open text can be coded
+with a model, whether it can support editing and the explanation of
+anomalies, and whether it can draft commentary whose numbers are
+verified. The last two are operational: how models are run inside the
+production environment, and how model use is documented and
+quality-assured. Each chapter answers one question with recipes,
+maturity levels, worked examples, and a checklist.
+
+The recipes follow the Generic Statistical Business Process Model
+(GSBPM) phases and build on the program's workstreams that serve them:
+[Anomaly Detection and Explanation](/docs/anomaly-detection/) for
+processing and analysis, the statistical classification and coding
+workstream, the Global Question Bank for design, and
+[Efficient and Inclusive AI](/docs/inclusive-ai/) for running models
+locally. The [standards page](./standards.md) lists each and where it
+applies.
+
+:::tip[Model roles and human decisions]
+Every recipe in this guide keeps a person at the point of decision: the
+methodologist on the questionnaire, the coder on the routed share, the
+editor on the proposal, the analyst on the explanation and the
+commentary. The model's role is named in each case, and a role of
+"decide" is not among them.
+:::
+
+## Prerequisites
+
+The recipes assume the following are in place or can be arranged:
+
+- A production process with defined steps (the organization's own or GSBPM), and the methodologists and production managers who run it.
+- Access to a language model that can run inside the production network for confidential text (an open-weight model on a local server), and a hosted model for public inputs under the AI-use policy.
+- A developer who can run Python scripts and batch jobs; for the AI-ready level, coders and editors willing to label a sample and rate outputs.
+
+## First steps
+
+For a team with limited time, this sequence gives the most useful result first:
+
+1. Write the map of model-assisted tasks and the list of tasks that stay with people, following [chapter 1](./map.mdx). This takes a day.
+2. Start with coding, following [chapter 3](./coding.mdx). A model proposes codes for one survey's open text, coders accept or change them, and accuracy is measured against the final codes. This takes a week.
+3. Publish a statement of model use with that survey's release, following [chapter 7](./assurance.mdx). This takes an hour.
+
+Edit explanations and anomaly explanations ([chapter 4](./editing.mdx)), commentary ([chapter 5](./commentary.mdx)), and questionnaire review ([chapter 2](./design.mdx)) follow the same pattern; [chapter 6](./running.mdx) covers the server and the batch jobs they need.
+
+## Self-assessment
+
+The [self-assessment](./start-here.mdx) takes about five minutes and places
+an organization's use of models in production at a level in each chapter.
+
+## Chapters and questions
+
+| Chapter | Question | Practical topics |
+|---|---|---|
+| [1. Model assistance across the production process](./map.mdx) | Where in the production process can a model assist, and where should it not? | GSBPM map, five roles, review and data rules, tasks that stay with people |
+| [2. Questionnaire and concept work](./design.mdx) | Can a model assist the design of questionnaires and the harmonization of concepts? | Wording checklist, question bank matching, variable descriptions, translations |
+| [3. Coding of open text](./coding.mdx) | Can open-text responses be coded to classifications with a model? | Classification as context, accuracy by level, confidence threshold, re-coded sample |
+| [4. Editing, imputation, and anomaly explanation](./editing.mdx) | Can a model support editing and the explanation of anomalies? | Plain-language explanations, proposals checked by rules, anomaly explanations with evidence |
+| [5. Commentary and summaries with verified numbers](./commentary.mdx) | Can a model draft commentary whose numbers are verified? | Drafting from tables, number and claim check, analyst approval, other languages |
+| [6. Models inside the production environment](./running.mdx) | How are models run inside the production environment? | Local open-weight models, batch jobs, cost and time, pinned versions, switch-off test |
+| [7. Quality assurance and documentation of model use](./assurance.mdx) | How is model use documented and quality-assured? | Decision points, suites per task, effect on the statistics, statement of model use, audit |
+
+## Maturity levels
+
+Each chapter describes three levels. An organization can sit at different
+levels in different chapters, and the first level is a complete, useful
+state on its own.
+
+| Level | Meaning |
+|---|---|
+| **Foundational** | Models assist a task with every output reviewed by a person, the task mapped, and the versions recorded. |
+| **AI-ready** | Each task has a labelled sample, measured performance, a production rule set from it, a local model where the data require it, and a statement of model use in the quality report. |
+| **AI-native** | Model assistance runs as pipeline stages gated by evaluation suites, corrections feed back into the models and indexes, and the effect on the statistics is measured and published each release. |
+
+## Running example
+
+The labour force survey of the example organization, in its 2025 second
+quarter round: a draft questionnaire with a double-barrelled question,
+twenty open-text occupation responses coded by a model and a coder, six
+model-proposed values for records that failed edit rules, a draft
+commentary with seven figures, a batch coding job of 250,000 responses,
+and the statement of model use for the release. All records, responses,
+and figures are invented.
+
+## Scope of the examples
+
+The examples are small on purpose: twenty responses, six suggestions,
+one draft, so that a reader can run them in an afternoon and see the
+shape of each check. They are starting points. Each recipe ends with a
+**What this does not do** note that says where the example stops and
+what the full version adds. The model calls themselves use the
+organization's chosen model; the scripts here map, measure, check, and
+document what comes back.
+
+## Files
+
+| File | Used in |
+|---|---|
+| [gsbpm_map.csv](pathname:///cookbook-files/language-models-in-production/gsbpm_map.csv) and [map_components.py](pathname:///cookbook-files/language-models-in-production/map_components.py) | Chapter 1: the component map and its check |
+| [occupation_coding.csv](pathname:///cookbook-files/language-models-in-production/occupation_coding.csv) and [coding_eval.py](pathname:///cookbook-files/language-models-in-production/coding_eval.py) | Chapter 3: coded responses and the accuracy and threshold evaluation |
+| [edit_rules.csv](pathname:///cookbook-files/language-models-in-production/edit_rules.csv), [suggested_values.csv](pathname:///cookbook-files/language-models-in-production/suggested_values.csv), and [check_suggestions.py](pathname:///cookbook-files/language-models-in-production/check_suggestions.py) | Chapter 4: edit rules, model proposals, and the rule check |
+| [release_table.csv](pathname:///cookbook-files/language-models-in-production/release_table.csv), [commentary_draft.md](pathname:///cookbook-files/language-models-in-production/commentary_draft.md), and [commentary_check.py](pathname:///cookbook-files/language-models-in-production/commentary_check.py) | Chapter 5: the release table, a draft, and the number and claim check |
+| [batch_cost.py](pathname:///cookbook-files/language-models-in-production/batch_cost.py) | Chapter 6: cost and time estimate for a batch job |
+| [model_use_statement.md](pathname:///cookbook-files/language-models-in-production/model_use_statement.md) and [check_statement.py](pathname:///cookbook-files/language-models-in-production/check_statement.py) | Chapter 7: the statement of model use and its check |
+
+## Related resources
+
+| Resource | Purpose |
+|---|---|
+| This guide | Where models assist production and under which controls, in a sequence of practical steps. |
+| [Mapping to the GSBPM](/docs/gsbpm-mapping) | The program's workstreams placed in the production phases. |
+| [Anomaly Detection and Explanation](/docs/anomaly-detection/) | Detection and structured explanation of unusual values. |
+| [Practical Guide to Metadata Curation with Language Models](/cookbook/metadata-curation-with-llms/) | Drafting, review, and translation workflows reused in the design and commentary chapters. |
+| [Practical Guide to Evaluation Suites for Statistical AI](/cookbook/evaluation-suites/) | The suites and report cards the assurance chapter requires. |
+| [Code](https://github.com/worldbank/ai4data) | Open-source software to deploy or adapt. |
+
+## Citation
+
+World Bank. 2026. *Practical Guide to Language Models in Statistical
+Production: A cookbook for methodologists and production managers in
+national statistical organizations.* Version 0.1. AI for Data – Data for
+AI. https://worldbank.github.io/ai4data/cookbook/language-models-in-production/
+
+## Version history
+
+- **0.1 (October 2026).** First draft: seven chapters, recipes, scripts, self-assessment.

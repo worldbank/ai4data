@@ -1,0 +1,21 @@
+response_id,response_text,gold_code,model_code,confidence
+r01,primary school teacher,2341,2341,0.97
+r02,drives a taxi in the city,8322,8322,0.95
+r03,sells vegetables at the market,5211,5211,0.90
+r04,nurse at the district hospital,2221,3221,0.62
+r05,grows maize and keeps goats,6111,6121,0.58
+r06,mechanic fixing motorcycles,7231,7231,0.93
+r07,works in a shop,5223,5223,0.48
+r08,accountant,2411,2411,0.96
+r09,builds houses,7111,9313,0.55
+r10,hairdresser,5141,5141,0.94
+r11,police officer,5412,5412,0.91
+r12,software developer,2512,2512,0.95
+r13,cleans offices at night,9112,9112,0.88
+r14,helps at home,9999,5322,0.35
+r15,fisherman,6221,6221,0.89
+r16,secretary in a ministry,4120,4110,0.66
+r17,bus conductor,5112,5112,0.86
+r18,tailor,7531,7531,0.92
+r19,doctor,2211,2211,0.97
+r20,security guard,5414,5414,0.90

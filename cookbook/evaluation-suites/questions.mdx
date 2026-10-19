@@ -1,0 +1,279 @@
+---
+id: questions
+title: "2. Questions and labels"
+sidebar_label: "2. Questions"
+sidebar_position: 3
+description: Where test questions and their labels come from, how a question set is built from real queries and failures, how two people label it and their agreement is measured, and how the set is versioned with a held-out part.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 2. Questions and labels
+
+**Question:** Where do test questions and labels come from?
+
+## Rationale
+
+A suite is as good as its questions. Questions staff invent reflect what
+staff think users ask; questions from search logs, help-desk tickets, and
+failed answers reflect what users ask. Labels (the expected series, the
+expected value, the expected refusal) are decisions, and two people
+making them independently disagree more often than expected, mostly on
+the edges: a near concept, a question with no answer, a series that
+exists in two forms. The disagreements are where the labelling guide is
+written, and the agreement between labellers is the ceiling for every
+score the suite will produce.
+
+## Target state
+
+- Question sets are built from real queries and recorded failures, with paraphrases, near concepts, and questions with no answer, in every supported language.
+- A labelling guide states the rules; two people label independently; their agreement is measured and the disagreements are adjudicated and fed back into the guide.
+- Sets are versioned with a held-out part, and every question records who added it and from where.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Build a first set of fifty questions with expected answers, including ten with no answer; version it. |
+| **AI-ready** | Add real queries and failures each month; write the labelling guide; label with two people and measure agreement; cover every language with native speakers; keep a held-out part. |
+| **AI-native** | Sample production traffic into the set on a schedule ([chapter 8](./production.mdx)); maintain the guide from disagreements; share the set format with other organizations. |
+
+:::info[Running example]
+Twenty search questions labelled by two people: seventeen agree, three
+differ, and all three disagreements involve whether a near concept has
+an answer (infant mortality when only under-five mortality exists). The
+agreement is 0.85 and Cohen's kappa 0.82, and the labelling guide gains a
+rule and an example.
+:::
+
+## Recipes
+
+<Recipe title="2.1 Build the set from real queries and failures" level="Foundational" skills="Dissemination staff; speakers of each supported language" time="One day for the first fifty">
+
+**Result:** the organization has a file of test questions with their
+expected answers, built from what users ask and kept under version
+control.
+
+A test question is a question with a known correct answer: for a
+search, the series that should come first; for an assistant, the value
+it should state, or the fact that it should decline. The best questions
+come from real users: search logs, help-desk tickets, press enquiries,
+and the answers that went wrong. Questions staff invent tend to ask
+what the system can answer.
+
+The file follows the format of the dissemination cookbook's
+[question set](pathname:///cookbook-files/ai-ready-dissemination/eval_questions.csv).
+Each row is one question. The columns are:
+
+| Column | Meaning |
+|---|---|
+| `question`, `language` | The question text and its language |
+| `expected_id` | The identifier of the series a specialist would point to, or `NONE` when the organization has no matching series |
+| `expected_value`, `expected_behaviour` | The value an assistant should give and what it should do (answer, say the data are not published, refuse) |
+| `phrasing` | Whether the question uses the official title or a paraphrase |
+| `added_by`, `source` | Who added the question and from where |
+
+1. Collect questions from four sources: search logs (queries that
+   returned nothing, or whose results nobody clicked); help-desk and
+   press questions; the monthly answer review; and the failures
+   recorded by every other test suite. Mark each question with its
+   source.
+2. Add the questions users do not type but the suite needs: near
+   concepts the organization does not publish (expected answer `NONE`),
+   questions in every supported language written by native speakers,
+   and questions that must be refused (confidential data, individuals).
+3. Save the file under version control and record who added each
+   question.
+4. Set aside a fifth of the questions, chosen at random once, as a
+   held-out part that nobody uses while developing the system. It
+   shows how the system does on questions it was never tuned on.
+
+**Worked example.** The first fifty questions of the example
+organization come from four places. Twenty-two are search queries from
+the last quarter that returned nothing or whose results nobody clicked,
+such as "jobless rate" and "how many kids finish primary". Nine are
+help-desk questions, such as "Is an inflation rate published?", which
+gets the expected identifier `NONE`. Eight are failed answers from the monthly
+review, with the expected value filled in. Eleven were written by the
+French-speaking statistician for coverage. Ten of the fifty are drawn
+at random into the held-out list, and the file records each question's
+source and the initials of the person who added it.
+
+**What this does not do.** A set built from one period's logs reflects
+that period's users and events. The set grows every month and is never
+finished. A question translated by machine is a placeholder until a
+native speaker has reviewed it, and the file says which ones those are.
+
+</Recipe>
+
+<Recipe title="2.2 Write the labelling guide and label with two people" level="AI-ready" skills="Dissemination staff; two labellers" time="One day for the guide; an hour per fifty questions per labeller">
+
+**Result:** the organization has a written guide that says how to
+decide the expected answer of a question, two sets of labels produced
+independently from it, and a measure of how often the two labellers
+agreed.
+
+Deciding the expected answer of a question (its label) sounds easy and
+is not. Two people who label the same questions independently disagree
+more often than expected, mostly at the edges: is "infant mortality" a
+question about under-five mortality, or a question with no answer? The
+disagreements are the material from which the labelling guide is
+written, and the rate of agreement between the two people is the
+ceiling for every score the suite will ever produce: a system cannot be
+measured more precisely than its labels.
+
+The example file has twenty questions labelled by two people (columns
+`label_a` and `label_b`). The script below reports how often they
+agreed, the agreement corrected for chance (Cohen's kappa, which is 1
+for perfect agreement and 0 for agreement no better than guessing), and
+the questions they disagreed on:
+
+```python file=../../website/static/cookbook-files/evaluation-suites/label_agreement.py
+```
+
+```bash
+python label_agreement.py labels_two_annotators.csv
+```
+
+Output for the running example:
+
+```text
+20 items: agreement 0.85 (17/20), Cohen's kappa 0.82
+
+disagreements to adjudicate:
+  q04: 'infant mortality': A NONE / B HE_U5_MORT_RATE
+  q07: 'primary school attendance': A ED_PRIMARY_NER_PCT / B NONE
+  q14: 'labour force size': A NONE / B LF_UNEMP_PCT
+
+3 of 3 disagreements involve NONE: the guide's rule on near concepts needs an example
+```
+
+The first line gives the raw agreement and the kappa. The list names
+each question the two labellers decided differently, with both labels.
+The last line says what the disagreements have in common, which is
+where the guide needs work.
+
+1. Write the guide, with an example for each rule. It says:
+   - what counts as the expected series (the one a specialist would
+     point to);
+   - when the answer is `NONE` (no published series covers the concept,
+     including near concepts);
+   - what to do when several series could answer (choose the most
+     specific published one).
+2. Have two people label the questions independently, each with the
+   guide. Run the script and read the agreement, the kappa, and the
+   number of questions.
+3. Settle each disagreement with a third person or in a meeting. Record
+   the decision and add the case to the guide as an example. In the
+   running example every disagreement is about near concepts, so that
+   is the rule to sharpen.
+4. After the guide changes, label a fresh sample. Agreement should
+   rise.
+
+**Worked example.** The three disagreements above are settled in a
+twenty-minute meeting with the health and education statisticians. For
+"infant mortality", the decision is `NONE`, because infant mortality
+and under-five mortality are different indicators and the organization
+publishes only the second. For "primary school attendance", the
+decision is the net enrolment rate, because attendance and enrolment
+are close enough that a user asking one wants the other, with a note in
+the answer. For "labour force size", the decision is `NONE`, because
+the unemployment rate does not give the size of the labour force. The
+guide gains the rule "a near concept is `NONE` when the published series
+measures a different population or event, and the nearest series when it
+measures the same thing by a different name", with the three cases as
+examples.
+
+**What this does not do.** Agreement measures whether two people are
+consistent with each other. Two consistent people can share the same
+wrong idea about a series. The specialist who owns each series reads
+its labels once; after that, the guide carries that knowledge.
+
+</Recipe>
+
+<Recipe title="2.3 Keep the set versioned, sliced, and held out" level="AI-ready" skills="Developer" time="Half a day to set up">
+
+**Result:** every test run records which version of the question set it
+used, every question carries the groups it belongs to, and a held-out
+part exists that development never touches.
+
+A slice is a group of questions scored on its own: the French
+questions, the paraphrased questions, the questions with no answer.
+Scoring by slice is what shows that a change helped one group and
+broke another.
+
+1. Keep the set under version control with a short changelog. Every
+   test run records the set's version with its scores, so that a change
+   in the score can be traced to a change in the set or in the system.
+2. Give every question its slice fields: language; official title or
+   paraphrase; question type (a value, a definition, a trend, a
+   comparison); and whether it has no answer. The scoring scripts of the
+   later chapters group by these fields.
+3. Keep the held-out fifth in a separate list. Development runs on the
+   rest, and the comparison of [chapter 7](./gates.mdx) reports the
+   held-out part on its own.
+4. Once the held-out part has been used to decide several changes, it
+   has been seen too often. Replace it with a fresh fifth drawn from the
+   questions added since.
+
+**Worked example.** The set's changelog reads, for version 1.2: "added
+14 questions from the October production review; adjudicated q04, q07,
+q14; held-out list unchanged". Every question carries its language, its
+phrasing flag, its type, and whether its expected identifier is `NONE`.
+After the held-out list has decided four changes, the developer draws a
+fresh ten from the thirty questions added since version 1.0, retires the
+old list into the development part, and records the rotation in the
+changelog as version 2.0. The comparison of chapter 7 reports the new
+held-out list on its own from then on.
+
+**What this does not do.** Versioning keeps runs comparable; it does
+not keep the set representative of users. The monthly sample of real
+traffic in [chapter 8](./production.mdx) does that.
+
+</Recipe>
+
+## Implementation options
+
+- **Sources:** search logs, help-desk and press questions, answer reviews, failures from other suites, production samples.
+- **Format:** the CSV of the dissemination cookbook with slice fields and provenance per question; JSON lines for answer suites with expected values and behaviour.
+- **Labelling:** a written guide; two labellers; Label Studio or a spreadsheet; the agreement script; adjudication recorded.
+- **Versioning:** version control with a changelog; a held-out list; the set version recorded with every run.
+
+## World Bank examples
+
+- The [dissemination cookbook's evaluation chapter](/cookbook/ai-ready-dissemination/evaluate) builds a known-item set with paraphrases, near concepts, `NONE` rows, and languages marked as reviewed or not.
+- The [Metadata Reviewer](/docs/metadata-reviewer/overview) records curator decisions on suggestions, which the [curation cookbook](/cookbook/metadata-curation-with-llms/improve) turns into an evaluation set.
+- The [Monitoring of Data Use](/docs/data_use/) work labels sentences by hand to measure the extractor, the labelled-sample pattern of recipe 2.2.
+
+## Resources
+
+- [Label Studio](https://labelstud.io/): open-source annotation with multiple annotators and agreement reports.
+- [Cohen's kappa (1960)](https://doi.org/10.1177/001316446002000104) and [Krippendorff's alpha](https://doi.org/10.1080/19312450709336664): agreement measures for two and for several labellers.
+- [Datasheets for datasets](https://arxiv.org/abs/1803.09010): the documentation a question set carries (sources, composition, collection, intended use).
+- [Question set](pathname:///cookbook-files/ai-ready-dissemination/eval_questions.csv) from the dissemination cookbook: the format with slices and provenance.
+- [Labels and agreement script](pathname:///cookbook-files/evaluation-suites/label_agreement.py): the running example.
+
+## Common mistakes
+
+- **Questions written by the people who built the system.** They ask what it can answer; users ask what they need.
+- **One labeller.** The errors are invisible and the ceiling unknown.
+- **No `NONE` questions.** A system that answers everything scores perfectly and misleads the public.
+- **Held-out part reused for years.** It has been seen; rotate it.
+
+## Verification
+
+- **Sources.** Every question has a recorded source, and real queries make up a growing share.
+- **Agreement.** Agreement has been measured on the latest labelling round, the disagreements adjudicated, and the guide updated.
+- **Versioning.** Every run records the set version, the held-out list exists, and development has not run on it.
+
+## Checklist
+
+<Checklist id="evaluation-suites-questions" items={[
+  'Questions from real queries and failures with provenance',
+  'Paraphrases, near concepts, NONE rows, refusal cases, every language',
+  'Labelling guide with rules and examples',
+  'Two labellers; agreement and kappa measured; disagreements adjudicated',
+  'Slice fields on every question',
+  'Set versioned with a changelog and a held-out part',
+]} />

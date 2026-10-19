@@ -1,0 +1,11 @@
+component,phase,sub_process,task,model_role,review,data_sensitivity,model_location,owner
+Question wording review,2. Design,2.3 Design collection,Flag ambiguous or double-barrelled questions in a draft questionnaire,flag,always,public,hosted,Methodology
+Concept harmonization,2. Design,2.2 Design variable descriptions,Propose matches between new questions and the question bank,propose,always,public,hosted,Methodology
+Occupation coding,5. Process,5.2 Classify and code,Assign ISCO-08 codes to open-text occupation responses,code,sample,confidential,local,Processing
+Industry coding,5. Process,5.2 Classify and code,Assign ISIC codes to open-text activity descriptions,code,sample,confidential,local,Processing
+Edit failure explanation,5. Process,5.3 Review and validate,Explain why a record failed an edit rule in plain language,explain,always,confidential,local,Processing
+Imputation suggestion,5. Process,5.4 Edit and impute,Suggest a value for a failed field from the record and rules,propose,always,confidential,local,Processing
+Anomaly explanation,6. Analyse,6.3 Interpret and explain outputs,Draft an explanation of an unusual aggregate with cited evidence,explain,always,internal,hosted,Analysis
+Release commentary,6. Analyse,6.5 Finalise outputs,Draft the commentary of a release from the output tables,draft,always,internal,hosted,Analysis
+Metadata drafting,Overarching,Metadata management,Draft missing definitions for curator review,draft,always,public,hosted,Dissemination
+Respondent chatbot,4. Collect,4.3 Run collection,Answer respondents' questions about the survey,answer,none,public,hosted,Collection

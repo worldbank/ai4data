@@ -1,0 +1,244 @@
+---
+id: reporting
+title: "9. Reporting and comparison"
+sidebar_label: "9. Reporting"
+sidebar_position: 10
+description: How results are reported so that they can be read across releases and compared between organizations, with a report card per release that gives pass rates and intervals per slice with the versions behind them, a public statement about each AI component, and shared formats for question sets.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 9. Reporting and comparison
+
+**Question:** How are results reported and compared?
+
+## Rationale
+
+A score reported as a number ("Recall@5 is 0.86") invites a comparison
+it cannot support: with last quarter, when the set was different; with
+another organization, whose set and measures differ; with a published
+benchmark, built on other data. A report card states what the number
+means: the set version and its size, the slices with their intervals,
+the measure definitions, the component versions, the date. Reported this
+way, scores can be read across releases, and organizations that adopt a
+shared set format can compare, which is how the field learns what is
+achievable on official statistics.
+
+## Target state
+
+- Every release of a component carries a report card: pass rates with intervals per slice, the set version and size, the measure definitions, the component versions, and the production scores of the period.
+- The organization publishes what it measures about each public AI component and how, in the method documentation.
+- Question sets follow a shared format with documentation (a datasheet), so that sets and results can be exchanged where the licence allows.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Report a score per release with the set version and the date. |
+| **AI-ready** | Produce the report card with intervals per slice and the versions; publish the measures used for each public component. |
+| **AI-native** | Publish report cards with releases; document the sets with datasheets in a shared format; exchange sets and results with other organizations. |
+
+:::info[Running example]
+The second run's report card: a pass rate of 0.73 overall with an
+interval from 0.57 to 0.90 on thirty questions, and intervals per
+language and slice that are wider still. The card states what has to be
+published with the numbers for them to be read.
+:::
+
+## Recipes
+
+<Recipe title="9.1 Produce the report card" level="AI-ready" skills="Python" time="Minutes per release">
+
+**Result:** every run has a short summary in a fixed format that gives
+the pass rate for each slice with an interval around it, and the facts
+a reader needs in order to interpret the rates.
+
+A score alone ("Recall@5 is 0.86") cannot be compared with anything:
+the set may have changed since last quarter, and another organization's
+set differs. The report card states, with every score, the version and
+size of the question set, the versions of the system, the date, and
+the interval that says how precise the score is.
+
+The script reads a run file (one row per question with pass or fail,
+language, and slice) and prints the card:
+
+```python file=../../website/static/cookbook-files/evaluation-suites/report_card.py
+```
+
+```bash
+python report_card.py run_scores_v2.csv --run-name "search v2, 2026-10-01"
+```
+
+Output for the running example:
+
+```text
+Report card: search v2, 2026-10-01
+
+group                n pass rate   95% interval
+all                 30      0.73   [0.57, 0.87]
+language=en         18      0.83   [0.67, 1.00]
+language=fr          6      0.83   [0.50, 1.00]
+language=es          6      0.33   [0.00, 0.67]
+slice=official       8      0.75   [0.38, 1.00]
+slice=paraphrase    17      0.76   [0.53, 0.94]
+slice=none           5      0.60   [0.20, 1.00]
+
+Publish with: the question set version, the measure definitions, the model and index versions, and the date.
+```
+
+The table has one row per slice, with the number of questions, the pass
+rate, and a 95 percent interval from a bootstrap over the questions. The
+last line lists what has to accompany the numbers.
+
+1. Run the script on the release's run file. Add the question set's
+   version and size, the definitions of the measures (or a link to
+   them), the versions of the system (model, search index, prompt), and
+   the date.
+2. Add the production scores of the period ([chapter 8](./production.mdx))
+   and the gate decision ([chapter 7](./gates.mdx)) with its reason.
+3. Add a line with the required score beside the measured score for
+   each measure, so that the card says whether the release meets the
+   standard set in [chapter 1](./inventory.mdx).
+4. Keep the cards with the releases. The series of cards is the
+   system's history.
+
+**Worked example.** The card for search version 2 opens with the table
+above. Below it, the developer adds: "Question set 1.2, 30 questions
+(18 English, 6 French, 6 Spanish; 17 paraphrases, 5 with no answer).
+Pass is Recall@3 for questions with an expected series and the decided
+behaviour for the rest. Search: keyword plus multilingual-e5-small
+embeddings, index built 2026-09-28. Required score 0.85 per language:
+met for English, direction only for French and Spanish at six questions
+each. Gate decision: REVIEW, held for the Spanish slice; see decision
+log 2026-10-01. Production review for September: 9 of 10 stratified
+answers passed." The card is filed beside the release.
+
+**What this does not do.** The card reports a run. It does not improve
+the system, and a card with wide intervals is a reminder that the set
+is small, which is [chapter 2](./questions.mdx).
+
+</Recipe>
+
+<Recipe title="9.2 Publish what is measured about each public component" level="AI-ready" skills="Dissemination lead" time="Half a day per component">
+
+**Result:** the organization's method documentation carries a public
+statement of what each public AI component does, how it is tested, and
+what its latest results were.
+
+1. For each public component (the search, the assistant, the agent
+   interface), publish four things:
+   - what it does and does not do;
+   - the measures and an outline of the question set (its size,
+     languages, and kinds of question);
+   - the headline rates from the latest report card with their
+     intervals;
+   - the date.
+2. State the limits in users' terms: which languages are covered, which
+   kinds of question fail most, what the assistant declines.
+3. Update the statement with each release and keep the previous ones.
+4. Follow the outline of a model card and a datasheet (two widely used
+   formats for describing a model and a dataset), so that readers who
+   know them find what they expect.
+
+**Worked example.** The statement for the example organization's
+assistant has four short sections. "What it does" says that it answers
+questions about the organization's published series with values from
+the API and declines questions about data the organization does not
+publish. "How it is tested" says that a set of 120 questions in English, French,
+and Spanish, drawn from real queries and including 18 with no answer, is
+run before every change and every week in production. It adds that a
+reader reviews 40 real answers a month. "Latest results" gives
+the numeric accuracy of 0.97 with its interval, the refusal accuracy of
+1.00 on confidential questions, and the languages in which the required
+scores are met. "Limits" says that comparisons between regions and
+questions about districts fail most often, and that Spanish coverage is
+newer than French. The page is dated and the previous version is linked.
+
+**What this does not do.** A public statement is accountability. The
+assurance behind it is the gate and the production review; the
+statement reports them.
+
+</Recipe>
+
+<Recipe title="9.3 Use a shared set format and exchange results" level="AI-native" skills="Developer; dissemination lead" time="One day to adopt the format">
+
+**Result:** the organization's question sets are in a documented,
+shared format that other organizations can run, and its results can be
+compared with theirs.
+
+1. Keep sets in the file formats of this guide and the other cookbooks,
+   with the slice fields and the source of each question. Describe each
+   set in a datasheet: its purpose, where its questions came from, what
+   it contains, how it was labelled, the labellers' agreement, and its
+   licence.
+2. Publish the sets whose questions and answers are public data
+   (catalog questions with expected identifiers) under an open licence.
+   Keep sets with confidential content internal.
+3. Run other organizations' public sets against the system where the
+   catalogs cover similar concepts, and report the results on a separate
+   card. Differences between catalogs explain most differences in
+   scores.
+4. Send new questions and newly found kinds of failure back through the
+   program.
+
+**Worked example.** The example organization publishes its catalog question set, 120
+questions with expected identifiers and no confidential content, under a
+CC BY 4.0 licence. Its datasheet states the sources, the composition by
+language and kind, the labelling guide, the labellers' agreement of
+0.88, and the date. A neighbouring
+organization with a similar catalog runs the set against its own search
+and reports a Recall@3 of 0.71 on a separate card, with the note that 30
+of the questions refer to series it does not publish. The two
+organizations swap their `NONE` questions, and each gains twenty cases
+it had not thought of.
+
+**What this does not do.** Comparison across organizations is rough,
+because catalogs, languages, and users differ. A shared format makes
+the differences visible; it does not remove them.
+
+</Recipe>
+
+## Implementation options
+
+- **Report card:** the script in this chapter plus the versions, definitions, required scores, production scores, and gate decision.
+- **Publication:** a page per public component in the method documentation, in model card and datasheet outline.
+- **Formats:** the CSV and JSON lines of this guide; a datasheet per set; open licences for public sets.
+- **Exchange:** public sets run across organizations; results reported as separate cards.
+
+## World Bank examples
+
+- The program's [PI-FT toolkit](/pift-toolkit/pipeline) reports retrieval results per model on the same queries, the comparison a shared set enables.
+- The [AI-readiness assessment](/ai-readiness-in-practice) and the program's documentation publish what the program measures and how.
+- The dissemination cookbook's [governance chapter](/cookbook/ai-ready-dissemination/govern) requires transparency about AI use, which recipe 9.2 fulfils.
+
+## Resources
+
+- [Model cards (Mitchell et al., 2019)](https://arxiv.org/abs/1810.03993) and [datasheets for datasets (Gebru et al., 2021)](https://arxiv.org/abs/1803.09010): the outlines for the public statement and the set documentation.
+- [Bootstrap intervals](https://doi.org/10.1201/9780429246593): the intervals on the report card.
+- [Report card script](pathname:///cookbook-files/evaluation-suites/report_card.py): the running example.
+- [Authoring guide](/cookbook/authoring/): the file formats and the conventions the cookbooks share, which a shared set follows.
+
+## Common mistakes
+
+- **A number without an interval.** Thirty questions cannot support two decimals.
+- **A card without versions.** The next card cannot be compared with it.
+- **Public claims beyond the measures.** Publish what was measured and the limits.
+- **Comparisons across organizations read as rankings.** Catalogs differ; the format makes the differences inspectable.
+
+## Verification
+
+- **Card.** Every release has a card with intervals, versions, definitions, required scores, production scores, and the gate decision.
+- **Publication.** Each public component has a current statement with the latest headline rates and limits.
+- **Formats.** The sets are in the shared formats with datasheets, and the public sets carry a licence.
+
+## Checklist
+
+<Checklist id="evaluation-suites-reporting" items={[
+  'Report card per release with intervals per slice',
+  'Set version and size, measure definitions, component versions, date',
+  'Required scores beside measured scores; gate decision and reason',
+  'Production scores of the period on the card',
+  'Public statement per public component in model card outline',
+  'Sets in shared formats with datasheets; public sets licensed',
+]} />

@@ -1,0 +1,12 @@
+SERIES,REF_AREA,TIME_PERIOD,OBS_VALUE,OBS_STATUS,UNIT_MEASURE,RELEASE,SOURCE_URL
+FS_UNDERNOURISH_PCT,NAT,2022,8.4,A,% of population,2025-03-14,https://stats.example/series/FS_UNDERNOURISH_PCT
+FS_UNDERNOURISH_PCT,NAT,2023,7.9,A,% of population,2025-03-14,https://stats.example/series/FS_UNDERNOURISH_PCT
+FS_UNDERNOURISH_PCT,NAT,2024,7.6,A,% of population,2025-03-14,https://stats.example/series/FS_UNDERNOURISH_PCT
+ED_PRIMARY_NER_PCT,NAT,2023,91.2,A,% of age group,2025-02-01,https://stats.example/series/ED_PRIMARY_NER_PCT
+ED_PRIMARY_NER_PCT,NAT,2024,92.0,A,% of age group,2025-02-01,https://stats.example/series/ED_PRIMARY_NER_PCT
+HE_U5_MORT_RATE,NAT,2015,48,A,deaths per 1000 live births,2022-11-30,https://stats.example/series/HE_U5_MORT_RATE
+HE_U5_MORT_RATE,NAT,2020,41,A,deaths per 1000 live births,2022-11-30,https://stats.example/series/HE_U5_MORT_RATE
+LF_UNEMP_PCT,NAT,2025-Q1,6.3,A,% of labour force,2025-08-20,https://stats.example/series/LF_UNEMP_PCT
+LF_UNEMP_PCT,NAT,2025-Q2,6.1,P,% of labour force,2025-08-20,https://stats.example/series/LF_UNEMP_PCT
+PV_HEADCOUNT_NPL_PCT,NAT,2018,23.5,A,% of population,2023-06-10,https://stats.example/series/PV_HEADCOUNT_NPL_PCT
+PV_HEADCOUNT_NPL_PCT,NAT,2021,21.9,A,% of population,2023-06-10,https://stats.example/series/PV_HEADCOUNT_NPL_PCT

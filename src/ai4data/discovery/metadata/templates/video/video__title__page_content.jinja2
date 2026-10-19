@@ -1,0 +1,4 @@
+{%- set d = video_description if video_description is mapping else {} -%}
+{%- if d.title -%}
+{{ d.title }}
+{%- endif -%}

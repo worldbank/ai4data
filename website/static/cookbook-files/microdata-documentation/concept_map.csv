@@ -1,0 +1,8 @@
+name,concept,classification,version,uri,harmonized_name,note
+educ,Educational attainment,ISCED,2011,https://uis.unesco.org/en/topic/international-standard-classification-education-isced,educ_isced11,Levels 0 to 5 map to ISCED 2011 levels 0 to 5; level 6 and above collapsed into 5
+lfs_status,Labour force status,ICLS resolution on work statistics,19th ICLS (2013),https://www.ilo.org/resource/19th-icls-resolution-i,lfs_status_icls19,Employed; unemployed; outside the labour force
+occupation,Occupation,ISCO,ISCO-08,https://www.ilo.org/public/english/bureau/stat/isco/isco08/,occupation_isco08_2d,Sub-major group (2 digits)
+industry,Economic activity,ISIC,Rev.4,https://unstats.un.org/unsd/classifications/Econ/isic,industry_isic4_2d,Division (2 digits)
+sex,Sex,,,,sex,1 male; 2 female
+age,Age,,,,age_years,Completed years
+region,Reference area,National administrative regions,2024 gazette,https://stats.example/codes/regions,region_code,Codes R01 and R02 as published in the regions code list

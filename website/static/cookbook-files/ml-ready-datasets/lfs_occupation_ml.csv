@@ -1,0 +1,601 @@
+record_id,hhid,region,urban,sex,age_group,educ,job_title,industry_text,isco_code,isco_major,weight
+r0001,H0001,R03,0,1,15-24,3,boda boda rider,transport,8321,8,1568.6
+r0002,H0001,R03,0,2,25-54,2,police constable,public administration,5412,5,878.7
+r0003,H0002,R04,1,1,25-54,5,early childhood teacher,education,2342,2,744.5
+r0004,H0002,R04,1,1,25-54,2,cashier in a supermarket,retail trade,5230,5,1243.3
+r0005,H0003,R02,1,1,15-24,1,police constable,public administration,5412,5,775.3
+r0006,H0003,R02,1,1,25-54,3,carpenter,manufacturing,7115,7,408.1
+r0007,H0004,R03,1,2,25-54,4,"teacher, grade 3",education,2341,2,1354.4
+r0008,H0004,R03,1,2,25-54,1,plumber,construction,7126,7,650.3
+r0009,H0004,R03,1,2,15-24,4,university lecturer,education,2310,2,520.8
+r0010,H0005,R02,0,1,15-24,3,picks tea,agriculture,9211,9,727.4
+r0011,H0005,R02,0,1,15-24,2,waitress,food service,5131,5,723.4
+r0012,H0005,R02,0,2,25-54,2,motorcycle taxi rider,transport,8321,8,1086.5
+r0013,H0006,R03,1,1,15-24,4,general practitioner,health,2211,2,858.9
+r0014,H0006,R03,1,2,15-24,5,kindergarten teacher,education,2342,2,703.2
+r0015,H0007,R02,0,1,25-54,1,plumber,construction,7126,7,392.4
+r0016,H0007,R02,0,1,15-24,2,taxi driver,transport,8322,8,735.1
+r0017,H0008,R02,1,1,15-24,2,plumber,construction,7126,7,558.4
+r0018,H0008,R02,1,1,25-54,4,early childhood teacher,education,2342,2,1309.8
+r0019,H0009,R03,0,2,25-54,2,data entry clerk,public administration,4132,4,1391.4
+r0020,H0009,R03,0,1,25-54,2,police constable,public administration,5412,5,1353.5
+r0021,H0010,R02,1,2,25-54,3,street cleaner,public administration,9613,9,733.9
+r0022,H0011,R02,1,1,25-54,2,joiner,manufacturing,7115,7,736.3
+r0023,H0011,R02,1,1,15-24,5,accountant,finance,2411,2,1215.7
+r0024,H0012,R02,1,2,25-54,5,midwife,health,2222,2,427.7
+r0025,H0013,R02,1,1,25-54,2,office secretary,public administration,4120,4,460.1
+r0026,H0013,R02,1,1,25-54,1,plumber,construction,7126,7,415.6
+r0027,H0013,R02,1,1,25-54,2,bricklayer,construction,7112,7,331.6
+r0028,H0014,R02,1,1,25-54,1,plumber,construction,7126,7,744.6
+r0029,H0014,R02,1,1,55-64,3,office secretary,public administration,4120,4,1185.4
+r0030,H0015,R01,1,2,25-54,4,journalist,media,2642,2,1577.5
+r0031,H0016,R04,1,2,25-54,2,agricultural labourer on a tea estate,agriculture,9211,9,1202.5
+r0032,H0017,R01,0,2,25-54,4,midwife,health,2222,2,882.0
+r0033,H0017,R01,0,2,25-54,5,kindergarten teacher,education,2342,2,2635.3
+r0034,H0018,R03,0,2,25-54,3,street food vendor,food service,5212,5,1577.7
+r0035,H0018,R03,0,1,25-54,5,teaches at a primary school,education,2341,2,1147.7
+r0036,H0019,R02,1,1,25-54,0,dressmaker,manufacturing,7531,7,949.7
+r0037,H0020,R02,0,1,15-24,1,cashier in a supermarket,retail trade,5230,5,1652.1
+r0038,H0020,R02,0,1,25-54,2,vegetable seller at the municipal market,retail trade,5211,5,397.4
+r0039,H0021,R01,1,1,55-64,4,medical doctor,health,2211,2,1496.9
+r0040,H0021,R01,1,1,25-54,3,office cleaner,services to buildings,9112,9,1923.9
+r0041,H0021,R01,1,1,25-54,3,wires buildings,construction,7411,7,608.1
+r0042,H0022,R04,1,1,15-24,0,shop cashier,retail trade,5230,5,1007.5
+r0043,H0023,R02,1,1,25-54,3,boda boda rider,transport,8321,8,902.7
+r0044,H0023,R02,1,1,55-64,2,porter,transport,9333,9,1386.1
+r0045,H0023,R02,1,2,25-54,1,sales agent,wholesale trade,3322,3,1307.7
+r0046,H0024,R01,1,1,25-54,2,raises cattle,agriculture,6121,6,954.0
+r0047,H0025,R02,1,1,25-54,1,sews clothes to order,manufacturing,7531,7,497.2
+r0048,H0026,R01,0,1,25-54,0,bricklayer,construction,7112,7,2696.9
+r0049,H0026,R01,0,1,25-54,2,sells cooked food on the street,food service,5212,5,1623.1
+r0050,H0026,R01,0,1,25-54,3,data entry clerk,public administration,4132,4,1329.0
+r0051,H0027,R04,1,1,25-54,2,fisherman,fishing,6222,6,1181.3
+r0052,H0028,R02,0,1,15-24,5,teaches at the university,education,2310,2,634.9
+r0053,H0028,R02,0,2,55-64,3,chef,food service,5120,5,1547.8
+r0054,H0029,R02,1,1,25-54,3,police officer,public administration,5412,5,859.3
+r0055,H0029,R02,1,1,25-54,2,electrician,construction,7411,7,728.0
+r0056,H0030,R02,1,1,15-24,4,engineer on road projects,construction,2142,2,1209.9
+r0057,H0030,R02,1,1,25-54,3,waitress,food service,5131,5,1297.7
+r0058,H0031,R02,1,1,25-54,2,fisherman,fishing,6222,6,488.7
+r0059,H0031,R02,1,2,55-64,1,farms maize and beans on own land,agriculture,6111,6,668.6
+r0060,H0031,R02,1,1,25-54,2,bank teller,finance,4211,4,1223.3
+r0061,H0032,R02,1,1,55-64,2,agricultural labourer on a tea estate,agriculture,9211,9,865.9
+r0062,H0032,R02,1,1,25-54,4,civil engineer,construction,2142,2,1257.4
+r0063,H0032,R02,1,2,25-54,2,fisherman,fishing,6222,6,507.5
+r0064,H0033,R02,0,1,25-54,5,nurse at the district hospital,health,2221,2,1678.9
+r0065,H0034,R02,1,1,25-54,3,waitress,food service,5131,5,1183.8
+r0066,H0035,R02,1,2,55-64,3,"market vendor, vegetables",retail trade,5211,5,1040.2
+r0067,H0036,R02,1,1,15-24,3,builds houses,construction,7112,7,1207.5
+r0068,H0036,R02,1,1,25-54,2,electrician,construction,7411,7,989.3
+r0069,H0037,R02,0,1,25-54,2,boda boda rider,transport,8321,8,1027.7
+r0070,H0037,R02,0,1,25-54,0,street food vendor,food service,5212,5,625.3
+r0071,H0037,R02,0,2,25-54,2,police officer,public administration,5412,5,913.6
+r0072,H0038,R04,1,2,25-54,1,street cleaner,public administration,9613,9,1229.7
+r0073,H0039,R03,0,1,15-24,1,raises cattle,agriculture,6121,6,603.6
+r0074,H0039,R03,0,1,15-24,3,agricultural labourer on a tea estate,agriculture,9211,9,752.2
+r0075,H0039,R03,0,2,25-54,2,"market vendor, vegetables",retail trade,5211,5,578.3
+r0076,H0040,R04,0,1,25-54,2,chef,food service,5120,5,1070.1
+r0077,H0040,R04,0,1,15-24,2,serves food in a restaurant,food service,5131,5,1417.7
+r0078,H0041,R03,1,2,25-54,3,drives a truck for a logistics company,transport,8332,8,417.6
+r0079,H0042,R03,0,2,25-54,0,police constable,public administration,5412,5,464.8
+r0080,H0043,R03,0,2,25-54,2,sells cooked food on the street,food service,5212,5,1065.2
+r0081,H0043,R03,0,1,25-54,5,shop manager,retail trade,1420,1,736.4
+r0082,H0043,R03,0,1,25-54,2,long-distance truck driver,transport,8332,8,595.2
+r0083,H0044,R03,0,1,55-64,1,vegetable seller at the municipal market,retail trade,5211,5,1680.5
+r0084,H0045,R02,1,1,15-24,5,teaches at the university,education,2310,2,699.1
+r0085,H0045,R02,1,1,25-54,3,enters data at a ministry,public administration,4132,4,443.6
+r0086,H0046,R02,1,2,25-54,1,car mechanic,repair of motor vehicles,7231,7,850.9
+r0087,H0046,R02,1,1,55-64,0,chef,food service,5120,5,786.0
+r0088,H0047,R03,1,1,25-54,4,midwife,health,2222,2,444.4
+r0089,H0048,R02,1,1,15-24,1,motor vehicle mechanic,repair of motor vehicles,7231,7,327.8
+r0090,H0049,R03,0,1,55-64,5,engineer on road projects,construction,2142,2,406.4
+r0091,H0049,R03,0,2,15-24,1,agricultural labourer on a tea estate,agriculture,9211,9,1384.9
+r0092,H0049,R03,0,2,25-54,1,loads goods at the port,transport,9333,9,1080.3
+r0093,H0050,R01,0,2,55-64,0,enters data at a ministry,public administration,4132,4,2267.2
+r0094,H0050,R01,0,1,15-24,0,data entry clerk,public administration,4132,4,2560.4
+r0095,H0051,R01,1,1,25-54,1,sells airtime and mobile money,finance,4211,4,2212.6
+r0096,H0052,R03,0,1,55-64,2,wires buildings,construction,7411,7,1595.5
+r0097,H0052,R03,0,2,25-54,4,secondary school teacher,education,2330,2,697.8
+r0098,H0052,R03,0,1,25-54,2,mason on construction sites,construction,7112,7,549.5
+r0099,H0053,R01,0,1,25-54,3,catches fish on the lake,fishing,6222,6,1244.1
+r0100,H0054,R02,0,2,55-64,1,electrician,construction,7411,7,1435.0
+r0101,H0054,R02,0,2,15-24,1,cashier in a supermarket,retail trade,5230,5,766.9
+r0102,H0055,R02,1,1,25-54,1,drives a truck for a logistics company,transport,8332,8,1038.5
+r0103,H0055,R02,1,1,25-54,2,office secretary,public administration,4120,4,1012.1
+r0104,H0055,R02,1,2,55-64,1,"market vendor, vegetables",retail trade,5211,5,301.1
+r0105,H0056,R03,1,2,25-54,2,police officer,public administration,5412,5,1163.0
+r0106,H0056,R03,1,1,25-54,3,enters data at a ministry,public administration,4132,4,404.7
+r0107,H0057,R04,0,1,15-24,1,waiter in a restaurant,food service,5131,5,1710.7
+r0108,H0058,R01,0,2,15-24,2,raises cattle,agriculture,6121,6,2374.7
+r0109,H0058,R01,0,1,15-24,2,street cleaner,public administration,9613,9,1024.9
+r0110,H0059,R04,1,2,25-54,2,office secretary,public administration,4120,4,776.8
+r0111,H0060,R02,0,1,55-64,3,raises cattle,agriculture,6121,6,632.7
+r0112,H0060,R02,0,1,25-54,2,boda boda rider,transport,8321,8,905.0
+r0113,H0061,R03,1,1,15-24,3,bricklayer,construction,7112,7,1394.9
+r0114,H0061,R03,1,1,25-54,0,fisherman,fishing,6222,6,690.0
+r0115,H0062,R01,0,2,15-24,5,nurse,health,2221,2,1666.6
+r0116,H0063,R02,1,1,25-54,1,enters data at a ministry,public administration,4132,4,662.0
+r0117,H0063,R02,1,1,25-54,2,motor vehicle mechanic,repair of motor vehicles,7231,7,458.4
+r0118,H0064,R03,1,2,25-54,3,police constable,public administration,5412,5,783.3
+r0119,H0064,R03,1,2,15-24,2,motorcycle taxi rider,transport,8321,8,905.9
+r0120,H0064,R03,1,1,25-54,2,hairdresser,personal services,5141,5,963.0
+r0121,H0065,R04,1,1,25-54,5,accountant,finance,2411,2,443.8
+r0122,H0066,R04,1,2,25-54,5,programmer,information technology,2512,2,812.9
+r0123,H0066,R04,1,1,25-54,2,vegetable seller at the municipal market,retail trade,5211,5,644.1
+r0124,H0067,R02,1,1,15-24,2,vegetable seller at the municipal market,retail trade,5211,5,705.3
+r0125,H0067,R02,1,1,55-64,2,makes furniture,manufacturing,7115,7,557.1
+r0126,H0068,R03,1,1,25-54,2,bricklayer,construction,7112,7,541.4
+r0127,H0069,R02,0,1,15-24,2,motorcycle taxi rider,transport,8321,8,1483.3
+r0128,H0069,R02,0,2,25-54,1,electrician,construction,7411,7,1379.9
+r0129,H0069,R02,0,1,25-54,3,"market vendor, vegetables",retail trade,5211,5,1209.1
+r0130,H0070,R02,1,1,55-64,2,motorcycle taxi rider,transport,8321,8,321.9
+r0131,H0070,R02,1,1,25-54,5,pharmacist,health,2262,2,816.9
+r0132,H0071,R02,1,1,15-24,2,security guard,security services,5414,5,400.6
+r0133,H0072,R03,0,2,25-54,1,sells cooked food on the street,food service,5212,5,949.3
+r0134,H0073,R02,1,2,25-54,2,sells vegetables at the market,retail trade,5211,5,872.0
+r0135,H0073,R02,1,1,15-24,3,motorcycle taxi rider,transport,8321,8,328.0
+r0136,H0074,R02,1,2,55-64,3,plumber,construction,7126,7,944.2
+r0137,H0074,R02,1,1,25-54,4,medical doctor,health,2211,2,1153.5
+r0138,H0075,R03,1,1,25-54,2,electrician,construction,7411,7,441.2
+r0139,H0076,R02,1,2,15-24,4,manager at a bank,finance,1346,1,1184.3
+r0140,H0076,R02,1,2,25-54,2,wires buildings,construction,7411,7,430.9
+r0141,H0077,R04,1,1,25-54,4,engineer on road projects,construction,2142,2,958.9
+r0142,H0078,R02,1,2,15-24,3,motorcycle taxi rider,transport,8321,8,845.2
+r0143,H0078,R02,1,1,25-54,2,vegetable seller at the municipal market,retail trade,5211,5,748.0
+r0144,H0079,R02,1,1,15-24,4,civil engineer,construction,2142,2,385.9
+r0145,H0079,R02,1,1,15-24,5,primary school teacher,education,2341,2,1326.7
+r0146,H0080,R04,0,2,25-54,3,porter,transport,9333,9,1809.9
+r0147,H0080,R04,0,2,25-54,1,agricultural labourer on a tea estate,agriculture,9211,9,1299.0
+r0148,H0081,R02,1,1,25-54,2,hairdresser,personal services,5141,5,615.0
+r0149,H0081,R02,1,2,25-54,0,chef,food service,5120,5,1007.3
+r0150,H0081,R02,1,2,15-24,5,midwife,health,2222,2,903.0
+r0151,H0082,R04,0,1,15-24,1,cashier in a supermarket,retail trade,5230,5,1019.8
+r0152,H0082,R04,0,2,55-64,1,raises cattle,agriculture,6121,6,1805.4
+r0153,H0082,R04,0,1,25-54,2,street cleaner,public administration,9613,9,756.0
+r0154,H0083,R03,1,1,25-54,3,keeps dairy cows,agriculture,6121,6,837.0
+r0155,H0083,R03,1,2,25-54,5,midwife,health,2222,2,1286.5
+r0156,H0083,R03,1,2,25-54,2,electrician,construction,7411,7,351.2
+r0157,H0084,R02,1,2,25-54,1,welder,manufacturing,7212,7,997.0
+r0158,H0084,R02,1,2,25-54,5,kindergarten teacher,education,2342,2,1318.5
+r0159,H0085,R03,1,2,15-24,2,plumber,construction,7126,7,452.4
+r0160,H0086,R01,0,1,25-54,2,police officer,public administration,5412,5,2341.4
+r0161,H0087,R03,0,2,15-24,3,street food vendor,food service,5212,5,639.8
+r0162,H0087,R03,0,1,25-54,3,minibus driver,transport,8322,8,1361.8
+r0163,H0087,R03,0,2,15-24,3,waitress,food service,5131,5,1037.5
+r0164,H0088,R03,1,1,25-54,3,grows maize and keeps goats,agriculture,6111,6,763.0
+r0165,H0089,R01,0,2,25-54,5,teaches mathematics in secondary school,education,2330,2,1578.6
+r0166,H0089,R01,0,2,25-54,3,agricultural labourer on a tea estate,agriculture,9211,9,630.9
+r0167,H0090,R03,1,1,25-54,2,bricklayer,construction,7112,7,1204.1
+r0168,H0091,R01,1,2,25-54,5,"teacher, grade 3",education,2341,2,2085.4
+r0169,H0091,R01,1,2,25-54,3,drives a minibus taxi,transport,8322,8,579.6
+r0170,H0092,R03,1,2,15-24,2,office cleaner,services to buildings,9112,9,996.2
+r0171,H0092,R03,1,1,25-54,2,drives a minibus taxi,transport,8322,8,1324.5
+r0172,H0093,R01,0,2,55-64,3,raises cattle,agriculture,6121,6,794.9
+r0173,H0093,R01,0,1,55-64,3,serves food in a restaurant,food service,5131,5,2419.4
+r0174,H0094,R03,1,1,25-54,4,university lecturer,education,2310,2,848.6
+r0175,H0094,R03,1,2,25-54,3,waitress,food service,5131,5,672.5
+r0176,H0095,R02,0,1,25-54,2,agricultural labourer on a tea estate,agriculture,9211,9,1036.2
+r0177,H0095,R02,0,2,25-54,4,teaches at the university,education,2310,2,1323.9
+r0178,H0096,R01,1,1,15-24,5,shop manager,retail trade,1420,1,661.3
+r0179,H0096,R01,1,1,25-54,2,smallholder farmer,agriculture,6111,6,2168.4
+r0180,H0097,R03,1,1,25-54,1,agricultural labourer on a tea estate,agriculture,9211,9,392.3
+r0181,H0098,R01,1,1,55-64,4,engineer on road projects,construction,2142,2,1090.1
+r0182,H0098,R01,1,1,25-54,2,office cleaner,services to buildings,9112,9,2076.6
+r0183,H0099,R03,1,2,25-54,3,waitress,food service,5131,5,943.1
+r0184,H0099,R03,1,1,25-54,3,sells airtime and mobile money,finance,4211,4,421.4
+r0185,H0100,R03,0,1,25-54,1,vegetable seller at the municipal market,retail trade,5211,5,1607.7
+r0186,H0100,R03,0,2,15-24,2,sells cooked food on the street,food service,5212,5,1425.5
+r0187,H0101,R04,1,2,55-64,3,street cleaner,public administration,9613,9,1142.7
+r0188,H0101,R04,1,2,25-54,3,street cleaner,public administration,9613,9,1398.6
+r0189,H0102,R04,1,2,25-54,5,university lecturer,education,2310,2,1354.2
+r0190,H0103,R01,1,2,15-24,1,smallholder farmer,agriculture,6111,6,2048.4
+r0191,H0104,R03,1,1,15-24,1,cook in a restaurant,food service,5120,5,1374.1
+r0192,H0104,R03,1,1,25-54,1,picks tea,agriculture,9211,9,1376.7
+r0193,H0105,R02,1,1,55-64,3,street food vendor,food service,5212,5,955.9
+r0194,H0105,R02,1,2,55-64,4,programmer,information technology,2512,2,638.0
+r0195,H0106,R04,0,1,55-64,1,drives a minibus taxi,transport,8322,8,730.0
+r0196,H0106,R04,0,1,55-64,3,sweeps streets for the municipality,public administration,9613,9,571.1
+r0197,H0107,R02,1,1,15-24,4,teaches at the university,education,2310,2,1300.0
+r0198,H0107,R02,1,2,25-54,3,wires buildings,construction,7411,7,1371.7
+r0199,H0108,R01,0,2,25-54,5,university lecturer,education,2310,2,2665.2
+r0200,H0109,R02,1,1,25-54,2,mobile money agent,finance,4211,4,694.5
+r0201,H0109,R02,1,1,25-54,2,fisherman,fishing,6222,6,1158.7
+r0202,H0110,R04,0,2,15-24,3,enters data at a ministry,public administration,4132,4,1162.5
+r0203,H0110,R04,0,1,25-54,3,sells cooked food on the street,food service,5212,5,500.5
+r0204,H0111,R03,0,1,15-24,2,raises cattle,agriculture,6121,6,1592.3
+r0205,H0112,R02,1,2,55-64,1,sews clothes to order,manufacturing,7531,7,957.4
+r0206,H0113,R02,1,1,25-54,1,enters data at a ministry,public administration,4132,4,822.5
+r0207,H0113,R02,1,2,25-54,4,nurse,health,2221,2,1121.4
+r0208,H0114,R01,0,1,55-64,2,chef,food service,5120,5,1683.5
+r0209,H0114,R01,0,2,15-24,2,mason on construction sites,construction,7112,7,2463.6
+r0210,H0114,R01,0,2,25-54,3,sells cooked food on the street,food service,5212,5,1736.0
+r0211,H0115,R03,1,2,25-54,3,smallholder farmer,agriculture,6111,6,919.9
+r0212,H0115,R03,1,1,25-54,1,electrician,construction,7411,7,358.8
+r0213,H0115,R03,1,1,25-54,3,sales agent,wholesale trade,3322,3,790.4
+r0214,H0116,R04,1,2,25-54,1,porter,transport,9333,9,512.7
+r0215,H0117,R03,1,1,15-24,2,drives a truck for a logistics company,transport,8332,8,669.1
+r0216,H0118,R03,0,2,25-54,1,police officer,public administration,5412,5,483.1
+r0217,H0119,R03,1,1,25-54,2,plumber,construction,7126,7,1232.5
+r0218,H0120,R02,1,2,15-24,1,barber,personal services,5141,5,833.7
+r0219,H0120,R02,1,1,25-54,3,sweeps streets for the municipality,public administration,9613,9,1256.9
+r0220,H0121,R01,1,2,25-54,4,doctor at a health centre,health,2211,2,1816.8
+r0221,H0121,R01,1,2,25-54,2,sells cooked food on the street,food service,5212,5,1077.8
+r0222,H0122,R03,1,1,25-54,1,bricklayer,construction,7112,7,477.3
+r0223,H0122,R03,1,1,25-54,2,catches fish on the lake,fishing,6222,6,578.4
+r0224,H0123,R04,0,1,25-54,5,midwife,health,2222,2,773.5
+r0225,H0123,R04,0,1,25-54,3,drives a minibus taxi,transport,8322,8,903.1
+r0226,H0124,R03,0,2,25-54,2,street cleaner,public administration,9613,9,631.8
+r0227,H0125,R01,1,2,25-54,0,"market vendor, vegetables",retail trade,5211,5,1428.8
+r0228,H0126,R03,1,1,25-54,3,housekeeper in a private household,households as employers,9111,9,916.7
+r0229,H0127,R04,1,1,25-54,5,kindergarten teacher,education,2342,2,326.0
+r0230,H0128,R03,0,1,15-24,2,fisherman,fishing,6222,6,1210.0
+r0231,H0129,R02,0,1,15-24,0,drives a truck for a logistics company,transport,8332,8,905.8
+r0232,H0129,R02,0,2,25-54,1,plumber,construction,7126,7,720.0
+r0233,H0130,R03,1,1,25-54,4,journalist,media,2642,2,700.9
+r0234,H0131,R03,0,1,25-54,1,plumber,construction,7126,7,1781.9
+r0235,H0131,R03,0,1,25-54,3,drives a minibus taxi,transport,8322,8,743.1
+r0236,H0132,R02,1,1,55-64,2,shop cashier,retail trade,5230,5,1301.3
+r0237,H0132,R02,1,1,25-54,3,fisherman,fishing,6222,6,335.0
+r0238,H0133,R04,0,1,25-54,5,primary school teacher,education,2341,2,1747.4
+r0239,H0133,R04,0,1,25-54,1,grows maize and keeps goats,agriculture,6111,6,639.1
+r0240,H0134,R01,0,1,25-54,4,civil engineer,construction,2142,2,2102.3
+r0241,H0134,R01,0,2,25-54,3,serves food in a restaurant,food service,5131,5,784.2
+r0242,H0134,R01,0,2,55-64,4,teaches at the university,education,2310,2,646.0
+r0243,H0135,R01,0,2,55-64,2,sells cooked food on the street,food service,5212,5,2257.4
+r0244,H0135,R01,0,2,25-54,0,plumber,construction,7126,7,2371.1
+r0245,H0135,R01,0,1,25-54,5,kindergarten teacher,education,2342,2,1200.0
+r0246,H0136,R02,1,2,25-54,1,sweeps streets for the municipality,public administration,9613,9,698.7
+r0247,H0137,R03,0,1,25-54,3,plumber,construction,7126,7,980.6
+r0248,H0138,R03,1,1,25-54,1,sells vegetables at the market,retail trade,5211,5,1214.8
+r0249,H0138,R03,1,2,25-54,1,catches fish on the lake,fishing,6222,6,1039.2
+r0250,H0138,R03,1,2,15-24,3,drives a truck for a logistics company,transport,8332,8,1185.1
+r0251,H0139,R02,1,1,25-54,1,welder,manufacturing,7212,7,485.3
+r0252,H0139,R02,1,1,55-64,2,office cleaner,services to buildings,9112,9,776.9
+r0253,H0139,R02,1,1,25-54,5,journalist,media,2642,2,888.2
+r0254,H0140,R04,1,1,15-24,4,midwife,health,2222,2,1073.2
+r0255,H0141,R02,1,1,25-54,1,keeps dairy cows,agriculture,6121,6,1110.8
+r0256,H0142,R02,1,1,25-54,1,boda boda rider,transport,8321,8,356.5
+r0257,H0143,R02,1,2,25-54,1,drives a truck for a logistics company,transport,8332,8,1349.6
+r0258,H0143,R02,1,1,25-54,3,motor vehicle mechanic,repair of motor vehicles,7231,7,562.3
+r0259,H0144,R03,1,2,25-54,2,joiner,manufacturing,7115,7,1136.3
+r0260,H0144,R03,1,1,15-24,2,mason on construction sites,construction,7112,7,1266.8
+r0261,H0145,R01,1,1,25-54,3,mason on construction sites,construction,7112,7,2068.9
+r0262,H0145,R01,1,1,25-54,5,teaches at the university,education,2310,2,1601.6
+r0263,H0146,R01,1,2,25-54,4,primary school teacher,education,2341,2,1848.7
+r0264,H0147,R01,1,1,25-54,1,plumber,construction,7126,7,615.1
+r0265,H0147,R01,1,1,25-54,0,shop cashier,retail trade,5230,5,1448.9
+r0266,H0148,R04,0,1,55-64,3,street food vendor,food service,5212,5,1809.6
+r0267,H0149,R02,1,1,25-54,3,security guard,security services,5414,5,375.8
+r0268,H0149,R02,1,1,25-54,3,waitress,food service,5131,5,424.0
+r0269,H0149,R02,1,2,25-54,1,office cleaner,services to buildings,9112,9,1309.1
+r0270,H0150,R01,0,1,55-64,4,civil engineer,construction,2142,2,1065.7
+r0271,H0150,R01,0,1,25-54,2,keeps dairy cows,agriculture,6121,6,1898.1
+r0272,H0151,R04,1,1,55-64,4,primary school teacher,education,2341,2,585.0
+r0273,H0151,R04,1,2,55-64,3,cleaner in an office building,services to buildings,9112,9,736.7
+r0274,H0152,R04,1,1,55-64,4,journalist,media,2642,2,327.7
+r0275,H0153,R02,1,2,25-54,2,domestic worker,households as employers,9111,9,547.5
+r0276,H0153,R02,1,1,15-24,2,serves food in a restaurant,food service,5131,5,618.2
+r0277,H0153,R02,1,2,25-54,3,enters data at a ministry,public administration,4132,4,352.5
+r0278,H0154,R01,1,2,25-54,1,shop cashier,retail trade,5230,5,1244.8
+r0279,H0155,R02,1,1,25-54,3,domestic worker,households as employers,9111,9,1118.2
+r0280,H0155,R02,1,1,25-54,2,cleans and cooks in a private home,households as employers,9111,9,1251.5
+r0281,H0155,R02,1,2,15-24,2,motor vehicle mechanic,repair of motor vehicles,7231,7,1007.5
+r0282,H0156,R01,1,2,25-54,2,motor vehicle mechanic,repair of motor vehicles,7231,7,1448.9
+r0283,H0157,R04,1,2,25-54,1,taxi driver,transport,8322,8,1284.0
+r0284,H0157,R04,1,1,25-54,1,sells airtime and mobile money,finance,4211,4,1182.7
+r0285,H0157,R04,1,2,55-64,1,enters data at a ministry,public administration,4132,4,1343.0
+r0286,H0158,R02,1,1,25-54,3,mobile money agent,finance,4211,4,706.5
+r0287,H0158,R02,1,1,15-24,2,sales agent,wholesale trade,3322,3,704.9
+r0288,H0158,R02,1,1,25-54,4,writes software for a bank,information technology,2512,2,623.1
+r0289,H0159,R02,1,1,25-54,2,administrative secretary,public administration,4120,4,1292.6
+r0290,H0160,R01,1,2,25-54,2,raises cattle,agriculture,6121,6,673.7
+r0291,H0160,R01,1,2,25-54,2,cashier in a supermarket,retail trade,5230,5,945.4
+r0292,H0161,R04,0,1,25-54,3,porter,transport,9333,9,763.9
+r0293,H0161,R04,0,1,55-64,2,taxi driver,transport,8322,8,965.7
+r0294,H0162,R02,1,2,25-54,1,sells vegetables at the market,retail trade,5211,5,467.8
+r0295,H0162,R02,1,2,55-64,2,electrician,construction,7411,7,803.5
+r0296,H0163,R02,1,1,25-54,5,teaches mathematics in secondary school,education,2330,2,1177.0
+r0297,H0163,R02,1,2,15-24,5,teaches mathematics in secondary school,education,2330,2,475.8
+r0298,H0163,R02,1,1,25-54,3,data entry clerk,public administration,4132,4,1230.6
+r0299,H0164,R02,1,1,25-54,2,housekeeper in a private household,households as employers,9111,9,645.6
+r0300,H0164,R02,1,2,25-54,2,plumber,construction,7126,7,425.6
+r0301,H0164,R02,1,1,25-54,1,motorcycle taxi rider,transport,8321,8,506.2
+r0302,H0165,R04,1,2,55-64,2,sells airtime and mobile money,finance,4211,4,1378.7
+r0303,H0166,R03,0,1,15-24,1,builds houses,construction,7112,7,536.3
+r0304,H0167,R01,1,1,15-24,1,vegetable seller at the municipal market,retail trade,5211,5,1653.0
+r0305,H0168,R02,0,2,55-64,3,fisherman,fishing,6222,6,781.0
+r0306,H0168,R02,0,2,15-24,2,chef,food service,5120,5,577.5
+r0307,H0169,R02,1,1,25-54,2,street cleaner,public administration,9613,9,553.7
+r0308,H0170,R01,0,1,25-54,2,porter,transport,9333,9,1951.6
+r0309,H0171,R02,1,1,25-54,5,bank branch manager,finance,1346,1,456.5
+r0310,H0172,R04,1,1,15-24,2,shop cashier,retail trade,5230,5,810.5
+r0311,H0173,R04,0,2,15-24,2,smallholder farmer,agriculture,6111,6,1120.8
+r0312,H0173,R04,0,2,25-54,1,livestock farmer,agriculture,6121,6,1111.6
+r0313,H0174,R02,1,1,25-54,0,sales representative for a beverage company,wholesale trade,3322,3,939.8
+r0314,H0175,R02,1,1,15-24,0,farms maize and beans on own land,agriculture,6111,6,1361.6
+r0315,H0175,R02,1,2,25-54,0,sales representative for a beverage company,wholesale trade,3322,3,1108.9
+r0316,H0176,R02,1,1,15-24,1,sweeps streets for the municipality,public administration,9613,9,1297.3
+r0317,H0177,R02,0,1,25-54,4,civil engineer,construction,2142,2,1557.2
+r0318,H0178,R02,1,2,15-24,2,administrative secretary,public administration,4120,4,569.2
+r0319,H0178,R02,1,1,25-54,5,manager at a bank,finance,1346,1,1285.6
+r0320,H0179,R03,0,1,15-24,1,cashier in a supermarket,retail trade,5230,5,667.0
+r0321,H0180,R01,1,1,25-54,3,barber,personal services,5141,5,2023.6
+r0322,H0181,R03,0,1,25-54,1,drives a minibus taxi,transport,8322,8,1014.1
+r0323,H0182,R01,1,1,25-54,5,early childhood teacher,education,2342,2,1702.8
+r0324,H0182,R01,1,2,25-54,5,secondary school teacher,education,2330,2,1516.1
+r0325,H0183,R02,1,1,15-24,3,sells airtime and mobile money,finance,4211,4,601.7
+r0326,H0184,R02,1,2,25-54,2,sales representative for a beverage company,wholesale trade,3322,3,859.5
+r0327,H0184,R02,1,1,25-54,4,teaches at the university,education,2310,2,1286.3
+r0328,H0184,R02,1,1,25-54,5,manager at a bank,finance,1346,1,859.5
+r0329,H0185,R02,1,1,15-24,1,keeps dairy cows,agriculture,6121,6,460.4
+r0330,H0186,R03,0,1,25-54,0,police constable,public administration,5412,5,649.4
+r0331,H0187,R02,1,2,25-54,2,porter,transport,9333,9,310.4
+r0332,H0187,R02,1,2,25-54,1,plumber,construction,7126,7,683.4
+r0333,H0187,R02,1,2,25-54,5,early childhood teacher,education,2342,2,1115.6
+r0334,H0188,R02,1,1,25-54,3,secretary in a ministry,public administration,4120,4,1082.6
+r0335,H0189,R04,0,1,55-64,2,keeps dairy cows,agriculture,6121,6,877.7
+r0336,H0190,R04,1,1,25-54,1,catches fish on the lake,fishing,6222,6,1346.1
+r0337,H0190,R04,1,1,25-54,5,accountant at a bank,finance,2411,2,1157.2
+r0338,H0190,R04,1,2,25-54,4,shop manager,retail trade,1420,1,536.2
+r0339,H0191,R03,1,1,25-54,3,plumber,construction,7126,7,1372.2
+r0340,H0191,R03,1,1,25-54,2,security guard,security services,5414,5,704.1
+r0341,H0191,R03,1,2,25-54,5,"teacher, grade 3",education,2341,2,1068.8
+r0342,H0192,R03,1,1,25-54,1,sweeps streets for the municipality,public administration,9613,9,722.1
+r0343,H0192,R03,1,2,25-54,0,police constable,public administration,5412,5,1362.7
+r0344,H0193,R02,1,1,25-54,5,reporter for a newspaper,media,2642,2,1064.7
+r0345,H0193,R02,1,1,15-24,4,university lecturer,education,2310,2,325.1
+r0346,H0193,R02,1,1,55-64,3,taxi driver,transport,8322,8,680.1
+r0347,H0194,R03,1,1,55-64,5,midwife,health,2222,2,577.3
+r0348,H0195,R03,1,1,25-54,1,sales agent,wholesale trade,3322,3,754.2
+r0349,H0196,R03,0,1,25-54,3,picks tea,agriculture,9211,9,694.0
+r0350,H0197,R03,1,1,25-54,1,cashier at a bank branch,finance,4211,4,755.0
+r0351,H0198,R02,1,1,25-54,2,minibus driver,transport,8322,8,337.9
+r0352,H0198,R02,1,1,25-54,4,programmer,information technology,2512,2,314.6
+r0353,H0199,R03,0,1,25-54,1,shop cashier,retail trade,5230,5,1045.3
+r0354,H0199,R03,0,2,25-54,1,bricklayer,construction,7112,7,1633.7
+r0355,H0200,R02,1,1,15-24,5,secondary school teacher,education,2330,2,1146.9
+r0356,H0201,R02,0,2,25-54,3,sells vegetables at the market,retail trade,5211,5,985.2
+r0357,H0201,R02,0,2,15-24,4,engineer on road projects,construction,2142,2,1134.3
+r0358,H0202,R02,1,2,15-24,1,chef,food service,5120,5,1220.0
+r0359,H0203,R03,0,2,15-24,2,drives a truck for a logistics company,transport,8332,8,1292.3
+r0360,H0203,R03,0,1,25-54,1,plumber,construction,7126,7,864.2
+r0361,H0204,R02,0,2,55-64,1,catches fish on the lake,fishing,6222,6,929.9
+r0362,H0205,R03,1,2,55-64,2,motorcycle taxi rider,transport,8321,8,942.8
+r0363,H0206,R03,0,2,55-64,3,fisherman,fishing,6222,6,1423.2
+r0364,H0207,R04,0,1,25-54,2,sweeps streets for the municipality,public administration,9613,9,1735.0
+r0365,H0208,R02,1,2,15-24,5,programmer,information technology,2512,2,1062.8
+r0366,H0209,R01,1,2,25-54,1,smallholder farmer,agriculture,6111,6,633.6
+r0367,H0210,R03,1,1,15-24,5,manager at a bank,finance,1346,1,1320.9
+r0368,H0211,R02,1,2,25-54,2,sales agent,wholesale trade,3322,3,1369.5
+r0369,H0211,R02,1,2,15-24,0,dressmaker,manufacturing,7531,7,717.8
+r0370,H0211,R02,1,1,25-54,4,bank branch manager,finance,1346,1,1233.5
+r0371,H0212,R04,0,2,25-54,5,registered nurse,health,2221,2,1658.5
+r0372,H0213,R01,1,2,25-54,5,general practitioner,health,2211,2,1376.5
+r0373,H0214,R04,1,1,25-54,5,civil engineer,construction,2142,2,1334.6
+r0374,H0215,R03,1,1,55-64,0,sells airtime and mobile money,finance,4211,4,1028.0
+r0375,H0215,R03,1,2,25-54,0,dressmaker,manufacturing,7531,7,1014.5
+r0376,H0216,R02,1,1,25-54,2,chef,food service,5120,5,1284.2
+r0377,H0217,R01,0,2,15-24,2,street cleaner,public administration,9613,9,755.4
+r0378,H0217,R01,0,2,25-54,3,sweeps streets for the municipality,public administration,9613,9,2689.9
+r0379,H0218,R02,1,1,25-54,2,domestic worker,households as employers,9111,9,1112.7
+r0380,H0218,R02,1,1,55-64,2,chef,food service,5120,5,340.2
+r0381,H0219,R02,1,1,25-54,3,cleans and cooks in a private home,households as employers,9111,9,929.4
+r0382,H0219,R02,1,2,55-64,3,sells cooked food on the street,food service,5212,5,1297.2
+r0383,H0220,R04,0,1,25-54,3,cook in a restaurant,food service,5120,5,1694.6
+r0384,H0220,R04,0,2,25-54,2,fisherman,fishing,6222,6,976.7
+r0385,H0220,R04,0,1,15-24,3,electrician,construction,7411,7,494.8
+r0386,H0221,R02,1,1,55-64,1,catches fish on the lake,fishing,6222,6,1341.2
+r0387,H0222,R02,0,2,25-54,4,teaches mathematics in secondary school,education,2330,2,637.5
+r0388,H0222,R02,0,1,25-54,4,university lecturer,education,2310,2,1788.3
+r0389,H0223,R03,0,1,25-54,2,fisherman,fishing,6222,6,1771.7
+r0390,H0223,R03,0,1,15-24,3,wires buildings,construction,7411,7,1443.3
+r0391,H0224,R01,0,1,15-24,4,teaches mathematics in secondary school,education,2330,2,1345.2
+r0392,H0224,R01,0,2,15-24,3,smallholder farmer,agriculture,6111,6,2895.6
+r0393,H0225,R03,1,1,25-54,1,picks tea,agriculture,9211,9,1141.7
+r0394,H0225,R03,1,1,25-54,2,raises cattle,agriculture,6121,6,521.1
+r0395,H0226,R02,1,1,25-54,2,housekeeper in a private household,households as employers,9111,9,1226.5
+r0396,H0227,R02,1,2,15-24,3,loads goods at the port,transport,9333,9,757.5
+r0397,H0228,R01,1,2,25-54,1,runs a hair salon,personal services,5141,5,2231.0
+r0398,H0229,R04,1,2,25-54,5,software developer,information technology,2512,2,1192.6
+r0399,H0229,R04,1,1,25-54,2,drives a truck for a logistics company,transport,8332,8,524.0
+r0400,H0230,R01,1,1,25-54,2,taxi driver,transport,8322,8,1289.8
+r0401,H0231,R04,1,1,15-24,4,midwife,health,2222,2,1183.9
+r0402,H0231,R04,1,1,25-54,1,drives a minibus taxi,transport,8322,8,642.4
+r0403,H0231,R04,1,1,55-64,1,office cleaner,services to buildings,9112,9,580.6
+r0404,H0232,R02,1,1,15-24,5,medical doctor,health,2211,2,683.2
+r0405,H0233,R04,0,1,55-64,3,long-distance truck driver,transport,8332,8,732.1
+r0406,H0234,R03,0,1,25-54,1,"market vendor, vegetables",retail trade,5211,5,985.4
+r0407,H0235,R03,1,2,55-64,1,welder,manufacturing,7212,7,1146.5
+r0408,H0235,R03,1,1,15-24,1,cook in a restaurant,food service,5120,5,788.4
+r0409,H0235,R03,1,1,25-54,1,mobile money agent,finance,4211,4,970.6
+r0410,H0236,R02,1,2,15-24,2,car mechanic,repair of motor vehicles,7231,7,1204.5
+r0411,H0236,R02,1,2,25-54,3,"mechanic, repairs cars",repair of motor vehicles,7231,7,662.8
+r0412,H0236,R02,1,1,25-54,1,mason on construction sites,construction,7112,7,685.7
+r0413,H0237,R01,1,1,25-54,3,welder,manufacturing,7212,7,1095.5
+r0414,H0238,R01,1,1,25-54,5,journalist,media,2642,2,1440.7
+r0415,H0239,R03,0,1,55-64,2,street cleaner,public administration,9613,9,408.8
+r0416,H0240,R03,0,1,55-64,4,manager of a hardware shop,retail trade,1420,1,592.9
+r0417,H0240,R03,0,1,25-54,5,teaches at the university,education,2310,2,1363.4
+r0418,H0241,R01,1,2,25-54,0,makes furniture,manufacturing,7115,7,566.4
+r0419,H0242,R02,1,2,15-24,2,street food vendor,food service,5212,5,707.9
+r0420,H0243,R03,0,2,25-54,1,cook in a restaurant,food service,5120,5,1725.7
+r0421,H0243,R03,0,1,25-54,2,builds houses,construction,7112,7,1199.8
+r0422,H0244,R02,1,2,55-64,5,runs a small shop,retail trade,1420,1,1104.8
+r0423,H0245,R03,0,2,55-64,0,street cleaner,public administration,9613,9,678.1
+r0424,H0245,R03,0,2,25-54,5,kindergarten teacher,education,2342,2,1075.1
+r0425,H0246,R03,1,1,55-64,5,early childhood teacher,education,2342,2,710.9
+r0426,H0246,R03,1,1,25-54,1,police constable,public administration,5412,5,696.8
+r0427,H0247,R04,0,1,25-54,3,wires buildings,construction,7411,7,1074.2
+r0428,H0248,R02,1,1,25-54,1,smallholder farmer,agriculture,6111,6,1272.0
+r0429,H0248,R02,1,1,25-54,1,taxi driver,transport,8322,8,443.4
+r0430,H0248,R02,1,1,25-54,2,wires buildings,construction,7411,7,721.2
+r0431,H0249,R04,0,2,25-54,1,minibus driver,transport,8322,8,1097.4
+r0432,H0250,R02,1,1,55-64,4,software developer,information technology,2512,2,462.0
+r0433,H0250,R02,1,1,25-54,5,early childhood teacher,education,2342,2,933.8
+r0434,H0251,R01,0,1,25-54,2,motorcycle taxi rider,transport,8321,8,899.6
+r0435,H0252,R02,1,1,25-54,2,vegetable seller at the municipal market,retail trade,5211,5,1349.2
+r0436,H0253,R03,0,1,25-54,2,mason on construction sites,construction,7112,7,426.0
+r0437,H0253,R03,0,2,15-24,1,vegetable seller at the municipal market,retail trade,5211,5,566.4
+r0438,H0254,R02,1,1,25-54,1,bank teller,finance,4211,4,887.2
+r0439,H0255,R02,1,2,55-64,0,long-distance truck driver,transport,8332,8,468.9
+r0440,H0256,R02,1,1,25-54,2,catches fish on the lake,fishing,6222,6,1338.9
+r0441,H0256,R02,1,1,25-54,2,sells vegetables at the market,retail trade,5211,5,647.2
+r0442,H0256,R02,1,1,25-54,2,carpenter,manufacturing,7115,7,838.6
+r0443,H0257,R01,0,2,25-54,2,serves food in a restaurant,food service,5131,5,888.8
+r0444,H0257,R01,0,1,25-54,4,registered nurse,health,2221,2,1547.5
+r0445,H0258,R02,1,1,25-54,0,street food vendor,food service,5212,5,1187.8
+r0446,H0258,R02,1,1,15-24,2,bricklayer,construction,7112,7,1337.3
+r0447,H0259,R04,1,1,25-54,5,nurse,health,2221,2,1028.8
+r0448,H0259,R04,1,1,15-24,3,chef,food service,5120,5,1127.1
+r0449,H0260,R02,1,1,25-54,2,keeps dairy cows,agriculture,6121,6,739.2
+r0450,H0261,R02,1,1,25-54,3,street cleaner,public administration,9613,9,498.2
+r0451,H0262,R02,0,1,25-54,2,sweeps streets for the municipality,public administration,9613,9,460.2
+r0452,H0262,R02,0,1,25-54,0,electrician,construction,7411,7,792.3
+r0453,H0263,R02,1,1,15-24,2,cashier at a bank branch,finance,4211,4,1176.9
+r0454,H0264,R03,1,2,55-64,1,raises cattle,agriculture,6121,6,917.5
+r0455,H0265,R03,0,1,55-64,0,fisherman,fishing,6222,6,405.3
+r0456,H0266,R02,0,1,25-54,2,motorcycle taxi rider,transport,8321,8,1573.6
+r0457,H0267,R04,0,1,55-64,4,teaches at a primary school,education,2341,2,1235.5
+r0458,H0267,R04,0,1,55-64,1,catches fish on the lake,fishing,6222,6,1387.8
+r0459,H0267,R04,0,1,25-54,1,data entry clerk,public administration,4132,4,1655.1
+r0460,H0268,R01,1,2,25-54,3,dock worker,transport,9333,9,1317.6
+r0461,H0268,R01,1,2,55-64,4,civil engineer,construction,2142,2,1299.3
+r0462,H0269,R03,1,2,25-54,1,catches fish on the lake,fishing,6222,6,386.7
+r0463,H0270,R02,0,2,25-54,2,picks tea,agriculture,9211,9,1644.1
+r0464,H0270,R02,0,1,15-24,3,sells cooked food on the street,food service,5212,5,1521.4
+r0465,H0271,R02,0,1,25-54,4,"teacher, grade 3",education,2341,2,1488.7
+r0466,H0272,R04,1,2,25-54,0,sells cooked food on the street,food service,5212,5,1329.5
+r0467,H0272,R04,1,1,25-54,1,car mechanic,repair of motor vehicles,7231,7,567.5
+r0468,H0273,R03,0,1,25-54,2,plumber,construction,7126,7,908.3
+r0469,H0273,R03,0,1,55-64,3,cook in a restaurant,food service,5120,5,949.5
+r0470,H0274,R02,1,1,15-24,0,welder,manufacturing,7212,7,925.1
+r0471,H0274,R02,1,2,25-54,5,pharmacist,health,2262,2,983.1
+r0472,H0275,R02,1,1,25-54,2,serves food in a restaurant,food service,5131,5,957.6
+r0473,H0275,R02,1,1,25-54,3,wires buildings,construction,7411,7,330.8
+r0474,H0275,R02,1,1,25-54,2,hairdresser,personal services,5141,5,582.4
+r0475,H0276,R02,1,1,55-64,5,pharmacist,health,2262,2,437.7
+r0476,H0276,R02,1,1,25-54,0,boda boda rider,transport,8321,8,1161.0
+r0477,H0277,R04,1,1,25-54,1,chef,food service,5120,5,338.5
+r0478,H0277,R04,1,1,25-54,3,administrative secretary,public administration,4120,4,353.1
+r0479,H0278,R01,0,2,25-54,2,dock worker,transport,9333,9,2705.6
+r0480,H0279,R02,1,1,55-64,5,general practitioner,health,2211,2,538.2
+r0481,H0279,R02,1,1,55-64,0,long-distance truck driver,transport,8332,8,568.7
+r0482,H0280,R03,0,2,15-24,2,enters data at a ministry,public administration,4132,4,1476.5
+r0483,H0280,R03,0,2,25-54,2,cook in a restaurant,food service,5120,5,1278.9
+r0484,H0280,R03,0,1,25-54,0,bricklayer,construction,7112,7,475.9
+r0485,H0281,R01,1,2,25-54,0,sews clothes to order,manufacturing,7531,7,634.8
+r0486,H0281,R01,1,1,15-24,1,picks tea,agriculture,9211,9,736.8
+r0487,H0282,R02,1,2,25-54,3,police constable,public administration,5412,5,562.1
+r0488,H0282,R02,1,1,25-54,5,programmer,information technology,2512,2,1051.0
+r0489,H0283,R04,0,1,25-54,2,street cleaner,public administration,9613,9,1171.1
+r0490,H0283,R04,0,2,25-54,1,police constable,public administration,5412,5,1492.0
+r0491,H0283,R04,0,1,25-54,3,enters data at a ministry,public administration,4132,4,514.2
+r0492,H0284,R02,1,1,25-54,1,police officer,public administration,5412,5,1145.4
+r0493,H0285,R03,0,1,25-54,2,sells vegetables at the market,retail trade,5211,5,1169.0
+r0494,H0285,R03,0,1,55-64,2,keeps dairy cows,agriculture,6121,6,1038.5
+r0495,H0285,R03,0,1,15-24,0,dock worker,transport,9333,9,1473.8
+r0496,H0286,R04,1,1,25-54,0,vegetable seller at the municipal market,retail trade,5211,5,1023.6
+r0497,H0287,R02,0,1,55-64,2,catches fish on the lake,fishing,6222,6,1706.8
+r0498,H0287,R02,0,1,25-54,5,runs a small shop,retail trade,1420,1,1608.9
+r0499,H0288,R02,1,1,25-54,4,nurse,health,2221,2,759.2
+r0500,H0289,R02,1,1,15-24,1,builds houses,construction,7112,7,590.1
+r0501,H0289,R02,1,1,25-54,1,street cleaner,public administration,9613,9,761.8
+r0502,H0289,R02,1,2,25-54,3,cleaner in an office building,services to buildings,9112,9,424.2
+r0503,H0290,R03,1,1,15-24,4,university lecturer,education,2310,2,975.0
+r0504,H0290,R03,1,2,25-54,1,"mechanic, repairs cars",repair of motor vehicles,7231,7,1287.7
+r0505,H0291,R02,1,1,15-24,3,waitress,food service,5131,5,302.9
+r0506,H0292,R04,0,1,25-54,0,dock worker,transport,9333,9,584.4
+r0507,H0292,R04,0,2,25-54,2,data entry clerk,public administration,4132,4,992.0
+r0508,H0292,R04,0,1,25-54,1,vegetable seller at the municipal market,retail trade,5211,5,1667.2
+r0509,H0293,R02,1,1,25-54,1,taxi driver,transport,8322,8,1071.2
+r0510,H0293,R02,1,2,15-24,3,sells cooked food on the street,food service,5212,5,1152.4
+r0511,H0294,R02,1,1,55-64,3,street cleaner,public administration,9613,9,1042.8
+r0512,H0295,R03,0,1,55-64,3,sells cooked food on the street,food service,5212,5,882.9
+r0513,H0295,R03,0,2,15-24,3,waiter in a restaurant,food service,5131,5,1436.0
+r0514,H0296,R03,0,2,25-54,2,waiter in a restaurant,food service,5131,5,1061.3
+r0515,H0297,R02,1,2,55-64,4,pharmacist,health,2262,2,819.7
+r0516,H0297,R02,1,1,25-54,4,accountant,finance,2411,2,358.3
+r0517,H0297,R02,1,2,25-54,3,barber,personal services,5141,5,1192.0
+r0518,H0298,R02,1,1,25-54,1,motor vehicle mechanic,repair of motor vehicles,7231,7,579.7
+r0519,H0298,R02,1,1,25-54,3,serves food in a restaurant,food service,5131,5,664.3
+r0520,H0299,R02,1,1,25-54,1,bank teller,finance,4211,4,1219.8
+r0521,H0299,R02,1,1,25-54,1,welder,manufacturing,7212,7,323.3
+r0522,H0299,R02,1,1,25-54,0,data entry clerk,public administration,4132,4,987.9
+r0523,H0300,R03,1,2,25-54,1,administrative secretary,public administration,4120,4,1141.6
+r0524,H0300,R03,1,1,25-54,1,police officer,public administration,5412,5,690.2
+r0525,H0301,R02,1,2,15-24,3,electrician,construction,7411,7,795.0
+r0526,H0301,R02,1,1,25-54,3,office secretary,public administration,4120,4,806.4
+r0527,H0301,R02,1,2,15-24,1,street food vendor,food service,5212,5,374.1
+r0528,H0302,R02,1,2,55-64,5,engineer on road projects,construction,2142,2,760.9
+r0529,H0303,R04,1,1,25-54,0,electrician,construction,7411,7,831.2
+r0530,H0304,R02,0,2,25-54,3,sells vegetables at the market,retail trade,5211,5,519.5
+r0531,H0304,R02,0,2,25-54,0,porter,transport,9333,9,959.7
+r0532,H0305,R02,0,2,55-64,0,sells vegetables at the market,retail trade,5211,5,968.8
+r0533,H0305,R02,0,1,25-54,5,runs a small shop,retail trade,1420,1,542.1
+r0534,H0306,R03,1,2,55-64,4,bank branch manager,finance,1346,1,895.8
+r0535,H0306,R03,1,1,25-54,1,"mechanic, repairs cars",repair of motor vehicles,7231,7,581.2
+r0536,H0306,R03,1,2,15-24,5,nurse at the district hospital,health,2221,2,836.5
+r0537,H0307,R02,1,1,15-24,5,writes software for a bank,information technology,2512,2,417.3
+r0538,H0308,R02,0,2,25-54,3,fisherman,fishing,6222,6,1355.8
+r0539,H0309,R02,1,1,15-24,3,cashier at a bank branch,finance,4211,4,484.1
+r0540,H0309,R02,1,1,25-54,2,domestic worker,households as employers,9111,9,834.0
+r0541,H0309,R02,1,1,25-54,1,police constable,public administration,5412,5,978.5
+r0542,H0310,R01,1,2,25-54,1,cleaner in an office building,services to buildings,9112,9,2127.3
+r0543,H0311,R02,1,1,55-64,1,street food vendor,food service,5212,5,738.8
+r0544,H0311,R02,1,1,25-54,2,cashier in a supermarket,retail trade,5230,5,719.0
+r0545,H0311,R02,1,2,15-24,1,sweeps streets for the municipality,public administration,9613,9,300.6
+r0546,H0312,R01,1,1,25-54,0,keeps dairy cows,agriculture,6121,6,1790.2
+r0547,H0313,R02,1,2,25-54,5,pharmacist,health,2262,2,1152.0
+r0548,H0314,R02,1,2,15-24,0,joiner,manufacturing,7115,7,322.7
+r0549,H0315,R02,1,1,25-54,0,sales agent,wholesale trade,3322,3,1054.4
+r0550,H0315,R02,1,2,25-54,5,general practitioner,health,2211,2,571.2
+r0551,H0316,R02,1,1,15-24,1,cleans and cooks in a private home,households as employers,9111,9,454.8
+r0552,H0316,R02,1,2,15-24,5,medical doctor,health,2211,2,971.1
+r0553,H0317,R04,0,2,25-54,2,cashier in a supermarket,retail trade,5230,5,834.1
+r0554,H0318,R02,1,2,55-64,0,shop cashier,retail trade,5230,5,1223.5
+r0555,H0318,R02,1,1,25-54,2,cook in a restaurant,food service,5120,5,541.1
+r0556,H0319,R03,1,1,15-24,0,makes furniture,manufacturing,7115,7,1111.0
+r0557,H0320,R03,1,1,25-54,2,enters data at a ministry,public administration,4132,4,1370.7
+r0558,H0320,R03,1,1,55-64,2,fisherman,fishing,6222,6,778.8
+r0559,H0321,R03,1,2,15-24,1,boda boda rider,transport,8321,8,509.4
+r0560,H0322,R02,1,1,25-54,1,taxi driver,transport,8322,8,692.2
+r0561,H0322,R02,1,1,25-54,5,software developer,information technology,2512,2,748.6
+r0562,H0323,R03,1,1,25-54,0,carpenter,manufacturing,7115,7,721.3
+r0563,H0324,R02,1,1,25-54,2,livestock farmer,agriculture,6121,6,879.1
+r0564,H0325,R01,0,1,25-54,2,mason on construction sites,construction,7112,7,2170.0
+r0565,H0325,R01,0,1,25-54,2,drives a truck for a logistics company,transport,8332,8,1431.8
+r0566,H0326,R03,1,2,55-64,2,dressmaker,manufacturing,7531,7,913.7
+r0567,H0326,R03,1,1,25-54,4,primary school teacher,education,2341,2,1059.1
+r0568,H0327,R01,0,1,25-54,5,runs a small shop,retail trade,1420,1,2774.1
+r0569,H0328,R03,1,1,25-54,2,barber,personal services,5141,5,585.2
+r0570,H0329,R03,1,2,25-54,2,police constable,public administration,5412,5,482.1
+r0571,H0330,R02,0,1,55-64,3,enters data at a ministry,public administration,4132,4,1174.2
+r0572,H0331,R02,0,2,15-24,3,long-distance truck driver,transport,8332,8,1744.9
+r0573,H0332,R04,0,1,25-54,2,police constable,public administration,5412,5,1636.6
+r0574,H0332,R04,0,1,15-24,1,minibus driver,transport,8322,8,797.0
+r0575,H0332,R04,0,2,25-54,1,administrative secretary,public administration,4120,4,902.7
+r0576,H0333,R02,1,1,25-54,4,bank branch manager,finance,1346,1,974.1
+r0577,H0333,R02,1,1,25-54,2,data entry clerk,public administration,4132,4,589.0
+r0578,H0334,R04,1,2,25-54,2,sells cooked food on the street,food service,5212,5,1347.8
+r0579,H0334,R04,1,1,25-54,0,carpenter,manufacturing,7115,7,956.3
+r0580,H0334,R04,1,1,25-54,5,kindergarten teacher,education,2342,2,381.7
+r0581,H0335,R01,0,1,15-24,1,chef,food service,5120,5,1138.9
+r0582,H0335,R01,0,1,25-54,3,electrician,construction,7411,7,1780.5
+r0583,H0336,R03,1,1,25-54,3,raises cattle,agriculture,6121,6,1184.7
+r0584,H0336,R03,1,2,15-24,2,housekeeper in a private household,households as employers,9111,9,379.3
+r0585,H0337,R02,0,1,25-54,4,civil engineer,construction,2142,2,516.6
+r0586,H0338,R02,1,2,25-54,1,"mechanic, repairs cars",repair of motor vehicles,7231,7,738.1
+r0587,H0338,R02,1,1,55-64,2,cleaner in an office building,services to buildings,9112,9,1347.2
+r0588,H0338,R02,1,1,15-24,3,office secretary,public administration,4120,4,778.1
+r0589,H0339,R04,1,2,15-24,1,carpenter,manufacturing,7115,7,983.1
+r0590,H0339,R04,1,1,25-54,2,fisherman,fishing,6222,6,727.2
+r0591,H0340,R02,1,1,25-54,2,wires buildings,construction,7411,7,1147.6
+r0592,H0340,R02,1,1,25-54,4,early childhood teacher,education,2342,2,1072.8
+r0593,H0341,R01,1,1,25-54,3,sales representative for a beverage company,wholesale trade,3322,3,1557.5
+r0594,H0341,R01,1,1,25-54,4,early childhood teacher,education,2342,2,2067.2
+r0595,H0342,R02,0,2,25-54,5,teaches at a primary school,education,2341,2,730.7
+r0596,H0342,R02,0,2,15-24,5,runs a small shop,retail trade,1420,1,1698.7
+r0597,H0343,R02,1,1,25-54,4,nurse,health,2221,2,1034.8
+r0598,H0343,R02,1,1,15-24,2,cleaner in an office building,services to buildings,9112,9,1382.6
+r0599,H0343,R02,1,2,15-24,3,livestock farmer,agriculture,6121,6,599.2
+r0600,H0344,R03,0,2,25-54,4,doctor at a health centre,health,2211,2,891.8

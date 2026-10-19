@@ -1,0 +1,121 @@
+---
+id: start-here
+title: Self-assessment
+sidebar_label: Self-assessment
+sidebar_position: 1
+description: A five-minute self-assessment that places a curation team's use of language models at a maturity level in each chapter and suggests a reading order.
+---
+
+import SelfAssessment from '@site/src/components/Cookbook/SelfAssessment';
+
+# Self-assessment
+
+Select the statement that best describes the curation team today, one per
+chapter. The result shows a level for each chapter and the chapters to read
+first. Answers are stored in this browser only.
+
+<SelfAssessment
+  base="/cookbook/metadata-curation-with-llms/"
+  questions={[
+    {
+      id: 'scope',
+      title: '1. Scope',
+      question: 'How is model assistance scoped?',
+      options: [
+        'Staff use assistants informally, with no rule on what may be sent or published.',
+        'A written rule names the tasks models may assist, forbids sending confidential records to external services, and requires curator approval before publication.',
+        'A task typology with decision rights is in place, and the records to start with are chosen from use and completeness.',
+        'The scope is reviewed from acceptance rates and incidents each period.',
+      ],
+    },
+    {
+      id: 'migrate',
+      title: '2. Migrate',
+      question: 'How are legacy records moved into the schema?',
+      options: [
+        'By retyping, or they stay where they are.',
+        'Columns of one source are mapped by hand and migrated with a script; the report is reviewed.',
+        'A model proposes the mapping with confidence and notes, a curator confirms each row, every source is migrated, validated, and routed into review.',
+        'Mappings are versioned per source, re-run on change, and unplaced columns feed schema change requests.',
+      ],
+    },
+    {
+      id: 'draft',
+      title: '3. Draft',
+      question: 'How are fields drafted?',
+      options: [
+        'By hand, or with ad hoc prompts.',
+        'A fixed prompt with the record and the schema field definitions produces drafts marked as drafts.',
+        'Drafts are structured output checked against the schema and the completeness profile, with acceptance rates measured per field.',
+        'Drafting runs over the catalog with templates per field, and acceptance rates gate prompt changes.',
+      ],
+    },
+    {
+      id: 'assess',
+      title: '4. Assess',
+      question: 'How is metadata quality assessed?',
+      options: [
+        'Not systematically.',
+        'Curators score a sample on a rubric.',
+        'A model scores records on fixed dimensions with structured output, calibrated against curator scores on a sample.',
+        'Scores are aggregated into catalog reports each period and drive the work list; calibration is re-checked when the model changes.',
+      ],
+    },
+    {
+      id: 'review',
+      title: '5. Review',
+      question: 'How are suggestions reviewed?',
+      options: [
+        'Suggestions are applied or ignored without a record.',
+        'A curator reads suggestions and applies the accepted ones by hand.',
+        'A review pipeline produces issues with category, severity, and a proposed fix; curators decide in a board with a diff view; decisions are recorded with reasons.',
+        'Decisions flow back to the catalog through the editor, and to the evaluation set.',
+      ],
+    },
+    {
+      id: 'standardize',
+      title: '6. Standardize',
+      question: 'How are keywords and topics standardized?',
+      options: [
+        'Free text; each curator writes their own.',
+        'A list of preferred terms exists and curators consult it.',
+        'A SKOS vocabulary with alternates and URIs is maintained; free text is mapped to it, with unmapped terms reviewed.',
+        'Mapping runs over the catalog with model proposals for unmapped terms, and labels exist per language under native review.',
+      ],
+    },
+    {
+      id: 'translate',
+      title: '7. Translate',
+      question: 'How are records translated?',
+      options: [
+        'They are not, or the browser translates the page.',
+        'Names and keywords of the most used records are translated with the vocabulary\'s labels and reviewed by a native speaker.',
+        'Definitions and units are translated by a model with the glossary, checked automatically, reviewed, and published per language with status and reviewer.',
+        'Acceptance per language and field is tracked, changes are gated on reviewed translations, and new records are translated at publication.',
+      ],
+    },
+    {
+      id: 'improve',
+      title: '8. Improve',
+      question: 'How do decisions improve the system?',
+      options: [
+        'They do not; prompts change when someone has an idea.',
+        'Acceptance rates are reviewed occasionally.',
+        'Acceptance rates and an error taxonomy are tracked per field and model; prompt and model changes are gated by an evaluation set built from decisions.',
+        'Routine tasks run on small or local models chosen by the evaluation; cost per record is known.',
+      ],
+    },
+  ]}
+/>
+
+## Interpretation of the result
+
+- Chapter 1 first: the rule on confidential records and on curator
+  approval takes a day and prevents the costliest mistakes.
+- Chapter 2 where the records are in spreadsheets: nothing else can run
+  on them until they are in the schema.
+- Chapter 5 before scaling chapters 3 and 7: a drafting or translation
+  run without a review board and recorded decisions produces text nobody
+  checked.
+- Chapter 8 is where the investment pays: without recorded decisions,
+  every prompt change is a guess.

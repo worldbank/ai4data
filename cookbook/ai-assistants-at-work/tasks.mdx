@@ -1,0 +1,250 @@
+---
+id: tasks
+title: "1. Tasks an assistant may help with"
+sidebar_label: "1. Tasks"
+sidebar_position: 1
+description: How an organization agrees, role by role, which everyday tasks a general AI assistant may help with, what the person checks afterwards, and which tasks stay with the person, and how the agreement reaches staff as a one-page card.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 1. Tasks an assistant may help with
+
+**Question:** Which everyday tasks may an assistant help with, and which stay with the person?
+
+## Rationale
+
+Most staff of a statistical organization will never run a model in
+production, and most of them already use, or could use, a general AI
+assistant for everyday work: shortening an email, summarizing a report,
+translating a page, explaining a term, drafting a description, reviewing a
+script. These uses are small, frequent, and invisible to the governance
+that the production components get. The AI-use policy covers them in one
+line; the rest of this guide says what that line means at a desk.
+
+A task list per role is the instrument. It names the tasks an assistant
+may help with, the role the model has in each (draft, summarize,
+translate, explain, classify, code), the highest tier of text the task may
+use, and the review the person makes before the output is used. It also
+names the tasks that stay with the person, which in a statistical
+organization are decisions about respondents and staff and the approval of
+anything published. The list is short enough to fit on a card, and the
+card is what a new member of staff receives on the first day.
+
+## Target state
+
+- Every role has a task list that says which tasks an assistant may help with, with the model's role, the data tier, and the review.
+- The tasks that stay with the person are named, with the reason.
+- The list is printed as a one-page card per role and given to every member of staff.
+- The list is reviewed from the use log and the unit sessions each year.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Agree the task list with the heads of units and print the cards. |
+| **AI-ready** | Register everyday assistants as a component with the task list as its control; review the list from the use log each year. |
+| **AI-native** | Tie each task to a prompt in the library and a check, so that the card, the library, and the log describe the same practice. |
+
+:::info[Running example]
+The example organization's task list has sixteen tasks for six roles and
+for all staff. Fourteen are allowed, each with a review; two stay with
+the person: decisions about a respondent or a member of staff, and the
+approval of a publication or a release. The file is
+[task_card.csv](pathname:///cookbook-files/ai-assistants-at-work/task_card.csv).
+:::
+
+## Recipes
+
+<Recipe title="1.1 Agree the task list with the heads of units" level="Foundational" skills="The owner of the AI-use policy with the heads of units" time="Half a day">
+
+**Result:** a table with one row per role and task that says whether an
+assistant may help, in what role, with what text, and what the person
+checks afterwards.
+
+The list is agreed with the people who know the tasks. Each head of unit
+names the everyday tasks of the unit where an assistant could help, and
+the policy owner places each in the table with its model role, its tier,
+and its review. The tiers are the three of the AI-use policy. Public text may go to any assistant the organization allows. Internal text, which includes embargoed and draft material, may go only to the organization's own assistant. Confidential text, which includes anything at the level of a respondent or a record, may go only to a local assistant on the organization's own server, and for most roles not at all.
+
+| Column | Meaning |
+|---|---|
+| `role`, `task_id`, `task` | The role (or "All staff"), a short identifier, and the task |
+| `model_role` | What the assistant does: draft, summarize, translate, explain, classify, code, or decide |
+| `allowed` | yes or no |
+| `data_tier` | The highest tier of text the task may use: public, internal, or confidential |
+| `review` | What the person checks before the output is used |
+
+```csv file=../../website/static/cookbook-files/ai-assistants-at-work/task_card.csv
+```
+
+1. Start from the running example's list and keep the rows for all
+   staff, which hold for every organization.
+2. With each head of unit, add the unit's tasks. A task nobody has
+   asked about is left out; the use log of chapter 5 will show what
+   staff ask for.
+3. Give each allowed task a review that names what the person checks.
+   A review that says "the person checks the output" is not a review;
+   "every figure is checked against the table" is.
+4. Write the tasks that stay with the person with "decide" as the model
+   role and "no" as allowed.
+
+**Worked example.** The example organization's list gives all staff four
+allowed tasks (emails and memos, summaries, translation of published
+text, explanations of terms) and one that stays with the person
+(decisions about respondents or staff). Data curators may draft
+descriptions and keywords for curator approval and, on the local
+assistant only, propose variable labels from questionnaire text.
+Methodologists may have edit failures explained on the local assistant
+and method notes drafted. Analysts may draft commentary with every number
+checked and have scripts reviewed. Dissemination officers may draft
+answers from published values with every number and citation checked.
+Managers may draft agendas and minutes, and the approval of a release
+stays with them.
+
+**What this does not do.** The list says what may be done. Whether it is
+done that way shows in the use log of chapter 5 and the unit session of
+chapter 6, and a task that staff use an assistant for without a row is
+the first thing those two reveal.
+
+</Recipe>
+
+<Recipe title="1.2 Print the one-page card per role" level="Foundational" skills="The owner of the AI-use policy" time="Fifteen minutes">
+
+**Result:** every role has a card that fits on one page, listing its
+allowed tasks with their tier and review, and the tasks that stay with
+the person.
+
+The card is the task list seen from one desk. It holds the rows for the
+role and the rows for all staff, with the tier written as an instruction
+("public text only", "internal text, no confidential records", "local
+assistant only") and the review beside each task. The script checks the
+list as it prints: a model role outside the seven, an allowed value other
+than yes or no, a tier outside the three, or an allowed task without a
+review stops it.
+
+1. Run the script for a role, or with `--all` for every role.
+2. Read each card as the role would: a task the role does every week
+   that is missing goes back to recipe 1.1.
+3. Give each member of staff the card for their role, and keep the
+   cards with the AI-use policy on the intranet.
+
+```bash
+python task_card.py task_card.csv --role "Data curator"
+```
+
+```text
+Task card: Data curator
+
+An assistant may help with:
+  T01  Draft or shorten an email or a memo (draft; internal text, no confidential records)
+       review: The sender reads the whole text and owns every sentence
+  T02  Summarize a published report or a meeting note (summarize; internal text, no confidential records)
+       review: The reader checks every figure in the summary against the source
+  T03  Translate a published text between the organization's languages (translate; public text only)
+       review: A speaker of the target language reads the translation before it is used
+  T04  Explain a term or a method in plain language (explain; public text only)
+       review: The explanation is checked against the methods note before it is repeated
+  T06  Draft a missing description or keywords for a catalog record (draft; internal text, no confidential records)
+       review: The curator approves the draft before it enters the record
+  T07  Propose a variable label from a questionnaire text (draft; local assistant only)
+       review: Local assistant only; the curator checks the label against the questionnaire
+
+Stays with the person:
+  T05  Decide anything about a respondent or a member of staff
+
+16 tasks for 6 roles and all staff; 14 allowed, 2 stay with the person
+result: PASS
+```
+
+**Worked example.** The data curator's card lists six allowed tasks and
+one that stays with the person. Two of the six are the curator's own:
+drafting descriptions and keywords for approval, on internal text, and
+proposing variable labels from questionnaire text, which may contain the
+wording of questions put to respondents and so runs on the local
+assistant only. The other four are the tasks of all staff. The card fits
+on one page, and the curators received it with the AI-use policy.
+
+**What this does not do.** A card tells a person what may be done. The
+inputs chapter says what may be entered, the asking chapter how to ask,
+and the checking chapter how to check; the card points to them and does
+not replace them.
+
+</Recipe>
+
+<Recipe title="1.3 Name the tasks that stay with the person" level="Foundational" skills="The owner of the AI-use policy with management" time="One hour">
+
+**Result:** the tasks where no assistant is used are listed with the
+reason, and every member of staff can say what they are.
+
+The list of tasks that stay with the person is short, and it is the part
+of the card people remember. In a statistical organization it holds the
+decisions about individuals that the Fundamental Principles and the
+data protection rules reserve, and the approvals that make something
+official. The reason for each is written so that the rule is understood
+as a principle and not as a prohibition.
+
+| Task that stays with the person | Reason |
+|---|---|
+| Any decision about a respondent, a household, or a business in the data | Confidentiality of individual data; a decision about a person is never delegated |
+| Any decision about a member of staff | The same, and the organization's employment rules |
+| Approval of a publication, a release, a record, or a correction | What the organization publishes is its responsibility, and a person signs |
+| Choice of a method or a threshold for a statistic | Methodology is the organization's professional judgment |
+| Any statement to a user or the press in the organization's name | The organization speaks through a person who can be asked |
+
+1. Take the table above and add the organization's own, if any.
+2. Put the list in the AI-use policy's prohibited uses, where it binds.
+3. Say the list aloud at the unit session of chapter 6; it is the one
+   part of the card that is learned by heart.
+
+**Worked example.** The example organization's card has two rows that stay with the person: decisions about a respondent or a member of staff, and the approval of a publication or a release. Its policy adds the choice of methodology and statements in the organization's name. At the
+unit sessions the head of methodology asked each unit to name the rows,
+and every unit did.
+
+**What this does not do.** The list names decisions. An assistant may
+still help prepare the material a person decides on, such as a summary
+of the cases before an editor, and the card's allowed tasks say where
+that help ends.
+
+</Recipe>
+
+## Implementation options
+
+- **One list or several.** Small organizations keep one list with a role column; large ones keep one per department with the all-staff rows shared.
+- **Model roles.** The seven roles (draft, summarize, translate, explain, classify, code, decide) are enough for everyday work; production tasks use the finer map of the [production cookbook](/cookbook/language-models-in-production/map).
+- **Where the card lives.** The intranet page of the AI-use policy, the onboarding pack, and the assistant's own start page, where the organization runs one.
+
+## World Bank examples
+
+- The [governance cookbook](/cookbook/governance-and-risk/position) gives the task boundary of the AI-use policy, of which the task card is the everyday-work part.
+- The [Metadata Curation with Language Models](/cookbook/metadata-curation-with-llms/scope) cookbook gives the task typology for curators that the curator rows of the card summarize.
+
+## Resources
+
+- [UN Fundamental Principles of Official Statistics](https://unstats.un.org/fpos/): the confidentiality and professional responsibility the tasks that stay with the person follow from.
+- [Task list of the running example](pathname:///cookbook-files/ai-assistants-at-work/task_card.csv) and [task_card.py](pathname:///cookbook-files/ai-assistants-at-work/task_card.py): the list and the card printer.
+
+## Common mistakes
+
+- **A list of tools where a list of tasks is needed.** Staff ask what they may do, and a tool list does not say.
+- **Reviews written as a formality.** "The person checks the output" guides nobody; the review names what is checked against what.
+- **A card nobody receives.** The list is governance only when it is at the desk.
+- **Prohibitions without reasons.** A rule understood as a principle is kept when the card is out of sight.
+
+## Verification
+
+- **List check.** The script passes on the current list.
+- **Desk check.** A member of staff picked at random can show the card for their role and name the tasks that stay with the person.
+- **Coverage check.** The use log of chapter 5 has no task that is not on the card.
+
+## Checklist
+
+<Checklist id="ai-assistants-at-work-tasks" items={[
+  'Task list agreed with every head of unit',
+  'Model role, tier, and review on every allowed task',
+  'Tasks that stay with the person named with reasons',
+  'Cards printed per role',
+  'Cards given to every member of staff',
+  'List reviewed from the use log each year',
+]} />

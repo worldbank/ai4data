@@ -2,7 +2,7 @@
 
 ## Overview
 
-Understanding how development data is actually used—in research, policy documents, program evaluations, and news reporting—is essential for measuring the impact of data programs and for prioritizing future data investments. The Data Use Monitoring workstream applies natural language processing (NLP) to extract and track **mentions of specific datasets** from large document collections.
+Understanding how development data is used, in research, policy documents, program evaluations, and news reporting, is essential for measuring the impact of data programs and for prioritizing future data investments. The Data Use Monitoring workstream applies natural language processing (NLP) to extract and track **mentions of specific datasets** from large document collections.
 
 When a policy report cites the World Development Indicators, a research paper uses DHS survey data, or a government document references a national statistical publication, these references constitute evidence of data use. Systematically extracting and cataloging such references provides insight into which datasets have the most influence, where data gaps exist, and how data quality improvements translate into downstream impact.
 
@@ -23,18 +23,18 @@ Standard keyword search finds only exact matches. The `ai4data.data_use` module 
 
 ## How It Works
 
-The extraction pipeline uses **GliNER** (Generalist and Lightweight NER), a zero-shot NER model that identifies named entities of arbitrary types given a label prompt at inference time (Zaratiana et al., 2023). By prompting GliNER with the entity type "dataset," "survey," or "data source," the model can identify dataset mentions even in novel contexts without task-specific fine-tuning.
+The extraction pipeline uses **GLiNER2** (`fastino/gliner2-large-v1`), a schema-driven successor of GLiNER, the generalist NER model that identifies entities of arbitrary types from a label prompt (Zaratiana et al., 2023). The base model is loaded once and fine-tuned LoRA adapters trained by the program are applied on it: `ai4data/datause-extraction` for the mention spans, `ai4data/datause-relation-v0` for the relations of each mention (organization, acronym, timeframe, geography, user), and `ai4data/datause-impact-v0` for the classification of usage, typology, and purpose. A classifier adapter (`ai4data/datause-classifier`) screens chunks before extraction so that boilerplate pages are skipped. Implementation: [`src/ai4data/data_use/models/model_manager.py`](../../src/ai4data/data_use/models/model_manager.py).
 
 ### Pipeline Overview
 
 ```
-Document (PDF, text) → Text Extraction → NER (GliNER) → Raw Mentions
+Document (PDF, text) → Text Extraction → NER (GLiNER2 with adapters) → Raw Mentions
         → Harmonization → Deduplication → Structured Output
 ```
 
 **1. Text Extraction** — PDFs are parsed using PyMuPDF. Text is extracted by page, preserving document structure. Implementation: [`src/ai4data/data_use/utils/document_parser.py`](../../src/ai4data/data_use/utils/document_parser.py).
 
-**2. NER** — The GliNER model identifies spans in the extracted text that represent dataset mentions. The model returns each span with a confidence score. Implementation: [`src/ai4data/data_use/extractors/dataset_extractor.py`](../../src/ai4data/data_use/extractors/dataset_extractor.py).
+**2. NER** — The GLiNER2 model with the extraction adapter identifies spans in the extracted text that represent dataset mentions. The model returns each span with a confidence score. Implementation: [`src/ai4data/data_use/extractors/dataset_extractor.py`](../../src/ai4data/data_use/extractors/dataset_extractor.py).
 
 **3. Harmonization** — Raw mentions ("WDI," "World Development Indicators," "World Bank Development Data") are mapped to canonical dataset identifiers using fuzzy string matching (RapidFuzz) and semantic similarity (sentence-transformers). Implementation: [`src/ai4data/data_use/extractors/harmonization.py`](../../src/ai4data/data_use/extractors/harmonization.py).
 
@@ -48,27 +48,28 @@ Document (PDF, text) → Text Extraction → NER (GliNER) → Raw Mentions
 # Install with data use dependencies
 # uv pip install ai4data[datause]
 
-from ai4data.data_use.extractors.dataset_extractor import DatasetExtractor
-from ai4data.data_use.utils.document_parser import extract_text_from_pdf
+from ai4data.data_use import extract_from_document, extract_from_text
 
-# Extract text from a PDF document
-pages = extract_text_from_pdf("policy_report.pdf")
-text = "\n".join(pages)
+# A whole PDF (path or URL): one result per page, with the page text and
+# the mentions found on it. Reference pages are skipped by default.
+results = extract_from_document("policy_report.pdf", include_confidence=True)
+for page in results:
+    for ds in page["datasets"]:
+        name = ds.get("mention_name") or {}
+        print(page["page"], repr(name.get("text")), name.get("confidence"), ds.get("specificity_tag"))
 
-# Extract dataset mentions
-extractor = DatasetExtractor()
-mentions = extractor.extract(text)
-
-for mention in mentions:
-    print(f"{mention.span_text!r:40s}  score={mention.score:.2f}")
+# A text string: one dict with the input text and the mentions.
+result = extract_from_text("We used the 2019 DHS and the World Development Indicators.", include_confidence=True)
+print(result["datasets"])
 ```
 
-**Example output:**
+`extract_from_document` reads the PDF with `DocumentParser` ([`utils/document_parser.py`](../../src/ai4data/data_use/utils/document_parser.py)); the same class can be called directly with `load_pdf_chunks(...)` or `load_pdf_as_markdown(...)` when the text is needed for other steps. Each mention is a dict whose `mention_name` entry carries the span text, its character offsets, and a confidence; the other keys hold the tag (named, descriptive, or vague), the typology, whether the dataset is used in the document, and the relations found for it.
+
+**Example output** (illustrative; values depend on the document and the model version):
 ```
-'World Development Indicators'      score=0.94
-'DHS 2019'                          score=0.88
-'Demographic and Health Surveys'    score=0.91
-'national poverty line estimates'   score=0.72
+3 'World Development Indicators' 0.94 named_data
+3 'DHS 2019' 0.88 named_data
+7 'national poverty line estimates' 0.72 descriptive_data
 ```
 
 ---
@@ -78,13 +79,21 @@ for mention in mentions:
 Raw extraction produces many surface forms of the same dataset. Harmonization maps these to a canonical identifier:
 
 ```python
-from ai4data.data_use.extractors.harmonization import HarmonizationAdapter
+from ai4data.data_use import deduplicate_extraction, harmonize_datasets, initialize_harmonization_env
 
-harmonizer = HarmonizationAdapter()
-# Map raw mention to canonical dataset
-canonical = harmonizer.map("WDI")
-# Returns: {"canonical_name": "World Development Indicators",
-#           "dataset_id": "WDI", "confidence": 0.98}
+# Deduplicate the mentions of one document (output of extract_from_text or extract_from_document)
+dedup = deduplicate_extraction(results, fuzzy_threshold=85)
+
+# Harmonize the deduplicated outputs of a corpus into canonical families.
+# input_folder holds one folder per project with its dedup/*.json files;
+# the results (families, aliases, country-specific prototypes) are written to output_dir.
+env = initialize_harmonization_env()
+harmonize_datasets(
+    input_folder="./extraction_outputs/",
+    output_dir="./harmonization_outputs/",
+    env=env,
+    sim_threshold=0.5,
+)
 ```
 
 The harmonization step uses a combination of:
@@ -116,3 +125,13 @@ Optional harmonization (adds sentence-transformers for semantic matching):
 ```bash
 uv pip install ai4data[harmonization]
 ```
+
+---
+
+## Limitations
+
+- Recall on informal mentions is lower than on formal citations with identifiers. The [monitoring cookbook](/cookbook/monitoring-data-use/) combines citation services, access counts, and mention extraction so that each covers what the others miss.
+- Harmonization needs a dictionary of the organization's dataset names and their variants; without it, mentions are extracted and left unmapped.
+- The extractor reads text. Mentions inside figures, scanned pages without OCR, and tables rendered as images are missed.
+- A mention shows that a dataset was used. Whether the cited figure is current is a separate check.
+- Status on the [tools catalogue](/tools#data-use): pre-release.

@@ -1,0 +1,25 @@
+{
+  "document_description": {
+    "title_statement": {
+      "idno": "EX-REP-2025-03",
+      "title": "Food security report 2025"
+    },
+    "authors": [{"full_name": "National Statistics Office (example), Food security unit"}],
+    "date_published": "2025-06-30",
+    "type": "report",
+    "abstract": "Annual report on food security, combining the prevalence of undernourishment series with household budget survey results on food expenditure and dietary diversity. The 2025 edition reports a decline in undernourishment from 8.4 percent in 2022 to 7.6 percent in 2024 and presents district-level estimates for the first time, with their margins of error.",
+    "languages": [{"name": "English", "code": "en"}],
+    "publisher": "National Statistics Office (example)",
+    "url": "https://stats.example/documents/EX-REP-2025-03.pdf",
+    "identifiers": [{"type": "doi", "identifier": "10.00000/example.fsr.2025"}],
+    "keywords": [{"name": "food security"}, {"name": "undernourishment"}],
+    "topics": [{"name": "Food security"}],
+    "ref_country": [{"name": "Example country", "code": "EX"}],
+    "temporal_coverage": "2022-2024",
+    "license": [{"name": "CC BY 4.0", "uri": "https://creativecommons.org/licenses/by/4.0/"}],
+    "data_sources": [
+      {"name": "Prevalence of undernourishment (FS_UNDERNOURISH_PCT)", "uri": "https://stats.example/series/FS_UNDERNOURISH_PCT"},
+      {"name": "Household Budget Survey 2021 (EX-HBS-2021)", "uri": "https://stats.example/microdata/EX-HBS-2021"}
+    ]
+  }
+}

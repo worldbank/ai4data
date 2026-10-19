@@ -1,0 +1,275 @@
+---
+id: map
+title: "1. Model assistance across the production process"
+sidebar_label: "1. Map"
+sidebar_position: 2
+description: How an organization maps where in its production process a language model can assist, with the role the model takes in each task, the review its output gets, the data it sees, and where it runs, and which tasks stay with people.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 1. Model assistance across the production process
+
+**Question:** Where in the production process can a model assist, and where should it not?
+
+## Rationale
+
+Statistical production is a sequence of defined steps, and the Generic
+Statistical Business Process Model (GSBPM) names them: specify needs,
+design, build, collect, process, analyse, disseminate, evaluate, with
+quality and metadata management across all of them. A language model
+can assist some steps well (coding open text, explaining an edit
+failure, drafting commentary from a table) and others badly or
+dangerously (deciding an estimate, answering respondents without
+review). The map puts every model-assisted task in its phase, names the
+role the model takes, the review its output gets, the data it sees, and
+where it runs, so that the organization can see at once what it has
+delegated and under what controls.
+
+Five roles cover the useful cases. A model can **flag** (point at a
+possible problem), **propose** (suggest a value or a match), **code**
+(assign a classification code with a confidence), **explain** (say why
+something looks wrong, with evidence), and **draft** (write text from
+given inputs). It does not decide: every estimate, every published
+value, and every record change is a person's decision, with the model's
+output as input.
+
+## Target state
+
+- Every model-assisted task is listed with its GSBPM phase and sub-process, its role, the review of its output, the data it sees, and where the model runs.
+- No task gives a model a deciding role, and no output that people see leaves without review.
+- Confidential microdata reach only models the organization runs.
+- The map is kept in the AI component register and checked when a task is added.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | List the tasks where models are used or planned, with phase, role, and review. |
+| **AI-ready** | Add data sensitivity and model location; run the check; record the map in the register; require a row before any task goes live. |
+| **AI-native** | Review the map each period from the evaluation suites and incidents; publish the map in the quality documentation ([chapter 7](./assurance.mdx)). |
+
+:::info[Running example]
+The example organization maps ten tasks across design, collection,
+processing, analysis, and metadata management. The check passes nine
+and flags one: a respondent chatbot whose answers reach the public with
+no review, which the organization either puts under review or removes.
+:::
+
+## Recipes
+
+<Recipe title="1.1 Write the map of model-assisted tasks" level="Foundational" skills="Methodologist; production manager" time="Half a day">
+
+**Result:** the organization has one table that lists every production
+task where a language model helps or could help. Each task is placed in
+the step of the production process it belongs to, with what the model
+does, who checks its output, what data it sees, and where it runs.
+
+The map is the organization's record of what it has delegated to
+models and under what controls. The example file below is the map of
+the example organization, with ten tasks. Each row is one task; the
+columns are:
+
+| Column | Meaning |
+|---|---|
+| `component` | The task, in the organization's own words |
+| `phase`, `sub_process` | The step of the production process, named as in GSBPM (specify needs, design, build, collect, process, analyse, disseminate, evaluate), or "overarching" for tasks such as metadata management that run across all steps |
+| `task` | What the model is asked to do, in one sentence |
+| `model_role` | One of five roles: `flag` (point at a possible problem), `propose` (suggest a value or a match), `code` (assign a classification code with a confidence), `explain` (say why something looks wrong, with evidence), `draft` (write text from given inputs). A model never decides |
+| `review` | Who checks the model's output: `always` (a person sees every output), `sample` (a person checks a random share), `none` |
+| `data_sensitivity` | What the task's input is: `public`, `internal`, or `confidential` |
+| `model_location` | Where the model runs: `local` (on the organization's own servers) or `hosted` (at a provider, which means the input leaves the organization) |
+| `owner` | The unit responsible |
+
+```csv file=../../website/static/cookbook-files/language-models-in-production/gsbpm_map.csv
+```
+
+1. Go through the production process step by step with the people who
+   run it, and list every task that involves text: questionnaire
+   wording, open-ended responses, edit messages, analysts' notes,
+   commentary, metadata.
+2. For each task, choose the model's role from the five, and say who
+   reviews its output.
+3. Record what data the task sees and where the model runs. The
+   program's [GSBPM mapping](/docs/gsbpm-mapping) shows which steps its
+   own tools serve, as a reference.
+4. Name the owner of each task.
+
+**Worked example.** The row for occupation coding in the map of the running example has
+the component "Occupation coding" in phase 5 Process, sub-process 5.2
+Classify and code. Its task reads "assign an ISCO-08 code to each
+open-text occupation response". Its role is `code`, its review `sample`,
+its data `confidential`, its model location `local`, and its owner the
+labour statistics unit.
+The row for release commentary reads: phase 6 Analyse, sub-process 6.5
+Finalise outputs, task "draft the commentary from the output tables",
+role `draft`, review `always`, data `internal`, location `hosted`, owner
+"Dissemination unit". The row for the respondent chatbot, added by the
+collection unit during a pilot, reads role `answer`, review `none`, and
+location `hosted`, and it is the row the check of recipe 1.2 flags.
+
+**What this does not do.** The map lists possibilities and controls. It
+does not say that a task is worth giving to a model; the later chapters
+measure that, task by task, and a task with no evaluation stays a pilot.
+
+</Recipe>
+
+<Recipe title="1.2 Check the map for unreviewed outputs and confidential data" level="AI-ready" skills="Python" time="Minutes; with each change">
+
+**Result:** a check runs whenever the map changes, and it reports any
+task whose output reaches people without review, any confidential input
+sent to a provider, and any task where a model has been given a
+deciding role.
+
+The script below reads the map, prints the tasks grouped by production
+step, and raises a flag for each of the three rules broken:
+
+```python file=../../website/static/cookbook-files/language-models-in-production/map_components.py
+```
+
+```bash
+python map_components.py gsbpm_map.csv
+```
+
+Output for the running example:
+
+```text
+10 components across 5 phases
+
+2. Design
+  2.3 Design collection              Question wording review      flag     review always  public        hosted
+  2.2 Design variable descriptions   Concept harmonization        propose  review always  public        hosted
+5. Process
+  5.2 Classify and code              Occupation coding            code     review sample  confidential  local
+  5.2 Classify and code              Industry coding              code     review sample  confidential  local
+  5.3 Review and validate            Edit failure explanation     explain  review always  confidential  local
+  5.4 Edit and impute                Imputation suggestion        propose  review always  confidential  local
+6. Analyse
+  6.3 Interpret and explain outputs  Anomaly explanation          explain  review always  internal      hosted
+  6.5 Finalise outputs               Release commentary           draft    review always  internal      hosted
+Overarching
+  Metadata management                Metadata drafting            draft    review always  public        hosted
+4. Collect
+  4.3 Run collection                 Respondent chatbot           answer   review none    public        hosted
+
+flags:
+  Respondent chatbot: answer output reaches people with no review
+```
+
+The output lists the tasks under their production phases, one line
+each, with the role, the review, the data sensitivity, and the model
+location. The flags at the end name each task that breaks a rule and
+say which rule.
+
+1. Run the check. Each flag is a task to change before it goes live:
+   add a review step, move the model onto the organization's own
+   server, or change the model's role.
+2. Keep the map with the AI component register of the
+   [dissemination cookbook](/cookbook/ai-ready-dissemination/govern) and
+   run the check whenever either changes.
+3. Require a row in the map before any new task uses a model. No row,
+   no deployment.
+
+**Worked example.** The check on the running example's map flags the
+respondent chatbot, because its answers reach respondents with no
+review. The production manager and the collection unit discuss it and choose
+the first of the three remedies. The chatbot's answers are limited to a
+fixed set of reviewed texts about the survey, and anything else is
+routed to a help-desk officer. That changes the role to `draft` and the
+review to `always`. The map is updated, the check passes, and
+the row joins the component register with the collection unit as owner.
+Six months later a unit proposes a model to summarise interviewer notes
+from confidential records through a hosted service, and the check
+flags the location before the task goes live.
+
+**What this does not do.** The check enforces the three rules written
+into it. The organization's other rules (which languages, which
+providers, how long inputs are kept) belong in the AI-use policy and are
+checked by its owner.
+
+</Recipe>
+
+<Recipe title="1.3 Decide the tasks that stay with people" level="Foundational" skills="Head of methodology; management" time="Two hours">
+
+**Result:** the organization has a short, published list of the
+production tasks that models are not used for, with a one-sentence
+reason for each.
+
+1. Write the list. At minimum: decisions about estimation and
+   weighting; the final value of any published statistic; decisions
+   about disclosure control; answers given directly to respondents
+   without review; and any task on confidential data through an
+   external service.
+2. Give the reason for each in one sentence: accountability, the
+   Fundamental Principles of Official Statistics, the confidentiality
+   law.
+3. Publish the list with the AI-use policy and revisit it once a year.
+   A task leaves the list only when it has an evaluation suite and a
+   review process that the methodology unit has signed off.
+
+**Worked example.** The example organization's list has five entries, each with its
+reason:
+
+- Estimation and weighting. The method of record is documented and
+  reproducible, and a model's output is neither.
+- The final value of any published statistic. A named statistician is
+  accountable for it under the Fundamental Principles.
+- Disclosure control decisions. The confidentiality law places them with
+  the disclosure committee.
+- Answers to respondents without review. The organization speaks to
+  respondents only through reviewed text.
+- Any task on confidential data through an external service. The
+  confidentiality law forbids it.
+
+The list is published as an annex to the AI-use policy, dated, and reviewed
+each October.
+
+**What this does not do.** A list of exclusions protects against the
+risks that are known. New tools bring new tasks; they enter the map of
+recipe 1.1 as pilots with full review before anything else.
+
+</Recipe>
+
+## Implementation options
+
+- **Framework:** GSBPM 5.1 phases and sub-processes; the organization's own process model where it differs.
+- **Roles:** flag, propose, code, explain, draft; never decide.
+- **Register:** the AI component register with the map's columns; the check in the pipeline.
+- **Exclusions:** a published list with reasons in the AI-use policy.
+
+## World Bank examples
+
+- The program's [GSBPM mapping](/docs/gsbpm-mapping) places each workstream in the phases and sub-processes it serves, from design (2.2) and coding (5.2) to validation (6.2) and evaluation (8.2).
+- The [Metadata Reviewer](/docs/metadata-reviewer/overview) and [Anomaly Detection and Explanation](/docs/anomaly-detection/) are flag-and-explain components with a person deciding, the roles this chapter names.
+
+## Resources
+
+- [GSBPM 5.1](https://unece.org/statistics/modernstats/gsbpm): the phases and sub-processes the map uses.
+- [UN Fundamental Principles of Official Statistics](https://unstats.un.org/fpos/): the accountability that keeps decisions with people.
+- [AI component register](pathname:///cookbook-files/ai-ready-dissemination/ai_component_register.csv) and [AI-use policy template](pathname:///cookbook-files/ai-ready-dissemination/ai_use_policy_template.md) from the dissemination cookbook.
+- [Component map](pathname:///cookbook-files/language-models-in-production/gsbpm_map.csv) and [check](pathname:///cookbook-files/language-models-in-production/map_components.py): the running example.
+
+## Common mistakes
+
+- **Models described by tool.** The map is by task and role; the tool changes.
+- **A deciding role by omission.** A code applied without a sample review is a decision.
+- **Confidential text to a hosted model.** The location column exists for this.
+- **A map written once.** New tasks appear; the check runs on every change.
+
+## Verification
+
+- **Map.** Every model-assisted task in production has a row with all columns filled.
+- **Check.** The check passes on the current map and runs in the pipeline.
+- **Exclusions.** The list of excluded tasks is published with the policy and dated.
+
+## Checklist
+
+<Checklist id="language-models-in-production-map" items={[
+  'Model-assisted tasks mapped to GSBPM phases and sub-processes',
+  'Role per task from flag, propose, code, explain, draft',
+  'Review, data sensitivity, model location, and owner per task',
+  'Check passes: visible outputs reviewed; confidential data local; no deciding role',
+  'Map kept in the AI component register; row required before deployment',
+  'Tasks that stay with people listed and published with reasons',
+]} />

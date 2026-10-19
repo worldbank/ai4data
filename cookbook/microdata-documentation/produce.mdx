@@ -1,0 +1,311 @@
+---
+id: produce
+title: "2. Documentation from existing files"
+sidebar_label: "2. Produce"
+sidebar_position: 3
+description: How to produce documentation from the files the organization already has, by drafting a data dictionary from the data file, importing labelled files into the Metadata Editor, recovering question text from questionnaires and old codebooks, and ordering the backlog of undocumented surveys.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 2. Documentation from existing files
+
+**Question:** Can documentation be produced from the files the organization already has?
+
+## Rationale
+
+Most organizations hold more surveys than documented surveys. The data
+files exist, often with variable labels and value labels inside them; the
+questionnaires exist as PDF or Word files; the codebooks of older surveys
+exist as scanned reports. The documentation work is then extraction before
+it is writing: get what the files already say into the dictionary, see what
+is missing, and spend the curator's time on that. A dictionary drafted from
+the file in minutes shows exactly which labels, universes, and questions a
+person still has to supply.
+
+The same logic orders the backlog. A survey that is used and undocumented
+comes before one that is documented and unused; a dictionary that lacks
+value codes comes before one that lacks a concept link.
+
+## Target state
+
+- Every data file has a dictionary drafted from the file itself, with the fields a curator must fill marked.
+- Files in statistical formats are imported with their labels and value labels, so that nothing already recorded is retyped.
+- Question text and code lists are recovered from questionnaires and legacy codebooks and attached to the variables.
+- The documentation backlog is ordered by use and by what each dictionary lacks.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Draft a dictionary from each data file. Import files with labels into the Metadata Editor. List the surveys and what each lacks. |
+| **AI-ready** | Recover question text and code lists from questionnaires and codebooks, with a model's draft under review where the document is long. Order the backlog by use and gaps, and track it. |
+| **AI-native** | Run the draft, the import, and the recovery as a pipeline for every new file, with the checks of [chapter 3](./variables.mdx) applied before the curator sees the draft. |
+
+:::info[Running example]
+A 41-record extract of the `EX-LFS-2025-Q2` data file, with 18 columns and
+no labels. The draft dictionary infers the type of each column, finds the
+negative codes used for missing values in four columns, and lists 18
+labels and 18 universes for the curator to fill. The questionnaire supplies
+the question text in [chapter 4](./concepts.mdx).
+:::
+
+## Recipes
+
+<Recipe title="2.1 Draft a dictionary from the data file" level="Foundational" skills="Data curator; Python" time="Minutes per file">
+
+**Result:** the curator has a first draft of the data dictionary. It has
+one row per column of the data file, with the type the script inferred,
+the codes it found, the candidate missing-value codes, and the fields
+left blank for the curator to fill.
+
+A data dictionary describes each variable of a file: its name, what it
+measures (the label), its type, the codes it uses and what they mean,
+and whom it applies to. When a file comes with no dictionary, the first
+step is to read the file itself. The script does that and writes a
+draft dictionary with these columns:
+
+| Column | Meaning |
+|---|---|
+| `name` | The column name in the file |
+| `label` | What the variable measures; blank in the draft |
+| `type` | `categorical`, `numeric`, or `string`, inferred from the values |
+| `universe` | Whom the variable applies to; blank in the draft |
+| `question` | The question text; blank in the draft |
+| `values` | The codes found, as `code=` with the label left blank |
+| `missing` | Codes that look like missing-value markers (negative integers) |
+| `concept` | The concept the variable measures; blank in the draft |
+| `n`, `n_missing`, `range` | How many values, how many empty, and the range of a numeric variable |
+
+```python file=../../website/static/cookbook-files/microdata-documentation/profile_datafile.py
+```
+
+```bash
+python profile_datafile.py lfs_2025q2_sample.csv draft_dictionary.csv
+```
+
+Output for the running example:
+
+```text
+41 records, 18 columns: 13 categorical, 5 numeric, 0 string
+to fill by the curator: 18 labels, 18 universes, 54 value labels; questions and concepts where they apply
+candidate missing codes found in 4 columns: educ, occupation, industry, jobsearch
+draft written to draft_dictionary.csv
+```
+
+The first line counts the columns by inferred type. The second line is
+the curator's to-do list: every label, universe, and value label that
+the file could not supply. The third line names the columns in which
+negative integers appear, which in survey files usually mark missing or
+inapplicable answers.
+
+1. Run the script on the data file and read the draft. A column with
+   few distinct integers is drafted as categorical with its codes
+   listed; a column with many values as numeric with its range;
+   negative integers as candidate missing codes.
+2. Correct the type where the inference is wrong (an identifier with
+   few values, a small count drafted as categorical). Fill the labels,
+   value labels, and universes from the questionnaire and the
+   processing notes.
+3. Run the dictionary check of [chapter 3](./variables.mdx) on the
+   result before it goes further. The draft itself fails it, by design,
+   on every missing label.
+
+**Worked example.** The draft for the running example lists the column
+`educ` as categorical with the codes 1 to 6 and `-8` found, and `-8` in
+the missing column, because it is the only negative value. The curator
+knows from the questionnaire that `-8` means "not applicable", because
+the education question is skipped for children under five, and writes
+"Persons aged 5 and over" in the universe column. The column `hhid` is
+drafted as numeric with a range, and the curator changes it to string,
+because it is an identifier. The column `income` is drafted as numeric
+with no missing code, which is correct for this file, so the curator
+writes `none`. After an hour the 18 labels and 18 universes are filled,
+and the dictionary check of chapter 3 finds the five defects that the
+questionnaire alone could not resolve.
+
+**What this does not do.** The draft reads values and infers nothing
+about meaning. It cannot tell an identifier from a code, a count from a
+category, or a missing code from a value, beyond the rules in the
+script. The curator can, and the draft tells the curator where to look.
+Files that carry labels (Stata, SPSS, SAS) are imported with them in
+recipe 2.2; the profile is for files without labels.
+
+</Recipe>
+
+<Recipe title="2.2 Import files with their labels into the Metadata Editor" level="Foundational" skills="Data curator" time="One hour per survey">
+
+**Result:** the variable names, labels, value labels, types, and summary
+statistics of each data file are in the study record, and nobody retyped
+them.
+
+1. In the [Metadata Editor](https://worldbank.github.io/metadata-editor-docs),
+   create the study from the microdata template and import the data
+   files. The editor reads the variable labels and value labels that
+   statistical formats carry and computes frequencies and summary
+   statistics per variable.
+2. Review what the import produced: labels that are the name or empty,
+   value codes without labels, numeric variables whose missing values
+   were stored as codes. These are the planted defects of the running
+   example and the usual defects of real files.
+3. Add what the file cannot carry: universes, question text,
+   derivations, and concepts, which come from the questionnaire and the
+   processing documentation (recipes 2.3 and
+   [4.1](./concepts.mdx)).
+4. Validate the record against the schema in the editor, and export it
+   or publish it to NADA.
+
+**Worked example.** The curator imports the Stata version of the 2025 Q2
+labour force survey file into the Metadata Editor. The editor reads the
+18 variables with the 17 labels the file carries, the value labels of
+ten categorical variables, and the frequency of each code. The review
+finds that `q17b` has no label in the file, that `relationship` has codes
+but no value labels, and that `informal` is labelled with its own name.
+Those are three of the five planted defects, and they would have been
+found by the check of chapter 3 as well. The curator then adds the
+universes and the question text from the questionnaire, validates the
+record, and publishes it to the test catalog.
+
+Where a file has to be read outside the editor, the
+[pyreadstat](https://github.com/Roche/pyreadstat) library reads Stata,
+SPSS, and SAS files with their labels into Python, and the dictionary
+CSV of this cookbook is a convenient intermediate form.
+
+**What this does not do.** An import reproduces what the file says,
+errors included. A label that was wrong in the Stata file is wrong in
+the record until the check of [chapter 3](./variables.mdx) and a
+curator catch it.
+
+</Recipe>
+
+<Recipe title="2.3 Recover question text and code lists from questionnaires and codebooks" level="AI-ready" skills="Data curator; developer for the extraction" time="Half a day per survey; less with a pipeline">
+
+**Result:** every collected variable carries its question text and its
+full code list, taken from the questionnaire and from any old codebook,
+and the dictionary records where each one came from.
+
+1. Collect the questionnaire (every language and version used in the
+   field) and any codebook or data documentation report. Scanned
+   documents need OCR first; the
+   [documents cookbook](/cookbook/data-from-documents/) covers the
+   extraction of text and tables from PDFs, including scans.
+2. Extract question numbers, wording, and answer categories into a
+   table (question identifier, text, categories). For a short
+   questionnaire this is a copy. For a long one, use a document
+   converter such as
+   [Docling](https://github.com/docling-project/docling), or a language
+   model draft over the converted text, with every drafted row checked
+   against the page.
+3. Link each variable to its question by the question number in the
+   variable name or label, or by hand where names are opaque. Add the
+   question text to the dictionary's `question` column and the
+   categories to `values` where the file lacks them.
+4. Record the source of each recovered item (document, page) so that a
+   later reviewer can check it. The provenance fields of the
+   [documents cookbook](/cookbook/data-from-documents/publish) are the
+   model.
+
+**Worked example.** The 2025 Q2 questionnaire is a 24-page PDF in two
+languages. The developer converts it with Docling and asks a language
+model to list every question number, its wording, and its answer
+categories as a table. The model's table has 62 rows. The curator checks
+each row against the page and corrects four, where the model merged two
+answer categories into one. Variable `q17b` is matched to question 17b,
+"In the last four weeks, did [NAME] look for work?", with the categories
+1 = Yes and 2 = No, and the dictionary's `question` column receives the
+text with the note "questionnaire v2, page 11". Variable `lfs_status` is
+derived from questions 14 to 18 and has no question of its own, so it is
+marked for the derivation documentation of chapter 3.
+
+**What this does not do.** Recovered text is what the questionnaire
+said, which may differ from what interviewers asked or what the
+processing changed. Derived variables have no question; their
+derivation is documented in [chapter 3](./variables.mdx), recipe 3.3.
+
+</Recipe>
+
+<Recipe title="2.4 Order the documentation backlog" level="AI-ready" skills="Head of the microdata unit" time="One day, then an hour per quarter">
+
+**Result:** the microdata unit has a list of its surveys in the order
+they will be documented, with what each one lacks and who will do the
+work.
+
+1. List every survey the organization holds with: the year, whether a
+   data file exists, whether a dictionary exists, what the dictionary
+   lacks (from the check of [chapter 3](./variables.mdx)), and its use
+   (downloads, requests, citations, from the
+   [monitoring cookbook](/cookbook/monitoring-data-use/)).
+2. Order by use first, then by the severity of what is missing: no
+   dictionary, then no value codes, then no universes or questions,
+   then no concepts.
+3. Estimate the time per survey from the first few documented and
+   assign them. Publish the list internally and review it each quarter.
+4. Record the baseline (surveys documented, dictionaries passing the
+   check) so that progress is measurable.
+
+**Worked example.** The example organization holds 14 surveys. Three have
+no data file in a usable format and go to the bottom of the list. Of the
+remaining eleven, the labour force survey rounds have the most downloads
+and dictionaries that lack universes and question text, so they come
+first. The 2021 household budget survey has fewer downloads but no
+dictionary at all, so it comes second, because a survey without a
+dictionary cannot be used at all. The 2014 census has a complete
+dictionary without concepts, so it comes last among the documented
+surveys. The head of the unit assigns the first four to two curators,
+estimates three days per survey from the first one done, and records the
+baseline: 6 of 14 surveys documented, 2 dictionaries passing the check.
+
+**What this does not do.** A backlog orders the work; the standard the
+work meets is set by [chapters 3](./variables.mdx) to
+[7](./fitness.mdx). Use counts for surveys that were never findable
+understate their value: the first documented release of a survey is
+also its first chance to be used.
+
+</Recipe>
+
+## Implementation options
+
+- **Profiling:** the script in this chapter for CSV; the Metadata Editor's import for statistical formats; pyreadstat or the `haven` R package to read labelled files in code.
+- **Question recovery:** manual for short questionnaires; document conversion (Docling, OCR) plus a model draft under review for long ones; a question bank once questions are reused ([chapter 4](./concepts.mdx), recipe 4.3).
+- **Backlog:** a spreadsheet with the fields in recipe 2.4; the check of chapter 3 run over all dictionaries gives the gaps.
+- **Pipeline:** the draft, import, and check run on every new file at the AI-native level, so that the curator starts from a checked draft.
+
+## World Bank examples
+
+- The [Metadata Editor](https://github.com/worldbank/metadata-editor) imports data files, builds the variable list with frequencies, and validates against the [microdata schema](https://github.com/worldbank/metadata-schemas).
+- [Metadata Augmentation](/docs/metadata-augmentation/) reads dictionaries from CSV, JSON, or a NADA catalog, which is the same intermediate form as this chapter's draft.
+- The [Data Snapshots](https://arxiv.org/abs/2606.06242) work locates tables and figures in document pages, the first step in recovering a legacy codebook.
+
+## Resources
+
+- [Metadata Editor user and practice guide](https://worldbank.github.io/metadata-editor-docs): importing data files, documenting variables, templates, validation, and publishing to NADA.
+- [pyreadstat](https://github.com/Roche/pyreadstat): reads Stata, SPSS, and SAS files with variable and value labels into Python; the way to get labels out of a file outside the editor.
+- [Docling](https://github.com/docling-project/docling): converts PDF, Word, and scanned documents into structured text and tables, for questionnaires and legacy codebooks.
+- [DDI Codebook 2.5](https://ddialliance.org/Specification/DDI-Codebook/2.5/): the elements a dictionary row maps to (`var`, `labl`, `catgry`, `qstn`, `universe`).
+- [IHSN anonymization and documentation resources](https://ihsn.org/): guidance and tools for archiving and documenting surveys, including the editor and NADA.
+
+## Common mistakes
+
+- **Retyping what the file carries.** Stata and SPSS files hold labels; import them.
+- **Trusting the draft's types.** An identifier with five values is drafted as categorical; the curator corrects it.
+- **Recovering questions without the source.** A question text without document and page cannot be checked later.
+- **Documenting in the order the files were found.** Use and gaps order the backlog.
+
+## Verification
+
+- **Draft.** Every data file has a draft dictionary, and the fields left to fill are counted.
+- **Import.** The labels and value labels from the file appear in the record without retyping, and a sample has been compared with the file.
+- **Recovery.** Every collected variable has a question text with its source document and page.
+- **Backlog.** The list exists with an order, the gaps, and an owner for each survey, and progress is reported against the baseline.
+
+## Checklist
+
+<Checklist id="microdata-documentation-produce" items={[
+  'Draft dictionary produced from each data file',
+  'Labelled files imported into the editor without retyping',
+  'Question text and code lists recovered with document and page',
+  'Derived variables marked for derivation documentation',
+  'Backlog ordered by use and gaps, with owners',
+  'Baseline recorded: surveys documented and dictionaries passing the check',
+]} />

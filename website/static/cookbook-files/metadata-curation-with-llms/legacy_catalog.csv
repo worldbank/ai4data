@@ -1,0 +1,6 @@
+Code,Indicator name,Description,Unit,Frequency,Start,End,Source agency,Updated,Tags,Notes
+FS_UNDERNOURISH_PCT,Prevalence of undernourishment,Share of the population whose habitual food consumption is insufficient to provide the dietary energy levels required to maintain a normal active and healthy life. Three-year average.,% of population,A,2010,2024,Food balance sheets; household budget survey,14/03/2025,food security; hunger,
+ED_PRIMARY_NER_PCT,Net enrolment rate in primary education,Children of official primary school age who are enrolled in primary education as a share of the population of that age group.,% of age group,A,2010,2024,School census,01/02/2025,education,
+HE_U5_MORT_RATE,Under-five mortality rate,Probability of dying between birth and exactly five years of age expressed per 1000 live births.,per 1000 live births,A,2010,2024,Civil registration; DHS,20/01/2025,health; child mortality,Break in 2018 (registration coverage)
+LF_UNEMP_PCT,Unemployment rate,,% of labour force,Q,2015,2025,Labour force survey,15/08/2025,labour; unemployment,
+PV_HEADCOUNT_NPL_PCT,Poverty headcount ratio at national poverty line,Share of the population living below the national poverty line.,% of population,Other,2010,2022,Household budget survey,30/06/2023,poverty,Survey years only

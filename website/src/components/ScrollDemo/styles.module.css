@@ -27,8 +27,9 @@
 /* ---------- Layout ---------- */
 
 .track {
-  /* Scroll distance for the pinned stage: one screen-fraction per example. */
-  height: calc(var(--stops) * 60vh + 40vh);
+  /* Scroll distance for the pinned stage: about one screen per example, so
+     the steps inside each example have room, plus the stage's own height. */
+  height: calc(var(--stops) * 110vh + 100vh);
 }
 
 .stage {
@@ -1537,6 +1538,13 @@
   border-radius: 2px;
   cursor: pointer;
   transition: background 0.2s;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.anClaim:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 .anClaim:hover {
@@ -2102,4 +2110,100 @@
 
 .head .lede + .lede {
   margin-top: 0.75rem;
+}
+
+
+/* ---------- Phones ---------- */
+
+@media screen and (max-width: 560px) {
+  .section {
+    padding: 3rem 0;
+  }
+
+  .head {
+    margin-bottom: 1.75rem;
+  }
+
+  .stops {
+    gap: 2.25rem;
+  }
+
+  /* Tracks and items may shrink below their content, so wide strips wrap or scroll. */
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* The desktop rule centres stops in a grid cell; in the column each stop spans the width. */
+  .stops {
+    align-items: stretch;
+  }
+
+  .stops,
+  .stop,
+  .stopEvidenceMobile,
+  .evidenceBox {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .mrSteps3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  /* The five-step strip scrolls sideways; five cells do not fit the width. */
+  .mrSteps {
+    display: flex;
+    max-width: 100%;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 0.2rem;
+  }
+
+  .mrSteps::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mrSteps .mrStep {
+    flex: 0 0 auto;
+    min-width: 7.25rem;
+    scroll-snap-align: start;
+  }
+
+  /* The source record opens as a sheet at the bottom of the screen. */
+  .pcnPopover {
+    position: fixed;
+    z-index: 300;
+    top: auto;
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    width: auto;
+    transform: translate(0, 8px);
+  }
+
+  .pcnProof:hover .pcnPopover,
+  .pcnProof:focus .pcnPopover,
+  .pcnProof:focus-within .pcnPopover {
+    transform: translate(0, 0);
+  }
+}
+
+/* Touch screens: controls at least 2.5rem tall. */
+@media (pointer: coarse) {
+  .section button:not(.anClaim) {
+    min-height: 2.5rem;
+  }
+}
+
+.stopCaveat {
+  margin: 0 0 1rem;
+  padding: 0.7rem 0.9rem;
+  border-left: 3px solid var(--primary);
+  background: var(--surface-1);
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  border-radius: 0 var(--radius) var(--radius) 0;
 }

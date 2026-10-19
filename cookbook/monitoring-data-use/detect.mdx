@@ -1,0 +1,266 @@
+---
+id: detect
+title: "6. Detection of mentions"
+sidebar_label: "6. Detect"
+sidebar_position: 7
+description: How mentions of the organization's datasets are found in the collected documents with the program's named-entity extractor, how its precision and recall are measured on a sample labelled by hand, and how the threshold and the deduplication are set.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 6. Detection of mentions
+
+**Question:** Can mentions of the data be found in documents?
+
+## Rationale
+
+Keyword search finds the canonical name and nothing else. Documents refer
+to a survey as "the labour survey", to an indicator by its definition, and
+to a report by its author; they name the dataset once and use a pronoun
+after. Named-entity extraction finds these mentions from the text around
+them, with a confidence, and records whether the document uses the data or
+cites it. The program's extractor does this with a zero-shot model and a
+fine-tuned adapter for dataset mentions.
+
+An extractor's output is only as good as its measured precision and
+recall, so the chapter pairs the model with a labelled sample.
+
+## Target state
+
+- Mentions are extracted from every collected document with the dataset name, acronym, producer, usage flag, context, and confidence.
+- Precision and recall are measured on a labelled sample across document types and languages, and reported.
+- Thresholds and deduplication are tuned on the sample, and the sample grows with each review.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Search the collected text for the canonical names and acronyms. Read the hits and record the mentions with their context. |
+| **AI-ready** | Run the extractor on every document. Label a sample of sentences and measure precision and recall. Set the confidence threshold and deduplicate. |
+| **AI-native** | Run extraction in the pipeline on each collection run, keep the labelled sample growing from reviews, and re-measure when the model or adapter changes. |
+
+:::info[Running example]
+The extractor found twelve mentions in the six documents. Against the
+labelled sample of fourteen sentences, it found eleven of the twelve
+labelled mentions, missed "Population and Housing Census 2014", and
+extracted one generic phrase ("food security report" in the regional
+outlook) that a person did not count as a mention.
+:::
+
+## Recipes
+
+<Recipe title="6.1 Run the extractor on the collected documents" level="AI-ready" skills="Developer with Python; a machine that runs a small language model" time="One day to set up; seconds per document">
+
+**Result:** for every document in the collection, the organization has
+one record per mention of a dataset, with the fields the later chapters
+need.
+
+The program's extractor reads a document's text and finds the places
+where a dataset is named. It uses a zero-shot named-entity model (a
+model that finds names of a given kind in text without having been
+trained on the organization's documents) with the program's adapter for
+dataset mentions. For each mention it returns the dataset name, the
+acronym and the producer where present, whether the data are used, the
+usage context, and a confidence. The code to run it on one document:
+
+```python
+from ai4data.data_use import extract_from_document
+
+result = extract_from_document("D01.pdf", include_confidence=True)
+for mention in result["dataset_mention"]:
+    print(mention["dataset_name"]["text"], mention["is_used"], mention["usage_context"])
+```
+
+The mentions are stored one per line as JSON objects:
+
+| Field | Meaning |
+|---|---|
+| `document_id` | The document the mention was found in |
+| `text` | The mention as written |
+| `context` | The sentence it was found in |
+| `dataset_tag` | `named` or `unnamed` |
+| `is_used`, `usage_context` | Whether the data are used, and as primary, secondary, or background ([chapter 1](./define.mdx)) |
+| `confidence` | The extractor's confidence, 0 to 1 |
+
+```json file=../../website/static/cookbook-files/monitoring-data-use/mentions_example.jsonl
+```
+
+1. Install the program's package with the data-use dependencies
+   (`pip install "ai4data[datause]"`) and run the extractor on the text
+   of each document.
+2. Store the mentions in the form above.
+3. Record the model, adapter, and threshold used with each run. A
+   change in any of them changes the counts.
+
+**Worked example.** Run on the 2023 journal article, the extractor
+returns two mentions. The first is "Household Budget Survey 2021" in
+the sentence "We estimate poverty from the Household Budget Survey
+2021", tagged as named, with `is_used` true, the usage context
+"primary", and a confidence of 0.97. The second is "HBS" in the
+sentence "Weights from the HBS are applied throughout", also used, with
+a confidence of 0.91. Run on the regional food security outlook, it
+returns "food security report" in the sentence "as several food security
+reports in the region have noted", with a confidence of 0.52, which the
+labelled sample of recipe 6.2 shows to be a false positive. The run is
+recorded with the model, the adapter version, and no threshold applied
+yet.
+
+**What this does not do.** The extractor finds mentions in the text it
+is given. A document without a text layer yields nothing, and a mention
+in a figure or in a reference list stored as an image is invisible. The
+model was trained on English development literature; other languages
+need the measurement of recipe 6.2 before the counts are trusted.
+
+</Recipe>
+
+<Recipe title="6.2 Measure precision and recall on a labelled sample" level="AI-ready" skills="Dissemination officer for labelling; Python" time="One day for the first hundred sentences">
+
+**Result:** the organization has two numbers that say how good the
+extractor is on its own documents, together with the lists of what it
+missed and what it wrongly extracted.
+
+Precision is the share of extracted mentions that are real; recall is
+the share of real mentions that were extracted. Both need a labelled
+sample: sentences a person has read and marked. The sample is a CSV
+with one row per sentence:
+
+| Column | Meaning |
+|---|---|
+| `document_id` | The document the sentence comes from |
+| `sentence` | The sentence |
+| `mention_text` | The dataset mention it contains, or empty when it contains none |
+| `note` | The labeller's remark |
+
+```csv file=../../website/static/cookbook-files/monitoring-data-use/labelled_sample.csv
+```
+
+The script compares the extractor's output with the sample:
+
+```python file=../../website/static/cookbook-files/monitoring-data-use/score_mentions.py
+```
+
+Output for the running example:
+
+```text
+labelled mentions 12, extracted 12, correct 11
+precision 0.92  recall 0.92  F1 0.92
+false positives (extracted, not labelled as a mention):
+  D06: 'food security report'
+false negatives (labelled, not extracted):
+  D04: 'population and housing census 2014'
+```
+
+The first two lines give the counts and the three measures. Precision is
+the share of extracted mentions that the labellers also marked, recall
+is the share of labelled mentions that the extractor found, and F1 is
+their harmonic mean. The two lists that follow name the disagreements
+in each direction, which is where the review starts.
+
+1. Draw sentences from the collected documents across types and
+   languages, and label each. Two labellers and an agreement check make
+   the sample trustworthy.
+2. Run the script.
+3. Read both lists. Here the false positive is a generic phrase with low
+   confidence (0.52), which a threshold removes. The false negative is a
+   census named as a sampling frame, which the adapter may treat as a
+   method; a review adds it to the sample as a positive example.
+4. Keep the sample and the scores with the model version, and re-run on
+   every change.
+
+**Worked example.** The false negative in the run above is the sentence
+"The sampling frame was the Population and Housing Census 2014" in the
+working paper. The extractor did not mark it, and the two labellers
+disagreed about it at first: one held that a census used as a frame is
+not "used" in the typology's sense, the other that it is a mention
+whatever the use. They settled on marking it as a mention with the
+context "background", which is what the sample now records, and the
+sentence is added as a positive example. The false positive, "food
+security report" in a sentence about reports in general, is a phrase
+the extractor took for a document name. Its confidence of 0.52 is the
+lowest in the run, which is what the threshold of recipe 6.3 uses.
+
+**What this does not do.** Fourteen sentences demonstrate the measure.
+A few hundred sentences per document type and language, with two
+labellers, give a number to report. The script scores the mention text
+only; the usage flag and the context are scored by review.
+
+</Recipe>
+
+<Recipe title="6.3 Set thresholds and deduplicate" level="AI-ready" skills="Developer" time="Half a day">
+
+**Result:** the confidence threshold is chosen on the sample for the use
+the counts serve, and each document has one record per distinct
+mention.
+
+1. Compute precision and recall on the sample at several thresholds of
+   the extractor's confidence, and choose the threshold for the use the
+   counts serve: a higher one for a published report, a lower one for a
+   review queue.
+2. Deduplicate within a document with the program's
+   `deduplicate_extraction`, which merges repeated mentions of the same
+   dataset, clusters acronyms with their long forms ("HBS" with
+   "Household Budget Survey 2021"), and keeps the context windows.
+3. Keep the mention count after deduplication as the secondary figure
+   next to the document count ([chapter 1](./define.mdx), recipe 1.3).
+
+**Worked example.** On the labelled sample, a threshold of 0.5 gives a
+precision of 0.92 and a recall of 0.92. Raising it to 0.6 removes the
+"food security report" false positive and gives a precision of 1.00
+with the same recall, because no true mention in the sample scored
+below 0.6. The developer sets 0.6 for the published report and 0.4 for
+the review queue, where a missed mention costs more than a wrong one.
+Deduplication then merges the article's "Household Budget Survey 2021"
+and "HBS" into one mention with both forms and both context windows, so
+that the article counts as one use of the survey with two mentions.
+
+**What this does not do.** A threshold trades precision for recall; it
+does not improve the model. Recurring misses of one kind (datasets named
+as frames, mentions in the national language) call for additions to the
+labelled sample and, at the AI-native level, for adapting the model.
+
+</Recipe>
+
+## Implementation options
+
+- **Extractor:** the program's `ai4data.data_use` package (GLiNER with the `ai4data/datause-extraction` adapter), run locally; keyword search over canonical names as the foundational method.
+- **Labelling:** a spreadsheet with document, sentence, and mention; two labellers; agreement measured.
+- **Measures:** precision, recall, and F1 at the mention level; the same per document type and language.
+- **Deduplication:** the program's `deduplicate_extraction` (overlap filtering, acronym clustering, fuzzy clusters).
+
+## World Bank examples
+
+- [Monitoring of Data Use](/docs/data_use/) documents the extractor, its output fields, and the deduplication step, with the implementation files in the repository.
+- The program publishes its extraction adapter on Hugging Face (`ai4data/datause-extraction`) for reuse.
+
+## Resources
+
+- [Monitoring of Data Use](/docs/data_use/): the program's extraction package, with `extract_from_text`, `extract_from_document`, and `deduplicate_extraction`.
+- [GLiNER](https://arxiv.org/abs/2311.08526) and the [ai4data/datause-extraction adapter](https://huggingface.co/ai4data/datause-extraction): the zero-shot named-entity model and the adapter trained for dataset mentions.
+- [Label Studio](https://labelstud.io/): open-source text annotation for the labelled sample, with inter-annotator agreement.
+- [scikit-learn classification metrics](https://scikit-learn.org/stable/modules/model_evaluation.html): precision, recall, and F1 as computed in the scoring script, with the definitions.
+- [Coleridge Initiative "Show US the Data" competition](https://www.kaggle.com/c/coleridgeinitiative-show-us-the-data): a public benchmark of dataset-mention detection in papers, for comparison of methods.
+
+## Common mistakes
+
+- **Trusting the model's scores.** A reported recall from another corpus is not the organization's recall; measure on its documents.
+- **Threshold chosen by eye.** The sample shows what each threshold costs.
+- **Counting duplicates.** The same survey mentioned ten times in one paper is one use.
+- **English only.** A labelled sample in the national language is the only evidence that the extractor works there.
+
+## Verification
+
+- **Extraction.** Every collected document has a mentions file, with the model, the adapter, and the threshold recorded.
+- **Measurement.** Precision and recall per document type and language have been measured on the labelled sample, with the date.
+- **Deduplication.** A sample of documents shows one record per distinct mention.
+
+## Checklist
+
+<Checklist id="monitoring-data-use-detect" items={[
+  'Extractor run on every collected document',
+  'Mentions stored as JSON lines with document, text, context, and fields',
+  'Model, adapter, and threshold recorded per run',
+  'Labelled sample across document types and languages, two labellers',
+  'Precision and recall measured and kept with the model version',
+  'Threshold chosen on the sample; mentions deduplicated per document',
+]} />

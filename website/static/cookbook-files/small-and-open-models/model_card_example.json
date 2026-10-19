@@ -1,0 +1,17 @@
+{
+  "model_id": "example-org/stats-coder-3b",
+  "base_model": "an open-weight 3B instruction model",
+  "version": "1.2.0",
+  "weights_sha256": "9a129038d9a00aed0cf6a7ea059ca50a813449061ab87848cf1a13eafdf33b2c",
+  "license": "Apache-2.0",
+  "license_url": "https://www.apache.org/licenses/LICENSE-2.0",
+  "languages": ["en", "fr", "sw"],
+  "intended_use": "Coding of open-text occupation and industry responses to ISCO-08 and ISIC Rev. 4 for the organization's surveys, with a confidence per code and human review of the routed share.",
+  "out_of_scope_use": "Any task on respondents' free text other than coding; any use without the confidence threshold and the re-coded sample.",
+  "training_data": "Fine-tuned on 48,000 coder-labelled responses from the organization's 2023 to 2025 labour force surveys; no external data; records never left the organization.",
+  "evaluation": {"suite": "coding-suite v3", "date": "2026-09-20", "four_digit_accuracy_auto_share": 0.93, "one_digit_accuracy": 0.98, "coverage_at_threshold_0.80": 0.61},
+  "known_limitations": "Local occupations absent from the index; lower accuracy on Swahili responses (0.87 at 4 digits).",
+  "hardware": "Runs on one 24 GB GPU at 4-bit quantization or on CPU for batch jobs.",
+  "contact": "methods@stats.example",
+  "release_date": "2026-09-25"
+}

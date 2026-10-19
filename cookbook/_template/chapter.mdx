@@ -1,0 +1,75 @@
+---
+id: {{CHAPTER_SLUG}}
+title: "{{CHAPTER_N}}. {{CHAPTER_TITLE}}"
+sidebar_label: "{{CHAPTER_N}}. {{CHAPTER_SHORT}}"
+sidebar_position: {{CHAPTER_POSITION}}
+description: {{CHAPTER_DESCRIPTION}}
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# {{CHAPTER_N}}. {{CHAPTER_TITLE}}
+
+**Question:** {{CHAPTER_QUESTION}}
+
+## Rationale
+
+{/* Why the question matters. Two or three paragraphs, declarative. */}
+
+## Target state
+
+- {/* The condition the chapter aims at, as a list. */}
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | |
+| **AI-ready** | |
+| **AI-native** | |
+
+:::info[Running example]
+{/* What this chapter does to the running example. */}
+:::
+
+## Recipes
+
+<Recipe title="{{CHAPTER_N}}.1 Imperative title naming the result" level="Foundational" skills="Who can do this" time="How long">
+
+**Result:** one sentence on what exists when the recipe is done.
+
+1. Step.
+2. Step, with code or a template where useful.
+3. How to check that it worked.
+
+**What this does not do.** Where the example stops and what the full version adds.
+
+</Recipe>
+
+## Implementation options
+
+- {/* Open standards and patterns, with alternatives. */}
+
+## World Bank examples
+
+- {/* Program workstreams, tools, and reference implementations, with links. Remove the section if none apply. */}
+
+## Resources
+
+- {/* External tools, guides, standards documents, and example implementations a reader needs to carry out the recipes, one line each: what it is and what it is used for here. Link every item. */}
+
+## Common mistakes
+
+- **Name the mistake.** One sentence on why it costs something.
+
+## Verification
+
+- **Name the check:** how to run it and what a pass looks like.
+
+## Checklist
+
+<Checklist id="{{ID}}-{{CHAPTER_SLUG}}" items={[
+  'First item',
+  'Second item',
+]} />

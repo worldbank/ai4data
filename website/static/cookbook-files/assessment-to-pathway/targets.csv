@@ -1,0 +1,13 @@
+dimension,target_level,reason
+1.1,C,An approved AI strategy and a governance board are conditions for every component the pathway adds
+1.2,C,The legal review of the statistics act and the licence positions have to be in place before data are served to AI systems
+1.3,B,A first data engineer and AI literacy for curators and methodologists; specialized expertise follows in a later cycle
+1.4,B,A model server and a development environment; cloud and privacy-preserving techniques follow later
+1.5,B,A budget line for the components and a cost record; lifecycle funding is a later cycle
+1.6,B,Participation in the peer network and one governed partnership
+2.1,C,Complete records in standard schemas with published code lists are the foundation of every later dimension
+2.2,C,Status codes and a revisions log on every series and a quality procedure that covers model-assisted steps
+2.3,C,A catalog with stable URLs and identifiers and search by meaning
+2.4,C,A documented API with provenance in every response and bulk access
+2.5,B,A first MCP pilot on the API once the foundations are in place
+2.6,C,A licence in every record in machine-readable form with the AI-use position stated

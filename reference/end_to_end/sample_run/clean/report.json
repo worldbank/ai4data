@@ -1,0 +1,162 @@
+{
+  "level": "foundational",
+  "records": [
+    {
+      "kind": "indicator",
+      "idno": "FS_UNDERNOURISH_PCT",
+      "published": true,
+      "structure_errors": [],
+      "missing_fields": [],
+      "validity_issues": []
+    },
+    {
+      "kind": "indicator",
+      "idno": "ED_PRIMARY_NER_PCT",
+      "published": true,
+      "structure_errors": [],
+      "missing_fields": [],
+      "validity_issues": []
+    },
+    {
+      "kind": "indicator",
+      "idno": "HE_U5_MORT_RATE",
+      "published": true,
+      "structure_errors": [],
+      "missing_fields": [],
+      "validity_issues": []
+    },
+    {
+      "kind": "indicator",
+      "idno": "LF_UNEMP_PCT",
+      "published": false,
+      "structure_errors": [],
+      "missing_fields": [
+        "series_description.definition_long"
+      ],
+      "validity_issues": []
+    },
+    {
+      "kind": "indicator",
+      "idno": "PV_HEADCOUNT_NPL_PCT",
+      "published": true,
+      "structure_errors": [],
+      "missing_fields": [],
+      "validity_issues": []
+    },
+    {
+      "kind": "microdata",
+      "idno": "EX-LFS-2025-Q2",
+      "published": true,
+      "structure_errors": [],
+      "missing_fields": [],
+      "validity_issues": []
+    }
+  ],
+  "published": [
+    "FS_UNDERNOURISH_PCT",
+    "ED_PRIMARY_NER_PCT",
+    "HE_U5_MORT_RATE",
+    "PV_HEADCOUNT_NPL_PCT",
+    "EX-LFS-2025-Q2"
+  ],
+  "files": [
+    "catalog/records/FS_UNDERNOURISH_PCT.json",
+    "catalog/values/FS_UNDERNOURISH_PCT.csv",
+    "catalog/jsonld/FS_UNDERNOURISH_PCT.jsonld",
+    "catalog/records/ED_PRIMARY_NER_PCT.json",
+    "catalog/values/ED_PRIMARY_NER_PCT.csv",
+    "catalog/jsonld/ED_PRIMARY_NER_PCT.jsonld",
+    "catalog/records/HE_U5_MORT_RATE.json",
+    "catalog/values/HE_U5_MORT_RATE.csv",
+    "catalog/jsonld/HE_U5_MORT_RATE.jsonld",
+    "catalog/records/PV_HEADCOUNT_NPL_PCT.json",
+    "catalog/values/PV_HEADCOUNT_NPL_PCT.csv",
+    "catalog/jsonld/PV_HEADCOUNT_NPL_PCT.jsonld",
+    "catalog/records/EX-LFS-2025-Q2.json",
+    "catalog/jsonld/EX-LFS-2025-Q2.jsonld",
+    "catalog/index.json"
+  ],
+  "nada": [],
+  "tool_calls": [
+    {
+      "tool": "search_catalog",
+      "arguments": {
+        "query": "undernourishment hunger food",
+        "limit": 3
+      },
+      "ok": true
+    },
+    {
+      "tool": "get_record",
+      "arguments": {
+        "idno": "FS_UNDERNOURISH_PCT"
+      },
+      "ok": true
+    },
+    {
+      "tool": "get_values",
+      "arguments": {
+        "series": "FS_UNDERNOURISH_PCT",
+        "ref_area": "NAT"
+      },
+      "ok": true
+    },
+    {
+      "tool": "get_values",
+      "arguments": {
+        "series": "HE_U5_MORT_RATE",
+        "ref_area": "NAT"
+      },
+      "ok": true
+    },
+    {
+      "tool": "get_values",
+      "arguments": {
+        "series": "ED_PRIMARY_NER_PCT",
+        "ref_area": "NAT"
+      },
+      "ok": true
+    },
+    {
+      "tool": "get_values",
+      "arguments": {
+        "series": "LF_UNEMP_PCT",
+        "ref_area": "NAT"
+      },
+      "ok": false
+    }
+  ],
+  "question": "What are the latest published figures for the prevalence of undernourishment, the under-five mortality rate, the net enrolment rate in primary education, and the unemployment rate?",
+  "answer": "In 2024, the prevalence of undernourishment was <claim id=\"FS_UNDERNOURISH_PCT:NAT:2024\" policy=\"rounded\" decimals=\"1\">7.6</claim> % of population, according to the release of 2025-03-14. In 2020, the under-five mortality rate was <claim id=\"HE_U5_MORT_RATE:NAT:2020\" policy=\"rounded\" decimals=\"0\">41</claim> deaths per 1000 live births, according to the release of 2022-11-30. In 2024, the net enrolment rate in primary education was <claim id=\"ED_PRIMARY_NER_PCT:NAT:2024\" policy=\"rounded\" decimals=\"1\">92.0</claim> % of age group, according to the release of 2025-02-01. No published series for the unemployment rate is in the catalog, so no figure is given for it.",
+  "answer_source": "composed by the template",
+  "verification": [
+    {
+      "number": "7.6",
+      "claim_id": "FS_UNDERNOURISH_PCT:NAT:2024",
+      "policy": "rounded",
+      "outcome": "verified",
+      "detail": "matches 7.6 for 2024 under rounded"
+    },
+    {
+      "number": "41",
+      "claim_id": "HE_U5_MORT_RATE:NAT:2020",
+      "policy": "rounded",
+      "outcome": "verified",
+      "detail": "matches 41.0 for 2020 under rounded"
+    },
+    {
+      "number": "92.0",
+      "claim_id": "ED_PRIMARY_NER_PCT:NAT:2024",
+      "policy": "rounded",
+      "outcome": "verified",
+      "detail": "matches 92.0 for 2024 under rounded"
+    }
+  ],
+  "counts": {
+    "verified": 3,
+    "flagged": 0,
+    "unmarked": 0
+  },
+  "caveat": "A verified number matches the record it cites under the stated policy. The check says nothing about whether the record is the right one for the question, whether the statistical method behind it is sound, or whether the sentence around the number interprets it correctly.",
+  "result": "PASS"
+}

@@ -1,0 +1,6 @@
+client_id,name,tier,requests_per_minute,daily_quota,terms_accepted,contact
+pub-anon,Unregistered public clients,public,30,2000,,
+k-7f3a,Ministry of Planning dashboard,registered,120,20000,2026-06-02,planning@example.gov
+k-9c1d,University research group,registered,120,20000,2026-07-15,lab@uni.example
+k-2b8e,News desk assistant,registered,60,5000,,desk@news.example
+k-4d0f,Regional development bank,partner,600,100000,2026-05-20,data@rdb.example

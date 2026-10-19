@@ -17,7 +17,7 @@ This manual is the operational reference for installing, configuring, and runnin
 - [The Client API](client-api.md) — constructor, factories, submission, job management
 - [Jobs](jobs.md) — lifecycle, waiting, cancellation, cleanup
 - [Advanced Usage](advanced-usage.md) — team presets, custom manifests, exclusion rules
-- [AI Suggestion Review Board](review-board.md) — triage pipeline output in the browser
+- [Reviewing the output](review-board.md) — the Metadata Editor's Issues page, or a triage table
 - [End-to-End Workflow](end-to-end-workflow.md) — catalogue review cycle
 - [Troubleshooting & FAQ](troubleshooting.md) — common problems and fixes
 - [Quick API Reference](appendix-api-reference.md)

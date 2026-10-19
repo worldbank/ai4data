@@ -1,0 +1,107 @@
+---
+id: start-here
+title: Self-assessment
+sidebar_label: Self-assessment
+sidebar_position: 1
+description: A five-minute self-assessment that places a microdata team's synthetic data practice at a maturity level in each chapter and suggests a reading order.
+---
+
+import SelfAssessment from '@site/src/components/Cookbook/SelfAssessment';
+
+# Self-assessment
+
+Select the statement that best describes the team today, one per chapter.
+The result shows a level for each chapter and the chapters to read first.
+Answers are stored in this browser only.
+
+<SelfAssessment
+  base="/cookbook/synthetic-data-for-sharing/"
+  questions={[
+    {
+      id: 'purpose',
+      title: '1. Purpose',
+      question: 'Is the purpose of synthetic files stated?',
+      options: [
+        'No synthetic files, or files produced without a stated purpose.',
+        'A purpose statement exists and one file is produced for code development and teaching.',
+        'Files for the main surveys are produced from demand with intended uses recorded and labelled everywhere.',
+        'Files are produced at each release as a pipeline stage with their use tracked.',
+      ],
+    },
+    {
+      id: 'method',
+      title: '2. Method',
+      question: 'How is the synthesis method chosen?',
+      options: [
+        'Whatever tool was at hand.',
+        'A sequential method with the seed recorded.',
+        'Methods are chosen by a written rule from data and uses, compared on the same measures, with parameters and alternatives recorded.',
+        'Relational generators for multi-table surveys, tuned by the target analyses, re-run at each release.',
+      ],
+    },
+    {
+      id: 'utility',
+      title: '3. Utility',
+      question: 'How is utility measured?',
+      options: [
+        'It is not.',
+        'Marginals and two example analyses compared.',
+        'Marginals, associations, and the target analyses of the intended uses, against thresholds, attached to the record.',
+        'The report runs as a pipeline stage and is published with the file.',
+      ],
+    },
+    {
+      id: 'risk',
+      title: '4. Risk',
+      question: 'How is disclosure risk measured?',
+      options: [
+        'Synthetic is assumed safe.',
+        'Exact copies are checked and a file with copies goes back to the method.',
+        'Closest-record distance and attribute inference are compared with baselines, limits are set by the disclosure control unit, and the review is recorded.',
+        'Membership inference and formal methods are added where the tier requires, as a pipeline stage.',
+      ],
+    },
+    {
+      id: 'relational',
+      title: '5. Relational',
+      question: 'How are linked tables handled?',
+      options: [
+        'Tables are synthesized separately or not at all.',
+        'The person table is synthesized with household variables; integrity and structure are checked.',
+        'A relational generator is used; survey rules are added to the check; structural distributions are compared.',
+        'Panels are synthesized wave by wave with transitions checked; checks run as a pipeline stage.',
+      ],
+    },
+    {
+      id: 'release',
+      title: '6. Release',
+      question: 'How is a release documented?',
+      options: [
+        'Files are shared without a record.',
+        'A synthesis record from the template; the file is labelled and linked to the real survey.',
+        'The record is checked; reports attached; the release decision recorded with reviewers, dates, tier, and review date.',
+        'Records are generated from the pipeline and published with the reports.',
+      ],
+    },
+    {
+      id: 'workflow',
+      title: '7. Workflow',
+      question: 'How do synthetic files enter the workflow?',
+      options: [
+        'They sit in a folder.',
+        'Offered on the survey page with guidance; downloads counted.',
+        'Offered in the application and enclave workflows; effect measured; feedback collected.',
+        'Served through the same interfaces as public data, labelled, with use tracked.',
+      ],
+    },
+  ]}
+/>
+
+## Interpretation of the result
+
+- Chapter 1 first: a purpose statement and a label take a day and prevent
+  the misuse that makes synthetic data a risk.
+- Chapters 3 and 4 before any release: a file nobody measured is a file
+  nobody can vouch for.
+- Chapter 7 is where the value appears; a measured file nobody is offered
+  changes nothing.

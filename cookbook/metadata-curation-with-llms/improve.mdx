@@ -1,0 +1,215 @@
+---
+id: improve
+title: "8. Improvement from decisions"
+sidebar_label: "8. Improve"
+sidebar_position: 9
+description: How curator decisions improve the system over time, through acceptance rates and an error taxonomy tracked per field and model, an evaluation set built from the decisions that every prompt or model change has to pass, and the choice of the smallest model that passes for each task.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 8. Improvement from decisions
+
+**Question:** How do curator decisions improve the system?
+
+## Rationale
+
+Every decision a curator records is a labelled example: this draft was
+accepted, this one edited in this way, this flag was wrong for this
+reason. Collected, they measure the system (acceptance rates per field
+and model), explain its failures (an error taxonomy), and test changes to
+it (an evaluation set that a new prompt or model has to pass). Without
+them, prompt changes are guesses and model changes are risks. With them,
+the organization can also choose the smallest model that does each task
+well enough, which is what makes routine curation affordable.
+
+## Target state
+
+- Acceptance rates and the error taxonomy are tracked per field, per task, and per model, each period.
+- An evaluation set of records with curator decisions is kept, and no prompt, manifest, or model change ships without passing it.
+- Routine tasks run on the smallest model that passes, and cost per record is known.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Review acceptance rates and rejection reasons each period and change prompts accordingly. |
+| **AI-ready** | Build the evaluation set from decisions; gate prompt and manifest changes on it; track the error taxonomy per field and model. |
+| **AI-native** | Compare models on the evaluation set, run routine tasks on the smallest that passes, report cost per record, and re-evaluate on each model release. |
+
+:::info[Running example]
+After the first period, the curator's decisions show keywords and
+definitions accepted or edited and one unit flag rejected as wrong. The
+rejection reason ("the flag was wrong; the unit is correct") becomes an
+error class, the critic agent's instructions are adjusted, and the change
+is tested on the decided records before it ships.
+:::
+
+## Recipes
+
+<Recipe title="8.1 Track acceptance and the error taxonomy" level="Foundational" skills="Curator; Python" time="One hour per period">
+
+**Result:** the unit has a time series of acceptance rates per field,
+task, and model, and a coded list of why suggestions fail, from which it
+can see what to fix.
+
+1. Run the acceptance script of [chapter 3](./draft.mdx) on each
+   period's decisions and keep the output with the model, prompt, and
+   manifest versions.
+2. Code rejection and edit reasons into a short taxonomy: wrong flag,
+   invented fact, wrong vocabulary term, style, too long, missed the
+   field's purpose. Count per class per period.
+3. Read the table. A rising "wrong flag" count after a model change, or
+   a field with a low rate, points to the prompt, the rubric, or the
+   model for that field.
+4. Report the rates with the curation unit's other measures (records
+   completed, time per record).
+
+**Worked example.** After three months the table has three columns of
+rates per field. Definitions run at 0.85, 0.88, and 0.90. Keywords run
+at 0.95 throughout. Unit flags run at 0.40, 0.45, and 0.70, with the
+jump in the third month after the critic agent's instructions were
+changed. The taxonomy counts for the quarter are: wrong flag 11,
+invented fact 4, wrong vocabulary term 3, style 9, too long 2. The head
+of the unit reads the "style" count as a prompt problem, adds the
+catalog's style rules to the definition prompt, and watches the count
+the following month. The unit's time per completed record has fallen
+from 25 minutes to 9.
+
+**What this does not do.** Acceptance rates measure agreement between
+curators and the model. Two curators who disagree with each other put a
+ceiling on what the rate can show, and a sample decided by two curators
+each period measures that ceiling.
+
+</Recipe>
+
+<Recipe title="8.2 Gate changes on an evaluation set" level="AI-ready" skills="Developer; curator" time="One day to set up; part of each change">
+
+**Result:** no change to a prompt, an agents manifest, a rubric, or a
+model goes live before its effect has been measured on a fixed set of
+records whose right answers are known.
+
+An evaluation set is a collection of records with their suggestions and
+the curators' decisions on them. A candidate change is run on the set,
+and its suggestions are compared with the decisions: does it still make
+the suggestions curators accepted, and has it stopped making the ones
+they rejected?
+
+1. Build the set from decided records: the record, the suggestion, and
+   the decision with the final text, across fields and error classes.
+   Fifty to a hundred items is a start.
+2. For a candidate change, re-run the suggestions on the set and score
+   them: the share that match an accepted suggestion, the similarity to
+   edited final texts, and the share of previously rejected flags that
+   the change no longer makes.
+3. Ship when the scores are at or above the current version's on every
+   field. Investigate when a field drops.
+4. Add each period's decisions to the set and hold out a part for the
+   next gate, as the dissemination cookbook's
+   [evaluation chapter](/cookbook/ai-ready-dissemination/evaluate) does
+   for search.
+
+**Worked example.** The evaluation set after the first quarter holds 80
+decided items: 30 definitions, 25 keyword sets, 15 flags, and 10
+translations, each with the suggestion and the curator's decision and
+final text. When the developer proposes the lighter single-pass manifest
+to cut cost, it is run on the 80 items. It reproduces 27 of the 30
+accepted definitions and 24 of the 25 keyword sets, but it makes 6 of
+the 11 flags that curators had rejected as wrong, where the default
+manifest made 2. The change is not shipped. The developer instead keeps
+the default manifest and tightens the critic's instruction, which on the
+same set makes 1 of the rejected flags and keeps every accepted
+suggestion, and that change ships.
+
+**What this does not do.** The set measures agreement with past
+decisions. A change that improves on a new kind of record is not
+credited until such records enter the set, which is why the set grows.
+
+</Recipe>
+
+<Recipe title="8.3 Choose the model per task and know the cost" level="AI-native" skills="Developer" time="One to two days per task">
+
+**Result:** each task runs on the smallest model that passes the
+evaluation set, and the cost per record, which is the model calls plus
+the review time, is known and reported.
+
+1. Test candidate models from small to large on the evaluation set, per
+   task: keywords and vocabulary proposals first (short outputs suit
+   small models), then definitions, then the review pipeline. The
+   program's tools accept any provider, including local open-weight
+   models (models whose files the organization downloads and runs
+   itself).
+2. Stop at the first model that meets the field's threshold, and record
+   the scores of every model tried.
+3. Use batch processing for catalog-scale runs; several providers offer
+   asynchronous batch endpoints at lower cost. Cache suggestions so that
+   a re-run after a decision does not re-draft what was accepted.
+4. Report cost per record per task per period. The review time is the
+   larger part, and the acceptance rate is what reduces it.
+
+**Worked example.** For keyword drafting, a small open-weight model run
+on the organization's server reaches an acceptance of 0.93 on the
+evaluation set, against 0.95 for the hosted model, so the small model
+takes the task at no token cost. For definitions, the small model
+reaches 0.71 and a mid-sized open-weight model 0.86, against 0.90 for
+the hosted model; the mid-sized model is chosen, because it passes the
+threshold of 0.85 and can also process unpublished records. The review
+pipeline stays on the hosted model, whose batch endpoint costs about
+two cents per record. The quarterly cost report reads: keywords 0 cents
+of model cost and 1 minute of review per record; definitions 0.4 cents
+and 4 minutes; review pipeline 2 cents and 6 minutes. Review time is
+nine tenths of the total.
+
+**What this does not do.** Model choice follows the evaluation set. A
+set of 50 items distinguishes large differences, and close calls between
+models need more items. The confidentiality rule of
+[chapter 1](./scope.mdx) limits the candidates for unpublished records
+to models the organization runs.
+
+</Recipe>
+
+## Implementation options
+
+- **Measures:** acceptance rate per field and model; error taxonomy counts; agreement between curators on a sample.
+- **Evaluation set:** decided records with final texts, versioned, with a held-out part; the same discipline as the question sets of the other cookbooks.
+- **Models:** provider-agnostic client (litellm); small and local models for routine tasks; batch endpoints for scale ([Efficient and Inclusive AI](/docs/inclusive-ai/)).
+- **Governance:** the AI component register with the model per task and the review date.
+
+## World Bank examples
+
+- [Generative AI for Metadata Quality](/docs/metadata-quality/generative-ai-for-metadata-quality) names feedback loops from reviewer corrections and human-in-the-loop review among the practices the program recommends.
+- [Efficient and Inclusive AI](/docs/inclusive-ai/) compares model sizes by task, describes batch processing, and shows the provider-agnostic configuration with a local model.
+- The [Metadata Reviewer](/docs/metadata-reviewer/overview) ships alternative agents manifests, which are the kind of change the evaluation set gates.
+
+## Resources
+
+- [Efficient and Inclusive AI](/docs/inclusive-ai/): model size by task, batch processing, and provider-agnostic configuration with local models.
+- [litellm](https://github.com/BerriAI/litellm): one client for hosted and local models, so that candidates can be compared on the same evaluation set.
+- [Evaluation chapter of the dissemination cookbook](/cookbook/ai-ready-dissemination/evaluate): the question-set discipline (versioning, held-out part, gates) applied here to decided records.
+- [Metadata Reviewer agents manifests](/docs/metadata-reviewer/user-manual/appendix-agents-manifest): the kind of change the evaluation set gates.
+- [Acceptance script](pathname:///cookbook-files/metadata-curation-with-llms/score_suggestions.py): the per-period measure.
+
+## Common mistakes
+
+- **Changing prompts by intuition.** Every change is tested on decided records or it is a guess.
+- **One model for everything.** Keywords do not need the model that definitions need; cost follows.
+- **Decisions not collected.** The system cannot improve from what it does not record.
+- **Evaluation set frozen.** New record types and new error classes enter the set each period.
+
+## Verification
+
+- **Rates.** Acceptance per field and model is reported each period, with the error taxonomy counts.
+- **Gate.** The last change to a prompt, manifest, or model has scores on the evaluation set at or above the previous version.
+- **Cost.** The cost per record per task is reported, with the model used.
+
+## Checklist
+
+<Checklist id="metadata-curation-with-llms-improve" items={[
+  'Acceptance rates tracked per field, task, and model',
+  'Rejection and edit reasons coded into an error taxonomy',
+  'Evaluation set built from decisions, versioned, with a held-out part',
+  'Prompt, manifest, rubric, and model changes gated on the set',
+  'Smallest passing model chosen per task; scores of all candidates kept',
+  'Cost per record per task reported',
+]} />

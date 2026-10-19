@@ -1,0 +1,67 @@
+{
+  "type": "document",
+  "name": "recommended document profile",
+  "description": "Recommended fields of the World Bank document schema (Dublin Core based) at each maturity level, as dotted paths, with the reason each field matters. Levels are cumulative. The schema itself requires only document_description.title_statement.idno and .title. An office can remove a field from a level, but each removal has the cost named in its reason.",
+  "levels": {
+    "foundational": [
+      "document_description.title_statement.idno",
+      "document_description.title_statement.title",
+      "document_description.authors",
+      "document_description.date_published",
+      "document_description.abstract",
+      "document_description.type",
+      "document_description.languages",
+      "document_description.publisher",
+      "document_description.url"
+    ],
+    "ai-ready": [
+      "document_description.identifiers",
+      "document_description.keywords",
+      "document_description.topics",
+      "document_description.ref_country",
+      "document_description.temporal_coverage",
+      "document_description.license",
+      "document_description.bibliographic_citation"
+    ],
+    "ai-native": [
+      "document_description.data_sources",
+      "document_description.toc_structured"
+    ]
+  },
+  "fields": {
+    "document_description.title_statement.idno": "The stable identifier for citation and retrieval.",
+    "document_description.title_statement.title": "The title shown in search results and answers.",
+    "document_description.authors": "Part of the citation.",
+    "document_description.date_published": "Freshness; an answer should say when the report was published.",
+    "document_description.abstract": "What the document says; the main text that search by meaning reads.",
+    "document_description.type": "Report, working paper, methodological note: tells a system how much weight to give it.",
+    "document_description.languages": "Needed for multilingual search and for answering in the right language.",
+    "document_description.publisher": "Part of the citation.",
+    "document_description.url": "Where the document can be retrieved (chapter 2).",
+    "document_description.identifiers": "A DOI makes the document citable and its citations countable (chapters 5 and 7).",
+    "document_description.keywords": "The words users search with.",
+    "document_description.topics": "Topic from a published list; drives filters.",
+    "document_description.ref_country": "Country coverage, for filtering and for answers.",
+    "document_description.temporal_coverage": "The period the document describes, so an answer does not present old figures as current.",
+    "document_description.license": "States what reuse is allowed.",
+    "document_description.bibliographic_citation": "A formatted citation ready to copy.",
+    "document_description.data_sources": "The datasets the document used, with links; connects documents to data for monitoring of use (chapter 7).",
+    "document_description.toc_structured": "A machine-readable table of contents, so a system can cite a section or extract a chapter."
+  },
+  "rules": {
+    "id": "document_description.title_statement.idno",
+    "periods": [
+      "document_description.date_published",
+      "document_description.date_created",
+      "document_description.date_modified"
+    ],
+    "urls": [
+      "document_description.url",
+      "document_description.license.uri",
+      "document_description.data_sources.uri"
+    ],
+    "min_words": {"document_description.abstract": 30},
+    "not_equal": [["document_description.title_statement.title", "document_description.abstract"]],
+    "placeholders": ["document_description.type"]
+  }
+}

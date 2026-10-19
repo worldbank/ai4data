@@ -1,0 +1,21 @@
+item_id,text,label_a,label_b
+q01,"unemployment rate 2025",LF_UNEMP_PCT,LF_UNEMP_PCT
+q02,"jobless rate latest",LF_UNEMP_PCT,LF_UNEMP_PCT
+q03,"how many children die before five",HE_U5_MORT_RATE,HE_U5_MORT_RATE
+q04,"infant mortality",NONE,HE_U5_MORT_RATE
+q05,"poverty line share",PV_HEADCOUNT_NPL_PCT,PV_HEADCOUNT_NPL_PCT
+q06,"hunger prevalence",FS_UNDERNOURISH_PCT,FS_UNDERNOURISH_PCT
+q07,"primary school attendance",ED_PRIMARY_NER_PCT,NONE
+q08,"taux de chômage",LF_UNEMP_PCT,LF_UNEMP_PCT
+q09,"inflation rate",NONE,NONE
+q10,"net enrolment primary",ED_PRIMARY_NER_PCT,ED_PRIMARY_NER_PCT
+q11,"undernourished population",FS_UNDERNOURISH_PCT,FS_UNDERNOURISH_PCT
+q12,"child mortality trend",HE_U5_MORT_RATE,HE_U5_MORT_RATE
+q13,"people below poverty line",PV_HEADCOUNT_NPL_PCT,PV_HEADCOUNT_NPL_PCT
+q14,"labour force size",NONE,LF_UNEMP_PCT
+q15,"school enrolment rate",ED_PRIMARY_NER_PCT,ED_PRIMARY_NER_PCT
+q16,"mortalité des moins de cinq ans",HE_U5_MORT_RATE,HE_U5_MORT_RATE
+q17,"GDP growth",NONE,NONE
+q18,"food insecurity",FS_UNDERNOURISH_PCT,FS_UNDERNOURISH_PCT
+q19,"unemployment by region",LF_UNEMP_PCT,LF_UNEMP_PCT
+q20,"poverty headcount 2022",PV_HEADCOUNT_NPL_PCT,PV_HEADCOUNT_NPL_PCT

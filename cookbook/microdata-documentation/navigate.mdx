@@ -1,0 +1,269 @@
+---
+id: navigate
+title: "5. Navigation of large dictionaries"
+sidebar_label: "5. Navigate"
+sidebar_position: 6
+description: How users and AI systems find the right variable among hundreds, through thematic variable groups, a question set that measures the variable search, and search by meaning across surveys.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 5. Navigation of large dictionaries
+
+**Question:** Can AI find the right variable among hundreds?
+
+## Rationale
+
+A household survey has 500 to 1,000 variables, and an organization has
+dozens of surveys. Users look for a variable, in their own words, often
+without knowing which survey holds it: "age of household head", "hours
+worked last week", "is the person looking for work". A dictionary read from
+top to bottom does not answer that, and a keyword search over variable
+names finds `jobsearch` only for users who guess the name.
+
+Two things make a large dictionary navigable: thematic groups, which let a
+user browse by topic, and variable-level search by meaning, which lets a
+user ask. Both read the labels, question text, and concepts from
+[chapters 3](./variables.mdx) and [4](./concepts.mdx).
+
+## Target state
+
+- Variables are organized into thematic groups in the catalog.
+- Variable search works over labels, question text, and concepts, by meaning as well as by keyword, and across surveys.
+- A known-variable question set measures the search, per language, and is re-run when the search or the documentation changes.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Publish the dictionary in the catalog with keyword search over variable names and labels. Group variables by questionnaire section. |
+| **AI-ready** | Generate thematic variable groups and review them. Write a known-variable question set and score the search with it. Index labels, question text, and concepts. |
+| **AI-native** | Add semantic variable search across surveys with a multilingual embedding model, score it against the baseline, and regenerate groups for every new survey. |
+
+:::info[Running example]
+Thirteen known-variable questions over the 18 variables of
+`EX-LFS-2025-Q2`. The keyword baseline finds 8 of the 10 English questions
+and neither French one, and misses "age of household member" because the
+label says "Age in completed years".
+:::
+
+## Recipes
+
+<Recipe title="5.1 Group variables into themes" level="AI-ready" skills="Data curator; Python for the automated version" time="Half a day per survey by hand; minutes with the pipeline, plus review">
+
+**Result:** the variables of a survey are organized into named groups by
+topic, so that a user can browse "Employment" or "Education" where
+before there was a list of 600 rows.
+
+1. By hand: group variables by the questionnaire section they come
+   from, then merge and rename groups by topic ("Household
+   composition", "Labour force", "Income"). Give each group a label, a
+   definition, and a universe.
+2. Automated: run the program's
+   [Metadata Augmentation](/docs/metadata-augmentation/) pipeline. It
+   represents each variable label as a vector (an embedding), clusters
+   the vectors, and asks a language model to name each cluster as a
+   group with a label, a definition, and the variables that belong.
+   The pipeline reads a dictionary CSV, JSON, or a NADA catalog:
+
+   ```python
+   from ai4data.metadata.augmentation import DataDictionaryAugmentor
+
+   augmentor = DataDictionaryAugmentor()
+   result = augmentor.augment("lfs_2025q2_dictionary.csv")
+   ```
+
+3. Review every proposed group. A curator accepts, renames, splits, or
+   merges. The pipeline's self-consistency check flags groups that the
+   model assigned differently on repeated runs, which is where review
+   starts.
+4. Store the groups in the study record (`variable_groups`, each with
+   an identifier, a label, a definition, a universe, and the variable
+   list) and import them into the catalog.
+
+**Worked example.** Run on the 18 variables of the running example, the
+pipeline proposes five groups. "Identification and weights" holds
+`hhid`, `pid`, and `weight`. "Household and demographics" holds
+`region`, `urban`, `relationship`, `sex`, and `age`. "Education" holds
+`educ` alone. "Labour force" holds `lfs_status`, `occupation`,
+`industry`, `hours`, `informal`, `q17b`, and `jobsearch`. "Income" holds
+`income`. The self-consistency check flags `informal`, which one run
+placed under "Income". The curator keeps it under "Labour force", writes
+a definition for each group, and sets the universe of "Labour force" to
+"persons aged 15 and over".
+
+**What this does not do.** The groups organize variables; they do not
+define concepts. A group named "Education" is a navigation aid, and the
+concept links of [chapter 4](./concepts.mdx) are what make `educ`
+comparable across surveys. The automated pipeline needs a language
+model, which can be a local open-weight one; see
+[Efficient and Inclusive AI](/docs/inclusive-ai/).
+
+</Recipe>
+
+<Recipe title="5.2 Measure variable search with a known-variable question set" level="AI-ready" skills="Data curator; speakers of each supported language; Python" time="One day for the first 30 questions">
+
+**Result:** for each language, two numbers say how well the catalog's
+variable search finds the variable a user is looking for. The scorer
+works with any search that returns a ranked list of variable names.
+
+The two numbers are Recall@5 (the share of questions for which the
+right variable is in the first five results) and MRR (the mean
+reciprocal rank: 1 when the right variable comes first, one half when
+it comes second, and so on, averaged). The question set is a CSV with
+one row per question:
+
+| Column | Meaning |
+|---|---|
+| `question_id`, `language` | The question's identifier and language |
+| `question` | The question as a user would type it |
+| `expected_name` | The variable that should come first |
+| `note` | Whether the question is a paraphrase, ambiguous, or unanswerable |
+
+```csv file=../../website/static/cookbook-files/microdata-documentation/variable_questions.csv
+```
+
+The scorer runs each question through a search and reports the two
+numbers. Its built-in search is a keyword overlap over the label, the
+question text, and the concept; the organization replaces the
+`search()` function with a call to the catalog's variable search:
+
+```python file=../../website/static/cookbook-files/microdata-documentation/score_variable_search.py
+```
+
+Output for the running example (keyword baseline):
+
+```text
+group    n    R@5    MRR
+all     12   0.67   0.60
+en      10   0.80   0.72
+fr       2   0.00   0.00
+```
+
+The first row scores all questions together, and the following rows
+score each language. The `n` column counts the questions with an
+expected variable, so the one unanswerable question is left out.
+
+1. Write the question set: questions the way users ask them, each with
+   the variable that should come first. Include paraphrases, questions
+   that are ambiguous between variables (hours in all jobs or in the
+   main job), and questions with no answer.
+2. Run the scorer.
+3. Read the misses. Here "employed or unemployed" fails because the
+   label says "Labour force status" and neither word appears in the
+   documentation, and both French questions fail because the dictionary
+   is in English. Each miss is a documentation fix (add a keyword or a
+   concept) or a search improvement (recipe 5.3), and the next run
+   shows which worked.
+4. Extend the set across surveys, so that it measures cross-survey
+   search, and keep it in version control.
+
+**Worked example.** The curator reads the two English misses. For "age
+of household member" the label says "Age in completed years", and the
+word "age" appears, so the miss comes from the ranking: three other
+variables mention "household" and outrank it. For "employed or
+unemployed" the label says "Labour force status" and the question text
+says "Derived from Q14 to Q18", so no word of the query appears
+anywhere. The curator adds the concept "employment status" and the
+keywords "employed; unemployed" to the `lfs_status` row. The next run
+finds both, and the English Recall@5 rises from 0.80 to 1.00, while the
+French questions still miss until the search of recipe 5.3 is in place.
+
+**What this does not do.** Twelve scored questions over one dictionary
+give a demonstration; 30 to 50 per language over several surveys give a
+measure. The questions in languages other than English were drafted
+without a native speaker and are marked as such in the file.
+
+</Recipe>
+
+<Recipe title="5.3 Add semantic variable search across surveys" level="AI-native" skills="Developer with Python" time="One to two weeks including evaluation">
+
+**Result:** the catalog's variable search returns `lfs_status` for
+"employed or unemployed" and `age` for "age of household member", across
+every survey in the catalog, and its scores are compared with the keyword
+baseline.
+
+Semantic search matches by meaning: each variable's documentation is
+turned into a vector (an embedding) by a language model, and the
+question is turned into one the same way, so that texts with similar
+meaning come out close together even when they share no words.
+
+1. Build the question set and baseline first (recipe 5.2).
+2. Embed each variable as one text: label, question text, concept, and
+   the survey title, with a multilingual sentence-embedding model. The
+   [PI-FT toolkit](/pift-toolkit/pipeline) fine-tunes such a model on
+   structured records of exactly this kind (short labelled fields) and
+   reports Recall@k, MRR, and nDCG.
+3. Combine the semantic ranking with the keyword ranking so that an
+   exact variable name still wins, and filter by survey, year, or
+   group.
+4. Re-run the scorer per language and keep the results with the model
+   name and the catalog version.
+5. [NADA AI](/tools#nada-ai) provides semantic search over a NADA
+   catalog's records and is being integrated into NADA. An organization
+   that runs NADA has this layer with the catalog, and the question set
+   measures it the same way.
+
+**Worked example.** The developer embeds each variable of the three
+documented surveys as one text, for example "Labour force status.
+Derived from Q14 to Q18. Employment status. Labour Force Survey 2025
+Q2", with a multilingual embedding model. For the French question
+"statut d'emploi", the semantic search ranks `lfs_status` first in both
+labour force survey rounds and the census employment variable third,
+although none of the three texts is in French. The scorer reports a
+French Recall@5 of 1.00 where the keyword baseline had 0.00, and the
+English scores stay at 1.00. The developer records the model name, the
+date, and the three catalog versions with the result.
+
+**What this does not do.** Semantic search finds variables whose
+documentation describes them. It cannot find a variable labelled with
+its name only, which is why [chapter 3](./variables.mdx) comes first.
+
+</Recipe>
+
+## Implementation options
+
+- **Variable groups:** DDI Codebook `varGrp`, in the World Bank schema as `variable_groups`; NADA displays them on the study page.
+- **Thematic grouping:** semantic clustering plus language-model curation (Metadata Augmentation), or questionnaire-section grouping by hand.
+- **Variable search:** keyword (BM25) over names and labels at the foundational level; dense retrieval with a multilingual embedding model, fine-tuned on the organization's records where a general model is not enough; both combined.
+- **Evaluation:** a versioned known-variable question set and the measures in [chapter 6 of the dissemination cookbook](/cookbook/ai-ready-dissemination/evaluate).
+
+## World Bank examples
+
+- [Metadata Augmentation](/docs/metadata-augmentation/) generates DDI-style variable groups with semantic clustering and language-model curation, with adapters for CSV, JSON, and NADA catalogs.
+- [Data Discoverability](/docs/data-discoverability/) and the [PI-FT toolkit](/pift-toolkit/pipeline) cover search by meaning over structured records and its evaluation.
+- The [Microdata Library](https://microdata.worldbank.org/) exposes variable-level search across its studies.
+
+## Resources
+
+- [Metadata Augmentation](/docs/metadata-augmentation/): thematic variable grouping with semantic clustering and model curation, with adapters for CSV, JSON, and NADA.
+- [Sentence Transformers](https://www.sbert.net/): multilingual embedding models for variable-level semantic search, and the training utilities to fine-tune one.
+- [rank_bm25](https://github.com/dorianbrown/rank_bm25): a small keyword retriever for the foundational level and the hybrid baseline.
+- [Data Discoverability](/docs/data-discoverability/) and the [PI-FT toolkit](/pift-toolkit/pipeline): the program's approach to search by meaning and its evaluation.
+- [Evaluation chapter of the dissemination cookbook](/cookbook/ai-ready-dissemination/evaluate): the measures and the question-set discipline used in recipe 5.2.
+
+## Common mistakes
+
+- **Groups generated and never reviewed.** A wrong group misleads more than no group; the review step is the recipe.
+- **Search over names only.** Users do not know the names; labels, question text, and concepts are what they search.
+- **Scores from one survey.** Cross-survey search is the hard case; the question set has to span surveys.
+- **One language tested.** A score of 0.80 in English and 0.00 in the national language is one system, as the baseline above shows.
+
+## Verification
+
+- **Groups.** Every variable belongs to a group, and a sample of groups has been reviewed by a subject-matter statistician.
+- **Search scores.** Recall@5 and MRR per language are compared with the baseline and kept with the date and the configuration.
+- **Cross-survey.** A query for a harmonized concept returns every survey that measures it.
+
+## Checklist
+
+<Checklist id="microdata-documentation-navigate" items={[
+  'Dictionary searchable in the catalog by name and label',
+  'Thematic variable groups generated or written, and reviewed',
+  'Groups stored in the study record and shown in the catalog',
+  'Known-variable question set written, per language',
+  'Search scored against the keyword baseline',
+  'Labels, question text, and concepts indexed by the search',
+  'Semantic variable search across surveys evaluated',
+]} />

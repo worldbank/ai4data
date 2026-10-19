@@ -47,6 +47,10 @@
 }
 
 @media screen and (max-width: 560px) {
+  .section {
+    padding: 3rem 0 0.5rem;
+  }
+
   .grid {
     grid-template-columns: 1fr;
   }

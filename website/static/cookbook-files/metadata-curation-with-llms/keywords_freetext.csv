@@ -1,0 +1,15 @@
+record_id,keyword
+PV_HEADCOUNT_NPL_PCT,poverty rate
+PV_HEADCOUNT_NPL_PCT,Poverty headcount
+PV_HEADCOUNT_NPL_PCT,poverty
+LF_UNEMP_PCT,unemployment
+LF_UNEMP_PCT,unemployment rates
+LF_UNEMP_PCT,labor force
+LF_UNEMP_PCT,jobless
+HE_U5_MORT_RATE,child mortality
+HE_U5_MORT_RATE,child mortalty
+HE_U5_MORT_RATE,health
+FS_UNDERNOURISH_PCT,food insecurity
+FS_UNDERNOURISH_PCT,hunger
+FS_UNDERNOURISH_PCT,undernourishment
+ED_PRIMARY_NER_PCT,education

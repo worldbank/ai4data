@@ -1,0 +1,240 @@
+---
+id: adaptation
+title: "4. Prompting, retrieval, and fine-tuning"
+sidebar_label: "4. Adaptation"
+sidebar_position: 5
+description: How a small model is adapted to the organization's tasks, in order of cost, by prompting with the right context, by retrieving the organization's own material at query time, and by fine-tuning on labelled data, with the suite deciding when each is enough.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 4. Prompting, retrieval, and fine-tuning
+
+**Question:** How are the models adapted to the organization's tasks?
+
+## Rationale
+
+A small model knows less than a large one and makes up for it with
+context: the classification's index, the record and the schema, the
+organization's examples. Three adaptations, in order of cost, close the
+gap. Prompting gives the model the instructions and the context the
+task needs, and for most narrow tasks it is enough. Retrieval gives it
+the organization's own material at query time, so that answers and
+drafts are grounded in the catalog. Fine-tuning changes the weights
+with the organization's labelled data, which is what makes a 3-billion
+coder match a larger model on the organization's own responses. Each
+step is taken when the suite shows the previous one is not enough, and
+each produces an artefact (a prompt, an index, a model) that is
+versioned and gated.
+
+## Target state
+
+- Every task's prompt is a versioned file with the context the task needs, tested on the suite.
+- Retrieval is used where the task needs the organization's material, with the index versioned and the retrieval scored on its own.
+- Fine-tuning is used where prompting and retrieval fall short on the suite, on labelled data the organization owns, with the derived model carded and gated.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Write and version the prompt for one task with the context it needs; test on the suite. |
+| **AI-ready** | Add retrieval over the organization's catalog where the task needs it; fine-tune an embedding model or a small generator on labelled data; gate each artefact with the suite. |
+| **AI-native** | Retrain from the decisions and corrections the workflows record; compare adaptations on the cost-quality frontier at each model release. |
+
+:::info[Running example]
+The coding task starts with a prompt that gives the classification's
+index entries retrieved for the response; the suite shows 0.86 at four
+digits on the 3-billion model. Fine-tuning the same model on 48,000
+coder-labelled responses raises it to 0.93, which the organization's
+model card records; the prompt-only mid-sized model reaches 0.91 at
+three times the cost per query.
+:::
+
+## Recipes
+
+<Recipe title="4.1 Prompt with the context the task needs" level="Foundational" skills="Developer; task owner" time="Half a day per task">
+
+**Result:** the task has a written prompt, kept as a versioned file,
+that gives the model its instructions, the reference material it needs,
+and the format of the answer, and its score on the task's test
+questions is recorded.
+
+A prompt is the text sent to the model with each request: the
+instruction, any reference material, examples, and the form the answer
+should take. A small model does well on a narrow task when the prompt
+gives it what it needs: the classification's index for coding, the
+schema's field definitions for drafting, the edit rules for
+explanations. Prompting is the first adaptation to try because it costs
+a day and needs no training.
+
+1. Write the prompt in four parts: the instruction; the reference
+   material (taken from the task's recipe in its own cookbook); two or
+   three examples from the organization's own data; and the output
+   format, as a JSON structure the software can check.
+2. Keep the prompt short enough to fit the model's context at the
+   planned concurrency ([chapter 3](./serving.mdx)). Spend the space on
+   reference material and examples, never on prose.
+3. Save the prompt as a file under version control. Run the task's test
+   questions and record the score with the prompt version and the model
+   version.
+4. Change one thing at a time and run the questions again. The
+   comparison rule of the [evaluation cookbook](/cookbook/evaluation-suites/gates)
+   decides whether the change stays.
+
+**Worked example.** The coding prompt's instruction reads "Choose the ISCO-08 unit group
+that best matches the occupation response, using only the candidate
+entries below". It continues: "Return the code, a confidence from 0 to
+1, and the entry relied on, as JSON." The reference material is
+the three to five index entries retrieved for the response, each with
+its code and definition. The examples are three responses from the
+organization's own survey with the codes coders gave them. The prompt
+is 410 tokens, which leaves room for the response and the entries at a
+concurrency of eight. Version 1 scores 0.83 on the suite with the small
+model. Version 2 adds the respondent's industry and employment status
+to the context and scores 0.86, and the comparison rule keeps it.
+
+**What this does not do.** A prompt cannot teach the model facts about
+the organization's catalog that it has never seen; retrieval does that
+(recipe 4.2). A prompt that has grown past a page is a sign that the
+task needs retrieval or fine-tuning.
+
+</Recipe>
+
+<Recipe title="4.2 Retrieve the organization's material at query time" level="AI-ready" skills="Developer" time="One to two days per task">
+
+**Result:** for each request, the model receives the few records,
+definitions, or index entries that are relevant to it, found by a
+search over the organization's own material. The search itself is
+scored separately from the model.
+
+Retrieval means searching the organization's material for each request
+and putting the results into the prompt, so that the model writes from
+what the organization published and nothing else. For an assistant, the
+material is the catalog records; for coding, the classification's index
+entries; for questionnaire design, the question bank.
+
+1. Build a search index over the material the task needs. The
+   [dissemination cookbook](/cookbook/ai-ready-dissemination/find)
+   describes the catalog index, which combines keyword search with search
+   by meaning.
+2. For each request, retrieve a few candidates and put them in the
+   prompt. The model chooses among them or writes from them.
+3. Score the retrieval on its own, with the measures of the
+   [evaluation cookbook](/cookbook/evaluation-suites/retrieval). When the
+   answer is wrong and the right material was retrieved, the model is at
+   fault; when the wrong material was retrieved, the search is.
+4. Where the retrieval scores are the limit, fine-tune the embedding
+   model on the organization's own queries and records. The
+   [PI-FT toolkit](/pift-toolkit/pipeline) does this for structured
+   metadata.
+
+**Worked example.** For the coding task, the index is the 4,000 entries
+of the national occupation index with their codes, indexed by keyword
+and by an embedding model. For the response "drives a taxi in the city",
+the retrieval returns "taxi driver", "car driver", and "bus driver" in
+that order, and the model chooses the first. Scored on its own with the
+evaluation cookbook's measures, the retrieval puts the correct entry in
+its top five for 94 percent of the suite's responses. Of the model's remaining errors, two thirds are cases where the right
+entry was retrieved and the model chose another. One third are cases
+where the index has no entry for the occupation at all, which is a
+retrieval gap and goes to the index's maintainers.
+
+**What this does not do.** Retrieval grounds the model in the
+organization's material. It does not teach the model the organization's
+conventions, such as the style of a definition or the code a coder would
+choose; fine-tuning does that (recipe 4.3).
+
+</Recipe>
+
+<Recipe title="4.3 Fine-tune on the organization's labelled data" level="AI-ready" skills="Data scientist with a GPU" time="One to two weeks for the first model">
+
+**Result:** the organization has a version of the model trained further
+on its own labelled examples, so that the model follows the
+organization's conventions. The derived model has a model card, a
+licence, and test scores, and it was approved through the same
+comparison as any other change.
+
+Fine-tuning changes the model's weights by training it on examples the
+organization has: responses with the codes coders gave them, drafts with
+the versions curators approved, documents with the mentions labellers
+marked. It is the most expensive adaptation and the one that makes a
+small model match a large one on the organization's own data.
+
+1. Collect the labelled examples the workflows already produce: coder
+   decisions ([production cookbook, chapter 3](/cookbook/language-models-in-production/coding)),
+   curator decisions ([curation cookbook, chapter 8](/cookbook/metadata-curation-with-llms/improve)),
+   labelled mentions. A text-generating model needs tens of thousands;
+   an embedding model needs thousands.
+2. Train with a parameter-efficient method (an adapter, which trains a
+   small addition to the model and leaves the rest unchanged) on the
+   organization's hardware. Hold back a part of the data for testing.
+   Keep the training settings under version control.
+3. Write the model card as the publisher ([chapter 2](./candidates.mdx)),
+   with the training data statement and the test scores, and choose a
+   licence that the base model's licence allows.
+4. Compare the fine-tuned model with the prompt-only version and with
+   the larger candidates on the test questions, and record the result on
+   the cost-quality comparison of [chapter 5](./comparison.mdx).
+
+**Worked example.** The data scientist collects 48,000 responses with
+the codes coders gave them in the 2024 and 2025 rounds, holds out 4,000,
+and trains an adapter on the small model for six hours on the 24 GB
+card. On the held-out responses the fine-tuned model scores 0.93 at
+four digits, against 0.86 for the same model with the prompt alone and
+0.91 for the prompt-only mid-sized model. The model card is written with
+the organization as publisher, the licence is Apache 2.0, and the
+comparison of chapter 5 puts the fine-tuned small model on the frontier
+at a third of the mid-sized model's cost per query. The new round's
+corrections are set aside for the next training run.
+
+**What this does not do.** A model fine-tuned on one survey's responses
+learns that survey's language. A new survey or a new version of the
+classification needs new examples and a new training run; the decisions
+the workflows keep recording are what make the next run cheap.
+
+</Recipe>
+
+## Implementation options
+
+- **Prompting:** versioned prompt files with instruction, context, examples, and output schema; structured output.
+- **Retrieval:** keyword plus embedding indexes over the organization's material; the retrieval scored on its own; embedding fine-tuning with the PI-FT toolkit.
+- **Fine-tuning:** parameter-efficient adapters on local hardware; held-out data; cards and licences for derived models; the suite as the gate.
+- **Data:** decisions and corrections recorded by the workflows of the other cookbooks.
+
+## World Bank examples
+
+- The [PI-FT toolkit](/pift-toolkit/pipeline) fine-tunes open embedding models on structured metadata and evaluates them against general models, the retrieval adaptation of recipe 4.2.
+- [Efficient and Inclusive AI Applications](/docs/inclusive-ai/) describes multilingual embedding models and small generators adapted to statistical tasks.
+- The [Metadata Augmentation](/docs/metadata-augmentation/) and [Metadata Reviewer](/docs/metadata-reviewer/overview) tools work by prompting with the record and the schema, the first adaptation.
+
+## Resources
+
+- [PI-FT toolkit](/pift-toolkit/pipeline): the program's pipeline for fine-tuning and evaluating embedding models on metadata.
+- [Sentence Transformers training](https://www.sbert.net/docs/sentence_transformer/training_overview.html): fine-tuning embedding models on the organization's query and record pairs.
+- [Hugging Face PEFT](https://github.com/huggingface/peft): parameter-efficient fine-tuning (adapters) for small generators on modest hardware.
+- [Gates chapter of the evaluation cookbook](/cookbook/evaluation-suites/gates): the comparison that decides between adaptations.
+
+## Common mistakes
+
+- **Fine-tuning first.** Prompting with the right context is often enough and costs a day.
+- **Prompts that grow without end.** A page of instructions is a sign to retrieve or fine-tune.
+- **Retrieval unscored.** The model is blamed for what the index missed.
+- **A fine-tuned model without a card or a gate.** The organization published a model it cannot describe.
+
+## Verification
+
+- **Prompts.** Each task's prompt is versioned, with suite scores per version.
+- **Retrieval.** The indexes are versioned, and the retrieval scores are reported separately from the answer scores.
+- **Fine-tuned models.** Each has a card, a licence, held-out results, and a gate decision on record.
+
+## Checklist
+
+<Checklist id="small-and-open-models-adaptation" items={[
+  'Prompt per task with instruction, context, examples, and output schema, versioned',
+  'Context budget spent on reference material and examples',
+  'Retrieval over the organization\'s material where the task needs it, scored separately',
+  'Embedding fine-tuning where retrieval is the limit',
+  'Generator fine-tuning on recorded decisions with held-out data',
+  'Derived models carded, licensed, and gated',
+]} />

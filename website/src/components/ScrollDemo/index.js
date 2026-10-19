@@ -23,7 +23,7 @@ const Stops = [
     ),
     link: {
       to: 'https://arxiv.org/abs/2606.06242',
-      label: 'Read the benchmark paper',
+      label: 'Benchmark paper',
     },
     Evidence: SnapshotEvidence,
   },
@@ -41,7 +41,7 @@ const Stops = [
     ),
     link: {
       to: '/docs/metadata-reviewer/overview',
-      label: 'See the full pipeline reference',
+      label: 'Pipeline reference',
     },
     Evidence: MetadataEvidence,
   },
@@ -59,7 +59,7 @@ const Stops = [
     ),
     link: {
       to: '/docs/anomaly/explanation/elicitation-pipeline#example-llm-inputoutput',
-      label: 'See the full input/output schema',
+      label: 'Input and output schema',
     },
     Evidence: AnomalyEvidence,
   },
@@ -75,7 +75,7 @@ const Stops = [
         Context Protocol (MCP) tool call.
       </p>
     ),
-    link: {to: '/docs/mcp/', label: 'See the MCP integration guide'},
+    link: {to: '/docs/mcp/', label: 'MCP integration guide'},
     Evidence: SearchEvidence,
   },
   {
@@ -92,15 +92,46 @@ const Stops = [
         flagged, and numbers without a tag receive no mark.
       </p>
     ),
+    caveat:
+      'A check mark means the number matches the record it cites under the stated policy. It does not say whether the record, the method behind it, or the interpretation is right.',
     link: {
-      to: 'https://arxiv.org/abs/2509.06902',
-      label: 'Read the PCN paper',
+      to: '/docs/pcn/',
+      label: 'Proof-Carrying Numbers',
     },
     Evidence: PcnEvidence,
   },
 ];
 
 const clamp = (x, lo, hi) => Math.min(hi, Math.max(lo, x));
+
+// On small screens the panels are inline under their text. Each one starts
+// when it first scrolls into view.
+function MobileEvidence({Evidence}) {
+  const ref = useRef(null);
+  const [seen, setSeen] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === 'undefined') {
+      return undefined;
+    }
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setSeen(true);
+          obs.disconnect();
+        }
+      },
+      {threshold: 0.3},
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return (
+    <div ref={ref}>
+      <Evidence active={seen} />
+    </div>
+  );
+}
 
 export default function ScrollDemo() {
   const [progress, setProgress] = useState(0);
@@ -110,7 +141,9 @@ export default function ScrollDemo() {
   useEffect(() => {
     // Progress is derived from scroll position, so it is identical in both
     // scroll directions. The stage is pinned while the track scrolls past;
-    // progress runs from 0 (first stop) to Stops.length - 1 (last stop).
+    // progress runs from 0 (start of the first stop) to Stops.length (end of
+    // the last stop). The integer part selects the example and the fraction
+    // drives the steps inside it.
     let frame = null;
     const update = () => {
       frame = null;
@@ -123,7 +156,7 @@ export default function ScrollDemo() {
       const rect = track.getBoundingClientRect();
       const total = rect.height - stage.offsetHeight;
       const t = total > 0 ? clamp((stickyTop - rect.top) / total, 0, 1) : 0;
-      setProgress(t * (Stops.length - 1));
+      setProgress(t * Stops.length);
     };
     const onScroll = () => {
       if (frame === null) {
@@ -142,7 +175,8 @@ export default function ScrollDemo() {
     };
   }, []);
 
-  const active = Math.round(progress);
+  const active = Math.min(Stops.length - 1, Math.floor(progress));
+  const scrub = Math.min(1, progress - active);
 
   return (
     <section className={styles.section}>
@@ -150,13 +184,13 @@ export default function ScrollDemo() {
         <div className={styles.head}>
           <span className="eyebrow">Examples</span>
           <Heading as="h2" className={styles.title}>
-            See the tools at work
+            Example outputs
           </Heading>
           <p className={styles.lede}>
-            Five short examples show what the program&apos;s tools do and how
-            they could fit your work. Scroll to step through them, and select
-            anything in a panel to try it. Parts that are illustrations are
-            labeled.
+            Five examples show the outputs of the program&apos;s tools on real
+            and illustrative inputs. Scrolling moves through the examples and
+            through the steps of each one; the interactive elements in each
+            panel can be selected. Parts that are illustrations are labeled.
           </p>
         </div>
 
@@ -197,7 +231,7 @@ export default function ScrollDemo() {
                           )}
                           key={stop.id}
                           aria-hidden={i !== active}>
-                          <Evidence active={i === active} />
+                          <Evidence active={i === active} scrub={i === active ? scrub : 0} />
                         </div>
                       );
                     })}
@@ -222,8 +256,9 @@ export default function ScrollDemo() {
                         {stop.title}
                       </Heading>
                       {stop.body}
+                      {stop.caveat && <p className={styles.stopCaveat}>{stop.caveat}</p>}
                       <div className={styles.stopEvidenceMobile}>
-                        <StopEvidence />
+                        <MobileEvidence Evidence={StopEvidence} />
                       </div>
                       <Link className={styles.stopLink} to={stop.link.to}>
                         {stop.link.label} →

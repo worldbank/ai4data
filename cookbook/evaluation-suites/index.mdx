@@ -1,0 +1,164 @@
+---
+id: index
+title: Practical Guide to Evaluation Suites for Statistical AI
+sidebar_label: Overview
+sidebar_position: 0
+description: A cookbook for teams that deploy AI components in national statistical organizations and need evaluation suites that decide whether search, assistants, extraction, and curation tools are good enough to publish and safe to change.
+---
+
+# Practical Guide to Evaluation Suites for Statistical AI
+
+**A cookbook for teams that deploy AI components in national statistical organizations.** Version 0.1 (working draft), October 2026.
+
+:::note[Working draft]
+This guide is a working draft from the AI for Data – Data for AI program. It
+collects practical approaches and open standards. It does not
+represent official World Bank Group guidance or policy and is not legal
+advice; an organization applies it under its own statistical law, data
+protection rules, and institutional policies.
+Comments and corrections are welcome as
+[GitHub issues](https://github.com/worldbank/ai4data/issues), and the
+[contributing](./contributing.md) page explains how to propose a recipe.
+:::
+
+Every AI component an organization deploys makes decisions on its behalf:
+which series a search returns, what number an assistant states, which
+spans an extractor keeps, which draft a curator sees. The organization is
+responsible for those decisions, and the only way to know whether a
+component makes them well enough, and whether a change made it better or
+worse, is an evaluation suite: a set of questions with known answers, run
+the same way every time, with measures that mean something and a rule
+for what passes. The other cookbooks each describe the suite for their own
+component. This guide is about the suites themselves: how they are built,
+labelled, measured, validated, used as gates, kept alive in production,
+and reported.
+
+This guide is organized around nine questions. The first two are about
+what goes into a suite: what should be evaluated and in what order, and
+where test questions and labels come from. The next four are about
+measurement: how search and retrieval are measured, how generated
+answers are measured, how extraction and classification are measured,
+and how automatic graders are validated. The last three are about using
+the suite: how it gates changes, how a deployed component is evaluated
+over time, and how results are reported and compared. Each chapter
+answers one question with recipes, maturity levels, worked examples,
+and a checklist.
+
+The recipes build on the evaluation practice of the program's workstreams
+([Data Discoverability](/docs/data-discoverability/) and the
+[PI-FT toolkit](/pift-toolkit/pipeline) for retrieval,
+[Monitoring of Data Use](/docs/data_use/) for extraction,
+[Proof-Carrying Numbers](https://arxiv.org/abs/2509.06902) for answers)
+and on the measures of information retrieval and classification. The
+[standards page](./standards.md) lists each and where it applies.
+
+:::tip[The suite is the product's memory]
+A component without a suite can be changed and nobody can say whether it
+got worse. The suite, versioned with the questions people asked and the
+errors found, is what turns a demonstration into a service the
+organization can maintain.
+:::
+
+## Prerequisites
+
+The recipes assume the following are in place or can be arranged:
+
+- At least one AI component in use or planned (a search, an assistant, an extractor, a drafting tool) and the people who own it.
+- Dissemination staff who can write questions and label answers, speakers of each supported language, and a person who can run Python scripts.
+- For the AI-ready level, a developer to run suites in continuous integration; for graders, access to a language model under the AI-use policy.
+
+## First steps
+
+For a team with limited time, this sequence gives the most useful result first:
+
+1. List the components and set the required score for the most important one, following [chapter 1](./inventory.mdx). This takes half a day.
+2. Build a set of fifty questions from real queries, including ten with no answer, and version it, following [chapter 2](./questions.mdx). This takes a day.
+3. Score the component with the chapter that fits it, which is [chapter 3](./retrieval.mdx) for search, [4](./answers.mdx) for answers, or [5](./extraction.mdx) for extraction, and keep the scores with the versions. This takes half a day.
+4. Run the suite before and after the next change and compare the runs, as [chapter 7](./gates.mdx) describes.
+
+Graders ([chapter 6](./judges.mdx)), production sampling ([chapter 8](./production.mdx)), and report cards ([chapter 9](./reporting.mdx)) come once the suite gates at least one change.
+
+## Self-assessment
+
+The [self-assessment](./start-here.mdx) takes about five minutes and places
+a team's evaluation practice at a level in each chapter.
+
+## Chapters and questions
+
+| Chapter | Question | Practical topics |
+|---|---|---|
+| [1. Components and decisions to evaluate](./inventory.mdx) | What should be evaluated, and in what order? | Component inventory, decisions and their cost, risk-based order, required scores |
+| [2. Questions and labels](./questions.mdx) | Where do test questions and labels come from? | Real queries, labelling guide, two labellers, agreement, languages, versioning |
+| [3. Measurement of search and retrieval](./retrieval.mdx) | How are search and retrieval measured? | Recall@k, MRR, nDCG, slices by language and paraphrase, questions with no answer |
+| [4. Measurement of generated answers](./answers.mdx) | How are generated answers measured? | Numeric accuracy, citation validity, refusal accuracy, unsupported numbers, caveats |
+| [5. Measurement of extraction and classification](./extraction.mdx) | How are extraction and classification tasks measured? | Precision, recall, F1, exact and lenient matching, error taxonomy, confusion |
+| [6. Validation of automatic graders](./judges.mdx) | How are automatic graders validated? | Agreement with humans, false passes, length and position bias, re-validation |
+| [7. Gates on changes](./gates.mdx) | How does the suite gate changes? | Paired comparison, intervals, tolerance, review on small slices, continuous integration |
+| [8. Evaluation in production](./production.mdx) | How is a deployed component evaluated over time? | Logged traffic, stratified samples, drift, feedback into the set |
+| [9. Reporting and comparison](./reporting.mdx) | How are results reported and compared? | Report cards with intervals, what to publish, comparability across organizations, shared sets |
+
+## Maturity levels
+
+Each chapter describes three levels. A team can sit at different levels in
+different chapters, and the first level is a complete, useful state on its
+own.
+
+| Level | Meaning |
+|---|---|
+| **Foundational** | Each component has a question set with known answers, scored by a script, with the scores kept per version. |
+| **AI-ready** | Sets are built from real queries, labelled by two people with measured agreement, sliced by language and type, with automatic graders validated and changes gated on paired comparisons with intervals. |
+| **AI-native** | Production traffic is sampled into the sets, drift is monitored, report cards are published with every release, and sets are shared in a common format. |
+
+## Running example
+
+The example organization of the dissemination cookbook runs a search, an
+assistant, and a mention extractor. Twenty search questions labelled by
+two people, two retrieval runs, eight assistant answers, twelve aligned
+extraction spans, twenty grader scores, two runs of thirty questions for a
+gate, and a month of twenty-four logged queries carry the recipes. All
+questions, answers, and scores are invented.
+
+## Scope of the examples
+
+The examples are small on purpose: twenty to thirty items per file, so
+that a reader can run them in an afternoon and see the shape of each
+measure, and see how wide the intervals are at that size. They are
+starting points. Each recipe ends with a **What this does not do** note
+that says where the example stops and what the full version adds.
+
+## Files
+
+| File | Used in |
+|---|---|
+| [labels_two_annotators.csv](pathname:///cookbook-files/evaluation-suites/labels_two_annotators.csv) and [label_agreement.py](pathname:///cookbook-files/evaluation-suites/label_agreement.py) | Chapter 2: two labellers' labels and their agreement |
+| [retrieval_runs.csv](pathname:///cookbook-files/evaluation-suites/retrieval_runs.csv) and [retrieval_by_slice.py](pathname:///cookbook-files/evaluation-suites/retrieval_by_slice.py) | Chapter 3: two retrieval runs scored by slice |
+| [answers_run.jsonl](pathname:///cookbook-files/evaluation-suites/answers_run.jsonl) and [answer_scores.py](pathname:///cookbook-files/evaluation-suites/answer_scores.py) | Chapter 4: a run of assistant answers and its four measures |
+| [extraction_gold_pred.csv](pathname:///cookbook-files/evaluation-suites/extraction_gold_pred.csv) and [extraction_scores.py](pathname:///cookbook-files/evaluation-suites/extraction_scores.py) | Chapter 5: aligned gold and predicted spans with an error taxonomy |
+| [judge_vs_human.csv](pathname:///cookbook-files/evaluation-suites/judge_vs_human.csv) and [judge_agreement.py](pathname:///cookbook-files/evaluation-suites/judge_agreement.py) | Chapter 6: grader scores against human scores with bias checks |
+| [run_scores_v1.csv](pathname:///cookbook-files/evaluation-suites/run_scores_v1.csv), [run_scores_v2.csv](pathname:///cookbook-files/evaluation-suites/run_scores_v2.csv), and [compare_runs.py](pathname:///cookbook-files/evaluation-suites/compare_runs.py) | Chapter 7: two runs and the gate with intervals |
+| [traffic_log.csv](pathname:///cookbook-files/evaluation-suites/traffic_log.csv) and [sample_traffic.py](pathname:///cookbook-files/evaluation-suites/sample_traffic.py) | Chapter 8: a month of logged queries and the stratified review sample |
+| [report_card.py](pathname:///cookbook-files/evaluation-suites/report_card.py) | Chapter 9: a report card with intervals |
+| [eval_questions.csv](pathname:///cookbook-files/ai-ready-dissemination/eval_questions.csv) and [score_retrieval.py](pathname:///cookbook-files/ai-ready-dissemination/score_retrieval.py) | Chapters 2 and 3: the dissemination cookbook's question set and scorer |
+
+## Related resources
+
+| Resource | Purpose |
+|---|---|
+| This guide | How to build and run the suites, and why, in a sequence of practical steps. |
+| [Practical Guide to AI-Ready Data Dissemination](/cookbook/ai-ready-dissemination/evaluate) | The suite for search and answers over a catalog, which this guide generalizes. |
+| [Practical Guide to Serving Official Statistics to AI Agents](/cookbook/serving-statistics-to-agents/evaluate) | The suite for an agent interface, with traces. |
+| [Practical Guide to Monitoring Data Use](/cookbook/monitoring-data-use/detect) | The suite for mention extraction. |
+| [Practical Guide to Metadata Curation with Language Models](/cookbook/metadata-curation-with-llms/improve) | The suite built from curator decisions. |
+| [PI-FT toolkit](/pift-toolkit/pipeline) | The program's retrieval evaluation with Recall@k, MRR, and nDCG. |
+| [Code](https://github.com/worldbank/ai4data) | Open-source software to deploy or adapt. |
+
+## Citation
+
+World Bank. 2026. *Practical Guide to Evaluation Suites for Statistical
+AI: A cookbook for teams that deploy AI components in national
+statistical organizations.* Version 0.1. AI for Data – Data for AI.
+https://worldbank.github.io/ai4data/cookbook/evaluation-suites/
+
+## Version history
+
+- **0.1 (October 2026).** First draft: nine chapters, recipes, scripts, self-assessment.

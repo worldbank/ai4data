@@ -127,6 +127,10 @@
 }
 
 @media screen and (max-width: 900px) {
+  .section {
+    padding: 3rem 0;
+  }
+
   .groups {
     column-count: 1;
   }

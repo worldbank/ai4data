@@ -1,0 +1,24 @@
+dimension,reaches,recipe,cookbook,days_low,days_high,roles,cost_kind
+1.1,B,Write the AI-use policy and the task boundary,governance-and-risk,2,3,Head of methodology; Legal adviser; Management,Staff time
+1.1,C,Build the register and rate each component; constitute the board,governance-and-risk,4,8,Head of methodology; Component owners; Management,Staff time
+1.1,D,Run the governance review in continuous integration,governance-and-risk,2,4,Developer; Head of methodology,Staff time
+1.2,B,Classify model licences and state the AI-use position per product type,governance-and-risk,3,5,Legal adviser; Head of dissemination,Staff time
+1.2,C,Legal review of the statistics act and the data protection rules for AI use,outside the series,10,20,Legal adviser; External counsel,Legal fees; Staff time
+1.3,B,First training cycle from the cookbooks and the assistant task card,ai-assistants-at-work,5,10,Trainer; Data curators; Methodologist,Staff time; Training venue
+1.3,C,Recruit or second a data engineer and a data scientist,outside the series,20,40,Management; Human resources,Salaries; Recruitment
+1.4,B,Size and run a model server and a development environment,small-and-open-models,5,10,IT lead; Data scientist,Hardware or hosting; Staff time
+1.4,C,Isolated segment for confidential inputs and evaluation runners,small-and-open-models,10,20,IT lead; Security staff,Hardware; Staff time
+1.5,B,Keep the cost record and a budget line for the components,governance-and-risk,2,3,Head of IT; Finance,Staff time
+1.6,B,Join the peer network and govern one partnership under the policy,outside the series,3,5,Management,Staff time; Travel
+2.1,B,Check the records against the schema and a completeness profile,ai-ready-dissemination,1,2,Data curator; Metadata lead,Staff time
+2.1,C,Publish code lists and crosswalks and migrate legacy records,metadata-curation-with-llms,10,20,Data curators; Developer,Staff time
+2.1,D,Regenerate records from production at each release,ai-ready-dissemination,10,15,Developer; Metadata lead,Staff time
+2.2,B,Status codes and a revisions log in the values files,ai-ready-dissemination,3,5,Methodologist; Data curator,Staff time
+2.2,C,Anomaly detection on the main series with a review board,language-models-in-production,8,15,Methodologist; Data scientist,Staff time; Model server share
+2.3,B,Stable URLs and schema.org markup on every record; DOIs,ai-ready-dissemination,5,10,Web developer; Catalog manager,Staff time; DataCite fee
+2.3,C,Semantic search beside keyword search with a question set,ai-ready-dissemination,10,20,Developer; Dissemination lead,Staff time; Search host
+2.4,B,Tidy CSV at stable URLs and a bulk file,ai-ready-dissemination,3,5,Developer,Staff time
+2.4,C,Documented API with provenance in every response and monitoring,serving-statistics-to-agents,15,30,Developer; Dissemination lead,Staff time; Gateway; Hosting
+2.5,B,MCP server pilot over the API with a manifest and a question set,serving-statistics-to-agents,10,20,Developer; Data scientist,Staff time; Model server share
+2.6,B,Licence chosen per product type with the AI-use position,governance-and-risk,2,4,Legal adviser; Head of dissemination,Staff time
+2.6,C,Licence URL in every record and API response; terms for machine clients,governance-and-risk,3,6,Catalog manager; Legal adviser,Staff time

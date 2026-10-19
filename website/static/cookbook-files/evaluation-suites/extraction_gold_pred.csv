@@ -1,0 +1,13 @@
+doc_id,gold_span,gold_type,pred_span,pred_type
+D01,Household Budget Survey 2021,dataset,Household Budget Survey 2021,dataset
+D01,Labour Force Survey,dataset,Labour Force Survey 2025,dataset
+D01,prevalence of undernourishment,indicator,,
+D02,national poverty line,indicator,national poverty line,dataset
+D02,,,"the survey",dataset
+D02,Population and Housing Census 2014,dataset,Population and Housing Census 2014,dataset
+D03,unemployment rate,indicator,unemployment rate,indicator
+D03,,,"National Statistics Office",dataset
+D04,Demographic and Health Survey,dataset,Demographic and Health Survey,dataset
+D04,under-five mortality rate,indicator,under-five mortality,indicator
+D05,Food security report 2025,document,Food security report 2025,document
+D05,Statistical yearbook 2023,document,,

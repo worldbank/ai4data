@@ -1,0 +1,167 @@
+---
+id: index
+title: Practical Guide to Monitoring Data Use
+sidebar_label: Overview
+sidebar_position: 0
+description: A cookbook for dissemination teams and management in national statistical organizations that want to know where their data are used, in research, policy, media, and AI systems, and to act on it.
+---
+
+# Practical Guide to Monitoring Data Use
+
+**A cookbook for dissemination teams and management in national statistical organizations.** Version 0.1 (working draft), October 2026.
+
+:::note[Working draft]
+This guide is a working draft from the AI for Data – Data for AI program. It
+collects practical approaches and open standards. It does not
+represent official World Bank Group guidance or policy and is not legal
+advice; an organization applies it under its own statistical law, data
+protection rules, and institutional policies.
+Comments and corrections are welcome as
+[GitHub issues](https://github.com/worldbank/ai4data/issues), and the
+[contributing](./contributing.md) page explains how to propose a recipe.
+:::
+
+Download counts say how often a file was fetched. They do not say whether
+the data were used, by whom, for what, or with what result. That evidence
+is in documents: research papers that build on a survey, policy documents
+that set targets against an indicator, news articles that quote a release,
+and, increasingly, the answers of AI systems. Finding those uses tells an
+organization which products matter, where its data are misquoted, and how
+to argue for its budget.
+
+This guide is organized around nine questions, in the order the work is
+done. The first three are about what can be counted without reading any
+document: what counts as use, whether downloads and API calls can be
+counted consistently, and whether citations can be counted through
+identifiers. The next four are about finding use in documents: whether
+the research documents and the policy, news, and web documents that use
+the data can be collected, whether mentions of the data can be found in
+them, and whether those mentions can be matched to the datasets they
+refer to. The last two are about what the organization does with the
+result: whether use can be reported and interpreted, and whether the
+results can improve the data and their documentation. Each chapter
+answers one question with recipes, maturity levels, worked examples, and
+a checklist.
+
+The recipes build on the program's [Monitoring of Data Use](/docs/data_use/)
+workstream, which extracts dataset mentions from documents with a
+zero-shot named-entity model, deduplicates them, and harmonizes name
+variants to canonical identifiers, and on the usage-metrics practice of
+the research data community. The [standards page](./standards.md) lists
+each standard and where it applies.
+
+:::tip[Names before models]
+The step with the highest return is the canonical names table in
+[chapter 1](./define.mdx): one name, one acronym, and one identifier per
+dataset, with the variants people write. Detection and harmonization both
+depend on it, and a recommended citation on every dataset page is what makes
+future mentions matchable.
+:::
+
+## Prerequisites
+
+The recipes assume the following are in place or can be arranged:
+
+- A list of the organization's main datasets with their names and identifiers, and web or API logs for its catalog.
+- A dissemination officer with a few hours a quarter, and a person who can run Python scripts.
+- For the AI-ready level, DOIs for the main datasets and a developer to query the citation services and run the extractor; for the AI-native level, a machine that runs a small language model.
+
+## First steps
+
+For a team with limited time, this sequence gives the most useful result first:
+
+1. Write the typology and the canonical names table of [chapter 1](./define.mdx). This takes a day, and every count depends on it.
+2. Count access with the Code of Practice rules of [chapter 2](./access.mdx). Setting up the log takes a day. This is the cheapest evidence of use, and it arrives every month.
+3. Register DOIs for the main datasets and look up their citations, following [chapter 3](./citations.mdx). This takes half a day, and then minutes each quarter.
+4. Search the main research and government sources by hand for the canonical names, as [chapters 4](./collect.mdx) and [5](./collect-web.mdx) describe, and report the documents found, following [chapter 8](./report.mdx).
+
+Automated mention detection ([chapters 6](./detect.mdx) and [7](./harmonize.mdx)) replaces the hand search once the names table and a labelled sample exist.
+
+## Self-assessment
+
+The [self-assessment](./start-here.mdx) takes about five minutes and places
+an organization's monitoring at a level in each chapter.
+
+## Chapters and questions
+
+| Chapter | Question | Practical topics |
+|---|---|---|
+| [1. Definition of use](./define.mdx) | What counts as use of the data? | Typology of use, canonical names, unit of count, scope |
+| [2. Access statistics](./access.mdx) | Can downloads and API calls be counted consistently? | Logging, COUNTER rules, robots and double-clicks, regular and machine access |
+| [3. Formal citations through identifiers](./citations.mdx) | Can citations be counted through DOIs and identifiers? | DataCite, Crossref, OpenAlex, Scholix, merging sources, comparison with text mining |
+| [4. Collection from scholarly sources](./collect.mdx) | Can the research documents that use the data be collected? | Indexes and repositories, queries by name and reference, open full texts, coverage |
+| [5. Collection from policy, news, and web sources](./collect-web.mdx) | Can policy documents, news, and reports that use the data be collected? | Sources and terms, robots.txt checks, identified rate-limited crawling, news and web datasets |
+| [6. Detection of mentions](./detect.mdx) | Can mentions of the data be found in documents? | Named-entity extraction, labelled samples, thresholds, deduplication |
+| [7. Harmonization of mentions](./harmonize.mdx) | Can mentions be matched to the datasets they refer to? | Canonical names, variants, acronyms, editions, external datasets, review |
+| [8. Reporting of use](./report.mdx) | Can use be reported and interpreted? | Use reports, access and citation counts, AI visibility, caveats |
+| [9. Action on the results](./act.mdx) | Can the results improve the data and their documentation? | Prioritization, misquotes, links between documents and data |
+
+## Maturity levels
+
+Each chapter describes three levels. An organization can sit at different
+levels in different chapters, and the first level is a complete, useful
+state on its own.
+
+| Level | Meaning |
+|---|---|
+| **Foundational** | Use is defined, dataset names are canonical, and mentions are found by searching a few sources by hand on a schedule. |
+| **AI-ready** | Documents are collected from listed sources, mentions are extracted and harmonized with tools, measured against a labelled sample, and reported with their caveats. |
+| **AI-native** | Monitoring runs as a pipeline, includes AI systems' answers, feeds the catalog and the documentation work, and its results are published with the data. |
+
+## Running example
+
+The example organization monitors six collected documents: a journal
+article, two policy documents, a news article, a working paper, and a
+regional report. The extractor found twelve mentions in them, of which ten
+refer to the organization's own data (its household budget survey, labour
+force survey, two indicators, and a report) and two to other
+organizations' data. A labelled sample of fourteen sentences measures the
+extractor; one mention, of the census, was missed, and one generic phrase
+was extracted. An access log of thirty requests, twelve citation events
+from identifier services, and a ministry site's robots.txt complete the
+example. All documents, requests, and mentions are invented.
+
+## Scope of the examples
+
+The examples are small on purpose: six documents, twelve mentions, fourteen
+labelled sentences, so that a reader can run them in an afternoon and see
+the shape of each step. They are starting points. Each recipe ends with a
+**What this does not do** note that says where the example stops and what
+the full version adds. The extraction model itself is the program's; the
+scripts here cover what comes before and after it.
+
+## Files
+
+| File | Used in |
+|---|---|
+| [canonical_names.csv](pathname:///cookbook-files/monitoring-data-use/canonical_names.csv) | Chapters 1 and 7: canonical names, acronyms, and variants |
+| [access_log.csv](pathname:///cookbook-files/monitoring-data-use/access_log.csv) and [count_access.py](pathname:///cookbook-files/monitoring-data-use/count_access.py) | Chapter 2: an access log and the COUNTER-style count |
+| [citation_events.csv](pathname:///cookbook-files/monitoring-data-use/citation_events.csv) and [merge_citations.py](pathname:///cookbook-files/monitoring-data-use/merge_citations.py) | Chapter 3: citation events from several services and their merge |
+| [documents.csv](pathname:///cookbook-files/monitoring-data-use/documents.csv) | Chapters 4, 5, and 8: the collected documents with year, type, and source |
+| [robots_example.txt](pathname:///cookbook-files/monitoring-data-use/robots_example.txt), [web_sources.csv](pathname:///cookbook-files/monitoring-data-use/web_sources.csv), and [robots_check.py](pathname:///cookbook-files/monitoring-data-use/robots_check.py) | Chapter 5: a site's robots.txt, candidate URLs, and the check |
+| [mentions_example.jsonl](pathname:///cookbook-files/monitoring-data-use/mentions_example.jsonl) | Chapters 6 and 7: the extractor's output for the running example |
+| [labelled_sample.csv](pathname:///cookbook-files/monitoring-data-use/labelled_sample.csv) | Chapter 6: sentences labelled by a person |
+| [score_mentions.py](pathname:///cookbook-files/monitoring-data-use/score_mentions.py) | Chapter 6: precision and recall against the labelled sample |
+| [harmonize_mentions.py](pathname:///cookbook-files/monitoring-data-use/harmonize_mentions.py) | Chapter 7: string matching of mentions to canonical names |
+| [use_report.py](pathname:///cookbook-files/monitoring-data-use/use_report.py) | Chapter 8: use per dataset, by year and document type |
+
+## Related resources
+
+| Resource | Purpose |
+|---|---|
+| This guide | What an organization can do to see where its data are used, and why, in a sequence of practical steps. |
+| [Monitoring of Data Use](/docs/data_use/) | The program's extraction, deduplication, and harmonization pipeline. |
+| [Practical Guide to AI-Ready Data Dissemination](/cookbook/ai-ready-dissemination/) | Chapter 7 covers monitoring within the dissemination system; chapter 5 the citations that make mentions matchable. |
+| [Practical Guide to Extracting Data from Documents](/cookbook/data-from-documents/) | The same documents, read for the data they hold. |
+| [Code](https://github.com/worldbank/ai4data) | Open-source software to deploy or adapt. |
+
+## Citation
+
+World Bank. 2026. *Practical Guide to Monitoring Data Use: A cookbook for
+dissemination teams and management in national statistical organizations.*
+Version 0.1. AI for Data – Data for AI.
+https://worldbank.github.io/ai4data/cookbook/monitoring-data-use/
+
+## Version history
+
+- **0.1 (October 2026).** First draft: six chapters, recipes, scripts, self-assessment.

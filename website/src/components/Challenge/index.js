@@ -43,9 +43,9 @@ export default function Challenge() {
             climate, and food security to AI systems. Whether the answers draw
             on official statistics depends on whether AI can find, interpret,
             and verify the data. When it cannot, AI relies on secondary
-            sources that may be outdated or wrong. Official statistics remain
-            the most trusted evidence, and they lose influence when AI cannot
-            reach them.
+            sources that may be outdated or wrong. Official statistics are the
+            evidence that governments and researchers rely on, and they lose
+            influence when AI cannot reach them.
           </p>
         </div>
         <div className={styles.grid}>

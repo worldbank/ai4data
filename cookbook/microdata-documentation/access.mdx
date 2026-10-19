@@ -1,0 +1,299 @@
+---
+id: access
+title: "8. Access under the right conditions"
+sidebar_label: "8. Access"
+sidebar_position: 9
+description: How microdata are made available under the right conditions, through an access policy with tiers, disclosure control that is applied and recorded, conditions stated in every record, and rules for what automated and AI clients may reach.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 8. Access under the right conditions
+
+**Question:** Can AI access the data under the stated conditions?
+
+:::caution[Legal review]
+The access tiers, terms, and licences in this chapter are examples of practice, and the
+World Bank Microdata Library's terms are one illustration among them. They are not legal
+advice. The organization's legal office confirms the licence, the terms of use, and any
+release decision under the organization's statistical law and data protection rules.
+:::
+
+## Rationale
+
+Microdata are confidential by default. A statistical organization releases
+them under conditions: public use files with disclosure control applied,
+licensed files for approved purposes, secure access for the rest. These
+conditions have to be decided once, stated in every record, and applied by
+the catalog, so that a person, a script, or an AI agent receives the same
+answer about what it may have. An agent that can reach a licensed file
+through an unguarded API is a breach, whatever the policy says.
+
+Access conditions are also what make reuse possible. A clear licence and a
+citation requirement on a public use file tell an AI developer that the
+data may be used and how to credit them.
+
+## Target state
+
+- A written access policy defines the tiers, the conditions of each, and the disclosure control applied before a file enters a tier.
+- Every record states its tier, licence, citation requirement, and restrictions in machine-readable fields.
+- Automated clients, including AI agents, reach public use files only, with the conditions delivered in the metadata; licensed and secure files expose their metadata and never their data.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Adopt the access policy with tiers. Apply disclosure control to public use files and record the steps. State the conditions on each study page. |
+| **AI-ready** | Fill the access fields of the record (`data_access`, licence, citation requirement, restrictions). Let the catalog enforce the tier for downloads and requests. |
+| **AI-native** | Expose public use files and all metadata through the API and agent interface with the conditions attached; keep licensed and secure data off every automated path; log access and review it. |
+
+:::info[Running example]
+`EX-LFS-2025-Q2` is a public use file: direct identifiers removed, region
+and age top-coded, users agree not to attempt re-identification. Its record
+states the tier, the citation requirement, and the restrictions. An agent
+interface serves its metadata and data; a licensed file from the same
+survey, with finer geography, would serve metadata only.
+:::
+
+## Recipes
+
+<Recipe title="8.1 Adopt an access policy with tiers" level="Foundational" skills="Management; legal; disclosure control specialist" time="One day to draft; approval time varies">
+
+**Result:** the organization has a short, approved statement of who may
+access which files under which conditions, and of what is done to a file
+before it enters a tier.
+
+A tier is a level of access: a public use file anyone can download, a
+licensed file given to approved users under an agreement, and secure
+access to the full file inside a controlled environment. Each tier
+applies a different degree of disclosure control, the removal or
+coarsening of information that could identify a respondent.
+
+1. Start from the
+   [access policy template](pathname:///cookbook-files/microdata-documentation/access_policy_template.md).
+   It has the three tiers, the conditions of each, the disclosure
+   control applied, a statement that travels with every record, and the
+   rules for automated and AI clients.
+2. Decide the disclosure control per tier with a specialist: which
+   identifiers are removed, which variables are top-coded or coarsened,
+   what geography is retained. Tools such as
+   [sdcMicro](https://github.com/sdcTools/sdcMicro) apply and measure
+   these steps, and the [IHSN](https://www.ihsn.org/) publishes guidance
+   on microdata anonymization and dissemination policy.
+3. Record the steps applied to each released file in the study record
+   (`data_files.data_checks` or the notes), so that the record states
+   what was done.
+4. Publish the policy. Users and developers need to read it before they
+   request data.
+
+**Worked example.** The example organization's policy defines three
+tiers. Public use files have direct identifiers removed, geography
+coarsened to the region, age top-coded at 80, and income top-coded at
+the 99th percentile. Anyone may download them after accepting the
+terms. Licensed files keep the district and the single years of age and
+are released to approved researchers under an agreement. Secure access
+to the full file is available in the organization's data laboratory. The
+section on automated clients says that the API and the agent interface
+serve public use data and every study's metadata, and nothing else. The
+head of the microdata unit owns the policy, and it is reviewed every two
+years.
+
+**What this does not do.** The policy sets the rules; disclosure
+control is a measured process. Re-identification risk is assessed on
+the file, with the specialist's tools, before release, and the
+assessment is kept.
+
+</Recipe>
+
+<Recipe title="8.2 Apply disclosure control and document it in the record" level="Foundational" skills="Disclosure control specialist; data curator" time="One to three days per file">
+
+**Result:** the organization has a public use file whose disclosure risk
+was measured and reduced by recorded steps, and a record that states what
+was changed, so that users compute correct statistics.
+
+Disclosure risk comes from combinations of ordinary variables. A
+person who is the only one in the file with their district, age, sex,
+and occupation is identifiable from those four alone. The key variables
+are the ones an outsider could know; the risk measure is how many
+records are unique on them.
+
+1. Measure the risk on the candidate file: identify the key variables
+   (geography, age, sex, occupation, education, household size),
+   compute the share of combinations that are unique in the sample and
+   in the population, and set the threshold the policy requires. The
+   [sdcMicro practice guide](https://sdcpractice.readthedocs.io/) walks
+   through this in a twelve-step workflow with code.
+2. Reduce the risk with the least information loss: remove direct
+   identifiers; recode geography and age into broader classes; top-code
+   income and hours; suppress the rare combinations that remain.
+   Measure the information loss on the statistics users need most (the
+   published tables) and stop when the policy's threshold is met.
+3. Record every step in the study record: the variables removed, the
+   recodings, the top-codes, and the suppression rate, in the data
+   processing and data appraisal fields, and a line on the study page.
+   A user who does not know that age is top-coded at 80 computes a
+   wrong mean.
+4. Keep the sdcMicro script or the sdcApp report with the internal
+   documentation, so that the next round applies the same rules.
+
+**Worked example.** For the running example the specialist takes
+region, urban or rural, sex, single year of age, occupation, and
+education as the key variables. On the full file, 3.1 percent of records
+are unique on those six, above the policy's threshold of 1 percent.
+Four steps bring the share down to 0.6 percent: the district is removed
+(it was already absent from the candidate file), age is grouped into
+five-year bands above 25 and top-coded at 80, and occupation is recoded
+to the sub-major group. Local suppression of the remaining unique
+combinations then brings it to zero, at a cost of 0.4 percent of values
+suppressed. The published
+unemployment rate computed from the public use file differs from the
+official figure by 0.02 points. The record's data processing field lists
+each step, and the sdcMicro script is filed with the round.
+
+**What this does not do.** Disclosure control makes a file safe enough
+under a stated threshold; it does not make it anonymous in an absolute
+sense. The use conditions of the tier (no re-identification attempts,
+no linking) remain part of the protection, and linked or longitudinal
+files need a risk assessment of the linkage.
+
+</Recipe>
+
+<Recipe title="8.3 State the conditions in every record" level="AI-ready" skills="Data curator" time="One hour per survey">
+
+**Result:** a person or a system that reads the record knows the tier,
+the licence, the citation requirement, and the restrictions, without
+having to read the policy.
+
+1. Fill the record's data access section: where the data can be
+   requested or downloaded, the citation requirement, the restrictions,
+   the confidentiality declaration, and any special permission form.
+2. Name the tier in the catalog's access type (NADA has public use,
+   licensed, and other access types) and make the record's text agree
+   with it.
+3. State the licence in the record and on the page. For open aggregate
+   data the World Bank's
+   [terms of use for datasets](https://www.worldbank.org/en/about/legal/terms-of-use-for-datasets)
+   default to CC BY 4.0. Public use microdata are released under terms
+   of use, as the
+   [Microdata Library](https://microdata.worldbank.org/index.php/terms-of-use)
+   does: the user agrees not to redistribute the file and not to attempt
+   re-identification. A Creative Commons licence does not allow such
+   conditions, so the licence field of a public use file names the
+   organization's public use terms with their URL, and the restrictions
+   field repeats the conditions.
+4. Put the citation requirement in the form users should copy, with
+   the DOI, as in
+   [chapter 5 of the dissemination cookbook](/cookbook/ai-ready-dissemination/trust).
+
+**Worked example.** The data access section of the running example's
+record names the tier as "public use file" and gives the download
+address on the catalog. It names the organization's public use terms
+of use as the licence, with their URL, repeats the condition "no attempt
+to re-identify respondents or to link the file with other sources" in
+the restrictions field, and gives the citation requirement with the
+DOI. The catalog's
+access type for the study is set to public use, so the download button
+appears after the terms are accepted. The licensed file from the same
+survey is a separate study in the catalog, with the access type
+"licensed", a request form, and the same metadata visible to everyone.
+
+**What this does not do.** Stating the conditions does not enforce
+them. Enforcement is the catalog's access control (recipe 8.4) and, for
+licensed and secure tiers, the agreement and the secure environment.
+
+</Recipe>
+
+<Recipe title="8.4 Define what automated and AI clients may access" level="AI-native" skills="Catalog administrator; developer" time="One day">
+
+**Result:** every automated path into the catalog, which means the API,
+the bulk download, and the agent interface, serves public use data and
+all metadata and nothing else, and the conditions travel with every
+response.
+
+1. List the automated paths into the catalog: the REST API, bulk
+   downloads, the MCP or agent interface, and any search index.
+2. For each path, confirm that data endpoints serve public use files
+   only, that metadata endpoints serve every study (metadata are the
+   product that should be found), and that licensed and secure files
+   have no data endpoint. NADA's API, and the MCP server of NADA AI over
+   it, follow the access type of each study.
+3. Return the licence, the citation requirement, and the restrictions
+   with every data response, so that an agent receives the conditions
+   with the data
+   ([chapter 5, recipe 5.2 of the dissemination cookbook](/cookbook/ai-ready-dissemination/trust)).
+4. Use read-only credentials for agent interfaces, rate-limit them, log
+   access, and review the log. Keep these in the organization's AI
+   component register
+   ([chapter 8 of the dissemination cookbook](/cookbook/ai-ready-dissemination/govern)).
+5. Test from outside: request a licensed file's data through each path
+   and confirm the refusal; request its metadata and confirm the
+   record.
+
+**Worked example.** The developer lists three automated paths: the
+catalog's REST API, the bulk download page, and the MCP interface. From
+outside the network, a request for the data of the licensed labour force
+file through the API returns a 403 response with the message "licensed
+study: apply through the catalog". The bulk page does not list the file,
+and the MCP data tool returns the same refusal as an execution error. A
+request for the same study's metadata succeeds on all three paths. A
+request for the public use file's data succeeds, and the response
+carries the licence URL, the re-identification condition, and the
+citation requirement. The three tests and their dates are recorded in
+the component register.
+
+**What this does not do.** This recipe governs the organization's own
+paths. Copies of public use files redistributed elsewhere carry the
+licence, and the citation requirement is what lets use be traced
+([chapter 7 of the dissemination cookbook](/cookbook/ai-ready-dissemination/monitor-use)).
+
+</Recipe>
+
+## Implementation options
+
+- **Access types:** NADA's public use, licensed, data enclave, and external access types, with request workflows for licensed files.
+- **Disclosure control:** sdcMicro (open source) for k-anonymity, local suppression, top-coding, and risk measures; the organization's disclosure control procedures set the thresholds.
+- **Licences:** CC BY 4.0 for open aggregate data; public use terms of use for public use files; an agreement for licensed files.
+- **Automated access:** the catalog API (OpenAPI-described) and an MCP interface with read-only tools; see [chapter 2 of the dissemination cookbook](/cookbook/ai-ready-dissemination/retrieve).
+
+## World Bank examples
+
+- The [Microdata Library](https://microdata.worldbank.org/) applies access types per study, with public use files downloadable after agreeing to terms and licensed files by application.
+- NADA manages registered and licensed access requests and exposes records through its REST API. NADA AI, the semantic search and MCP service being integrated into NADA, serves the records to agents under the same access types.
+- The dissemination cookbook's [governance chapter](/cookbook/ai-ready-dissemination/govern) covers the AI-use policy and the component register that the automated paths belong in.
+
+## Resources
+
+- [IHSN anonymization resources](https://ihsn.org/anonymization): the theory guide, the practice guide, and sdcApp, for statistical disclosure control of microdata.
+- [sdcMicro practice guide](https://sdcpractice.readthedocs.io/): the twelve-step workflow with code, risk measures, methods, and information-loss measures; the [sdcMicro package](https://cran.r-project.org/package=sdcMicro) on CRAN.
+- [Creative Commons BY 4.0](https://creativecommons.org/licenses/by/4.0/): the licence for open aggregate data. Public use files carry terms of use, as the [Microdata Library terms of use](https://microdata.worldbank.org/index.php/terms-of-use) show.
+- [NADA](https://nada.ihsn.org/): access types (public use, licensed, data enclave, external) and the request workflow.
+- [Access policy template](pathname:///cookbook-files/microdata-documentation/access_policy_template.md): the tiers, conditions, and rules for automated clients used in recipe 8.1.
+- [Governance chapter of the dissemination cookbook](/cookbook/ai-ready-dissemination/govern): the AI-use policy and component register the automated paths belong in.
+
+## Common mistakes
+
+- **Conditions in the policy but not in the record.** Systems read records; a policy on another page does not reach them.
+- **An API that serves what the website restricts.** Every automated path is checked against the tiers, including bulk and agent interfaces.
+- **Metadata locked with the data.** The record of a licensed study is public information; locking it makes the study unfindable.
+- **Disclosure control undocumented.** A user who does not know that age is top-coded computes wrong statistics.
+
+## Verification
+
+- **Policy.** The policy is approved, published, and referenced from every study page.
+- **Record.** The access fields, the licence, the citation requirement, and the restrictions are filled, and the catalog's access type agrees with the text.
+- **Paths.** An outside request for a licensed file's data is refused on every automated path, and its metadata are served.
+- **Conditions in responses.** Every data response carries the licence and the citation requirement.
+
+## Checklist
+
+<Checklist id="microdata-documentation-access" items={[
+  'Access policy with tiers approved and published',
+  'Disclosure control applied per tier and recorded in the record',
+  'Tier, licence, citation requirement, and restrictions in every record',
+  'Catalog access type agrees with the record',
+  'Automated paths listed and checked against the tiers',
+  'Licensed and secure files have no data endpoint; metadata served',
+  'Conditions returned with every data response',
+  'Agent access read-only, rate-limited, logged, and registered',
+]} />

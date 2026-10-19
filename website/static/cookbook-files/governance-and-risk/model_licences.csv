@@ -1,0 +1,5 @@
+model_id,model,used_by,licence,licence_class,allowed_use,restrictions_noted
+M01,Open-weight 8B instruction model,C01;C03;C04;C06,Apache-2.0,permissive,Commercial and internal use; modification; redistribution with notice,None beyond attribution
+M02,Multilingual embedding model,C02,MIT,permissive,Commercial and internal use; modification; redistribution with notice,None beyond attribution
+M03,Hosted model (provider A),C05,proprietary terms of service,proprietary-api,Use through the API under the contract,Inputs must not contain personal data; outputs may be published with review
+M04,Open-weight 70B model (candidate),,custom community licence,restricted,Internal use below the user threshold stated in the licence; attribution required,Acceptable-use policy applies; redistribution of derivatives carries the licence

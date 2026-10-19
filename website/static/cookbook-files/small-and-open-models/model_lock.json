@@ -1,0 +1,10 @@
+{
+  "model_id": "example-org/stats-coder-3b",
+  "version": "1.2.0",
+  "source": "internal registry, imported from the base model's publisher on 2026-09-10",
+  "files": {
+    "config.json": "f963a7f52a05373364adc79ea054023bfdb3bdcc5be1903bd2b6b39cad9b2c2b",
+    "tokenizer.json": "c2823fb776dfaab48bfa06a33005d02a60492d87762cdb66c9c4155f97fbaa5d",
+    "model.safetensors": "9a129038d9a00aed0cf6a7ea059ca50a813449061ab87848cf1a13eafdf33b2c"
+  }
+}

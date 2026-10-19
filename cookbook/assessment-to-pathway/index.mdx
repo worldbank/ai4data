@@ -1,0 +1,156 @@
+---
+id: index
+title: Practical Guide from the Readiness Assessment to an Improvement Pathway
+sidebar_label: Overview
+sidebar_position: 0
+description: A cookbook for management and planning teams in national statistical organizations, and the advisers who support them, on turning an AI-readiness profile into an agreed, sequenced, and funded improvement pathway with evidence for the re-assessment.
+---
+
+# Practical Guide from the Readiness Assessment to an Improvement Pathway
+
+**A cookbook for management and planning teams in national statistical organizations, and the advisers who support them.** Version 0.1 (working draft), October 2026.
+
+:::note[Working draft]
+This guide is a working draft from the AI for Data – Data for AI program. It
+collects practical approaches and open standards. It does not
+represent official World Bank Group guidance or policy and is not legal
+advice; an organization applies it under its own statistical law, data
+protection rules, and institutional policies.
+Comments and corrections are welcome as
+[GitHub issues](https://github.com/worldbank/ai4data/issues), and the
+[contributing](./contributing.md) page explains how to propose a recipe.
+:::
+
+The AI-readiness assessment framework places a statistical organization on
+twelve dimensions and says that its output is a prioritized map of where
+the organization stands, where it needs to go, and what steps are most
+likely to move it forward. This guide is the method for the second and
+third parts of that sentence. It takes the sixty-nine answers of an
+assessment and produces, in seven steps, a pathway that a board can
+approve and a funder can read: the profile with the questions behind each
+level, a target per dimension with a reason, the order of the work by
+dependency, the effort and the kinds of cost, the pathway document, the
+evidence that will show each question moved, and the comparison at the
+re-assessment.
+
+The guide follows the framework's own four-step logic of prioritize,
+diagnose, plan, and monitor, and its pathway for early-stage
+organizations, which puts the four foundations (quality control, metadata
+standards, a searchable catalog, API access under a clear licence) before
+the frontier dimensions. The other cookbooks of the series are where the
+work of each dimension is done; this guide is where the work is chosen,
+ordered, estimated, and measured. The [operational companion](/ai-readiness-in-practice)
+maps each dimension to the cookbooks and tools that serve it, and the
+[governance cookbook](/cookbook/governance-and-risk/) keeps the decision
+log where the pathway's approvals and changes are recorded.
+
+:::tip[What the scripts do and do not decide]
+The scripts of this guide compute profiles, gaps, waves, estimates, and
+comparisons from tables the organization fills. The targets, the
+dependencies that differ from the running example's, the dates, and the
+narrative are the organization's decisions, written in the same tables and
+in the pathway document. A pathway is a set of recorded decisions with
+arithmetic behind them.
+:::
+
+## Prerequisites
+
+The recipes assume the following are in place or can be arranged:
+
+- A completed AI-readiness assessment, with the answer and the assessor's note for each question, and the framework version it was made with.
+- A planning team of two or three people who can run short Python scripts and who have the heads of units available for half a day each.
+- For the AI-ready level, a governance board and a decision log (the [governance cookbook](/cookbook/governance-and-risk/decisions)) where the pathway's approval and its quarterly reviews are recorded.
+
+## First steps
+
+For a team with limited time, this sequence gives the most useful result first:
+
+1. Compute the profile and read each dimension with its questions, following [chapter 1](./profile.mdx). This takes half a day.
+2. Set a target per dimension with a reason and run the gap table, following [chapter 2](./targets.mdx). This takes half a day.
+3. Compute the waves and the estimate, following [chapters 3](./sequence.mdx) and [4](./effort.mdx). This takes an hour.
+4. Generate the pathway document, add the narrative and the dates, and take it to the board, following [chapter 5](./pathway.mdx). This takes a day.
+
+The evidence register of [chapter 6](./evidence.mdx) is written in the first month of the pathway and checked each quarter, and the re-assessment of [chapter 7](./reassess.mdx) closes the cycle.
+
+## Self-assessment
+
+The [self-assessment](./start-here.mdx) takes about five minutes and places
+an organization's planning practice at a level in each chapter.
+
+## Chapters and questions
+
+| Chapter | Question | Practical topics |
+|---|---|---|
+| [1. Reading a readiness profile](./profile.mdx) | What does the readiness profile say about the organization? | Score file, dimension averages and levels, pillar and overall scores, reading questions and notes |
+| [2. Target levels and the gap](./targets.mdx) | Which level should each dimension reach, and how large is the gap? | Targets with reasons, foundations first, gap in levels and in questions |
+| [3. The order of the work](./sequence.mdx) | In what order should the dimensions be addressed? | Dependency table, waves, foundations check |
+| [4. Effort, roles, and kinds of cost](./effort.mdx) | What will the pathway take in effort, roles, and cost? | Recipe effort table, selection by level, person-days, roles, items outside the series |
+| [5. The improvement pathway document](./pathway.mdx) | How is the pathway written so that it can be agreed and funded? | Generated document, narrative file, dates, budget lines, approval |
+| [6. Evidence for each question](./evidence.mdx) | What evidence will show that a dimension moved? | Evidence register, owners and due dates, quarterly check, overdue rows |
+| [7. The re-assessment](./reassess.mdx) | How is progress measured at the re-assessment? | Same version, evidence pack, profile comparison, next cycle |
+
+## Maturity levels
+
+Each chapter describes three levels. An organization can sit at different
+levels in different chapters, and the first level is a complete, useful
+state on its own.
+
+| Level | Meaning |
+|---|---|
+| **Foundational** | The tables exist and the scripts have run once; the pathway is approved and dated. |
+| **AI-ready** | The tables are kept under version control, the register is checked each quarter, and changes to the pathway are recorded decisions. |
+| **AI-native** | The profile comes from the assessment platform's export, the evidence pack is generated from the register, and the comparison is shared with the peer network. |
+
+## Running example
+
+The example organization was assessed on 2025-06-20 and scored 25.6 of
+100, with ten dimensions at B and two at A. It set targets of C for the
+foundations, licensing, strategy, and the legal environment, and B for
+skills and agentic access; nine dimensions had a gap, forty-six questions
+were below target, and the work fell into three waves for 75 to 149
+person-days. Its evidence register was checked on 2026-01-15 with nothing
+overdue, and its re-assessment on 2026-09-30 reached every target, with
+an overall score of 55.3. All answers, targets, dates, and estimates are
+invented; the dimensions and questions are those of the framework.
+
+## Scope of the examples
+
+The examples are small on purpose: one organization, one cycle, one
+recipe per dimension in the estimate, so that a reader can run them in an
+afternoon and see the shape of each step. They are starting points. Each
+recipe ends with a **What this does not do** note that says where the
+example stops and what the full version adds. The framework's own scoring
+scripts are the reference for the published index; the profile script
+here reproduces the published rule for planning.
+
+## Files
+
+| File | Used in |
+|---|---|
+| [question_scores.csv](pathname:///cookbook-files/assessment-to-pathway/question_scores.csv) and [readiness_profile.py](pathname:///cookbook-files/assessment-to-pathway/readiness_profile.py) | Chapter 1: the first assessment's answers and the profile script |
+| [targets.csv](pathname:///cookbook-files/assessment-to-pathway/targets.csv) and [gap_table.py](pathname:///cookbook-files/assessment-to-pathway/gap_table.py) | Chapter 2: the targets with reasons and the gap table |
+| [dependencies.csv](pathname:///cookbook-files/assessment-to-pathway/dependencies.csv) and [sequence_plan.py](pathname:///cookbook-files/assessment-to-pathway/sequence_plan.py) | Chapter 3: the dependency table and the waves |
+| [recipe_effort.csv](pathname:///cookbook-files/assessment-to-pathway/recipe_effort.csv) and [effort_estimate.py](pathname:///cookbook-files/assessment-to-pathway/effort_estimate.py) | Chapter 4: the recipe effort table and the estimate |
+| [pathway_document.py](pathname:///cookbook-files/assessment-to-pathway/pathway_document.py) | Chapter 5: the generator of the pathway document |
+| [evidence_register.csv](pathname:///cookbook-files/assessment-to-pathway/evidence_register.csv) and [check_evidence.py](pathname:///cookbook-files/assessment-to-pathway/check_evidence.py) | Chapter 6: the evidence register and its check |
+| [scores_after.csv](pathname:///cookbook-files/assessment-to-pathway/scores_after.csv) and [compare_profiles.py](pathname:///cookbook-files/assessment-to-pathway/compare_profiles.py) | Chapter 7: the re-assessment's answers and the comparison |
+
+## Related resources
+
+| Resource | Purpose |
+|---|---|
+| This guide | What an organization can do, and why, in a sequence of practical steps. |
+| [AI-readiness assessment framework](/ai-readiness-assessment) | The dimensions, questions, levels, and scoring the pathway starts from. |
+| [Operational companion](/ai-readiness-in-practice) | The program resources, recipes, and evidence per dimension. |
+| [Governance cookbook](/cookbook/governance-and-risk/) | The board and the decision log where the pathway is approved and changed. |
+| [Documentation](/docs/introduction) | How each program method and tool works. |
+| [Code](https://github.com/worldbank/ai4data) | Open-source software to deploy or adapt. |
+
+## Citation
+
+World Bank. 2026. *Practical Guide from the Readiness Assessment to an Improvement Pathway.* Version 0.1. AI for Data – Data for AI.
+https://worldbank.github.io/ai4data/cookbook/assessment-to-pathway/
+
+## Version history
+
+- **0.1 (October 2026).** First draft.

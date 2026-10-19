@@ -1,0 +1,129 @@
+---
+id: start-here
+title: Self-assessment
+sidebar_label: Self-assessment
+sidebar_position: 1
+description: A five-minute self-assessment that places a team's evaluation practice at a maturity level in each chapter and suggests a reading order.
+---
+
+import SelfAssessment from '@site/src/components/Cookbook/SelfAssessment';
+
+# Self-assessment
+
+Select the statement that best describes the team today, one per chapter.
+The result shows a level for each chapter and the chapters to read first.
+Answers are stored in this browser only.
+
+<SelfAssessment
+  base="/cookbook/evaluation-suites/"
+  questions={[
+    {
+      id: 'inventory',
+      title: '1. Inventory',
+      question: 'Which components are evaluated?',
+      options: [
+        'None in a systematic way; demonstrations are judged by eye.',
+        'A list of AI components exists with the decision each makes and a required score for the most important.',
+        'Every component has a suite, ordered by the cost of its errors, with required scores set before testing.',
+        'The inventory is reviewed each period from incidents and production samples.',
+      ],
+    },
+    {
+      id: 'questions',
+      title: '2. Questions',
+      question: 'Where do the test questions come from?',
+      options: [
+        'Staff write a few examples when needed.',
+        'A versioned set with expected answers, including questions with no answer.',
+        'Real queries and failures feed the set; two labellers with measured agreement; every supported language covered.',
+        'The set grows each month from production samples, with a labelling guide maintained from disagreements.',
+      ],
+    },
+    {
+      id: 'retrieval',
+      title: '3. Retrieval',
+      question: 'How is search measured?',
+      options: [
+        'By trying a few queries.',
+        'Recall@k and MRR on the set, scored by a script.',
+        'Scores per language and per question type, with nDCG where graded relevance exists, and no-answer questions scored by refusal.',
+        'Scores tracked per version with intervals, and slices below the threshold block a change.',
+      ],
+    },
+    {
+      id: 'answers',
+      title: '4. Answers',
+      question: 'How are generated answers measured?',
+      options: [
+        'By reading some.',
+        'Numeric accuracy and citation validity scored automatically on the set.',
+        'Refusal accuracy and unsupported numbers added; a grader with a rubric for caveats and period; per language.',
+        'Answer scores gate every change of model, prompt, index, or metadata.',
+      ],
+    },
+    {
+      id: 'extraction',
+      title: '5. Extraction',
+      question: 'How are extraction and classification measured?',
+      options: [
+        'Not measured.',
+        'Precision and recall on a labelled sample.',
+        'Exact and lenient matching, an error taxonomy, and scores per document type and language.',
+        'The taxonomy drives fixes, and the labelled sample grows from production errors.',
+      ],
+    },
+    {
+      id: 'judges',
+      title: '6. Graders',
+      question: 'How are automatic graders validated?',
+      options: [
+        'They are trusted.',
+        'A sample of grades is spot-checked by a person.',
+        'Agreement and kappa with human scores measured on a hundred items; length and position bias checked; rubric adjusted.',
+        'Graders are re-validated on every rubric or model change, with the validation kept with the suite.',
+      ],
+    },
+    {
+      id: 'gates',
+      title: '7. Gates',
+      question: 'How do changes ship?',
+      options: [
+        'When they look better.',
+        'The suite runs before a change and the overall score must not drop.',
+        'Paired comparison per slice with intervals and a tolerance; small slices go to a person.',
+        'The gate runs in continuous integration, and the suite versions with the component.',
+      ],
+    },
+    {
+      id: 'production',
+      title: '8. Production',
+      question: 'How is a deployed component evaluated?',
+      options: [
+        'It is not, after launch.',
+        'Logged traffic is reviewed occasionally.',
+        'A stratified sample of traffic is reviewed each month, declined and down-rated queries included; failures enter the set.',
+        'Drift in scores and in traffic mix is monitored with thresholds, and the suite is re-run on schedule.',
+      ],
+    },
+    {
+      id: 'reporting',
+      title: '9. Reporting',
+      question: 'How are results reported?',
+      options: [
+        'In conversation.',
+        'A score per release.',
+        'A report card per release with intervals, slices, set version, and model versions.',
+        'Report cards are published, and sets follow a shared format so that organizations can compare.',
+      ],
+    },
+  ]}
+/>
+
+## Interpretation of the result
+
+- Chapters 1 and 2 first: without an inventory and a real question set,
+  every measure in the later chapters measures the wrong thing well.
+- Chapter 7 is the one that changes behaviour: a suite that gates changes
+  is run; a suite that only reports is forgotten.
+- Chapter 6 before relying on any grader: an unvalidated grader is a
+  second system to be wrong.

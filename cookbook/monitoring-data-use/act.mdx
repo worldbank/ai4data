@@ -1,0 +1,211 @@
+---
+id: act
+title: "9. Action on the results"
+sidebar_label: "9. Act"
+sidebar_position: 10
+description: How the results of monitoring change what the organization does, by ordering documentation and dissemination work by use, following up misquoted figures, and linking document records and dataset pages from the results.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 9. Action on the results
+
+**Question:** Can the results improve the data and their documentation?
+
+## Rationale
+
+Monitoring earns its cost when the results change something. The
+report of chapter 8 is a set of numbers, and numbers that nobody acts
+on are an expense. The decisions that the report can inform are of four
+kinds: which datasets get documentation work first, which misquotes are
+corrected, which documents and datasets are linked in the catalog, and
+which products are argued for at budget time. This chapter turns the
+report into those decisions, and it records each decision so that the
+next report can show whether it made a difference.
+
+## Target state
+
+- Documentation and dissemination work is prioritized by use and by the gaps the report shows.
+- Misquoted figures found in documents and AI answers are followed up, with the fix on the organization's side where the cause is there.
+- Document records and dataset pages link to each other from the results, and confirmed variants flow back to the names table.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Review the report each period and decide which products to continue, improve, or promote. |
+| **AI-ready** | Prioritize the documentation work of the other cookbooks by use. Check quoted figures against the catalog and follow up misquotes. Add "used in" to dataset pages. |
+| **AI-native** | Feed results into the catalog automatically: document records' data sources, dataset pages' citations lists, names table variants, and the question sets of the evaluation suites. |
+
+:::info[Running example]
+The report shows the household budget survey used in research, the
+labour force survey in media, and its unemployment rate in policy. The nutrition strategy quotes the
+undernourishment figure correctly; the regional outlook mentions a food
+security report without using it. The example organization decides to
+complete the labour force survey's variable documentation first, because it
+is the dataset most used outside research, where users rely on the record
+alone.
+:::
+
+## Recipes
+
+<Recipe title="9.1 Prioritize documentation and dissemination work by use" level="AI-ready" skills="Dissemination lead" time="Half a day per period">
+
+**Result:** the work lists of the other cookbooks are ordered by the use
+the report shows, so that the datasets people rely on most are
+documented first, and the gaps the report shows have a decision against
+them.
+
+1. For each dataset, put the use counts next to its documentation
+   status: the completeness check of the
+   [dissemination cookbook](/cookbook/ai-ready-dissemination/find) and,
+   for surveys, the dictionary check of the
+   [microdata cookbook](/cookbook/microdata-documentation/variables).
+2. Order the work: datasets used most and documented least first. Among
+   them, those used outside research first, since policy and media
+   users read the record and nothing else.
+3. Read the gaps. A dataset produced and never mentioned is a
+   discoverability or relevance signal. A dataset used only with
+   another organization's data (co-use) is a candidate for a joint
+   product or a crosswalk.
+4. Record the decisions with the report, so that the next period shows
+   whether use changed where work was done.
+
+**Worked example.** The lead puts the use counts beside the
+documentation status. The household budget survey is used most in
+research and has a complete dictionary. The labour force survey is used
+in media and policy, where readers see the record and nothing else, and
+its dictionary fails the check with four errors. The 2014 census is
+mentioned nowhere in the collection, although it is the most downloaded
+file. Three decisions are recorded with the report. The labour force
+survey's variable documentation is completed this quarter. The census
+is looked into, starting with whether its recommended citation is on
+the page, to find out why it is downloaded and never cited. And a
+crosswalk to the Demographic and Health Survey, with which the budget
+survey is used, is proposed.
+
+**What this does not do.** Use measures demand as it was; it does not
+show demand that better documentation would create. Datasets never
+mentioned need a judgement about why.
+
+</Recipe>
+
+<Recipe title="9.2 Follow up misquoted figures" level="AI-ready" skills="Dissemination officer" time="One hour per period plus follow-up">
+
+**Result:** figures quoted from the data in documents and in AI answers
+have been checked against the catalog, and the causes that lie on the
+organization's own side have been fixed first.
+
+1. For mentions whose context quotes a figure (the extractor's context
+   window shows it), compare the figure with the catalog value for the
+   dataset, period, and geography, with the tolerance of the number
+   check in the
+   [dissemination cookbook](/cookbook/ai-ready-dissemination/trust).
+2. Do the same for the AI visibility check: wrong figures, wrong
+   periods, missing citations.
+3. For each misquote, check the organization's side first: was the
+   current figure findable, retrievable, and clearly labelled with its
+   period and unit? Most fixes are there. Then contact the author or
+   publisher where the error matters.
+4. Log misquotes by dataset and cause. A dataset misquoted often needs
+   its page and its API response looked at.
+
+**Worked example.** The nutrition strategy quotes the prevalence of
+undernourishment as 7.6 percent for 2024, which matches the catalog. A
+news article quotes the unemployment rate as 6.3 percent "in the latest
+quarter" in September 2025, when the latest quarter was the second, at
+6.1. The officer checks the organization's page and finds that the
+second-quarter release was shown in a chart with the figure only in the
+image. The page is changed to state the latest value and its quarter in
+text. The misquote is logged against the unemployment rate with the
+cause "latest value not in text on the series page", and the journalist
+is sent the current figure with the citation.
+
+**What this does not do.** The check finds figures that differ from the
+catalog. A figure that differs because the document used an earlier
+vintage is correct for its date, and the revisions log says so.
+
+</Recipe>
+
+<Recipe title="9.3 Close the loop in the catalog" level="AI-native" skills="Catalog administrator; developer" time="One week to set up">
+
+**Result:** the results of monitoring have become part of the catalog.
+Documents link to the datasets they use, dataset pages list the
+documents that use them, and the names table grows from confirmed
+variants.
+
+1. For each matched mention marked as used, add the dataset to the
+   document's record (`data_sources` in the World Bank document schema)
+   where the document is in the organization's catalog.
+2. On each dataset page, show "used in" from the harmonized mentions,
+   as the Microdata Library's citations pages do, with the document,
+   year, and type.
+3. Write confirmed variants back to the names table and to the series
+   record's `aliases` field, and add misquoted questions to the
+   evaluation question set of the dissemination cookbook.
+4. Expose the links through the catalog API, so that an AI system
+   answering about a dataset can cite the documents that use it.
+
+**Worked example.** The 2023 journal article is in the organization's
+own document catalog, because a staff member co-authored it. Its record
+gains `EX-HBS-2021` in `data_sources`. The catalog page of the household
+budget survey gains a "Used in" section that lists the article and the
+2024 working paper with their years and types. The variant "the budget
+survey", confirmed in chapter 7, is written to the survey's `aliases`
+field, and the misquoted question about the latest unemployment rate is
+added to the evaluation question set with the expected answer of 6.1
+percent for 2025 Q2. An assistant that answers a question about the
+budget survey through the catalog API can now cite the two documents
+that use it.
+
+**What this does not do.** Automatic links carry the extractor's
+precision. Links on public pages are added for exact and reviewed
+matches only; "contains" and fuzzy matches wait for review.
+
+</Recipe>
+
+## Implementation options
+
+- **Prioritization:** use counts joined with the completeness and dictionary checks of the other cookbooks.
+- **Misquote checks:** the number verification approach of Proof-Carrying Numbers applied to quoted figures; the revisions log for vintages.
+- **Catalog links:** `data_sources` in document records, citations lists on dataset pages, `aliases` in series records; NADA's citations feature.
+- **Feedback to evaluation:** misquoted questions added to the question sets that score search and answers.
+
+## World Bank examples
+
+- The [Microdata Library](https://microdata.worldbank.org/citations) lists citing publications per study.
+- [Proof-Carrying Numbers](https://arxiv.org/abs/2509.06902) is the number verification that recipe 9.2 applies to quoted figures.
+- The [operationalizing the assessment](/ai-readiness-in-practice) page places monitoring in the dimensions of the AI-readiness assessment.
+
+## Resources
+
+- [Proof-Carrying Numbers](https://arxiv.org/abs/2509.06902): the program's method for checking a quoted figure against its source, applied to misquotes.
+- [NADA](https://nada.ihsn.org/): the catalog's citations feature, where "used in" lists are published per study.
+- [World Bank metadata schemas](https://github.com/worldbank/metadata-schemas): `data_sources` in document records and `aliases` in series records, the fields that close the loop.
+- [Findability chapter of the dissemination cookbook](/cookbook/ai-ready-dissemination/find) and [chapter 3 of the microdata cookbook](/cookbook/microdata-documentation/variables): the completeness and dictionary checks that use counts prioritize.
+- [Evaluation chapter of the dissemination cookbook](/cookbook/ai-ready-dissemination/evaluate): the question sets that misquoted figures feed.
+
+## Common mistakes
+
+- **Reports without decisions.** The period ends and nothing is different.
+- **Blaming the author first.** Most misquotes trace to a figure that was hard to find or unlabelled on the organization's side.
+- **Linking unreviewed matches on public pages.** A wrong "used in" entry is a public error.
+- **Prioritizing by research use alone.** Policy and media users depend most on the record.
+
+## Verification
+
+- **Decisions.** Each period's report has a recorded set of decisions, and the next period's report records their effect.
+- **Misquotes.** Every misquote is logged with its cause and its follow-up, and the share caused by the organization's own side falls over time.
+- **Links.** "Used in" lists and `data_sources` entries exist for every reviewed match, and the aliases are updated.
+
+## Checklist
+
+<Checklist id="monitoring-data-use-act" items={[
+  'Documentation work ordered by use and documentation status',
+  'Gaps (never mentioned, co-use only) reviewed with a decision',
+  'Quoted figures checked against the catalog; misquotes logged by cause',
+  'Own-side causes fixed before external follow-up',
+  'data_sources and "used in" lists updated from reviewed matches',
+  'Variants and misquoted questions fed back to the table and the question sets',
+]} />

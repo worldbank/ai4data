@@ -1,0 +1,631 @@
+/* ---------- Hero ---------- */
+
+.hero {
+  padding: 4.5rem 0 3rem;
+  background: linear-gradient(180deg, var(--band) 0%, var(--canvas) 100%);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.heroTitle {
+  font-weight: 300;
+  font-size: 3rem;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+  margin: 0.75rem 0 1rem;
+  max-width: 46rem;
+}
+
+.heroLede {
+  max-width: 46rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--ink-muted);
+  margin: 0 0 1.5rem;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.primary {
+  background: var(--primary);
+  color: #fff;
+  border: 0;
+}
+
+.primary:hover {
+  color: #fff;
+  filter: brightness(1.1);
+}
+
+.secondary {
+  background: var(--canvas);
+  color: var(--ink);
+  border: 1px solid var(--hairline);
+}
+
+.secondary:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  max-width: 46rem;
+  margin: 0;
+}
+
+.facts div {
+  border-left: 2px solid var(--primary);
+  padding-left: 0.8rem;
+}
+
+.facts dt {
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.facts dd {
+  margin: 0.1rem 0 0;
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* ---------- Sections ---------- */
+
+.section {
+  padding: 4rem 0;
+}
+
+.band {
+  background: var(--band);
+}
+
+.head {
+  max-width: 46rem;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 1.9rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0.6rem 0 0.6rem;
+}
+
+.lede {
+  color: var(--ink-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.note {
+  color: var(--ink-muted);
+  line-height: 1.6;
+  margin: 1.5rem 0 0;
+  padding: 1rem 1.2rem;
+  border-left: 3px solid var(--primary);
+  background: var(--surface-1);
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+}
+
+.list {
+  margin: 0;
+  padding-left: 1.1rem;
+  line-height: 1.55;
+}
+
+.list li + li {
+  margin-top: 0.35rem;
+}
+
+.blockTitle {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin: 1.2rem 0 0.5rem;
+}
+
+.twoCol {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.panel {
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  background: var(--canvas);
+  padding: 1.4rem 1.5rem;
+}
+
+.panelTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 0.8rem;
+}
+
+/* ---------- Legend ---------- */
+
+.legendGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem 1.5rem;
+  margin-top: 2rem;
+}
+
+.legendItem {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+}
+
+.legendItem strong {
+  display: block;
+  font-size: 0.92rem;
+  margin-bottom: 0.2rem;
+}
+
+.legendItem p {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+.badge {
+  display: inline-block;
+  flex-shrink: 0;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.badge + .badge {
+  margin-left: 0.3rem;
+}
+
+.lv_available {
+  background: rgba(31, 111, 235, 0.14);
+  color: var(--primary);
+}
+
+.lv_adapt {
+  background: rgba(210, 140, 20, 0.16);
+  color: #8a5a00;
+}
+
+.lv_expand {
+  background: rgba(40, 150, 90, 0.16);
+  color: #1d6b43;
+}
+
+.lv_project {
+  background: var(--surface-1);
+  color: var(--ink-muted);
+}
+
+:global([data-theme='dark']) .lv_adapt {
+  color: #f0b45a;
+}
+
+:global([data-theme='dark']) .lv_expand {
+  color: #6fd39a;
+}
+
+/* ---------- Phases ---------- */
+
+.phases {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.2rem;
+}
+
+.phase {
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  background: var(--canvas);
+  padding: 1.3rem 1.4rem 1.5rem;
+  min-width: 0;
+}
+
+.phaseHead {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.8rem;
+}
+
+.phaseN {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.phaseTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.gate {
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+  margin: 0 0 0.8rem;
+  padding: 0.5rem 0.8rem;
+  border-left: 3px solid var(--primary);
+  background: var(--surface-1);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  line-height: 1.45;
+}
+
+.phaseSummary {
+  font-size: 0.92rem;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.phase .list {
+  font-size: 0.88rem;
+}
+
+/* ---------- Matrix ---------- */
+
+.matrixWrap {
+  overflow-x: auto;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  background: var(--canvas);
+}
+
+.matrix {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  margin: 0;
+  display: table;
+}
+
+.matrix th,
+.matrix td {
+  padding: 0.6rem 0.8rem;
+  border: 0;
+  border-bottom: 1px solid var(--hairline);
+  text-align: center;
+  vertical-align: middle;
+  background: transparent;
+}
+
+.matrix thead th {
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+}
+
+.matrix th[scope='row'],
+.matrix thead th:first-child {
+  text-align: left;
+}
+
+.matrixGroup th {
+  text-align: left;
+  background: var(--surface-1);
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.rowOn th,
+.rowOn td {
+  background: rgba(31, 111, 235, 0.07);
+}
+
+.rowButton {
+  font: inherit;
+  color: var(--ink);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  min-height: 1.5rem;
+}
+
+.rowButton:hover {
+  color: var(--primary);
+}
+
+.rowOn .rowButton {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.cell {
+  width: 4.5rem;
+}
+
+.dimCol {
+  width: 6rem;
+  white-space: nowrap;
+}
+
+.levelCol {
+  width: 14rem;
+  white-space: nowrap;
+}
+
+.phaseShort {
+  display: none;
+}
+
+.dot {
+  display: inline-block;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 999px;
+  border: 2px solid var(--hairline-strong, #b9c2cc);
+  background: transparent;
+  vertical-align: middle;
+}
+
+.dotFull {
+  border-color: var(--primary);
+  background: var(--primary);
+}
+
+.dimId {
+  display: inline-block;
+  min-width: 2.1rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-muted);
+  font-weight: 600;
+  font-size: 0.82rem;
+}
+
+.rolesTable th,
+.rolesTable td {
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.rolesTable th[scope='row'] {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ---------- Area detail ---------- */
+
+.detail {
+  margin-top: 1.5rem;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  background: var(--canvas);
+  padding: 1.6rem 1.8rem 1.8rem;
+  scroll-margin-top: 5rem;
+}
+
+.detailHead {
+  margin-bottom: 1rem;
+}
+
+.detailTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0.4rem 0 0.5rem;
+}
+
+.detailMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1.5rem;
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}
+
+.inlineButton {
+  font: inherit;
+  color: var(--primary);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.need {
+  line-height: 1.6;
+  margin: 0;
+  max-width: 60rem;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem 2.5rem;
+}
+
+.contribList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
+}
+
+.contribList li {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+}
+
+.contribList li + li {
+  margin-top: 0.45rem;
+}
+
+.contribList .badge {
+  margin-top: 0.2rem;
+}
+
+/* ---------- Expansions ---------- */
+
+.expGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.expGroup {
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  background: var(--canvas);
+  padding: 1.3rem 1.5rem;
+  min-width: 0;
+}
+
+.expGroupTitle {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin: 0 0 0.8rem;
+}
+
+.expArea + .expArea {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--hairline);
+}
+
+.expAreaTitle {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: var(--ink);
+}
+
+.expAreaTitle:hover {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.expArea .list {
+  font-size: 0.92rem;
+}
+
+/* ---------- Risks ---------- */
+
+.risks {
+  margin: 0;
+}
+
+.risks div + div {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--hairline);
+}
+
+.risks dt {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+.risks dd {
+  margin: 0;
+  color: var(--ink-muted);
+  line-height: 1.55;
+}
+
+/* ---------- Responsive ---------- */
+
+@media screen and (max-width: 996px) {
+  .phases {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .legendGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .phaseFull {
+    display: none;
+  }
+
+  .phaseShort {
+    display: inline;
+  }
+
+  .levelCol {
+    width: auto;
+    white-space: normal;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .heroTitle {
+    font-size: 2.2rem;
+  }
+
+  .facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .twoCol,
+  .phases,
+  .legendGrid,
+  .detailGrid,
+  .expGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .section {
+    padding: 3rem 0;
+  }
+
+  .detail {
+    padding: 1.2rem 1rem 1.4rem;
+  }
+
+  .matrix {
+    min-width: 40rem;
+  }
+
+  .rolesTable {
+    min-width: 52rem;
+  }
+}
+
+@media (pointer: coarse) {
+  .rowButton,
+  .inlineButton {
+    min-height: 2.5rem;
+  }
+}

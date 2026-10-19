@@ -1,0 +1,272 @@
+---
+id: understand
+title: "3. Meaning of the data: units, concepts, and classifications"
+sidebar_label: "3. Understand"
+sidebar_position: 4
+description: How to document what each number means, through a fixed template for definitions and methods, published code lists and crosswalks, and breaks and revisions recorded as data, so that people and software read the figures correctly.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 3. Meaning of the data: units, concepts, and classifications
+
+**Question:** Can AI understand what the numbers mean?
+
+## Rationale
+
+A number on its own means nothing. The value 41 is an under-five
+mortality rate only because the record says it counts deaths per 1,000
+live births, refers to the year 2020, and covers the whole country. An AI
+system that retrieves the 41 without those fields may describe it as a
+percentage, attach it to the wrong year, or compare it with a figure from
+another country that uses a different definition. People make the same
+mistakes when the fields are missing; software makes them faster and at
+scale.
+
+The meaning of a number lives in a small set of things: its unit, its
+reference period, the population it describes, its definition, and the
+method used to produce it. Two further things decide whether numbers can
+be compared: the code lists that say what each code stands for, and the
+record of where a series breaks or a value was revised. This chapter puts
+each of them in a form that a person can read and software can extract.
+
+## Target state
+
+- Each series states its unit, frequency, reference period, geographic coverage, and population.
+- Definitions and method notes are written once, linked to the series, and available in structured form.
+- Codes for geography, time, sex, age groups, and activities come from published code lists and classifications.
+- Breaks in a series and revisions are recorded as data.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Write a plain-language definition, a unit, and a method note for each indicator. Use standard geography and date codes. Add a "last revised" date. |
+| **AI-ready** | Publish structure and code lists in SDMX (aggregate data) or DDI (surveys and microdata). Use standard classifications and publish the mapping from national codes. Record series breaks and revisions in fields as well as in footnotes. |
+| **AI-native** | Link concepts to shared vocabularies or an ontology, so that systems can relate "poverty headcount" in one catalog to the same concept elsewhere. Use AI to propose concept links and variable groupings, with expert review. |
+
+:::info[Running example]
+`HE_U5_MORT_RATE` is expressed per 1,000 live births, and
+`FS_UNDERNOURISH_PCT` is a three-year average. The recipes below document
+both so that a system reading "41" or "7.6" cannot misread them.
+:::
+
+## Recipes
+
+<Recipe title="3.1 Write a definition and method note with a fixed template" level="Foundational" skills="Subject-matter statistician" time="About 30 minutes per indicator">
+
+**Result:** every indicator has the same short set of documentation
+fields in the same order. People read them quickly because they know
+where to look, and software extracts them reliably because the structure
+never changes.
+
+Use these fields and keep each to one to three sentences. The third
+column gives the field of the
+[World Bank indicator metadata schema](https://github.com/worldbank/metadata-schemas)
+that holds it, so that the record can be stored in NADA or the Metadata
+Editor without translation:
+
+| Field | Example for `FS_UNDERNOURISH_PCT` | Schema field |
+|---|---|---|
+| Definition | Share of the population whose habitual food consumption is insufficient to provide the dietary energy levels required to maintain a normal active and healthy life. | `definition_long` |
+| Method, with numerator and denominator | Estimated number of undernourished people, divided by the total population. | `methodology` |
+| Unit | % of population | `measurement_unit` |
+| Population | Resident population, all ages | `universe` |
+| Reference period | Three-year average centred on the year shown; annual | `base_period`, `periodicity` |
+| Source | Food balance sheets and household budget survey | `sources` |
+| Breaks and comparability | Comparable across years from 2010; the 2016 survey changed the food item list | `series_break` |
+| Limitations | Estimates for regions have wider margins of error than the national figure | `limitation` |
+
+1. Fill the template for the ten most-used indicators first.
+2. Store the fields in the catalog record, with `definition_references`
+   pointing to the page that shows them. The
+   [metadata template](pathname:///cookbook-files/ai-ready-dissemination/metadata_template.csv)
+   has a column for each schema field above.
+3. Add the template to the release checklist, so that new indicators
+   arrive with it filled.
+
+**Worked example.** The table above is the template filled in for the
+prevalence of undernourishment. The method line names the numerator and
+the denominator. The reference period line says that the published value
+is a three-year average centred on the year shown, which is the detail a
+reader needs in order to understand why the 2024 figure does not change
+when a single bad harvest year arrives. The breaks line records that the
+2016 survey changed the food item list. The statistician who fills in the
+template for the under-five mortality rate writes "deaths of children
+under five per 1,000 live births" in the unit line, which is the fact that
+stops the value 41 from being read as a percentage.
+
+**What this does not do.** The template produces consistent text and
+says nothing about whether the text is right. The subject-matter
+statistician writes the method, and the assessment of the
+[curation cookbook](/cookbook/metadata-curation-with-llms/assess)
+checks that the name and the definition agree.
+
+</Recipe>
+
+<Recipe title="3.2 Publish code lists and crosswalks" level="AI-ready" skills="Data manager; classification specialist for the crosswalk" time="One to two days per code list">
+
+**Result:** every code used in the data appears in a published list with
+its labels, and every national classification is mapped to the
+international one it corresponds to.
+
+A code list says what each code in the data means (`R01` is the
+Northern Region). A crosswalk says how the codes of one classification
+correspond to those of another (the national industry code `111`
+corresponds to ISIC code `0111`). Both are published as CSV files.
+A code list, in the form of an SDMX code list, has a code, a name per
+language, and a parent for hierarchies:
+
+```csv
+code,name_en,name_fr,parent
+NAT,National,National,
+R01,Northern Region,Région du Nord,NAT
+R02,Central Region,Région du Centre,NAT
+```
+
+A crosswalk has the national code and label, the target classification
+and code, and the kind of correspondence:
+
+```csv
+national_code,national_label,target_classification,target_code,mapping
+111,Growing of cereals,ISIC Rev.4,0111,exact
+112,Growing of rice,ISIC Rev.4,0112,exact
+119,Other crops,ISIC Rev.4,0119,partial
+```
+
+1. Publish one CSV per code list. For the reference area list, use the
+   ISO 3166 country code at the top and the national subdivision codes
+   below it.
+2. For each national classification, publish a crosswalk to the
+   international one and state the mapping type.
+   [XKOS](https://ddialliance.org/xkos), the DDI Alliance extension of
+   SKOS for statistical classifications, defines the correspondence
+   types (exact, partial, and others) and lets the crosswalk be
+   published as linked data.
+3. Audit: list every distinct code in the data files and confirm that
+   each appears in a code list. A short script does this in minutes and
+   should run on each release.
+4. For aggregate data, the same lists become code lists in an SDMX data
+   structure definition. Reuse published structures where they exist:
+   the [SDG global DSD](https://unstats.un.org/sdgs/iaeg-sdgs/sdmx-working-group/)
+   already defines the structure and code lists for SDG indicator
+   reporting. For surveys, DDI Codebook holds the variable labels and
+   value codes.
+
+**Worked example.** The example organization publishes a reference area
+code list with the national code `NAT` at the top and four regions, `R01`
+to `R04`, each with an English and a French label and `NAT` as the
+parent. Its industry classification is a national adaptation of ISIC
+Revision 4, so the crosswalk has one row per national code. Most rows map
+exactly, and the row for "other crops" is marked partial, because the
+national code groups activities that ISIC separates. The audit script
+lists every distinct `REF_AREA` value in the values file, finds the four
+regions and `NAT`, and confirms that each appears in the list. When a
+later release introduces a new code `R05` for a newly created region, the
+audit fails until the code list is updated.
+
+**What this does not do.** The lists and crosswalks cover the codes in
+the data files. The audit in step 3 finds codes without a list, never
+codes with a wrong label. A crosswalk between versions of the same
+classification (ISIC Rev. 3 to Rev. 4) is a separate table, published
+the same way.
+
+</Recipe>
+
+<Recipe title="3.3 Record breaks and revisions as data" level="AI-ready" skills="Data manager" time="Half a day to set up; part of each release">
+
+**Result:** a system that reads the values can see where a series stops
+being comparable with its past and what changed in the last release,
+without parsing footnotes.
+
+A break is a point after which the values are measured differently (a
+new survey, a new definition). A revision is a change to an already
+published value. Both are usually footnotes; here they become columns
+and files. The revisions file has one row per changed value, with the
+old value, the new value, the release, and the reason:
+
+```csv
+SERIES,REF_AREA,TIME_PERIOD,previous_value,OBS_VALUE,RELEASE,reason
+FS_UNDERNOURISH_PCT,NAT,2023,8.1,7.9,2025-03-14,Updated population estimates
+```
+
+1. Add an `OBS_STATUS` column to the values file with codes from the
+   SDMX observation status code list: `A` normal, `P` provisional, `B`
+   break in series, `E` estimated, `I` imputed, `M` missing.
+2. Publish the revisions file as above.
+3. In the series record, fill the `series_break` field with the periods
+   and reasons, and use the `errata` field for corrections. Keep the
+   human-readable note on the page as well.
+4. Make the API return `OBS_STATUS` with each observation (see the
+   OpenAPI example in [chapter 2](./retrieve.mdx)).
+
+**Worked example.** In the release of 14 March 2025, the example
+organization revised the 2023 value of the prevalence of undernourishment
+from 8.1 to 7.9, because the population estimates behind the denominator
+were updated. The revisions file gains the row shown above, with both
+values, the release date, and the reason. The values file marks the
+second quarter of 2025 for the unemployment rate with `P`, because the
+quarter is provisional, and the series record's `series_break` field
+records the first quarter of 2025, when the labour force survey changed
+its sampling frame. An assistant that reads the values file sees the `P`
+and says that the latest figure may be revised. One that reads the record
+sees the break and declines to describe the change from 2024 as a trend.
+
+**What this does not do.** Status codes and the revisions file record
+what changed, without the reasons. The series record's break and errata
+fields and the methodology note carry those, and a system that reads
+only the values file sees the flags without them.
+
+</Recipe>
+
+## Implementation options
+
+- **SDMX** provides data structure definitions, code lists, and concept schemes for aggregate statistics, and the Content-Oriented Guidelines provide cross-domain concepts and code lists to reuse. Published DSDs such as the SDG global DSD can be adopted as they are.
+- **DDI Codebook** documents variables, questions, and value labels for surveys and administrative microdata; **DDI Lifecycle** adds reusable questions and concepts across studies.
+- **The World Bank metadata schemas** give the record fields for indicators and microdata, aligned with these standards.
+- **Classifications:** ISO 3166 for countries, ISO 8601 for dates, ISO 639 for languages, and the relevant international statistical classifications (ISIC, ISCO, COICOP, ISCED, CPC) with crosswalks to national versions, published with XKOS where possible.
+- **Controlled vocabularies and ontologies:** SKOS concept schemes can publish a thesaurus of statistical concepts with multilingual labels; GSIM names the information objects (concept, variable, classification, unit) that these schemes describe.
+- **Documentation text:** a short, consistent template for definition, method, limitations, and comparability makes both human reading and machine extraction easier.
+
+## World Bank examples
+
+- The [indicator metadata schema](https://github.com/worldbank/metadata-schemas) of the Development Data Group has fields for definition, methodology, universe, base period, series breaks, limitations, and errata, and the microdata schema follows DDI Codebook.
+- [Metadata Augmentation](/docs/metadata-augmentation/) generates DDI-style variable groups from data dictionaries, with human review.
+- [Generative AI for Metadata Quality](/docs/metadata-quality/generative-ai-for-metadata-quality) checks that an indicator's name and definition describe the same concept.
+- The [AI-ready data framework](/docs/ai-ready-framework) lists the attributes, including standards and semantic knowledge, that make data interpretable.
+
+## Resources
+
+- [SDMX Content-Oriented Guidelines](https://sdmx.org/?page_id=4345): cross-domain concepts and code lists to reuse.
+- [DDI Codebook 2.5](https://ddialliance.org/Specification/DDI-Codebook/2.5/) and [DDI Lifecycle 3.3](https://ddialliance.org/Specification/DDI-Lifecycle/3.3/): variable-level documentation and reusable questions and concepts; the [microdata cookbook](/cookbook/microdata-documentation/) applies them.
+- [UN classifications registry](https://unstats.un.org/unsd/classifications/): ISIC, CPC, COICOP, and correspondence tables; [ISCED](https://uis.unesco.org/en/topic/international-standard-classification-education-isced) and [ISCO](https://www.ilo.org/public/english/bureau/stat/isco/).
+- [SKOS](https://www.w3.org/TR/skos-reference/), [XKOS](https://ddialliance.org/xkos), and [GSIM](https://unece.org/statistics/modernstats/gsim): concept schemes, classifications, and the names of statistical information objects.
+- [SDMX `OBS_STATUS` code list](https://sdmx.org/?page_id=3215): the status codes for breaks, revisions, and estimates in recipe 3.3.
+- [Metadata template](pathname:///cookbook-files/ai-ready-dissemination/metadata_template.csv): the definition and method template of recipe 3.1.
+
+## Common mistakes
+
+- **Units in the title only.** "Under-five mortality rate (per 1,000)" in the title and no `unit` field. Systems that read the field get nothing.
+- **Footnote-only breaks.** A break noted at the bottom of a page is invisible to any system that reads the values.
+- **One definition page for a family of indicators.** Each series needs its own record, even when the text is shared.
+- **National codes without a crosswalk.** Users and systems cannot compare with other countries.
+
+## Verification
+
+- **Interpretation questions.** For 20 series, an assistant is asked for the unit, the reference period, and the definition, and its answers match the official metadata.
+- **Comparability questions.** The assistant is asked whether two series can be compared, in cases where the answer is known because of a definition change, and it answers correctly.
+- **Code audit.** Every code used in the data appears in a published code list.
+
+## Checklist
+
+<Checklist id="understand" items={[
+  'Unit, frequency, and reference period stated for each series',
+  'Definition and method note for each indicator, in the fixed template',
+  'Standard codes for geography and time',
+  'Code lists published with labels in each language',
+  'Crosswalks from national to international classifications',
+  'Series breaks and revisions recorded as data, with SDMX observation status codes',
+  'Structure published in SDMX or DDI, reusing published DSDs where they exist',
+  'Concept links to shared vocabularies considered',
+]} />

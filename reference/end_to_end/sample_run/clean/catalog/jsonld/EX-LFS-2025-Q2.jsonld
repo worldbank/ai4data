@@ -1,0 +1,19 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "identifier": "EX-LFS-2025-Q2",
+  "name": "Labour Force Survey 2025, Quarter 2",
+  "description": "Quarterly household survey that measures employment, unemployment, hours worked, earnings, and informality for the resident population aged 15 and over. The second quarter of 2025 covers April to June and follows the same questionnaire as the first quarter, with an added module on job search methods. Results are published as the unemployment rate series LF_UNEMP_PCT.",
+  "url": "https://stats.example/microdata/EX-LFS-2025-Q2",
+  "creator": {
+    "@type": "Organization",
+    "name": "National Statistics Office (example)"
+  },
+  "temporalCoverage": "2025-04-01/2025-06-30",
+  "keywords": [
+    "employment",
+    "unemployment",
+    "informal work"
+  ],
+  "sameAs": "https://doi.org/10.00000/example.lfs.2025q2"
+}

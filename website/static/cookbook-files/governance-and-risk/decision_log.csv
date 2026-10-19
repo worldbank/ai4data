@@ -1,0 +1,11 @@
+decision_id,date,type,component_id,decision,decided_by,follow_up,follow_up_due,closed
+D001,2025-09-15,policy,,Adopt the policy on the use of AI in official statistics version 1.0,Director General,Publish the policy on the methods page,2025-09-30,yes
+D002,2025-09-22,approval,C01,Approve metadata description drafts for production with curator approval of every draft,AI governance board,Add the description check to the release procedure,2025-10-15,yes
+D003,2025-09-22,approval,C02,Approve catalog semantic search beside keyword search,AI governance board,Report retrieval scores at the next board meeting,2025-12-01,yes
+D004,2025-10-06,approval,C03,Approve occupation coding at a confidence threshold of 0.80 with a 5 percent re-coded sample; residual risk accepted,Director General,Report agreement by major group with each round,2026-01-06,no
+D005,2025-10-06,approval,C04,Approve edit failure explanations for the labour force survey,AI governance board,,,yes
+D006,2025-11-03,approval,C05,Approve commentary drafting with a hosted model on aggregate tables only; residual risk accepted,Director General,Test a second provider within one quarter,2026-02-03,yes
+D007,2025-12-01,approval,C06,Approve the public statistics assistant with verified numbers and a monthly review sample; residual risk accepted,Director General,First monthly review report,2026-01-05,no
+D008,2025-11-20,incident,C05,"Incident I-2025-01: the commentary draft for the labour market report 2025 Q2 carried the first-quarter youth unemployment rate (17.5 percent) in place of the second-quarter rate (16.8 percent); the number check caught it before publication; the draft prompt now names the reference period",Head of dissemination,Add a reference-period case to the commentary suite,2025-12-05,yes
+D009,2025-12-05,incident,C05,Close incident I-2025-01: the reference-period case runs in the suite and passes,AI governance board,,,yes
+D010,2025-12-15,review,C01,Six-month review of metadata description drafts: 312 drafts and 289 accepted or edited; continue,AI governance board,,,yes

@@ -1,0 +1,260 @@
+---
+id: verify
+title: "5. Verification of extracted values"
+sidebar_label: "5. Verify"
+sidebar_position: 6
+description: How extracted values are verified against the document itself, through printed labels, total rows, and derived rates, a sample reviewed with the page open, and a cross-check against the catalog, so that every value carries a status.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 5. Verification of extracted values
+
+**Question:** Can the extracted values be verified against the document?
+
+## Rationale
+
+Extraction tools make errors: a 9 read as an 8, a column shifted by one
+row, a value label attached to the wrong bar. An extracted value published
+without a check is a transcription with an unknown error rate, and a user
+or an AI system that quotes it attributes the error to the organization.
+
+Documents offer their own checks. Charts print value labels; tables have
+total rows and columns computed from other columns; the text repeats key
+figures. Each is a constraint that an extracted value either satisfies or
+fails. This chapter uses them to give every value a status, and a reviewed
+sample to measure what the checks cannot see.
+
+## Target state
+
+- Every extracted value has a status: verified against the document, flagged for correction, or estimated where no check exists.
+- Flagged values are corrected by a person with the page open, and the correction is recorded.
+- A sample of extractions is reviewed by a person each batch, and the error rate is reported.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Review a sample of extracted tables against the page by hand and record the error rate. |
+| **AI-ready** | Run the automated checks (printed labels, totals, derived rates) on every extraction. Give each value a status and correct flagged values before publication. Review a sample each batch. |
+| **AI-native** | Run the checks in the extraction pipeline, block publication on flagged values, cross-check extracted figures against the series in the catalog where they exist, and report error rates per document type and model. |
+
+:::info[Running example]
+The chart's four values all match a printed label and are verified. The
+district table's population and undernourished columns sum to the national
+row; the prevalence column is derived from them, and one extracted value,
+8.2 for the Eastern Region, does not match the computed 9.19 and is
+flagged.
+:::
+
+## Recipes
+
+<Recipe title="5.1 Check values against printed labels, totals, and derived rates" level="AI-ready" skills="Python" time="Minutes per batch">
+
+**Result:** every extracted value has a status, set by the checks that
+the document itself makes possible, and the script returns an exit
+status that a pipeline can act on.
+
+A document constrains its own numbers in three ways, and each is a
+check. A chart that prints its values can be checked against the
+printed labels. A table with a total row can be checked by adding up
+the rows. A column computed from two others (a rate from a count and a
+population) can be recomputed. The script applies whichever checks the
+record allows:
+
+```python file=../../website/static/cookbook-files/data-from-documents/verify_extraction.py
+```
+
+Run on the chart of [chapter 3](./locate.mdx):
+
+```bash
+python verify_extraction.py example_snapshot.json
+```
+
+```text
+WB-PRWP-4771 page 12: Type of guarantee systems (figure)
+  verified  HIGH/MUTUAL                      15 matches a printed label
+  verified  HIGH/PUBLIC                      7 matches a printed label
+  verified  LOW_MIDDLE/MUTUAL                7 matches a printed label
+  verified  LOW_MIDDLE/PUBLIC                17 matches a printed label
+
+4 verified, 0 flagged, 0 estimated
+Not checked here: whether the right table or chart was extracted, or whether labels are correct.
+```
+
+Run on the table of [chapter 4](./extract.mdx):
+
+```bash
+python verify_extraction.py example_table.json
+```
+
+```text
+EX-REP-2025-03 page 24: Table 3.1 Undernourishment by district, 2024 (table)
+  verified  National/Population (thousands)  total 5640 vs sum of rows 5640
+  verified  Northern Region/Population (thousands) 1240 (covered by the total check)
+  verified  Central Region/Population (thousands) 2110 (covered by the total check)
+  verified  Eastern Region/Population (thousands) 860 (covered by the total check)
+  verified  Western Region/Population (thousands) 1430 (covered by the total check)
+  verified  National/Undernourished (thousands) total 434 vs sum of rows 434
+  verified  Northern Region/Undernourished (thousands) 118 (covered by the total check)
+  verified  Central Region/Undernourished (thousands) 141 (covered by the total check)
+  verified  Eastern Region/Undernourished (thousands) 79 (covered by the total check)
+  verified  Western Region/Undernourished (thousands) 96 (covered by the total check)
+  verified  Northern Region/Prevalence (%)   9.5 vs computed 9.52
+  verified  Central Region/Prevalence (%)    6.7 vs computed 6.68
+  flagged   Eastern Region/Prevalence (%)    8.2 vs computed 9.19
+  verified  Western Region/Prevalence (%)    6.7 vs computed 6.71
+  verified  National/Prevalence (%)          7.7 vs computed 7.70
+
+14 verified, 1 flagged, 0 estimated
+Not checked here: whether the right table or chart was extracted, or whether labels are correct.
+```
+
+Each line names a value, its status, and the check that set the status.
+A value in a column with a total row is verified by the total check, and
+the rows that make up a verified total are marked as covered by it. A
+value in a derived column is compared with the value recomputed from its
+inputs, and a difference beyond the rounding tolerance is flagged.
+
+1. Run the check on every record.
+2. Correct flagged values with the page open. Here the page prints 9.2,
+   and the extraction misread it. Record the correction (value, reason,
+   who, date) and re-run the check.
+3. Write the statuses into the tidy file (recipe 4.3 takes the report).
+
+**Worked example.** In the run on the district table, the Eastern
+Region's prevalence is flagged: the extraction read 8.2, and 79 thousand
+undernourished out of 860 thousand people is 9.19 percent. The
+dissemination officer opens page 24 and sees that the printed value is
+9.2 and that the parser took the 9 for an 8 because of a faint line
+through the cell. The correction is recorded as "8.2 corrected to 9.2;
+misread digit; reviewed against page 24 on 2026-10-02", and the check
+runs again with fifteen values verified. The chart's four values pass on
+the first run, because each matches a printed label.
+
+**What this does not do.** The checks verify what the document
+constrains. A value in a column with no total and no derivation is
+marked estimated, which means unverified by this method. A wrong value
+whose row total was extracted with the same error passes the total
+check. Recipe 5.2 covers what the checks cannot.
+
+</Recipe>
+
+<Recipe title="5.2 Review a sample with the page open" level="Foundational" skills="Dissemination officer" time="Half a day per batch">
+
+**Result:** the organization has a measured error rate for the
+extraction, per document type and per method, from a sample that a
+person has compared with the page.
+
+1. Draw a sample from each batch: 20 tables or charts, across document
+   types and extraction methods, including some that the automated
+   checks marked verified.
+2. For each, compare every value with the page and record the errors
+   by kind: wrong digit, shifted row or column, wrong unit, missing
+   row, wrong total treated as data.
+3. Report the error rate (errors per hundred values) per document type
+   and method, and keep the sample and its results.
+4. Feed the findings back. A method with a high error rate on one
+   document type is replaced for that type; a kind of error that recurs
+   becomes an automated check where possible.
+
+**Worked example.** From the first batch of 180 tables and 40 charts, the
+officer draws 20: 14 tables and 6 charts across the four document types,
+including 12 that the automated checks had passed. The tables hold 410
+values and the charts 48. The review finds 7 errors in the tables, 5 of
+them wrong digits in the yearbook's OCR pages and 2 of them a shifted
+row in a bulletin, and 2 errors in the charts, both values read from an
+axis without printed labels. The error rates are 1.7 per hundred values
+for tables and 4.2 for charts. The two chart errors lead to a rule that
+charts without printed labels are published as estimates only, and the
+yearbook pages are sent back for re-OCR at a higher resolution.
+
+**What this does not do.** A sample measures; it does not fix the
+batch. At a high error rate the batch is re-extracted with another
+method, and the sample is drawn again.
+
+</Recipe>
+
+<Recipe title="5.3 Cross-check extracted figures against the catalog" level="AI-native" skills="Developer" time="One day to set up">
+
+**Result:** every extracted figure that the catalog already holds as a
+series value is checked against the catalog, and the number that is
+published is the catalog's.
+
+1. Match extracted tables to series through the document record's
+   `data_sources` and the table's column mapping. The example table's
+   prevalence column maps to `FS_UNDERNOURISH_PCT`.
+2. For each matched value, compare the extracted figure with the
+   catalog value for the same geography and period, with the tolerance
+   of the number check in the
+   [dissemination cookbook](/cookbook/ai-ready-dissemination/trust).
+3. Where they differ, the catalog is authoritative for the current
+   figure, and the document's figure is historical. Keep both, and
+   record in the tidy file that the value is as printed in the document
+   on its date.
+4. Where the catalog has no such series, the extracted table is the
+   only source. That is the case for most historical documents, and the
+   reason extraction is worth the effort.
+
+**Worked example.** The national row of the district table gives a
+prevalence of 7.7 percent for 2024. The document record's `data_sources`
+field names `FS_UNDERNOURISH_PCT`, and the table's prevalence column is
+mapped to it. The catalog holds 7.6 for 2024, from the release of 14
+March 2025. The two differ by 0.1, which is outside the rounding
+tolerance, and the footnote of the table says that the figure is
+provisional. The tidy file keeps 7.7 with the status "as printed,
+superseded by the catalog release of 2025-03-14", and the published
+series value stays 7.6. The four regional rows have no catalog series,
+so the extracted values are the only source and are published as
+verified.
+
+**What this does not do.** A catalog match verifies the figure. It does
+not verify the document's context (a different definition, a revised
+series). The document's own footnote and the series' revisions log are
+what resolve that.
+
+</Recipe>
+
+## Implementation options
+
+- **Automated checks:** printed labels, totals, derived rates, and text repetition (a figure quoted in the running text that matches a table cell).
+- **Review:** a sample per batch with a fixed rubric and an error rate; a review board for flagged values, as the [Metadata Reviewer](/docs/metadata-reviewer/overview) provides for metadata.
+- **Status codes:** verified, flagged, estimated, corrected; the same role as SDMX `OBS_STATUS` in the values files of the dissemination cookbook.
+- **Pipeline gate:** publication blocked while any value is flagged.
+
+## World Bank examples
+
+- [Proof-Carrying Numbers](https://arxiv.org/abs/2509.06902) applies the same principle to generated answers: every number is verified against the record or flagged.
+- [Anomaly Detection and Explanation](/docs/anomaly-detection/) flags unusual values in series, which catches extraction errors that enter a time series.
+
+## Resources
+
+- [Proof-Carrying Numbers](https://arxiv.org/abs/2509.06902): the program's method for binding a stated number to its source so that a reader can check it.
+- [Metadata Reviewer review board](/docs/metadata-reviewer/user-manual/review-board): the review pattern (current and proposed side by side, decision recorded) applied to flagged values.
+- [verify_numbers.py](pathname:///cookbook-files/ai-ready-dissemination/verify_numbers.py) from the dissemination cookbook: checking numbers in text against the catalog, the same check as recipe 5.3 from the other side.
+- [SDMX `OBS_STATUS` code list](https://sdmx.org/?page_id=3215): the published status codes the tidy file's status column maps to when values join the catalog.
+
+## Common mistakes
+
+- **Publishing before checking.** The error rate is unknown and the organization's name is on the number.
+- **Treating "no check possible" as verified.** A value with no printed label, total, or derivation is an estimate and is published as one.
+- **Correcting in place without a record.** The next extraction run reintroduces the error; the correction has to be recorded against the document and page.
+- **Reviewing only flagged values.** The sample has to include values the checks passed, or the checks' blind spots stay unmeasured.
+
+## Verification
+
+- **Status.** Every value in every tidy file has a status, and no published file contains a flagged value.
+- **Error rate.** The error rate is reported per batch, document type, and method, from the reviewed sample.
+- **Corrections.** Each correction is recorded with the value, the reason, the person, and the date.
+
+## Checklist
+
+<Checklist id="data-from-documents-verify" items={[
+  'Automated checks run on every extraction',
+  'Status per value written to the tidy file',
+  'Flagged values corrected with the page open and the correction recorded',
+  'Sample reviewed per batch with a fixed rubric',
+  'Error rate reported per document type and method',
+  'Extracted figures cross-checked against catalog series where they exist',
+]} />

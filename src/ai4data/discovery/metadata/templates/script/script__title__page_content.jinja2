@@ -1,0 +1,5 @@
+{%- set d = project_desc if project_desc is mapping else {} -%}
+{%- set ts = d.title_statement if d.title_statement is mapping else {} -%}
+{%- if ts.title -%}
+{{ ts.title }}
+{%- endif -%}

@@ -1,6 +1,7 @@
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.css';
+import {useStage} from './useStage';
 
 // Worked example from docs/metadata-reviewer/user-manual/quick-start.md. The
 // record and the final output are taken from that page; the candidate lists
@@ -94,54 +95,24 @@ const FINAL_JSON = `[
   }
 ]`;
 
-const STEP_MS = 1700;
+// Timed playback: delay before each stage, in ms.
+const TIMINGS = [600, 1700, 1700, 1700, 1700];
 
-export default function MetadataEvidence({active = true}) {
-  const [stage, setStage] = useState(0); // 0 = not started, 1..5 = agent done
-  const [playing, setPlaying] = useState(false);
+export default function MetadataEvidence({active = true, scrub}) {
   const [run, setRun] = useState(0);
   const [showJson, setShowJson] = useState(false);
-
-  // Autoplay when the example becomes active or Replay is pressed.
-  useEffect(() => {
-    if (!active) {
-      setStage(0);
-      setPlaying(false);
-      return undefined;
-    }
-    const reduce =
-      typeof window !== 'undefined' &&
-      window.matchMedia &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce) {
-      setStage(Stages.length);
-      setPlaying(false);
-      return undefined;
-    }
-    setStage(0);
+  // stage: 0 = not started, 1..5 = agent done
+  const {stage, setStage, playing} = useStage({
+    active,
+    scrub,
+    count: Stages.length,
+    timings: TIMINGS,
+    run,
+  });
+  const goTo = setStage;
+  const replay = () => {
     setShowJson(false);
-    setPlaying(true);
-    return undefined;
-  }, [active, run]);
-
-  useEffect(() => {
-    if (!playing) {
-      return undefined;
-    }
-    const t = setTimeout(() => {
-      setStage((s) => {
-        if (s + 1 >= Stages.length) {
-          setPlaying(false);
-        }
-        return Math.min(s + 1, Stages.length);
-      });
-    }, stage === 0 ? 600 : STEP_MS);
-    return () => clearTimeout(t);
-  }, [playing, stage]);
-
-  const goTo = (s) => {
-    setPlaying(false);
-    setStage(s);
+    setRun((r) => r + 1);
   };
 
   const isRemoved = (i) => i.removedAt && stage >= i.removedAt;
@@ -187,7 +158,7 @@ export default function MetadataEvidence({active = true}) {
 
       <div className={styles.mrNote} aria-live="polite">
         {stage === 0
-          ? 'A metadata record enters the pipeline. Select a stage or press Run.'
+          ? 'A metadata record enters the pipeline. Scroll on, select a stage, or press Run.'
           : Stages[stage - 1].note}
       </div>
 
@@ -211,7 +182,7 @@ export default function MetadataEvidence({active = true}) {
             <button
               type="button"
               className={styles.pcnReplay}
-              onClick={() => setRun((r) => r + 1)}>
+              onClick={replay}>
               {stage === 0 && !playing ? '▶ Run' : '↻ Replay'}
             </button>
             {stage >= 5 && (

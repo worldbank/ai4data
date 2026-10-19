@@ -1,0 +1,284 @@
+---
+id: represent
+title: "5. Coverage and representativeness"
+sidebar_label: "5. Representativeness"
+sidebar_position: 6
+description: "Why a training dataset is not a sample of the population, how its composition is compared with census benchmarks by group, how thin groups and label coverage are reported, and how the result is stated in the card."
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 5. Coverage and representativeness
+
+**Question:** How are coverage and representativeness documented and measured?
+
+## Rationale
+
+A model learns the patterns in its examples and reproduces them. A
+coding model trained on job descriptions from the capital codes rural
+occupations badly; a model trained mostly on men's jobs codes women's
+jobs worse. Whether that matters depends on where the model will be
+used, and the person who decides needs to know the composition of the
+examples. A statistical organization is well placed to say: it holds
+the census and the survey weights, so it can compare the dataset's
+composition with the population's, group by group, and state the
+difference.
+
+Representativeness is one of the attributes the program names for
+training data, and it is the attribute a statistical organization can
+document better than anyone else. The point of the measurement is to
+inform, and the report of this chapter is written into the card as a
+statement of fact: these groups are over-represented, these under, these
+have too few examples to learn from, and the label covers these
+categories. Whether to reweight, to collect more examples, or to limit
+the model's use is a decision the report makes possible.
+
+## Target state
+
+- Every dataset's composition is compared with population benchmarks on the variables that matter for the task, unweighted and weighted, and the differences are stated in the card.
+- Groups with too few examples to learn from are listed, and so is the coverage of the label's categories.
+- The benchmarks and the thresholds are recorded, and the report is regenerated at each release.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Run the report against census benchmarks on three or four variables; write the result into the card. |
+| **AI-ready** | Add cross-tabulations of the groups the task depends on and the coverage of the label; set the minimum count per group; regenerate the report at each release. |
+| **AI-native** | Measure a model's error per group on the test split and publish it with the dataset, so that the composition and its consequence are both known. |
+
+:::info[Running example]
+The occupation-coding dataset is compared with the 2024 census on
+region, urban or rural residence, sex, and age group. It
+over-represents the Central Region, urban residents, and men, and
+under-represents the Northern Region and persons aged 15 to 24. All
+44 occupation codes it contains have fewer than 30 examples.
+:::
+
+## Recipes
+
+<Recipe title="5.1 Compare the composition with population benchmarks" level="Foundational" skills="Python; methodologist for the benchmarks" time="An hour to set up; minutes per run">
+
+**Result:** for each variable that matters for the task, the share of
+each group in the dataset is set next to its share in the population,
+with the difference in percentage points and a flag on groups that
+differ or are thin.
+
+The benchmarks file has one row per variable and category:
+
+| Column | Meaning |
+|---|---|
+| `variable` | The column of the dataset the benchmark refers to |
+| `category` | The category, in the dataset's codes |
+| `population_share` | The category's share of the population, between 0 and 1 |
+| `source` | Where the share comes from, with its reference year |
+
+```csv file=../../website/static/cookbook-files/ml-ready-datasets/census_benchmarks.csv
+```
+
+The script compares the dataset with the benchmarks. With a weight
+column it also reports the weighted share, which shows what the survey
+weights would correct and what they would not:
+
+```python file=../../website/static/cookbook-files/ml-ready-datasets/representativeness_report.py
+```
+
+```bash
+python representativeness_report.py lfs_occupation_ml.csv census_benchmarks.csv --weight weight --min-count 30 --max-diff 5
+```
+
+Output for the running example:
+
+```text
+600 records; benchmarks for 4 variable(s); weighted by 'weight'
+
+region  (benchmark: Population census 2024, persons aged 15-64)
+  category       n   dataset  weighted  population  diff pp
+  R01           86     0.143     0.225       0.270    -12.7  differs from the population
+  R02          272     0.453     0.390       0.330    +12.3  differs from the population
+  R03          152     0.253     0.234       0.240     +1.3
+  R04           90     0.150     0.151       0.160     -1.0
+
+urban  (benchmark: Population census 2024, persons aged 15-64)
+  category       n   dataset  weighted  population  diff pp
+  0            203     0.338     0.404       0.590    -25.2  differs from the population
+  1            397     0.662     0.596       0.410    +25.2  differs from the population
+
+sex  (benchmark: Population census 2024, persons aged 15-64)
+  category       n   dataset  weighted  population  diff pp
+  1            381     0.635     0.614       0.490    +14.5  differs from the population
+  2            219     0.365     0.386       0.510    -14.5  differs from the population
+
+age_group  (benchmark: Population census 2024, persons aged 15-64)
+  category       n   dataset  weighted  population  diff pp
+  15-24        126     0.210     0.208       0.300     -9.0  differs from the population
+  25-54        388     0.647     0.653       0.570     +7.7  differs from the population
+  55-64         86     0.143     0.140       0.130     +1.3
+
+categories below 30 records: 0
+categories more than 5 pp from the population (unweighted): 8: region=R01 (-12.7 pp), region=R02 (+12.3 pp), urban=0 (-25.2 pp), urban=1 (+25.2 pp), sex=1 (+14.5 pp), sex=2 (-14.5 pp), age_group=15-24 (-9.0 pp), age_group=25-54 (+7.7 pp)
+A dataset is not a sample of the population; the card states these differences and the weights, and the user decides.
+```
+
+Each block is one variable, with its benchmark source. The columns give
+the count of records in each category, its unweighted share of the
+dataset, its weighted share, its share of the population, and the
+difference in percentage points, with a flag where the difference
+exceeds the stated limit. The summary lines count the thin categories
+and the categories that differ.
+
+1. Choose the variables: the ones a model's error could differ by, and
+   the ones users will ask about. Region, residence, sex, and age are
+   the usual minimum; language and education where the task depends on
+   them.
+2. Take the benchmarks from the census or the population estimates for
+   the same population definition as the dataset (here persons aged 15
+   to 64), and record the source and year in the file.
+3. Run the report. Read the difference column: the Northern Region
+   holds 14 percent of the examples and 27 percent of the population.
+   Read the weighted column: the survey weight narrows the gap on
+   region and residence (the design under-sampled rural areas) and
+   does nothing for the extract's own selection on sex.
+4. Write the result into the card's representativeness section, as
+   the example card does: the groups that differ, by how much, and
+   what the weight corrects.
+
+**Worked example.** The methodologist reads the run above. Urban
+residents are two thirds of the examples and two fifths of the
+population, a gap of 25 points that the survey weight narrows to 19,
+because the design sampled urban areas more heavily on purpose. Men are
+64 percent of the examples and 49 percent of the population, and the
+weight does nothing about it, because the gap comes from who was
+employed and coded, which the weight does not correct. The Northern
+Region is 14 percent of the examples against 27 percent of the
+population. The representativeness section of the card gains three
+sentences stating these gaps and the note "the survey weight corrects
+the design's sampling of urban areas and nothing else; a model trained
+on these examples has seen few rural and few northern job descriptions".
+
+**What this does not do.** The report compares marginal shares one
+variable at a time. Joint gaps (women aged 55 to 64 in the Northern
+Region) need the cross-tabulations of recipe 5.2, and the report says
+nothing about why the gaps exist, which the collection process section
+of the card explains.
+
+</Recipe>
+
+<Recipe title="5.2 Report thin groups and the coverage of the label" level="AI-ready" skills="Methodologist" time="Half a day per dataset">
+
+**Result:** the groups, and the combinations of groups, with too few
+examples to learn from are listed, and the card states which categories
+of the label the dataset covers and how many examples each has.
+
+1. Set the minimum count per group for the task. Thirty examples is a
+   floor for a category to be learnable at all; a text classifier
+   needs more per label. The report flags groups below the minimum.
+2. Cross-tabulate the groups the task depends on (region by sex,
+   residence by age group) and list the cells below the minimum.
+3. Count the examples per category of the label. In the running
+   example, 600 records cover 44 of the 436 ISCO-08 unit groups and
+   none has 30 examples; a real dataset for this task has thousands of
+   examples and still has rare occupations with a handful. State the
+   coverage and the counts in the card, and name the categories a
+   model will not learn.
+4. Where the gaps matter for the intended use, say what the
+   organization did: collected more examples from the next round,
+   added synthetic examples (marked as such), or limited the stated
+   use.
+
+**Worked example.** The cross-tabulation of region by sex on the 600
+records finds two cells below 30: women in the Northern Region, with 28
+examples, and women in the Western Region, with 26. The label count
+finds that the 600 records cover 44 of the 436 ISCO-08 unit groups and
+that the most common, shop sales assistants, has 29 examples. The card states both facts and says that the dataset is an
+illustration of the format. It adds that the full dataset of 38,000
+records covers 310 unit groups, with 60 of them above 100 examples, and
+that a model should not be expected to learn a code with fewer than 30
+examples. For the two thin
+cells, the card says that the next round's examples will be added in
+version 1.1.
+
+**What this does not do.** Thin groups are a fact about the dataset.
+Whether a model's error is worse on them is measured on the test split
+(recipe 5.3), and the two are published together.
+
+</Recipe>
+
+<Recipe title="5.3 Publish the model's error by group with the dataset" level="AI-native" skills="Data scientist; methodologist" time="One day">
+
+**Result:** a reference model trained on the dataset has its error on
+the test split measured by group, and the result is published with the
+dataset so that users see the consequence of the composition as well as
+the composition.
+
+1. Train a simple reference model on the training split and score it
+   on the test split, overall and by the groups of recipe 5.1, with
+   the measures of the task (accuracy by level for coding, as the
+   [production cookbook](/cookbook/language-models-in-production/coding)
+   measures it).
+2. Report the scores by group with their counts, and read them against
+   the representativeness report. A group that is thin and scores low
+   is a gap to close; a group that is thin and scores well is a
+   warning that the test split is too small to see a difference.
+3. Publish the table with the dataset as a baseline, with the model's
+   description and the version of the dataset it was trained on.
+4. Repeat at each release. A new version that adds examples for a
+   thin group should move its score.
+
+**Worked example.** On the full dataset, a simple reference coder that
+retrieves index entries and chooses among them scores 0.88 at four
+digits on the test part overall. By group it scores 0.90 for urban and
+0.81 for rural respondents, 0.89 for men and 0.85 for women, and 0.79
+in the Northern Region on 140 test records. The gap between urban and
+rural is the one the representativeness report predicted, and the
+Northern Region's score is read with care because 140 records give a
+wide interval. The table is published with the dataset as the baseline,
+with the model described and the dataset version named, and version
+1.1, which adds the next round's northern examples, moves the Northern
+Region's score to 0.84.
+
+**What this does not do.** A baseline model's error by group describes
+that model. A user's model can do better or worse on the same groups;
+the baseline tells them where to look.
+
+</Recipe>
+
+## Implementation options
+
+- **Benchmarks:** the census; population estimates; the survey's own weighted estimates for the population the dataset was drawn from.
+- **Measures:** share differences in percentage points (this chapter); ratios; a summary index such as the total variation distance of the [synthetic data cookbook](/cookbook/synthetic-data-for-sharing/utility).
+- **Remedies, stated in the card:** more examples from later rounds; reweighting for training with the reason stated; synthetic examples marked as such; limited stated use.
+
+## World Bank examples
+
+- The program's [Inclusive AI](/docs/inclusive-ai/) work concerns the same question for models: whether they work across languages and countries, which is the diversity and representativeness attribute applied to the model side.
+- The [synthetic data cookbook's utility report](/cookbook/synthetic-data-for-sharing/utility) compares distributions the same way, between a real and a synthetic file.
+
+## Resources
+
+- [AI-ready data attributes](/docs/ai-ready-framework): diversity and representativeness as an attribute of training data.
+- [Datasheets for Datasets](https://arxiv.org/abs/1803.09010): the composition questions a card answers, including whether the dataset is a sample of a larger set and how representative it is.
+- [Coding accuracy by level in the production cookbook](/cookbook/language-models-in-production/coding): the measures for the reference model of recipe 5.3.
+
+## Common mistakes
+
+- **"Representative" because the source survey was.** An extract of coded records is selected by who was employed, who answered, and who was coded; the report measures the extract.
+- **Survey weights used as training weights without a reason.** They correct population estimates; whether they help a classifier is an empirical question stated in the card if tried.
+- **Marginals only.** The gaps that matter are often joint.
+
+## Verification
+
+- **Report.** The report runs at each release against recorded benchmarks, and its numbers appear in the card.
+- **Thin groups and label coverage.** Both are listed in the card with the minimum count used.
+- **Baseline by group.** The baseline is published with the dataset at the AI-native level.
+
+## Checklist
+
+<Checklist id="ml-ready-datasets-represent" items={[
+  'Benchmarks recorded with source and year for the variables that matter for the task',
+  'Report run, unweighted and weighted; differences stated in the card',
+  'Thin groups and joint gaps listed with the minimum count used',
+  'Coverage and counts of the label categories stated',
+  'Remedies, where any, stated in the card',
+]} />

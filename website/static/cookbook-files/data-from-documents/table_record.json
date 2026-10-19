@@ -1,0 +1,43 @@
+{
+  "metadata_information": {
+    "title": "Table 3.1 Undernourishment by district, 2024 (extracted)",
+    "idno": "EX-REP-2025-03-T3.1",
+    "producers": [{"name": "National Statistics Office (example), Dissemination unit"}],
+    "production_date": "2025-07-15",
+    "version": "1.0"
+  },
+  "table_description": {
+    "title_statement": {
+      "idno": "EX-REP-2025-03-T3.1",
+      "table_number": "3.1",
+      "title": "Undernourishment by district, 2024"
+    },
+    "table_columns": [
+      {"label": "District"},
+      {"label": "Population (thousands)"},
+      {"label": "Undernourished (thousands)"},
+      {"label": "Prevalence (%)", "var_name": "FS_UNDERNOURISH_PCT", "dataset": "FS_UNDERNOURISH_PCT"}
+    ],
+    "table_rows": [
+      {"label": "Northern Region"}, {"label": "Central Region"}, {"label": "Eastern Region"}, {"label": "Western Region"}, {"label": "National"}
+    ],
+    "data_sources": [
+      {"name": "Food security report 2025 (EX-REP-2025-03), page 24", "uri": "https://stats.example/documents/EX-REP-2025-03.pdf#page=26"},
+      {"name": "Prevalence of undernourishment (FS_UNDERNOURISH_PCT)", "uri": "https://stats.example/series/FS_UNDERNOURISH_PCT"}
+    ],
+    "time_periods": [{"from": "2024", "to": "2024"}],
+    "ref_country": [{"name": "Example country", "code": "EX"}],
+    "definitions": [
+      {"name": "Prevalence of undernourishment", "definition": "Share of the population whose habitual food consumption is insufficient to provide the dietary energy levels required to maintain a normal active and healthy life. Three-year average.", "uri": "https://stats.example/def/FS_UNDERNOURISH_PCT"}
+    ],
+    "license": [{"name": "CC BY 4.0", "uri": "https://creativecommons.org/licenses/by/4.0/"}],
+    "citation": "National Statistics Office (example). 2025. Food security report 2025, Table 3.1, page 24. https://stats.example/documents/EX-REP-2025-03.pdf#page=26",
+    "notes": [
+      {"note": "Extracted from the PDF text layer with PyMuPDF; header and footnote reviewed by a person; verified against the row total and the derived prevalence rate (see the tidy file's status column)."}
+    ],
+    "relations": [{"name": "EX-REP-2025-03", "type": "isPartOf"}],
+    "links": [
+      {"uri": "https://stats.example/documents/EX-REP-2025-03/tables/T3.1.csv", "description": "Tidy CSV with provenance columns"}
+    ]
+  }
+}

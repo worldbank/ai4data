@@ -1,0 +1,209 @@
+---
+id: targets
+title: "2. Target levels and the gap"
+sidebar_label: "2. Targets"
+sidebar_position: 2
+description: How a planning team sets a target level per dimension for the next cycle, with a reason, and sizes the gap between the current level and the target as levels and as questions below target.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 2. Target levels and the gap
+
+**Question:** Which level should each dimension reach, and how large is the gap?
+
+## Rationale
+
+The framework's first planning step is to prioritize: identify the
+dimensions where the gap between current and target readiness is largest,
+considering the strategic importance of each dimension for the
+organization's mandate. A gap needs a target, and a target is a decision
+about the next cycle, which is usually eighteen months to two years. Not
+every dimension needs to move. An organization with a small IT function
+may leave the technical environment at B while it builds the metadata,
+quality, and licensing foundations to C, and that is a defensible target.
+
+A gap has two sizes. The gap in levels says how far the dimension has to
+move, and it is usually one. The number of questions below the target
+says how much work the move is, and it varies from two to six within the
+same gap in levels. The table of this chapter gives both, with the reason
+for each target written down so that the board that approves the pathway
+knows what it is approving.
+
+## Target state
+
+- Every dimension has a target level for the cycle, with a one-sentence reason.
+- The gap per dimension is known in levels and in questions below target.
+- The targets respect the framework's pathway for early-stage organizations: the foundations reach C before the frontier dimensions move.
+- The target table is approved by the board and dated.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Set a target per dimension with a reason; run the gap table. |
+| **AI-ready** | Approve the targets at the board with the gap table in the papers; review them at the end of each cycle. |
+| **AI-native** | Set targets from the evidence of the previous cycle and the peer network's experience, and publish them with the pathway. |
+
+:::info[Running example]
+The example organization set targets of C for the four foundations
+(metadata standards, quality control, the catalog, API access), for
+licensing, for strategy and governance, and for the legal environment. It
+set B for skills and for agentic access, and left the technical
+environment, funding, and partnerships at their current B. Nine dimensions
+have a gap of one level; forty-six questions are below their target. The
+file is
+[targets.csv](pathname:///cookbook-files/assessment-to-pathway/targets.csv).
+:::
+
+## Recipes
+
+<Recipe title="2.1 Set a target level per dimension with a reason" level="Foundational" skills="The planning team with management" time="Half a day">
+
+**Result:** a table with one target level per dimension and the reason
+the organization chose it.
+
+A target is chosen for the cycle, with three considerations. The first is
+the framework's pathway: for early-stage organizations the four
+foundations (quality control, metadata standards, a searchable catalog,
+API access under a clear licence) come first, and the agentic and
+generative dimensions follow. The second is the organization's mandate:
+a dimension that users or the law press on moves sooner. The third is
+capacity: a target that needs a recruitment the organization cannot make
+in the cycle is a target for the next one.
+
+| Column | Meaning |
+|---|---|
+| `dimension` | The dimension number |
+| `target_level` | A, B, C, or D |
+| `reason` | Why this level in this cycle, in one sentence |
+
+```csv file=../../website/static/cookbook-files/assessment-to-pathway/targets.csv
+```
+
+1. Start from the foundations: set them to C unless they are already
+   there.
+2. Set strategy and governance and the legal environment to the level the
+   components of the cycle need. A pathway that adds any High-tier
+   component needs a board and a policy, which is C on dimension 1.1.
+3. Set the frontier dimensions one level up at most, and only where the
+   foundations they depend on will be reached in the same cycle.
+4. Leave the rest at their current level with a reason that says what
+   the next cycle will do.
+5. Write the reason for every row, including the rows with no gap.
+
+**Worked example.** The example organization set C for metadata standards,
+quality control, the catalog, API access, and licensing, because they are
+the foundations and the licence matrix is the evidence for a whole
+dimension. It set C for strategy and governance, because the components
+of the cycle need a board, and for the legal environment, because the
+legal review of the statistics act has to precede data served to AI
+systems. It set B for skills, aiming at a first data engineer and AI
+literacy for curators and methodologists, and B for agentic access, aiming
+at one MCP pilot once the API exists. It left the technical environment,
+funding, and partnerships at B, with reasons that name what the next
+cycle will add.
+
+**What this does not do.** A target is a decision, and the reason is the
+record of it. Whether the target is reachable in the cycle is what the
+effort estimate of chapter 4 shows, and a target can be revised when the
+estimate comes back.
+
+</Recipe>
+
+<Recipe title="2.2 Size the gap in levels and in questions" level="Foundational" skills="A planning officer who can run a Python script" time="Fifteen minutes">
+
+**Result:** a table that orders the dimensions by their gap, with the
+current level and average, the target, the gap in levels, and the number
+of questions below the target's value.
+
+The gap table is the prioritization of the framework's first planning
+step, made explicit. The number of questions below target is the better
+measure of work: it counts the practices, tools, and policies that have
+to change for the dimension to reach its target, because each question
+below target needs an answer that moves.
+
+1. Run the gap table with the score file and the targets. It reports a
+   dimension without a target and a target below the current level.
+2. Read the order. The dimensions with the most questions below target
+   are where the planning team spends its time in chapters 4 to 6.
+
+```bash
+python gap_table.py question_scores.csv targets.csv
+```
+
+```text
+dim      current target  gap  below  name
+1.2     B (0.86)      C    1      6  Legal environment
+1.1     B (0.60)      C    1      5  Strategy and governance
+2.2     B (1.14)      C    1      5  Quality control procedures
+2.4     B (0.60)      C    1      5  API access
+2.5     A (0.00)      B    1      5  Agentic AI access and generative AI for diss
+2.3     B (1.17)      C    1      4  Searchable data catalog
+2.6     B (0.50)      C    1      4  Data licensing
+1.3     A (0.40)      B    1      3  Skills and capacity
+2.1     B (1.40)      C    1      3  Metadata standards and classifications
+1.4     B (1.00)      B    0      2  Technical environment
+1.5     B (0.80)      B    0      2  Funding and resources
+1.6     B (0.75)      B    0      2  Partnerships
+
+dimensions with a gap: 9 of 12; questions below target: 46
+result: PASS
+```
+
+**Worked example.** Nine of the example organization's twelve dimensions
+have a gap of one level, and forty-six questions are below target. The
+legal environment has the most questions to move, six, although its
+average is among the higher ones, because its target of C asks every
+question to reach at least C. Metadata standards has the fewest, three,
+and is the dimension the organization will reach first. The three
+dimensions without a gap still show two questions each below B, which the
+reasons in the target table leave to the next cycle.
+
+**What this does not do.** The gap table orders by size. The sequence of
+chapter 3 orders by dependency, and the two orders differ: the legal
+environment has the largest gap and comes in the second wave, because it
+depends on the strategy.
+
+</Recipe>
+
+## Implementation options
+
+- **Cycle length.** Targets are set for the period to the re-assessment, which the framework's guidance treats as a baseline for action; eighteen months to two years is typical.
+- **Targets per question.** An organization that wants finer control can set a target option per question; the gap table then counts questions below their own target. The dimension target is simpler to approve and to explain.
+- **Mid-stage organizations.** The framework's pathway for mid-stage organizations builds on the foundations toward semantic search, API provenance, and agentic access; the targets move the frontier dimensions once the foundations are at C.
+
+## World Bank examples
+
+- The [operational companion](/ai-readiness-in-practice) gives, for each dimension, the progression between maturity levels with the program resources that support each step, which is a source for the reasons.
+- The [modern statistical office](/modern-nso) page shows what the destination looks like at three maturity levels.
+
+## Resources
+
+- [AI-readiness assessment framework](/ai-readiness-assessment): the response options per question that define each level.
+- [Targets of the running example](pathname:///cookbook-files/assessment-to-pathway/targets.csv) and [gap_table.py](pathname:///cookbook-files/assessment-to-pathway/gap_table.py): the table and the script.
+
+## Common mistakes
+
+- **Targets of D everywhere.** The framework describes D as advanced and integrated; a cycle that aims there from B has no chance of ending in evidence.
+- **Frontier dimensions before foundations.** An MCP pilot on an API that does not exist is a target the sequence will refuse.
+- **Targets without reasons.** The board approves a table it cannot read, and the next cycle cannot tell why the targets were set.
+- **Gaps measured in levels only.** Two dimensions with a gap of one can differ by a factor of two in the work.
+
+## Verification
+
+- **Table check.** The gap table passes: every dimension has a target and none is below its current level.
+- **Pathway check.** Every foundation dimension below C has a target of at least C, or its reason says why not.
+- **Approval check.** The target table is in the board's decision log with a date.
+
+## Checklist
+
+<Checklist id="assessment-to-pathway-targets" items={[
+  'Target level set for every dimension',
+  'Reason written for every row',
+  'Foundations targeted at C unless already there',
+  'Frontier dimensions targeted one level up at most',
+  'Gap table run and read',
+  'Targets approved by the board and dated',
+]} />

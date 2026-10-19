@@ -1,9 +1,22 @@
 from __future__ import annotations
 
 # This defines the facets for each metadata type. The facets are used to filter the metadata in the search.
+from typing import ClassVar
+
 from pydantic import BaseModel
 
-from .parsers import DocumentParser, GeospatialParser, IndicatorParser, MicrodataParser
+from .parsers import (
+    DocumentParser,
+    GeospatialParser,
+    ImageParser,
+    IndicatorDbParser,
+    IndicatorParser,
+    MicrodataParser,
+    Parser,
+    ScriptParser,
+    TableParser,
+    VideoParser,
+)
 from .utils import create_uuid_from_string
 
 
@@ -162,6 +175,76 @@ class MicrodataFilterFacets(FilterFacets):
         )
 
 
+# ``type`` is a field name on the facet models below, so it can't be used as the builtin in their annotations.
+ParserClass = type[Parser]
+
+
+class ParsedFilterFacets(FilterFacets):
+    """Years, geographies and source from a parser's ``parse_periods``/``parse_geographies``/``parse_source``."""
+
+    source: list[str] | None = None
+    parser_class: ClassVar[ParserClass]
+
+    @classmethod
+    def from_metadata(cls, metadata: dict) -> ParsedFilterFacets:
+        """
+        Create a FilterFacets object from metadata.
+
+        Args:
+            metadata (dict): The metadata.
+        """
+        parser = cls.parser_class()
+        idno = parser.parse_idno(metadata)
+        periods = parser.parse_periods(metadata, out_format="details")
+
+        return cls(
+            idno=idno,
+            year_start=periods.get("year_start"),
+            year_end=periods.get("year_end"),
+            years=periods.get("years"),
+            geographies=parser.parse_geographies(metadata),
+            source=parser.parse_source(metadata),
+        )
+
+
+class IndicatorDbFilterFacets(ParsedFilterFacets):
+    type: str = "indicator-db"
+    parser_class: ClassVar[ParserClass] = IndicatorDbParser
+
+
+class TableFilterFacets(ParsedFilterFacets):
+    type: str = "table"
+    parser_class: ClassVar[ParserClass] = TableParser
+
+
+class ScriptFilterFacets(ParsedFilterFacets):
+    type: str = "script"
+    parser_class: ClassVar[ParserClass] = ScriptParser
+
+
+class ImageFilterFacets(ParsedFilterFacets):
+    type: str = "image"
+    parser_class: ClassVar[ParserClass] = ImageParser
+
+
+class VideoFilterFacets(ParsedFilterFacets):
+    type: str = "video"
+    parser_class: ClassVar[ParserClass] = VideoParser
+
+
+_FILTER_FACETS_BY_TYPE: dict[str, type[FilterFacets]] = {
+    "indicator": IndicatorFilterFacets,
+    "document": DocumentFilterFacets,
+    "geospatial": GeospatialFilterFacets,
+    "microdata": MicrodataFilterFacets,
+    "indicator-db": IndicatorDbFilterFacets,
+    "table": TableFilterFacets,
+    "script": ScriptFilterFacets,
+    "image": ImageFilterFacets,
+    "video": VideoFilterFacets,
+}
+
+
 def get_filter_facets(metadata: dict) -> FilterFacets:
     """
     Get the filter facets for the metadata.
@@ -174,16 +257,11 @@ def get_filter_facets(metadata: dict) -> FilterFacets:
     """
     metadata_type = metadata.get("type")
 
-    if metadata_type == "indicator":
-        return IndicatorFilterFacets.from_metadata(metadata)
-    elif metadata_type == "document":
-        return DocumentFilterFacets.from_metadata(metadata)
-    elif metadata_type == "geospatial":
-        return GeospatialFilterFacets.from_metadata(metadata)
-    elif metadata_type == "microdata":
-        return MicrodataFilterFacets.from_metadata(metadata)
-    else:
+    facets_class = _FILTER_FACETS_BY_TYPE.get(metadata_type)
+    if facets_class is None:
         raise ValueError(f"Invalid metadata type: {metadata_type}")
+
+    return facets_class.from_metadata(metadata)
 
 
 # filter_facets = dict(

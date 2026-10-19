@@ -1,0 +1,230 @@
+---
+id: sustain
+title: "9. Sustainability and maintenance"
+sidebar_label: "9. Sustain"
+sidebar_position: 10
+description: How the organization keeps what it builds running, through a test that the data layer works without the AI layer, an estimate of the cost per query before launch, and the choice of the smallest model that passes the evaluation suite.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 9. Sustainability and maintenance
+
+**Question:** Can we maintain what we build?
+
+## Rationale
+
+:::note[A deeper treatment exists]
+This chapter gives the first steps. The [Small and Open Models for Statistical Offices](/cookbook/small-and-open-models/) cookbook covers
+model candidates and licences, serving, adaptation, comparison, security, and cost in full, with scripts and a running example.
+:::
+
+
+Pilots are easy to start and costly to keep running. A model that worked
+in the pilot is withdrawn by its provider. A price that fit the budget
+doubles. The one developer who understood the system moves on. An
+AI-ready dissemination system that depends on one person or one provider
+can stop working within a year of launch, and the organization is left
+with a chatbot it cannot fix and a budget line it cannot explain.
+
+Sustainability starts with a separation. The catalog, the API, and the
+files are the product, and they have to work with every AI component
+switched off. The AI components are a layer on top, each with a known
+cost, a known owner, and a known replacement. The three recipes in this
+chapter test the separation, put a figure on the cost, and keep the
+models as small as the task allows, because a small model is cheaper to
+run, easier to replace, and simpler to host on the organization's own
+server.
+
+## Target state
+
+- The system is built from open standards and replaceable parts.
+- Running costs are known and proportionate to the number of users.
+- More than one person can operate and update each component.
+- The metadata and data pipeline keeps working if the AI layer is switched off.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Document how data and metadata are produced and published. Assign backups for each task. Improve metadata and file formats first, since these keep their value regardless of tools. |
+| **AI-ready** | Use open standards for catalog, structure, and API (chapters 1 to 3). Keep code and configuration in version control. Schedule reviews of metadata and the test suite. Estimate the cost per query before launch. |
+| **AI-native** | Use small and open models where they reach the needed quality, and larger models where the task requires them. Monitor cost, latency, and quality together. Share components with partner organizations, and contribute fixes back. |
+
+:::info[Running example]
+The example organization's catalog, API, and CSV files work with no AI component
+running. The semantic search and the description drafts are an added layer:
+each runs on a small open-weight model on one server, and each has a row in
+the register with an exit plan.
+:::
+
+## Recipes
+
+<Recipe title="9.1 Run the switch-off test" level="Foundational" skills="Operations" time="One hour">
+
+**Result:** the organization has proof that the catalog, the API, and the
+downloads keep working with every AI component stopped.
+
+1. In a test environment, stop every AI component: the semantic search
+   index, the assistant, the metadata drafting.
+2. Check that series pages load, the API answers, bulk files download,
+   and keyword search returns results.
+3. Fix any dependency found. The authoritative data store and the API
+   must never depend on the AI layer.
+4. Repeat after any architecture change.
+
+**Worked example.** The operations officer stops the semantic search
+index and the description-drafting model on the test server. The series
+pages load, the API returns the unemployment rate for the second quarter
+of 2025, the bulk file downloads, and the keyword search returns the
+undernourishment series for "undernourishment". The search box no longer
+answers "how many people go hungry", which is the expected loss. The one
+dependency found is that the series page template called the embedding
+service to show related series and failed with an error when the service
+was down. The template is changed to hide the panel in that case, and
+the test is repeated.
+
+**What this does not do.** The switch-off test proves that the data
+layer stands without the AI layer. The AI layer's own failure modes,
+such as a model update that changes answers, are the evaluation
+suite's to catch.
+
+</Recipe>
+
+<Recipe title="9.2 Estimate the cost per query before launch" level="AI-ready" skills="Developer; finance" time="Half a day">
+
+**Result:** management has a cost per query that it can compare with the
+expected number of users, and a basis for choosing between a hosted model
+and a local one.
+
+A hosted model is paid per token (roughly three quarters of a word)
+sent and received. A local model costs a server and the staff to run
+it, whatever the number of queries.
+
+1. Measure, for 50 questions from the test set, the tokens sent and
+   received per answer (including the retrieved records), and the time
+   per answer.
+2. For a hosted model, the cost per query is the input tokens times
+   the input price plus the output tokens times the output price, at
+   the provider's current prices. Add the share of fixed costs (search
+   index, server) per expected query.
+3. For a local model, the cost per query is the server cost per month
+   plus the staff time for operation, divided by the expected queries
+   per month.
+4. Multiply by the expected queries per month, with a low and a high
+   estimate.
+5. Record the estimate with the date and the prices used. Revisit
+   quarterly; prices and usage both change.
+
+**Worked example.** For fifty test questions, the assistant sends an
+average of 1,800 tokens per question, most of them the retrieved records
+and values, and receives 120 tokens back. At the hosted provider's
+current prices that is about 0.4 cents per query, plus the share of the
+search server. At the expected 20,000 queries a month, the hosted model
+costs about 80 dollars a month in tokens. The local alternative, a small
+open-weight model on a server the organization already owns, costs about
+200 dollars a month in server time and staff attention, whatever the
+number of queries. At 20,000 queries a month the hosted model is cheaper,
+and at 100,000 the local model is. The developer records both figures
+with the date and the prices, and the decision is to start hosted and
+revisit at the first quarterly review.
+
+**What this does not do.** An estimate from fifty questions at today's
+prices is a planning figure. Usage, prices, and tokens per answer all
+change, the quarterly revisit is part of the recipe, and the measured
+cost per query after launch replaces the estimate.
+
+</Recipe>
+
+<Recipe title="9.3 Choose the smallest model that passes the suite" level="AI-native" skills="Developer" time="One to three days per task">
+
+**Result:** for each task, the organization uses the smallest model that
+reaches the required scores, and it keeps the scores of every model it
+tried as evidence for the choice.
+
+1. Set the required scores for the task from
+   [chapter 6](./evaluate.mdx) before testing any model, for example
+   Recall@5 of 0.85 per language for search, or 98% numeric accuracy
+   for answers.
+2. Test candidate models from small to large: a small open-weight model
+   (one whose files the organization downloads and runs itself) first,
+   then larger ones, then hosted models. Use the same questions and
+   catalog for each.
+3. Stop at the first model that meets the requirement, and record the
+   scores of every model tried.
+4. Repeat when a task changes, or once a year, since small models
+   improve quickly.
+
+The program's
+[Efficient and Inclusive AI Applications](/docs/inclusive-ai/) page
+compares model sizes by task and describes batch processing and locally
+hosted models, and the
+[small and open models cookbook](/cookbook/small-and-open-models/)
+gives the full procedure.
+
+**Worked example.** For the search task the required score is a Recall@5
+of 0.85 in each language. The developer tries a small multilingual
+embedding model first and gets 0.90 in English, 1.00 in French, and 1.00
+in Spanish on the question set, so the search stops there. For the
+answer task the required numeric accuracy is 98 percent. A small
+open-weight generation model reaches 93 percent, a mid-sized one reaches
+98 percent, and a hosted model reaches 99 percent. The mid-sized model is
+chosen, the three scores are recorded in the evaluation log, and the
+entry notes that the small model is to be tried again in a year.
+
+**What this does not do.** The smallest model that passes the suite is
+tested on what the suite covers. A new task needs new questions before
+a smaller model is trusted on it, and the scores of the larger models
+stay on file as the reference.
+
+</Recipe>
+
+## Implementation options
+
+- **Architecture:** keep the AI layer separate from the authoritative data store and API. Place each component in the [GSBPM](https://unece.org/statistics/modernstats/gsbpm) phase it serves (the program's [GSBPM mapping](/docs/gsbpm-mapping) does this for its own workstreams), so that ownership follows the existing process.
+- **Model size:** classification, tagging, and embedding tasks often work with small models. Open-weight models can run on one modest server.
+- **Cost control:** cache repeated queries, batch non-urgent work such as metadata review, and set usage limits.
+- **Skills:** a small team that combines a metadata specialist, a data engineer, and someone responsible for evaluation covers most of the work in this guide. Training material can be shared across organizations.
+- **Lifecycle:** plan for model updates, index rebuilds, and the retirement of components. Re-run the evaluation suite after each.
+- **Shared resources:** open-source tools and shared test sets let organizations reuse each other's work.
+
+## World Bank examples
+
+- [Efficient and Inclusive AI Applications](/docs/inclusive-ai/) compares model sizes by task and describes batch processing and local models.
+- The program publishes its methods and software as open resources in the [GitHub repository](https://github.com/worldbank/ai4data).
+- The [PI-FT deployment guide](/pift-toolkit/deployment) describes serving and refreshing a fine-tuned embedding model.
+
+## Resources
+
+- [GSBPM](https://unece.org/statistics/modernstats/gsbpm): the production model each AI component is placed in.
+- [Efficient and Inclusive AI Applications](/docs/inclusive-ai/): model size by task, batch processing, and local open-weight deployment, the basis of recipes 9.2 and 9.3.
+- [litellm](https://github.com/BerriAI/litellm): a provider-agnostic client that lets a model be replaced without rewriting the application.
+- [Open LLM Leaderboard](https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard) and [MTEB](https://huggingface.co/spaces/mteb/leaderboard): where to find candidate open-weight generation and embedding models to run through the suite.
+- [Evaluation chapter](./evaluate.mdx): the suite that the switch-off test, the cost estimate, and the model choice all run against.
+
+## Common mistakes
+
+- **Choosing the largest model first.** It costs more at every query and hides whether a small one would do.
+- **A pilot that lives on one laptop.** The handover test (below) finds this early.
+- **No budget for re-running the evaluation.** Each model update needs a run; without it, quality drifts unnoticed.
+- **Building what partner organizations already share.** Check the open resources first.
+
+## Verification
+
+- **Switch-off test.** The test of recipe 9.1 has passed on the current architecture.
+- **Handover test.** A staff member who did not build a component runs an update from the documentation alone.
+- **Cost review.** The monthly cost is compared with the number of queries served, and the comparison is reviewed quarterly.
+
+## Checklist
+
+<Checklist id="sustain" items={[
+  'Production process documented, with backups for each task',
+  'Open standards used for catalog, structure, and API',
+  'Code, prompts, and configuration in version control',
+  'AI layer separable from the data store and API (switch-off test passed)',
+  'Cost per query estimated and reviewed quarterly',
+  'Smallest sufficient model chosen per task, with scores kept',
+  'Handover test passed for each component',
+  'Review dates set for metadata, models, and the test suite',
+]} />

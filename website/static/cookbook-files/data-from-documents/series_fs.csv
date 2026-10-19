@@ -1,0 +1,13 @@
+series_id,area,period,value,unit,source_document,source_page,status,previous_value,previous_document
+FS_UNDERNOURISH_PCT,Central Region,2021,7.1,% of population,EX-REP-2024-03,22,single,,
+FS_UNDERNOURISH_PCT,Central Region,2022,6.8,% of population,EX-REP-2024-03,22,confirmed,,
+FS_UNDERNOURISH_PCT,Central Region,2023,6.6,% of population,EX-REP-2024-03,22,confirmed,,
+FS_UNDERNOURISH_PCT,Central Region,2024,6.3,% of population,EX-REP-2025-03,24,single,,
+FS_UNDERNOURISH_PCT,Northern Region,2021,10.4,% of population,EX-REP-2024-03,22,single,,
+FS_UNDERNOURISH_PCT,Northern Region,2022,9.9,% of population,EX-REP-2024-03,22,confirmed,,
+FS_UNDERNOURISH_PCT,Northern Region,2023,9.6,% of population,EX-REP-2025-03,24,revised,9.7,EX-REP-2024-03
+FS_UNDERNOURISH_PCT,Northern Region,2024,9.5,% of population,EX-REP-2025-03,24,single,,
+FS_UNDERNOURISH_PCT,Total,2021,8.5,% of population,EX-REP-2024-03,22,single,,
+FS_UNDERNOURISH_PCT,Total,2022,8.1,% of population,EX-REP-2024-03,22,confirmed,,
+FS_UNDERNOURISH_PCT,Total,2023,7.8,% of population,EX-REP-2025-03,24,revised,7.9,EX-REP-2024-03
+FS_UNDERNOURISH_PCT,Total,2024,7.6,% of population,EX-REP-2025-03,24,single,,

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "org.example.stats/statistics-example",
+  "title": "Example organization statistics",
+  "description": "Read-only access to the published official statistics of the example organization: search, metadata, observations, and code lists, with source, release date, licence, and citation in every response.",
+  "version": "1.0.0",
+  "websiteUrl": "https://stats.example/agents",
+  "repository": {
+    "url": "https://github.com/example-nso/statistics-mcp",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://stats.example/mcp"
+    }
+  ],
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "statistics-example-mcp",
+      "version": "1.0.0",
+      "transport": {"type": "stdio"},
+      "environmentVariables": [
+        {"name": "STATS_API_URL", "description": "Base URL of the organization's data API", "isRequired": false, "isSecret": false}
+      ]
+    }
+  ]
+}

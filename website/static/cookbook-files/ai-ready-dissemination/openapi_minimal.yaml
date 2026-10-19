@@ -1,0 +1,100 @@
+openapi: 3.0.3
+info:
+  title: Statistics API (example)
+  version: "1.0"
+  description: >
+    Read-only access to published series. Series records use the field names
+    of the World Bank indicator metadata schema; data responses use SDMX
+    cross-domain concept names (SERIES, REF_AREA, TIME_PERIOD, OBS_VALUE,
+    OBS_STATUS, UNIT_MEASURE). Offices that run an SDMX web service already
+    have the SDMX REST API as their documented interface and do not need this
+    description.
+  license:
+    name: CC BY 4.0
+    url: https://creativecommons.org/licenses/by/4.0/
+  contact:
+    email: stats@example
+servers:
+  - url: https://stats.example/api/v1
+paths:
+  /series:
+    get:
+      summary: List published series
+      parameters:
+        - name: q
+          in: query
+          description: Free-text filter on name and definition
+          schema: {type: string}
+      responses:
+        "200":
+          description: Series records
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: "#/components/schemas/Series"}
+  /series/{idno}:
+    get:
+      summary: Metadata for one series
+      parameters:
+        - {name: idno, in: path, required: true, schema: {type: string}}
+      responses:
+        "200":
+          description: Series record
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/Series"}
+        "404": {description: Unknown series}
+  /series/{idno}/data:
+    get:
+      summary: Observations for one series
+      parameters:
+        - {name: idno, in: path, required: true, schema: {type: string}}
+        - {name: REF_AREA, in: query, schema: {type: string}, description: Code from the published reference area code list}
+        - {name: startPeriod, in: query, schema: {type: string}, description: First period, inclusive (ISO 8601 or SDMX period)}
+        - {name: endPeriod, in: query, schema: {type: string}, description: Last period, inclusive}
+      responses:
+        "200":
+          description: Observations with their unit, status, and release
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/DataResponse"}
+components:
+  schemas:
+    Series:
+      type: object
+      required: [idno, name, measurement_unit, periodicity, sources, date_last_update]
+      properties:
+        idno: {type: string, example: FS_UNDERNOURISH_PCT}
+        name: {type: string}
+        definition_long: {type: string}
+        measurement_unit: {type: string, example: "% of population"}
+        periodicity: {type: string, example: annual}
+        time_period_start: {type: string}
+        time_period_end: {type: string}
+        geographic_units: {type: string}
+        sources: {type: string}
+        date_last_update: {type: string, format: date}
+        definition_references: {type: string, format: uri}
+        license: {type: string, format: uri}
+        citation_requirement: {type: string}
+    DataResponse:
+      type: object
+      required: [SERIES, UNIT_MEASURE, RELEASE, SOURCE_URL, observations]
+      properties:
+        SERIES: {type: string}
+        UNIT_MEASURE: {type: string}
+        RELEASE: {type: string, format: date}
+        SOURCE_URL: {type: string, format: uri}
+        observations:
+          type: array
+          items:
+            type: object
+            required: [REF_AREA, TIME_PERIOD, OBS_VALUE]
+            properties:
+              REF_AREA: {type: string, example: NAT}
+              TIME_PERIOD: {type: string, example: "2024"}
+              OBS_VALUE: {type: number, example: 7.6}
+              OBS_STATUS:
+                type: string
+                description: "Code from the SDMX observation status code list, for example A (normal), P (provisional), B (break), E (estimated)"

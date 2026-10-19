@@ -1,0 +1,5 @@
+series,period,value,previous_value,unit,status
+LF_UNEMP_PCT,2025-Q2,6.1,6.3,% of labour force,P
+LF_UNEMP_PCT_YOUTH,2025-Q2,16.8,17.5,% of labour force aged 15-24,P
+LF_PART_RATE,2025-Q2,61.2,60.9,% of population aged 15+,P
+LF_EMPLOYED,2025-Q2,4312,4268,thousands,P

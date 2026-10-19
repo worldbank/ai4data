@@ -1,0 +1,200 @@
+---
+id: index
+title: Practical Guide to AI-Ready Data Dissemination
+sidebar_label: Overview
+sidebar_position: 0
+description: A cookbook for national statistical organizations that want their published statistics to be found, understood, and cited correctly by people and AI systems.
+---
+
+# Practical Guide to AI-Ready Data Dissemination
+
+**A cookbook for national statistical organizations.** Version 0.1 (working draft), October 2026.
+
+:::note[Working draft]
+This guide is a working draft from the AI for Data – Data for AI program. It
+collects practical approaches and open standards. It does not
+represent official World Bank Group guidance or policy and is not legal
+advice; an organization applies it under its own statistical law, data
+protection rules, and institutional policies.
+Comments and corrections are welcome as
+[GitHub issues](https://github.com/worldbank/ai4data/issues), and the
+[contribute](./contribute.md) page explains how to propose a recipe.
+:::
+
+People increasingly reach statistics through AI systems: search
+assistants, chatbots, and analysis tools. These systems read the
+metadata, the web pages, and the APIs that a statistical organization
+publishes, and they read them without asking anyone for help. When those
+sources are incomplete, ambiguous, or hard to retrieve, the systems
+return the wrong series, mix up definitions, or quote numbers without a
+source, and they do so under the organization's name.
+
+This guide is organized around nine questions that an organization can
+ask about its own dissemination system, from "can people and AI find our
+statistics?" to "can we maintain what we build?". Each chapter explains
+why the question matters and what a good answer looks like. It then gives
+recipes, which are tasks with a defined result, the skills and the time
+they need, the code or the template to do them, and a worked example on
+the running example.
+
+The recipes build on published standards: SDMX for aggregate data, DDI for
+microdata, ISO 19115 for geospatial data, Dublin Core for documents, DCAT
+and schema.org for catalogs, DataCite for identifiers, and the World Bank's
+own metadata schemas for records. The [standards page](./standards.md)
+lists each one, where the World Bank uses it, and where it appears in the
+guide. The chapters follow one indicator catalog as a running example; the
+[Application by data type](./data-types.md) page shows how each question and recipe
+applies to survey microdata, geospatial data, documents, and tables, with a
+record and a profile for each.
+
+:::tip[AI readiness does not require generative AI]
+Many of the highest-value steps are ordinary data practice: complete
+metadata, open structured data, stable identifiers, and documented APIs. These
+steps help human users and conventional search as well. A chatbot is an
+optional later layer, and chapters 4 and 5 explain what has to be in place
+before one is safe to run.
+:::
+
+## Prerequisites
+
+The recipes assume the following are in place or can be arranged:
+
+- A published catalog of indicators or datasets, on a website the organization controls, with someone who can edit its pages or records.
+- One person who can run a Python script (the checks in this guide use the standard library and one package) and one who knows the statistics well enough to write definitions and judge answers.
+- For the AI-ready level, a developer who can change the website template or the API; for the AI-native level, a server that can run a small open-weight model, or access to a hosted model under the AI-use policy of chapter 8.
+
+## First steps
+
+For a team with limited time, this sequence gives the most useful result first:
+
+1. Run the completeness check of [chapter 1](./find.mdx) on the catalog export. It takes half a day, and its output is the work list for the metadata.
+2. Write the one-page AI-use policy of [chapter 8](./govern.mdx). It takes a day, and nothing else in this guide is safe to start without it.
+3. Write thirty known-item questions and score the current search with them, as [chapter 6](./evaluate.mdx) describes. It takes a day, and every later change is measured against this baseline.
+4. Publish the series as tidy files at stable addresses, with the source and a citation on each page, following [chapters 2](./retrieve.mdx) and [5](./trust.mdx). This serves every user and every AI system at once.
+
+A conversational interface ([chapter 4](./ask.mdx)) comes last, after the four steps above are at the AI-ready level.
+
+## Self-assessment
+
+The [self-assessment](./start-here.mdx) takes about five minutes. It places
+an organization at a level in each chapter and suggests a reading order.
+
+## Chapters and questions
+
+| Chapter | Question for a statistical organization | Practical topics |
+|---|---|---|
+| [1. Findability of statistics](./find.mdx) | Can people and AI find our statistics? | Metadata completeness, indexing, DCAT and schema.org, semantic search, multilingual metadata |
+| [2. Retrieval of data by software](./retrieve.mdx) | Can AI retrieve our data reliably? | Open formats, APIs, stable identifiers, machine-readable access, MCP |
+| [3. Meaning of the data: units, concepts, and classifications](./understand.mdx) | Can AI understand what the numbers mean? | Units, concepts, classifications, method notes, SDMX, DDI, code lists |
+| [4. Natural-language access](./ask.mdx) | Can users ask questions in their own words? | Natural-language search, retrieval-augmented generation, conversational interfaces, multilingual access |
+| [5. Trust and provenance of answers](./trust.mdx) | Can answers be trusted and traced? | Provenance, citation, numeric verification, grounding, freshness |
+| [6. Evaluation](./evaluate.mdx) | Can we tell whether our AI-ready steps improved anything? | Retrieval benchmarks, hallucination tests, answer accuracy, multilingual evaluation |
+| [7. Monitoring of data use](./monitor-use.mdx) | Can we see how our data are used, including by AI systems? | Dataset mention detection, citation tracking, AI visibility |
+| [8. Governance and responsible operation](./govern.mdx) | Can we operate AI-supported dissemination responsibly? | Governance, human oversight, security, privacy, model choice, vendor dependence |
+| [9. Sustainability and maintenance](./sustain.mdx) | Can we maintain what we build? | Architecture, open standards, small and open models, cost, skills, lifecycle |
+
+These questions follow the same path as the program's
+[AI-ready data framework](/docs/ai-ready-framework): find the right data,
+retrieve it with context, interpret it, and verify the result.
+
+## Maturity levels
+
+Each chapter describes three levels. An organization can sit at different levels in
+different chapters, and the first level is a complete, useful state on its
+own.
+
+| Level | Meaning |
+|---|---|
+| **Foundational** | Data and metadata are published in open, documented formats that a person can download and that a crawler can read. |
+| **AI-ready** | Data and metadata are structured, identified, and accessible through documented interfaces, so that software, including AI systems, can use them without manual steps. |
+| **AI-native** | The organization offers AI-oriented interfaces such as semantic search or an agent protocol, with provenance and verification built in. |
+
+For access, as an example:
+
+- **Foundational:** downloadable CSV files with a metadata page.
+- **AI-ready:** a documented REST API, stable identifiers, and structured metadata.
+- **AI-native:** semantic discovery, a standard agent interface such as MCP, and provenance on every answer.
+
+## Running example
+
+The recipes use one small, fictional catalog so that each chapter picks up
+where the previous one ends. The example organization publishes five series:
+
+| id | title | unit |
+|---|---|---|
+| `FS_UNDERNOURISH_PCT` | Prevalence of undernourishment | % of population |
+| `ED_PRIMARY_NER_PCT` | Net enrolment rate in primary education | % of age group |
+| `HE_U5_MORT_RATE` | Under-five mortality rate | deaths per 1000 live births |
+| `LF_UNEMP_PCT` | Unemployment rate | % of labour force |
+| `PV_HEADCOUNT_NPL_PCT` | Poverty headcount ratio at national poverty line | % of population |
+
+One record has an empty definition on purpose, so that the completeness
+report in chapter 1 and the search scores in chapter 6 have something to
+find. The catalog file uses the field names of the
+[World Bank indicator metadata schema](https://github.com/worldbank/metadata-schemas)
+(`idno`, `name`, `definition_long`, `measurement_unit`, `periodicity`, and
+so on), and the values file uses SDMX cross-domain concept names (`SERIES`,
+`REF_AREA`, `TIME_PERIOD`, `OBS_VALUE`, `OBS_STATUS`, `UNIT_MEASURE`). The
+catalog, the values, and every script in this guide are in the files list
+below. All values are invented.
+
+## Scope of the examples
+
+The examples are small on purpose: five series, fifteen test questions,
+and single-file scripts with no dependencies beyond the standard library
+and `jsonschema`, so that a reader can run them in an afternoon and see
+the shape of each check. They are starting points. Each recipe
+ends with a **What this does not do** note that says where the example
+stops and what the full version adds, and points to the program's tools
+where one exists. Treat a recipe as done when the organization's own data pass
+the organization's own version of the check, with the profile, question set, and
+rules that the organization has agreed.
+
+## Files
+
+Each file is embedded in the chapter that uses it and can be downloaded here.
+The scripts use only the Python standard library unless stated.
+
+| File | Used in |
+|---|---|
+| [example_catalog.csv](pathname:///cookbook-files/ai-ready-dissemination/example_catalog.csv) | The running example catalog (World Bank indicator schema field names) |
+| [example_values.csv](pathname:///cookbook-files/ai-ready-dissemination/example_values.csv) | The running example values (SDMX cross-domain concept names) |
+| [metadata_template.csv](pathname:///cookbook-files/ai-ready-dissemination/metadata_template.csv) | Chapter 1: fields every series record needs, named as in the World Bank indicator schema |
+| [check_metadata.py](pathname:///cookbook-files/ai-ready-dissemination/check_metadata.py) | Chapter 1: three-layer metadata check (schema, profile, validity) for every World Bank metadata type; needs `jsonschema` 4.18+ |
+| [profile_indicator.json](pathname:///cookbook-files/ai-ready-dissemination/profile_indicator.json) | Chapter 1: fields required at each level for indicators, and the validity rules, for the organization to edit |
+| [profile_microdata.json](pathname:///cookbook-files/ai-ready-dissemination/profile_microdata.json) | Chapter 1: the same for survey microdata (DDI Codebook based schema) |
+| [profile_geospatial.json](pathname:///cookbook-files/ai-ready-dissemination/profile_geospatial.json) | Chapter 1: the same for geospatial data (ISO 19115/19139 based schema) |
+| [profile_document.json](pathname:///cookbook-files/ai-ready-dissemination/profile_document.json) | Chapter 1: the same for documents (Dublin Core based schema) |
+| [example_microdata.json](pathname:///cookbook-files/ai-ready-dissemination/example_microdata.json) | A microdata record in the World Bank schema (fictional labour force survey) |
+| [example_geospatial.json](pathname:///cookbook-files/ai-ready-dissemination/example_geospatial.json) | A geospatial record in the World Bank schema (fictional district boundaries) |
+| [example_document.json](pathname:///cookbook-files/ai-ready-dissemination/example_document.json) | A document record in the World Bank schema (fictional report, linked to the series and survey it used) |
+| [dataset.jsonld](pathname:///cookbook-files/ai-ready-dissemination/dataset.jsonld) | Chapter 1: schema.org Dataset markup |
+| [openapi_minimal.yaml](pathname:///cookbook-files/ai-ready-dissemination/openapi_minimal.yaml) | Chapter 2: API description |
+| [mcp_server_example.py](pathname:///cookbook-files/ai-ready-dissemination/mcp_server_example.py) | Chapter 2: MCP server (needs the `mcp` package) |
+| [verify_numbers.py](pathname:///cookbook-files/ai-ready-dissemination/verify_numbers.py) | Chapter 5: numeric verification |
+| [eval_questions.csv](pathname:///cookbook-files/ai-ready-dissemination/eval_questions.csv) | Chapter 6: question set |
+| [score_retrieval.py](pathname:///cookbook-files/ai-ready-dissemination/score_retrieval.py) | Chapter 6: retrieval scoring |
+| [ai_component_register.csv](pathname:///cookbook-files/ai-ready-dissemination/ai_component_register.csv) | Chapter 8: AI component register |
+| [ai_use_policy_template.md](pathname:///cookbook-files/ai-ready-dissemination/ai_use_policy_template.md) | Chapter 8: AI-use policy template |
+
+## Related resources
+
+| Resource | Purpose |
+|---|---|
+| This guide | What a statistical organization can do, and why, in a sequence of practical steps. |
+| [Application by data type](./data-types.md) | How the questions and recipes apply to indicators, microdata, geospatial data, documents, and tables. |
+| [Standards used in this guide](./standards.md) | The published standards behind each recipe, with the ones the World Bank has adopted. |
+| [AI-readiness assessment](/ai-readiness-assessment) | A structured assessment of where an organization stands before planning. |
+| [From assessment to action](/ai-readiness-in-practice) | Each assessment dimension mapped to the program's tools, methods, and the chapters of this guide. |
+| [Documentation](/docs/introduction) | How each program method and tool works. |
+| [Code](https://github.com/worldbank/ai4data) | Open-source software to deploy or adapt. |
+
+## Citation
+
+World Bank. 2026. *Practical Guide to AI-Ready Data Dissemination: A cookbook
+for national statistical organizations.* Version 0.1. AI for Data – Data for AI.
+https://worldbank.github.io/ai4data/cookbook/ai-ready-dissemination/
+
+## Version history
+
+- **0.1 (October 2026).** First draft: nine chapters, recipes, templates, self-assessment.

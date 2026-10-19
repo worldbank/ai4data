@@ -1,0 +1,17 @@
+role,task_id,task,model_role,allowed,data_tier,review
+All staff,T01,Draft or shorten an email or a memo,draft,yes,internal,The sender reads the whole text and owns every sentence
+All staff,T02,Summarize a published report or a meeting note,summarize,yes,internal,The reader checks every figure in the summary against the source
+All staff,T03,Translate a published text between the organization's languages,translate,yes,public,A speaker of the target language reads the translation before it is used
+All staff,T04,Explain a term or a method in plain language,explain,yes,public,The explanation is checked against the methods note before it is repeated
+All staff,T05,Decide anything about a respondent or a member of staff,decide,no,,Stays with the person; no assistant is used
+Data curator,T06,Draft a missing description or keywords for a catalog record,draft,yes,internal,The curator approves the draft before it enters the record
+Data curator,T07,Propose a variable label from a questionnaire text,draft,yes,confidential,Local assistant only; the curator checks the label against the questionnaire
+Methodologist,T08,Explain why a record failed an edit rule,explain,yes,confidential,Local assistant only; the editor decides the case
+Methodologist,T09,Draft a method note from a specification,draft,yes,internal,The methodologist checks every formula and reference
+Analyst,T10,Draft commentary from a published or embargoed table,draft,yes,internal,Every number is checked against the table before approval
+Analyst,T11,Write or review a script in Python or R,code,yes,internal,The analyst runs the script on test data and reads the diff
+Dissemination officer,T12,Draft a user-facing answer from published values,draft,yes,public,Every number and citation is checked against the record
+Dissemination officer,T13,Classify incoming user requests by topic,classify,yes,internal,A sample is reviewed each month
+Manager,T14,Draft an agenda or minutes from notes,draft,yes,internal,The manager reads and corrects the text before it is sent
+Manager,T15,Approve a publication or a release,decide,no,,Stays with the person; no assistant is used
+IT staff,T16,Explain a log message or an error,explain,yes,internal,The explanation is tested before a change is made

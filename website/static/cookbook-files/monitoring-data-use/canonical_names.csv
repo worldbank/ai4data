@@ -1,0 +1,7 @@
+dataset_id,canonical_name,acronym,producer,variants
+EX-HBS-2021,Household Budget Survey 2021,HBS,National Statistics Office (example),household budget survey;HBS 2021;budget survey 2021;household budget survey (HBS) 2021
+EX-LFS,Labour Force Survey,LFS,National Statistics Office (example),labour survey;labor force survey;quarterly labour force survey
+FS_UNDERNOURISH_PCT,Prevalence of undernourishment,,National Statistics Office (example),undernourishment;prevalence of undernourishment series;undernourishment rate
+LF_UNEMP_PCT,Unemployment rate,,National Statistics Office (example),unemployment rate from the LFS;national unemployment rate
+EX-REP-2025-03,Food security report 2025,,National Statistics Office (example),food security report;national statistics office food security report 2025
+EX-CEN-2014,Population and Housing Census 2014,,National Statistics Office (example),2014 census;population census 2014

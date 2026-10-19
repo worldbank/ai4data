@@ -1,0 +1,232 @@
+---
+id: operate
+title: "9. Operation and maintenance"
+sidebar_label: "9. Operate"
+sidebar_position: 10
+description: How the server is run as a product, with a stable endpoint over a supported transport, versions and announced deprecations, usage counted as machine access, a known cost per call, pinned dependencies, and a plan for retiring it.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 9. Operation and maintenance
+
+**Question:** How is the interface operated and maintained?
+
+## Rationale
+
+A server that runs on a developer's machine serves one person. In
+production it needs a stable address, a transport that clients support, a
+version number, usage statistics, a known cost, and a person to contact.
+It also needs maintenance, because everything around it changes. The
+protocol is published in dated versions. Its SDKs change their interfaces
+between major versions; the Python SDK renamed its server class between
+versions 1 and 2. Assistants change how they select tools. The catalog
+behind the server changes with every release.
+
+The server is therefore a maintained product, with the same obligations as
+the API it wraps. This chapter covers what that means in practice, and it
+ends with the plan for retiring the server, because a thin layer over the
+API should be easy to switch off without losing the API.
+
+## Target state
+
+- The server runs at a stable endpoint over a supported transport, with a version number and a changelog.
+- The client configuration is published, and the server is listed where clients look for it.
+- Usage is counted as machine access, following the COUNTER Code of Practice for Research Data, and feeds the monitoring of data use.
+- The cost per call is known, and a contact and a deprecation policy are published.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | The server is hosted at a stable endpoint, and the endpoint, the tool list, and a contact are published. |
+| **AI-ready** | The server and its tools are versioned. The client configuration is published. Usage is counted, the cost is estimated, and availability and latency are monitored. |
+| **AI-native** | The server is listed for clients. Deprecations are announced in advance. Usage feeds the monitoring of data use and the documentation work, and the SDK and protocol versions are reviewed on a schedule. |
+
+:::info[Running example]
+The example server runs at `https://stats.example/mcp` over streamable
+HTTP, at version 1.0.0, with a published client configuration and a
+contact. Its log counts calls per tool and per client, and the use report
+of the monitoring cookbook includes those counts as machine access.
+:::
+
+## Recipes
+
+<Recipe title="9.1 Host the server at a stable endpoint" level="Foundational" skills="Operations; developer" time="One to two days">
+
+**Result:** the server has an address that clients can rely on, over a
+transport they support, and its availability and latency are monitored.
+
+A transport is the way the client and the server exchange messages. The
+protocol defines two. Streamable HTTP is for a server reached over the
+network, which is the case for a server the organization hosts. Stdio is
+for a server that the client starts as a local program on the same
+machine, which suits a package a developer installs. A hosted server uses
+streamable HTTP, and it sits behind the organization's gateway like any
+other web service.
+
+1. Choose the transport. Streamable HTTP is the one for a server used
+   over the network. Stdio is only for a server run locally by a client.
+   The Data360 server runs over HTTP with a server-sent events option.
+2. Put the server behind the organization's gateway, with TLS, the rate
+   limits of [chapter 5](./access.mdx), and a stable path such as
+   `/mcp`. Keep the server stateless, as the base protocol assumes, so
+   that any instance can answer any request.
+3. Monitor availability and latency per tool, and alert on failures of
+   the upstream API, because the server depends on it for every answer.
+4. Publish the endpoint, the tool list (the manifest), the terms of use,
+   and a contact on a page under the catalog, as
+   [chapter 8](./distribute.mdx) describes.
+
+**Worked example.** The example organization runs two instances of the
+server in containers behind its existing API gateway, at
+`https://stats.example/mcp`. The gateway terminates TLS, applies the rate
+limits, and forwards requests to whichever instance is free. The
+monitoring dashboard shows the share of successful calls per tool and the
+median latency, which is 0.4 seconds for `search_series` and 0.9 seconds
+for `get_observations`, most of it spent waiting for the API. An alert
+fires when the API returns errors for more than one minute.
+
+**What this does not do.** A stable endpoint keeps clients connected. A
+stable tool set keeps them working, and that is the subject of recipe
+9.2.
+
+</Recipe>
+
+<Recipe title="9.2 Version the server and announce changes" level="AI-ready" skills="Developer; dissemination officer" time="Half a day; ongoing">
+
+**Result:** changes to the server do not break connected clients without
+notice, and every version can be evaluated and rolled back.
+
+A client that connected last month stores the tool names it learned, and
+an assistant that used the server stores what it learned about the tools
+in its own instructions. A renamed tool breaks both. Versioning gives
+every change a number, and the deprecation period gives clients time to
+move.
+
+1. Version the server with semantic versioning, and treat any change to a
+   tool's name, inputs, or outputs as a breaking change. Add the new
+   tool, keep the old one for a stated period, and announce the
+   deprecation in the changelog and in the old tool's description, where
+   the model will read it.
+2. Keep the manifest, the guidance resource, the listing, and the
+   evaluation scores for each version, so that a regression can be
+   traced to the change that caused it.
+3. Announce releases where clients were told to look: the developer page
+   of [chapter 8](./distribute.mdx), the registry listing's version, and
+   a release note that states the date on which the old version stops.
+4. Keep the previous version deployable for the deprecation period, so
+   that a rollback is a configuration change.
+
+**Worked example.** In its second release, the example organization adds
+a `period_end` input to `get_observations`, so that a client can ask for
+a range. The input is optional, so the change is backward compatible and
+the version becomes 1.1.0. Had the organization renamed the tool to
+`get_data`, the version would have become 2.0.0. In that case
+`get_observations` would have stayed in the manifest for six months with
+the description "Deprecated: use get_data; this tool stops on
+2027-04-01", and the changelog and the developer page would have said the
+same.
+
+**What this does not do.** Versioning protects clients from changes the
+organization makes. Changes in assistants and in the protocol are tracked
+in recipe 9.3.
+
+</Recipe>
+
+<Recipe title="9.3 Count usage, estimate cost, and maintain" level="AI-ready" skills="Operations; dissemination officer" time="One day to set up; part of each period">
+
+**Result:** the organization knows who uses the server, what it costs,
+and when its dependencies change, and it has a plan for retiring the
+server.
+
+Usage counts are what justify the server at budget time, and they are
+also a form of monitoring: a tool nobody calls is a design question, and
+a client that calls one tool ten thousand times a day is an operations
+question. Counting them in a standard way, the COUNTER Code of Practice
+for Research Data, makes the figures comparable with downloads and with
+the counts of other organizations.
+
+1. Count calls per tool and per client from the log as machine access,
+   following the
+   [COUNTER Code of Practice for Research Data](https://coprd.countermetrics.org/),
+   and report them beside downloads and mentions in the
+   [monitoring of data use](/cookbook/monitoring-data-use/report).
+2. Estimate the cost per call, including hosting, the load on the
+   upstream API, and operations time, and compare it with the usage. The
+   dissemination cookbook's [cost recipe](/cookbook/ai-ready-dissemination/sustain)
+   applies.
+3. Review the SDK and protocol versions on a schedule. The specification
+   is dated, with 2026-07-28 as the current version, and the SDK's major
+   versions change interfaces. Keep the server's SDK pinned to a version,
+   and upgrade with the evaluation suite as the gate.
+4. Keep an exit plan. The server is a thin layer over the API, so the API
+   and the catalog remain the product if the server is retired. Say so in
+   the component register.
+5. Name the support contact and the response time, and route questions
+   about figures to the dissemination team, because they are questions
+   about the data.
+
+**Worked example.** For September 2026 the example server's log shows
+about 41,000 tool calls from 14 registered clients and the anonymous
+tier. Three quarters of the calls are `get_observations`, and the Ministry
+of Planning dashboard accounts for half of those. The use report lists
+the 41,000 calls as machine access beside 9,200 file downloads for the
+same month. The estimated cost is 0.3 cents per call, most of it hosting.
+The SDK is pinned at version 2.1, and the next review of the SDK and the
+specification is scheduled for December. The component register says
+that if the server were retired, the API and the catalog would continue
+unchanged and the developer page would say so.
+
+**What this does not do.** Usage counts show calls. They show neither
+users nor decisions. The AI visibility check and the monitoring of data
+use show where the figures end up.
+
+</Recipe>
+
+## Implementation options
+
+- **Transport.** Streamable HTTP for networked servers and stdio for local use, with a gateway for TLS, authentication, and rate limits.
+- **Hosting.** The organization's web infrastructure or a container service. The server is stateless and small.
+- **Versioning.** Semantic versions, with deprecation periods stated in the changelog and in the tool descriptions.
+- **Usage.** COUNTER-aligned counts of machine access from the server log, and a cost per call from hosting and upstream load.
+- **Dependencies.** The official SDK pinned by version, and the specification's dated releases tracked.
+
+## World Bank examples
+
+- The [Data360 MCP server](https://github.com/worldbank/data360-mcp) documents its transport (HTTP, with server-sent events), client connection from several frameworks, configurable timeouts and retries, and its licence (MIT with the World Bank IGO rider).
+- The [dissemination cookbook's sustainability chapter](/cookbook/ai-ready-dissemination/sustain) covers the switch-off test, the cost per query, and the handover test that apply to the server.
+
+## Resources
+
+- [MCP specification: transports](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports) defines streamable HTTP and stdio and what a hosted server implements.
+- [Semantic Versioning](https://semver.org/) is the versioning rule for the server and its tools.
+- The [COUNTER Code of Practice for Research Data](https://coprd.countermetrics.org/) defines how machine access is counted in a comparable way; the [monitoring cookbook's access chapter](/cookbook/monitoring-data-use/access) applies it.
+- The [distribution chapter](./distribute.mdx) covers the client configurations, the registry listing, and the developer page that announcements go to.
+- The [Data360 MCP server](https://github.com/worldbank/data360-mcp) shows a hosted server's deployment, configuration, and versioning in practice.
+
+## Common mistakes
+
+- **A prototype in production.** With no version, no monitoring, and no contact, the first failure is found by a user.
+- **Renaming a tool in place.** Every client's saved configuration and every model's learned usage breaks at once.
+- **Usage uncounted.** The server's value is invisible at budget time.
+- **SDK upgraded without the suite.** A major version change alters behaviour. The evaluation suite is the gate.
+
+## Verification
+
+- **Endpoint.** The published configuration connects an assistant, and availability and latency are monitored.
+- **Versions.** The changelog lists the versions and the deprecations, and the manifest and the scores exist for each version.
+- **Usage.** Calls per tool and per client are reported each period as machine access.
+- **Maintenance.** The SDK and specification versions are reviewed on the schedule, and the register names an owner and an exit plan.
+
+## Checklist
+
+<Checklist id="serving-statistics-to-agents-operate" items={[
+  'Stable endpoint over streamable HTTP behind the gateway',
+  'Availability and latency monitored; upstream failures alerted',
+  'Client configuration, tool list, terms, and contact published',
+  'Semantic versions; deprecations announced with a period',
+  'Usage counted as machine access and reported with data use',
+  'Cost per call estimated; SDK pinned; exit plan in the register',
+]} />

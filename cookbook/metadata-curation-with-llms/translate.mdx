@@ -1,0 +1,289 @@
+---
+id: translate
+title: "7. Translation of metadata"
+sidebar_label: "7. Translate"
+sidebar_position: 8
+description: How metadata is translated so that every language gets the same meaning, by deciding the fields, languages, and reviewers, translating with a model that is given the vocabulary as a glossary, checking for changed numbers and dropped content, and publishing only reviewed text under a language code.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 7. Translation of metadata
+
+**Question:** Can metadata be translated so that every language gets the same meaning?
+
+## Rationale
+
+A record in one language is findable in one language. Users and AI
+systems searching in the other official languages of a country, or in
+English for a national-language catalog, find nothing or find a machine
+translation of the page that changes the terms. Translating the names,
+definitions, units, and keywords of every record by hand is more work
+than most organizations can do; translating them with a model is cheap
+and produces fluent text with the occasional changed number, dropped
+sentence, or wrong statistical term. The workflow that makes model
+translation safe is the same as for drafting: the vocabulary as a
+glossary, automatic checks for what a machine gets wrong, a native
+speaker's review, and a status that keeps unreviewed text out of the
+published record.
+
+## Target state
+
+- The fields and the languages to translate are decided, with the priority by use, and a native-speaking reviewer named per language.
+- Translations are produced with the vocabulary's labels as the glossary, as structured output per field, and marked machine-translated.
+- Every translation passes the automatic checks before review, and every published translation has a reviewer and a date.
+- Records carry each language with its code, and search works in each.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Translate names and keywords of the most used records with the vocabulary's labels; review by a native speaker; publish with a language code. |
+| **AI-ready** | Translate the definitions and units with a model and the glossary; run the checks; route to review; record status and reviewer; translate the whole catalog in order of use. |
+| **AI-native** | Measure the acceptance of translations per language and field; gate prompt and model changes on a set of reviewed translations; translate new records at publication. |
+
+:::info[Running example]
+Ten French translations of five records' fields: four reviewed, six by a
+model. The checks find a changed number in a definition ("per 1000" became
+"pour 100"), an untranslated unit, and a definition cut to half its
+length; two are held back from review, and the rest go to the native
+speaker.
+:::
+
+## Recipes
+
+<Recipe title="7.1 Decide the fields, the languages, and the reviewers" level="Foundational" skills="Head of the curation unit" time="Half a day">
+
+**Result:** the unit has a short table that says which fields are
+translated into which languages, in which order, and who reviews each
+language.
+
+1. Fields: name, definition, unit, keywords, and the short description
+   first; methodology and limitations next; notes last. Codes and
+   identifiers are never translated.
+2. Languages: the official languages, then the languages of the main
+   users (the [monitoring cookbook](/cookbook/monitoring-data-use/)
+   shows where the data are used).
+3. Order: records by use, as in [chapter 1](./scope.mdx), recipe 1.3.
+4. Reviewers: a native speaker with statistical knowledge per language,
+   with the time per record estimated. The review is the cost, and the
+   checks of recipe 7.3 are what keep it small.
+
+**Worked example.** The example organization's table has two rows, one
+per target language. French, the second official language, comes first:
+name, definition, unit, and keywords of every indicator record, in order
+of use, reviewed by the labour statistician who is a native speaker, at
+an estimated four minutes per record. English comes second for the
+survey records whose documentation exists only in French, reviewed by
+the dissemination officer. Methodology and limitations are listed for a
+second phase. Codes, identifiers, and URLs are marked "never
+translated".
+
+**What this does not do.** The decision sets scope. The vocabulary of
+[chapter 6](./standardize.mdx) in each language is what makes the
+translations consistent, and it comes first.
+
+</Recipe>
+
+<Recipe title="7.2 Translate with the model and the vocabulary as glossary" level="AI-ready" skills="Curator with access to a model" time="Seconds per record">
+
+**Result:** each field has a translation produced by a model that was
+given the organization's own terms. The translation is returned in a
+fixed format and marked as machine-translated until a person reviews
+it.
+
+1. Build the prompt from four parts:
+   - the field and its definition;
+   - the source text;
+   - the glossary: the vocabulary's preferred labels in the source and
+     target language ([chapter 6](./standardize.mdx));
+   - the rules: keep every number, code, and unit symbol; translate the
+     statistical sense; return the field as JSON with a list of the
+     glossary terms used.
+2. Translate one field at a time, so that each output can be checked
+   and reviewed on its own.
+3. Write the translation into the record's field for that language with
+   status `machine`, the model, and the date. The published field stays
+   the reviewed one.
+4. For a language with little model support, use the model for a draft
+   and plan more review time, or translate by hand with the glossary.
+
+**Worked example.** The prompt for the unemployment rate's definition
+gives the field, the English definition, the glossary rows for
+"unemployment rate: taux de chômage" and "labour force: population
+active", and the rules. The model returns `{"definition_long": "Part de
+la population active sans emploi, disponible pour travailler et à la
+recherche active d'un emploi au cours de la période de référence,
+mesurée chaque trimestre à partir de l'enquête sur la population
+active. Exprimée en pourcentage de la population active.",
+"glossary_used": ["taux de chômage", "population active"]}`. The
+translation is written into the record's French definition field with
+the status `machine`, the model name, and the date, and the English
+definition stays the published one until the French is reviewed.
+
+**What this does not do.** A model with a glossary uses the right terms
+most of the time, and still drops a clause or changes a figure now and
+then. Recipe 7.3 catches the form, and the reviewer the sense.
+
+</Recipe>
+
+<Recipe title="7.3 Check translations before review" level="AI-ready" skills="Python" time="Minutes per batch">
+
+**Result:** translations with a changed number, with content dropped or
+added, or with text left untranslated have been held back, and the rest
+reach the reviewer with the flags that matter.
+
+The input file has one row per translated field:
+
+| Column | Meaning |
+|---|---|
+| `record_id`, `field`, `language` | Which record, field, and target language |
+| `source_text`, `translated_text` | The original and the translation |
+| `status` | `machine` (not yet reviewed) or `reviewed` |
+| `reviewer` | Who reviewed it, where reviewed |
+
+The script compares each translation with its source: are the same
+numbers present, is the length ratio plausible, is the translation
+identical to the source (left untranslated), and has it been reviewed:
+
+```python file=../../website/static/cookbook-files/metadata-curation-with-llms/check_translations.py
+```
+
+```bash
+python check_translations.py translations_example.csv
+```
+
+Output for the running example:
+
+```text
+record                 field             lang status    flags
+LF_UNEMP_PCT           name              fr   reviewed  ok
+LF_UNEMP_PCT           definition_long   fr   machine   unreviewed
+LF_UNEMP_PCT           measurement_unit  fr   machine   unreviewed
+HE_U5_MORT_RATE        name              fr   reviewed  ok
+HE_U5_MORT_RATE        definition_long   fr   machine   numbers changed (source 1000; translation 100); unreviewed
+HE_U5_MORT_RATE        measurement_unit  fr   machine   untranslated; unreviewed
+FS_UNDERNOURISH_PCT    name              fr   reviewed  ok
+FS_UNDERNOURISH_PCT    definition_long   fr   machine   length ratio 0.45; unreviewed
+PV_HEADCOUNT_NPL_PCT   name              fr   machine   unreviewed
+ED_PRIMARY_NER_PCT     name              fr   reviewed  ok
+
+10 translations: unreviewed 6, numbers changed 1, untranslated 1, length 1
+2 machine translation(s) held back for numbers or length; the rest go to the native speaker
+```
+
+The table has one row per translated field, with its status and the
+flags the check raised. "Unreviewed" means only that no person has
+looked at it yet. "Numbers changed" names the numbers in the source and
+in the translation. "Length ratio" gives the translation's length as a
+share of the source's. The last line counts what was held back.
+
+1. Run the check on each batch. A held-back translation goes back to
+   the model with the rule it broke, or to a person.
+2. Read the untranslated flag with care. A unit such as "%" is the same
+   in both languages, and the flag is a prompt to look.
+3. Add checks for the organization's own cases: glossary terms that
+   must appear, date formats, decimal separators.
+
+**Worked example.** In the run above, the definition of the under-five
+mortality rate is held back because the source says "per 1,000 live
+births" and the translation says "pour 100 naissances vivantes". The
+curator returns it to the model with the rule "keep every number
+exactly", and the second draft keeps the 1,000. The undernourishment
+definition is held back because the translation is 45 percent of the
+source's length; the model had dropped the second sentence, which
+explains the three-year average. The unit "%" of the under-five
+mortality rate is flagged as untranslated, which the curator reads and
+dismisses, because the unit is "per 1,000" in the source and the
+translation of that unit is correct. The remaining four machine
+translations go to the native speaker.
+
+**What this does not do.** The check reads form. The wrong statistical
+term in fluent text passes, and the native speaker with the vocabulary
+at hand catches it.
+
+</Recipe>
+
+<Recipe title="7.4 Review, publish per language, and measure" level="AI-ready" skills="Native-speaking reviewer; catalog administrator" time="Minutes per record for review">
+
+**Result:** every published translation has a reviewer and a date, the
+records can be searched in each language, and the unit has an
+acceptance rate per language and field.
+
+1. Review in the board of [chapter 5](./review.mdx) with the source and
+   the translation side by side. Record accept, edit, or reject with the
+   reason, as for any suggestion.
+2. Publish the reviewed text in the record under its language code
+   (ISO 639, such as `fr`). The Metadata Editor and NADA hold
+   multilingual fields, and the schema.org markup on the page carries
+   `inLanguage`.
+3. Index each language in search, and add questions in each language
+   to the question sets of the
+   [dissemination cookbook](/cookbook/ai-ready-dissemination/evaluate).
+4. Track acceptance per language and field ([chapter 8](./improve.mdx)).
+   A language with low acceptance needs a better glossary, a better
+   model, or more human translation.
+
+**Worked example.** The labour statistician reviews the six French
+translations in the board in twenty minutes. She accepts four, edits
+the unemployment rate's definition to replace "sans emploi" with the
+standard term "en chômage", and rejects the poverty headcount's name,
+which the model had rendered as "taux de pauvreté" where the catalog's
+term is "incidence de la pauvreté". The five accepted or edited texts
+are published under the code `fr`, with her initials and the date, and
+the French search index is rebuilt. The question "taux de chômage" in
+the dissemination cookbook's question set now returns the unemployment
+rate first. The period's acceptance rate for French is 5 of 6, and the
+rejection reason "wrong standard term" goes into the taxonomy.
+
+**What this does not do.** Reviewed translations make records findable
+in a language. The search engine's handling of that language (word
+stems, embeddings) is a separate check in the dissemination cookbook.
+
+</Recipe>
+
+## Implementation options
+
+- **Scope:** fields and languages in order of use; codes never translated.
+- **Model translation:** a prompt per field with the glossary and the rules; structured output; status and model recorded; hosted or local models through the provider-agnostic client.
+- **Checks:** the script in this chapter; glossary-term presence; locale formats.
+- **Publication:** multilingual fields in the record with language codes; `inLanguage` in schema.org; per-language search indexes.
+
+## World Bank examples
+
+- [Generative AI for Metadata Quality](/docs/metadata-quality/generative-ai-for-metadata-quality) lists translation among the model tasks, with the risk of altered meaning and the need for review.
+- The [Metadata Editor](https://github.com/worldbank/metadata-editor) supports fields in several languages, and NADA catalogs are run in several languages by national organizations.
+
+## Resources
+
+- [ISO 639 language codes](https://www.iso.org/iso-639-language-code): the codes under which each language's fields are stored.
+- [schema.org `inLanguage`](https://schema.org/inLanguage): the property that tells crawlers and assistants a page's language.
+- [SKOS multilingual labels](https://www.w3.org/TR/skos-reference/#labels): preferred labels per language, the form of the glossary.
+- [Metadata Editor user and practice guide](https://worldbank.github.io/metadata-editor-docs): multilingual fields and templates.
+- [Translations file](pathname:///cookbook-files/metadata-curation-with-llms/translations_example.csv) and [check](pathname:///cookbook-files/metadata-curation-with-llms/check_translations.py): the running example.
+
+## Common mistakes
+
+- **Translating the page with a browser.** Terms change on every visit; translate the record once and review it.
+- **Numbers trusted.** "per 1000" becomes "pour 100" often enough to check every time.
+- **No glossary.** The same concept gets three names in the target language.
+- **Machine text published.** Status and reviewer on every published translation.
+
+## Verification
+
+- **Scope.** The table of fields, languages, order, and reviewers exists.
+- **Checks.** Every batch runs the check, and every held-back item has a recorded outcome.
+- **Publication.** Every published translation has the status `reviewed`, a reviewer, and a date, and the page carries the language.
+- **Search.** A question in each language finds the record.
+
+## Checklist
+
+<Checklist id="metadata-curation-with-llms-translate" items={[
+  'Fields, languages, order, and reviewers decided',
+  'Glossary from the vocabulary in each language',
+  'Model translation per field with rules, structured output, and status',
+  'Automatic checks run; held-back items handled',
+  'Native-speaker review recorded with reason',
+  'Published per language with code, reviewer, date, and search in each language',
+]} />

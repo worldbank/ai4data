@@ -1,0 +1,108 @@
+---
+id: start-here
+title: Self-assessment
+sidebar_label: Self-assessment
+sidebar_position: 1
+description: A five-minute self-assessment that places an organization's use of language models in statistical production at a maturity level in each chapter and suggests a reading order.
+---
+
+import SelfAssessment from '@site/src/components/Cookbook/SelfAssessment';
+
+# Self-assessment
+
+Select the statement that best describes the organization today, one per
+chapter. The result shows a level for each chapter and the chapters to
+read first. Answers are stored in this browser only.
+
+<SelfAssessment
+  base="/cookbook/language-models-in-production/"
+  questions={[
+    {
+      id: 'map',
+      title: '1. Map',
+      question: 'Is model use in production mapped?',
+      options: [
+        'Staff use models informally; nobody has a list.',
+        'The model-assisted tasks are listed with phase, role, and review.',
+        'The map includes data sensitivity and model location, passes the check, and sits in the component register; a row is required before deployment.',
+        'The map is reviewed each period and published in the quality documentation.',
+      ],
+    },
+    {
+      id: 'design',
+      title: '2. Design',
+      question: 'How do models assist questionnaire and concept work?',
+      options: [
+        'They do not.',
+        'A model reviews drafts against the wording checklist; the methodologist reads the flags.',
+        'Question bank matches are proposed with confidence and confirmed; variable descriptions are drafted; acceptance is recorded.',
+        'Every questionnaire version is reviewed, acceptance is tracked, and cognitive test findings feed the checklist.',
+      ],
+    },
+    {
+      id: 'coding',
+      title: '3. Coding',
+      question: 'How is open text coded?',
+      options: [
+        'By coders alone, or by a model with no measurement.',
+        'A model proposes codes that coders accept or change; accuracy is measured against the final codes.',
+        'A threshold from the accuracy curve automates a share; a sample is re-coded each round; the rule and results are in the quality report.',
+        'Corrections retrain or re-prompt the model; coding runs as a pipeline stage on a local model.',
+      ],
+    },
+    {
+      id: 'editing',
+      title: '4. Editing',
+      question: 'How do models support editing and anomaly explanation?',
+      options: [
+        'They do not.',
+        'Edit failures reach editors with plain-language explanations rated on a sample.',
+        'Proposed values are checked against the rules before editors see them; anomaly explanations cite evidence; decisions are recorded.',
+        'Routine and non-routine cases are routed from recorded decisions; verdicts feed the explanation classes.',
+      ],
+    },
+    {
+      id: 'commentary',
+      title: '5. Commentary',
+      question: 'How is commentary drafted?',
+      options: [
+        'By analysts from scratch, or by a model with no check.',
+        'The headline paragraph is drafted from the tables and checked by hand.',
+        'The full commentary is drafted with the style guide, every number and claim checked by script, the analyst\'s approval recorded.',
+        'Drafts in every language with the glossary; claims sourced from the series history; acceptance tracked per section.',
+      ],
+    },
+    {
+      id: 'running',
+      title: '6. Running',
+      question: 'Where do the models run?',
+      options: [
+        'Wherever the tool is; versions unknown.',
+        'A local open-weight model runs inside the production network for one task; the version is pinned.',
+        'Batch jobs with manifests; cost and time estimated and measured; versions recorded per job; the switch-off test passes.',
+        'A shared model service with quotas; updates gated by the suites; capacity planned from demand.',
+      ],
+    },
+    {
+      id: 'assurance',
+      title: '7. Assurance',
+      question: 'How is model use documented and assured?',
+      options: [
+        'It is not.',
+        'A statement of model use exists for one release with decision points and versions.',
+        'Each task has a suite with required scores; effects on the statistics are measured; the statement is published and checked each release.',
+        'Statements are generated from the register and suites; a run is audited end to end each year; report cards are published.',
+      ],
+    },
+  ]}
+/>
+
+## Interpretation of the result
+
+- Chapter 1 first: the map and its rules are a day of work and decide
+  where every other chapter applies.
+- Chapter 3 is where most organizations start in practice; the threshold
+  rule and the re-coded sample are what make it a production method.
+- Chapter 7 is the one that keeps the statistics official; a release with
+  model assistance and no statement is a release with an undocumented
+  method.

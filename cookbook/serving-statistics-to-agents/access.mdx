@@ -1,0 +1,324 @@
+---
+id: access
+title: "5. Access control, quotas, and terms"
+sidebar_label: "5. Access"
+sidebar_position: 6
+description: How an organization decides who may call the agent interface and how much, from anonymous public access with limits to registered clients with keys and user-level authorization, and how it audits the request log against the client registry.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 5. Access control, quotas, and terms
+
+**Question:** Who may call the interface, how much, and under which terms?
+
+## Rationale
+
+Public statistics are free to use, and an agent interface over them can be
+open to anyone. Open does not have to mean unlimited. One misconfigured
+agent can send a thousand requests a minute and take the service down for
+everyone else. A leaked key can be abused for months before anyone
+notices. And even for free data the organization wants attribution, and a
+way to reach whoever runs a client that is sending heavy traffic.
+
+The usual answer is a small number of access tiers. Anonymous clients get
+tight limits and nothing else. Registered clients get a key, higher
+quotas, and a contact person, in exchange for accepting the terms of use.
+Where a product requires the user to be identified, for example a licensed
+product or a personal account, the protocol's OAuth-based authorization
+identifies the user. Quotas protect the service, the terms protect
+attribution, and the client registry and the request log together make
+both of them auditable.
+
+## Target state
+
+- The access tiers (public, registered, partner, and user-level) are defined with their limits, their quotas, and their terms, and the AI-use policy records them.
+- Each registered client holds a key or a token, has accepted the terms, and has a contact person. A registry holds the records.
+- The server, or a gateway in front of it, enforces the per-minute limits and the daily quotas of each tier and returns errors the model can act on.
+- A periodic audit compares the request log with the registry and reports unknown clients, clients over their limits, and clients that never accepted the terms.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Public data are served anonymously with a per-client rate limit, and the terms of use for agents are published. |
+| **AI-ready** | Registration issues keys. Tiers have quotas. A client registry holds contacts and accepted terms, and the audit of this chapter runs on a schedule. |
+| **AI-native** | The protocol's authorization (OAuth 2.1 with protected resource metadata) is in place for user-level access. Tools are scoped per tier, and usage per client is reported to the monitoring. |
+
+:::info[Running example]
+The example server has a public tier with a limit of 30 requests a minute
+and no key, a registered tier, and a partner tier. One day's request log
+shows an anonymous burst that the limit cut off, two requests with a key
+the registry does not know, and a registered client that never accepted
+the terms. The audit reports all three.
+:::
+
+## Recipes
+
+<Recipe title="5.1 Define the tiers, the quotas, and the terms" level="Foundational" skills="Dissemination lead; legal; developer" time="One day">
+
+**Result:** the organization has a short table of access tiers with their
+limits and conditions, and a terms-of-use text for agents. Both are
+published on the developer page.
+
+A tier is a class of client with its own limits and obligations. Defining
+the tiers before the server exists settles two questions at once: how much
+load the organization is prepared to serve, and what it asks of the
+clients in return. The terms of use for agents are separate from the data
+licence. The licence says what may be done with the data; the terms say
+what may be done with the service.
+
+1. Define the tiers. The public tier is anonymous, with a low per-minute
+   limit and a small daily quota. The registered tier requires a key,
+   accepted terms, and a contact, and gets higher limits. The partner
+   tier rests on an agreement and gets the highest limits. A user-level
+   tier exists only where a product requires it, through the
+   authorization of recipe 5.3.
+2. Write the terms for agents. They ask for attribution in the form of
+   [chapter 4](./provenance.mdx), forbid attempts at re-identification
+   and resale of the service, require respect of the limits, and give the
+   contact for heavy use. For the data themselves they point to the data
+   licence, which is CC BY 4.0 by default.
+3. Record the tiers and the terms in the AI-use policy and in the
+   component register of the dissemination cookbook, with the name of the
+   person who owns the registry.
+4. Set the limits from the API's own capacity, because the server passes
+   every request upstream. The upstream limit divided by the expected
+   number of clients is the starting point, and the audit of recipe 5.4
+   shows whether it was right.
+
+**Worked example.** The example organization's table has three rows. The
+public tier allows 30 requests a minute and 2,000 a day. The registered
+tier allows between 60 and 120 requests a minute, depending on the client,
+and 20,000 a day. The partner tier allows 600 a minute under an agreement.
+Its terms text asks every client to cite the organization in the form
+given in the guidance resource and to contact the data team before
+exceeding 20,000 requests a day. The API behind the server handles about
+1,500 requests a minute, so the limits leave room for a few dozen
+registered clients at once.
+
+**What this does not do.** The terms state expectations. The limits enforce
+only the ones the server can see. Attribution is verified by reading
+answers, which is the work of [chapter 7](./evaluate.mdx) and of the
+[monitoring cookbook](/cookbook/monitoring-data-use/).
+
+</Recipe>
+
+<Recipe title="5.2 Register clients and enforce limits per tier" level="AI-ready" skills="Developer; operations" time="Two days">
+
+**Result:** the organization has a registry of known clients, each with a
+key issued at registration, and a server, or a gateway in front of it,
+that enforces each tier's limits and returns errors an assistant can act
+on.
+
+A key is a secret string the client sends with every request. The server
+uses it to look up the client's tier and to count the client's requests.
+Keys identify clients, which are programs; they say nothing about the
+people using those programs. The registry is the list of clients the
+organization knows, and it is kept as a CSV file with one row per client:
+
+| Column | Meaning |
+|---|---|
+| `client_id` | The key prefix, or `pub-anon` for anonymous public clients. |
+| `name`, `contact` | Who the client is and how to reach them. |
+| `tier` | `public`, `registered`, or `partner`. |
+| `requests_per_minute`, `daily_quota` | The limits of the tier. |
+| `terms_accepted` | The date the terms were accepted, left empty if they were not. |
+
+The registry of the running example:
+
+```csv file=../../website/static/cookbook-files/serving-statistics-to-agents/client_registry.csv
+```
+
+1. Build a registration form that collects the client's name, its
+   purpose, its contact, and the acceptance of the terms, and issues a
+   key. Store the record in the registry with its tier.
+2. Enforce the per-minute limits and the daily quotas per client, either
+   in the server or in a gateway in front of it. When a client exceeds a
+   limit, return HTTP status 429 with a `Retry-After` header, and a tool
+   execution error that tells the model to wait and retry later. Without
+   that message, a model retries at once and makes the burst worse.
+3. Carry keys in headers (`Authorization: Bearer`), never in URLs, where
+   they end up in logs and referrers. Rotate a key on request, revoke it
+   on abuse, and log the client identifier with every request, as
+   [chapter 6](./safety.mdx) describes.
+4. For the public tier, identify anonymous clients by address or session
+   only for the purpose of the limit, and keep nothing else about them.
+
+**Worked example.** The running example's registry has five rows. The row
+`k-7f3a` is the Ministry of Planning's dashboard, a registered client with
+120 requests a minute, a daily quota of 20,000, terms accepted on 2 June
+2026, and a contact address. The row `pub-anon` stands for every anonymous
+client, with 30 requests a minute and a quota of 2,000. When the dashboard
+sends its 121st request in one minute, the gateway returns 429 with
+`Retry-After: 30`, and the tool error reads "rate limit reached; retry
+after 30 seconds".
+
+**What this does not do.** Keys identify clients and say nothing about
+users. A product that needs to know who the user is, or that serves a
+licensed product, needs the authorization flow of recipe 5.3.
+
+</Recipe>
+
+<Recipe title="5.3 Add OAuth-based authorization for user-level access" level="AI-native" skills="Developer with identity management experience" time="One to two weeks">
+
+**Result:** the server acts as an OAuth 2.1 resource server, as the
+protocol specifies. A client obtains a token for a specific user, and the
+server serves what that user may see.
+
+OAuth is the standard by which a program obtains permission to act for a
+user without ever seeing the user's password. The user signs in at the
+organization's identity provider, the identity provider issues a token
+that names the user and what they may do, and the client sends that token
+with every request. The Model Context Protocol specifies how an MCP server
+takes part in this flow, so that any compliant client can authorize a user
+without custom code.
+
+1. Publish protected resource metadata (RFC 9728) at the well-known URL.
+   The metadata names the authorization server. Clients discover it from
+   the `WWW-Authenticate` header of a 401 response, which also states the
+   scopes required.
+2. Use the organization's identity provider as the authorization server,
+   with OAuth 2.1, PKCE, authorization server metadata, and resource
+   indicators, so that tokens are bound to this server and cannot be
+   replayed elsewhere. Support client ID metadata documents, and
+   pre-register the clients the organization knows.
+3. Validate the audience and the scopes of every token. Return 401 for an
+   invalid token and 403, with the required scope named, for a token
+   that lacks it. Define scopes per tool group: `stats:read` for the
+   public tools, and a product scope for licensed data.
+4. Keep the public tier anonymous. Authorization applies only where the
+   product requires a user.
+
+**Worked example.** The example organization has one licensed product, a
+set of regional tables available to subscribing ministries. Its server
+defines two scopes: `stats:read`, which every token carries, and
+`stats:regional`, which the identity provider grants to users from
+subscribing ministries. A request for the regional tables with a token
+that lacks `stats:regional` receives a 403 response whose body names the
+missing scope. The public series need no token at all.
+
+**What this does not do.** Authorization identifies users and their scopes.
+It does not decide whether a licensed product may be served to an agent at
+all. That decision belongs to the access policy of the
+[microdata cookbook](/cookbook/microdata-documentation/access).
+
+</Recipe>
+
+<Recipe title="5.4 Audit the log against the registry" level="AI-ready" skills="Python; operations" time="Minutes per period">
+
+**Result:** a periodic report lists unknown clients, clients over their
+limits, rejected requests, and registered clients that never accepted the
+terms.
+
+The request log has one row per request, with the timestamp, the client
+identifier, the tool called, and the HTTP status. On its own the log says
+what happened. Joined with the registry, it says whether what happened was
+allowed. The script joins the two and reports per client:
+
+```python file=../../website/static/cookbook-files/serving-statistics-to-agents/quota_audit.py
+```
+
+It runs with the registry and the log as arguments:
+
+```bash
+python quota_audit.py client_registry.csv agent_requests.csv
+```
+
+For the running example the output is:
+
+```text
+27 requests from 6 clients; registry lists 5
+
+client     tier        requests busiest min limit/min rejected  note
+pub-anon   public            10           8        30        2  
+k-4d0f     partner            5           5       600        0  
+k-2b8e     registered         4           4        60        0  terms not accepted
+k-7f3a     registered         4           4       120        0  
+k-0000     unknown            2           2         -        2  not in the registry
+k-9c1d     registered         2           2       120        0  
+
+unknown clients: k-0000 (rejected by the server; check for a leaked or revoked key)
+registered without accepted terms: k-2b8e (suspend until the terms are accepted)
+tool calls served: get_observations 18, search_series 3, get_series_metadata 1, list_code_values 1
+```
+
+The table has one row per client seen in the log. The "busiest min"
+column is the highest number of requests the client sent in any one
+minute, which is what the per-minute limit applies to. The "rejected"
+column counts requests the server refused. The lines after the table are
+the findings that need action.
+
+1. Run the audit weekly on the request log. The script's exit status
+   fails the run when an unknown key or a client without accepted terms
+   made requests, so that a scheduled job raises an alert.
+2. Act on each finding. An unknown key is revoked or its registration is
+   completed. A client without accepted terms is suspended until it
+   accepts them. A client that keeps hitting its limit is contacted about
+   a higher tier.
+3. Feed the per-client counts to the usage statistics of
+   [chapter 9](./operate.mdx) and to the
+   [monitoring cookbook](/cookbook/monitoring-data-use/access).
+
+**Worked example.** In the run above, the key `k-0000` made two requests
+and is not in the registry. Both requests were rejected by the server, so
+no data were served, but the operations officer checks whether the key was
+revoked recently or whether a registered client's key was leaked and
+altered. The client `k-2b8e` is registered and made four requests without
+ever accepting the terms, so it is suspended and its contact is asked to
+accept them. The anonymous clients sent 8 requests in their busiest
+minute, under the limit of 30, and the two rejections among them came from
+a short burst earlier in the day.
+
+**What this does not do.** The audit reads what the server logged. It does
+not enforce anything. A gateway in front of the server is where the limits
+are applied, and the audit confirms that what the gateway did matches the
+registry.
+
+</Recipe>
+
+## Implementation options
+
+- **Tiers.** Public, registered, partner, and user-level, with limits derived from the upstream API's capacity.
+- **Enforcement.** A token bucket per key inside the server, or a gateway (an API management product) that handles keys, quotas, and 429 responses.
+- **Authorization.** OAuth 2.1 as the specification defines it, with the organization's identity provider. The Python SDK supports the server side.
+- **Registry and audit.** A CSV file or a database table with the fields of this chapter, and the audit script run on a schedule.
+
+## World Bank examples
+
+- The [Data360 MCP server](https://github.com/worldbank/data360-mcp) runs as a hosted service with its own access configuration over the public Data360 API.
+- The [governance chapter](/cookbook/ai-ready-dissemination/govern) of the dissemination cookbook holds the AI-use policy and the component register where the tiers and the terms are recorded.
+
+## Resources
+
+- [MCP specification: authorization](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization) defines the OAuth 2.1 flow, protected resource metadata, scopes, and the token requirements for HTTP transports.
+- [RFC 9728 OAuth 2.0 Protected Resource Metadata](https://datatracker.ietf.org/doc/html/rfc9728) and [RFC 8707 Resource Indicators](https://www.rfc-editor.org/rfc/rfc8707.html) are the two specifications an MCP server implements for authorization.
+- [RFC 6585 (HTTP 429 Too Many Requests)](https://datatracker.ietf.org/doc/html/rfc6585) defines the status code and the `Retry-After` header used for rate limiting.
+- The [client registry](pathname:///cookbook-files/serving-statistics-to-agents/client_registry.csv) and the [quota audit](pathname:///cookbook-files/serving-statistics-to-agents/quota_audit.py) are the running example's registry and audit script.
+- The [access chapter of the monitoring cookbook](/cookbook/monitoring-data-use/access) counts machine access from the same log.
+
+## Common mistakes
+
+- **No limit on the public tier.** One agent's retry loop becomes everyone's outage.
+- **Keys in URLs.** They end up in logs and referrer headers. Keys travel in headers only.
+- **A registry nobody audits.** Revoked keys keep working, and the terms are never accepted by anyone.
+- **Authorization for everything.** Public data stay anonymous. Authorization is for the products that need a user.
+
+## Verification
+
+- **Tiers.** The tiers are published with their limits and terms and recorded in the AI-use policy.
+- **Enforcement.** A burst over the limit receives a 429 response with `Retry-After`, and a request with an unknown key receives 401.
+- **Audit.** The weekly run exists, and each of its findings has a recorded action.
+- **Authorization.** Where it is implemented, a token issued for another server is rejected, and a missing scope returns 403 with the scope named.
+
+## Checklist
+
+<Checklist id="serving-statistics-to-agents-access" items={[
+  'Tiers with limits, quotas, and terms published and recorded in the policy',
+  'Registration issues keys with terms accepted and a contact',
+  'Per-minute limits and daily quotas enforced per tier with 429 and Retry-After',
+  'Keys in headers only; rotation and revocation in place',
+  'Weekly audit of the log against the registry with recorded actions',
+  'OAuth-based authorization where user-level access is required',
+]} />

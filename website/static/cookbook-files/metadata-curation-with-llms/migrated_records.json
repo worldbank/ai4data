@@ -1,0 +1,86 @@
+[
+  {
+    "idno": "FS_UNDERNOURISH_PCT",
+    "name": "Prevalence of undernourishment",
+    "definition_long": "Share of the population whose habitual food consumption is insufficient to provide the dietary energy levels required to maintain a normal active and healthy life. Three-year average.",
+    "measurement_unit": "% of population",
+    "periodicity": "annual",
+    "time_period_start": "2010",
+    "time_period_end": "2024",
+    "sources": [
+      "Food balance sheets",
+      "household budget survey"
+    ],
+    "date_last_update": "2025-03-14",
+    "keywords": [
+      "food security",
+      "hunger"
+    ]
+  },
+  {
+    "idno": "ED_PRIMARY_NER_PCT",
+    "name": "Net enrolment rate in primary education",
+    "definition_long": "Children of official primary school age who are enrolled in primary education as a share of the population of that age group.",
+    "measurement_unit": "% of age group",
+    "periodicity": "annual",
+    "time_period_start": "2010",
+    "time_period_end": "2024",
+    "sources": [
+      "School census"
+    ],
+    "date_last_update": "2025-02-01",
+    "keywords": [
+      "education"
+    ]
+  },
+  {
+    "idno": "HE_U5_MORT_RATE",
+    "name": "Under-five mortality rate",
+    "definition_long": "Probability of dying between birth and exactly five years of age expressed per 1000 live births.",
+    "measurement_unit": "per 1000 live births",
+    "periodicity": "annual",
+    "time_period_start": "2010",
+    "time_period_end": "2024",
+    "sources": [
+      "Civil registration",
+      "DHS"
+    ],
+    "date_last_update": "2025-01-20",
+    "keywords": [
+      "health",
+      "child mortality"
+    ]
+  },
+  {
+    "idno": "LF_UNEMP_PCT",
+    "name": "Unemployment rate",
+    "measurement_unit": "% of labour force",
+    "periodicity": "quarterly",
+    "time_period_start": "2015",
+    "time_period_end": "2025",
+    "sources": [
+      "Labour force survey"
+    ],
+    "date_last_update": "2025-08-15",
+    "keywords": [
+      "labour",
+      "unemployment"
+    ]
+  },
+  {
+    "idno": "PV_HEADCOUNT_NPL_PCT",
+    "name": "Poverty headcount ratio at national poverty line",
+    "definition_long": "Share of the population living below the national poverty line.",
+    "measurement_unit": "% of population",
+    "periodicity": "Other",
+    "time_period_start": "2010",
+    "time_period_end": "2022",
+    "sources": [
+      "Household budget survey"
+    ],
+    "date_last_update": "2023-06-30",
+    "keywords": [
+      "poverty"
+    ]
+  }
+]

@@ -1,0 +1,12 @@
+variable,category,population_share,source
+region,R01,0.27,"Population census 2024, persons aged 15-64"
+region,R02,0.33,"Population census 2024, persons aged 15-64"
+region,R03,0.24,"Population census 2024, persons aged 15-64"
+region,R04,0.16,"Population census 2024, persons aged 15-64"
+urban,1,0.41,"Population census 2024, persons aged 15-64"
+urban,0,0.59,"Population census 2024, persons aged 15-64"
+sex,1,0.49,"Population census 2024, persons aged 15-64"
+sex,2,0.51,"Population census 2024, persons aged 15-64"
+age_group,15-24,0.3,"Population census 2024, persons aged 15-64"
+age_group,25-54,0.57,"Population census 2024, persons aged 15-64"
+age_group,55-64,0.13,"Population census 2024, persons aged 15-64"

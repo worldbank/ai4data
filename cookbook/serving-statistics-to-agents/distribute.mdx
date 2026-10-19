@@ -1,0 +1,251 @@
+---
+id: distribute
+title: "8. Distribution to clients and developers"
+sidebar_label: "8. Distribute"
+sidebar_position: 9
+description: How users and developers find and connect to the server, through client configurations for the common assistants, a listing in the MCP registry, a developer page that holds the manifest and the guidance, and a support channel.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 8. Distribution to clients and developers
+
+**Question:** How do users and developers connect to the interface?
+
+## Rationale
+
+A server that nobody can find or configure serves nobody. Users of
+assistants need a configuration they can paste into their application.
+Developers of agents need the manifest, the guidance, the terms, and an
+endpoint they can test against. Registries need a listing in their own
+format. Each of these pieces is small, and their absence is the usual
+reason a working server has no traffic.
+
+Distribution is therefore a short list of published things: a developer
+page that holds them all, a listing where clients look for servers, and a
+support channel through which the organization hears when something is
+wrong.
+
+## Target state
+
+- A developer page publishes the endpoint, the client configurations, the manifest, the guidance resource, the tiers and the terms, the changelog, and the support contact.
+- The server is listed in the MCP registry with a listing that passes the format check, and in the organization's own catalog.
+- The configurations are tested with the common assistants and frameworks at each release.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | The developer page is published with the endpoint, one client configuration, the terms, and a contact. |
+| **AI-ready** | Configurations exist for the common assistants and frameworks. The registry listing is published and checked. The configurations are tested at each release. |
+| **AI-native** | A server package is published for local use beside the hosted endpoint. The listing and the configurations are updated automatically from the manifest and the version. |
+
+:::info[Running example]
+The example server's developer page holds a configuration for an
+assistant that connects over streamable HTTP with a bearer token. The
+registry listing names the hosted endpoint and a package for local use,
+and the listing check passes with no errors or warnings.
+:::
+
+## Recipes
+
+<Recipe title="8.1 Publish the client configurations" level="Foundational" skills="Developer; dissemination officer" time="Half a day; tested each release">
+
+**Result:** a user can connect their assistant to the server by pasting a
+short configuration, and a developer can connect a framework with a few
+lines, because both are published and have been tested.
+
+An assistant such as a desktop chat application learns about a server
+through a configuration block in its settings. The block names the server,
+gives its address, and says how to authenticate. Each client has its own
+format, and a user who has to work the format out from the specification
+usually gives up. The configuration for the running example, for a
+desktop assistant, is:
+
+```json file=../../website/static/cookbook-files/serving-statistics-to-agents/client_config_example.json
+```
+
+1. Publish a configuration for each kind of client the organization's
+   users have: desktop assistants that take an `mcpServers` block,
+   assistants that add servers through a settings page, coding tools, and
+   agent frameworks. The Data360 server documents connection from several
+   clients, and its page is the pattern to follow.
+2. State for each configuration the transport (streamable HTTP for the
+   hosted endpoint, stdio for a package run locally), where the key goes,
+   and the first question to try.
+3. Test every configuration with each release, as
+   [chapter 9](./operate.mdx) describes, and keep a screenshot or a
+   transcript of the first question's answer, so that a user can compare
+   what they see with what they should see.
+
+**Worked example.** The running example's configuration block names the
+server `statistics-example`, points it at `https://stats.example/mcp`,
+and carries the client's key in an `Authorization: Bearer` header. The
+page beside it says: "Paste this block into the `mcpServers` section of
+the assistant's settings file, replace `YOUR_KEY` with the key issued at
+registration, restart the assistant, and ask: What was the prevalence of
+undernourishment in 2024? The answer should state 7.6% and cite
+https://stats.example/series/FS_UNDERNOURISH_PCT."
+
+**What this does not do.** Configurations change when the clients change.
+The page says which client versions were tested and on which date, and a
+user with a newer client may have to adapt.
+
+</Recipe>
+
+<Recipe title="8.2 List the server in the registry and the catalog" level="AI-ready" skills="Developer" time="Half a day">
+
+**Result:** the server appears where clients and developers look for
+servers, with a listing that passes the format check.
+
+The MCP registry is a public directory of servers. A listing is a JSON
+file with the server's name, its version, a description, the hosted
+endpoint, and the installable package where one exists. The name is
+written under the organization's domain in reverse, for example
+`org.example.stats/statistics-example`, and the registry verifies that
+the publisher owns that domain, which is how a user can tell the
+organization's server from an imitation. The script checks a listing
+against the registry's format:
+
+```python file=../../website/static/cookbook-files/serving-statistics-to-agents/check_server_listing.py
+```
+
+It runs with the listing as its argument:
+
+```bash
+python check_server_listing.py server_listing.json
+```
+
+For the running example the output is:
+
+```text
+server_listing.json: org.example.stats/statistics-example 1.0.0; 1 remote(s), 1 package(s)
+0 error(s), 0 warning(s)
+```
+
+The first line names the listing, its version, and how many hosted
+endpoints (remotes) and packages it declares. The second line counts the
+problems found.
+
+1. Write the listing, following the running example's
+   [server_listing.json](pathname:///cookbook-files/serving-statistics-to-agents/server_listing.json).
+   It holds the name, the version, a title and a description, the
+   website, the repository, the hosted endpoint with its transport and
+   URL, and the package where one exists.
+2. Run the check. Then publish the listing to the
+   [MCP registry](https://registry.modelcontextprotocol.io/) with its
+   publisher tool, which validates the file against the dated schema and
+   verifies that the organization owns the namespace.
+3. List the server in the organization's own catalog and developer page,
+   and in the AI component register. Update the listing's version with
+   each release.
+
+**Worked example.** The running example's listing declares one remote,
+the streamable HTTP endpoint at `https://stats.example/mcp`, and one
+package, `statistics-example-mcp` on PyPI, for users who want to run the
+server locally over stdio. Its description reads "Read-only access to the
+published statistics of the example organization: search, metadata,
+observations, and code lists, with provenance in every response." The
+check passed, and the listing was published under the namespace
+`org.example.stats` after the registry verified the domain.
+
+**What this does not do.** A listing makes the server findable. The
+registry does not vouch for it. Users decide to trust the organization's
+domain, which is why the namespace and the website matter.
+
+</Recipe>
+
+<Recipe title="8.3 Publish the developer page and the support channel" level="Foundational" skills="Dissemination officer; developer" time="Half a day; ongoing">
+
+**Result:** one page holds everything a user or a developer needs in order
+to connect to and use the server, and there is a way to reach the
+organization when something is wrong.
+
+The developer page is the single address the organization gives out. Every
+other chapter produces something that belongs on it, and a page that
+collects them saves the user from hunting through the catalog. The support
+channel closes the loop: a user who finds a wrong answer has somewhere to
+report it, and the report reaches the evaluation.
+
+1. Put on the page:
+   - the endpoint and the transport;
+   - the client configurations of recipe 8.1;
+   - the manifest of [chapter 2](./tools.mdx) and the guidance resource
+     of [chapter 3](./context.mdx);
+   - the tiers, the terms, and the registration form of
+     [chapter 5](./access.mdx);
+   - the changelog and the deprecation policy of
+     [chapter 9](./operate.mdx);
+   - the licence, the citation form, and the support contact.
+2. Add a "first question" walkthrough with the expected answer, so that a
+   user can tell a working connection from a broken one.
+3. Open a support channel, such as an address or an issue tracker, and
+   state the response time. Route bug reports about answers to the
+   evaluation of [chapter 7](./evaluate.mdx), and misquotes of the
+   organization's figures to the
+   [monitoring cookbook](/cookbook/monitoring-data-use/act).
+4. Link the page from the catalog's API documentation and from each
+   series page, so that a developer who found the series finds the
+   server.
+
+**Worked example.** The example organization's developer page sits at
+`https://stats.example/developers/agents`. It opens with the endpoint and
+the first-question walkthrough, then lists the configurations for three
+assistants and one agent framework, with the dates they were tested. The
+manifest and the guidance are linked as files. The tiers table and the
+registration form follow, then the changelog with its one entry for
+version 1.0.0. The page ends with the support address, a stated response
+time of two working days, and the sentence "Questions about a figure go
+to the dissemination team at data@stats.example".
+
+**What this does not do.** A developer page documents the interface. The
+documentation of the data, which is the definitions and the methods, stays
+in the catalog, and the metadata tool returns it.
+
+</Recipe>
+
+## Implementation options
+
+- **Configurations.** `mcpServers` blocks for desktop assistants, settings-page instructions for other assistants, and SDK snippets for frameworks.
+- **Listing.** The registry's server.json format and its publisher tool, plus the organization's catalog and developer page.
+- **Package.** A PyPI or npm package for local use with stdio transport, beside the hosted endpoint.
+- **Support.** An address or a tracker, with the response time stated.
+
+## World Bank examples
+
+- The [Data360 MCP server](https://github.com/worldbank/data360-mcp) documents connection from several clients and publishes its endpoint and configuration.
+- The program's [MCP page](/docs/mcp/) describes the interfaces and how to connect to them.
+
+## Resources
+
+- The [MCP registry](https://registry.modelcontextprotocol.io/) is the official registry of servers, with the publisher tool and the server.json format.
+- The [server.json reference](https://github.com/modelcontextprotocol/registry/blob/main/docs/reference/server-json/generic-server-json.md) documents the fields of a listing (name, version, repository, packages, remotes).
+- The [MCP clients page](https://modelcontextprotocol.io/clients) lists the client applications and the features each supports (tools, resources, prompts).
+- The [server listing](pathname:///cookbook-files/serving-statistics-to-agents/server_listing.json) and the [listing check](pathname:///cookbook-files/serving-statistics-to-agents/check_server_listing.py) are the running example's listing and its check.
+- The [client configuration](pathname:///cookbook-files/serving-statistics-to-agents/client_config_example.json) is the running example's configuration for a desktop assistant.
+
+## Common mistakes
+
+- **A server with no page.** It works, and nobody uses it.
+- **One configuration.** Users have different assistants. The page publishes the ones they use and says which were tested.
+- **A listing never updated.** A stale version in the registry sends clients to tools that no longer exist.
+- **Support nobody reads.** The page states the response time, and reports are routed to the evaluation and the monitoring.
+
+## Verification
+
+- **Page.** A new user connects from the page alone and receives the expected first answer.
+- **Listing.** The check passes, and the registry entry shows the current version.
+- **Configurations.** Each has been tested with the current release, with the date recorded.
+- **Support.** Every report received in the period has a recorded response.
+
+## Checklist
+
+<Checklist id="serving-statistics-to-agents-distribute" items={[
+  'Developer page with endpoint, configurations, manifest, guidance, terms, changelog, contact',
+  'Configurations for the common assistants and frameworks, tested each release',
+  'Registry listing passes the check and is published',
+  'Server listed in the catalog and the component register',
+  'First-question walkthrough with the expected answer',
+  'Support channel with a stated response time and routing',
+]} />

@@ -1,0 +1,321 @@
+---
+id: context
+title: "3. Context beyond the tools"
+sidebar_label: "3. Context"
+sidebar_position: 4
+description: How to give an assistant the context the tools alone cannot carry, through a guidance text it reads before using the server, code lists and a release calendar served as resources, prompt templates for common questions, and a check that the guidance matches the tools.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 3. Context beyond the tools
+
+**Question:** What context does an agent need beyond the tools?
+
+## Rationale
+
+Tools let an assistant fetch values. What the assistant does with those
+values depends on context that the tools do not carry. A provisional value
+may be revised later. A break in a series means that the figures before
+and after it cannot be compared. The organization expects to be cited in a
+particular form. There are no district-level data, and there are no values
+before a certain year. A question about a named person has no answer in
+official statistics. An assistant with perfect tools and none of this
+context will still estimate what it cannot fetch, compare what cannot be
+compared, and cite what it cannot verify.
+
+The Model Context Protocol has two features that carry context. A resource
+is a document or a dataset that the client can give to the model. Each
+resource has a URI (its address), a name, a description, and a MIME type
+(the kind of content it holds). A resource template describes a whole
+family of resources with one pattern, for example one code list per
+dimension of the data. A prompt is a templated message that a user can
+invoke by name for a common task.
+
+This chapter uses both. A guidance text, read at the start of a session,
+tells the assistant how the server is meant to be used. Code lists and the
+release calendar are served as resources, so that the assistant can look up
+a code or a release date without guessing. A few prompts cover the
+questions users ask most. Together they turn tool access into correct
+answers.
+
+## Target state
+
+- A guidance resource states what the server provides, how to use the tools and in what order, how to cite, the licence, the limitations, and when to refuse. It names every tool, and it stays short.
+- The code lists, the release calendar, and the data notes are resources with URIs, descriptions, and MIME types, and families of them use templates.
+- Prompt templates exist for the common question types, with the arguments they need.
+- The guidance is checked against the manifest with every change, and its effect is measured with the question set.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | The guidance resource is written and served, and the code lists are served as resources. |
+| **AI-ready** | The release calendar and the data notes are resources with templates and annotations. Prompts exist for the common question types. The guidance is checked against the manifest with each change. |
+| **AI-native** | The effect of each guidance change on the question set is measured. Per-series notes are served as resources and linked from the metadata responses. The guidance is kept per server version. |
+
+:::info[Running example]
+The example server's guidance resource has eight headings and 326 words.
+It names the four tools, gives a citation in the exact form the
+organization wants, states the licence, lists four limitations, and says
+when to refuse. The check finds every required section and every tool
+named. The code lists and the release calendar are the other two resources
+in the manifest.
+:::
+
+## Recipes
+
+<Recipe title="3.1 Write the guidance resource" level="Foundational" skills="Dissemination officer; developer" time="Half a day">
+
+**Result:** the server serves a short text that an assistant reads before
+it uses the tools. The text answers the questions that the tool
+descriptions cannot: what the server covers, in what order to call the
+tools, how to cite, and when to refuse.
+
+A tool description says what one tool does. It cannot say how the tools
+relate to one another, what the organization's citation looks like, or
+which questions the server cannot answer. The guidance resource is the one
+place for that. Assistants that support resources read it at the start of
+a session, so it works like a briefing given to a new member of staff
+before they answer their first enquiry.
+
+The guidance for the running example has six sections and about three
+hundred words:
+
+```md file=../../website/static/cookbook-files/serving-statistics-to-agents/guidance_resource.md
+```
+
+1. Write the six sections. "What this server provides" names the data
+   and the tools, and says what is absent. "How to use the tools" gives
+   the order of calls. "How to cite" gives one example in the exact form
+   the organization wants quoted. "Licence" states the terms. "Limitations"
+   lists the status codes, the breaks, the coverage, and the start years.
+   "When to refuse or decline" says what the assistant should say when
+   the tools return nothing.
+2. Name every tool and every field the model has to look for, such as
+   `SOURCE_URL`, `RELEASE`, and `OBS_STATUS`, in the same spelling as the
+   manifest. The check of recipe 3.4 compares the two.
+3. Keep the text under about 600 words. Assistants read it in every
+   session, and a long text gets skimmed. Detail that applies to one
+   series belongs in that series' notes (recipe 3.2).
+4. Serve the text as a resource with a stable address, such as
+   `stats://guidance`, a description, and the annotations that tell
+   clients it is meant for the assistant and has high priority. Clients
+   that select context automatically then include it. The Data360
+   server's `data360://system-prompt` resource is the model for this.
+
+**Worked example.** The "How to cite" section of the running example's
+guidance gives one example citation. It reads: "Unemployment rate, 2025
+Q2: 6.1% of the labour force (National Statistical Organization,
+released 2025-08-20, https://stats.example/series/LF_UNEMP_PCT)." An
+assistant that has read
+the guidance quotes the value with its unit and period, names the
+organization, and gives the source URL and the release date. It does so
+because the example shows all five parts. The "Limitations" section tells the
+assistant that a value with `OBS_STATUS = P` is provisional, so the same
+assistant adds that the second-quarter figure may be revised.
+
+**What this does not do.** Clients decide whether to give resources to the
+model. Some include them automatically, and some only when the user selects
+them. The developer page of [chapter 8](./distribute.mdx) tells users to
+add the guidance, and the evaluation of [chapter 7](./evaluate.mdx) shows
+whether it reached the model.
+
+</Recipe>
+
+<Recipe title="3.2 Serve code lists, the release calendar, and notes as resources" level="AI-ready" skills="Developer" time="One day">
+
+**Result:** the reference data an assistant needs in order to call the
+tools correctly are served as resources it can read: which codes exist,
+when each series was last released, and what the caveats of a series are.
+
+A code list is the set of valid values of one dimension, such as the
+regions or the periods a series covers, each with a code and a label. An
+assistant that does not have the code list guesses, and a guessed code
+either fails or, worse, returns the wrong region. The release calendar
+lets the assistant say whether a figure is current. The data notes carry
+the caveats of a series in full, where the metadata response has only
+room for a flag.
+
+1. Serve one code list per dimension, for example
+   `stats://codelists/REF_AREA`, through a resource template such as
+   `stats://codelists/{dimension}`. Each resource returns the codes with
+   their labels in every supported language. The `list_code_values` tool
+   returns the same information for one query; the resource serves the
+   whole list at once.
+2. Serve the release calendar at `stats://release-calendar`. It lists the
+   latest release of each series and the next planned one, so that the
+   assistant can say whether a figure is current and when the next one is
+   due.
+3. Serve the data notes of each series at `stats://notes/{idno}`. The
+   notes hold the caveats, breaks, and revisions from the catalog record.
+   Link them from the metadata response, so that the model can read them
+   when they matter.
+4. Annotate each resource with its audience (the assistant, the user, or
+   both), a priority, and a last-modified date. Clients use the
+   annotations to filter resources and to show how fresh they are.
+   Declare that the list can change, and send the change notification
+   when a release updates the calendar.
+
+**Worked example.** The running example's `stats://release-calendar`
+resource lists the unemployment rate with its latest release on
+2025-08-20, for the second quarter of 2025, and the prevalence of
+undernourishment with its latest release on 2025-03-14, for 2024. An
+assistant asked in September 2025 whether the undernourishment figure is
+the latest can answer from the calendar that it is, and that the next
+release is the one planned for the following March.
+
+**What this does not do.** Resources are read on request or by the
+client's choice. They do not change what the tools return. The provenance
+fields of [chapter 4](./provenance.mdx) travel with every data response
+whether or not the resources were read.
+
+</Recipe>
+
+<Recipe title="3.3 Add prompt templates for the common question types" level="AI-ready" skills="Dissemination officer; developer" time="Half a day">
+
+**Result:** the server offers a few ready-made instructions, one per
+common question type. A user picks one by name in their assistant, fills
+in its arguments, and the assistant is set up to answer that type of
+question correctly.
+
+A prompt template is a message written in advance, with blanks for the
+arguments. When the user chooses it, the client fills in the blanks and
+sends the message to the model. For a statistics server, a template can
+tell the model the exact sequence of tool calls for a question type and
+remind it to check the status and cite the source. Templates help the
+users who know they exist. They do nothing for a question typed freely,
+which the guidance resource and the tool descriptions have to handle.
+
+1. Take the question types from the question set of
+   [chapter 1](./purpose.mdx). The usual types are the latest value of a
+   series, a trend over a period, a comparison between regions, and a
+   definition question.
+2. Write one prompt per type, with its arguments, such as `series`,
+   `period`, and `regions`. Each prompt instructs the assistant to search
+   for the series, read its metadata, fetch the observations, check the
+   status, and cite in the stated form. Each embeds a link to the
+   guidance resource.
+3. Give each prompt a name, a title, and a description that the client
+   can show as a command, and validate the arguments so that a wrong
+   period format is rejected before the model sees it.
+4. Test each prompt with the question set. A prompt that does not raise
+   the pass rate for its question type is noise and is removed.
+
+**Worked example.** The running example's `latest_value` prompt takes one
+argument, `series`. Its message reads: "Find the series that matches
+`{series}` with search_series. Read its metadata with get_series_metadata
+and note the unit, the periodicity, and any break. Fetch the most recent
+observation with get_observations. If OBS_STATUS is P, say that the value
+is provisional. Quote the value with its unit and period, and cite the
+source URL and release date as in stats://guidance." With `series` set to
+"unemployment", the assistant finds `LF_UNEMP_PCT`, reports 6.1% for the
+second quarter of 2025, marks it provisional, and cites the release of
+2025-08-20.
+
+**What this does not do.** Prompts are under the user's control: the user
+selects them, and nothing happens unless they do. They help users who know
+them and do nothing for a question typed freely.
+
+</Recipe>
+
+<Recipe title="3.4 Check the guidance against the manifest" level="AI-ready" skills="Python" time="Minutes; with each change">
+
+**Result:** a check runs with every change to the guidance or the manifest.
+It confirms that the guidance names every tool and every field it refers
+to, that it has every required section, and that it stays short.
+
+The guidance and the manifest describe the same server in two files, and
+they drift apart when one is edited without the other. A renamed tool, or
+a new tool nobody mentioned in the guidance, leaves the assistant with
+instructions that refer to something that does not exist. The script reads
+both files and compares them:
+
+```python file=../../website/static/cookbook-files/serving-statistics-to-agents/check_guidance.py
+```
+
+It runs with the two files as arguments:
+
+```bash
+python check_guidance.py guidance_resource.md tool_manifest.json
+```
+
+For the running example the output is:
+
+```text
+guidance_resource.md: 326 words, 8 headings; manifest statistics-example 1.0.0 with 4 tool(s)
+  ok      What this server provides
+  ok      How to use the tools
+  ok      How to cite
+  ok      Licence
+  ok      Limitations
+  ok      When to refuse or decline
+tools named: 4/4
+result: PASS
+```
+
+Each line of the section list says whether a required section was found.
+The "tools named" line counts how many of the manifest's tools the
+guidance mentions. A missing section or an unnamed tool turns the result
+into `FAIL`, and a text over the word limit produces a warning.
+
+1. Run the check in the same pipeline as the manifest check of
+   [chapter 2](./tools.mdx). A renamed tool then fails the check until
+   the guidance is updated.
+2. Keep the guidance and the manifest versioned together, as
+   [chapter 9](./operate.mdx) describes.
+3. After a guidance change, run the question set again and compare the
+   behaviour and citation scores with the previous run
+   ([chapter 7](./evaluate.mdx)). The check says that the text is
+   complete; the evaluation says whether it works.
+
+**What this does not do.** The check reads headings and names. Whether the
+citation example is right, or whether the limitations listed are the real
+ones, is judged by a person.
+
+</Recipe>
+
+## Implementation options
+
+- **Guidance.** One Markdown resource with the six sections is enough for most servers. The Data360 server's system-prompt resource is a reference.
+- **Reference resources.** Code lists are served per dimension through a template, the release calendar as one resource, and per-series notes linked from the metadata responses. Annotations state the audience and the priority of each.
+- **Prompts.** One prompt per common question type, with arguments, and an embedded link to the guidance.
+- **Checks.** The guidance check of this chapter runs beside the manifest check, and the question set measures the effect of changes.
+
+## World Bank examples
+
+- The [Data360 MCP server](https://github.com/worldbank/data360-mcp) serves a `data360://system-prompt` resource and a search-usage resource that tell the model how to use its tools.
+- The dissemination cookbook's [MCP example](/cookbook/ai-ready-dissemination/retrieve) serves guidance and code lists as resources beside its tools.
+
+## Resources
+
+- [MCP specification: resources](https://modelcontextprotocol.io/specification/2026-07-28/server/resources) defines resources, templates (which use RFC 6570 URI templates), annotations, and change notifications.
+- [MCP specification: prompts](https://modelcontextprotocol.io/specification/2026-07-28/server/prompts) defines prompts, their arguments, and embedded resources.
+- [RFC 6570 URI Template](https://datatracker.ietf.org/doc/html/rfc6570) is the syntax of resource templates.
+- The [guidance resource](pathname:///cookbook-files/serving-statistics-to-agents/guidance_resource.md) of the running example is a template for an organization's own text.
+- The [guidance check](pathname:///cookbook-files/serving-statistics-to-agents/check_guidance.py) is the script of recipe 3.4.
+
+## Common mistakes
+
+- **Guidance in the tool descriptions only.** A description says what one tool does. The limitations and the citation form belong in one place that the model reads once per session.
+- **A guidance text that keeps growing.** Beyond a few hundred words the model skims it. Detail about one series belongs in that series' notes.
+- **Resources without annotations.** Without them, a client cannot tell which resources are meant for the model and which for the user.
+- **A prompt for everything.** One prompt per question type in the question set is enough. Everything else is the job of the guidance.
+
+## Verification
+
+- **Check.** The guidance check passes with the current manifest.
+- **Resources.** The server's `resources/list` response includes the guidance, the code lists, the calendar, and the notes, each with a description and a MIME type, and the template resolves for every dimension.
+- **Effect.** The behaviour and citation scores of the question set with the guidance in place are at or above the scores without it.
+
+## Checklist
+
+<Checklist id="serving-statistics-to-agents-context" items={[
+  'Guidance resource with the six sections, every tool named, under 600 words',
+  'Guidance served with a stable URI, MIME type, and annotations',
+  'Code lists, release calendar, and per-series notes as resources with templates',
+  'Prompt templates for the common question types with arguments',
+  'Guidance check run with the manifest check on every change',
+  'Effect of guidance changes measured with the question set',
+]} />

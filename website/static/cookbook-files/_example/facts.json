@@ -1,0 +1,38 @@
+{
+  "organization": "National Statistics Office (example)",
+  "domain": "stats.example",
+  "series": {
+    "FS_UNDERNOURISH_PCT": {"name": "Prevalence of undernourishment", "unit": "% of population", "values": {"2022": 8.4, "2023": 7.9, "2024": 7.6}, "release": "2025-03-14"},
+    "ED_PRIMARY_NER_PCT": {"name": "Net enrolment rate in primary education", "unit": "% of age group", "values": {"2023": 91.2, "2024": 92.0}, "release": "2025-02-01"},
+    "HE_U5_MORT_RATE": {"name": "Under-five mortality rate", "unit": "deaths per 1000 live births", "values": {"2015": 48, "2020": 41}, "release": "2022-11-30"},
+    "LF_UNEMP_PCT": {"name": "Unemployment rate", "unit": "% of labour force", "values": {"2025-Q1": 6.3, "2025-Q2": 6.1}, "release": "2025-08-20", "note": "2025-Q2 is provisional"},
+    "PV_HEADCOUNT_NPL_PCT": {"name": "Poverty headcount ratio at national poverty line", "unit": "% of population", "values": {"2018": 23.5, "2021": 21.9}, "release": "2023-06-10"},
+    "LF_UNEMP_PCT_YOUTH": {"name": "Youth unemployment rate", "unit": "% of labour force aged 15-24", "values": {"2025-Q1": 17.5, "2025-Q2": 16.8}},
+    "LF_PART_RATE": {"name": "Labour force participation rate", "unit": "% of population aged 15+", "values": {"2025-Q1": 60.9, "2025-Q2": 61.2}},
+    "LF_EMPLOYED": {"name": "Employed persons", "unit": "thousands", "values": {"2025-Q1": 4268, "2025-Q2": 4312}}
+  },
+  "datasets": {
+    "EX-LFS": "Labour Force Survey (the series of rounds)",
+    "EX-LFS-2024-Q4": "Labour Force Survey, fourth quarter 2024",
+    "EX-LFS-2025-Q1": "Labour Force Survey, first quarter 2025",
+    "EX-LFS-2025-Q2": "Labour Force Survey, second quarter 2025 (the running example's round)",
+    "EX-HBS-2021": "Household Budget Survey 2021",
+    "EX-CEN-2014": "Population and Housing Census 2014",
+    "EX-ADMIN2-2024": "Administrative boundaries, level 2, 2024 edition"
+  },
+  "documents": {
+    "EX-REP-2025-03": "Food security report 2025",
+    "EX-REP-2024-03": "Food security report 2024",
+    "EX-REP-2025-01": "Labour market report 2025 Q1",
+    "EX-REP-2025-02": "Labour market report 2025 Q2",
+    "EX-BUL-2025-06": "Statistical bulletin June 2025",
+    "EX-CEN-2014-01": "Population and housing census 2014 main report",
+    "EX-YB-2023": "Statistical yearbook 2023",
+    "EX-MET-2021-02": "Household budget survey 2021 methodology",
+    "EX-REP-2025-03-T3.1": "Table 3.1 of the food security report 2025, extracted",
+    "WB-PRWP-4771": "World Bank Policy Research Working Paper 4771 (a real document in the data-snapshot dataset)"
+  },
+  "distractors": {
+    "EDU_STATS_2024": "An identifier an assistant cites wrongly in the evaluation example; it exists nowhere else"
+  }
+}

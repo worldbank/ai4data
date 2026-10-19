@@ -1,0 +1,57 @@
+{
+  "server": "statistics-example",
+  "version": "1.0.0",
+  "description": "Read-only access to the published statistics of the example organization. Every data response carries the series identifier, unit, release date, source URL, licence, and citation.",
+  "tools": [
+    {
+      "name": "search_series",
+      "description": "Search the published series by words in the name, definition, or keywords. Returns up to `limit` matches with idno, name, measurement_unit, periodicity, and coverage, ranked by relevance. Use this first when the series identifier is unknown.",
+      "readOnlyHint": true,
+      "inputs": {
+        "query": {"type": "string", "description": "Words from the user's question, in any supported language"},
+        "limit": {"type": "integer", "description": "Maximum number of matches, 1 to 20; default 5"}
+      },
+      "outputs": ["idno", "name", "measurement_unit", "periodicity", "time_period_start", "time_period_end", "score"],
+      "example": {"query": "unemployment rate", "limit": 3}
+    },
+    {
+      "name": "get_series_metadata",
+      "description": "Return the full record of one series in the World Bank indicator schema: definition, methodology, universe, unit, periodicity, breaks, limitations, licence, and citation requirement. Use this before interpreting values.",
+      "readOnlyHint": true,
+      "inputs": {
+        "idno": {"type": "string", "description": "Series identifier from search_series"}
+      },
+      "outputs": ["idno", "name", "definition_long", "methodology", "measurement_unit", "periodicity", "series_break", "limitation", "license", "citation_requirement"],
+      "example": {"idno": "FS_UNDERNOURISH_PCT"}
+    },
+    {
+      "name": "get_observations",
+      "description": "Return the published values of one series for a reference area and a period range, with the unit, the observation status of each value, the release date, the source URL, the licence, and the citation. Values are the official figures; no estimation is performed.",
+      "readOnlyHint": true,
+      "inputs": {
+        "idno": {"type": "string", "description": "Series identifier"},
+        "ref_area": {"type": "string", "description": "Code from the reference area code list; NAT for the national total"},
+        "start_period": {"type": "string", "description": "First period, inclusive, ISO 8601 or SDMX period such as 2024 or 2025-Q1"},
+        "end_period": {"type": "string", "description": "Last period, inclusive"}
+      },
+      "outputs": ["SERIES", "REF_AREA", "UNIT_MEASURE", "RELEASE", "SOURCE_URL", "license", "citation", "observations"],
+      "example": {"idno": "FS_UNDERNOURISH_PCT", "ref_area": "NAT", "start_period": "2022", "end_period": "2024"}
+    },
+    {
+      "name": "list_code_values",
+      "description": "Return the codes and labels of a code list (reference areas, sexes, age groups) so that a request can use valid codes. Use this to resolve a place name to its code.",
+      "readOnlyHint": true,
+      "inputs": {
+        "codelist": {"type": "string", "description": "Code list identifier, for example REF_AREA"},
+        "language": {"type": "string", "description": "Label language, ISO 639 code; default en"}
+      },
+      "outputs": ["codelist", "codes"],
+      "example": {"codelist": "REF_AREA", "language": "en"}
+    }
+  ],
+  "resources": [
+    {"uri": "stats://guidance", "description": "How to use the tools: search first, read metadata before interpreting, request codes from the code lists, cite the source URL and release date in every answer."},
+    {"uri": "stats://codelists", "description": "The published code lists."},
+    {"uri": "stats://release-calendar", "description": "Upcoming releases and the latest release of each series."}
+  ]
+}

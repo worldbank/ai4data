@@ -1,0 +1,11 @@
+record_id,field,language,source_text,translated_text,status,reviewer
+LF_UNEMP_PCT,name,fr,Unemployment rate,Taux de chômage,reviewed,curator-c
+LF_UNEMP_PCT,definition_long,fr,"Share of the labour force aged 15 and over that is without work, available for work, and seeking work during the reference week, as a percentage of the labour force.","Part de la population active âgée de 15 ans et plus qui est sans emploi, disponible pour travailler et à la recherche d'un emploi pendant la semaine de référence, en pourcentage de la population active.",machine,
+LF_UNEMP_PCT,measurement_unit,fr,% of labour force,% de la population active,machine,
+HE_U5_MORT_RATE,name,fr,Under-five mortality rate,Taux de mortalité des moins de cinq ans,reviewed,curator-c
+HE_U5_MORT_RATE,definition_long,fr,Probability of dying between birth and exactly five years of age expressed per 1000 live births.,Probabilité de décéder entre la naissance et l'âge de cinq ans exactement exprimée pour 100 naissances vivantes.,machine,
+HE_U5_MORT_RATE,measurement_unit,fr,per 1000 live births,per 1000 live births,machine,
+FS_UNDERNOURISH_PCT,name,fr,Prevalence of undernourishment,Prévalence de la sous-alimentation,reviewed,curator-c
+FS_UNDERNOURISH_PCT,definition_long,fr,Share of the population whose habitual food consumption is insufficient to provide the dietary energy levels required to maintain a normal active and healthy life. Three-year average.,Part de la population dont la consommation alimentaire habituelle est insuffisante.,machine,
+PV_HEADCOUNT_NPL_PCT,name,fr,Poverty headcount ratio at national poverty line,Ratio de pauvreté au seuil national de pauvreté,machine,
+ED_PRIMARY_NER_PCT,name,fr,Net enrolment rate in primary education,Taux net de scolarisation dans le primaire,reviewed,curator-c

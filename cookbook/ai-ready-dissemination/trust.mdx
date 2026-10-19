@@ -1,0 +1,267 @@
+---
+id: trust
+title: "5. Trust and provenance of answers"
+sidebar_label: "5. Trust"
+sidebar_position: 6
+description: How a reader can trust and trace a number that an AI system quotes, through a citation block on every page, provenance fields in every API response, and a check of every number in a generated answer against the values that were retrieved for it.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 5. Trust and provenance of answers
+
+**Question:** Can answers be trusted and traced?
+
+## Rationale
+
+Official statistics carry the authority of the organization that
+publishes them. When an AI system quotes a number, readers assume it
+comes from that organization, and they rarely check. A wrong or outdated
+value, shown with the organization's name, damages trust in the source,
+and the organization usually learns of it last.
+
+Trust therefore has to be built into the chain that carries a number from
+the catalog to the reader. The page the number comes from says how to
+cite it. The API response that carries it says which release it came
+from. And the answer that quotes it is checked against the values that
+were retrieved before the reader sees it. Each recipe in this chapter adds
+one link to that chain, from the cheapest to the most demanding.
+
+## Target state
+
+- Every number in an answer links to the series, release, and date it came from.
+- Numbers shown to users are checked against the official record before display.
+- Answers show the publication date and the latest release, so outdated values are visible.
+- When the system is unsure, it says so.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Show the source, release date, and citation text on every dataset page. Provide a suggested citation in a consistent format. Publish a revisions log. |
+| **AI-ready** | Return source, identifier, and release date with every API response. Publish citation metadata in machine-readable form. Mark superseded series and point to their replacements. |
+| **AI-native** | Check each number in a generated answer against the official record and flag those that do not match. Attach provenance to the answer. Log answers with the retrieved records for audit. |
+
+:::info[Running example]
+An assistant writes "Undernourishment fell from 8.4% in 2022 to 7.2% in
+2024." The retrieved values say 7.6 for 2024. Recipe 5.3 flags the 7.2 before
+the user sees it.
+:::
+
+## Recipes
+
+<Recipe title="5.1 Put source, release, and a citation on every page" level="Foundational" skills="Web editor" time="Half a day for the template">
+
+**Result:** every series page shows where its numbers come from and how
+to cite them, in the same place and in the same format, so that a reader
+or a crawler always knows where to look.
+
+The citation block names the organization, the year, the series with
+its identifier, the release, the page, and the date of access:
+
+```text
+National Statistics Office (example). 2025. Prevalence of undernourishment
+(FS_UNDERNOURISH_PCT), release of 14 March 2025.
+https://stats.example/series/FS_UNDERNOURISH_PCT. Accessed [date].
+```
+
+1. Add a fixed block to the series page template with the source, the
+   release date, the next release date if known, and the citation in
+   the format above.
+2. Register a DOI (a persistent identifier) for each dataset through
+   [DataCite](https://schema.datacite.org/) where the organization can,
+   and put it in the citation. The World Bank Microdata Library assigns
+   DataCite DOIs to its datasets (prefix 10.48529), and the World Bank
+   schemas carry a `datacite` block for the registration metadata and a
+   `citation_requirement` field for the citation text.
+3. State the licence in the record and on the page. World Bank
+   datasets use
+   [Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/)
+   by default, which requires attribution and permits reuse.
+4. Offer the same citation as a file download (BibTeX or RIS) and in
+   the schema.org record of [chapter 1](./find.mdx) (`dateModified`,
+   `publisher`, `identifier`, `license`).
+5. Link the revisions log ([chapter 3](./understand.mdx)) from the
+   block.
+6. When a series is discontinued or replaced, keep the page and add a
+   notice that names the replacement.
+
+**Worked example.** The block on the undernourishment page shows the
+source as "Food balance sheets and household budget survey", the release
+as 14 March 2025, the next release as March 2026, and the citation text
+shown above. The licence line reads "CC BY 4.0: reuse is permitted with
+attribution". A BibTeX file sits beside it, and the schema.org record of
+the page carries the same publisher, identifier, and licence. When the
+organization replaced its old poverty series in 2022, it kept the old
+page with the notice "This series was discontinued in 2022 and replaced
+by PV_HEADCOUNT_NPL_PCT", and citations of the old page still resolve.
+
+**What this does not do.** A citation block tells people how to cite
+and cannot make them cite. The monitoring of
+[chapter 7](./monitor-use.mdx) shows whether the format is used, and
+the DOI is what makes citations countable through the identifier
+services.
+
+</Recipe>
+
+<Recipe title="5.2 Return provenance with every API response" level="AI-ready" skills="Backend developer" time="One day">
+
+**Result:** any client, including an AI system, receives enough
+information with each response to cite it correctly without looking
+anything up.
+
+The fields to include at the top level of every data response:
+
+| Field | Example |
+|---|---|
+| `SERIES` | `FS_UNDERNOURISH_PCT` |
+| `UNIT_MEASURE` | `% of population` |
+| `RELEASE` | `2025-03-14` |
+| `SOURCE_URL` | `https://stats.example/series/FS_UNDERNOURISH_PCT` |
+| `retrieved_at` | `2026-10-02T09:14:00Z` |
+| `license` | `https://creativecommons.org/licenses/by/4.0/` |
+
+An SDMX web service already returns the structure reference and the
+attributes with the data; the fields above are the minimum for a
+custom API.
+
+1. Include the fields above in every data response.
+2. Return `OBS_STATUS` per observation from the SDMX code list
+   (provisional, break, estimated).
+3. For a superseded series, return the replacement identifier in the
+   error or the record.
+4. Test: fetch any value and write the citation from the response
+   alone.
+
+**Worked example.** A client requests the observations of the
+unemployment rate for 2025. The response carries `SERIES` as
+`LF_UNEMP_PCT`, `UNIT_MEASURE` as "% of labour force", `RELEASE` as
+2025-08-20, `SOURCE_URL` as `https://stats.example/series/LF_UNEMP_PCT`,
+the retrieval time, and the licence URL. The second-quarter observation
+carries `OBS_STATUS` P. From that response alone the client writes:
+"Unemployment rate, 2025 Q2: 6.1% of the labour force, provisional
+(National Statistics Office, release of 20 August 2025,
+https://stats.example/series/LF_UNEMP_PCT)". Nothing in the citation had
+to be guessed.
+
+**What this does not do.** The provenance fields identify the source of
+a response. They do not show that the values were quoted unchanged
+afterwards. Recipe 5.3 checks the numbers in an answer against the
+response, which is the second half.
+
+</Recipe>
+
+<Recipe title="5.3 Verify the numbers in a generated answer" level="AI-native" skills="Python developer" time="Half a day for the basic check">
+
+**Result:** every number in a generated answer is marked verified or
+unverified against the values that were retrieved for it, before the
+user sees it.
+
+The script reads an answer and the values that were retrieved for it,
+finds every number in the answer, and looks for each among the values,
+within a tolerance for rounding. Four-digit numbers between 1900 and
+2099 are treated as years:
+
+```python file=../../website/static/cookbook-files/ai-ready-dissemination/verify_numbers.py
+```
+
+Output for the running example:
+
+```text
+  number  status     match
+     8.4  verified   FS_UNDERNOURISH_PCT NAT 2022 = 8.4 % of population
+    2022  period
+     7.2  UNVERIFIED no retrieved value within tolerance
+    2024  period
+4 numbers, 1 unverified
+```
+
+Each line names one number found in the answer. A year is marked as a
+period and left alone. A value that matches a retrieved observation is
+marked verified, with the observation it matched. A value that matches
+nothing is marked unverified, and the last line counts them.
+
+1. Run the check on every answer, with the values retrieved for that
+   answer.
+2. Show flagged numbers as unverified, or regenerate the answer with a
+   note that the number was not found. Never show an unverified number
+   as a plain figure.
+3. Log the result with the answer. The share of flagged numbers is one
+   of the measures in [chapter 6](./evaluate.mdx).
+4. Extend the check to match the series and period named in the
+   sentence, so that a correct number attached to the wrong year is
+   also caught. The
+   [Proof-Carrying Numbers](https://arxiv.org/abs/2509.06902) paper
+   describes that fuller approach.
+
+**Worked example.** The answer in the running example reads
+"Undernourishment fell from 8.4% in 2022 to 7.2% in 2024". The values
+retrieved for the question are 8.4, 7.9, and 7.6 for 2022 to 2024. The
+check finds four numbers. It marks 2022 and 2024 as periods, matches 8.4
+to the 2022 observation, and finds no value within tolerance of 7.2, so
+it marks 7.2 unverified. The interface shows the answer with 7.2
+highlighted as unverified, and the log records one unverified number out
+of two values. A reviewer later finds that the model had misread 7.6 and
+tightens the instruction to quote values exactly as retrieved.
+
+**What this does not do.** The script matches each number to any
+retrieved value within a tolerance. It accepts a correct value quoted
+for the wrong series, geography, or year, and it cannot check derived
+numbers such as a change or an average unless the inputs appear in the
+text. The fuller method binds each number to the claim it supports and
+checks the claim, which is the part that needs the paper's approach.
+
+</Recipe>
+
+## Implementation options
+
+- **Provenance vocabulary:** [W3C PROV](https://www.w3.org/TR/prov-overview/) describes the origin and derivation of data, and [DDI-CDI](https://ddialliance.org/ddi-cdi) covers provenance across data types. For metadata records harvested between catalogs, the World Bank schemas carry an [OAI provenance](https://www.openarchives.org/OAI/2.0/guidelines-provenance.htm) block. A simpler form is a fixed set of fields: source, identifier, release, retrieval date.
+- **Citation:** DataCite DOIs and a standard citation string make it easy for systems and people to cite the same way.
+- **Licence:** state it in the record, the page, and the API; CC BY 4.0 is the World Bank default.
+- **Grounding:** instruct the model to answer only from retrieved material, and return that material with the answer ([chapter 4](./ask.mdx)).
+- **Numeric verification:** extract numbers from the generated text, match them to the retrieved values, and mark each one verified or unverified.
+- **Freshness:** include the date of the latest release in API responses, and have the answer interface mention when it is using an older release.
+
+## World Bank examples
+
+- The [Microdata Library](https://microdata.worldbank.org/) assigns a DataCite DOI and a citation requirement to each dataset, and [World Bank datasets](https://www.worldbank.org/en/about/legal/terms-of-use-for-datasets) carry the CC BY 4.0 licence by default.
+- [Proof-Carrying Numbers](https://arxiv.org/abs/2509.06902) checks each number in a chatbot answer against the official record and marks it as verified or flagged. The [home page](/) shows an example.
+- [Anomaly Detection and Explanation](/docs/anomaly-detection/) classifies unusual values in a series and cites the evidence, which supports review before publication.
+
+## Resources
+
+- [DataCite](https://datacite.org/) and the [DataCite metadata schema](https://schema.datacite.org/): DOI registration and the citation metadata for datasets.
+- [Creative Commons BY 4.0](https://creativecommons.org/licenses/by/4.0/) and the [World Bank terms of use for datasets](https://www.worldbank.org/en/about/legal/terms-of-use-for-datasets): the licence text and a published example of its application.
+- [W3C PROV](https://www.w3.org/TR/prov-overview/) and [DDI-CDI](https://ddialliance.org/ddi-cdi): provenance vocabularies for exchange as linked data.
+- [Proof-Carrying Numbers](https://arxiv.org/abs/2509.06902): the method behind recipe 5.3.
+- [verify_numbers.py](pathname:///cookbook-files/ai-ready-dissemination/verify_numbers.py): the number check of recipe 5.3; [dataset.jsonld](pathname:///cookbook-files/ai-ready-dissemination/dataset.jsonld): the page markup with source and licence.
+
+## Common mistakes
+
+- **Citing the organization without the release.** A correct number from an old release looks wrong next to the current one. The release date is part of the citation.
+- **Trusting the model to cite.** Models produce plausible citations. The citation must come from the retrieved record, and the number must be checked against it.
+- **Deleting superseded pages.** Citations break and the replacement is not found. Keep the page with a notice.
+- **Verifying only the final answer.** Intermediate values a model computes (a change, an average) need the inputs shown so a reader can check them.
+
+## Verification
+
+- **Number match rate.** On a test set, the share of numbers in answers that match the official values is reported (recipe 5.3).
+- **Citation check.** In a sample of answers, each citation resolves and supports the statement it is attached to.
+- **Staleness test.** A revision published in a test environment appears in the answers that follow it.
+- **Adversarial prompts.** Asked for numbers the organization does not publish, the system declines and invents nothing.
+
+## Checklist
+
+<Checklist id="trust" items={[
+  'Source, release, and citation text on every series page',
+  'DOI or other persistent identifier registered for each dataset',
+  'Licence stated in the record, on the page, and in the API',
+  'Citation available in a machine-readable form',
+  'Source, release date, and license in every API response',
+  'Revisions and superseded series documented and linked',
+  'Numbers in generated answers checked against retrieved values',
+  'Flagged numbers never shown as plain figures',
+  'Answers logged with the records they used',
+  'Declining behavior tested',
+]} />

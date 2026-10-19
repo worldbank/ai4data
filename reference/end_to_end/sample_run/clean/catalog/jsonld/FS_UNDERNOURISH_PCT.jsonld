@@ -1,0 +1,32 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "identifier": "FS_UNDERNOURISH_PCT",
+  "name": "Prevalence of undernourishment",
+  "description": "Share of the population whose habitual food consumption is insufficient to provide the dietary energy levels required to maintain a normal active and healthy life. Three-year average.",
+  "url": "https://stats.example/series/FS_UNDERNOURISH_PCT",
+  "creator": {
+    "@type": "Organization",
+    "name": "National Statistics Office (example)"
+  },
+  "dateModified": "2025-03-14",
+  "temporalCoverage": "2010/2024",
+  "variableMeasured": {
+    "@type": "PropertyValue",
+    "name": "Prevalence of undernourishment",
+    "unitText": "% of population"
+  },
+  "keywords": [
+    "food security",
+    "hunger",
+    "dietary energy"
+  ],
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "distribution": [
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "text/csv",
+      "contentUrl": "https://stats.example/series/FS_UNDERNOURISH_PCT.csv"
+    }
+  ]
+}

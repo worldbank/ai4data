@@ -1,0 +1,170 @@
+---
+id: index
+title: Practical Guide to Metadata Curation with Language Models
+sidebar_label: Overview
+sidebar_position: 0
+description: A cookbook for metadata curators and their managers in national statistical organizations that want to use language models to draft, assess, and standardize metadata while keeping the curator in charge.
+---
+
+# Practical Guide to Metadata Curation with Language Models
+
+**A cookbook for metadata curators and their managers in national statistical organizations.** Version 0.1 (working draft), October 2026.
+
+:::note[Working draft]
+This guide is a working draft from the AI for Data – Data for AI program. It
+collects practical approaches and open standards. It does not
+represent official World Bank Group guidance or policy and is not legal
+advice; an organization applies it under its own statistical law, data
+protection rules, and institutional policies.
+Comments and corrections are welcome as
+[GitHub issues](https://github.com/worldbank/ai4data/issues), and the
+[contributing](./contributing.md) page explains how to propose a recipe.
+:::
+
+Metadata curation is skilled work that never ends: thousands of records,
+each with dozens of fields, written by different people over years, with
+definitions that drift and keywords that follow no list. Language models
+can draft a missing description from the record and the schema, score a
+record on completeness and consistency, flag a name that does not match
+its definition, and map free-text keywords to a vocabulary. They can also
+produce plausible text that is wrong. The difference between help and harm
+is the workflow: what the model is asked to do, how its output is checked,
+who decides, and how decisions feed back.
+
+This guide is organized around eight questions that a curation team can
+ask. The first two are about setting up: which tasks a model can assist
+and which stay with people, and whether legacy records can be moved into
+the schema without loss. The next three are about the work itself:
+whether a model can draft fields a curator will accept, whether it can
+assess quality consistently, and how curators review and decide on its
+suggestions. The last three are about consistency and improvement:
+whether free text can be aligned with controlled vocabularies, whether
+metadata can be translated with the same meaning in every language, and
+how curator decisions improve the system over time. Each chapter answers
+one question with recipes, maturity levels, worked examples, and a
+checklist.
+
+The recipes build on the program's
+[Generative AI for Metadata Quality](/docs/metadata-quality/generative-ai-for-metadata-quality)
+work, which scores records on four dimensions with structured output, and
+on the [Metadata Reviewer](/docs/metadata-reviewer/overview), an agentic
+pipeline that detects issues, categorizes them, scores their severity, and
+proposes corrections for a curator's review board. Records follow the
+[World Bank metadata schemas](https://github.com/worldbank/metadata-schemas).
+The [standards page](./standards.md) lists each standard and where it
+applies.
+
+:::tip[The curator decides]
+Nothing in this guide publishes model output. Every draft, score, and
+mapping is a suggestion that a named curator accepts, edits, or rejects,
+and the record of those decisions is what makes the system better over
+time. A workflow that skips the decision is faster and worse.
+:::
+
+## Prerequisites
+
+The recipes assume the following are in place or can be arranged:
+
+- A catalog of records in a published schema (or legacy records to migrate, which [chapter 2](./migrate.mdx) covers) and a curator who owns them.
+- Access to a language model under the organization's AI-use policy: a hosted model for public records, a local open-weight model for unpublished ones.
+- A person who can run Python scripts; for the AI-ready level, a developer to run the review pipeline and the Metadata Editor to apply decisions.
+
+## First steps
+
+For a team with limited time, this sequence gives the most useful result first:
+
+1. Write the task typology and the two rules of [chapter 1](./scope.mdx) and choose twenty records. This takes a day.
+2. Draft the missing definitions of those records, following [chapter 3](./draft.mdx), and review every draft in a spreadsheet, recording accept, edit, or reject as [chapter 5](./review.mdx) describes. This takes two days.
+3. Compute the acceptance rate, following [chapter 8](./improve.mdx). This takes minutes, and the number decides whether to scale up.
+
+Quality scoring ([chapter 4](./assess.mdx)), vocabularies ([chapter 6](./standardize.mdx)), and translation ([chapter 7](./translate.mdx)) each start the same way: twenty records, every output reviewed, the rate measured.
+
+## Self-assessment
+
+The [self-assessment](./start-here.mdx) takes about five minutes and places
+a curation team at a level in each chapter.
+
+## Chapters and questions
+
+| Chapter | Question | Practical topics |
+|---|---|---|
+| [1. Scope of model assistance](./scope.mdx) | Which curation tasks can a model assist, and which stay with people? | Task typology, decision rights, confidentiality, where to start |
+| [2. Migration of legacy records](./migrate.mdx) | Can legacy records be moved into the schema without losing what they say? | Field mapping with model proposals, transforms, unplaced columns, validation and review |
+| [3. Drafting of fields](./draft.mdx) | Can a model draft fields that a curator will accept? | Prompts with record and schema, structured output, draft status, acceptance rate |
+| [4. Assessment of quality](./assess.mdx) | Can a model assess metadata quality consistently? | Four dimensions, structured scores, calibration against curators, catalog reports |
+| [5. Review of suggestions](./review.mdx) | How do curators review and decide on suggestions? | The Metadata Reviewer, issue categories and severity, the review board, recorded decisions |
+| [6. Alignment with vocabularies](./standardize.mdx) | Can free text be aligned with controlled vocabularies? | SKOS vocabularies, mapping, unmapped terms, model proposals |
+| [7. Translation of metadata](./translate.mdx) | Can metadata be translated so that every language gets the same meaning? | Scope and reviewers, glossary from the vocabulary, model translation, checks, publication per language |
+| [8. Improvement from decisions](./improve.mdx) | How do curator decisions improve the system? | Acceptance rates, error taxonomy, evaluation gates, model choice and cost |
+
+## Maturity levels
+
+Each chapter describes three levels. A team can sit at different levels in
+different chapters, and the first level is a complete, useful state on its
+own.
+
+| Level | Meaning |
+|---|---|
+| **Foundational** | Curation rules and decision rights are written; models are used for drafts and flags on a small set of records, with every output reviewed. |
+| **AI-ready** | Drafting, assessment, and mapping run with structured output over the catalog, calibrated against curators, reviewed through a board, with decisions recorded. |
+| **AI-native** | Decisions feed an evaluation set that gates changes to prompts and models; acceptance rates and error taxonomies are tracked per field and model; small or local models handle routine tasks. |
+
+## Running example
+
+The example organization of the dissemination cookbook has five indicator
+records. One lacks a definition, one has a unit that does not match its
+values, one has a name that does not match its definition, and two have
+free-text keywords that follow no list. The recipes draft the missing
+definition, score the five records on four dimensions and compare the
+scores with a curator's, run the records through a review pipeline, map
+the keywords to a small vocabulary, and compute acceptance rates from the
+curator's decisions. A legacy spreadsheet of the same five records and
+ten French translations serve the migration and translation chapters.
+All records, translations, and decisions are invented.
+
+## Scope of the examples
+
+The examples are small on purpose: five records, ten suggestions, fourteen
+keywords, so that a reader can run them in an afternoon and see the shape
+of each check. They are starting points. Each recipe ends with a **What
+this does not do** note that says where the example stops and what the
+full version adds. The model calls themselves use the program's tools; the
+scripts here measure what comes back.
+
+## Files
+
+| File | Used in |
+|---|---|
+| [legacy_catalog.csv](pathname:///cookbook-files/metadata-curation-with-llms/legacy_catalog.csv), [field_mapping.csv](pathname:///cookbook-files/metadata-curation-with-llms/field_mapping.csv), and [migrate_records.py](pathname:///cookbook-files/metadata-curation-with-llms/migrate_records.py) | Chapter 2: the legacy spreadsheet, the field mapping, and the migration |
+| [migrated_records.json](pathname:///cookbook-files/metadata-curation-with-llms/migrated_records.json) | Chapter 2: output of the migration script, the input of the completeness check |
+| [suggestions_example.jsonl](pathname:///cookbook-files/metadata-curation-with-llms/suggestions_example.jsonl) | Chapters 3, 5, and 8: suggestions from drafting and from the review pipeline |
+| [decisions_example.csv](pathname:///cookbook-files/metadata-curation-with-llms/decisions_example.csv) | Chapters 5 and 8: the curator's decisions on the suggestions |
+| [score_suggestions.py](pathname:///cookbook-files/metadata-curation-with-llms/score_suggestions.py) | Chapters 3 and 8: acceptance rates per field and source |
+| [model_scores.csv](pathname:///cookbook-files/metadata-curation-with-llms/model_scores.csv) and [curator_scores.csv](pathname:///cookbook-files/metadata-curation-with-llms/curator_scores.csv) | Chapter 4: quality scores from the model and from a curator |
+| [assess_agreement.py](pathname:///cookbook-files/metadata-curation-with-llms/assess_agreement.py) | Chapter 4: calibration of model scores against curators |
+| [keywords_freetext.csv](pathname:///cookbook-files/metadata-curation-with-llms/keywords_freetext.csv) and [vocabulary.csv](pathname:///cookbook-files/metadata-curation-with-llms/vocabulary.csv) | Chapter 6: free-text keywords and a small vocabulary |
+| [map_vocabulary.py](pathname:///cookbook-files/metadata-curation-with-llms/map_vocabulary.py) | Chapter 6: mapping of keywords to the vocabulary |
+| [example_catalog.csv](pathname:///cookbook-files/ai-ready-dissemination/example_catalog.csv) | The five records, from the dissemination cookbook |
+| [translations_example.csv](pathname:///cookbook-files/metadata-curation-with-llms/translations_example.csv) and [check_translations.py](pathname:///cookbook-files/metadata-curation-with-llms/check_translations.py) | Chapter 7: French translations with planted errors, and the check |
+
+## Related resources
+
+| Resource | Purpose |
+|---|---|
+| This guide | What a curation team can do with language models, and why, in a sequence of practical steps. |
+| [Generative AI for Metadata Quality](/docs/metadata-quality/generative-ai-for-metadata-quality) | The program's method for scoring records with structured output, with a notebook. |
+| [Metadata Reviewer](/docs/metadata-reviewer/overview) | The agentic review pipeline and its review board. |
+| [Metadata Augmentation](/docs/metadata-augmentation/) | The program's method for grouping survey variables with model curation. |
+| [Practical Guide to AI-Ready Data Dissemination](/cookbook/ai-ready-dissemination/) | The completeness check and profiles the drafts and scores feed. |
+| [Code](https://github.com/worldbank/ai4data) | Open-source software to deploy or adapt. |
+
+## Citation
+
+World Bank. 2026. *Practical Guide to Metadata Curation with Language
+Models: A cookbook for metadata curators and their managers in national
+statistical organizations.* Version 0.1. AI for Data – Data for AI.
+https://worldbank.github.io/ai4data/cookbook/metadata-curation-with-llms/
+
+## Version history
+
+- **0.1 (October 2026).** First draft: six chapters, recipes, scripts, self-assessment.

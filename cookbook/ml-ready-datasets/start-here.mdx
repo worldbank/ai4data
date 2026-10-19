@@ -1,0 +1,109 @@
+---
+id: start-here
+title: Self-assessment
+sidebar_label: Self-assessment
+sidebar_position: 1
+description: A five-minute self-assessment that places a team's practice of publishing datasets for machine learning at a maturity level in each chapter and suggests a reading order.
+---
+
+import SelfAssessment from '@site/src/components/Cookbook/SelfAssessment';
+
+# Self-assessment
+
+Select the statement that best describes the team today, one per chapter.
+The result shows a level for each chapter and the chapters to read first.
+Answers are stored in this browser only.
+
+<SelfAssessment
+  base="/cookbook/ml-ready-datasets/"
+  questions={[
+    {
+      id: 'purpose',
+      title: '1. Purpose',
+      question: 'Which datasets are published for machine learning?',
+      options: [
+        'None, or extracts shared on request without a stated purpose.',
+        'A statement of purpose exists and one dataset from a coding or transcription task is published with a decision record.',
+        'Datasets for the main model-assisted tasks are selected by a written rule, each with uses, owner, and approvals recorded.',
+        'Datasets are produced as a stage of production at each round.',
+      ],
+    },
+    {
+      id: 'shape',
+      title: '2. Form',
+      question: 'What form do the files take?',
+      options: [
+        'Whatever the source system exports.',
+        'Tidy files with a dictionary that names the label, the features, the identifier, and the group key.',
+        'Open formats with stable column names across versions, the role of every column recorded, and leakage between features and label checked.',
+        'Files and dictionary generated from production with the checks as a pipeline stage.',
+      ],
+    },
+    {
+      id: 'describe',
+      title: '3. Croissant',
+      question: 'How is a dataset described for loading?',
+      options: [
+        'It is not; users read the files.',
+        'A Croissant record is generated from the dictionary and checked.',
+        'The record carries the splits, passes the reference validator, and is published on the page and in the catalog.',
+        'The record is generated and validated at each release and registered in a public repository.',
+      ],
+    },
+    {
+      id: 'document',
+      title: '4. Card',
+      question: 'How is a dataset documented?',
+      options: [
+        'A readme, or nothing.',
+        'A card with the twelve sections and a machine-readable header, checked by script.',
+        'The representativeness section comes from the report, the card is reviewed by a specialist, and it is published everywhere the dataset is.',
+        'The measured sections are regenerated at each release and the written sections are versioned with the data.',
+      ],
+    },
+    {
+      id: 'represent',
+      title: '5. Representativeness',
+      question: 'How is coverage measured?',
+      options: [
+        'It is not; the source survey is assumed representative.',
+        'The composition is compared with census benchmarks on three or four variables and stated in the card.',
+        'Cross-tabulations, thin groups, and label coverage are reported with a minimum count, at each release.',
+        'A reference model\'s error by group is published with the dataset.',
+      ],
+    },
+    {
+      id: 'splits',
+      title: '6. Splits',
+      question: 'How is the dataset split?',
+      options: [
+        'Users split it themselves, or records are split at random.',
+        'Split by group with a recorded seed; the assignment file is published and the leakage check runs.',
+        'Time-based test parts where rounds exist; group distributions per part reported; the test part frozen under the version policy.',
+        'New rounds join the training part at release and the test part moves on a stated schedule, with a reference model\'s scores per version.',
+      ],
+    },
+    {
+      id: 'license',
+      title: '7. Licence',
+      question: 'Under what terms is a dataset released?',
+      options: [
+        'Unstated, or the licence of the source file by default.',
+        'An open licence chosen on purpose, terms that permit training and ask for attribution, and a recorded disclosure review.',
+        'The licence URL is in the Croissant record and the catalog record, free text is screened as a release check, and the attribution form for model cards is stated.',
+        'Models that cite the dataset are tracked and the terms are reviewed yearly.',
+      ],
+    },
+    {
+      id: 'version',
+      title: '8. Versions',
+      question: 'How are versions and integrity maintained?',
+      options: [
+        'Files are updated in place.',
+        'A version policy, a manifest of checksums verified before publication, and a DOI.',
+        'The card and the record are versioned with the data, superseded versions stay available, and downloads and citations are counted.',
+        'Releases are a pipeline stage with manifest, record, card, and DOI generated together, and model cards that cite the dataset are tracked.',
+      ],
+    },
+  ]}
+/>

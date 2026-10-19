@@ -1,0 +1,16 @@
+question_id,language,question,expected_id,note
+q01,en,how many people go hungry,FS_UNDERNOURISH_PCT,paraphrase
+q02,en,share of kids in primary school,ED_PRIMARY_NER_PCT,paraphrase
+q03,en,child deaths before age 5,HE_U5_MORT_RATE,paraphrase
+q04,en,jobless rate,LF_UNEMP_PCT,paraphrase; description field empty
+q05,en,how many people are poor,PV_HEADCOUNT_NPL_PCT,paraphrase
+q06,en,prevalence of undernourishment,FS_UNDERNOURISH_PCT,official title
+q07,en,unemployment rate latest quarter,LF_UNEMP_PCT,official title with period
+q08,en,net enrolment primary,ED_PRIMARY_NER_PCT,official title fragment
+q09,en,infant mortality,HE_U5_MORT_RATE,near concept; under-five is the closest published series
+q10,en,poverty line,PV_HEADCOUNT_NPL_PCT,keyword
+q11,fr,taux de chômage,LF_UNEMP_PCT,needs native-speaker review
+q12,fr,mortalité des enfants de moins de cinq ans,HE_U5_MORT_RATE,needs native-speaker review
+q13,es,tasa de desempleo,LF_UNEMP_PCT,needs native-speaker review
+q14,es,desnutrición,FS_UNDERNOURISH_PCT,needs native-speaker review
+q15,en,inflation rate,NONE,not published; the system should return nothing confident

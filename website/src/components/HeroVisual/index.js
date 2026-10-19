@@ -83,7 +83,7 @@ export default function HeroVisual() {
               in the Philippines
             </span>
             <span className={styles.line}>
-              Prevalence of severe food insecurity (%)
+              Prevalence of severe food insecurity in the population (%)
             </span>
             <span className={styles.code}>SN.ITK.SVFI.ZS</span>
           </button>
@@ -111,7 +111,7 @@ export default function HeroVisual() {
                   <span className={styles.popTitle}>Verified data</span>
                   <span className={styles.popGrid}>
                     <span>Indicator</span>
-                    <span>Prevalence of severe food insecurity (%)</span>
+                    <span>Prevalence of severe food insecurity in the population (%)</span>
                     <span>Country</span>
                     <span>Philippines</span>
                     <span>Date</span>

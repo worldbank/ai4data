@@ -1,0 +1,241 @@
+---
+id: relational
+title: "5. Relational and longitudinal data"
+sidebar_label: "5. Relational"
+sidebar_position: 6
+description: How surveys with linked tables, such as households and persons, and panel data are synthesized so that the structure holds, how integrity and within-household consistency are checked before anything else, and which structural distributions have to match.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 5. Relational and longitudinal data
+
+**Question:** How are multi-table and longitudinal data synthesized?
+
+## Rationale
+
+Most surveys are not one table. A household survey has households and
+the persons in them; an establishment survey has firms and their
+establishments; a panel has the same persons across waves. A synthetic
+file that handles each table separately produces households whose
+persons do not exist, children older than their parents, and persons
+whose age falls between waves. Users of such a file cannot test their
+code on it, because the code joins the tables. Relational synthesis
+generates the parent table and then the child records conditional on
+their parent, and longitudinal synthesis generates each wave conditional
+on the previous one; both are checked for the structure every survey
+assumes, before any distribution is compared.
+
+## Target state
+
+- Linked tables are synthesized with their structure: every child record has a parent, every parent has its children, sizes agree, and within-group rules hold.
+- Panel files keep within-person consistency across waves (ages advance, fixed characteristics stay fixed, transitions are plausible).
+- The structural checks run before the utility and risk reports, and a structural fault sends the file back to the method.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Synthesize the person table with the household identifier and size as variables; check integrity and structure with the script. |
+| **AI-ready** | Use a relational generator for parent and child tables; add the survey's own structure rules; compare the structural distributions with the real pair. |
+| **AI-native** | Synthesize panels wave by wave with transitions checked; run the structural checks as a pipeline stage; publish the relational file with its record. |
+
+:::info[Running example]
+A synthetic pair of forty households and 128 persons. The structural
+check finds a person whose household does not exist, a household whose
+size disagrees with its person count, and a child older than the head;
+the size distributions match the real pair within a few percent. The
+file goes back to the method before any utility is measured.
+:::
+
+## Recipes
+
+<Recipe title="5.1 Synthesize linked tables with a relational generator" level="AI-ready" skills="Data scientist with Python" time="Two to three days for the first survey">
+
+**Result:** the organization has a synthetic household table and a
+synthetic person table in which every person belongs to a generated
+household and the persons' characteristics depend on their household's.
+
+1. Prepare the real pair of tables with the key that links them: the
+   household table with its variables, and the person table with the
+   household identifier and each person's position in the household.
+2. Fit the relational mode of [REaLTabFormer](https://github.com/worldbank/REaLTabFormer):
+   one model for the household table and a second model that generates
+   each household's persons given the household record. The HMA
+   synthesizer of SDV is a copula-based alternative.
+3. Generate the households first, then their persons. Keep the seed and
+   the settings.
+4. Compute the derived variables (household size, number of children,
+   the head's age) from the generated persons. They are never
+   synthesized directly.
+
+**Worked example.** The labour force survey's quarter has 3,100
+households and 9,400 persons. The household table carries the region,
+the urban flag, and the dwelling type; the person table carries the
+household identifier, the position, the relationship to the head, and
+the person's variables. The data scientist fits the parent model on the
+household table and the child model on the persons given their
+household, generates 3,100 households and then their persons, and
+computes household size and the number of children from the result. The
+generated file has 9,350 persons, and the number per household ranges
+from one to eleven, as in the real file. The seed and the settings go
+into the synthesis record.
+
+**What this does not do.** A relational generator preserves the
+dependence of persons on their household. It does not know the survey's
+logical rules (one head per household, children younger than the head)
+unless the data make them nearly certain. Recipe 5.2 checks them.
+
+</Recipe>
+
+<Recipe title="5.2 Check integrity and structure before anything else" level="Foundational" skills="Python" time="Minutes per file">
+
+**Result:** every structural fault in the synthetic pair of tables is
+listed, and its household-size distribution is compared with the real
+one, before any utility is measured.
+
+The script reads a synthetic household table (one row per household:
+identifier, region, size) and a synthetic person table (one row per
+person: household identifier, position, relationship to the head, age,
+sex). It checks that every person's household exists, that every
+household has persons, that recorded sizes match person counts, that
+each household has exactly one head, that children are younger than the
+head, and that spouses are within 25 years of the head. Given the real
+pair, it also compares the distributions of household size:
+
+```python file=../../website/static/cookbook-files/synthetic-data-for-sharing/relational_check.py
+```
+
+```bash
+python relational_check.py households_synth.csv persons_synth.csv --real-households households_real.csv --real-persons persons_real.csv
+```
+
+Output for the running example:
+
+```text
+40 households, 128 persons
+
+3 fault(s):
+  person H999/1 belongs to no household
+  household H011 size 3 but 2 persons
+  household H005: child 3 aged 61 is not younger than the head (56)
+
+household size distribution: TVD 0.025; persons per household: TVD 0.022
+```
+
+The first line counts the tables. The faults block names each fault
+with the household or person concerned and the rule it breaks. The last
+line gives the total variation distance between the real and the
+synthetic distributions of household size, from the household table and
+from the person counts.
+
+1. Run the check on every synthetic pair. A fault points to the method
+   (a generator that invents identifiers, a derived size that was
+   synthesized), and the file goes back.
+2. Add the survey's own rules to the script: school age and
+   attendance, labour force status by age, marital status by age,
+   whatever the questionnaire's routing enforces.
+3. Read the distributions. Household size and persons per household are
+   the first things users of the file will tabulate.
+4. Only once the structure holds, run the utility and risk reports of
+   [chapters 3](./utility.mdx) and [4](./risk.mdx) on each table and on
+   the joined file.
+
+**Worked example.** The three faults above each point to a cause.
+Person H999/1 has a household identifier that no household carries,
+which means the generator invented an identifier; the fix is to generate persons from the household records, with no free identifier field at all. Household H011 records a size of 3 with two persons,
+which means the size was synthesized as a variable; the fix is to
+recompute it. The 61-year-old child in H005 is a relationship code the
+child model produced without the age constraint; the fix is a rule
+applied after generation that recodes such a person as another
+relative. After the fixes the check reports no faults, the distances
+stay at 0.02, and the file goes on to the utility and risk reports.
+
+**What this does not do.** The check enforces the rules it has been
+given. A rule nobody wrote (a plausible age gap between siblings) is not
+checked, and a file can pass with implausibilities a demographer would
+notice. The rules grow from such findings.
+
+</Recipe>
+
+<Recipe title="5.3 Synthesize panel data wave by wave" level="AI-native" skills="Methodologist; data scientist" time="One week for the first panel">
+
+**Result:** the organization has a synthetic panel in which each
+person's records are consistent from one wave to the next, and the
+transitions between states resemble those in the real panel.
+
+1. Synthesize the first wave as a single table ([chapter 2](./method.mdx)).
+2. For each later wave, synthesize its variables conditional on the
+   same person's previous wave: in sequential synthesis, put the
+   previous wave's variables first in the visit sequence. Carry fixed
+   characteristics (sex, year of birth) over unchanged and advance ages
+   by rule.
+3. Check the transitions against the real panel: the table of labour
+   force status in one wave against the next, and the share of
+   impossible changes (a fall in age, a change of sex).
+4. Apply attrition (people leaving the panel) by rule, matching the
+   real panel, so that the synthetic panel keeps the same shape over
+   time.
+
+**Worked example.** The labour force survey follows each household for
+four quarters. The methodologist synthesizes the first quarter as in
+chapter 2, then synthesizes each later quarter with the previous
+quarter's labour force status, hours, and income first in the visit
+sequence, carrying sex and year of birth over and adding one quarter to
+the age. The transition table of labour force status between the first
+and second quarter in the synthetic panel has 91 percent of persons
+staying in their state, against 92 percent in the real panel, and the
+share of impossible changes is zero. Attrition is applied at the real
+panel's rate of 8 percent per quarter, drawn at random within region.
+The record notes that returns to employment after two quarters out are
+weaker in the synthetic panel than in the real one.
+
+**What this does not do.** Synthesizing wave by wave preserves the link
+between consecutive waves and weakens longer patterns, such as a return
+to a state after two waves; the record says so. A model over whole
+person histories is the alternative for panels with many waves.
+
+</Recipe>
+
+## Implementation options
+
+- **Relational generators:** REaLTabFormer relational mode (MIT); SDV's HMA synthesizer (check the licence); sequential synthesis of the person table with household variables as predictors as a simpler fallback.
+- **Checks:** the script in this chapter extended with the survey's rules; the microdata cookbook's dictionary check for the resulting files.
+- **Panels:** sequential synthesis wave by wave with carried-over fixed characteristics; transition matrices compared; attrition by rule.
+
+## World Bank examples
+
+- [REaLTabFormer](https://github.com/worldbank/REaLTabFormer) was built for relational data: a parent table model and a sequence-to-sequence child model, evaluated on household-person and similar structures.
+- The [microdata cookbook's comparability chapter](/cookbook/microdata-documentation/rounds) documents the structure across rounds that a synthetic panel has to reproduce.
+
+## Resources
+
+- [REaLTabFormer paper](https://arxiv.org/abs/2302.02041): the relational generation method and its evaluation.
+- [SDV multi-table synthesis](https://github.com/sdv-dev/SDV): the HMA synthesizer and metadata for linked tables.
+- [IPUMS International harmonized household-person data](https://international.ipums.org/international/): the reference form of linked household and person records with within-household rules.
+- [Relational check script](pathname:///cookbook-files/synthetic-data-for-sharing/relational_check.py) and the [household and person pairs](pathname:///cookbook-files/synthetic-data-for-sharing/persons_synth.csv): the running example.
+
+## Common mistakes
+
+- **Tables synthesized separately.** The join produces orphans and contradictions.
+- **Derived sizes synthesized.** They disagree with the persons; recompute them.
+- **Utility measured before structure.** A file with orphans has no utility to measure.
+- **Panels synthesized as independent waves.** Ages fall and people change sex.
+
+## Verification
+
+- **Integrity.** There are no orphans and no empty parents, and the sizes agree.
+- **Structure.** Each household has one head, the survey's rules hold, and the transitions are plausible for panels.
+- **Distributions.** Household size and persons per household are within the stated distance of the real pair.
+
+## Checklist
+
+<Checklist id="synthetic-data-for-sharing-relational" items={[
+  'Linked tables synthesized with a relational generator or conditional sequential synthesis',
+  'Derived variables recomputed from the generated records',
+  'Integrity and structure checks pass before utility and risk',
+  'Survey-specific rules added to the check',
+  'Structural distributions compared with the real pair',
+  'Panels synthesized wave by wave with transitions and attrition checked',
+]} />

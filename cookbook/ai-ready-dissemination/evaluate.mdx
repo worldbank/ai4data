@@ -1,0 +1,283 @@
+---
+id: evaluate
+title: "6. Evaluation"
+sidebar_label: "6. Evaluate"
+sidebar_position: 7
+description: How the organization can tell whether its AI-ready steps improved anything, through a question set with known answers, automatic scoring of retrieval, and answer-level tests of numbers, citations, and refusals.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 6. Evaluation
+
+**Question:** Can we tell whether our AI-ready steps improved anything?
+
+## Rationale
+
+:::note[A deeper treatment exists]
+This chapter gives the first steps. The [Evaluation Suites for Statistical AI](/cookbook/evaluation-suites/) cookbook covers
+question sets, labelling, retrieval and answer measures, graders, gates, and report cards in full, with scripts and a running example.
+:::
+
+
+Each step in this guide is meant to improve a measurable outcome. After
+the metadata work, more questions should find the right series. After the
+provenance work, more answers should carry the right number and its
+source. Without a fixed set of test questions, none of that can be shown.
+A change to the metadata, the search, or the model cannot be compared
+with what came before, and problems appear first in front of users.
+
+A question set is a small investment that pays on every later change. It
+is a file of questions whose right answer is known, and it is run before
+and after each change, so that the scores say whether the change helped.
+This chapter builds the set, scores the search with it, and then extends
+it to the answers an assistant gives.
+
+## Target state
+
+- A small, versioned set of test questions with known correct answers.
+- The same measures are run before and after each change.
+- Results are reported by language, topic, and question type.
+- Failures are reviewed and added to the test set.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Write 30 to 50 known-item questions. Run them by hand against the search page each quarter and record the rank of the correct result. |
+| **AI-ready** | Automate the run. Report Recall@k and MRR for retrieval. Keep the question set in version control. Test each supported language separately. |
+| **AI-native** | Add answer-level tests: numeric accuracy, citation validity, and correct refusals. Use a language model as a first-pass grader with human spot checks. Run the suite before every model or metadata change. |
+
+:::info[Running example]
+Fifteen questions over the five-series catalog, in three languages, including
+one question with no answer. Keyword search finds 8 of the 10 English
+questions and none of the French or Spanish ones. That is the baseline the
+semantic search in chapter 1 has to beat.
+:::
+
+## Recipes
+
+<Recipe title="6.1 Build a known-item question set" level="Foundational" skills="Dissemination staff; speakers of each supported language" time="One day for the first 30 questions">
+
+**Result:** the organization has a file of questions, each paired with
+the series that should come first in the results. Anyone in the
+organization can add to it, and every later measurement runs on it.
+
+A known-item question is one whose right answer is known: for "how many
+people go hungry", the right series is the prevalence of
+undernourishment. The set is a CSV with one row per question:
+
+| Column | Meaning |
+|---|---|
+| `question_id`, `language` | The question's identifier and its language, coded with ISO 639 (`en`, `fr`, `es`) |
+| `question` | The question as a user would type it |
+| `expected_id` | The series that should come first, or `NONE` when the organization publishes no matching series |
+| `note` | Whether the question is a paraphrase, uses the official title, is a near concept, or needs review |
+
+```csv file=../../website/static/cookbook-files/ai-ready-dissemination/eval_questions.csv
+```
+
+1. Take real questions from search logs and help-desk tickets first.
+2. Write paraphrases of the official title ("jobless rate"), since
+   users rarely use the exact words. Mark which questions are
+   paraphrases and which use the official title; the scores for the two
+   groups differ and both matter.
+3. Include near concepts where the organization publishes something
+   close but different ("infant mortality" when only under-five
+   mortality exists).
+4. Include questions with no answer and mark the expected identifier
+   `NONE`.
+5. Include each supported language, written by speakers of that
+   language. Machine translation is a starting point and needs review;
+   the example file marks its French and Spanish rows as unreviewed.
+6. Keep the file in version control and record who added each
+   question.
+
+**Worked example.** The running example's file has fifteen rows. The
+first three are English paraphrases: "how many people go hungry" expects
+the undernourishment series, "share of kids in primary school" expects
+the net enrolment rate, and "child deaths before age 5" expects the
+under-five mortality rate. Other rows use the official titles, so that
+the two groups can be scored apart. One row asks about inflation and
+expects `NONE`. Two rows are in French and two in Spanish, and their
+notes say "needs review", because they were drafted by machine
+translation and no speaker has checked them yet.
+
+**What this does not do.** A question set written by the organization
+reflects what the organization expects users to ask. Real queries from
+search logs (recipe 4.1) and failed answers (recipe 4.3) correct it
+over time. A set that is never extended measures last year's users.
+
+</Recipe>
+
+<Recipe title="6.2 Score retrieval automatically" level="AI-ready" skills="Python" time="Two hours">
+
+**Result:** for each language, three numbers say how well the search
+finds the right series. The script prints them in seconds, and it works
+for any search system that returns a ranked list of identifiers.
+
+Recall@5 and Recall@10 are the share of questions for which the right
+series is in the first five, or ten, results. MRR is the mean
+reciprocal rank: 1 when the right series comes first, one half when it
+comes second, and so on, averaged over the questions. The script
+includes a plain keyword search so that it runs with no dependencies and gives a
+baseline. The organization replaces the `search()` function with a call
+to its own search to score it:
+
+```python file=../../website/static/cookbook-files/ai-ready-dissemination/score_retrieval.py
+```
+
+Output for the running example (keyword baseline):
+
+```text
+group    n    R@5   R@10    MRR
+all     14   0.57   0.57   0.57
+en      10   0.80   0.80   0.80
+es       2   0.00   0.00   0.00
+fr       2   0.00   0.00   0.00
+```
+
+The first row scores all questions together; the other rows score each
+language. The `n` column counts the questions with an expected series,
+so the `NONE` question is left out.
+
+1. Run the script with the baseline and keep the output with the date.
+   Here the baseline misses the two English paraphrases that share no
+   words with the records ("how many people go hungry", "how many
+   people are poor") and every non-English question.
+2. Plug in the semantic search of recipe 1.3 and run again. A
+   multilingual semantic search should fix both kinds of miss, and the
+   script shows by how much.
+3. Report both, per language, with the model name and the catalog
+   version.
+
+**Worked example.** With the keyword baseline, eight of the ten English
+questions find their series in the top five, which gives a Recall@5 of
+0.80. The two misses are the paraphrases that share no words with any
+record. The French and Spanish questions all miss, because the records
+are in English only. After the semantic search of chapter 1 is plugged
+in, the English Recall@5 rises to 1.00 and the French and Spanish
+questions find their series as well. The team records both runs with the
+date, the model name `intfloat/multilingual-e5-small`, and the catalog
+version, and the pair of outputs becomes the first entry in the
+evaluation log.
+
+**What this does not do.** Fifteen questions over five records give a
+demonstration, and the scores move by 0.07 with a single question. A
+usable set has at least 30 to 50 questions per language and is drawn
+from real queries, and differences between systems are read with that
+sample size in mind. The built-in keyword search is a baseline for the
+exercise; the organization's own search will be better than it.
+
+</Recipe>
+
+<Recipe title="6.3 Add answer-level tests" level="AI-native" skills="Python; subject-matter reviewers" time="One week to set up; part of each release">
+
+**Result:** the assistant has four scores that are reported with every
+change: numeric accuracy, citation validity, refusal accuracy, and
+hallucination rate, which is the share of answers that contain a claim
+with no support in the retrieved records.
+
+1. For each question in the set, add the expected answer values and the
+   expected behaviour (`answer` or `decline`).
+2. Run every question through the assistant and keep the answer with
+   the retrieved records.
+3. Score automatically what can be scored automatically:
+   - **Numeric accuracy:** run the number check of
+     [chapter 5](./trust.mdx) on each answer; the share of verified
+     numbers.
+   - **Citation validity:** each cited series identifier and URL exists
+     and was among the retrieved records.
+   - **Refusal accuracy:** the share of `NONE` questions where the
+     assistant declined.
+4. Use a language model as a first-pass grader for the rest, with a
+   short rubric (right series, right period, caveats stated), and have
+   a reviewer check 20% of the grades each run. Disagreements go into
+   the rubric.
+5. Run the whole suite before any change of model, index, prompt, or
+   metadata, and keep the results with the change.
+
+**Worked example.** The team extends the fifteen questions with expected
+values and behaviours. "How many people go hungry" now expects the value
+7.6 and the behaviour `answer`; the inflation question expects `decline`.
+A run of the assistant produces fifteen answers. The number check
+verifies every number in thirteen of them, which gives a numeric
+accuracy of 0.87. Every cited series was among the retrieved records,
+so citation validity is 1.00. The inflation question was declined, so
+refusal accuracy is 1.00. The grader flags one answer that described a
+trend the records did not support, which gives a hallucination rate of
+0.07, and the reviewer, checking three of the fifteen grades, agrees
+with all three.
+
+The program's [PI-FT pipeline](/pift-toolkit/pipeline) includes an
+evaluation step that reports Recall@k, MRR, and nDCG@k and compares
+several embedding models on the same queries, and its
+[method page](/pift-toolkit/method) describes graded evaluation with a
+language model as judge. The
+[evaluation cookbook](/cookbook/evaluation-suites/) covers the full
+suite.
+
+**What this does not do.** Automatic scores cover numbers, citations,
+and refusals. The grader covers the rest with an error rate known from
+the reviewer's checks. An answer that is right and unhelpful (the right
+series without the caveat the user needed) scores as right unless the
+rubric names the caveat.
+
+</Recipe>
+
+## Measures
+
+**Retrieval**
+
+- **Recall@k:** the share of questions for which the correct item appears in the top k results.
+- **MRR (mean reciprocal rank):** the average of 1 divided by the rank of the first correct result.
+- **nDCG@k:** a graded measure that credits partially relevant results.
+
+**Answers**
+
+- **Numeric accuracy:** the share of numbers in answers that match the official value, with a stated tolerance for rounding.
+- **Citation validity:** the share of citations that resolve and support the statement.
+- **Refusal accuracy:** the share of unanswerable questions that the system declines.
+- **Hallucination rate:** the share of answers that contain a claim with no support in the retrieved records.
+
+## Implementation options
+
+- **Question sets:** a versioned CSV with expected ids, languages, paraphrase flags, and `NONE` rows; real queries added each month.
+- **Retrieval scoring:** the script in this chapter (Recall@k, MRR); ranx or the PI-FT pipeline's evaluation step for larger suites and more measures.
+- **Answer scoring:** automatic checks for numbers, citations, and refusals; a language-model grader with a rubric and a reviewed share of grades; Inspect or a similar framework for suites with tool use.
+- **Gates:** scores kept per change of model, index, prompt, or metadata; publication blocked below the previous run.
+
+## Resources
+
+- [Evaluation questions](pathname:///cookbook-files/ai-ready-dissemination/eval_questions.csv) and [score_retrieval.py](pathname:///cookbook-files/ai-ready-dissemination/score_retrieval.py): the running example's question set and the retrieval scorer.
+- [BEIR](https://github.com/beir-cellar/beir) and [MTEB](https://huggingface.co/spaces/mteb/leaderboard): retrieval benchmarks and the measures (recall, MRR, nDCG) the scorer follows, for comparison with published models.
+- [ranx](https://github.com/AmenRa/ranx): a library for information retrieval evaluation with the standard measures, for suites larger than the script here.
+- [Inspect](https://inspect.ai-safety-institute.org.uk/): an open-source framework for answer-level evaluation of language model systems with graders.
+- [Data Discoverability](/docs/data-discoverability/) and the [PI-FT toolkit](/pift-toolkit/pipeline): the program's evaluation of search by meaning over structured records.
+
+## Common mistakes
+
+- **Testing with the official titles only.** Scores look good and users still fail. Paraphrases are the test.
+- **One language.** See the baseline above: 0.80 in English and 0.00 elsewhere is one system.
+- **Changing the question set and the system at the same time.** The scores cannot be compared. Version the set.
+- **Grading with a model and never checking.** Model graders drift and share blind spots with the system under test. Spot-check every run.
+
+## Verification of the suite
+
+Confirm that a deliberately worse configuration, such as search with empty
+descriptions, scores lower. If it does not, the suite is not measuring what
+matters.
+
+## Checklist
+
+<Checklist id="evaluate" items={[
+  'Versioned question set with known answers',
+  'Paraphrases, near concepts, and no-answer questions included',
+  'Each supported language included and reviewed by a speaker',
+  'Recall@k and MRR reported for retrieval, per language',
+  'Baseline scores kept with date and configuration',
+  'Numeric accuracy, citation validity, and refusal accuracy measured for answers',
+  'Human review of a sample of graded results each run',
+  'Suite run before every model, index, prompt, or metadata change',
+]} />

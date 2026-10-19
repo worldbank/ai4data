@@ -1,0 +1,228 @@
+---
+id: define
+title: "1. Definition of use"
+sidebar_label: "1. Define"
+sidebar_position: 2
+description: How an organization decides what counts as use of its data, through a typology that separates mention from use, a table of the names people give each dataset, and a stated unit and scope of counting.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 1. Definition of use
+
+**Question:** What counts as use of the data?
+
+## Rationale
+
+"Use" covers very different things. A paper builds its whole analysis
+on a survey. A strategy sets a target against an indicator. An article
+quotes a release. A report lists a dataset among its sources without
+drawing on it. An AI answer states a figure. Counting all of these
+together gives a number without a meaning, and a number without a
+meaning cannot be compared with last year's or argued with at budget
+time.
+
+Two things have to be settled before any tool runs. The first is a
+definition that separates these kinds of use, so that a count says what
+it counts. The second is a table that says which dataset each mention
+refers to, because documents name the same survey in a dozen ways and
+none of them is the catalog's name. This chapter writes both, and it
+ends with the unit and the scope of counting, so that one period's
+report can be compared with the next.
+
+## Target state
+
+- A written typology distinguishes mention from use, and primary use from secondary and background use.
+- Every dataset has one canonical name, one acronym, one identifier, and the list of variants people write, in a table the catalog and the citations share.
+- The unit of counting (documents, by default) and the scope (which sources, which period, whether the organization's own publications are included) are stated.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Write the typology. Build the canonical names table for the most-used datasets. Decide the unit and scope. |
+| **AI-ready** | Extend the table to the whole catalog with identifiers and variants found in documents. Publish the recommended citation on every dataset page. Record the typology in the extraction's usage fields. |
+| **AI-native** | Maintain the table from the monitoring results, with new variants reviewed and added, and expose it through the catalog so that other systems match the same names. |
+
+:::info[Running example]
+The example organization's table has six datasets with their acronyms and
+the variants found so far, including "the labour survey" and
+"unemployment rate from the LFS". The typology marks a mention as used
+when the document builds on the data and as background when it cites the
+data as context.
+:::
+
+## Recipes
+
+<Recipe title="1.1 Adopt a typology of use" level="Foundational" skills="Dissemination lead" time="Half a day">
+
+**Result:** the organization has a one-page definition of what counts
+as a use of its data, and every count and every report in this guide
+refers to it.
+
+Without a typology, a document that names a survey in passing and a
+document whose whole analysis rests on it are counted the same. The
+typology separates them.
+
+1. Distinguish a **mention** (the dataset is named or referred to) from
+   **use** (the document's analysis, decision, or statement depends on
+   the data). The program's extractor records this as the `is_used`
+   flag.
+2. Within use, distinguish **primary** (the main source of the
+   analysis), **secondary** (combined with another main source), and
+   **background** (cited as context). The extractor records it as
+   `usage_context`.
+3. Treat **named** mentions ("Household Budget Survey 2021") and
+   **unnamed** mentions ("the labour survey") separately. Unnamed
+   mentions need harmonization and are less certain.
+4. Add the uses that documents do not show: downloads and API calls,
+   which access statistics cover ([chapter 2](./access.mdx)), and AI
+   systems' answers, which the AI visibility check covers
+   ([chapter 8](./report.mdx)).
+
+**Worked example.** The example organization's typology fits on one
+page. It gives one example of each category from its own collection. The
+2023 journal article that estimates poverty from the household budget
+survey is a primary use. The regional food security outlook, which
+cites the organization's food security report in its introduction and
+draws nothing from it, is a mention with the context "background". The
+news article that quotes the unemployment rate in its first paragraph is
+a use, because the article's statement depends on the figure, and it is
+marked "secondary" because the article also draws on an interview. The
+page ends with the rule that downloads, API calls, and AI answers are
+counted separately and never added to the document counts.
+
+**What this does not do.** A typology states categories. Applying them
+is a judgement that the extractor makes with a confidence and that a
+person confirms on a sample ([chapter 6](./detect.mdx)).
+
+</Recipe>
+
+<Recipe title="1.2 Build the canonical names table" level="Foundational" skills="Dissemination officer" time="Half a day for the main datasets; ongoing additions">
+
+**Result:** the organization has one list of the names people use for
+each of its datasets, and detection, harmonization, and the catalog all
+read the same list.
+
+Documents name the same survey in many ways: "Household Budget Survey
+2021", "HBS 2021", "the budget survey". The names table maps all of
+them to one identifier. It is a CSV with one row per dataset:
+
+| Column | Meaning |
+|---|---|
+| `dataset_id` | The catalog's identifier (`idno`) or the DOI, so that a matched mention links to the record |
+| `canonical_name` | The official name, used in the recommended citation |
+| `acronym` | The acronym, where one exists |
+| `producer` | The organization that produced the dataset |
+| `variants` | Other forms found in documents, separated by `;` |
+
+```csv file=../../website/static/cookbook-files/monitoring-data-use/canonical_names.csv
+```
+
+1. Start from the datasets with the most downloads and the flagship
+   products (surveys, censuses, main indicators, main reports).
+2. Use the catalog's identifiers as `dataset_id`.
+3. Add variants as they are found: acronyms with and without years,
+   informal names, translations, and misspellings that recur.
+4. Publish the recommended citation on each dataset page in the catalog
+   ([chapter 5 of the dissemination cookbook](/cookbook/ai-ready-dissemination/trust)).
+   The citation uses the canonical name, which makes future mentions
+   matchable.
+
+**Worked example.** The table of the running example has six rows. The
+row for the household budget survey has the identifier `EX-HBS-2021`,
+the canonical name "Household Budget Survey 2021", the acronym "HBS",
+the example organization as producer, and the variants "HBS 2021; the
+budget survey; household survey 2021". The row for the unemployment rate
+has the identifier `LF_UNEMP_PCT`, the canonical name "Unemployment
+rate", no acronym, and the variants "jobless rate; unemployment rate
+from the LFS". The variant "the labour survey", found in a news article,
+is added to the labour force survey's row after the review of chapter 7.
+Each dataset page in the catalog now shows the recommended citation
+with the canonical name and the DOI.
+
+**What this does not do.** The table lists the organization's own data.
+Other organizations' datasets that appear alongside (the Demographic and
+Health Survey, the World Development Indicators) are tracked as co-use
+in [chapter 7](./harmonize.mdx), without a row here.
+
+</Recipe>
+
+<Recipe title="1.3 Decide the unit and the scope" level="Foundational" skills="Dissemination lead" time="One hour">
+
+**Result:** the unit of counting and the scope are written down, so that
+reports can be compared from one period to the next.
+
+1. Count **documents** as the default unit, one per document per
+   dataset. A document that mentions a survey five times is one use.
+   Keep the mention count as a secondary figure.
+2. State the **sources** in scope ([chapters 4](./collect.mdx) and
+   [5](./collect-web.mdx) list them), the **period**, and whether the
+   organization's own publications are included. They are usually
+   excluded from use counts and tracked separately.
+3. State the **languages** covered. A source in the national language
+   needs the extractor tested in that language.
+4. Record the decisions with the typology. A change in scope is a break
+   in the series of reports.
+
+**Worked example.** The example organization counts documents and keeps
+the mention count as a secondary figure. Its scope statement lists the
+four open scholarly indexes of chapter 4, the publication pages of six
+ministries and the parliament, the national news archive, and the
+country reports of three international organizations. It covers
+documents dated 2023 onwards, in English and French. Its own publications are
+excluded from the use counts and listed separately. The statement is
+dated and filed with the typology. When the national research repository
+is added a year later, the report of that period marks the change as a
+break and shows the counts with and without the new source.
+
+**What this does not do.** The unit and scope define what is counted.
+The coverage of the sources ([chapter 4](./collect.mdx)) and the recall
+of the extractor ([chapter 6](./detect.mdx)) decide what is found, and
+both are reported with the counts.
+
+</Recipe>
+
+## Implementation options
+
+- **Typology:** the extractor's fields (`is_used`, `usage_context`, `dataset_tag`) as the recorded form; a one-page definition as the human form.
+- **Names table:** a CSV under version control, or the catalog's own identifiers and aliases exported; the series record's `aliases` field in the World Bank schema holds variants.
+- **Identifiers:** catalog identifiers and DataCite DOIs; a DOI makes citations countable through DataCite as well as through text mining.
+
+## World Bank examples
+
+- [Monitoring of Data Use](/docs/data_use/) records the usage flag and context per mention and harmonizes name variants ("WDI", "World Development Indicators", "World Bank Development Data") to one identifier.
+- The [dissemination cookbook](/cookbook/ai-ready-dissemination/monitor-use) places the canonical names table and the recommended citation at the foundational level of its monitoring chapter.
+
+## Resources
+
+- [Monitoring of Data Use](/docs/data_use/): the extractor's fields (`is_used`, `usage_context`, `dataset_tag`) that record the typology.
+- [World Bank metadata schemas](https://github.com/worldbank/metadata-schemas): the `aliases` field of the series record, where name variants belong.
+- [DataCite](https://datacite.org/): DOI registration, which makes a dataset's citations countable through identifiers ([chapter 3](./citations.mdx)).
+- [Make Data Count](https://makedatacount.org/): the research data community's definitions of usage and citation metrics, which the typology aligns with.
+- [Canonical names table](pathname:///cookbook-files/monitoring-data-use/canonical_names.csv): the template with dataset identifier, canonical name, acronym, producer, and variants.
+
+## Common mistakes
+
+- **Counting mentions as use.** A dataset listed in a bibliography and a dataset the analysis depends on are different uses.
+- **A table without identifiers.** Matched mentions cannot be linked to records or counted with DataCite citations.
+- **Scope that moves.** Adding a source without saying so makes a rise in use look like growth.
+- **One language.** Mentions in the national language go unfound if the table and the extractor are English-only.
+
+## Verification
+
+- **Typology.** Two staff members classify twenty mentions independently and agree on most of them, and the disagreements have been used to refine the definitions.
+- **Names table.** Every flagship dataset has a row with an identifier and at least three variants.
+- **Citations.** Every dataset page shows the recommended citation with the canonical name.
+
+## Checklist
+
+<Checklist id="monitoring-data-use-define" items={[
+  'Typology written: mention and use; primary, secondary, background',
+  'Canonical names table with identifiers, acronyms, and variants',
+  'Recommended citation on every dataset page',
+  'Unit of counting stated (documents) and mention count kept',
+  'Sources, period, languages, and own publications stated',
+  'Decisions recorded; changes treated as breaks',
+]} />

@@ -1,0 +1,63 @@
+{
+  "type": "geospatial",
+  "name": "recommended geospatial profile",
+  "description": "Recommended fields of the World Bank geospatial schema (ISO 19115/19139 based) at each maturity level, as dotted paths, with the reason each field matters. Levels are cumulative. The schema itself requires only description.idno. An office can remove a field from a level, but each removal has the cost named in its reason.",
+  "levels": {
+    "foundational": [
+      "description.idno",
+      "description.identificationInfo.citation.title",
+      "description.identificationInfo.abstract",
+      "description.identificationInfo.extent.geographicElement",
+      "description.referenceSystemInfo",
+      "description.dateStamp",
+      "description.contact",
+      "description.identificationInfo.topicCategory"
+    ],
+    "ai-ready": [
+      "description.identificationInfo.descriptiveKeywords",
+      "description.identificationInfo.resourceConstraints",
+      "description.identificationInfo.spatialResolution",
+      "description.identificationInfo.resourceMaintenance",
+      "description.identificationInfo.language",
+      "description.distributionInfo.distributionFormat",
+      "description.distributionInfo.transferOptions",
+      "description.dataQualityInfo",
+      "description.metadataStandardName"
+    ],
+    "ai-native": [
+      "description.feature_catalogue",
+      "description.identificationInfo.serviceIdentification",
+      "description.contentInfo"
+    ]
+  },
+  "fields": {
+    "description.idno": "The stable identifier for citation and retrieval.",
+    "description.identificationInfo.citation.title": "The title shown in search results and answers.",
+    "description.identificationInfo.abstract": "What the layer contains and its edition; the main text that search reads.",
+    "description.identificationInfo.extent.geographicElement": "The bounding box; lets a system filter by place and say what area is covered.",
+    "description.referenceSystemInfo": "The coordinate reference system; a layer without it cannot be used by software.",
+    "description.dateStamp": "When the record was made; freshness.",
+    "description.contact": "Who answers questions about the layer.",
+    "description.identificationInfo.topicCategory": "ISO topic category; drives filters and browsing.",
+    "description.identificationInfo.descriptiveKeywords": "The words users search with.",
+    "description.identificationInfo.resourceConstraints": "Access and use constraints, including sensitive locations (chapter 8).",
+    "description.identificationInfo.spatialResolution": "Scale or ground resolution; tells a system what the layer can and cannot support.",
+    "description.identificationInfo.resourceMaintenance": "Update frequency; when to expect a new edition.",
+    "description.identificationInfo.language": "Language of the data and attributes.",
+    "description.distributionInfo.distributionFormat": "Formats available (GeoPackage, GeoJSON, COG), so software knows what it will get (chapter 2).",
+    "description.distributionInfo.transferOptions": "Download links or service endpoints (OGC API Features, WMS) for retrieval (chapter 2).",
+    "description.dataQualityInfo": "Lineage: where the geometry came from and how it was processed (chapter 5).",
+    "description.metadataStandardName": "Names the standard the record follows, for harvesters.",
+    "description.feature_catalogue": "Attribute definitions and code lists; the meaning of the columns (chapter 3).",
+    "description.identificationInfo.serviceIdentification": "Describes the OGC services that serve the layer, for agents and tools.",
+    "description.contentInfo": "Band or coverage description for rasters."
+  },
+  "rules": {
+    "id": "description.idno",
+    "dates": ["description.dateStamp"],
+    "urls": ["description.dataSetURI"],
+    "min_words": {"description.identificationInfo.abstract": 20},
+    "not_equal": [["description.identificationInfo.citation.title", "description.identificationInfo.abstract"]],
+    "placeholders": ["description.referenceSystemInfo.code"]
+  }
+}

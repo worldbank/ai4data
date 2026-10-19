@@ -89,7 +89,7 @@ objects that reflect structural variation; and URL-structure issues.
 ### Field-level exclusions (issues on these fields are removed)
 
 `idno`, `proj_idno`, `version_statement`, `prod_date`, `version_date`, `changed`,
-`changed_by`, `contacts`, `topics`, `tags`, `database_id`, `visualization`, and `uri`.
+`changed_by`, `contacts`, `topics`, `tags`, `database_id`, and `visualization`.
 
 ### Data-state exclusions (removed)
 

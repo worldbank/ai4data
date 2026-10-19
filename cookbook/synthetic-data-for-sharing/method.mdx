@@ -1,0 +1,232 @@
+---
+id: method
+title: "2. Choice of synthesis method"
+sidebar_label: "2. Method"
+sidebar_position: 3
+description: How the synthesis method is chosen from the shape of the data and the intended uses, what the families of methods preserve and cost, and how the first run is made with its seed and parameters recorded.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 2. Choice of synthesis method
+
+**Question:** Which synthesis method fits the data?
+
+## Rationale
+
+Synthesis methods differ in what they preserve, what they need, and
+what they can leak. Sequential methods fit one variable at a time
+conditional on the previous ones (classification and regression trees
+or parametric models) and are transparent, fast, and well understood in
+official statistics. Copula methods fit the marginals and a dependence
+structure. Generative networks and transformer-based generators learn
+the joint distribution from the records and handle mixed types and
+relational structure, at the cost of training time, tuning, and a
+tendency to memorize if left unchecked. The choice follows the data (how
+many records and variables, which types, whether tables are linked) and
+the uses (which relationships have to hold); the running example shows
+what the simplest method loses.
+
+## Target state
+
+- The method for each synthetic file is chosen by a written rule from the data and the intended uses, with the alternatives considered recorded.
+- The synthesis runs with a recorded seed and parameters, on the organization's infrastructure, with the real data never leaving it.
+- The first run is measured ([chapters 3](./utility.mdx) and [4](./risk.mdx)) before any choice is final.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Synthesize one file with a sequential method (synthpop or equivalent) with the seed recorded; measure it. |
+| **AI-ready** | Compare two methods on the same file with the utility and risk measures; choose by the written rule; record parameters and alternatives in the synthesis record. |
+| **AI-native** | Use a relational generator for multi-table surveys; tune by the organization's target analyses; re-synthesize at each release as a pipeline stage. |
+
+:::info[Running example]
+The 300-record extract is synthesized by the crudest method, sampling
+each column independently with income conditioned on education, to show
+what a method that ignores relationships loses: the marginals match, the
+link between sex and labour force status disappears, and the employment
+rate for men falls from 0.56 to 0.40. A sequential CART synthesis is the
+method the chapter recommends as the first real attempt.
+:::
+
+## Recipes
+
+<Recipe title="2.1 Choose the method by data and use" level="Foundational" skills="Methodologist" time="Half a day">
+
+**Result:** the synthesis method for a file has been chosen by a written
+rule from the shape of the data and the intended uses, together with
+the alternative that will be compared with it.
+
+Four families of method exist. Sequential synthesis builds the
+synthetic file one variable at a time: it fits a model of the first
+variable, generates it, then fits the second variable given the first,
+and so on. The models are usually classification and regression trees
+(CART), and the method is transparent and fast. Copula methods fit each
+variable's distribution and the pattern of dependence between
+variables separately. Generative networks and transformer-based
+generators learn the whole joint distribution from the records at once;
+they handle complex structure and need more records, more tuning, and a
+check that they did not memorize. Relational generators extend these to
+linked tables. The table gives a first choice for each situation:
+
+| Data and use | First choice | Why |
+|---|---|---|
+| One table, up to a few hundred thousand records, mixed variable types; uses need the distributions and the main relationships | Sequential synthesis (CART) | Transparent, fast, handles mixed types, comes with its own measures |
+| One table, mostly numeric; uses need the correlations | Copula (Gaussian copula) | Fits distributions and dependence directly |
+| One table, many records, complex interactions; uses need higher-order structure | Transformer-based generator (REaLTabFormer) or a tabular generative network | Learns the joint distribution; needs tuning and memorization checks |
+| Several linked tables (households and persons, firms and establishments) | Relational generator (REaLTabFormer relational mode, HMA) | Models the parent-child structure ([chapter 5](./relational.mdx)) |
+| Panel or longitudinal records | Sequential synthesis wave by wave, with the previous wave as predictor, or a sequence model | Keeps each person's records consistent across waves |
+
+1. Describe the data: number of records, variables by type, linked
+   tables, panel structure. Describe the uses: the analyses that have to
+   give similar answers ([chapter 1](./purpose.mdx)).
+2. Take the first choice from the table and one alternative. Both will
+   be measured.
+3. Record the choice and the reason in the synthesis record
+   ([chapter 6](./release.mdx)).
+
+**Worked example.** The labour force survey of the running example has
+one person table of about 9,400 records per quarter, with 18 variables
+of mixed types, linked to a household table. The intended uses are code
+testing and teaching, which need the distributions and the main
+relationships, such as employment by sex and income by education. The
+table's first row fits: sequential synthesis with CART is the first
+choice, and the household link is handled by synthesizing the person
+table with the household identifier and size as variables, as chapter 5
+describes for the foundational level. The alternative to compare is the
+transformer-based generator, because the full file is large enough for
+it. The record notes that the 300-record extract in the cookbook's files
+is synthesized by a cruder method on purpose, to show what is lost.
+
+**What this does not do.** The table gives a starting point. The
+measures of [chapters 3](./utility.mdx) and [4](./risk.mdx) decide, and a
+file whose uses need a relationship the method cannot preserve is a
+file whose record says so.
+
+</Recipe>
+
+<Recipe title="2.2 Run a sequential synthesis with the parameters recorded" level="Foundational" skills="Methodologist with R or Python" time="One day for the first file">
+
+**Result:** the organization has a synthetic file produced by
+sequential synthesis, with the settings that produced it recorded so
+that the run can be repeated.
+
+1. Set the visit sequence, the order in which variables are synthesized.
+   Put the variables that others depend on first: geography, then
+   demographics, then outcomes. Do not synthesize derived variables
+   (household size, age groups); compute them afterwards from the
+   synthetic values of their inputs.
+2. Choose the model for each variable: CART for most, a simple
+   parametric model where the variable is simple. Set a minimum leaf
+   size (the smallest group a tree may isolate) so that no leaf holds a
+   single person. Add smoothing to continuous variables such as income.
+3. Run with a recorded random seed, using synthpop's `syn()` in R or an
+   equivalent Python implementation. Keep the real data on the
+   organization's own infrastructure throughout.
+4. Apply the survey's logical rules after synthesis (children younger
+   than the household head; hours only for the employed), or synthesize
+   within them, and count how many records the rules changed.
+
+**Worked example.** The methodologist sets the visit sequence as region,
+urban, sex, age, educ, lfs_status, occupation, industry, hours, income,
+and leaves out household size and the age group, which are recomputed
+afterwards. Every variable uses CART except sex, which uses a simple
+sampling model. The minimum leaf size is set at 10, and income is
+smoothed. The run uses seed 20250711 with synthpop and takes four
+minutes on the unit's server. The survey's three logical rules are
+applied afterwards: 23 records had hours for persons outside the labour
+force and are set to missing, and no child was older than its head,
+because the household structure was carried in the visit sequence. The
+settings and the seed are written to the synthesis record.
+
+**What this does not do.** Sequential synthesis preserves the
+relationships along the visit sequence and weakens the others; the
+utility report shows which. Rare categories and small areas lose
+fidelity first, and the record says so.
+
+</Recipe>
+
+<Recipe title="2.3 Run a transformer-based or network generator with memorization checks" level="AI-ready" skills="Data scientist with Python and a GPU" time="Two to three days for the first file">
+
+**Result:** the organization has a synthetic file from a generator that
+learns the whole joint distribution of the records. Training was stopped
+before the generator started to copy records, and the settings are
+recorded.
+
+1. Install the generator ([REaLTabFormer](https://github.com/worldbank/REaLTabFormer):
+   `pip install realtabformer`) and fit it on the real table. It trains
+   a model over the records and includes a stopping rule that measures
+   whether generated records are getting too close to the real ones.
+2. Set the generation settings and the seed. Generate the same number
+   of records as the real file, or more where the uses need it.
+3. Run the risk checks of [chapter 4](./risk.mdx) first, for exact
+   copies and closest-record distance. A generator that copied is
+   trained again with a stricter stopping rule or a smaller model.
+4. Record the generator's version, the training settings, the stopping
+   statistic, and the seed.
+
+**Worked example.** The data scientist fits REaLTabFormer on the 9,400
+records of the quarter on the unit's server with one accelerator card.
+The stopping rule halts training after 38 epochs, when the distance
+between generated and real records stops falling, and the run takes
+two hours. The generator produces 9,400 synthetic records with seed
+1042. The risk checks of chapter 4 find no exact copies and a
+closest-record distance in line with the real-to-real baseline. The
+record notes the package version, the number of epochs, the stopping
+statistic's final value, and the seed. On the utility report the
+generator keeps the association between sex and labour force status as
+well as the sequential method does and does better on the joint
+distribution of occupation and industry.
+
+**What this does not do.** A generator needs many records to learn
+from. A small survey of a few thousand records is usually better served
+by sequential synthesis. Training and tuning are real costs, and the
+check for copying is never skipped.
+
+</Recipe>
+
+## Implementation options
+
+- **Sequential:** synthpop (R) with CART or parametric methods; equivalent Python implementations.
+- **Copula and networks:** SDV (Gaussian copula, CTGAN, TVAE; Business Source License) for comparison; tabular generative networks where licensing allows.
+- **Transformer-based:** REaLTabFormer (MIT) for tabular and relational data, with its built-in memorization stopping criterion.
+- **Rules:** survey edit rules applied after synthesis or enforced during it; derived variables recomputed.
+
+## World Bank examples
+
+- [REaLTabFormer](https://github.com/worldbank/REaLTabFormer) (Solatorio and Dupriez, 2023) is the program's generator for tabular and relational data, with a target-based stopping criterion that limits memorization.
+- The program's [GSBPM mapping](/docs/gsbpm-mapping) places synthetic data under disclosure control, where the method choice is recorded with the file.
+
+## Resources
+
+- [synthpop](https://cran.r-project.org/package=synthpop) and its [paper (Nowok, Raab, and Dibben, 2016)](https://doi.org/10.18637/jss.v074.i11): sequential synthesis with CART and the utility and disclosure measures that come with it.
+- [REaLTabFormer paper](https://arxiv.org/abs/2302.02041): the transformer-based method for tabular and relational data and its memorization control.
+- [SDV](https://github.com/sdv-dev/SDV): copula, network, and multi-table synthesizers for comparison (check the licence for the organization's use).
+- [UNECE starter guide](https://unece.org/statistics/publications/synthetic-data-official-statistics-starter-guide): the method overview written for statistical organizations.
+- [Real and synthetic extracts](pathname:///cookbook-files/synthetic-data-for-sharing/real_sample.csv): the running example's files, with the crude synthesis that the utility chapter measures.
+
+## Common mistakes
+
+- **A generator for a small survey.** Sequential methods do better with thousands of records and are transparent.
+- **Derived variables synthesized.** They stop agreeing with their inputs; recompute them.
+- **No seed, no parameters.** The file cannot be reproduced or explained.
+- **Training until the loss stops falling.** The generator memorizes; stop by the copying check.
+
+## Verification
+
+- **Choice.** The choice is recorded with the reason and the alternative considered.
+- **Run.** The seed, the parameters, and the visit sequence or training settings are recorded, and the real data stayed on the organization's infrastructure.
+- **Rules.** The survey rules have been applied and the changes counted.
+
+## Checklist
+
+<Checklist id="synthetic-data-for-sharing-method" items={[
+  'Data and intended uses described before the choice',
+  'Method chosen by the written rule with an alternative to compare',
+  'Visit sequence, methods per variable, leaf size, smoothing recorded (sequential)',
+  'Model version, training parameters, stopping statistic recorded (generators)',
+  'Seed recorded; real data kept on the organization\'s infrastructure',
+  'Survey rules applied; derived variables recomputed',
+]} />

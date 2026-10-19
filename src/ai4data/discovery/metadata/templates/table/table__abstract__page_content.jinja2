@@ -1,0 +1,8 @@
+{%- set d = table_description if table_description is mapping else {} -%}
+{%- if d.description -%}
+{{ d.description }}
+{%- elif d.notes is sequence and d.notes is not string and d.notes is not mapping -%}
+{%- for n in d.notes if n is mapping and n.note -%}
+{{ n.note }}{{ ' ' if not loop.last }}
+{%- endfor -%}
+{%- endif -%}

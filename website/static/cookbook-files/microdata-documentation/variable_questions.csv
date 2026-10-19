@@ -1,0 +1,14 @@
+question_id,language,question,expected_name,note
+v01,en,age of household member,age,paraphrase
+v02,en,is the person looking for a job,jobsearch,paraphrase
+v03,en,hours worked last week,hours,ambiguous between all jobs and main job
+v04,en,highest education level,educ,paraphrase
+v05,en,employed or unemployed,lfs_status,paraphrase
+v06,en,what kind of work,occupation,question wording
+v07,en,survey weight,weight,paraphrase
+v08,en,urban rural,urban,keyword
+v09,en,earnings last month,income,paraphrase; label says income
+v10,en,informal employment,informal,label equals name; found by name only
+v11,fr,heures travaillées la semaine dernière,hours,needs native-speaker review
+v12,fr,niveau d'éducation,educ,needs native-speaker review
+v13,en,household size,NONE,not in the dictionary; a derived variable

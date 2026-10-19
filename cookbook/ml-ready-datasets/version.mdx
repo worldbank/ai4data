@@ -1,0 +1,257 @@
+---
+id: version
+title: "8. Versions, integrity, and use"
+sidebar_label: "8. Versions"
+sidebar_position: 9
+description: "How releases of a dataset are versioned, how a manifest of checksums proves that a user holds the released files, how a DOI makes each version citable, and how the organization tracks the models and papers that use the dataset."
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 8. Versions, integrity, and use
+
+**Question:** How are versions, integrity, and use maintained over time?
+
+## Rationale
+
+A training dataset is cited by models, papers, and benchmarks, and a
+citation has to point at a fixed thing. If a record is corrected, a
+round is added, or the test part is redrawn, the scores reported on
+the old files no longer describe the new ones. Versioning gives each
+state of the dataset a name; a manifest of checksums (a fingerprint
+per file) lets anyone confirm that the files they hold are the files
+of that version; a DOI per version makes the citation resolve to it.
+Together they make a published dataset something that can be relied on
+and compared across time.
+
+Use is the other half. An organization that publishes a dataset wants to know who trained
+what on it. That is the question the
+[monitoring cookbook](/cookbook/monitoring-data-use/) answers for every
+other product, through citations of the DOI, mentions in papers, and
+downloads. For training data there is one more source: model cards that
+name the dataset. The recipes of this chapter set the version policy, build and
+verify the manifest, register the identifier, and track use.
+
+## Target state
+
+- Every release has a version under a written policy that says what counts as a major, minor, or patch change, and the test part is frozen within a major version.
+- Every release has a manifest with a checksum per file, verified before publication and verifiable by any user.
+- Every version has a DOI, and the organization tracks the citations, mentions, downloads, and model cards that name the dataset.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Adopt the version policy; build and verify the manifest for one release; register a DOI. |
+| **AI-ready** | Version the card and the Croissant record with the data; keep superseded versions available; count downloads and citations with the monitoring workflow. |
+| **AI-native** | Release new versions as a pipeline stage with the manifest, the record, the card, and the DOI generated together; track model cards that cite the dataset. |
+
+:::info[Running example]
+Version 1.0.0 of the occupation-coding dataset has a manifest of five
+files with their sizes and checksums. A folder in which one file was
+edited and one removed fails verification, which is what a user who
+downloaded a partial or altered copy would see.
+:::
+
+## Recipes
+
+<Recipe title="8.1 Adopt the version policy" level="Foundational" skills="Dataset owner" time="An hour">
+
+**Result:** the organization has a written rule for what changes the
+version number of a dataset and by how much, and the rule applies to
+the data, the card, and the loading record together.
+
+The policy uses three-part version numbers (major.minor.patch), as
+software does:
+
+| Change | Version | Example |
+|---|---|---|
+| The test part changes, a column is removed or renamed, or the label's definition changes | Major (2.0.0) | A new test round replaces the old one |
+| Records are added to the training or validation part, a column is added, the card gains a section | Minor (1.1.0) | Next quarter's coded records join the training part |
+| A record is corrected, a description is fixed, a checksum is recomputed | Patch (1.0.1) | A labelling error found by a user is fixed |
+
+1. Adopt the table, with the organization's own additions.
+2. Apply one version to the whole release: the data, the splits, the
+   dictionary, the card, the Croissant record, and the manifest carry
+   the same number.
+3. State in the card's versions section what changed since the last
+   version and which parts are frozen.
+4. Keep every released version available at its own URL. A
+   superseded version is marked superseded on its page and never
+   deleted, because papers cite it.
+
+**Worked example.** Version 1.0.0 is the first release. When a user reports three test records with the same title and
+different codes, the coding supervisor corrects them and the release
+becomes 1.0.1. The card's versions section reads "1.0.1: three
+labelling errors in the test part corrected (records r0112, r0387,
+r0541); no other change". When the 2025 Q3 round's examples join the training part, the
+release becomes 1.1.0, and the section says that the test part is
+unchanged. When the test part moves forward to the 2025 Q4 round, the
+release becomes 2.0.0, and the section warns that scores on version 2
+are not comparable with scores on version 1. All four versions stay at
+their own URLs.
+
+**What this does not do.** A policy names the change. Whether a change
+is worth a new major version (a test part that moves forward every
+year, for example) is a decision the owner takes with the users in
+mind, and states in the card.
+
+</Recipe>
+
+<Recipe title="8.2 Build and verify the manifest" level="Foundational" skills="Python" time="Minutes">
+
+**Result:** the release has a file that lists every file with its size
+and checksum, built at release and verifiable by anyone who downloads
+the dataset.
+
+The script has two modes. In build mode it writes the manifest; in
+verify mode it compares the files on disk with it:
+
+```python file=../../website/static/cookbook-files/ml-ready-datasets/release_manifest.py
+```
+
+```bash
+python release_manifest.py build --version 1.0.0 --date 2026-10-09 -o manifest.json \
+    lfs_occupation_ml.csv splits.csv dictionary.csv dataset_card.md lfs_occupation_ml.croissant.json
+python release_manifest.py verify manifest.json
+```
+
+Output for the running example:
+
+```text
+manifest.json: version 1.0.0, 5 file(s), 69275 bytes
+manifest.json: version 1.0.0 of 2026-10-09; 5 file(s) listed
+  ok        lfs_occupation_ml.csv
+  ok        splits.csv
+  ok        dictionary.csv
+  ok        dataset_card.md
+  ok        lfs_occupation_ml.croissant.json
+result: PASS
+```
+
+The same verification on a copy in which one file was edited and one
+removed:
+
+```text
+manifest.json: version 1.0.0 of 2026-10-09; 5 file(s) listed
+  ok        lfs_occupation_ml.csv
+  ok        dataset_card.md
+  ok        lfs_occupation_ml.croissant.json
+  CHANGED   splits.csv
+  MISSING   dictionary.csv
+result: FAIL
+```
+
+The build line names the manifest, the version, and the total size. The
+verification lists each file with `ok`, `CHANGED` when its checksum
+differs, or `MISSING` when it is absent, and ends with the verdict.
+
+1. Build the manifest as the last step of a release, after the card
+   and the Croissant record are final, because it fingerprints both.
+2. Verify it before publication and publish it with the files. Tell
+   users on the dataset page how to verify a download.
+3. Where the organization signs releases, sign the manifest; its
+   checksums then cover the files. The
+   [small and open models cookbook](/cookbook/small-and-open-models/security)
+   describes the same practice for model files.
+
+**Worked example.** The second output above is what a partner saw after
+downloading the dataset over an unreliable connection: the splits file
+had been truncated and the dictionary had not arrived. The partner ran
+the verification as the dataset page instructs, saw the two lines, and
+downloaded the two files again, after which the verification passed.
+Without the manifest the partner would have trained a model on a
+truncated split file and reported a score on the wrong test part. The
+organization signs its manifests with its release key, so that a user
+can also confirm that the manifest itself is the organization's.
+
+**What this does not do.** A manifest proves that files are unchanged
+since release. It does not prove that the release was right, and it
+does not replace the version numbers in the card and the record, which
+it fingerprints and which the policy keeps in step.
+
+</Recipe>
+
+<Recipe title="8.3 Register a DOI per version and track use" level="AI-ready" skills="Catalog administrator; dissemination officer" time="Half a day to set up; an hour per period">
+
+**Result:** every version of the dataset has a persistent identifier
+that resolves to it, and the organization counts the papers, models,
+and downloads that use the dataset with the monitoring workflow it uses
+for its other products.
+
+1. Register a DOI for each version through DataCite, with the version
+   in the metadata and a relation to the previous version, as the
+   [monitoring cookbook](/cookbook/monitoring-data-use/citations)
+   describes. Put the DOI in the citation of the card, the Croissant
+   record's `citeAs`, and the catalog record.
+2. Count downloads of each version with the access rules of the
+   [monitoring cookbook](/cookbook/monitoring-data-use/access), and
+   collect citation events for the DOI.
+3. Add the dataset's names to the canonical names table, so that
+   mentions in papers are found and harmonized, and search the public
+   model repositories for model cards that name the dataset. A model
+   card that cites the dataset is the attribution the terms asked for.
+4. Report use per version with the organization's other use measures,
+   and read it: a version nobody cites after a year can be superseded;
+   a model card that reports a score far above the coders' agreement
+   is a leak to look into.
+
+**Worked example.** Version 1.0.0 receives a DOI with the version in
+its metadata, and version 1.0.1 receives its own, related to the first
+as a new version. The canonical names table gains the rows "LFS
+occupation coding" and "lfs-occupation-ml". After a year the use report
+shows 1,100 downloads of version 1.0.1, two papers that cite the DOI,
+four papers that mention the dataset by name without citing it, and
+three model cards on the public repository that name it. One of the
+model cards reports an accuracy of 0.97 at four digits, above the
+coders' agreement of 0.91, and the dataset owner writes to the authors,
+who find that they had trained on the test part by mistake.
+
+**What this does not do.** Use tracking finds what is declared. Models
+trained on the data without citing it are invisible, which is why the
+terms ask for citation and the card makes it easy.
+
+</Recipe>
+
+## Implementation options
+
+- **Versioning:** major.minor.patch (this chapter); a date-based version where releases follow survey rounds, with the same rules for what is frozen.
+- **Integrity:** a manifest of SHA-256 checksums (this chapter); checksums in the Croissant record (both); a signed manifest.
+- **Identifiers:** a DataCite DOI per version; the catalog's persistent identifier where DOIs are not available.
+- **Use:** downloads, DOI citations, text-mined mentions, and model cards, through the monitoring cookbook's workflow.
+
+## World Bank examples
+
+- The [Microdata Library](https://microdata.worldbank.org/) registers DataCite DOIs and lists versions on each study page, which is the pattern for a dataset's versions.
+- The [small and open models cookbook](/cookbook/small-and-open-models/security) verifies model files against a lock file the same way a manifest verifies a dataset.
+
+## Resources
+
+- [DataCite metadata schema](https://schema.datacite.org/): the fields for a dataset version's DOI, including the relation to other versions.
+- [Monitoring cookbook, chapter 3](/cookbook/monitoring-data-use/citations): collecting and merging citation events for a DOI.
+- [Hugging Face dataset cards](https://huggingface.co/docs/hub/datasets-cards): where a dataset's card links a paper, and where model cards name the datasets a model was trained on.
+- [Microdata cookbook, chapter 7](/cookbook/microdata-documentation/fitness): versioning each release and publishing errata, the same practice for microdata.
+
+## Common mistakes
+
+- **A corrected file under the old version.** Two users with the same citation hold different data.
+- **The manifest built before the card was final.** The card's checksum fails at once.
+- **Superseded versions deleted.** The papers that cite them point at nothing.
+- **A DOI for the dataset but not the version.** The citation cannot say which test part the score was on.
+
+## Verification
+
+- **Policy.** The policy is written and applied, and the card's versions section names the version and what changed.
+- **Manifest.** The manifest is built last, verified before publication, and published with the files.
+- **Identifier and use.** Each version has a DOI, and downloads, citations, and model cards are reported each period.
+
+## Checklist
+
+<Checklist id="ml-ready-datasets-version" items={[
+  'Version policy adopted; one version across data, splits, dictionary, card, record, and manifest',
+  'Test part frozen within a major version',
+  'Manifest built last and verified; users told how to verify',
+  'Every version kept at its own URL with a DOI',
+  'Downloads, citations, mentions, and model cards tracked per version',
+]} />

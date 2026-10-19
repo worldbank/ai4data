@@ -1,0 +1,203 @@
+---
+id: evidence
+title: "6. Evidence for each question"
+sidebar_label: "6. Evidence"
+sidebar_position: 6
+description: How every question below its target gets a row in an evidence register naming the document that will show the change, its owner, its due date, and its status, and how the register is checked each quarter so that the pathway's progress is visible before the re-assessment.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 6. Evidence for each question
+
+**Question:** What evidence will show that a dimension moved?
+
+## Rationale
+
+The assessment's questions are answered with evidence. The framework's
+sub-questions invite links to documents, policies, and platforms that
+substantiate the selected response, and an assessor who sees a policy, a
+register, or a catalog record scores what is there. A pathway that ends
+in work done and no document to show it will be scored as if the work
+were not done. The evidence register turns each question below target
+into the document that will show it moved, with an owner and a date, so
+that the work and its evidence are planned together.
+
+The register is also the pathway's progress report. Its status column,
+read each quarter, says how much of the pathway is done, in progress, or
+still planned, per dimension, and its due dates say what is late. The
+framework's fourth planning step, monitor, is this register read on a
+schedule.
+
+## Target state
+
+- Every question below its dimension's target has an evidence row with the document, an owner, a due date, and a status.
+- The register is checked each quarter, and the overdue rows go to the board.
+- The documents named in the register are the ones the re-assessment of chapter 7 will be shown.
+- A row's status moves to done only when the document exists and is dated.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Write the register for the questions of the first wave and check it. |
+| **AI-ready** | Cover every question below target; check the register each quarter with the date; report the status and the overdue rows to the board. |
+| **AI-native** | Link each row to the document's location so that the evidence pack of the re-assessment is generated from the register. |
+
+:::info[Running example]
+The example organization's register has forty-six rows, one per question
+below target, from its first wave's policy and register to the third
+wave's MCP pilot. On 2026-01-15, eleven rows were done, thirteen in
+progress, and twenty-two planned, with nothing overdue. The file is
+[evidence_register.csv](pathname:///cookbook-files/assessment-to-pathway/evidence_register.csv).
+:::
+
+## Recipes
+
+<Recipe title="6.1 Name the evidence for every question below target" level="Foundational" skills="The planning team with the owner of each dimension" time="Two hours per dimension">
+
+**Result:** a register with one row per question below target, naming the
+document that will show the question's new answer, the role that will
+produce it, the date, and the status.
+
+The evidence for a question is the document the next level's response
+option describes. For "AI risk management" at C it is a risk register with
+tiers and controls; for "persistent identifiers for datasets" at C it is
+DOIs registered for every dataset; for "licence associated with each
+dataset" at C it is the licence field in every record. The governance and
+dissemination cookbooks produce most of these documents, and the register
+names the one that applies.
+
+| Column | Meaning |
+|---|---|
+| `question_id`, `dimension` | The question and its dimension |
+| `evidence` | The document, record, or platform that will show the new answer |
+| `owner` | The role that produces it |
+| `due` | The date, from the wave the dimension is in |
+| `status` | planned, in progress, or done |
+
+```csv file=../../website/static/cookbook-files/assessment-to-pathway/evidence_register.csv
+```
+
+1. For each dimension with a gap, take the questions below target from
+   the gap table and the reading of recipe 1.2.
+2. For each, name the document from the response option of the target
+   level and the cookbook that produces it.
+3. Give each row an owner and a due date inside the dimension's wave.
+4. Run the check. It reports a question below target without a row, a
+   row without an owner or a date, and a status outside the three
+   values.
+
+```bash
+python check_evidence.py question_scores.csv targets.csv evidence_register.csv --as-of 2026-01-15
+```
+
+```text
+questions below target: 46; with evidence rows: 46
+dim    done  in progress  planned
+1.1       3            1        1
+1.2       2            2        2
+1.3       0            0        5
+1.4       0            0        2
+1.5       0            0        2
+1.6       0            0        2
+2.1       2            2        0
+2.2       1            2        2
+2.3       1            1        3
+2.4       0            1        4
+2.5       0            0        5
+2.6       2            2        0
+
+overdue on 2026-01-15: 0
+result: PASS
+```
+
+**Worked example.** For strategy and governance, the example organization has five rows. The AI strategy document is owed by the Director General's office in March 2026. The board's terms of reference and the decision log, the risk register, and the AI-use policy are done. The change and training plan is planned. For the catalog, the rows name the catalog with
+a record per product (done), semantic search with retrieval scores
+(planned for May 2026), lineage fields, the release calendar as data, and
+DOIs (in progress). The three dimensions without a gap have rows for
+their two questions at A each, planned for the end of the cycle, so that
+the next cycle starts from them.
+
+**What this does not do.** The register names evidence; it does not
+produce it. The cookbooks of each dimension are where the documents are
+made, and the register's due dates are the pathway's calendar seen from
+the assessor's side.
+
+</Recipe>
+
+<Recipe title="6.2 Check the register each quarter and report the status" level="AI-ready" skills="The owner of the pathway; the board reads" time="One hour per quarter">
+
+**Result:** the board sees, each quarter, how many rows are done, in
+progress, and planned per dimension, and which are overdue.
+
+The quarterly check is the pathway's monitoring. The status counts per
+dimension show where the pathway is moving and where it is not, and the
+overdue list shows what the board has to decide about: a new date, a
+different owner, or a target moved to the next cycle. The check runs with
+the date, so that the overdue list is the one of the meeting.
+
+1. Before each board meeting, the owners update the status of their
+   rows, and a row moves to done only when its document exists and
+   carries a date.
+2. Run the check with the meeting's date and put the output in the
+   papers.
+3. For each overdue row, the board records a decision: a new due date,
+   a new owner, or a change to the pathway, in the decision log.
+4. Regenerate the pathway document with the register as an annex.
+
+**Worked example.** On 2026-01-15 the example organization's check found
+eleven rows done, thirteen in progress, and twenty-two planned, and
+nothing overdue. The first wave's governance rows were done and its
+metadata and licensing rows in progress, as the wave's dates intended.
+The board noted that the catalog's semantic search row, planned for May,
+depended on the developer who was also carrying the API, and asked the
+head of IT to report in April whether the two could run together.
+
+**What this does not do.** The check counts statuses. Whether a document
+marked done would satisfy an assessor is the reading of the response
+option it answers, which the owner does when the row is closed and the
+re-assessment of chapter 7 confirms.
+
+</Recipe>
+
+## Implementation options
+
+- **Register and decision log.** The register's overdue rows become decisions in the governance cookbook's decision log; the two files together are the pathway's audit trail.
+- **Evidence locations.** A column with the document's path or URL turns the register into the evidence pack of the re-assessment; the governance cookbook's review does the same for its own artefacts.
+- **Sub-questions.** Where the framework's sub-questions ask for a link, the register row's document is the link to give.
+
+## World Bank examples
+
+- The [governance cookbook](/cookbook/governance-and-risk/review) compiles the evidence pack for dimensions 1.1, 1.2, 1.5, and 2.6 from its artefacts, which are the documents the register names for those dimensions.
+- The [operational companion](/ai-readiness-in-practice) lists, per dimension, the evidence each program resource produces.
+
+## Resources
+
+- [Evidence register of the running example](pathname:///cookbook-files/assessment-to-pathway/evidence_register.csv) and [check_evidence.py](pathname:///cookbook-files/assessment-to-pathway/check_evidence.py): the register and the check.
+- [AI-readiness assessment framework](/ai-readiness-assessment): the response options the evidence answers.
+
+## Common mistakes
+
+- **Work planned without its evidence.** The assessor scores the document, and a practice without one scores as absent.
+- **Rows marked done before the document exists.** The re-assessment finds the gap, after the cycle's budget is spent.
+- **A register checked once a year.** Overdue rows are cheap to fix in the quarter they slip and expensive at the re-assessment.
+- **Evidence named vaguely.** "Improved metadata" is not a document; "records passing the completeness profile" is.
+
+## Verification
+
+- **Register check.** The check passes with the current date: every question below target has a row with an owner and a date.
+- **Document check.** For a row marked done picked at random, the document exists and carries a date before the row's due date.
+- **Reporting check.** The last quarter's output is in the board's papers, and each overdue row has a decision.
+
+## Checklist
+
+<Checklist id="assessment-to-pathway-evidence" items={[
+  'One row per question below target',
+  'Evidence named from the target level\'s response option',
+  'Owner and due date on every row',
+  'Register check passes',
+  'Status updated before each board meeting',
+  'Overdue rows decided and recorded',
+]} />

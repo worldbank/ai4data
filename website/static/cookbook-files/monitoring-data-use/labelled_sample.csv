@@ -1,0 +1,15 @@
+document_id,sentence,mention_text,note
+D01,We use the Household Budget Survey 2021 to estimate consumption per adult equivalent.,Household Budget Survey 2021,
+D01,The HBS sample covers 6000 households in both urban and rural areas.,HBS,acronym
+D01,Our estimates are consistent with the official prevalence of undernourishment series.,prevalence of undernourishment series,unnamed mention of a series
+D02,As the National Statistics Office food security report 2025 shows undernourishment fell to 7.6 percent.,National Statistics Office food security report 2025,a document cited as a source
+D02,Targets are set against the Prevalence of undernourishment (FS_UNDERNOURISH_PCT) indicator.,Prevalence of undernourishment (FS_UNDERNOURISH_PCT),
+D03,According to the Labour Force Survey unemployment fell to 6.1 percent in the second quarter.,Labour Force Survey,
+D03,The labour survey also shows a rise in informal employment.,the labour survey,
+D04,We combine the Household Budget Survey (HBS) 2021 with anthropometric data.,Household Budget Survey (HBS) 2021,
+D04,Anthropometric measures come from the Demographic and Health Survey 2016.,Demographic and Health Survey 2016,external dataset
+D04,Sampling weights follow the Population and Housing Census 2014 frame.,Population and Housing Census 2014,missed by the extractor
+D05,The unemployment rate from the LFS stood at 6.3 percent at the start of the year.,unemployment rate from the LFS,
+D06,Regional comparisons draw on the World Development Indicators.,World Development Indicators,external dataset
+D06,Each country publishes a food security report with its own methodology.,,generic phrase; not a mention of a specific dataset
+D06,The outlook covers twelve countries in the region.,,no mention

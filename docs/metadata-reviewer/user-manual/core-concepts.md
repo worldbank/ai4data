@@ -26,7 +26,7 @@ cost for higher coverage.
 ## Issue categories
 
 The categorizer assigns exactly one label to each confirmed issue. The
-bundled default manifest uses these five categories:
+bundled default manifest uses these six categories:
 
 | Category | Meaning |
 |---|---|
@@ -35,6 +35,7 @@ bundled default manifest uses these five categories:
 | Missing / Redundant Information | Unquestionably missing required information, or accidental duplication. |
 | Inconsistency / Conflict | Direct contradictions across fields. |
 | Incorrect / Invalid Content | Clearly wrong facts, values, units, methods, or invalid values. |
+| Ambiguity / Unclear | Vague or underspecified meaning; unclear scope, method, or definition. |
 
 ## Severity scale
 

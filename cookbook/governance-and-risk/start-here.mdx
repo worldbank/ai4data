@@ -1,0 +1,127 @@
+---
+id: start-here
+title: Self-assessment
+sidebar_label: Self-assessment
+sidebar_position: 1
+description: A five-minute self-assessment that places an organization's governance of AI use at a maturity level in each chapter and suggests a reading order.
+---
+
+import SelfAssessment from '@site/src/components/Cookbook/SelfAssessment';
+
+# Self-assessment
+
+Select the statement that best describes the organization today, one per
+chapter. The result shows a level for each chapter and the chapters to read
+first. Answers are stored in this browser only.
+
+For the full assessment across twelve dimensions, see the program's
+[AI-readiness assessment framework](/ai-readiness-assessment); chapter 8 of
+this guide maps the instruments here to its questions.
+
+<SelfAssessment
+  base="/cookbook/governance-and-risk/"
+  questions={[
+    {
+      id: 'position',
+      title: '1. Position',
+      question: 'What does the organization say about AI use?',
+      options: [
+        'Nothing written; units decide for themselves.',
+        'A written policy names permitted and prohibited uses, an approver, and a review date, and states which tasks a model may assist.',
+        'The policy is published, its adoption is in the decision log, and each control names the instrument that shows it is followed.',
+        'The policy is reread each year from the evidence of incidents, reviews, and the re-assessment, and the revisions are published with reasons.',
+      ],
+    },
+    {
+      id: 'register',
+      title: '2. Register',
+      question: 'Does the organization know which AI components it runs?',
+      options: [
+        'Components are known to the people who run them.',
+        'A register lists every component with an owner, a model, the data it sees, its review, and an exit plan.',
+        'No component goes live without a row, a tier, and an approval, and the rows are reviewed on their dates with outcomes recorded.',
+        'The public columns of the register and the statement of model use are generated from the same file, and each row links to its suite report.',
+      ],
+    },
+    {
+      id: 'risk',
+      title: '3. Risk',
+      question: 'How is the risk of each component rated?',
+      options: [
+        'It is not rated; all components are treated alike.',
+        'Each component has three ratings, a score, a tier, and a written worst case.',
+        'Each tier\'s controls are in place with evidence, and a named role has accepted the residual risk.',
+        'Suite scores and incidents feed back into the ratings, and the tiers are reported to the board each quarter.',
+      ],
+    },
+    {
+      id: 'decisions',
+      title: '4. Decisions',
+      question: 'How are decisions taken and recorded?',
+      options: [
+        'Decisions are taken as they come up and recorded in minutes, if at all.',
+        'A board with terms of reference exists, and the log holds the policy adoption and each component\'s approval.',
+        'Every decision type is logged with a follow-up, the log is checked before each meeting, and incidents follow the six-step procedure with a report.',
+        'The log\'s statistics are reported to the board each quarter and the incident count is published with the statement of model use.',
+      ],
+    },
+    {
+      id: 'providers',
+      title: '5. Providers',
+      question: 'How does the organization manage its dependence on providers?',
+      options: [
+        'Providers are chosen per component; nobody has read the data terms.',
+        'A provider register names each provider\'s services, data terms, contract end, second option, and exit plan.',
+        'Each exit plan has been tested on the suite with a date and a score, and the cost record is kept monthly and reported.',
+        'Prompts, suites, and indexes are provider-neutral in version control, and the drills repeat each year and at renewal.',
+      ],
+    },
+    {
+      id: 'licensing',
+      title: '6. Licensing',
+      question: 'What do the licences say about AI?',
+      options: [
+        'Products carry a licence on the website, or none; AI use is not mentioned.',
+        'Each product type has a licence from a short list and a stated AI-use position.',
+        'The licence and its URL are in every record and API response, terms for machine clients are published, and every model licence is classified.',
+        'Licences are served in the structured fields AI systems read, and the licence check runs with every release.',
+      ],
+    },
+    {
+      id: 'statement',
+      title: '7. Statement',
+      question: 'How is model use reported to users?',
+      options: [
+        'It is not reported.',
+        'A statement of model use is written by hand for a release, with the six sections.',
+        'The statement is generated from the register and the evaluation summary, checked, signed, and linked from the release and the records.',
+        'The evaluation summary comes from the suites\' report cards, and the statements are published as data across releases.',
+      ],
+    },
+    {
+      id: 'review',
+      title: '8. Review',
+      question: 'Is the governance reviewed?',
+      options: [
+        'It is looked at when an assessment or an audit asks.',
+        'The artefacts are opened once a year and noted as present or current.',
+        'The review script runs before each board meeting, the evidence pack is compiled by assessment question, and the findings are actions with dates.',
+        'The review runs in continuous integration on every change, and its summary is published with the statement of model use.',
+      ],
+    },
+  ]}
+/>
+
+## Interpretation of the result
+
+- A **Not yet** or **Foundational** result in chapters 1 and 2 comes before
+  anything else. Every other instrument refers to the policy and the
+  register.
+- Chapters 3 and 4 can be done in the same week as the register, because
+  the ratings and the approvals are what the register's rows wait for.
+- Chapters 5 and 6 depend on the legal adviser's time; the licence matrix
+  is worth starting early because it is the evidence for a whole
+  assessment dimension.
+- Chapter 7 is worth doing for one release as soon as a component in the
+  Medium or High tier has a suite, and chapter 8 is the first task of each
+  quarter after that.

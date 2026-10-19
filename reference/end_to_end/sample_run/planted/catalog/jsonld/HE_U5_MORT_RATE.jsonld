@@ -1,0 +1,32 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "identifier": "HE_U5_MORT_RATE",
+  "name": "Under-five mortality rate",
+  "description": "Probability that a child born in a given year dies before reaching age five. Expressed per 1000 live births.",
+  "url": "https://stats.example/series/HE_U5_MORT_RATE",
+  "creator": {
+    "@type": "Organization",
+    "name": "National Statistics Office (example)"
+  },
+  "dateModified": "2022-11-30",
+  "temporalCoverage": "2010/2020",
+  "variableMeasured": {
+    "@type": "PropertyValue",
+    "name": "Under-five mortality rate",
+    "unitText": "deaths per 1000 live births"
+  },
+  "keywords": [
+    "child mortality",
+    "under-five",
+    "child health"
+  ],
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "distribution": [
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "text/csv",
+      "contentUrl": "https://stats.example/series/HE_U5_MORT_RATE.csv"
+    }
+  ]
+}

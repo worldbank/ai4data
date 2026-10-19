@@ -1,0 +1,98 @@
+{
+  "type": "indicator",
+  "name": "recommended indicator profile",
+  "description": "Recommended fields of the World Bank indicator metadata schema (timeseries-schema.json) at each maturity level, as dotted paths, with the reason each field matters for AI-ready dissemination. Levels are cumulative. The schema itself requires only series_description.idno and series_description.name. An office can remove a field from a level, but each removal has the cost named in its reason.",
+  "csv_root": "series_description",
+  "csv_columns": {
+    "time_period_start": "time_periods.start",
+    "time_period_end": "time_periods.end"
+  },
+  "csv_item_keys": {
+    "series_description.definition_references": "uri",
+    "series_description.methodology_references": "uri",
+    "series_description.license": "uri",
+    "series_description.links": "uri",
+    "series_description.contacts": "email"
+  },
+  "levels": {
+    "foundational": [
+      "series_description.idno",
+      "series_description.name",
+      "series_description.definition_long",
+      "series_description.measurement_unit",
+      "series_description.periodicity",
+      "series_description.time_periods",
+      "series_description.geographic_units",
+      "series_description.sources",
+      "series_description.date_last_update"
+    ],
+    "ai-ready": [
+      "series_description.methodology",
+      "series_description.universe",
+      "series_description.series_break",
+      "series_description.limitation",
+      "series_description.definition_references",
+      "series_description.license",
+      "series_description.citation_requirement",
+      "series_description.keywords",
+      "series_description.topics",
+      "series_description.aliases",
+      "series_description.languages",
+      "series_description.contacts"
+    ],
+    "ai-native": [
+      "series_description.concepts",
+      "series_description.related_indicators",
+      "series_description.api_documentation",
+      "series_description.links"
+    ]
+  },
+  "fields": {
+    "series_description.idno": "The stable identifier every citation, API call, and cross-reference depends on (chapters 2 and 5).",
+    "series_description.name": "The title shown in search results and answers.",
+    "series_description.definition_long": "Search by meaning and answers both read this text; without it a system matches on the title alone (chapter 1).",
+    "series_description.measurement_unit": "A value without its unit is misread: a rate per 1,000 becomes a percentage (chapter 3).",
+    "series_description.periodicity": "Tells a system which periods to expect and how to compare releases.",
+    "series_description.time_periods": "Lets a system say whether a question about a year can be answered at all.",
+    "series_description.geographic_units": "Lets a system say which areas the series covers before it answers.",
+    "series_description.sources": "Part of every citation (chapter 5).",
+    "series_description.date_last_update": "Freshness: an answer should say how old the figures are (chapter 5).",
+    "series_description.methodology": "How the number is computed, with numerator and denominator; needed to judge comparability.",
+    "series_description.universe": "The population the series refers to; prevents comparison across different universes.",
+    "series_description.series_break": "Breaks as data, so a system does not compare across a definition change (chapter 3).",
+    "series_description.limitation": "Caveats a trustworthy answer must repeat (chapter 5).",
+    "series_description.definition_references": "A link to the full definition that an answer can cite.",
+    "series_description.license": "States what reuse is allowed; CC BY 4.0 is the World Bank default.",
+    "series_description.citation_requirement": "The citation text people and systems should use (chapter 5).",
+    "series_description.keywords": "The words users search with, which often differ from the title (chapter 1).",
+    "series_description.topics": "Topic from a published list; drives filters and browsing.",
+    "series_description.aliases": "Acronyms and other names the series goes by; makes mentions matchable (chapter 7) and searches hit.",
+    "series_description.languages": "Which languages the metadata is available in; needed for multilingual search (chapters 1 and 4).",
+    "series_description.contacts": "Who answers questions about the series.",
+    "series_description.concepts": "Links to shared vocabularies, so that systems relate the series to the same concept elsewhere (chapter 3).",
+    "series_description.related_indicators": "Lets an answer point to the nearest series when the question does not match exactly.",
+    "series_description.api_documentation": "Tells software and agents how to retrieve the values (chapter 2).",
+    "series_description.links": "Related pages, reports, and visualizations an answer can cite."
+  },
+  "rules": {
+    "id": "series_description.idno",
+    "dates": ["series_description.date_last_update"],
+    "periods": ["series_description.time_periods.start", "series_description.time_periods.end"],
+    "period_order": [["series_description.time_periods.start", "series_description.time_periods.end"]],
+    "urls": [
+      "series_description.definition_references.uri",
+      "series_description.methodology_references.uri",
+      "series_description.links.uri",
+      "series_description.license.uri"
+    ],
+    "vocabularies": {
+      "series_description.periodicity": [
+        "daily", "weekly", "monthly", "quarterly", "annual", "biennial",
+        "every 3 years", "every 5 years", "irregular"
+      ]
+    },
+    "min_words": {"series_description.definition_long": 12},
+    "not_equal": [["series_description.name", "series_description.definition_long"]],
+    "placeholders": ["series_description.measurement_unit"]
+  }
+}

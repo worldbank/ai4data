@@ -1,0 +1,79 @@
+{
+  "type": "microdata",
+  "name": "recommended microdata profile",
+  "description": "Recommended fields of the World Bank microdata schema (DDI Codebook based) at each maturity level, as dotted paths, with the reason each field matters. Levels are cumulative. The schema itself requires only study_desc.title_statement.idno and .title. An office can remove a field from a level, but each removal has the cost named in its reason.",
+  "levels": {
+    "foundational": [
+      "study_desc.title_statement.idno",
+      "study_desc.title_statement.title",
+      "study_desc.authoring_entity",
+      "study_desc.study_info.abstract",
+      "study_desc.study_info.coll_dates",
+      "study_desc.study_info.nation",
+      "study_desc.study_info.universe",
+      "study_desc.study_info.analysis_unit",
+      "study_desc.method.data_collection.sampling_procedure",
+      "study_desc.data_access.dataset_use.cit_req",
+      "study_desc.distribution_statement.contact"
+    ],
+    "ai-ready": [
+      "study_desc.title_statement.identifiers",
+      "study_desc.study_info.keywords",
+      "study_desc.study_info.topics",
+      "study_desc.study_info.geog_coverage",
+      "study_desc.method.data_collection.coll_mode",
+      "study_desc.method.data_collection.weight",
+      "study_desc.method.analysis_info.response_rate",
+      "study_desc.data_access.dataset_use.restrictions",
+      "study_desc.data_access.dataset_availability.access_place_url",
+      "study_desc.version_statement.version",
+      "data_files",
+      "variables"
+    ],
+    "ai-native": [
+      "variable_groups",
+      "study_desc.method.analysis_info.data_appraisal",
+      "study_desc.bib_citation"
+    ]
+  },
+  "fields": {
+    "study_desc.title_statement.idno": "The stable study identifier used in citations and access requests.",
+    "study_desc.title_statement.title": "The title shown in search results and answers.",
+    "study_desc.authoring_entity": "Who produced the survey; part of the citation.",
+    "study_desc.study_info.abstract": "What the survey measures and why; the main text that search by meaning reads.",
+    "study_desc.study_info.coll_dates": "When the data were collected; answers must state the reference period.",
+    "study_desc.study_info.nation": "Country coverage.",
+    "study_desc.study_info.universe": "Who is covered; prevents wrong generalization in answers.",
+    "study_desc.study_info.analysis_unit": "Individuals, households, firms: needed to interpret any count or rate.",
+    "study_desc.method.data_collection.sampling_procedure": "Without the design, estimates cannot be judged or weighted correctly.",
+    "study_desc.data_access.dataset_use.cit_req": "The citation users and systems should use (chapter 5).",
+    "study_desc.distribution_statement.contact": "Who handles access requests and questions.",
+    "study_desc.title_statement.identifiers": "A DOI makes the survey citable and its citations countable (chapters 5 and 7).",
+    "study_desc.study_info.keywords": "The words users search with (chapter 1).",
+    "study_desc.study_info.topics": "Topic from a published list; drives filters.",
+    "study_desc.study_info.geog_coverage": "National, urban and rural, regions: what an answer may claim about coverage.",
+    "study_desc.method.data_collection.coll_mode": "Interview mode affects comparability across rounds.",
+    "study_desc.method.data_collection.weight": "Which weights to apply; results computed without them are wrong.",
+    "study_desc.method.analysis_info.response_rate": "A quality indicator a trustworthy answer can state.",
+    "study_desc.data_access.dataset_use.restrictions": "Access conditions stated with the data, so no system offers what it may not (chapter 8).",
+    "study_desc.data_access.dataset_availability.access_place_url": "Where the data can be requested or downloaded (chapter 2).",
+    "study_desc.version_statement.version": "Which version an answer or an analysis used.",
+    "data_files": "The files that make up the dataset, so software knows what to retrieve.",
+    "variables": "Variable names, labels, and value codes: the main search target for microdata users (chapter 1).",
+    "variable_groups": "Thematic grouping of variables, which makes large surveys navigable for people and systems (Metadata Augmentation).",
+    "study_desc.method.analysis_info.data_appraisal": "Known quality issues an answer should repeat.",
+    "study_desc.bib_citation": "A formatted citation ready to copy."
+  },
+  "rules": {
+    "id": "study_desc.title_statement.idno",
+    "periods": ["study_desc.study_info.coll_dates.start", "study_desc.study_info.coll_dates.end"],
+    "period_order": [["study_desc.study_info.coll_dates.start", "study_desc.study_info.coll_dates.end"]],
+    "urls": [
+      "study_desc.data_access.dataset_availability.access_place_url",
+      "study_desc.distribution_statement.distributors.uri"
+    ],
+    "min_words": {"study_desc.study_info.abstract": 30},
+    "not_equal": [["study_desc.title_statement.title", "study_desc.study_info.abstract"]],
+    "placeholders": ["study_desc.study_info.universe", "study_desc.study_info.analysis_unit"]
+  }
+}

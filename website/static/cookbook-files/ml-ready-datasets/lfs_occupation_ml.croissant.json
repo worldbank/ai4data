@@ -1,0 +1,353 @@
+{
+  "@context": {
+    "@language": "en",
+    "@vocab": "https://schema.org/",
+    "citeAs": "cr:citeAs",
+    "column": "cr:column",
+    "conformsTo": "dct:conformsTo",
+    "cr": "http://mlcommons.org/croissant/",
+    "rai": "http://mlcommons.org/croissant/RAI/",
+    "data": {
+      "@id": "cr:data",
+      "@type": "@json"
+    },
+    "dataType": {
+      "@id": "cr:dataType",
+      "@type": "@vocab"
+    },
+    "dct": "http://purl.org/dc/terms/",
+    "equivalentProperty": "cr:equivalentProperty",
+    "examples": {
+      "@id": "cr:examples",
+      "@type": "@json"
+    },
+    "extract": "cr:extract",
+    "field": "cr:field",
+    "fileProperty": "cr:fileProperty",
+    "fileObject": "cr:fileObject",
+    "fileSet": "cr:fileSet",
+    "format": "cr:format",
+    "includes": "cr:includes",
+    "isLiveDataset": "cr:isLiveDataset",
+    "jsonPath": "cr:jsonPath",
+    "key": "cr:key",
+    "md5": "cr:md5",
+    "parentField": "cr:parentField",
+    "path": "cr:path",
+    "recordSet": "cr:recordSet",
+    "references": "cr:references",
+    "regex": "cr:regex",
+    "repeated": "cr:repeated",
+    "replace": "cr:replace",
+    "samplingRate": "cr:samplingRate",
+    "sc": "https://schema.org/",
+    "separator": "cr:separator",
+    "source": "cr:source",
+    "subField": "cr:subField",
+    "transform": "cr:transform"
+  },
+  "@type": "sc:Dataset",
+  "conformsTo": "http://mlcommons.org/croissant/1.0",
+  "name": "LFS occupation coding (example)",
+  "description": "Job descriptions from the labour force survey with ISCO-08 codes assigned by trained coders, for training and evaluating automatic occupation coders.",
+  "url": "https://stats.example/datasets/lfs-occupation-ml",
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "version": "1.0.0",
+  "datePublished": "2026-10-09",
+  "citeAs": "National Statistics Office (example). 2026. LFS occupation coding (example), version 1.0.0. https://stats.example/datasets/lfs-occupation-ml",
+  "creator": {
+    "@type": "Organization",
+    "name": "National Statistics Office (example)"
+  },
+  "distribution": [
+    {
+      "@type": "cr:FileObject",
+      "@id": "data-file",
+      "name": "lfs_occupation_ml.csv",
+      "description": "The data, one record per row.",
+      "contentUrl": "lfs_occupation_ml.csv",
+      "encodingFormat": "text/csv",
+      "sha256": "e6b0b1fd6a3230680e3598208f4c08b1b25e41873cc0d050009bd6f858264972"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "splits-file",
+      "name": "splits.csv",
+      "description": "The split assignment, one row per record.",
+      "contentUrl": "splits.csv",
+      "encodingFormat": "text/csv",
+      "sha256": "bbd83fc32f8f6d7fb90ae1195140e0cc934945e813c209153915736f80a08ce6"
+    }
+  ],
+  "recordSet": [
+    {
+      "@type": "cr:RecordSet",
+      "@id": "records",
+      "name": "records",
+      "description": "One record per row of lfs_occupation_ml.csv.",
+      "key": {
+        "@id": "records/record_id"
+      },
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "records/record_id",
+          "name": "records/record_id",
+          "description": "Unique identifier of the record; no meaning Role: id.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "data-file"
+            },
+            "extract": {
+              "column": "record_id"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "records/hhid",
+          "name": "records/hhid",
+          "description": "Identifier of the household the person belongs to; records of one household must stay in one split Role: group.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "data-file"
+            },
+            "extract": {
+              "column": "hhid"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "records/region",
+          "name": "records/region",
+          "description": "Region of residence: R01 Northern, R02 Central, R03 Southern, R04 Eastern Role: feature.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "data-file"
+            },
+            "extract": {
+              "column": "region"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "records/urban",
+          "name": "records/urban",
+          "description": "1 urban, 0 rural Role: feature.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "data-file"
+            },
+            "extract": {
+              "column": "urban"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "records/sex",
+          "name": "records/sex",
+          "description": "1 male, 2 female Role: feature.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "data-file"
+            },
+            "extract": {
+              "column": "sex"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "records/age_group",
+          "name": "records/age_group",
+          "description": "15-24, 25-54, 55-64 Role: feature.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "data-file"
+            },
+            "extract": {
+              "column": "age_group"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "records/educ",
+          "name": "records/educ",
+          "description": "ISCED 2011 level 0 to 5 (6 and above collapsed into 5) Role: feature.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "data-file"
+            },
+            "extract": {
+              "column": "educ"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "records/job_title",
+          "name": "records/job_title",
+          "description": "The respondent's description of their main job, as recorded by the interviewer Role: feature.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "data-file"
+            },
+            "extract": {
+              "column": "job_title"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "records/industry_text",
+          "name": "records/industry_text",
+          "description": "The respondent's description of the activity of the establishment Role: feature.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "data-file"
+            },
+            "extract": {
+              "column": "industry_text"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "records/isco_code",
+          "name": "records/isco_code",
+          "description": "ISCO-08 unit group (four digits) assigned by a trained coder; the label to predict Role: label.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "data-file"
+            },
+            "extract": {
+              "column": "isco_code"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "records/isco_major",
+          "name": "records/isco_major",
+          "description": "First digit of isco_code; a coarser label Role: label.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "data-file"
+            },
+            "extract": {
+              "column": "isco_major"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "records/weight",
+          "name": "records/weight",
+          "description": "Person weight calibrated to the population; use for population estimates, never as a training sample weight without a stated reason Role: weight.",
+          "dataType": "sc:Float",
+          "source": {
+            "fileObject": {
+              "@id": "data-file"
+            },
+            "extract": {
+              "column": "weight"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "@type": "cr:RecordSet",
+      "@id": "split_names",
+      "name": "split_names",
+      "description": "The named splits of the dataset.",
+      "dataType": "cr:Split",
+      "key": {
+        "@id": "split_names/name"
+      },
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "split_names/name",
+          "name": "name",
+          "description": "The split name.",
+          "dataType": "sc:Text"
+        }
+      ],
+      "data": [
+        {
+          "split_names/name": "test"
+        },
+        {
+          "split_names/name": "train"
+        },
+        {
+          "split_names/name": "validation"
+        }
+      ]
+    },
+    {
+      "@type": "cr:RecordSet",
+      "@id": "record_splits",
+      "name": "record_splits",
+      "description": "The split of each record, joined on the record identifier.",
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "record_splits/record",
+          "name": "record_splits/record",
+          "description": "The record identifier.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "splits-file"
+            },
+            "extract": {
+              "column": "record_id"
+            }
+          },
+          "references": {
+            "field": {
+              "@id": "records/record_id"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "record_splits/split",
+          "name": "record_splits/split",
+          "description": "The split name.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "splits-file"
+            },
+            "extract": {
+              "column": "split"
+            }
+          },
+          "references": {
+            "field": {
+              "@id": "split_names/name"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

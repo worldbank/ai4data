@@ -1,0 +1,272 @@
+---
+id: candidates
+title: "2. Candidate models and licences"
+sidebar_label: "2. Candidates"
+sidebar_position: 3
+description: Where candidate open-weight models are found, how their licences are read and classified, what a model card has to state before the organization considers a model, and how a short list of candidates is kept for the suite.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 2. Candidate models and licences
+
+**Question:** Which models are candidates, and under which licences?
+
+## Rationale
+
+Open-weight models are published by companies, research groups, and
+communities under licences that range from permissive (Apache 2.0, MIT)
+to open-weight licences with use restrictions and acceptable-use
+policies, and some that allow reading the weights and forbid using them. The
+differences matter to a public organization: whether the model may be
+used for the organization's purposes, modified, redistributed inside
+the organization, and run for others. A candidate is a model whose
+licence a person has read and found acceptable, whose model card states
+what the organization needs to know (languages, training data,
+evaluation, limitations), and whose weights can be verified. The
+shortlist is small, by design, because every candidate is run through
+the suite.
+
+## Target state
+
+- Candidate models are found through a few named sources and shortlisted by language coverage, size class, and licence.
+- Every candidate's licence is read and classified (permissive, restricted, or unusable) by a named person, with the restrictions recorded.
+- Every candidate has a model card that passes the organization's check, and its weights have a recorded digest.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Shortlist two or three candidates per size class from named sources; read and classify their licences. |
+| **AI-ready** | Check each candidate's model card; record digests; keep the shortlist in a registry with the licence classification. |
+| **AI-native** | Review the shortlist on each notable release; maintain the organization's own fine-tuned models with their own cards. |
+
+:::info[Running example]
+The example organization keeps a shortlist of six candidates for its
+coding task: three local open-weight models of 3, 8, and 14 billion
+parameters, a large local one, and two hosted ones. Its own fine-tuned
+3-billion coder has a model card that passes the check: licence,
+languages, training data that never left the organization, an
+evaluation with a date and numbers, limitations, hardware, contact.
+:::
+
+## Recipes
+
+<Recipe title="2.1 Find candidates from named sources and shortlist" level="Foundational" skills="Data scientist" time="Half a day">
+
+**Result:** each kind of task has a shortlist of two or three candidate
+models per size class, with each model's languages and licence noted.
+
+Hundreds of open-weight models are published every year. A shortlist is
+needed because every candidate costs a full evaluation run; the
+evaluation decides, and the shortlist only limits how many runs there are. Three facts are enough to
+shortlist: whether the model was trained or tested on the national
+language, whether it fits the hardware the organization has, and whether
+its licence can be accepted.
+
+1. Look in three places: model hubs that let models be filtered by
+   licence and language (Hugging Face is the largest); the public
+   leaderboards for text generation and for embeddings; and the models
+   the program has measured on statistical tasks
+   ([Efficient and Inclusive AI](/docs/inclusive-ai/)).
+2. Keep a model only if the national language appears in its training
+   data or its published evaluation, if it fits a size class the hardware
+   allows ([chapter 3](./serving.mdx)), if its licence is acceptable
+   (recipe 2.2), and if its publisher releases versions and fixes.
+3. Keep two or three per size class (small, mid-sized, large). More
+   candidates cost more evaluation runs than they return.
+4. Record each candidate with its source, version, and the date.
+
+**Worked example.** For the coding task, the data scientist filters the
+model hub for text-generation models under permissive or open-weight
+licences whose cards list French and Swahili, the organization's
+languages, and reads the program's measurements. The shortlist has
+three local candidates in the small, mid-sized, and large classes,
+one large local model as the ceiling, and two hosted models. One
+popular model is left out because its card lists neither language, and
+another because its publisher has released nothing for two years. Each
+candidate is recorded with its hub address, its version tag, and the
+date of the shortlist.
+
+**What this does not do.** A leaderboard score is a result on someone
+else's questions. It says which models are worth testing; it does not
+say how they will do on the organization's tasks and languages.
+
+</Recipe>
+
+<Recipe title="2.2 Read and classify the licence" level="Foundational" skills="Legal; data scientist" time="An hour per candidate">
+
+**Result:** each candidate has a one-line classification of its licence
+for the organization's uses, with any restrictions recorded.
+
+An open-weight model comes with a licence text. Some are the same
+permissive licences used for open-source software (Apache 2.0, MIT),
+which allow use, modification, and redistribution. Others allow use but
+restrict it: to organizations below a size, to listed purposes, or under
+an acceptable-use policy. A few allow downloading the weights and
+forbid using them. A public body needs to know which it has before it
+builds anything on the model.
+
+1. Read the licence text and any acceptable-use policy. Note what it
+   says about: use by a public body; modification (fine-tuning counts as
+   modification); redistribution inside the organization; serving the
+   model's outputs to the public; and attribution.
+2. Classify the licence as permissive, restricted (with the restrictions
+   listed), or unusable for the organization.
+3. Record the classification, the restrictions, who read the licence,
+   and the date, next to the candidate. A new version of a model can
+   change the licence; read it again.
+4. For a model the organization fine-tunes, choose a licence for the
+   derived weights that the base model's licence allows.
+
+**Worked example.** The legal adviser reads the three local candidates'
+licences in an afternoon. The small and the mid-sized model are under
+Apache 2.0 and are classified permissive. The 14-billion model is under an open-weight licence with an
+acceptable-use policy and a clause that forbids use by organizations
+above a number of monthly users, which the organization is far below.
+It is classified restricted, with the two clauses recorded and the note
+"check again before serving outputs to the public". A fourth model whose licence allows research use only is
+classified unusable. The classifications, the reader's name, and the
+date go into the registry, and the fine-tuned coder derived from the
+small model is given Apache 2.0, which the base licence allows.
+
+**What this does not do.** The classification is the organization's own
+reading for its own uses. It is not legal advice to anyone else, and a
+new use (serving the model to the public, for example) means checking the
+restrictions again.
+
+</Recipe>
+
+<Recipe title="2.3 Require a model card that passes the check" level="AI-ready" skills="Python; data scientist" time="Minutes per candidate">
+
+**Result:** every candidate, and every model the organization has
+fine-tuned itself, has a model card that states the facts the
+organization needs, and a script has checked the card before any
+evaluation runs.
+
+A model card is a short document that accompanies a model: who made it,
+from what data, under which licence, for which uses, with which known
+limits. Publishers write one for the models they release; the
+organization writes one for any model it fine-tunes, because it is then
+the publisher. The example card below is for the organization's own
+coding model. It is a JSON file with one field per fact:
+
+| Field | What it states |
+|---|---|
+| `model_id`, `version`, `weights_sha256` | Which model this is, which version, and a digest (a fingerprint) of its files, so that the files in use can be verified |
+| `license`, `license_url` | The licence and where to read it |
+| `languages` | The languages the model was trained or tested on |
+| `intended_use`, `out_of_scope_use` | What the model is for and what it must not be used for |
+| `training_data` | What the model was trained on, and whether confidential or external data were used |
+| `evaluation` | The test suite, the date, and the scores |
+| `known_limitations`, `hardware`, `contact` | Known weak spots, what it runs on, whom to ask |
+
+```json file=../../website/static/cookbook-files/small-and-open-models/model_card_example.json
+```
+
+The check below reads a card and reports which fields are missing or
+incomplete:
+
+```python file=../../website/static/cookbook-files/small-and-open-models/model_card_check.py
+```
+
+```bash
+python model_card_check.py model_card_example.json
+```
+
+Output for the running example:
+
+```text
+example-org/stats-coder-3b 1.2.0: licence Apache-2.0, languages en, fr, sw
+  ok      model_id
+  ok      version
+  ok      weights_sha256
+  ok      license
+  ok      license_url
+  ok      languages
+  ok      intended_use
+  ok      out_of_scope_use
+  ok      training_data
+  ok      evaluation
+  ok      known_limitations
+  ok      hardware
+  ok      contact
+result: PASS
+```
+
+The first line names the model, its licence, and its languages. Each
+line that follows confirms one required field, and the last line is
+the verdict.
+
+1. For a published model, fill the card from the publisher's own model
+   card. Where the publisher does not state a fact, write that it is not
+   stated; a card with gaps counts against the candidate.
+2. For a model the organization fine-tuned, write the card as the
+   publisher. The training data statement says what data were used and
+   that they stayed inside the organization.
+3. Run the check. A card that fails is completed, or the candidate is
+   dropped.
+
+**Worked example.** The card shown above is the organization's own, for
+the fine-tuned coder. Its training data field reads "48,000 occupation
+responses with coder-assigned ISCO-08 codes from the 2024 and 2025
+labour force surveys; all data stayed on the organization's servers; no
+external data". Its evaluation field names the coding suite, the date,
+and the scores of 0.93 overall and 0.90 on the national language. Its
+out-of-scope use says "any task other than ISCO-08 coding of
+occupation responses; any confidential text outside the organization's
+network". For the hosted large model, the card the organization writes
+from the publisher's page has "not stated" in the training data field,
+which counts against the candidate in the registry.
+
+**What this does not do.** The check confirms that the card says these
+things; whether they are true is a separate question. The scores on a card are reproduced on
+the organization's own test questions ([chapter 5](./comparison.mdx))
+before they count for anything.
+
+</Recipe>
+
+## Implementation options
+
+- **Sources:** model hubs with licence and language metadata; generation and embedding leaderboards; the program's measurements.
+- **Licence classes:** permissive; restricted (use-based, threshold-based, behavioural); not usable.
+- **Cards:** the Hugging Face model card format (Markdown with YAML metadata) or the JSON of this chapter; the check before the suite.
+- **Registry:** a table of candidates with version, digest, licence class, card status, and suite results.
+
+## World Bank examples
+
+- [Efficient and Inclusive AI Applications](/docs/inclusive-ai/) names the open-weight models the program measured for multilingual embedding and generation tasks.
+- The [PI-FT toolkit](/pift-toolkit/pipeline) fine-tunes open embedding models and publishes the results, a derived model with its own documentation.
+
+## Resources
+
+- [Hugging Face model cards](https://huggingface.co/docs/hub/model-cards): the card format with licence, language, dataset, and evaluation metadata, and the annotated template.
+- [Model cards for model reporting (Mitchell et al., 2019)](https://arxiv.org/abs/1810.03993): the sections a card should have.
+- [Responsible AI Licenses](https://www.licenses.ai/): the behavioural-use licence family and its clauses.
+- [Open LLM Leaderboard](https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard) and [MTEB](https://huggingface.co/spaces/mteb/leaderboard): public scores for shortlisting generation and embedding models.
+- [Model card example and check](pathname:///cookbook-files/small-and-open-models/model_card_check.py): the running example.
+
+## Common mistakes
+
+- **A licence nobody read.** Restrictions appear at deployment.
+- **Shortlists of twenty.** Every candidate costs a suite run.
+- **Leaderboards as evaluation.** They shortlist; the suite ranks.
+- **A fine-tuned model without a card.** The organization is now the publisher.
+
+## Verification
+
+- **Shortlist.** There are two or three candidates per size class, each with its source, version, and date.
+- **Licences.** Each licence is classified by a named reader, with restrictions recorded.
+- **Cards.** Each card passes the check, and the digests are recorded.
+
+## Checklist
+
+<Checklist id="small-and-open-models-candidates" items={[
+  'Candidates from named sources, filtered by language, size class, and licence',
+  'Licence read and classified per candidate with restrictions recorded',
+  'Model card per candidate passes the check',
+  'Weights digest recorded per candidate',
+  'Organization\'s fine-tuned models carry their own cards and licences',
+  'Shortlist reviewed on notable releases',
+]} />
