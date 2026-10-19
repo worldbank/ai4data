@@ -25,9 +25,9 @@ HERE = Path(__file__).resolve().parent
 SETUP = '''# Setup. In Colab this clones the repository and installs the dependencies; locally it uses the folder as is.
 import os, sys, subprocess, pathlib
 
-REPO_URL = "https://github.com/rafmacalaba/ai4data.git"   # replace with the published repository when released
-BRANCH = "feat/training-session-01-v2"
-SESSION = "training/session-01-building-ai-applications-v2/notebooks"
+REPO_URL = "https://github.com/worldbank/ai4data.git"   # the program's repository
+BRANCH = "feat/training-series"   # change to "main" once the series is merged
+SESSION = "training/session-01-building-ai-applications/notebooks"
 
 if not pathlib.Path("workshop.py").exists():
     subprocess.run(["git", "clone", "-q", "--depth", "1", "--branch", BRANCH, REPO_URL, "/content/ai4data"], check=True)
