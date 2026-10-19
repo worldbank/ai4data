@@ -5,7 +5,7 @@ The Generic Statistical Business Process Model (GSBPM) is the UNECE reference mo
 This page maps each AI for Data workstream to the GSBPM phases and sub-processes where it applies. Organizations that plan and report in GSBPM terms can use the mapping to see where each tool fits into their existing process.
 
 :::note[Version]
-The phase and sub-process names follow GSBPM version 5.1. Confirm the numbering against the version your organization uses.
+The phase and sub-process names follow GSBPM version 5.1. The numbering is confirmed against the version the organization uses.
 :::
 
 ---
@@ -23,7 +23,7 @@ The phase and sub-process names follow GSBPM version 5.1. Confirm the numbering 
 | [Monitoring of Data Use](data_use/data_use.md) | 8.1 (gather evaluation inputs), 8.2 (conduct evaluation), and 7.5 (manage user support) | Identifies where datasets are cited in reports and papers |
 | [Inclusive AI Applications](inclusive-ai/inclusive-ai.md) | Cross-cutting | Multilingual embedding models and batch inference used by the other workstreams |
 | Statistical classification and coding | 5.2 (classify and code) | AI-assisted coding of survey responses and records against standard classifications, with human review |
-| [Synthetic data](https://github.com/avsolatorio/RealTabFormer) | 6.4 (apply disclosure control) | Synthetic tabular and relational data generated with REaLTabFormer, for sharing and methodological research |
+| [Synthetic data](https://github.com/worldbank/REaLTabFormer) | 6.4 (apply disclosure control) | Synthetic tabular and relational data generated with REaLTabFormer, for sharing and methodological research |
 | Global Question Bank | 2.2 (design variable descriptions) | Multilingual semantic mappings of survey questions and variables across surveys and countries |
 | AI-ready metadata and standards, and AI-assisted metadata platforms | Overarching: metadata management. Applied at 7.1 (update output systems) | Implementation guidance for metadata standards, and AI-assisted metadata creation and search in the Metadata Editor and NADA |
 | Responsible AI guidance | Overarching: quality management | Guidance and evaluation methods for using AI in official statistics |

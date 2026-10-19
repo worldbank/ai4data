@@ -1,16 +1,16 @@
-# Model Context Protocol (MCP) for AI-centric Data Dissemination
+# Model Context Protocol (MCP) for data dissemination
 
 ## Overview
 
-The Model Context Protocol (MCP) is an **open standard** introduced by Anthropic in November 2024 to simplify how large language models (LLMs) connect to external data sources and tools. Think of MCP as the "USB-C of AI integrations"—a universal interface that enables AI systems, like Claude or ChatGPT, to tap into datasets, APIs, documents, or productivity tools without building bespoke integrations for each one.
+The Model Context Protocol (MCP) is an open standard introduced by Anthropic in November 2024 that defines how a large language model (LLM) application connects to external data sources and tools. An MCP server exposes a data source as a fixed set of tools and resources; any MCP client, such as a desktop assistant or a custom agent, discovers and calls them through the same protocol.
 
-For development data, MCP is a transformative opportunity. Today, integrating World Bank data into an AI assistant requires custom retrieval logic, data transformation code, and API authentication—separately for each AI system. MCP provides a single server implementation that any MCP-compatible AI client can use. Build it once; use it everywhere.
+For development data, the protocol replaces one integration per AI system with one server per data provider. Before it, connecting an assistant to World Bank data meant custom retrieval logic, data transformation code, and API authentication for each AI system. With it, the provider maintains one server and each client that implements the protocol can use it.
 
 ---
 
-## The Problem MCP Solves
+## The integration problem the protocol addresses
 
-Before MCP, connecting an AI assistant to development data looked like this:
+Without a shared protocol, each AI system connects to a data source through its own plugin:
 
 ```
 AI System A → custom plugin → WDI API → parse response → inject into prompt
@@ -18,7 +18,7 @@ AI System B → different custom plugin → same WDI API → different parsing �
 AI System C → yet another custom integration → ...
 ```
 
-Each integration is bespoke, fragile, and duplicates effort. MCP replaces this with:
+Each integration is separate and duplicates the work of the others. With the protocol, the clients share one server:
 
 ```
 AI System A ──┐
@@ -26,23 +26,24 @@ AI System B ──┼──► MCP Client → MCP Protocol → MCP Server → WD
 AI System C ──┘
 ```
 
-A single MCP server implementation serves all compatible AI clients. The AI system calls standardized tools and receives standardized responses. The data provider maintains a single server.
+The AI system calls the server's tools and receives structured responses. The data provider maintains one server.
 
 ---
 
-## MCP Architecture
+## MCP architecture
 
-The MCP architecture has three components:
+The architecture has three components.
 
-**MCP Protocol** — A JSON-RPC based specification that defines the interface between client and server. It standardizes how tools are discovered, called, and how results are returned. The protocol is transport-agnostic (HTTP, stdin/stdout, WebSocket) and LLM-agnostic.
+**MCP protocol.** A JSON-RPC based specification that defines the interface between client and server: how tools are discovered, how they are called, and how results are returned. The specification defines two standard transports, stdio for a client-launched subprocess and Streamable HTTP for a server behind an HTTP endpoint (earlier revisions used HTTP with server-sent events), and it allows custom transports over any bidirectional channel. The protocol does not depend on a particular model.
 
-**MCP Server** — A server that implements the MCP protocol and exposes data as **tools** and **resources**. For development data, a server might expose tools like:
-- `get_indicator(indicator_code, country_code, start_year, end_year)` — Retrieve WDI timeseries
-- `search_indicators(query)` — Semantic search over the indicator catalog
-- `get_dataset_metadata(dataset_id)` — Retrieve metadata for a microdata dataset
-- `list_countries(region)` — List countries by region
+**MCP server.** A server that implements the protocol and exposes data as tools and resources. For development data, a server might expose tools such as:
 
-**MCP Client** — A client that uses the MCP protocol to connect to servers. This is built into MCP-compatible AI systems (Claude Desktop, Cursor, Zed, and many others) or can be implemented in custom AI applications.
+- `get_indicator(indicator_code, country_code, start_year, end_year)`: a WDI time series
+- `search_indicators(query)`: search over the indicator catalog by meaning
+- `get_dataset_metadata(dataset_id)`: the metadata of a microdata dataset
+- `list_countries(region)`: the countries in a region
+
+**MCP client.** A client that uses the protocol to connect to servers. It is built into MCP-compatible AI applications (Claude Desktop, Cursor, Zed, and others) and can be implemented in a custom application.
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -71,9 +72,9 @@ The MCP architecture has three components:
 
 ---
 
-## Example: A Development Data MCP Tool
+## Example: a development data MCP tool
 
-Here is an example tool definition that an MCP server for development data might expose:
+An example tool definition that an MCP server for development data might expose:
 
 ```python
 @mcp_server.tool()
@@ -98,24 +99,24 @@ def get_indicator(
     ...
 ```
 
-When a user asks an MCP-enabled AI assistant "What was Nigeria's GDP growth rate in 2020?", the assistant calls `get_indicator("NY.GDP.MKTP.KD.ZG", "NGA", 2020, 2020)`, receives the value, and incorporates it directly into its response—with provenance from the official WDI source.
+When a user asks an MCP-enabled assistant for Nigeria's GDP growth rate in 2020, the assistant calls `get_indicator("NY.GDP.MKTP.KD.ZG", "NGA", 2020, 2020)`, receives the value, and uses it in its answer with the WDI record as the source.
 
 ---
 
-## Why MCP Matters for Official Statistics
+## What the protocol provides for official statistics
 
-For national statistical offices (NSOs) and international data organizations, MCP offers:
+For national statistical offices and international data organizations, a server over a catalog has four properties:
 
-1. **Discoverability at zero marginal cost.** Once a data catalog is published as an MCP server, it becomes queryable by any AI assistant that supports MCP—without additional integration work.
-2. **Provenance and trust.** MCP tools return structured data with metadata, so AI assistants can cite the specific indicator, source, and vintage in their responses—maintaining the traceability expected of official statistics.
-3. **Scalable AI integration.** A single MCP implementation serves every platform that speaks the protocol, so the office negotiates no integration agreements per platform.
-4. **Standardized access control.** The MCP protocol supports authentication and authorization, allowing controlled access to restricted or embargoed datasets.
+1. **One server for every client.** Once a catalog is published as an MCP server, each client that implements the protocol can query it without further integration work on the provider's side.
+2. **Provenance in the response.** The tools return structured data with metadata, so a client can cite the indicator, the source, and the vintage of each value it uses.
+3. **One implementation per provider.** The office maintains one server and does not write an integration for each AI platform.
+4. **Authorization in the protocol.** The specification carries authentication and authorization, which the server uses to control access to restricted or embargoed series.
 
-See [MCP for Official Statistics](mcp-for-official-statistics.md) for use cases specific to NSOs and official data producers.
+[MCP for official statistics](mcp-for-official-statistics.md) gives the use cases for statistical offices and the servers in operation.
 
 ---
 
-## Getting Started
+## Getting started
 
 **Servers and applications from the program**
 
@@ -126,7 +127,7 @@ See [MCP for Official Statistics](mcp-for-official-statistics.md) for use cases 
 
 **Protocol resources**
 
-- [Model Context Protocol specification](https://modelcontextprotocol.io/): the protocol documentation, including its security guidance for authorization.
+- [Model Context Protocol specification](https://modelcontextprotocol.io/): the protocol documentation, including the transport bindings and the security guidance for authorization.
 - [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk): for building servers and clients in Python.
 
 ---
@@ -136,4 +137,4 @@ See [MCP for Official Statistics](mcp-for-official-statistics.md) for use cases 
 - MCP standardizes how tools are discovered and called. It does not make a catalog complete or an API reliable; the server passes through what they hold, which the completeness and retrieval chapters of the [dissemination cookbook](/cookbook/ai-ready-dissemination/) address first.
 - The protocol carries authorization and the specification gives security guidance, but access control, quotas, and terms are decisions the office makes and enforces at the server. The [access chapter of the agents cookbook](/cookbook/serving-statistics-to-agents/access) gives the design.
 - A server returns data; the quality of an answer depends on the client's model and prompt. The [evaluation chapter](/cookbook/serving-statistics-to-agents/evaluate) measures it.
-- The specification is young and its transports and authorization flows have changed between versions. Servers pin an SDK version and state the protocol version they implement.
+- The specification is young, and its transports and authorization flows have changed between revisions. Servers pin an SDK version and state the protocol version they implement.

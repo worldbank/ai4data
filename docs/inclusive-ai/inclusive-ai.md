@@ -2,7 +2,7 @@
 
 ## Overview
 
-As AI tools become central to data quality, discoverability, and analysis, a critical question emerges: *who benefits?* The most capable AI models are large, expensive, and predominantly trained on English-language text. Without deliberate design choices, AI for development data risks amplifying existing inequalities—better tools for well-resourced institutions, poorer ones for the rest.
+The most capable AI models are large, expensive, and trained mostly on English-language text. Without deliberate design choices, AI for development data gives better tools to well-resourced institutions and poorer ones to the rest.
 
 The Efficient and Inclusive AI Applications workstream addresses this directly. It focuses on making AI capabilities accessible and practical for data practitioners, researchers, and institutions in low- and middle-income countries (LMICs), particularly those working with limited compute, budgets, and English-language coverage.
 
@@ -10,7 +10,7 @@ The Efficient and Inclusive AI Applications workstream addresses this directly. 
 
 ## The Efficiency Dimension
 
-Not all tasks require the most powerful (and most expensive) LLM. Many data quality and metadata tasks can be addressed effectively with smaller, more efficient models:
+Many data quality and metadata tasks can be done with smaller models at lower cost. The table gives the program's working guidance by task:
 
 ### Choosing the Right Model for the Task
 
@@ -26,11 +26,11 @@ The ai4data project defaults to capable models where appropriate. For example, `
 
 ### Batch Processing
 
-Large-scale processing (e.g., explaining thousands of anomalies or augmenting a large microdata catalog) is made practical through batch APIs. OpenAI and Gemini both offer asynchronous batch endpoints that are typically 50% cheaper than synchronous calls and support higher throughput. The anomaly explanation pipeline uses batch mode by default for production runs (see [Running at Scale](../anomaly/explanation/elicitation-pipeline.md#running-at-scale)).
+Large-scale processing (e.g., explaining thousands of anomalies or augmenting a large microdata catalog) is made practical through batch APIs. OpenAI and Gemini both offer asynchronous batch endpoints that are typically 50% cheaper than synchronous calls and support higher throughput. Batch mode is recommended for large runs of the anomaly explanation pipeline (see [Running at Scale](../anomaly/explanation/elicitation-pipeline.md#running-at-scale)).
 
 ### On-device and Open-weight Models
 
-For organizations that cannot use third-party cloud APIs—due to data sensitivity, cost, or connectivity—the pipeline is designed to be provider-agnostic. Through `litellm`, the metadata augmentation and other LLM-dependent workflows can be configured to use locally hosted open-weight models (e.g., Llama 3, Mistral, Qwen) via Ollama or similar local inference servers:
+For organizations that cannot use third-party cloud APIs, because of data sensitivity, cost, or connectivity, the pipeline is provider-agnostic. Through `litellm`, the metadata augmentation and other LLM-dependent workflows can be configured to use locally hosted open-weight models (e.g., Llama 3, Mistral, Qwen) via Ollama or similar local inference servers:
 
 ```python
 from ai4data.metadata.augmentation import DataDictionaryAugmentor
@@ -50,17 +50,17 @@ Most LLMs perform significantly better on English than on other languages, and s
 
 **Multilingual embedding models.** Models such as `paraphrase-multilingual-MiniLM-L12-v2` (sentence-transformers) and `LaBSE` support over 50 languages with strong cross-lingual alignment. Semantic search and clustering can use these models to operate across multilingual metadata without translation.
 
-**Translation as preprocessing.** For LLM-based tasks (anomaly explanation, metadata generation), translating non-English metadata to English before the LLM call—using a translation model or API—often yields better results than prompting directly in the source language.
+**Translation as preprocessing.** For LLM-based tasks such as anomaly explanation and metadata generation, translating non-English metadata to English before the LLM call, with a translation model or API, often gives better results than prompting in the source language. The result is measured on the organization's own question set before the choice is fixed.
 
 **Culturally grounded prompting.** For country-specific contexts, prompts that include the country name and relevant regional context improve LLM explanation quality, particularly for less-documented geographies. The anomaly explanation prompts include geography name as a required context field precisely for this reason.
 
 ### Capacity Building
 
-Technical tools are only inclusive if practitioners can use them. The program supports:
+Tools are usable in practice only where practitioners can run them. The program provides:
 
-- **Open-source code and documentation** — All tools in this repository are MIT-licensed and documented for independent deployment.
-- **Jupyter notebooks** — Each methodology is accompanied by a step-by-step notebook that can be run on free platforms (Google Colab, Kaggle) without a local compute setup.
-- **Configurable infrastructure** — Tools default to free-tier or low-cost API options, with clear documentation for switching to local or alternative backends.
+- **Open-source code and documentation.** The code in this repository is MIT-licensed and documented for independent deployment.
+- **Jupyter notebooks.** Notebooks accompany the anomaly detection, metadata quality, and Metadata Reviewer workstreams under `notebooks/`. They run in a local Jupyter environment; a hosted notebook platform needs the same API keys and dependencies.
+- **Configurable model and provider.** Each LLM-dependent tool takes the model and provider as configuration. The defaults are hosted models (the augmentor defaults to `claude-sonnet-4-6`); batch APIs reduce the cost of large runs, and local open-weight models are an option where the code routes through `litellm`.
 
 ### Data Equity
 
@@ -72,17 +72,17 @@ The Data for AI dimension of the program also has an inclusion component: ensuri
 
 The program's approach to inclusive AI is guided by:
 
-1. **Default to efficiency** — Use the smallest model that achieves adequate quality for the task.
-2. **Support provider choice** — Never hardcode a specific API provider; use abstractions (litellm) that allow institutional choice.
-3. **Build for low-connectivity contexts** — Prefer offline-capable or cached components where possible.
-4. **Document for all levels** — Provide both technical documentation for engineers and accessible summaries for non-technical stakeholders.
-5. **Measure inclusion** — Track language coverage, country coverage, and cost profiles of deployed tools.
+1. **Efficiency by default.** The smallest model that reaches adequate quality for the task is the one used.
+2. **Provider choice.** No tool hardcodes an API provider; the abstraction layer (litellm) leaves the choice to the institution.
+3. **Low-connectivity contexts.** Offline-capable or cached components are preferred where they exist.
+4. **Documentation at every level.** Technical documentation for engineers and plain summaries for non-technical readers.
+5. **Measured inclusion.** Language coverage, country coverage, and cost profiles of deployed tools are tracked.
 
 ---
 
 ## Limitations
 
-- The model size table above is guidance from the program's own tasks. Each organization measures its tasks with its own evaluation suite before choosing a size; the [small and open models cookbook](/cookbook/small-and-open-models/) gives the comparison method.
+- The model size table above is guidance from the program's own tasks, and the model names in it date quickly; the sizes are the point, and the names are examples from the date of writing. Each organization measures its tasks with its own evaluation suite before choosing a size; the [small and open models cookbook](/cookbook/small-and-open-models/) gives the comparison method.
 - Cost figures for batch processing are those the providers publish and change with their pricing.
 - Multilingual embedding models cover many languages unevenly, and coverage of a language in a model's training data is rarely documented. A question set in the organization's language is the only measure that holds.
 - Running models locally needs hardware and operations capacity that the [hardware chapter](/cookbook/small-and-open-models/serving) sizes.

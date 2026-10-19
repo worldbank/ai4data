@@ -4,7 +4,7 @@
 
 ## Why the program exists
 
-People increasingly put questions about poverty, employment, climate, and food security to AI systems. Whether the answers draw on official statistics depends on whether an AI system can find the data, interpret what a number means, retrieve the authoritative value, and show where it came from. When it cannot, the system falls back on secondary sources that may be outdated or wrong, and official statistics lose influence while remaining the most trusted evidence.
+People increasingly put questions about poverty, employment, climate, and food security to AI systems. Whether the answers draw on official statistics depends on whether an AI system can find the data, interpret what a number means, retrieve the authoritative value, and show where it came from. When it cannot, the system falls back on secondary sources that may be outdated or wrong, and official statistics lose influence.
 
 Four gaps recur across data producers:
 
@@ -15,13 +15,11 @@ Four gaps recur across data producers:
 
 The program's position follows the UN Fundamental Principles of Official Statistics: AI supports statistical systems and does not replace them, and a person remains responsible for what an organization publishes.
 
-## Three pillars
+## Two pillars
 
 **AI for Data.** AI applied inside the statistical process, under human review: assessment and enrichment of metadata, thematic organization of data dictionaries, detection and explanation of anomalies in time series, extraction of data from documents, search by meaning over catalogs, monitoring of how datasets are used, and verification of the numbers in generated text.
 
-**Data for AI.** Development data made usable by AI systems through open standards and infrastructure: the World Bank metadata schemas, the Metadata Editor and the NADA catalog, Model Context Protocol servers over official statistics, and the question-level and concept-level metadata that let a system resolve what a term refers to.
-
-**Country capacity.** An assessment framework that scores a national statistical organization on twelve dimensions of AI readiness, an operational companion that maps each dimension to tools and recipes, and a cookbook series that gives the steps.
+**Data for AI.** Development data made usable by AI systems through open standards and infrastructure: the World Bank metadata schemas, the Metadata Editor and the NADA catalog, Model Context Protocol servers over official statistics, and the question-level and concept-level metadata that let a system resolve what a term refers to. The country-capacity work sits under this pillar: an assessment framework that scores a national statistical organization on twelve dimensions of AI readiness, an operational companion that maps each dimension to tools and recipes, and a cookbook series that gives the steps.
 
 The [AI-ready data framework](ai-ready-framework.md) defines the attributes of AI-ready data under FAIR and shows which workstream serves each. The [mapping to the GSBPM](gsbpm-mapping.md) places each workstream in the statistical production process.
 
