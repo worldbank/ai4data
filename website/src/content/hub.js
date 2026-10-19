@@ -9,7 +9,7 @@ export const HUB = {
       'Score the organization on the twelve dimensions with the assessment framework, or take the five-minute cookbook self-assessment for a first orientation. Read the operational companion for the dimensions with the largest gaps.',
     tools: ['assessment-framework', 'operational-companion'],
     guides: [
-      {title: 'AI-readiness assessment framework', to: '/ai-readiness-assessment', note: 'Two pillars, twelve dimensions, four maturity levels; the pathway for early-stage organizations.'},
+      {title: 'AI-readiness assessment framework', to: '/ai-readiness-assessment', note: 'Two pillars, twelve dimensions, four maturity levels; the pathway from a score to a plan.'},
       {title: 'Operational companion', to: '/ai-readiness-in-practice', note: 'Resources and evidence per dimension; effort and roles per recipe.'},
       {title: 'AI-ready data framework', to: '/docs/ai-ready-framework', note: 'The attributes of AI-ready data under FAIR, and how the workstreams map to them.'},
     ],
@@ -21,7 +21,7 @@ export const HUB = {
       'Document each product in the World Bank schema for its type with the Metadata Editor or the CSV template, run the completeness check at the foundational level, and publish to a catalog. Add AI-assisted review and enrichment once the records exist.',
     tools: ['metadata-editor', 'nada', 'metadata-schemas', 'metadata-reviewer', 'metadata-augmentation', 'metadata-quality', 'data-snapshots'],
     guides: [
-      {title: 'Metadata Reviewer', to: '/docs/metadata-reviewer/overview', note: 'Five-agent review pipeline with a user manual and a review board.'},
+      {title: 'Metadata Reviewer', to: '/docs/metadata-reviewer/overview', note: 'Five-agent review pipeline with a user manual; available as a package, a review app, and an add-on in the Metadata Editor.'},
       {title: 'Metadata Augmentation', to: '/docs/metadata-augmentation/', note: 'DDI-style variable groups generated for a data dictionary.'},
       {title: 'Generative AI for metadata quality', to: '/docs/metadata-quality/generative-ai-for-metadata-quality', note: 'Scoring records on completeness, alignment, specificity, and consistency.'},
       {title: 'Mapping to the GSBPM', to: '/docs/gsbpm-mapping', note: 'Where each workstream applies in the statistical production process.'},

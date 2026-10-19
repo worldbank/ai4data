@@ -14,7 +14,7 @@ export const workstreams = {
     to: '/docs/metadata-augmentation/',
     description:
       'Organizes hundreds of survey variables into DDI-style thematic groups using semantic clustering.',
-    gsbpm: '5.2',
+    gsbpm: '2.2',
   },
   anomaly: {
     title: 'Anomaly Detection and Explanation',
@@ -50,7 +50,7 @@ export const workstreams = {
   },
   synthetic: {
     title: 'Synthetic data',
-    to: 'https://github.com/avsolatorio/RealTabFormer',
+    to: 'https://github.com/worldbank/REaLTabFormer',
     description:
       'Generates synthetic tabular and relational data with REaLTabFormer, an open-source transformer model, for data sharing and methodological research.',
     gsbpm: '6.4',
@@ -122,7 +122,7 @@ export const workstreams = {
     title: 'AI-assisted metadata platforms',
     to: '/tools#metadata-editor',
     description:
-      'AI-assisted metadata creation, semantic search, and AI-native APIs in the open-source Metadata Editor and NADA platforms.',
+      'AI-assisted metadata review in the open-source Metadata Editor as an optional add-on, and semantic search and MCP access to NADA catalogs through NADA AI, a pre-release service being integrated into NADA.',
     gsbpm: '7.1',
   },
   knowledgeGraphs: {

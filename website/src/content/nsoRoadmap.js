@@ -327,7 +327,7 @@ export const AREAS = [
   {
     id: 'metadata',
     category: 'metadata',
-    title: 'Metadata standards and classifications',
+    title: 'Metadata standards and ontologies',
     dimensions: ['2.1'],
     need:
       'Every product has a complete, machine-readable record in a standard schema (DDI for microdata, SDMX for indicators, DCAT and schema.org for discovery), classifications are published as code lists with crosswalks, and the records are checked against a completeness profile before release.',

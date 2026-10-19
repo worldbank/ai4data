@@ -4,9 +4,10 @@ import styles from './styles.module.css';
 import {schedule, useStage} from './useStage';
 
 // Simulated chatbot for the PCN example (arXiv:2509.06902): Philippines GDP
-// growth, 2024, World Development Indicators. The official record is what the
-// application compares the model's tagged number against.
-const OFFICIAL = 5.69201612823412;
+// growth, 2024, World Development Indicators (NY.GDP.MKTP.KD.ZG, API data
+// updated 2026-10-08). The official record is what the application compares
+// the model's tagged number against.
+const OFFICIAL = 5.71474526128652;
 const RECORD_ID = '0328';
 const PAYLOAD = {
   claim_id: RECORD_ID,

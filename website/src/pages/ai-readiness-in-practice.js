@@ -20,7 +20,7 @@ const CHAPTER_COUNT = cookbooks.reduce((n, c) => n + c.chapters, 0);
 
 const PILLARS = {
   1: {label: 'Pillar I', name: 'Institutional readiness for AI adoption', tag: 'AI for Data'},
-  2: {label: 'Pillar II', name: 'Readiness of data products for AI', tag: 'Data for AI'},
+  2: {label: 'Pillar II', name: 'Readiness of data products and services for AI', tag: 'Data for AI'},
 };
 
 function hashToId() {
@@ -553,12 +553,12 @@ function Closing() {
               Recommended sequence
             </Heading>
             <p className={styles.closingText}>
-              The framework's pathway for early-stage organizations places
-              data quality control, metadata standards, a searchable catalog,
-              and API access under a clear licence first. These correspond to
-              dimensions 2.2, 2.1, 2.3, 2.4, and 2.6 on this page and to
-              chapters 1 to 3 and 5 of the cookbook. Agentic and generative AI
-              access (dimension 2.5) follows.
+              This companion orders the work for an early-stage organization
+              as data quality control, metadata standards, a searchable
+              catalog, and API access under a clear licence first. These
+              correspond to dimensions 2.2, 2.1, 2.3, 2.4, and 2.6 on this
+              page and to chapters 1 to 3 and 5 of the cookbook. Agentic and
+              generative AI access (dimension 2.5) follows.
             </p>
           </div>
           <div className={styles.closingActions}>

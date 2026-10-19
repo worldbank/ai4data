@@ -459,7 +459,7 @@ export const dimensionsByUnit = {
   '1.4': 'Technical environment',
   '1.5': 'Funding and resources',
   '1.6': 'Partnerships',
-  '2.1': 'Metadata standards',
+  '2.1': 'Metadata standards and ontologies',
   '2.2': 'Quality control',
   '2.3': 'Searchable catalog',
   '2.4': 'API access',

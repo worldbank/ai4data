@@ -147,7 +147,7 @@ export const TOOLS = [
     status: 'reference',
     summary:
       'Web application for documenting microdata (DDI Codebook 2.5), indicators, documents, geospatial data, images, videos, and scripts in the World Bank metadata schemas, with validation, templates, a REST API, and publication to NADA catalogs.',
-    stack: 'PHP 7 or later, MySQL or MariaDB, Apache, IIS, or NGINX',
+    stack: 'PHP 8.2 or later with the listed extensions; MySQL 8 or MariaDB 10 or later; Apache 2.4, NGINX, or IIS 10; Python 3.11 or later for the FastAPI service',
     licence: 'MIT with the World Bank IGO rider',
     docs: 'https://worldbank.github.io/metadata-editor-docs',
     install: 'https://worldbank.github.io/metadata-editor-docs/tech_installation.html',
@@ -155,12 +155,12 @@ export const TOOLS = [
     releases: GITHUB + 'metadata-editor/releases',
     operator: 'Deployed by the adopting organization.',
     limits: [
-      'AI assistance inside the Editor is in development. Today the Metadata Reviewer and the augmentation package run beside it on exported records.',
+      'The Metadata Reviewer is an optional add-on to the Editor\'s FastAPI service, installed from its own requirements file and enabled in site administration; it adds AI-generated issues with suggested corrections under Assess metadata on a project\'s Issues page. The augmentation package runs beside the Editor on exported records.',
       'Publication targets NADA catalogs through catalog connections; other catalogs take the exported JSON or DDI.',
-      'Requires a PHP web stack and a relational database, so it is deployed on a server.',
+      'Requires a PHP web stack, a relational database, and the Python service for importing and processing data, so it is deployed on a server.',
     ],
-    verifies: ['Tagged releases with notes', 'Installation guide', 'OpenAPI description of the REST API in the repository'],
-    checked: '2026-10-13',
+    verifies: ['Tagged releases with notes', 'Installation guide, with the Metadata Reviewer add-on guide', 'OpenAPI description of the REST API in the repository'],
+    checked: '2026-10-19',
   },
   {
     id: 'nada',
@@ -170,7 +170,7 @@ export const TOOLS = [
     status: 'reference',
     summary:
       'Open-source data cataloguing system for surveys, indicators, documents, tables, and geospatial data, with search, managed access requests, and a catalog administration REST API with API-key authentication.',
-    stack: 'PHP, MySQL or MariaDB; Solr optional',
+    stack: 'PHP, MySQL or MariaDB',
     licence: 'MIT',
     docs: 'https://nada.ihsn.org/',
     install: 'https://github.com/ihsn/nada#readme',
@@ -213,7 +213,7 @@ export const TOOLS = [
     kind: 'Python package',
     status: 'prerelease',
     summary:
-      'Five-agent pipeline that scans metadata records for typos, inconsistencies, missing fields, and incorrect content, and returns ranked issues with suggested corrections for a curator to accept or reject.',
+      'Five-agent pipeline that scans metadata records for typos, inconsistencies, missing fields, and incorrect content, and returns ranked issues with suggested corrections for a curator to accept or reject. It runs as a Python package, through the review app, and inside the Metadata Editor as an optional add-on.',
     stack: 'Python 3.11 or later; any AutoGen-compatible model client (OpenAI, Azure OpenAI, Anthropic, Ollama)',
     licence: 'MIT',
     docs: '/docs/metadata-reviewer/overview',
@@ -222,12 +222,11 @@ export const TOOLS = [
     releases: 'https://pypi.org/project/ai4data/',
     operator: null,
     limits: [
-      'Every suggestion needs a curator decision; the pipeline detects and proposes, and it does not write to a catalog.',
+      'Every suggestion needs a curator decision; the pipeline detects and proposes. As a package it writes no catalog record; inside the Metadata Editor the curator accepts or rejects each issue on the project\'s Issues page.',
       'Quality depends on the model behind the agents; results differ between providers and model versions.',
-      'The review board is a standalone HTML prototype shipped beside the package.',
     ],
-    verifies: ['User manual on this site', 'Package extras on PyPI', 'Tests in the repository'],
-    checked: '2026-10-13',
+    verifies: ['User manual on this site', 'Package extras on PyPI', 'Tests in the repository', 'Metadata Reviewer add-on guide in the Metadata Editor documentation'],
+    checked: '2026-10-19',
   },
   {
     id: 'metadata-augmentation',
@@ -320,7 +319,7 @@ export const TOOLS = [
       'Adapting the server to another organization’s data API means replacing the data layer; the tool contracts and the client setup guides carry over.',
     ],
     verifies: [
-      'Public endpoint named in the repository README',
+      'Public endpoint named in the documentation site',
       'Semantic-versioned releases with a documented rollback',
       'Test suite in the repository',
       'Client setup guides for three MCP clients',
@@ -358,7 +357,7 @@ export const TOOLS = [
     status: 'reference',
     summary:
       'Self-hostable chat application that connects to any MCP server over HTTP or SSE, routes model calls through LiteLLM, renders charts and documents in a side panel, and marks numbers in answers with Proof-Carrying Numbers. The World Bank customization, Data360 Chat, ships pre-configured for the Data360 MCP server.',
-    stack: 'Next.js frontend and FastAPI backend; PostgreSQL and Redis; Docker Compose',
+    stack: 'Next.js frontend and FastAPI backend; PostgreSQL, with Redis optional for resumable streams and caching; Docker Compose',
     licence: 'Apache-2.0 with the World Bank IGO rider',
     docs: 'https://worldbank.github.io/data-ai-chatbot',
     install: 'https://github.com/worldbank/data-ai-chatbot#getting-started',
@@ -366,7 +365,7 @@ export const TOOLS = [
     releases: GITHUB + 'data-ai-chatbot/releases',
     operator: 'The World Bank runs Data360 Chat. Other organizations deploy the application with their own MCP server and model provider.',
     limits: [
-      'Needs a model provider through LiteLLM, a PostgreSQL database, and Redis; it is a full-stack deployment.',
+      'Needs a model provider through LiteLLM and a PostgreSQL database, with Redis optional; it is a full-stack deployment.',
       'The verification marks depend on the MCP server returning claim identifiers with values; a server without them yields unverified numbers.',
       'Verification covers the numbers the model tagged; the PCN page says what a mark does and does not mean.',
     ],
@@ -433,7 +432,7 @@ export const TOOLS = [
     docs: '/docs/pcn/',
     install: 'https://github.com/worldbank/pcn/blob/main/docs/integration.md',
     repo: GITHUB + 'pcn',
-    releases: GITHUB + 'pcn/releases',
+    releases: 'https://www.npmjs.com/package/@pcn-js/core',
     operator: 'Used inside Data360 Chat. Other applications integrate the packages.',
     limits: [
       'A verified mark means the number matches the record it cites under the stated policy. It says nothing about whether the record, the method behind it, or the interpretation is right.',
@@ -539,7 +538,7 @@ export const TOOLS = [
 
 // Work announced by the program that has nothing to install or read yet.
 export const IN_DEVELOPMENT = [
-  {name: 'AI assistance inside the Metadata Editor', area: 'document', note: 'Enrichment and review in the Editor itself; today the Reviewer and the augmentation package run beside it.'},
+  {name: 'AI-assisted enrichment inside the Metadata Editor', area: 'document', note: 'Enrichment in the Editor itself; review is in the Editor as the Metadata Reviewer add-on, and the augmentation package runs beside it.'},
   {name: 'Global Question Bank', area: 'document', note: 'Question- and variable-level metadata with multilingual mappings across surveys.'},
   {name: 'Ontologies and knowledge graphs', area: 'document', note: 'Concept links between indicators, variables, and datasets.'},
   {name: 'Responsible AI guidance', area: 'verify', note: 'Guidance for AI use in official statistics under the UN Fundamental Principles; the governance instruments are in the cookbooks.'},

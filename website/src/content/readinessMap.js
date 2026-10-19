@@ -135,7 +135,7 @@ export const resources = {
   },
   synthetic: {
     title: 'REaLTabFormer synthetic data',
-    to: 'https://github.com/avsolatorio/RealTabFormer',
+    to: 'https://github.com/worldbank/REaLTabFormer',
     kind: 'tools',
     note: 'Synthetic tabular and relational data for sharing and research',
   },
@@ -433,7 +433,7 @@ export const dimensions = [
   {
     id: '2.1',
     pillar: 2,
-    name: 'Metadata standards and classifications',
+    name: 'Metadata standards and ontologies',
     short: 'Metadata',
     coverage: 'direct',
     summary:
@@ -591,11 +591,11 @@ export const dimensions = [
   {
     id: '2.5',
     pillar: 2,
-    name: 'Agentic AI access and generative AI for dissemination',
+    name: 'Agentic AI access',
     short: 'Agent access',
     coverage: 'direct',
     summary:
-      'The program\'s work is concentrated in this dimension: MCP design for official statistics with the Data360 MCP server in operation and MCP access to NADA catalogs through NADA AI, which is being integrated into NADA, grounded answers with every number verified against its record (Proof-Carrying Numbers), evaluation of retrieval and answers, synthetic data for sharing, ML-ready datasets with Croissant records and dataset cards, and small and agentic models for statistical tasks. The cookbook sequences these so that a conversational interface follows findability, retrieval, meaning, and trust.',
+      'This dimension also covers generative AI for dissemination. The program\'s work is concentrated here: MCP design for official statistics with the Data360 MCP server in operation and MCP access to NADA catalogs through NADA AI, which is being integrated into NADA, grounded answers with every number verified against its record (Proof-Carrying Numbers), evaluation of retrieval and answers, synthetic data for sharing, ML-ready datasets with Croissant records and dataset cards, and small and agentic models for statistical tasks. The cookbook sequences these so that a conversational interface follows findability, retrieval, meaning, and trust.',
     questions: [
       {id: '2.5.1', topic: 'Generative AI for dissemination', covered: true},
       {id: '2.5.2', topic: 'Model Context Protocol adoption', covered: true},
