@@ -38,7 +38,7 @@ jobs:
       - name: Check cookbook structure and writing rules
         run: python scripts/docs/check_cookbooks.py
       - name: Quoted outputs match the scripts
-        run: for cb in $(ls cookbook | grep -v -e _template -e authoring); do python scripts/docs/refresh_cookbook_outputs.py $cb --check | tail -1 | grep -q '^0 block' || exit 1; done
+        run: for cb in $(ls cookbook | grep -v -e '^_' -e authoring); do python scripts/docs/refresh_cookbook_outputs.py $cb --check | tail -1 | grep -q '^0 block' || exit 1; done
       - name: Glossary pages match the shared glossary
         run: python scripts/docs/build_glossaries.py --check
       - name: Overview tables and landing cards match the chapter files
