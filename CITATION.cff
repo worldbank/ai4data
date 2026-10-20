@@ -2,12 +2,11 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 title: "AI for Data - Data for AI"
 version: 0.1.0
-doi: 10.5281/zenodo.XXXXXXX
-date-released: 2024-01-01
+date-released: 2026-06-01
 authors:
   - given-names: Development Data Group
     affiliation: "World Bank Group"
-abstract: "AI for Data – Data for AI is a work program under the World Bank's Development Data Group, advancing the strategic use of artificial intelligence (AI) to improve the quality, usability, and impact of development data. This repository provides Python tools and methodologies for data scientists, researchers, and development practitioners working with development data and AI applications."
+abstract: "AI for Data – Data for AI is a work program of the World Bank's Development Data Group and Office of the Chief Statistician. It applies AI to the production, curation, and dissemination of development data, and it prepares development data for use by AI systems. This repository holds the Python package, the JavaScript packages, the documentation, the cookbooks, the end-to-end reference implementation, and the training materials of the program."
 keywords:
   - artificial intelligence
   - data quality
@@ -16,6 +15,8 @@ keywords:
   - anomaly detection
   - semantic search
   - data use monitoring
+  - model context protocol
+  - official statistics
 license: MIT
 repository-code: "https://github.com/worldbank/ai4data"
 url: "https://worldbank.github.io/ai4data"
