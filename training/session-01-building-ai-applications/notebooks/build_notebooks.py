@@ -1579,7 +1579,7 @@ lab.launch(chat)
     md("""
 ## A complete version: the Data360 chat
 
-What you built here is the small version. The World Bank's **[Data360 chat](https://data360.worldbank.org/en/int/chat)** (in beta) is a complete version that puts the ideas of this series to work in one application: a language model that answers questions about development data, tools that fetch the records, and numbers that can be checked against them (the protocol of notebook 06). Open it, ask the main question of the session, and compare what you see with your own chat box: where does each answer come from, and how does it show that a number can be trusted?
+What you built here is the small version. The World Bank's **[Data360 chat](https://data360.worldbank.org/en/int/chat)** is a complete version that puts the ideas of this series to work in one application: a language model that answers questions about development data, tools that fetch the records, and numbers that can be checked against them (the protocol of notebook 06). Open it, ask the main question of the session, and compare what you see with your own chat box: where does each answer come from, and how does it show that a number can be trusted?
 
 ## What this application leaves out
 
