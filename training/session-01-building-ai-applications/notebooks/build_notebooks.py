@@ -1577,6 +1577,10 @@ Each question is answered on its own. The application does not remember the earl
 lab.launch(chat)
 '''),
     md("""
+## A complete version: the Data360 chat
+
+What you built here is the small version. The World Bank's **[Data360 chat](https://data360.worldbank.org/en/int/chat)** (in beta) is a complete version that puts the ideas of this series to work in one application: a language model that answers questions about development data, tools that fetch the records, and numbers that can be checked against them (the protocol of notebook 06). Open it, ask the main question of the session, and compare what you see with your own chat box: where does each answer come from, and how does it show that a number can be trusted?
+
 ## What this application leaves out
 
 This is the simplest version that works, and it leaves out what a full chatbot has. Each of these is an enhancement that you can add later, and none is needed for a useful first version:
@@ -1594,6 +1598,7 @@ This is the simplest version that works, and it leaves out what a full chatbot h
 - A small model runs on your own machine, and the documents stay there. It is also weaker, so the checks and the retrieval threshold carry more of the work.
 - Saying "I could not find that" when no passage is close is the application's job, and costs nothing.
 - A check on numbers finds numbers that are not in the sources. It cannot find a claim that has no number.
+- The Data360 chat is the complete version of this application, with the enhancements below.
 
 ## Exercise
 
