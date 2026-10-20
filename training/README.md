@@ -6,6 +6,20 @@ Materials for the training series of the AI for Data – Data for AI program: se
 |---|---|---|---|
 | 01 | [Building AI applications for research and data](session-01-building-ai-applications/README.md) | 90 minutes, slides and guided notebooks, plus 15 to 30 minutes of questions | Draft for team review |
 
+### Session 01 notebooks
+
+They open in Google Colab from the `main` branch of `worldbank/ai4data`, and each ends with a link to the next one. For the lab (07), choose a T4 GPU runtime before you run it; the notebook explains how.
+
+| Notebook | Open in Colab |
+|---|---|
+| 01 · From a language model to an application | [Open](https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-01-building-ai-applications/notebooks/01-from-model-to-application.ipynb) |
+| 02 · Preparing knowledge for an application | [Open](https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-01-building-ai-applications/notebooks/02-preparing-knowledge.ipynb) |
+| 03 · Retrieval-augmented generation | [Open](https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-01-building-ai-applications/notebooks/03-retrieval-augmented-generation.ipynb) |
+| 04 · Tools and structured outputs | [Open](https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-01-building-ai-applications/notebooks/04-tools-and-structured-outputs.ipynb) |
+| 05 · Workflows and agents | [Open](https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-01-building-ai-applications/notebooks/05-workflows-and-agents.ipynb) |
+| 06 · Making the application trustworthy | [Open](https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-01-building-ai-applications/notebooks/06-verification-and-evaluation.ipynb) |
+| 07 · Lab: chat with your documents | [Open](https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-01-building-ai-applications/notebooks/07-lab-chat-with-your-documents.ipynb) |
+
 ## Layout of a session folder
 
 ```
