@@ -15,7 +15,7 @@ pip install ai4data              # core
 pip install "ai4data[all]"       # every capability
 ```
 
-Each capability is an extra, so a deployment installs only what it uses.
+Each capability is an optional extra.
 
 | Extra | Capability |
 |---|---|

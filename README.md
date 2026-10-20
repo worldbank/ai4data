@@ -36,20 +36,20 @@ AI applied to the production, curation, and dissemination of development data, a
 
 ---
 
-## The problem the program works on
+## Motivation
 
-People increasingly put questions about poverty, employment, climate, and food security to AI systems. Whether the answers draw on official statistics depends on whether an AI system can find the data, interpret what a number means, retrieve the authoritative value, and show where it came from. When it cannot, the system falls back on secondary sources that may be outdated or wrong.
+People increasingly put questions about poverty, employment, climate, and food security to AI systems. Whether the answers draw on official statistics depends on whether an AI system can find the data, interpret the meaning of a number, retrieve the authoritative value, and show its source. When it cannot, the system falls back on secondary sources that may be outdated or wrong.
 
-Four gaps recur across data producers, and each workstream in this repository addresses one of them.
+Four gaps are common among data producers.
 
-| Gap | What goes wrong | Workstreams that address it |
+| Gap | Effect | Workstreams |
 |---|---|---|
-| **Metadata is incomplete or inconsistent** | A dataset with a vague title, missing keywords, or a definition that contradicts its name does not appear in a search for what it measures. | [Metadata Reviewer](https://worldbank.github.io/ai4data/docs/metadata-reviewer/overview), [Metadata Augmentation](https://worldbank.github.io/ai4data/docs/metadata-augmentation/), [Generative AI for metadata quality](https://worldbank.github.io/ai4data/docs/metadata-quality/generative-ai-for-metadata-quality) |
+| **Metadata is incomplete or inconsistent** | A dataset with a vague title, missing keywords, or a definition that contradicts its name does not appear in a search for its subject. | [Metadata Reviewer](https://worldbank.github.io/ai4data/docs/metadata-reviewer/overview), [Metadata Augmentation](https://worldbank.github.io/ai4data/docs/metadata-augmentation/), [Generative AI for metadata quality](https://worldbank.github.io/ai4data/docs/metadata-quality/generative-ai-for-metadata-quality) |
 | **Context is thin** | Units, classifications, breaks in series, and revisions are absent from the machine-readable record, so a number is easy to misread. | [Anomaly detection and explanation](https://worldbank.github.io/ai4data/docs/anomaly-detection/), [AI-ready data framework](https://worldbank.github.io/ai4data/docs/ai-ready-framework), [Data Snapshots](https://arxiv.org/abs/2606.06242) |
 | **Data are hard for software to reach** | Statistics sit in PDF tables and spreadsheets, and where an API exists, each organization has its own. | [Model Context Protocol for statistics](https://worldbank.github.io/ai4data/docs/mcp/), [Data discoverability](https://worldbank.github.io/ai4data/docs/data-discoverability/), [Monitoring of data use](https://worldbank.github.io/ai4data/docs/data_use/) |
-| **Answers cannot be traced** | A figure in a generated answer rarely links to the record it came from, so a wrong or outdated value goes unnoticed. | [Proof-Carrying Numbers](https://worldbank.github.io/ai4data/docs/pcn/), [End-to-end reference implementation](https://worldbank.github.io/ai4data/docs/reference-implementation/) |
+| **Answers cannot be traced** | A figure in a generated answer rarely links to its source record, so a wrong or outdated value goes unnoticed. | [Proof-Carrying Numbers](https://worldbank.github.io/ai4data/docs/pcn/), [End-to-end reference implementation](https://worldbank.github.io/ai4data/docs/reference-implementation/) |
 
-The program's position follows the UN Fundamental Principles of Official Statistics: AI supports statistical systems and does not replace them, a person remains responsible for what an organization publishes, and the methods and software are published as open resources.
+The program's position follows the UN Fundamental Principles of Official Statistics: AI supports statistical systems and does not replace them, a person remains responsible for the organization's publications, and the methods and software are published as open resources.
 
 ## Two pillars
 
@@ -60,14 +60,14 @@ The program's position follows the UN Fundamental Principles of Official Statist
   </picture>
 </p>
 
-The [AI-ready data framework](https://worldbank.github.io/ai4data/docs/ai-ready-framework) defines the attributes of AI-ready data under FAIR with two added dimensions, trustworthy and inclusive, and names the workstream that serves each. The [mapping to the GSBPM](https://worldbank.github.io/ai4data/docs/gsbpm-mapping) places each workstream in the statistical production process.
+The [AI-ready data framework](https://worldbank.github.io/ai4data/docs/ai-ready-framework) defines the attributes of AI-ready data under FAIR with two added dimensions, trustworthy and inclusive, and names the workstream for each dimension. The [mapping to the GSBPM](https://worldbank.github.io/ai4data/docs/gsbpm-mapping) places each workstream in the statistical production process.
 
-## What the tools produce
+## Example outputs
 
-Each example below is a recorded output of the method it illustrates. The same examples run on the [home page of the documentation](https://worldbank.github.io/ai4data/).
+The outputs are recorded runs of the methods. The [home page of the documentation](https://worldbank.github.io/ai4data/) shows the same examples.
 
 <details>
-<summary><b>Search by meaning over a catalog.</b> A query matches indicators whose titles share none of its words.</summary>
+<summary><b>Search by meaning over a catalog.</b> The query and the matching indicator titles share no words.</summary>
 
 <br>
 
@@ -85,7 +85,7 @@ The same query can be sent by an AI agent as a Model Context Protocol tool call.
 </details>
 
 <details>
-<summary><b>Metadata review by five agents.</b> A record goes in; ranked issues with suggested corrections come out, for a curator to accept or reject.</summary>
+<summary><b>Metadata review by five agents.</b> Input: one metadata record. Output: ranked issues with suggested corrections, for a curator to accept or reject.</summary>
 
 <br>
 
@@ -115,7 +115,7 @@ The reviewer runs as a Python package, through a review app, and inside the open
 </details>
 
 <details>
-<summary><b>Anomaly explanation with cited evidence.</b> A flagged point in a time series becomes a classified, evidence-backed explanation for a reviewer.</summary>
+<summary><b>Anomaly explanation with cited evidence.</b> A flagged point in a time series receives a classification, a confidence, and cited evidence.</summary>
 
 <br>
 
@@ -136,11 +136,11 @@ Each explanation is one of four classes: external driver, data error, measuremen
 </details>
 
 <details>
-<summary><b>Number verification in a chatbot answer.</b> Each number carries a tag naming its source record, and the application draws the mark after comparing the two.</summary>
+<summary><b>Number verification in a chatbot answer.</b> Each number carries a tag with its source record; the application compares the two and draws the mark.</summary>
 
 <br>
 
-Question: *How fast did the Philippines' economy grow in 2024?* The application holds the record the model retrieved: GDP growth (annual %), Philippines, 2024, value 5.71474526128652, from the World Development Indicators, claim id `0328`.
+Question: *How fast did the Philippines' economy grow in 2024?* The application holds the retrieved record: GDP growth (annual %), Philippines, 2024, value 5.71474526128652, from the World Development Indicators, claim id `0328`.
 
 | The model writes | Outcome |
 |---|---|
@@ -148,12 +148,12 @@ Question: *How fast did the Philippines' economy grow in 2024?* The application 
 | `The economy grew by <claim id="0328">6.0</claim>% in 2024.` | Flagged: 6.0 does not match the record. |
 | `The economy grew by 6.0% in 2024.` | No mark: no source tag, so the number was never checked. |
 
-The model cannot draw the mark, and a number without a tag is never marked verified. A mark says that the number matches the record it cites under the stated policy; it says nothing about whether that record, the method behind it, or the interpretation is right. Protocol, specification, and packages: [worldbank/pcn](https://github.com/worldbank/pcn); paper: [arXiv:2509.06902](https://arxiv.org/abs/2509.06902).
+The model cannot draw the mark, and a number without a tag is never marked verified. A mark means that the number matches the cited record under the stated policy. It does not mean that the record, the method behind it, or the interpretation is right. Protocol, specification, and packages: [worldbank/pcn](https://github.com/worldbank/pcn); paper: [arXiv:2509.06902](https://arxiv.org/abs/2509.06902).
 
 </details>
 
 <details>
-<summary><b>Dataset mentions in documents.</b> Zero-shot named-entity recognition finds the datasets a report or paper used, including name variants.</summary>
+<summary><b>Dataset mentions in documents.</b> Zero-shot named-entity recognition finds the datasets used in a report or paper, including name variants.</summary>
 
 <br>
 
@@ -185,11 +185,11 @@ The [benchmark paper](https://arxiv.org/abs/2606.06242) compares open-source lay
 
 | Role | Start at |
 |---|---|
-| An engineer building an application on official statistics | The [end-to-end reference implementation](reference/end_to_end/README.md), which documents, validates, publishes, serves, and verifies in one run, and the [training series](training/README.md) |
+| An engineer building an application on official statistics | The [end-to-end reference implementation](reference/end_to_end/README.md), one run from documentation to verification, and the [training series](training/README.md) |
 | A curator or data producer | The [Metadata Reviewer user manual](https://worldbank.github.io/ai4data/docs/metadata-reviewer/user-manual/) and the cookbooks on [microdata documentation](https://worldbank.github.io/ai4data/cookbook/microdata-documentation/) and [metadata curation](https://worldbank.github.io/ai4data/cookbook/metadata-curation-with-llms/) |
-| A manager at a statistical office | The [AI-readiness assessment](https://worldbank.github.io/ai4data/ai-readiness-assessment), which scores an organization on twelve dimensions, and its [operational companion](https://worldbank.github.io/ai4data/ai-readiness-in-practice), which maps each dimension to tools and recipes |
-| A researcher | The [papers](#research-and-papers) below and the [PI-FT toolkit](research/pift-toolkit/README.md) |
-| Anyone choosing a tool | The [tools catalogue](https://worldbank.github.io/ai4data/tools), which records each tool's status with the evidence behind it, its stack, licence, installation guide, and known limits |
+| A manager at a statistical office | The [AI-readiness assessment](https://worldbank.github.io/ai4data/ai-readiness-assessment) (twelve dimensions, four maturity levels) and its [operational companion](https://worldbank.github.io/ai4data/ai-readiness-in-practice) (tools and recipes per dimension) |
+| A researcher | The [papers](#research-and-papers) and the [PI-FT toolkit](research/pift-toolkit/README.md) |
+| Anyone choosing a tool | The [tools catalogue](https://worldbank.github.io/ai4data/tools): status with evidence, stack, licence, installation guide, and known limits for each tool |
 
 ## Install
 
@@ -200,7 +200,7 @@ pip install ai4data              # core
 pip install "ai4data[all]"       # every capability
 ```
 
-Each capability is an extra, so a deployment installs only what it uses.
+Each capability is an optional extra.
 
 | Extra | Capability |
 |---|---|
@@ -254,7 +254,7 @@ To work on the packages, run `npm install` at the repository root, then `npm run
 
 ### Reference implementation
 
-One command runs the pattern the program describes on the cookbooks' example organization: document five series and one survey in the World Bank schemas, validate them, publish a catalog with schema.org records, serve it through an MCP server, answer a question from the tool results, and verify every number in the answer with the Proof-Carrying Numbers engine.
+One command runs the full pipeline on the cookbooks' example organization: document five series and one survey in the World Bank schemas, validate them, publish a catalog with schema.org records, serve it through an MCP server, answer a question from the tool results, and verify every number in the answer with the Proof-Carrying Numbers engine.
 
 ```bash
 cd reference/end_to_end
@@ -267,7 +267,7 @@ Two runs are committed under `reference/end_to_end/sample_run/`, and the same sc
 
 ## Cookbooks
 
-Step-by-step guides for statistical organizations, each built around one example organization with scripts that run in CI. They are working drafts of the program and carry a version, a date, and a banner saying so; they are the program's working material and do not represent official World Bank Group guidance or policy.
+Step-by-step guides for statistical organizations. Each is built around one example organization, with scripts that run in CI. The cookbooks are working drafts, with a version, a date, and a draft banner on every chapter. They are working material of the program and do not represent official World Bank Group guidance or policy.
 
 <details>
 <summary>The eleven published cookbooks</summary>
@@ -297,13 +297,13 @@ Step-by-step guides for statistical organizations, each built around one example
 - [Evaluation suites for statistical AI](https://worldbank.github.io/ai4data/cookbook/evaluation-suites/)
 - [Monitoring data use](https://worldbank.github.io/ai4data/cookbook/monitoring-data-use/)
 
-The sources are under [`cookbook/`](cookbook/), and the [authoring guide](cookbook/authoring/index.md) states the standard every cookbook follows and the checks that enforce it.
+The sources are under [`cookbook/`](cookbook/), and the [authoring guide](cookbook/authoring/index.md) states the cookbook standard and the checks that enforce it.
 
 </details>
 
 ## Training
 
-The [training series](training/README.md) holds session plans, slide decks, notebooks, worked-example assets, demonstration scripts, and participant resources. Session 01, [Building AI applications for research and data](training/session-01-building-ai-applications/README.md), is 90 minutes of slides and six guided notebooks on one worked example, followed by a hands-on lab. The notebooks open in Google Colab and run without an API key; model calls fall back to recorded outputs that are labelled as such.
+The [training series](training/README.md) holds session plans, slide decks, notebooks, worked-example assets, demonstration scripts, and participant resources. Session 01, [Building AI applications for research and data](training/session-01-building-ai-applications/README.md), is 90 minutes of slides and six guided notebooks on one worked example, followed by a hands-on lab. The notebooks open in Google Colab and run without an API key; model calls fall back to recorded, labelled outputs.
 
 ## Research and papers
 
@@ -317,7 +317,7 @@ Synthetic tabular and relational data generation is in a separate repository, [R
 
 ## Related repositories
 
-| Repository | What it holds |
+| Repository | Contents |
 |---|---|
 | [worldbank/pcn](https://github.com/worldbank/pcn) | Proof-Carrying Numbers: specification, shared fixtures, TypeScript packages under `@pcn-js`, and the Python core `pcn-core` |
 | [worldbank/data360-mcp](https://github.com/worldbank/data360-mcp) | MCP server over the World Bank Data360 platform, in operation with a public endpoint and releases on PyPI |
@@ -333,7 +333,7 @@ ai4data/
 ├── src/ai4data/          Python package: anomaly, data_use, discovery, metadata (augmentation, reviewer)
 ├── packages/ai4data/     JavaScript packages: @ai4data/core, @ai4data/search
 ├── reference/end_to_end/ Reference implementation with committed sample runs
-├── cookbook/             Cookbook sources and the scripts they ship
+├── cookbook/             Cookbook sources and their scripts
 ├── docs/                 Workstream documentation, frameworks, and the Metadata Reviewer manual
 ├── training/             Training series: sessions, notebooks, decks, assets
 ├── research/             PI-FT toolkit
@@ -347,7 +347,7 @@ ai4data/
 
 ## Status of the work
 
-Each tool on the [tools catalogue](https://worldbank.github.io/ai4data/tools) has one of five statuses, from in operation to in development, with the evidence behind it and the date it was checked. The status describes the software and makes no claim about adoption outside the World Bank. Working drafts say so on their pages.
+Each tool on the [tools catalogue](https://worldbank.github.io/ai4data/tools) has one of five statuses, from in operation to in development, with the supporting evidence and the check date. The status describes the software and makes no claim about adoption outside the World Bank. Draft pages carry a draft banner.
 
 ## Contributing
 
@@ -364,7 +364,7 @@ Bug reports, installation test records, and feature requests go to the [issues](
 }
 ```
 
-The [CITATION.cff](CITATION.cff) file carries the same reference in a machine-readable form. The papers above have their own citations.
+[CITATION.cff](CITATION.cff) holds the same reference in machine-readable form. Each paper has its own citation.
 
 ## Contact
 
