@@ -1504,7 +1504,14 @@ The model is new: a small open one, **Qwen2.5-1.5B-Instruct**, that runs in the 
 
 ## How to run it
 
-Run the cells in order. The first run downloads the model, about 3 GB, and takes a few minutes. The notebook works on the free Colab CPU, but each answer then takes up to a minute. For quick answers, choose **Runtime > Change runtime type > T4 GPU** before you start. The chat box in step 6 needs the notebook to be running in Colab or Jupyter, so it is empty when you read the saved copy.
+This notebook runs a real language model inside Colab, so it needs more than the others. No account key and no payment are needed. Do these steps in this order:
+
+1. **Choose a GPU first.** In the Colab menu, click **Runtime > Change runtime type**, pick **T4 GPU**, and click **Save**. Do this before you run anything, because changing it later restarts the notebook. A GPU makes each answer take a few seconds instead of up to a minute. If Colab says no GPU is available, the notebook still works on the CPU, only more slowly.
+2. **Run everything.** Click **Runtime > Run all**. If Colab warns that the notebook comes from GitHub, click **Run anyway**.
+3. **Wait for the first run.** It downloads the model, about 3 GB, and takes a few minutes. The cell of step 3 prints "loaded on the GPU" when it is ready. Cells that show a spinner are still working.
+4. **Chat.** Scroll to step 6 at the end, type a question in the box, and press Enter or click **Ask**. The first answer is the slowest.
+
+If something goes wrong, click **Runtime > Restart session**, then run all again. The chat box in step 6 appears only in a running Colab or Jupyter notebook, so it is empty when you read the saved copy. To use your own documents, set `USE_MY_DOCUMENTS = True` in step 1 before you run all, and upload your files when asked.
 """),
     code(SETUP_NO_MODEL),
     md("""
