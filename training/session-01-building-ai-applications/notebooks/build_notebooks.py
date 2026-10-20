@@ -1497,6 +1497,8 @@ Every piece comes from a notebook you have already seen:
 | Ask a model to answer from those passages | Notebooks 01 and 03 |
 | Look up every number of the answer in the passages, and mark it | The idea of notebook 06, on documents |
 
+The application is deliberately simple: one question at a time, with no memory of the conversation. The enhancements that a full chatbot adds are listed at the end of the notebook.
+
 The model is new: a small open one, **Qwen2.5-1.5B-Instruct**, that runs in the notebook itself. It is far weaker than the models behind the chatbots you know. That is useful here, because its mistakes show why the checks of the earlier notebooks are needed.
 
 ## The application
@@ -1505,7 +1507,7 @@ The model is new: a small open one, **Qwen2.5-1.5B-Instruct**, that runs in the 
 
 ## How to run it
 
-Run the cells in order. The first run downloads the model, about 3 GB, and takes a few minutes. The notebook works on the free Colab CPU, but each answer then takes up to a minute. For quick answers, choose **Runtime > Change runtime type > T4 GPU** before you start. The chat box in step 5 needs the notebook to be running in Colab or Jupyter, so it is empty when you read the saved copy.
+Run the cells in order. The first run downloads the model, about 3 GB, and takes a few minutes. The notebook works on the free Colab CPU, but each answer then takes up to a minute. For quick answers, choose **Runtime > Change runtime type > T4 GPU** before you start. The chat box in step 6 needs the notebook to be running in Colab or Jupyter, so it is empty when you read the saved copy.
 """),
     code(SETUP_LAB),
     md("""
@@ -1551,15 +1553,7 @@ from IPython.display import HTML, display
 display(HTML(lab.reply_html(chat.ask("What share of Rwanda's population used the internet in 2024?"))))
 '''),
     md("""
-## 5. Chat
-
-Now ask your own questions. Type in the box and press **Ask** (or Enter). Some to try on the session documents: *What is mobile money? How did Kenya's GDP per capita change between 2010 and 2020? Which sources mention coffee?* With your own documents, ask what you would ask a colleague who had read them. The chat box appears when you run the cell, so it is empty in a saved copy of this notebook.
-"""),
-    code('''
-lab.launch(chat)
-'''),
-    md("""
-## 6. What the checks can and cannot tell you
+## 5. What the checks can and cannot tell you
 
 Three questions on the session documents show the three situations that you will meet. They are asked from code, so that the answers are saved in this copy of the notebook.
 """),
@@ -1576,6 +1570,27 @@ for question in [
 - **A close passage with no numbers.** The coffee note is close to the question, so the model answers. It has no figures to give, and a model that is weak may say more than the note does. No mark can appear, because there are no numbers, and nothing here checks the sentences. This is what a check on numbers does not cover.
 - **Numbers.** The marks say whether each number is in a passage. They do not say that it is the right number for the question. In the saved copy of the third answer, the model wrote that Rwanda's GDP per capita "had risen to $803" by 2024. The figure 803 is in the Rwanda document, so it carries a ✓, but it is the figure for 2020: the value for 2024 is 1,060. The check found the number and could not see that the sentence puts it in the wrong year. Your own run may word the answers differently, and a small model makes this kind of slip often. In notebook 06 each number named its own record, with its country and year, which is the stronger check; here the check is what can be done on arbitrary documents.
 
+## 6. Chat
+
+Now use the application. Type a question in the box under the cell and press **Ask** (or Enter). Some to try on the session documents: *What is mobile money? How did Kenya's GDP per capita change between 2010 and 2020? Which sources mention coffee?* With your own documents, ask what you would ask a colleague who had read them. The chat box appears when you run the cell, so it is empty in a saved copy of this notebook.
+
+Each question is answered on its own. The application does not remember the earlier ones, so a follow-up such as "and for Rwanda?" has nothing to refer to; write the full question each time.
+"""),
+    code('''
+lab.launch(chat)
+'''),
+    md("""
+## What this application leaves out
+
+This is the simplest version that works, and it leaves out what a full chatbot has. Each of these is an enhancement that you can add later, and none is needed for a useful first version:
+
+- **Memory of the conversation**, so that follow-up questions work.
+- **Managing the context**: the application sends the four closest passages and the question, and nothing more. It does not count how much text the model can take, and it does not shorten or summarise long passages.
+- **Speed-ups**: reusing the model's work on text it has already read (a **KV cache**), and showing the answer as it is written.
+- **Better search**: re-ranking the passages, combining a search by words with the search by meaning, or rewriting the question before it is searched.
+- **Keeping the index**, so that the documents are not split and stored again each time the notebook starts.
+- **A test suite of your own questions**, as in notebook 06, to see whether a change made the application better.
+
 ## Key points
 
 - An application that chats with documents is the pieces of the earlier notebooks put together: split and store, retrieve, answer from the passages, check.
@@ -1586,8 +1601,8 @@ for question in [
 ## Exercise
 
 1. Set `USE_MY_DOCUMENTS = True`, upload two or three files of your own, and rerun from step 1. Ask one question that the files answer and one that they do not. What does the application do with the second?
-2. After step 3, run `chat.min_score = 0.5`, then ask the coffee question again. What changes, and what is the risk of a high threshold? Try `0.1` as well.
-3. Run `chat.k = 1`, then ask the main question of the session (`w.MAIN_QUESTION`). How much of the answer is left, and why?
+2. After step 3, run `chat.min_score = 0.5`, then ask the coffee question again in the chat box of step 6. What changes, and what is the risk of a high threshold? Try `0.1` as well.
+3. Run `chat.k = 1`, then paste the main question of the session (`w.MAIN_QUESTION`) into the chat box. How much of the answer is left, and why?
 4. On a GPU runtime, rerun from step 3 with `lab.load_model("Qwen/Qwen2.5-3B-Instruct")`. Do the answers get better? Which of the marks change?
 """),
     md(LINKS),
