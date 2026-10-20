@@ -48,6 +48,7 @@ Questions are taken at the notebook transitions as well as at the end. Notebooks
 |---|---|---|
 | Worked-example assets: question, documents, indicator data and metadata, evaluation questions, recorded model outputs | `assets/` | Drafted |
 | Six notebooks with explanatory text, runnable code, cached outputs, and one exercise each | `notebooks/` | Drafted; outputs cached in fallback mode |
+| A lab notebook (07) in which participants chat with their own documents, with a small open model that runs in Colab | `notebooks/07-lab-chat-with-your-documents.ipynb` | Drafted; needs a Colab run on a CPU and a GPU runtime |
 | Shared module the notebooks import: the worked-example data and tool, a recorded-output chat model, printing and evaluation helpers; the indicator MCP server | `notebooks/workshop.py`, `notebooks/indicator_server.py` | Drafted |
 | Slide deck, about 22 slides, with the outline as reviewable text | `slides/` | Drafted |
 | Data360 Chat demonstration: pretested queries and a fallback | `demo/` | Drafted; queries to pretest on the live application |

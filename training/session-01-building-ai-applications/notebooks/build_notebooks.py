@@ -1475,9 +1475,6 @@ All of these run without a key, on the answer of section 1 (`reply`).
     md(LINKS),
 ]
 
-# PROTOTYPE: until the lab is merged, its setup clones the branch on the fork. Remove this before the pull request.
-SETUP_LAB = SETUP_NO_MODEL.replace("https://github.com/worldbank/ai4data.git", "https://github.com/rafmacalaba/ai4data.git").replace('BRANCH = "main"', 'BRANCH = "feat/training-session-01-lab"')
-
 NB07 = [
     md("""
 # 07 · Lab: chat with your documents
@@ -1509,7 +1506,7 @@ The model is new: a small open one, **Qwen2.5-1.5B-Instruct**, that runs in the 
 
 Run the cells in order. The first run downloads the model, about 3 GB, and takes a few minutes. The notebook works on the free Colab CPU, but each answer then takes up to a minute. For quick answers, choose **Runtime > Change runtime type > T4 GPU** before you start. The chat box in step 6 needs the notebook to be running in Colab or Jupyter, so it is empty when you read the saved copy.
 """),
-    code(SETUP_LAB),
+    code(SETUP_NO_MODEL),
     md("""
 ## 1. Choose the documents
 
