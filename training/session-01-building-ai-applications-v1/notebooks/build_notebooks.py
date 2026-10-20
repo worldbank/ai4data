@@ -23,7 +23,7 @@ SETUP = '''# Setup. In Colab this clones the repository and installs the depende
 import os, sys, subprocess, pathlib
 
 REPO_URL = "https://github.com/worldbank/ai4data.git"   # replace with the published repository when released
-BRANCH = "feat/training-series"
+BRANCH = "main"
 SESSION = "training/session-01-building-ai-applications-v1/notebooks"
 
 if not pathlib.Path("workshop.py").exists():

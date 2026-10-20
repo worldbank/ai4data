@@ -27,7 +27,7 @@ session-NN-short-name/
 - **Cached outputs.** Notebooks are committed with their outputs so that reviewers and participants can read them without running them. The regeneration script reruns them in fallback mode.
 - **No names in the materials.** Authors and reviewers are recorded in the session README under roles until the material is released.
 - **No confidential documents.** The corpus of a session is public or written for the session.
-- **House style.** The writing rules in the repository's `CLAUDE.md` apply to slides, notebooks, and resources: descriptive titles, plain statements, no slogans, no antithesis as a habit.
+- **House style.** The writing rules of the [cookbook authoring guide](../cookbook/authoring/index.md) apply to slides, notebooks, and resources: descriptive titles, plain statements, no slogans, no antithesis as a habit.
 
 ## Review
 
