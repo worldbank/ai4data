@@ -61,8 +61,8 @@ def table_html(headers, rows, source=""):
         """Green for a hit or a full count, red for a miss or a short count; nothing for other cells."""
         text = str(text)
         count = re.fullmatch(r"(\d+)/(\d+)", text)
-        good = text == "hit" or (count and count.group(1) == count.group(2))
-        bad = text == "miss" or (count and count.group(1) != count.group(2))
+        good = text in ("hit", "verified") or (count and count.group(1) == count.group(2))
+        bad = text in ("miss", "no match", "flagged") or (count and count.group(1) != count.group(2))
         return ";font-weight:600;color:" + ("#1f6b43" if good else "#8e2b21") if good or bad else ""
 
     numeric = [all(align(row[i]) == "right" for row in rows) for i in range(len(headers))]   # a column of numbers is right-aligned, its header too
@@ -185,6 +185,22 @@ def prompt_html(messages):
     return (f'<div style="{CARD}">' + block("instructions", f"the system message, {len(system):,} characters", system)
             + block("context", f"{len(context):,} characters" + ("" if shown == context else ", the first lines shown"), shown)
             + block("question", "from the user", question) + "</div>")
+
+
+def tagged_html(text):
+    """An answer with its claim tags: the text wraps to the page and each tag is drawn in blue, so that nothing needs scrolling sideways."""
+    import re
+
+    parts = re.split(r"(</?claim[^>]*>)", text)
+    body = "".join(
+        f'<span style="color:#1a56b0;font-weight:600">{escape(p)}</span>' if p.startswith(("<claim", "</claim")) else escape(p)
+        for p in parts
+    )
+    return f'<div style="{CARD};font:13.5px/1.7 Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word">{body}</div>'
+
+
+def show_tagged(text):
+    display(HTML(tagged_html(text)))
 
 
 def show_prompt(messages):

@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import csv
 import json
+from IPython.display import HTML, display
 import os
 import re
 import textwrap
@@ -50,6 +51,7 @@ from visuals import (  # noqa: F401  (the tables and views the notebooks draw)
     show_form,
     show_prompt,
     show_ranking,
+    show_tagged,
     show_search_comparison,
     show_table,
     table_html,
@@ -421,7 +423,7 @@ def final_text(result: dict[str, Any]) -> str:
     return "(no final answer)"
 
 
-def print_trace(result: dict[str, Any], width: int = 150) -> None:
+def print_trace(result: dict[str, Any], width: int = 90) -> None:
     """Every tool call and result in an agent run, in order."""
     step = 0
     for m in result["messages"]:
@@ -432,6 +434,33 @@ def print_trace(result: dict[str, Any], width: int = 150) -> None:
         elif isinstance(m, ToolMessage):
             text = m.content if isinstance(m.content, str) else json.dumps(m.content)
             print(f"   -> {text[:width]}{'…' if len(text) > width else ''}")
+
+
+def show_trace(result: dict[str, Any]) -> None:
+    """The tool calls of an agent run as a table: the round (one message of the model, which may ask for several tools at once), the call, the tool, what was asked, and what came back."""
+    answers = {m.tool_call_id: m for m in result["messages"] if isinstance(m, ToolMessage)}
+
+    def came_back(m: ToolMessage) -> str:
+        try:
+            r = json.loads(m.content) if isinstance(m.content, str) else m.content
+        except json.JSONDecodeError:
+            return str(m.content)[:60]
+        if isinstance(r, list):
+            return f"{len(r)} passages, first {r[0]['citation']}" if r else "no passages"
+        if "error" in r:
+            return f"error: {r['error']}"
+        obs = r.get("observations", [])
+        return f"{len(obs)} observations, {obs[0]['year']} to {obs[-1]['year']}, latest {obs[-1]['value']:,.1f}" if obs else "no observations"
+
+    rows, rnd, call = [], 0, 0
+    for m in result["messages"]:
+        if isinstance(m, AIMessage) and m.tool_calls:
+            rnd += 1
+            for c in m.tool_calls:
+                call += 1
+                asked = ", ".join(f"{k}={v}" for k, v in c["args"].items())
+                rows.append((rnd, call, c["name"], asked, came_back(answers[c["id"]]) if c["id"] in answers else ""))
+    show_table(["round", "call", "tool", "what was asked", "what came back"], rows)
 
 
 def tool_results(result: dict[str, Any], name: str) -> list[dict[str, Any]]:
@@ -498,6 +527,73 @@ def print_checks(checks: list[ClaimCheck]) -> None:
     print(f"\n{counts['verified']} verified, {counts['flagged']} flagged, {counts['unmarked']} unmarked")
 
 
+def show_checks(checks: list[ClaimCheck]) -> None:
+    """The verifier's marks as a table: each number, the record it names, what the record holds, and the mark."""
+    rows = [(c.text, c.claim_id or "no tag", c.detail.replace("record holds ", "").replace("no claim tag, so no mark is drawn", "none"), c.status) for c in checks]
+    counts = {s: sum(c.status == s for c in checks) for s in ("verified", "flagged", "unmarked")}
+    show_table(["number", "claim_id", "the record holds", "mark"], rows, source=f"{counts['verified']} verified, {counts['flagged']} flagged, {counts['unmarked']} unmarked")
+
+
+def chat_html(question: str, answer: str, observations: dict[str, float], results: list[dict[str, Any]] | None = None, raw: bool = False) -> str:
+    """The question and the answer as a chatbot draws them: a green check after each verified number, an amber warning after each flagged one, nothing after a number without a tag.
+
+    Hovering a mark shows why: the record the model named, where the tool got it, the display rule and the comparison, as in the pcn-js `ClaimMark`. With `raw`, a closed fold under the answer holds the model's text with the tags."""
+    from html import escape
+
+    from visuals import tagged_html
+
+    about = {}
+    for r in results or []:
+        for o in r.get("observations", []):
+            about[o["claim_id"]] = (r.get("name", r["indicator"]), r.get("source", ""))
+    marks = iter(c for c in verify(answer, observations) if c.claim_id)
+    out, pos = [], 0
+    for m in CLAIM_RE.finditer(answer):
+        out.append(escape(answer[pos:m.start()]))
+        check = next(marks)
+        cid, policy, decimals, shown = m.group(1), m.group(2) or "rounded", m.group(3), m.group(4).strip()
+        indicator, country, year = (cid.split(":") + ["", "", ""])[:3]
+        truth = observations.get(cid)
+        d = int(decimals) if decimals else 1
+        if policy == "exact":
+            rule, expect = "exact match", None if truth is None else f"{truth:g}"
+        else:
+            rule, expect = f"rounded to {d} decimal{'s' if d != 1 else ''}", None if truth is None else f"{round(truth, d):,.{d}f}"
+        name, source = about.get(cid, (indicator, ""))
+        lines = [f"The model named the record {cid}", f"Record: {name}, {country}, {year}"]
+        if source:
+            lines.append(f"Source: {source}")
+        if truth is None:
+            glyph, colour = "⚠", "#d97706"
+            lines = [f"The model named the record {cid}", "No such record came back from the tool", "Not verified"]
+        else:
+            lines += [f"Returned by the tool: {truth:g}", f"Display rule: {rule}, which gives {expect}", f"Shown in the answer: {shown}"]
+            glyph, colour = ("✓", "#16a34a") if check.status == "verified" else ("⚠", "#d97706")
+            lines.append("They are equal: verified" if check.status == "verified" else "They are not equal: not verified")
+        out.append(f'<span style="border-bottom:2px dotted {colour};cursor:help" title="{escape(chr(10).join(lines))}">{escape(shown)}<b style="color:{colour};margin-left:2px">{glyph}</b></span>')
+        pos = m.end()
+    out.append(escape(answer[pos:]))
+    bubble = "padding:10px 14px;border-radius:14px;margin:6px 0;max-width:88%;font:14px/1.6 Helvetica,Arial,sans-serif;color:#16315a"
+    fold = (
+        '<details style="margin-top:8px;font:12.5px Helvetica,Arial,sans-serif;color:#5b6b85"><summary style="cursor:pointer">What the model actually wrote (open to see the labels)</summary>'
+        f'<div style="margin-top:6px">{tagged_html(answer)}</div></details>'
+        if raw
+        else ""
+    )
+    return (
+        '<div style="background:#ffffff;border:1px solid #e1e6ee;border-radius:10px;padding:10px 14px">'
+        f'<div style="{bubble};background:#e8eefb;margin-left:auto">{escape(question)}</div>'
+        f'<div style="{bubble};background:#f3f4f6">{"".join(out)}</div>'
+        '<div style="font:12.5px Helvetica,Arial,sans-serif;color:#5b6b85;margin-top:6px">'
+        '<b style="color:#16a34a">✓</b> verified · <b style="color:#d97706">⚠</b> does not match its record · no mark: no label. Hover a mark to see why.</div>'
+        f"{fold}</div>"
+    )
+
+
+def show_chat(question: str, answer: str, observations: dict[str, float], results: list[dict[str, Any]] | None = None, raw: bool = False) -> None:
+    display(HTML(chat_html(question, answer, observations, results, raw)))
+
+
 def strip_claims(answer: str) -> str:
     """The answer as a reader sees it, tags removed."""
     return CLAIM_RE.sub(lambda m: m.group(4).strip(), answer)
@@ -546,6 +642,12 @@ class EvalRow:
     cited: str
     verification: str
     note: str = ""
+
+
+def show_eval(rows: list[EvalRow]) -> None:
+    """The evaluation table: one row per question."""
+    show_table(["id", "category", "retrieval", "numbers", "cited", "verified / flagged / unmarked"],
+               [(r.id, r.category, r.retrieval, r.numbers, r.cited, r.verification) for r in rows])
 
 
 def print_table(rows: list[EvalRow]) -> None:
