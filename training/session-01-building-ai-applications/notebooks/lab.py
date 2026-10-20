@@ -75,11 +75,14 @@ def load_model(model_id: str = MODEL_ID, max_new_tokens: int = 200) -> LocalChat
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
-    gpu = torch.cuda.is_available()
+    gpu = torch.cuda.is_available()   # any GPU that Colab gives (T4, L4, A100...) is used first
     tokenizer = AutoTokenizer.from_pretrained(model_id)
     model = AutoModelForCausalLM.from_pretrained(model_id, dtype=torch.float16 if gpu else torch.float32)
     model.to("cuda" if gpu else "cpu").eval()
-    print(f"{model_id} loaded on the {'GPU' if gpu else 'CPU'}" + ("" if gpu else ". Answers take longer here; Runtime > Change runtime type > T4 GPU makes them faster."))
+    if gpu:
+        print(f"{model_id} loaded on the GPU ({torch.cuda.get_device_name(0)}).")
+    else:
+        print(f"{model_id} loaded on the CPU, so answers will take up to a minute. For quick answers: Runtime > Change runtime type > T4 GPU, then run the notebook again from the top.")
     return LocalChatModel(model_id=model_id, max_new_tokens=max_new_tokens, tokenizer=tokenizer, model=model)
 
 

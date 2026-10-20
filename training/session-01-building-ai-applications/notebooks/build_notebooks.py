@@ -1534,7 +1534,7 @@ lab.chunk_table(chunks)
     md("""
 ## 3. The model
 
-The cell downloads the model on the first run and loads it, onto the GPU when there is one. Because the model runs here, the documents are never sent anywhere.
+The cell downloads the model on the first run and loads it. If Colab has given you a GPU, the model goes onto it and the cell says which one; if not, it runs on the CPU and the cell tells you how to switch. Because the model runs here, the documents are never sent anywhere. This cell has no saved output, because the message depends on the machine that runs it.
 """),
     code('''
 llm = lab.load_model()
@@ -1553,7 +1553,7 @@ display(HTML(lab.reply_html(chat.ask("What share of Rwanda's population used the
     md("""
 ## 5. Chat
 
-Now ask your own questions. Type in the box and press **Ask** (or Enter). Some to try on the session documents: *What is mobile money? How did Kenya's GDP per capita change between 2010 and 2020? Which sources mention coffee?* With your own documents, ask what you would ask a colleague who had read them.
+Now ask your own questions. Type in the box and press **Ask** (or Enter). Some to try on the session documents: *What is mobile money? How did Kenya's GDP per capita change between 2010 and 2020? Which sources mention coffee?* With your own documents, ask what you would ask a colleague who had read them. The chat box appears when you run the cell, so it is empty in a saved copy of this notebook.
 """),
     code('''
 lab.launch(chat)
