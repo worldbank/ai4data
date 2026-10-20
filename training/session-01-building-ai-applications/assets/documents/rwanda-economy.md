@@ -20,4 +20,4 @@ Real GDP growth was 7.3 percent in 2010 and 8.9 percent in 2015. Output contract
 
 ## Reading the two indicators together
 
-Rwanda recorded growth above 7 percent in most years of the period, with 2020 the exception. GDP per capita in current dollars rose by about 80 percent between 2010 and 2024 from a lower starting level than Kenya's.
+Rwanda recorded growth above 7 percent in 10 of the 15 years of the period; 2020 was the only year of contraction. GDP per capita in current dollars rose by about 80 percent between 2010 and 2024 from a lower starting level than Kenya's.

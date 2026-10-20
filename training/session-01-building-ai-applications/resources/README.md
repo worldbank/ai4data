@@ -38,7 +38,7 @@ Never write a key into a notebook. The setup cell reads it from the environment.
 ## Running locally
 
 ```bash
-git clone https://github.com/avsolatorio/ai4data.git     # replace with the published repository when released
+git clone https://github.com/worldbank/ai4data.git
 cd ai4data/training/session-01-building-ai-applications/notebooks
 pip install -r requirements.txt jupyter
 jupyter lab

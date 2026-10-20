@@ -258,7 +258,7 @@ function diagram(s, y, highlight) {
   text(s, "Demonstration: notebook 02, the outdated summary's header, fixed windows against sections, and a search over a poorly prepared index against a prepared one.", { x: M, y: 6.3, w: W - 2 * M, h: 0.5, fontSize: 12.5, color: HEX.slate });
   record(["Pipeline: documents, metadata, chunks, embeddings, index", "Metadata is knowledge; chunk boundaries decide what can be found; embeddings place text by meaning", "Demonstration: notebook 02"]);
   outline[outline.length - 1].demo = "Notebook 02, sections 2, 3, and 5";
-  notes(s, "Show the 2016 document's header, then the fixed window that cuts mid-sentence against the section chunk, then the poorly prepared index. Notebooks 02 and 03 are demonstrated from one file.");
+  notes(s, "Show the 2016 document's header, then the fixed windows that strand a heading against the section chunks, then the poorly prepared index. Notebooks 02 and 03 are demonstrated from one file.");
 }
 
 // 8 Retrieval

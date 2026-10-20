@@ -61,7 +61,7 @@ Notes: The bridge from notebook 01 to 02 and 03. Keep it short.
 
 Demonstration: Notebook 02, sections 2, 3, and 5
 
-Notes: Show the 2016 document's header, then the fixed window that cuts mid-sentence against the section chunk, then the poorly prepared index. Notebooks 02 and 03 are demonstrated from one file.
+Notes: Show the 2016 document's header, then the fixed windows that strand a heading against the section chunks, then the poorly prepared index. Notebooks 02 and 03 are demonstrated from one file.
 
 ## 8. Retrieval-augmented generation
 

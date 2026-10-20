@@ -8,7 +8,7 @@ Everything the six notebooks share.
 | `indicator_metadata.json` | Name, definition, unit, source organization, and topics for each indicator | Same API |
 | `documents/*.md` | Eight short documents with a YAML header: four country briefs written for the workshop from the indicator data, one indicator definition note, one outdated regional summary from 2016, two distractors | Written for the workshop; each header names its source and date |
 | `questions.json` | Eight evaluation questions with the expected evidence, expected numbers, and the expected behaviour | Written for the workshop |
-| `recorded_responses.json` | Model outputs recorded for each scenario the notebooks run, used when no API key is configured | Recorded; regenerate with `notebooks/record_responses.py` when a key is available |
+| `recorded_responses.json` | Model outputs recorded for each scenario the notebooks run, used when no API key is configured | Recorded; regenerate with `notebooks/record_responses.py` when a key is available ; in `nb01_with_context`, one sentence on Rwanda's growth was corrected by hand to match the data, after the brief it repeated was corrected (10 of 15 years above 7 percent, 2020 the only contraction) |
 
 ## Indicators
 
