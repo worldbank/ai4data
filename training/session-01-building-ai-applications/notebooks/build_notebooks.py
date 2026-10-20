@@ -1475,6 +1475,124 @@ All of these run without a key, on the answer of section 1 (`reply`).
     md(LINKS),
 ]
 
+# PROTOTYPE: until the lab is merged, its setup clones the branch on the fork. Remove this before the pull request.
+SETUP_LAB = SETUP_NO_MODEL.replace("https://github.com/worldbank/ai4data.git", "https://github.com/rafmacalaba/ai4data.git").replace('BRANCH = "main"', 'BRANCH = "feat/training-session-01-lab"')
+
+NB07 = [
+    md("""
+# 07 · Lab: chat with your documents
+
+**Session 01 · Building AI applications for research and data · the lab, after notebook 6**
+
+## Objective
+
+Build a small application that answers questions from documents of your choice, and use it. You start with the eight documents of the session, so that everything runs at once, and then you can replace them with your own: reports, notes, papers or a data dictionary. The documents stay inside the notebook. Nothing is sent to an outside service, and no key is needed.
+
+Every piece comes from a notebook you have already seen:
+
+| Piece | From |
+|---|---|
+| Split the documents into chunks and store them | Notebook 02 |
+| Retrieve the passages closest to a question, and say so when none is close | Notebook 03 |
+| Ask a model to answer from those passages | Notebooks 01 and 03 |
+| Look up every number of the answer in the passages, and mark it | The idea of notebook 06, on documents |
+
+The model is new: a small open one, **Qwen2.5-1.5B-Instruct**, that runs in the notebook itself. It is far weaker than the models behind the chatbots you know. That is useful here, because its mistakes show why the checks of the earlier notebooks are needed.
+
+## The application
+
+@@DIAGRAM:lab@@
+
+## How to run it
+
+Run the cells in order. The first run downloads the model, about 3 GB, and takes a few minutes. The notebook works on the free Colab CPU, but each answer then takes up to a minute. For quick answers, choose **Runtime > Change runtime type > T4 GPU** before you start. The chat box in step 5 needs the notebook to be running in Colab or Jupyter, so it is empty when you read the saved copy.
+"""),
+    code(SETUP_LAB),
+    md("""
+## 1. Choose the documents
+
+The session documents are used unless you say otherwise. The cell lists them. To use your own, set `USE_MY_DOCUMENTS = True` and run the cell again: Colab asks you to pick files. Plain text, Markdown and PDF files work, and a zip of several files is unpacked. A scanned PDF has no text to read, so it will not work. If you would like to see what a document looks like first, `lab.download_session_documents()` saves the eight session documents as a zip file, which you can open, change and upload again.
+"""),
+    code('''
+import lab
+
+USE_MY_DOCUMENTS = False   # True: upload your own files (Colab asks you to pick them)
+
+paths = lab.upload_documents() if USE_MY_DOCUMENTS else lab.session_documents()
+w.show_table(["document", "size"], [(p.name, f"{p.stat().st_size / 1000:.1f} KB") for p in paths], source=f"{len(paths)} documents")
+'''),
+    md("""
+## 2. Split and store
+
+As in notebook 02, each document is split into chunks, by section when it has headings and in windows of about 700 characters when it does not, and every chunk is stored with its meaning, so that a question can find it. The table shows what was made.
+"""),
+    code('''
+chunks = lab.prepare(paths)
+store = w.build_store(chunks)
+lab.chunk_table(chunks)
+'''),
+    md("""
+## 3. The model
+
+The cell downloads the model on the first run and loads it, onto the GPU when there is one. Because the model runs here, the documents are never sent anywhere.
+"""),
+    code('''
+llm = lab.load_model()
+chat = lab.DocumentChat(llm, store, k=4, min_score=0.25)
+'''),
+    md("""
+## 4. One question, asked from code
+
+`chat.ask(question)` does the whole round: it retrieves the closest passages, drops any that are not close enough (`min_score`), asks the model to answer from what is left, and looks up every number of the answer in those passages. The answer is shown as a chat. A ✓ after a number means that the number appears in one of the passages; hover over it to see where. A ⚠ means that it does not. Years and citations are not checked. Under the answer, the passages that the answer was written from can be opened.
+"""),
+    code('''
+from IPython.display import HTML, display
+
+display(HTML(lab.reply_html(chat.ask("What share of Rwanda's population used the internet in 2024?"))))
+'''),
+    md("""
+## 5. Chat
+
+Now ask your own questions. Type in the box and press **Ask** (or Enter). Some to try on the session documents: *What is mobile money? How did Kenya's GDP per capita change between 2010 and 2020? Which sources mention coffee?* With your own documents, ask what you would ask a colleague who had read them.
+"""),
+    code('''
+lab.launch(chat)
+'''),
+    md("""
+## 6. What the checks can and cannot tell you
+
+Three questions on the session documents show the three situations that you will meet. They are asked from code, so that the answers are saved in this copy of the notebook.
+"""),
+    code('''
+for question in [
+    "What is the capital of France?",
+    "How have Kenya's coffee export earnings changed in recent years?",
+    "What is Kenya's GDP per capita and how does it compare with Rwanda's?",
+]:
+    display(HTML(lab.reply_html(chat.ask(question))))
+'''),
+    md("""
+- **No close passage.** The documents say nothing about France, so no passage reaches `min_score` and the model is not asked. The application says so instead of guessing. This is the "no relevant result" case of notebook 03, handled by the application and not by the model.
+- **A close passage with no numbers.** The coffee note is close to the question, so the model answers. It has no figures to give, and a model that is weak may say more than the note does. No mark can appear, because there are no numbers, and nothing here checks the sentences. This is what a check on numbers does not cover.
+- **Numbers.** The marks say whether each number is in a passage. They do not say that it is the right number for the question. In the saved copy of the third answer, the model wrote that Rwanda's GDP per capita "had risen to $803" by 2024. The figure 803 is in the Rwanda document, so it carries a ✓, but it is the figure for 2020: the value for 2024 is 1,060. The check found the number and could not see that the sentence puts it in the wrong year. Your own run may word the answers differently, and a small model makes this kind of slip often. In notebook 06 each number named its own record, with its country and year, which is the stronger check; here the check is what can be done on arbitrary documents.
+
+## Key points
+
+- An application that chats with documents is the pieces of the earlier notebooks put together: split and store, retrieve, answer from the passages, check.
+- A small model runs on your own machine, and the documents stay there. It is also weaker, so the checks and the retrieval threshold carry more of the work.
+- Saying "I could not find that" when no passage is close is the application's job, and costs nothing.
+- A check on numbers finds numbers that are not in the sources. It cannot find a claim that has no number.
+
+## Exercise
+
+1. Set `USE_MY_DOCUMENTS = True`, upload two or three files of your own, and rerun from step 1. Ask one question that the files answer and one that they do not. What does the application do with the second?
+2. After step 3, run `chat.min_score = 0.5`, then ask the coffee question again. What changes, and what is the risk of a high threshold? Try `0.1` as well.
+3. Run `chat.k = 1`, then ask the main question of the session (`w.MAIN_QUESTION`). How much of the answer is left, and why?
+4. On a GPU runtime, rerun from step 3 with `lab.load_model("Qwen/Qwen2.5-3B-Instruct")`. Do the answers get better? Which of the marks change?
+"""),
+    md(LINKS),
+]
+
 NOTEBOOKS = {
     "01-from-model-to-application.ipynb": NB01,
     "02-preparing-knowledge.ipynb": NB02,
@@ -1482,6 +1600,7 @@ NOTEBOOKS = {
     "04-tools-and-structured-outputs.ipynb": NB04,
     "05-workflows-and-agents.ipynb": NB05,
     "06-verification-and-evaluation.ipynb": NB06,
+    "07-lab-chat-with-your-documents.ipynb": NB07,
 }
 
 
