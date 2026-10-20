@@ -58,7 +58,7 @@ STACK = """## The stack
 | Documents, splitting, embeddings, vector store, prompts, tools, structured output | [LangChain](https://python.langchain.com/) |
 | The agent loop | [LangGraph](https://langchain-ai.github.io/langgraph/), through `langchain.agents.create_agent` |
 | Tool server and client over the Model Context Protocol | [FastMCP](https://gofastmcp.com/) |
-| Number verification | [`pcn-core`](https://github.com/worldbank/pcn), the Python core of Proof-Carrying Numbers |
+| Number verification | [`pcn-core`](https://github.com/worldbank/pcn), the Python core of the Proof-Carrying Numbers protocol |
 | Output schemas | [Pydantic](https://docs.pydantic.dev/) |
 
 `workshop.py` holds what these do not: the worked-example data, a chat model that replays recorded outputs when no API key is configured, and a few printing and evaluation helpers."""
@@ -67,7 +67,7 @@ LINKS = """## Where this connects to the program
 
 - [Practical Guide to Serving Official Statistics to AI Agents](https://worldbank.github.io/ai4data/cookbook/serving-statistics-to-agents/): the design of tools over a statistical catalog, in full.
 - [Practical Guide to Evaluation Suites for Statistical AI](https://worldbank.github.io/ai4data/cookbook/evaluation-suites/): how to build and run the tests.
-- [Proof-Carrying Numbers](https://worldbank.github.io/ai4data/docs/pcn/): the claim-tag protocol the verifier in this session follows.
+- [Proof-Carrying Numbers](https://worldbank.github.io/ai4data/docs/pcn/): the claim-tag protocol the verifier in this session follows. See also the [paper](https://arxiv.org/abs/2509.06902) and the [`pcn` repository](https://github.com/worldbank/pcn).
 - [Data360 MCP server](https://github.com/worldbank/data360-mcp): the tools of notebook 04, exposed to any MCP client over the World Bank's data platform.
 - [End-to-end reference implementation](https://worldbank.github.io/ai4data/docs/reference-implementation/): documentation, validation, publication, agent access, and verification in one run."""
 
@@ -92,6 +92,8 @@ def explainer_md(name: str) -> str:
         "desk": explainers.desk_svg,
         "metadata": explainers.metadata_svg,
         "toolloop": explainers.toolloop_svg,
+        "workflows": explainers.workflows_svg,
+        "claimtag": explainers.claimtag_svg,
     }[name]()
     return f"![{explainers.ALT[name]}](data:image/svg+xml;base64,{base64.b64encode(svg.encode()).decode()})"
 
@@ -201,7 +203,7 @@ prompt = ChatPromptTemplate.from_messages([
 ])
 chain = prompt | model
 
-print(w.MAIN_QUESTION)
+w.show(w.MAIN_QUESTION)
 '''),
     md("""
 ## 2. Zero context: the model answers from its training data
@@ -402,7 +404,7 @@ d = next(d for d in docs if d.metadata["id"] == "regional-2016")
 for k in ("date", "type", "note"):
     print(f"{k:6s}", d.metadata[k])
 print()
-print(d.page_content)
+w.show(d.page_content)
 '''),
     md("""
 ## 3. Chunking: fixed windows against sections
@@ -423,9 +425,9 @@ sections = w.split_sections(kenya)
 print(f"fixed windows: {len(fixed)} chunks · sections: {len(sections)} chunks\\n")
 
 print("A fixed window (note where it starts and ends):\\n")
-print(repr(fixed[1].page_content))
+w.show(repr(fixed[1].page_content))
 print("\\nA section chunk:\\n")
-print(sections[1].page_content)
+w.show(sections[1].page_content)
 print("\\nmetadata:", sections[1].metadata["section"], "|", sections[1].metadata["date"], "|", sections[1].metadata["country"])
 '''),
     md("""
@@ -936,8 +938,9 @@ So far the model's answers are sentences, which suits a person. Suppose instead 
 import re
 
 first = re.findall(r"\\d[\\d,]*\\.?\\d*", final.content)[0]
-print("The answer:           ", final.content)
-print("The dashboard's box:  ", first)
+print("The answer:")
+w.show(final.content)
+print("\\nThe dashboard's box: ", first)
 '''),
     md("""
 The box gets 2023, which is the year and not a figure. The sentence holds three figures for different years, and the words around them change from one answer to the next, so a program reading a sentence has to guess which one is wanted.
@@ -1026,7 +1029,9 @@ The program's [Data360 MCP server](https://github.com/worldbank/data360-mcp) off
 try:
     async with Client(w.DATA360_MCP_URL) as client:
         tools = await client.list_tools()
-        print(len(tools), "tools, for example:", [t.name for t in tools][:5])
+        print(len(tools), "tools, for example:")
+        for t in tools[:5]:
+            print("  ", t.name)
         found = await client.call_tool("data360_search_indicators", {"query": "individuals using the internet", "limit": 3})
         for ind in found.data["indicators"]:
             print(f"  {ind['idno']:28s} {ind['name']}")
@@ -1059,17 +1064,40 @@ NB05 = [
     md("""
 # 05 · Workflows and agents
 
-**Session 01 · notebook 5 of 6**
+**Session 01 · Building AI applications for research and data · notebook 5 of 6**
 
 ## Objective
 
-Give the application two tools, document search and indicator data, and compare two ways of deciding which to call: a fixed workflow written as a chain, and a LangGraph agent in which the model chooses. See how to bound the agent, inspect its decisions, and handle a failed call.
+Notebook 04 gave the model one tool and one question at a time. The main question of this session needs more than that: figures for two countries, which come from the tool, and context from the documents, which comes from the search of notebook 03. Someone has to decide which calls to make, and in what order. This notebook shows two ways of deciding, runs both on the main question, and then looks at what an answer built from several calls still lacks.
+
+The application so far can search a store of documents (notebook 03) and call a tool for exact numbers (notebook 04). Here the search becomes a second tool, next to the first, and the application gains the means to coordinate them.
+
+Four terms, in plain words:
+
+- A **workflow** is a fixed order of steps written in code: search, then look up, then write. Every run makes the same calls.
+- An **agent** is a model that chooses its own next step. It asks for a tool, sees the result, and decides what to do next, until it can answer. The agent here is built with LangGraph, a library for loops of this kind.
+- A **trace** is the list of every call the agent made and what came back.
+- A **step limit** (`recursion_limit` in LangGraph) is the number of steps after which a run is stopped, so that a loop that never ends cannot run for ever. A step is one turn of the loop: the model's turn, or the tools' turn.
 
 ## The application after this notebook
 
 @@DIAGRAM:agent@@
 
-The model chooses between the two tools, in a fixed order in a chain or by its own choice, with a recursion limit and a trace.
+## What you will see
+
+Seven short scenes:
+
+1. A workflow answering the main question, with each step printed as it runs.
+2. An agent answering the same question: the same calls, chosen by the model, shown as a trace table.
+3. A question that the tools cannot answer, and what the agent does.
+4. A call that fails, and how the agent recovers.
+5. A loop that never ends, stopped by the step limit.
+6. A comparison: when a workflow is the better design and when an agent is.
+7. A look at the answer: it mixes numbers from tools, passages and the model's own arithmetic. Can we trust them? The question for notebook 06.
+
+## How to run it
+
+Run the cells in order. The model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. The searches, the tool results, the tables and the checks are computed when you run the cell. The exercises at the end run without a key.
 """),
     code(SETUP),
     code('''
@@ -1079,9 +1107,9 @@ from langchain_core.messages import HumanMessage
 from langchain_core.prompts import ChatPromptTemplate
 
 docs = w.load_documents()
-store = w.build_store(w.split_sections(docs))
-search_documents = w.make_search_tool(store, k=3, since="2020")
-tools = [search_documents, w.get_indicator]
+store = w.build_store(w.split_sections(docs))   # the store of notebooks 02 and 03
+search_documents = w.make_search_tool(store, k=3, since="2020")   # the search of notebook 03, offered as a tool
+tools = [search_documents, w.get_indicator]   # the tool of notebook 04 is the second one
 
 INSTRUCTIONS = """You are a research assistant for development data.
 Use get_indicator for every statistic and search_documents for definitions, context, and explanations.
@@ -1089,9 +1117,11 @@ Name the indicator and the source with each figure; cite passages in the square-
 If the tools do not provide what is needed, say so. Do not quote figures from memory."""
 '''),
     md("""
-## 1. A fixed workflow
+## 1. A workflow: the order is written in code
 
-The order of calls is written in code: search the documents, fetch the four series, compose. The model is called once, to write. Every run makes the same calls.
+The picture contrasts the two designs. In a workflow, the steps are written in code in advance: search the documents, look up the four series, then ask the model to write. The model is called once, at the end, and every run makes the same calls. The cell runs the workflow on the main question and prints each step as it happens.
+
+@@EXPLAINER:workflows@@
 """),
     code('''
 compose = ChatPromptTemplate.from_messages([("system", INSTRUCTIONS), ("human", "PASSAGES:\\n{passages}\\n\\nDATA:\\n{data}\\n\\nQUESTION: {question}")]) | model
@@ -1099,61 +1129,74 @@ compose = ChatPromptTemplate.from_messages([("system", INSTRUCTIONS), ("human", 
 
 def fixed_workflow(question):
     passages = search_documents.invoke({"query": question})
+    print(f"step 1: searched the documents, found {len(passages)} passages")
     series = [w.indicator_lookup(i, c, start=2010) for i in ["IT.NET.USER.ZS", "NY.GDP.PCAP.CD"] for c in ["Kenya", "Rwanda"]]
-    return compose.invoke({
+    print(f"step 2: looked up {len(series)} series: internet use and GDP per capita, for Kenya and Rwanda")
+    answer = compose.invoke({
         "passages": "\\n\\n".join(f"{p['citation']}\\n{p['text']}" for p in passages),
         "data": json.dumps(series),
         "question": question,
     })
+    print("step 3: the model wrote the answer\\n")
+    return answer, series
 
 
 w.use("nb05_compose")
-w.show(fixed_workflow(w.MAIN_QUESTION))
+workflow_answer, workflow_series = fixed_workflow(w.MAIN_QUESTION)
+w.show(workflow_answer)
 '''),
     md("""
-## 2. The model chooses the tools
+The application can now answer the main question with a fixed set of steps. It is predictable: the same question makes the same calls, so it is easy to test.
 
-`create_agent` builds a LangGraph agent: the model is offered the tools with their schemas, the graph runs what it asks for, feeds the results back, and stops when the model answers in text. The trace lists every call and result.
+## 2. An agent: the model chooses the steps
+
+In an agent, the model is offered the tools and their descriptions, and chooses. `create_agent` builds the loop with LangGraph: the model replies with the calls it wants, the loop runs them, the results go back to the model, and the loop stops when the model answers in text. The cell asks the same question, then shows the trace as a table, one row per call, grouped by round.
 """),
     code('''
 agent = create_agent(model, tools, system_prompt=INSTRUCTIONS)
 
 w.use("nb05_agent_main")
 result = agent.invoke({"messages": [HumanMessage(content=w.MAIN_QUESTION)]}, config={"recursion_limit": 10})
-w.print_trace(result)
+w.show_trace(result)
 print()
 w.show(w.final_text(result))
 '''),
     md("""
-The model chose the same calls the fixed workflow made, in one step. On a different question it would choose differently, which is the point and the risk.
+The model chose the same five calls that the workflow made. On a different question it would choose differently. That is the point of an agent, and also its risk: the calls are not known in advance.
 
-## 3. A question outside the tools
+The first column of the table is the round: one message from the model, which can ask for several tools at once. Here it asked for all five in its first message, so they share round 1; in section 4, a call that fails takes a second round to correct. The application can now let the model choose between its tools.
 
-The planted out-of-scope question. A good agent searches, finds nothing usable, and says so.
+## 3. A question the tools cannot answer
+
+A good agent searches, finds nothing usable, and says so. The question is about coffee exports. The collection holds one note on coffee that carries no figures, and the data tool has no series on exports.
 """),
     code('''
 w.use("nb05_agent_offscope")
 result = agent.invoke({"messages": [HumanMessage(content="How have Kenya's coffee export earnings changed in recent years?")]}, config={"recursion_limit": 10})
-w.print_trace(result)
+w.show_trace(result)
 print()
 w.show(w.final_text(result))
 '''),
     md("""
-## 4. A failed call
+The agent made one search, read what came back, and declined to invent figures. The application can now say that it cannot answer, and what would be needed.
 
-The model asks for an indicator id that does not exist. The tool returns an error object; the model reads it and retries with the right id. Returning errors as data is what lets the loop recover.
+## 4. A call that fails
+
+The model asks for an indicator id that does not exist. The tool does not crash: it returns an error as data, with the list of valid ids. The model reads it and tries again. Returning errors as data is what lets the loop recover.
 """),
     code('''
 w.use("nb05_agent_error")
 result = agent.invoke({"messages": [HumanMessage(content="What share of Rwanda's population used the internet in 2023?")]}, config={"recursion_limit": 10})
-w.print_trace(result)
+w.show_trace(result)
 print()
 w.show(w.final_text(result))
 '''),
     md("""
-## 5. Bounding the loop
+The first row is the failed call, in round 1; the second is the retry that worked, in round 2. The application can now recover from a wrong call, as long as its tools return errors that the model can read.
 
-LangGraph's `recursion_limit` caps the number of graph steps. When a model keeps calling tools, the run stops with `GraphRecursionError`, and the application decides what to do then: answer with what it has, ask the user, or fail. The recorded scenario below is a model that never stops.
+## 5. A loop that never ends
+
+A model can also keep calling tools without ever answering. The step limit stops it: after the given number of steps, the run ends with an error (`GraphRecursionError`), and the application decides what to do next. It can answer with what it has, ask the user, or give up. The recorded scenario below is a model that never stops: the cell sets the limit to 6, and the model keeps asking for tools until the loop is cut off.
 """),
     code('''
 from langgraph.errors import GraphRecursionError
@@ -1163,29 +1206,48 @@ try:
     agent.invoke({"messages": [HumanMessage(content=w.MAIN_QUESTION)]}, config={"recursion_limit": 6})
 except GraphRecursionError as e:
     print("stopped:", str(e)[:80])
+    print("The application now chooses: here, it tells the user that it could not finish.")
 '''),
     md("""
+The application can now stop a loop that does not end, instead of waiting for it.
+
 ## 6. Choosing between the two
 
-| | Fixed workflow | Agent |
+| | Workflow | Agent |
 |---|---|---|
 | Calls per run | Known in advance | Varies with the question |
 | Behaviour on a new kind of question | Same calls, possibly irrelevant | Adapts, possibly wrongly |
-| Cost | Predictable | Bounded by the recursion limit |
-| Testing | Test the composer | Test the trace and the answer |
+| Cost | Predictable | Bounded by the step limit |
+| Testing | Test the final step and the data | Test the trace and the answer |
 | Use when | The questions have one shape | The questions vary and the tools are few and safe |
 
-The worked example has one shape, so the fixed workflow is the right design for it. The agent earns its place when users ask questions the designer did not anticipate, and only with a recursion limit, a trace, and tools that fail as data.
+The worked example has one shape, so a workflow is the right design for it. The agent earns its place when users ask questions the designer did not anticipate, and only with a step limit, a trace, and tools that fail as data.
+
+## 7. Can we trust the numbers?
+
+Both designs produce an answer that holds several numbers. Some come straight from a tool, some come from a passage, and some are worked out by the model itself: "has risen by about 28 percentage points" is a subtraction, which no tool returned. The answer is plain text, and a reader, or a program, has no way to tell which number is which.
+
+The tools have already laid some groundwork. Every figure the data tool returns carries a label, called a `claim_id`, made of the indicator, the country and the year. The cell shows the latest figure of each series that the workflow fetched.
+"""),
+    code('''
+latest = [(s["indicator"], s["country"], o["claim_id"], f"{o['value']:,.1f}" if o["value"] < 1000 else f"{o['value']:,.0f}") for s in workflow_series for o in s["observations"][-1:]]
+w.show_table(["indicator", "country", "claim_id", "value"], latest, source="Every figure the tool returns has a claim_id: indicator, country, year.")
+'''),
+    md("""
+The labels sit on the tool's side, and nothing in the answer points back to them. What if every number in an answer carried its label, and a program checked each number against the record it names? The program has a protocol for exactly that, **Proof-Carrying Numbers** (PCN), its approach to trustworthy data, and notebook 06 builds it into the application.
 
 ## Key points
 
-- A workflow written as a chain is predictable and testable; prefer it when the task has one shape.
-- An agent adapts to the question; bound it with a recursion limit, keep the trace, and return tool errors as data.
-- Both need the same two things from the tools: good descriptions and results the model can read.
+- A workflow is a fixed order of steps written in code: predictable and easy to test. Prefer it when the questions have one shape.
+- An agent is a model that chooses its next step. It adapts to the question, so it needs a step limit, a trace, and tools that return their errors as data.
+- Both designs need the same from their tools: clear descriptions and results the model can read.
+- An answer built from several calls mixes numbers that come from tools, from passages and from the model's own arithmetic, and plain text does not say which is which. The labels the tool already attaches are the groundwork for checking that, in notebook 06.
 
 ## Exercise
 
-Remove `w.get_indicator` from `tools` and rerun section 2. Read what the model does without a data tool and whether the instructions stop it from quoting figures from memory. In recorded mode, write down the expected behaviour; with a key, compare.
+1. In section 2, change `recursion_limit` from 10 to 3 and run the cell, then try 4. What is the smallest limit that lets this question finish? What does the application see when the limit is too low?
+2. After section 2, run `sum(len(m.tool_calls) for m in result["messages"] if getattr(m, "tool_calls", None))`. How many calls did the agent make, and how many did the workflow make in section 1? Why are the two numbers equal here, and when would they differ?
+3. Run `w.indicator_lookup("IT.NET.USER.ZS", "Uganda", start=2010)["observations"]`. The tool returns an empty list. What would the workflow of section 1 do with this result, and what would the agent do?
 """),
     md(LINKS),
 ]
@@ -1197,15 +1259,24 @@ NB06 = [
     md("""
 # 06 · Making the application trustworthy
 
-**Session 01 · notebook 6 of 6**
+**Session 01 · Building AI applications for research and data · notebook 6 of 6**
 
 ## Objective
 
-Add verification of every number in an answer, with the program's `pcn-core` package, and an evaluation suite that runs the application over a set of questions with known evidence. Compare two configurations of the application on the same suite.
+Notebook 05 ended on a question: what if every number in an answer carried its label, and a program checked each number against the record it names? The answer to the main question holds numbers from a tool, from a passage and from the model's own arithmetic, in plain text that does not say which is which. This notebook builds that check, and it is the last layer of trust. Retrieval found the right evidence (03), a tool returned exact figures (04), and a step limit and a trace bounded the agent (05). Now the numbers themselves are checked.
 
-## The checks
+The protocol is **Proof-Carrying Numbers** (PCN), the program's approach to trustworthy data ([paper](https://arxiv.org/abs/2509.06902), [code](https://github.com/worldbank/pcn)): the model labels each number with the record it comes from, and a verifier checks each number against exactly that record. Then the notebook asks a second question, about the whole application and not one answer: how do we know that it behaves well across many questions, and that a change made it better and not worse? It answers with an evaluation suite, a fixed set of questions with known right evidence, run on two versions of the application and compared.
 
-| Check | Question it answers | Where it runs |
+Four terms, in plain words:
+
+- A **claim tag** is a label that the model writes around a number: it names the record the number comes from, and how exactly to compare the two. The tag is the `claim_id` of notebook 05 with a little more.
+- A **verifier** reads the tags and checks each number against its record. The one here is `pcn-core`, the Python core of the PCN protocol. Each number gets a mark: **verified** (it matches its record), **flagged** (it does not) or **unmarked** (it has no tag, so there is nothing to check it against).
+- An **evaluation suite** is a fixed list of questions, each with the evidence and the behaviour that a good answer needs. The application runs on every question, and a table shows how it did.
+- A **configuration** is one version of the application. The suite compares two.
+
+Four kinds of check, and where each has appeared:
+
+| Check | Question it answers | Where |
 |---|---|---|
 | Retrieval | Did the application find the right evidence? | Notebook 03, section 6 |
 | Grounding | Is the answer written from that evidence? | Citations in the answer |
@@ -1216,7 +1287,19 @@ Add verification of every number in an answer, with the program's `pcn-core` pac
 
 @@DIAGRAM:verification@@
 
-The verifier and the evaluation suite are what this notebook adds.
+## What you will see
+
+Five short scenes:
+
+1. A claim tag, step by step, and the model's answer to the main question with every number checked.
+2. A wrong number and a number with no tag: how the verifier marks them, and how a chatbot shows those marks to a reader.
+3. Two versions of the application, to be compared.
+4. The evaluation suite: the eight questions, and a table of results for each version.
+5. How to read the table, and what the suite does not cover.
+
+## How to run it
+
+Run the cells in order. The model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. The searches, the tool results, the checks and the tables are computed when you run the cell. The exercises at the end run without a key.
 """),
     code(SETUP),
     code('''
@@ -1226,8 +1309,8 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate
 
 docs = w.load_documents()
-store = w.build_store(w.split_sections(docs))
-search_documents = w.make_search_tool(store, k=3, since="2020")
+store = w.build_store(w.split_sections(docs))   # the store of notebooks 02 and 03
+search_documents = w.make_search_tool(store, k=3, since="2020")   # the tools of notebooks 04 and 05
 tools = [search_documents, w.get_indicator]
 
 INSTRUCTIONS_CLAIMS = """You are a research assistant for development data.
@@ -1240,43 +1323,56 @@ If the question is ambiguous, ask which reading is meant."""
     md("""
 ## 1. Claim tags
 
-The instructions ask the model to wrap each figure in a tag that names the observation it came from. `w.verify` finds the tags and hands each number and its record to `pcn_core.compare_by_policy` with the policy from the tag: rounded to the stated decimals, or exact. This is the Proof-Carrying Numbers protocol used in the program's chatbot, with the same comparison code.
+The instruction in the cell above asks the model to wrap each figure from the tool in a tag. The picture shows the parts of one tag, and what the verifier does with it: it takes the record named by the `claim_id`, compares it with the number inside the tag by the stated policy (rounded to some decimals, or exact), and marks the result. This is the Proof-Carrying Numbers protocol of the program, and `pcn-core` is its comparison code.
+
+@@EXPLAINER:claimtag@@
+
+The next cell gives the model the four series that the main question needs and runs it. What comes back is drawn the way a chatbot would draw it: the answer as a reader sees it, with a small mark after each number that the application could check. Hover over a mark to see why it is there: which record the model named, where the tool got it, and how the two were compared. The labels themselves are folded away under the answer, for anyone who wants to see what the model really wrote.
 """),
     code('''
 results = [w.indicator_lookup(i, c, start=2010) for i in ["IT.NET.USER.ZS", "NY.GDP.PCAP.CD"] for c in ["Kenya", "Rwanda"]]
-observations = w.observations_from_results(results)
-print(len(observations), "observations available to the verifier, for example", list(observations)[:2])
+observations = w.observations_from_results(results)   # claim_id -> the value the tool returned
 
 w.use("nb06_claims_main")
 reply = model.invoke([SystemMessage(content=INSTRUCTIONS_CLAIMS), HumanMessage(content="DATA:\\n" + json.dumps(results) + "\\n\\nQUESTION: " + w.MAIN_QUESTION)])
-print("\\nAs the reader sees it:\\n")
-w.show(w.strip_claims(reply.content))
-print("\\nVerification:\\n")
-w.print_checks(w.verify(reply.content, observations))
+w.show_chat(w.MAIN_QUESTION, reply.content, observations, results, raw=True)
 '''),
     md("""
-Every tagged number matches its record. Years are not claims and are skipped.
+Every number carries a ✓. Behind each mark is a check that the application made on its own: the model named a record, the application looked the record up in what the tool returned, and compared the two by the rule in the label. The table lists those checks, one row per number: the record each label named, what the record holds, and the mark.
+"""),
+    code('''
+w.show_checks(w.verify(reply.content, observations))
+'''),
+    md("""
+Why not simply look for a tool value equal to each number, without labels? Because a match by value cannot tell a source from a coincidence: "28", a subtraction the model did itself, equals Rwanda's 2022 value of 28.0, and a value-matching check would call that a source. With a label, the verifier reads which record the model meant instead of guessing. Years are not figures to check, so they are skipped. The application can now check every number that the model says comes from the tool.
 
-## 2. A wrong number and a number without a claim
+The picture and the cell above follow the program's JavaScript packages for the web, `@pcn-js/core` and `@pcn-js/ui` ([`worldbank/pcn`](https://github.com/worldbank/pcn)), whose `ClaimMark` component draws the ✓ and the hover in a real chatbot. The repository has a small demo chat app that uses it. The notebook imitates that view with plain HTML, and the marks come from the Python verifier.
 
-The planted problem. One tagged figure has been altered, and one figure has no tag because it came from nowhere in the data. The verifier flags the first and marks the second as unmarked: it carries no claim, so it receives no mark, whether or not it happens to be right.
+## 2. A wrong number, and a number with no label
+
+Two things can go wrong, and the cell shows one of each. In this recorded answer, one labelled figure has been altered (Rwanda's internet use is given as 35.7 instead of 31.7), and one figure has no label because it did not come from the data: "about 70 percent … use mobile money". The verifier flags the first with a ⚠. The second it marks **unmarked**: it carries no claim, so there is nothing to check it against, and no mark is drawn, whether or not it happens to be right.
 """),
     code('''
 w.use("nb06_claims_error")
-reply = model.invoke([SystemMessage(content=INSTRUCTIONS_CLAIMS), HumanMessage(content="DATA:\\n" + json.dumps(results) + "\\n\\nQUESTION: " + w.MAIN_QUESTION)])
-w.show(w.strip_claims(reply.content))
-print()
-w.print_checks(w.verify(reply.content, observations))
+flawed = model.invoke([SystemMessage(content=INSTRUCTIONS_CLAIMS), HumanMessage(content="DATA:\\n" + json.dumps(results) + "\\n\\nQUESTION: " + w.MAIN_QUESTION)])
+w.show_chat(w.MAIN_QUESTION, flawed.content, observations, results)
+w.show_checks(w.verify(flawed.content, observations))
 '''),
     md("""
-A reader of the chatbot sees a mark beside each number. A flagged number is one the model changed. An unmarked number is one the model did not tie to a record, and the fail-closed rule says it gets no mark.
+Hover over the ⚠: the tooltip shows the record the model named, the figure the tool returned, and that the two are not equal. "About 70 percent" carries nothing. That absence is part of the design. The protocol's own principle reads: *trust is earned only by proof, and the absence of a verification mark communicates uncertainty.* The same holds for the numbers of notebook 05 that the model worked out itself, such as a rise of "about 28 percentage points". They have no single record, so they stay unmarked, and a reader knows to look at them.
 
-What the check says nothing about: whether the record is the right one for the question, whether the method behind it is sound, or whether the sentence around the number interprets it correctly. Those stay with the reader.
+What the check says nothing about: whether the record is the right one for the question, whether the method behind it is sound, or whether the sentence around the number interprets it correctly. Those stay with the reader. The application can now flag a number that does not match its record, and leave unmarked a number that has no record.
 
-## 3. Two configurations of the application
+## 3. Two versions of the application
 
-- **A, retrieval only**: the RAG chain of notebook 03. Passages as context, no tools, no tags.
-- **B, tools and claims**: the agent of notebook 05 with the claim instructions, and the verifier.
+A check on one answer is not yet a measure of the application. The second half of the notebook compares two configurations on the same questions:
+
+| Configuration | What it uses | Built in |
+|---|---|---|
+| **A · retrieval only** | The search, then the model writes from the passages. No tools, no tags. | Notebook 03 |
+| **B · tools and claims** | The agent with both tools, the claim instructions above, and the verifier. | Notebooks 04 and 05, and this one |
+
+The cell defines both as functions that take a question and return the answer, the passages the search found, and the records the tools returned.
 """),
     code('''
 INSTRUCTIONS_RAG = """You are a research assistant for development data.
@@ -1301,19 +1397,25 @@ def app_tools(question, scenario):
     return w.final_text(result), hits, obs
 '''),
     md("""
+The application can now be run as a function of a question, which is what a suite needs.
+
 ## 4. The evaluation suite
 
-Eight questions with expected documents, expected numbers, and expected behaviour, from `assets/questions.json`. For each question and configuration the table reports:
-
-- **retrieval**: did the top-4 passages include an expected document
-- **numbers**: how many expected values appear in the answer
-- **cited**: does the answer cite a retrieved document or name a source
-- **verify**: counts of verified, flagged, and unmarked numbers (configuration B only)
+The suite is eight questions from `assets/questions.json`, each of a different kind: the main question, factual ones, an ambiguous one, a missing year, an out-of-scope one, a definition, and one where the evidence is outdated. Each has the documents and numbers a good answer should use, and the behaviour it should show.
 """),
     code('''
 questions = w.load_questions()
+w.show_table(["id", "kind", "question", "what a good answer does"], [(q["id"], q["category"], q["question"], q["behaviour"]) for q in questions])
+'''),
+    md("""
+For each question and each configuration, the table reports four things:
 
-
+- **retrieval**: did the four passages that the search found include an expected document?
+- **numbers**: how many of the expected numbers appear in the answer?
+- **cited**: does the answer cite a retrieved document, or name a source?
+- **verified / flagged / unmarked**: the verifier's counts (configuration B only, since only B uses tags).
+"""),
+    code('''
 def evaluate(app, prefix):
     rows = []
     for qd in questions:
@@ -1322,45 +1424,195 @@ def evaluate(app, prefix):
         cited = w.grounded(answer, hits) or "WDI" in answer or "World Development Indicators" in answer
         if obs:
             checks = w.verify(answer, obs)
-            v = sum(c.status == "verified" for c in checks); f = sum(c.status == "flagged" for c in checks); u = sum(c.status == "unmarked" for c in checks)
-            ver = f"{v}v {f}f {u}u"
+            v, f, u = (sum(c.status == s for c in checks) for s in ("verified", "flagged", "unmarked"))
+            ver = f"{v} / {f} / {u}"
         else:
-            ver = "n/a" if prefix.endswith("rag") else "no data used"
-        rows.append(w.EvalRow(qd["id"], qd["category"], "hit" if w.retrieval_hit(hits, qd["expected_documents"]) else "miss", f"{found}/{total}", "yes" if cited else "no", ver))
+            ver = "not applicable" if prefix.endswith("rag") else "no tool data used"
+        rows.append(w.EvalRow(qd["id"], qd["category"], "hit" if w.retrieval_hit(hits, qd["expected_documents"]) else "miss", f"{found}/{total}" if total else "none expected", "yes" if cited else "no", ver))
     return rows
 
 
 print("A · retrieval only\\n")
-w.print_table(evaluate(app_rag, "nb06_rag"))
-print("\\n\\nB · tools and claims\\n")
-w.print_table(evaluate(app_tools, "nb06_tools"))
+w.show_eval(evaluate(app_rag, "nb06_rag"))
+print("\\nB · tools and claims\\n")
+w.show_eval(evaluate(app_tools, "nb06_tools"))
 '''),
     md("""
+The application can now be measured across questions, and two versions of it compared.
+
 ## 5. Reading the table
 
-- **q8, outdated evidence.** Configuration A answers from the 2016 summary when it ranks first and reports 2015 figures; B fetches the series and reports 2024. The expected numbers are found in B and missed in A.
-- **q3, ambiguous.** Neither configuration should produce a number. B asks which reading is meant, as its instructions say; A picks one. The table shows 0/0 for both; the behaviour has to be read.
-- **q4, missing data.** Both say that 2025 is unavailable; B's statement rests on an empty tool result.
+- **q8, outdated evidence.** Both configurations "hit" on retrieval. Yet A answers from the 2016 summary, with 2015 figures, and finds none of the two expected numbers, while B fetches the series and reports 2024. No single column tells the whole story: retrieval alone said A was fine.
+- **q3, ambiguous.** Neither configuration should answer with a single number. B asks which measure is meant, as its instructions say. A answers without asking, with both measures at once. The numbers column shows "none expected" for both: the behaviour has to be read, not counted.
+- **q4, missing data.** Both say that 2025 is unavailable and give 2024. B's statement rests on an empty tool result.
 - **q5, out of scope.** Both give no number. A's retrieval "hit" is the coffee note, which is the expected document and contains no figures.
-- **verify.** In B every number from the data tool is verified; in A there is nothing to verify against, because no number came from a tool.
+- **Verified, flagged, unmarked.** In B every number that came from the data tool is verified, and nothing is flagged. In A there is nothing to verify against, because no number came from a tool.
 
-A table like this is what distinguishes a demonstration from a measured application. It is rerun after every change to the instructions, the tools, the store, or the model. For suites at scale, with a model as a judge for the behaviours a rule cannot check, see the program's evaluation cookbook; libraries such as Ragas and DeepEval provide those judges.
+A table like this is what separates a demonstration from a measured application. It is rerun after every change to the instructions, the tools, the store or the model. For suites at scale, with a model as a judge for the behaviours that a rule cannot check, see the program's evaluation cookbook; libraries such as Ragas and DeepEval provide those judges.
 
 ## 6. What the suite does not cover
 
 - Whether the application chose the right indicator for the question. A verified number from the wrong series is verified.
 - Whether the interpretation around the numbers is right.
-- Behaviour on questions nobody wrote down. The suite grows from use: every failure found in use becomes a question.
+- Behaviour on questions that nobody wrote down. The suite grows from use: every failure found in use becomes a question.
 
 ## Key points
 
-- Verification checks each number against its source record with `pcn-core` and fails closed: no claim, no mark.
-- Evaluation runs the application over questions with known evidence and expected behaviour, and is rerun on every change.
-- The two configurations differ most on outdated evidence and on numbers: tools make numbers checkable; retrieval alone does not.
+- Notebook 05 could only match numbers to values, and guessed. A claim tag names the record that a number comes from, and the verifier compares the two: verified, flagged, or unmarked.
+- The rule is that an untagged number gets no mark. The verifier cannot say whether a number is right, only whether it matches the record it names.
+- Evaluation runs the application over questions with known evidence and expected behaviour, and is rerun on every change. One column is rarely enough: on q8 retrieval alone said the weaker version was fine.
+- The two configurations differ most on outdated evidence and on numbers: tools make numbers checkable, and retrieval alone does not.
 
 ## Exercise
 
-Add a ninth question to `assets/questions.json` with an expected number that is deliberately wrong, rerun the suite, and confirm that the numbers column catches it. Then correct it.
+All of these run without a key, on the answer of section 1 (`reply`).
+
+1. Take the answer of section 1 and change one number inside a tag: `tampered = reply.content.replace(">35.0<", ">35.7<")`, then `w.show_checks(w.verify(tampered, observations))`. Which mark changes, and what does the record hold?
+2. Remove all the tags: `plain = w.strip_claims(reply.content)`, then `w.show_checks(w.verify(plain, observations))`. What happens to every number, and why is it not a "verified" result?
+3. Change the policy of one tag from rounded to exact: `strict = reply.content.replace('policy="rounded" decimals="1"', 'policy="exact"', 1)`, then verify it. Why does 35.0 stop matching a record of 34.9762, and which policy would you want for a published percentage?
+4. Look at the eight questions of section 4. Which kind of question would you add next, and what would a good answer to it do? Failures found in use are the best source.
+"""),
+    md(LINKS),
+]
+
+NB07 = [
+    md("""
+# 07 · Lab: chat with your documents
+
+**Session 01 · Building AI applications for research and data · the lab, after notebook 6**
+
+## Objective
+
+Build a small application that answers questions from documents of your choice, and use it. You start with the eight documents of the session, so that everything runs at once, and then you can replace them with your own: reports, notes, papers or a data dictionary. The documents stay inside the notebook. Nothing is sent to an outside service, and no key is needed.
+
+Every piece comes from a notebook you have already seen:
+
+| Piece | From |
+|---|---|
+| Split the documents into chunks and store them | Notebook 02 |
+| Retrieve the passages closest to a question, and say so when none is close | Notebook 03 |
+| Ask a model to answer from those passages | Notebooks 01 and 03 |
+| Look up every number of the answer in the passages, and mark it | The idea of notebook 06, on documents |
+
+The application is deliberately simple: one question at a time, with no memory of the conversation. The enhancements that a full chatbot adds are listed at the end of the notebook.
+
+The model is new: a small open one, **Qwen2.5-1.5B-Instruct**, that runs in the notebook itself. It is far weaker than the models behind the chatbots you know. That is useful here, because its mistakes show why the checks of the earlier notebooks are needed.
+
+## The application
+
+@@DIAGRAM:lab@@
+
+## How to run it
+
+This notebook runs a real language model inside Colab, so it needs more than the others. No account key and no payment are needed. Do these steps in this order:
+
+1. **Choose a GPU first.** In the Colab menu, click **Runtime > Change runtime type**, pick **T4 GPU**, and click **Save**. Do this before you run anything, because changing it later restarts the notebook. A GPU makes each answer take a few seconds instead of up to a minute. If Colab says no GPU is available, the notebook still works on the CPU, only more slowly.
+2. **Run everything.** Click **Runtime > Run all**. If Colab warns that the notebook comes from GitHub, click **Run anyway**.
+3. **Wait for the first run.** It downloads the model, about 3 GB, and takes a few minutes. The cell of step 3 prints "loaded on the GPU" when it is ready. Cells that show a spinner are still working.
+4. **Chat.** Scroll to step 6 at the end, type a question in the box, and press Enter or click **Ask**. The first answer is the slowest.
+
+If something goes wrong, click **Runtime > Restart session**, then run all again. The chat box in step 6 appears only in a running Colab or Jupyter notebook, so it is empty when you read the saved copy. To use your own documents, set `USE_MY_DOCUMENTS = True` in step 1 before you run all, and upload your files when asked.
+"""),
+    code(SETUP_NO_MODEL),
+    md("""
+## 1. Choose the documents
+
+The session documents are used unless you say otherwise. The cell lists them. To use your own, set `USE_MY_DOCUMENTS = True` and run the cell again: Colab asks you to pick files. Plain text, Markdown and PDF files work, and a zip of several files is unpacked. A scanned PDF has no text to read, so it will not work. If you would like to see what a document looks like first, `lab.download_session_documents()` saves the eight session documents as a zip file, which you can open, change and upload again.
+"""),
+    code('''
+import lab
+
+USE_MY_DOCUMENTS = False   # True: upload your own files (Colab asks you to pick them)
+
+paths = lab.upload_documents() if USE_MY_DOCUMENTS else lab.session_documents()
+w.show_table(["document", "size"], [(p.name, f"{p.stat().st_size / 1000:.1f} KB") for p in paths], source=f"{len(paths)} documents")
+'''),
+    md("""
+## 2. Split and store
+
+As in notebook 02, each document is split into chunks, by section when it has headings and in windows of about 700 characters when it does not, and every chunk is stored with its meaning, so that a question can find it. The table shows what was made.
+"""),
+    code('''
+chunks = lab.prepare(paths)
+store = w.build_store(chunks)
+lab.chunk_table(chunks)
+'''),
+    md("""
+## 3. The model
+
+The cell downloads the model on the first run and loads it. If Colab has given you a GPU, the model goes onto it and the cell says which one; if not, it runs on the CPU and the cell tells you how to switch. Because the model runs here, the documents are never sent anywhere. This cell has no saved output, because the message depends on the machine that runs it.
+"""),
+    code('''
+llm = lab.load_model()
+chat = lab.DocumentChat(llm, store, k=4, min_score=0.25)
+'''),
+    md("""
+## 4. One question, asked from code
+
+`chat.ask(question)` does the whole round: it retrieves the closest passages, drops any that are not close enough (`min_score`), asks the model to answer from what is left, and looks up every number of the answer in those passages. The answer is shown as a chat. A ✓ after a number means that the number appears in one of the passages; hover over it to see where. A ⚠ means that it does not. Years and citations are not checked. Under the answer, the passages that the answer was written from can be opened.
+"""),
+    code('''
+from IPython.display import HTML, display
+
+display(HTML(lab.reply_html(chat.ask("What share of Rwanda's population used the internet in 2024?"))))
+'''),
+    md("""
+## 5. What the checks can and cannot tell you
+
+Three questions on the session documents show the three situations that you will meet. They are asked from code, so that the answers are saved in this copy of the notebook.
+"""),
+    code('''
+for question in [
+    "What is the capital of France?",
+    "How have Kenya's coffee export earnings changed in recent years?",
+    "What is Kenya's GDP per capita and how does it compare with Rwanda's?",
+]:
+    display(HTML(lab.reply_html(chat.ask(question))))
+'''),
+    md("""
+- **No close passage.** The documents say nothing about France, so no passage reaches `min_score` and the model is not asked. The application says so instead of guessing. This is the "no relevant result" case of notebook 03, handled by the application and not by the model.
+- **A close passage with no numbers.** The coffee note is close to the question, so the model answers. It has no figures to give, and a model that is weak may say more than the note does. No mark can appear, because there are no numbers, and nothing here checks the sentences. This is what a check on numbers does not cover.
+- **Numbers.** The marks say whether each number is in a passage. They do not say that it is the right number for the question. In the saved copy of the third answer, the model wrote that Rwanda's GDP per capita "had risen to $803" by 2024. The figure 803 is in the Rwanda document, so it carries a ✓, but it is the figure for 2020: the value for 2024 is 1,060. The check found the number and could not see that the sentence puts it in the wrong year. Your own run may word the answers differently, and a small model makes this kind of slip often. In notebook 06 each number named its own record, with its country and year, which is the stronger check; here the check is what can be done on arbitrary documents.
+
+## 6. Chat
+
+Now use the application. Type a question in the box under the cell and press **Ask** (or Enter). Some to try on the session documents: *What is mobile money? How did Kenya's GDP per capita change between 2010 and 2020? Which sources mention coffee?* With your own documents, ask what you would ask a colleague who had read them. The chat box appears when you run the cell, so it is empty in a saved copy of this notebook.
+
+Each question is answered on its own. The application does not remember the earlier ones, so a follow-up such as "and for Rwanda?" has nothing to refer to; write the full question each time.
+"""),
+    code('''
+lab.launch(chat)
+'''),
+    md("""
+## A complete version: the Data360 chat
+
+What you built here is the small version. The World Bank's **[Data360 chat](https://data360.worldbank.org/en/int/chat)** is a complete version that puts the ideas of this series to work in one application: a language model that answers questions about development data, tools that fetch the records, and numbers that can be checked against them (the protocol of notebook 06). Open it, ask the main question of the session, and compare what you see with your own chat box: where does each answer come from, and how does it show that a number can be trusted?
+
+## What this application leaves out
+
+This is the simplest version that works, and it leaves out what a full chatbot has. Each of these is an enhancement that you can add later, and none is needed for a useful first version:
+
+- **Memory of the conversation**, so that follow-up questions work.
+- **Managing the context**: the application sends the four closest passages and the question, and nothing more. It does not count how much text the model can take, and it does not shorten or summarise long passages.
+- **Speed-ups**: reusing the model's work on text it has already read (a **KV cache**), and showing the answer as it is written.
+- **Better search**: re-ranking the passages, combining a search by words with the search by meaning, or rewriting the question before it is searched.
+- **Keeping the index**, so that the documents are not split and stored again each time the notebook starts.
+- **A test suite of your own questions**, as in notebook 06, to see whether a change made the application better.
+
+## Key points
+
+- An application that chats with documents is the pieces of the earlier notebooks put together: split and store, retrieve, answer from the passages, check.
+- A small model runs on your own machine, and the documents stay there. It is also weaker, so the checks and the retrieval threshold carry more of the work.
+- Saying "I could not find that" when no passage is close is the application's job, and costs nothing.
+- A check on numbers finds numbers that are not in the sources. It cannot find a claim that has no number.
+- The Data360 chat is the complete version of this application, with the enhancements below.
+
+## Exercise
+
+1. Set `USE_MY_DOCUMENTS = True`, upload two or three files of your own, and rerun from step 1. Ask one question that the files answer and one that they do not. What does the application do with the second?
+2. After step 3, run `chat.min_score = 0.5`, then ask the coffee question again in the chat box of step 6. What changes, and what is the risk of a high threshold? Try `0.1` as well.
+3. Run `chat.k = 1`, then paste the main question of the session (`w.MAIN_QUESTION`) into the chat box. How much of the answer is left, and why?
+4. On a GPU runtime, rerun from step 3 with `lab.load_model("Qwen/Qwen2.5-3B-Instruct")`. Do the answers get better? Which of the marks change?
 """),
     md(LINKS),
 ]
@@ -1372,6 +1624,7 @@ NOTEBOOKS = {
     "04-tools-and-structured-outputs.ipynb": NB04,
     "05-workflows-and-agents.ipynb": NB05,
     "06-verification-and-evaluation.ipynb": NB06,
+    "07-lab-chat-with-your-documents.ipynb": NB07,
 }
 
 

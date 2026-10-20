@@ -43,8 +43,9 @@ ALT = {
     "knowledge": "Diagram: documents, metadata, chunks, embeddings, then the vector store. Below, built in notebook 03: the question and the retrieved passages from the vector store feed the prompt, then the model and the answer.",
     "retrieval": "Diagram: the question goes to retrieval, a search of the vector store that returns the closest chunks as passages; the passages and the question go into the prompt, then to generation, where the model writes an answer with citations.",
     "tools": "Diagram: the question goes to a search of the store, which returns passages for the prompt; the prompt goes to the model. New in this notebook: the model can call the tool get_indicator with an indicator, a country and optional start and end years; the data it returns goes back into the prompt; the model answers with text or a structured output, a filled-in form that other software can read. Separately, the same tool is served over MCP to any MCP client, such as this notebook, a chatbot or a desktop assistant.",
-    "agent": "Diagram: the question goes to the model, which calls search_documents with a query, getting passages, or get_indicator with an indicator, a country and optional start and end years, getting data; the results return to the model, which answers. The tools run in a fixed order in a chain, or are chosen by the model, with a recursion limit and a trace.",
-    "verification": "Diagram: the question goes to an agent with tools, which produces an answer with claim tags; pcn-core marks each number as verified, flagged or unmarked. Separately, the evaluation suite produces a table per question.",
+    "agent": "Diagram: the question goes to a model that chooses the next step. It can call search_documents, the search of notebook 03 now offered as a tool, which returns passages, or get_indicator, the tool of notebook 04, which returns data. The results go back to the model, which writes the answer. New in this notebook: the model chooses the steps, a step limit and a trace bound and record the loop, and the answer ends on the question of whether its numbers can be trusted, which notebook 06 takes up.",
+    "lab": "Diagram: your documents are split and stored; a question retrieves the closest passages; a small open model, running in the notebook, writes the answer from them; every number of the answer is looked up in the passages and gets a mark; the answer is shown with its sources. If no passage is close enough, the application says it could not find the answer.",
+    "verification": "Diagram: the question goes to the agent with tools of notebook 05, which writes an answer with claim tags; the verifier, pcn-core, puts a mark on each number: verified, flagged or unmarked. Separately, the evaluation suite of eight questions produces a table per question for each configuration of the application.",
 }
 
 
@@ -124,30 +125,51 @@ def flow(name: str, stage: int | None = None) -> Flow:
         return Flow(
             [
                 ("q", "question", "normal"),
-                ("m1", "model", "hot"),
-                ("s", "search_documents(\nquery)", "hot"),
-                ("g", "get_indicator(\nindicator, country,\nstart, end)", "hot"),
+                ("m1", "the model\nchooses the next step", "hot"),
+                ("s", "search_documents\n(the search of 03,\nnow a tool)", "hot"),
+                ("g", "get_indicator\n(the tool of 04)", "normal"),
                 ("ps", "passages", "normal"),
                 ("dt", "data", "normal"),
-                ("m2", "model", "normal"),
+                ("m2", "the model writes", "normal"),
                 ("a", "answer", "normal"),
+                ("lim", "step limit\nand a trace", "hot"),
+                ("chk", "can we trust\nthe numbers?", "hot"),
             ],
-            [("q", "m1"), ("m1", "s"), ("m1", "g"), ("s", "ps"), ("g", "dt"), ("ps", "m2"), ("dt", "m2"), ("m2", "a")],
-            caption="Fixed order in a chain, or chosen by the model, with a recursion limit and a trace",
+            [("q", "m1"), ("m1", "s"), ("m1", "g"), ("s", "ps"), ("g", "dt"), ("ps", "m2"), ("dt", "m2"), ("m2", "a"), ("m1", "lim"), ("a", "chk")],
+            grid={"q": (0, 0), "m1": (1, 0), "s": (2, 0), "ps": (3, 0), "m2": (4, 0), "a": (5, 0), "lim": (1, 1), "g": (2, 1), "dt": (3, 1), "chk": (5, 1)},
+            caption="Light boxes: built in notebooks 01 to 04. Dark boxes: added in this notebook.",
         )
     if name == "verification":
         return Flow(
             [
                 ("q", "question", "normal"),
-                ("ag", "agent with tools", "normal"),
-                ("an", "answer with\n<claim> tags", "normal"),
-                ("pcn", "pcn-core", "hot"),
-                ("mk", "marks:\nverified · flagged · unmarked", "hot"),
-                ("ev", "evaluation suite", "hot"),
-                ("tb", "table per question", "hot"),
+                ("ag", "agent with tools\n(notebook 05)", "normal"),
+                ("an", "answer with\nclaim tags", "hot"),
+                ("pcn", "verifier\n(pcn-core)", "hot"),
+                ("mk", "a mark on each number:\nverified, flagged, unmarked", "hot"),
+                ("ev", "evaluation suite:\neight questions", "hot"),
+                ("tb", "a table per question,\nfor each configuration", "hot"),
             ],
             [("q", "ag"), ("ag", "an"), ("an", "pcn"), ("pcn", "mk"), ("ev", "tb")],
             grid={"q": (0, 0), "ag": (1, 0), "an": (2, 0), "pcn": (3, 0), "mk": (4, 0), "ev": (3, 1), "tb": (4, 1)},
+            caption="Light boxes: built in notebooks 01 to 05. Dark boxes: added in this notebook.",
+        )
+    if name == "lab":
+        return Flow(
+            [
+                ("d", "your documents\n(or the session's)", "hot"),
+                ("sp", "split into chunks\n(notebook 02)", "normal"),
+                ("st", "store\n(notebook 02)", "normal"),
+                ("q", "your question", "normal"),
+                ("rt", "retrieve the closest\npassages (notebook 03)", "normal"),
+                ("nf", "no close passage:\nsay so", "hot"),
+                ("m", "small open model\nwrites the answer", "hot"),
+                ("ck", "each number looked up\nin the passages", "hot"),
+                ("a", "answer, marks\nand sources", "hot"),
+            ],
+            [("d", "sp"), ("sp", "st"), ("q", "rt"), ("st", "rt"), ("rt", "m"), ("rt", "nf"), ("m", "ck"), ("ck", "a")],
+            grid={"d": (0, 0), "sp": (1, 0), "st": (2, 0), "q": (2, 1), "rt": (3, 0), "m": (4, 0), "ck": (5, 0), "a": (6, 0), "nf": (4, 1)},
+            caption="Light boxes: built in notebooks 02 and 03. Dark boxes: new in the lab.",
         )
     if name == "architecture":
         if stage is None:
