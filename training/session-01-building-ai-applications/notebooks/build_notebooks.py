@@ -1617,6 +1617,20 @@ This is the simplest version that works, and it leaves out what a full chatbot h
     md(LINKS),
 ]
 
+COLAB = "https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-01-building-ai-applications/notebooks/"
+ORDER = [
+    ("01-from-model-to-application.ipynb", "01 · From a language model to an application", NB01),
+    ("02-preparing-knowledge.ipynb", "02 · Preparing knowledge for an application", NB02),
+    ("03-retrieval-augmented-generation.ipynb", "03 · Retrieval-augmented generation", NB03),
+    ("04-tools-and-structured-outputs.ipynb", "04 · Tools and structured outputs", NB04),
+    ("05-workflows-and-agents.ipynb", "05 · Workflows and agents", NB05),
+    ("06-verification-and-evaluation.ipynb", "06 · Making the application trustworthy", NB06),
+    ("07-lab-chat-with-your-documents.ipynb", "07 · Lab: chat with your documents", NB07),
+]
+for (_, _, nb), (nxt_file, nxt_title, _) in zip(ORDER, ORDER[1:]):
+    nb.append(md(f"**Next:** [{nxt_title}]({COLAB}{nxt_file})"))
+
+
 NOTEBOOKS = {
     "01-from-model-to-application.ipynb": NB01,
     "02-preparing-knowledge.ipynb": NB02,
