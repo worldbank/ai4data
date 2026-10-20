@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="508" viewBox="0 0 1200 508" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" role="img" aria-labelledby="t">
+<title id="t">The two pillars of the AI for Data – Data for AI program and the workstreams under each</title>
+<rect x="1" y="1" width="590" height="506" rx="12" fill="#f6f8fa" stroke="#d0d7de"/>
+<rect x="1" y="1" width="590" height="6" rx="3" fill="#2a5aa7"/>
+<text x="23" y="48" font-size="24" font-weight="700" fill="#2a5aa7">AI for Data</text>
+<text x="23" y="72" font-size="14" fill="#57606a">AI applied inside the statistical process, under human review</text>
+<rect x="23" y="101" width="546" height="92" rx="8" fill="#ffffff" stroke="#d8dee4"/>
+<rect x="23" y="111" width="4" height="72" rx="2" fill="#2a5aa7"/>
+<text x="45" y="130" font-size="15" font-weight="600" fill="#1f2328">Data production</text>
+<text x="45" y="153" font-size="14" fill="#57606a">Statistical classification and coding · Data Snapshots from PDF</text>
+<text x="45" y="173" font-size="14" fill="#57606a">documents · Small and agentic AI · Synthetic data (REaLTabFormer)</text>
+<rect x="23" y="205" width="546" height="92" rx="8" fill="#ffffff" stroke="#d8dee4"/>
+<rect x="23" y="215" width="4" height="72" rx="2" fill="#2a5aa7"/>
+<text x="45" y="234" font-size="15" font-weight="600" fill="#1f2328">Data quality and metadata</text>
+<text x="45" y="257" font-size="14" fill="#57606a">Metadata Reviewer and quality scoring · Metadata Augmentation ·</text>
+<text x="45" y="277" font-size="14" fill="#57606a">Anomaly detection and explanation · Responsible AI guidance</text>
+<rect x="23" y="309" width="546" height="92" rx="8" fill="#ffffff" stroke="#d8dee4"/>
+<rect x="23" y="319" width="4" height="72" rx="2" fill="#2a5aa7"/>
+<text x="45" y="338" font-size="15" font-weight="600" fill="#1f2328">Discovery and trustworthy dissemination</text>
+<text x="45" y="361" font-size="14" fill="#57606a">Search by meaning over catalogs · Proof-Carrying Numbers ·</text>
+<text x="45" y="381" font-size="14" fill="#57606a">Monitoring of data use</text>
+<rect x="23" y="413" width="546" height="72" rx="8" fill="#ffffff" stroke="#d8dee4"/>
+<rect x="23" y="423" width="4" height="52" rx="2" fill="#2a5aa7"/>
+<text x="45" y="442" font-size="15" font-weight="600" fill="#1f2328">Methods and open tools</text>
+<text x="45" y="465" font-size="14" fill="#57606a">Inclusive and multilingual models · Open benchmarks and evaluation</text>
+<rect x="611" y="1" width="590" height="506" rx="12" fill="#f6f8fa" stroke="#d0d7de"/>
+<rect x="611" y="1" width="590" height="6" rx="3" fill="#13917f"/>
+<text x="633" y="48" font-size="24" font-weight="700" fill="#13917f">Data for AI</text>
+<text x="633" y="72" font-size="14" fill="#57606a">Development data made usable by AI systems through open standards and</text>
+<text x="633" y="90" font-size="14" fill="#57606a">infrastructure</text>
+<rect x="633" y="101" width="546" height="92" rx="8" fill="#ffffff" stroke="#d8dee4"/>
+<rect x="633" y="111" width="4" height="72" rx="2" fill="#13917f"/>
+<text x="655" y="130" font-size="15" font-weight="600" fill="#1f2328">Assessment</text>
+<text x="655" y="153" font-size="14" fill="#57606a">AI-readiness assessment framework · Operational companion</text>
+<rect x="633" y="205" width="546" height="92" rx="8" fill="#ffffff" stroke="#d8dee4"/>
+<rect x="633" y="215" width="4" height="72" rx="2" fill="#13917f"/>
+<text x="655" y="234" font-size="15" font-weight="600" fill="#1f2328">Standards and metadata</text>
+<text x="655" y="257" font-size="14" fill="#57606a">AI-ready data framework · AI-ready metadata and standards: DDI,</text>
+<text x="655" y="277" font-size="14" fill="#57606a">SDMX, DCAT, Croissant, schema.org</text>
+<rect x="633" y="309" width="546" height="92" rx="8" fill="#ffffff" stroke="#d8dee4"/>
+<rect x="633" y="319" width="4" height="72" rx="2" fill="#13917f"/>
+<text x="655" y="338" font-size="15" font-weight="600" fill="#1f2328">Infrastructure</text>
+<text x="655" y="361" font-size="14" fill="#57606a">Model Context Protocol servers over official statistics · AI-</text>
+<text x="655" y="381" font-size="14" fill="#57606a">assisted metadata platforms: Metadata Editor, NADA</text>
+<rect x="633" y="413" width="546" height="72" rx="8" fill="#ffffff" stroke="#d8dee4"/>
+<rect x="633" y="423" width="4" height="52" rx="2" fill="#13917f"/>
+<text x="655" y="442" font-size="15" font-weight="600" fill="#1f2328">Semantic knowledge</text>
+<text x="655" y="465" font-size="14" fill="#57606a">Global Question Bank · Ontologies and knowledge graphs</text>
+</svg>

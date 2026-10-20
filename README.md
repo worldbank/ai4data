@@ -53,24 +53,12 @@ The program's position follows the UN Fundamental Principles of Official Statist
 
 ## Two pillars
 
-```mermaid
-flowchart LR
-  subgraph A["AI for Data · AI applied inside the statistical process, under human review"]
-    direction TB
-    A1["Data production<br/>classification and coding · data snapshots from PDFs<br/>small and agentic AI · synthetic data"]
-    A2["Data quality and metadata<br/>metadata review and scoring · variable grouping<br/>anomaly detection and explanation"]
-    A3["Discovery and trustworthy dissemination<br/>search by meaning · Proof-Carrying Numbers<br/>monitoring of data use"]
-    A4["Methods and open tools<br/>inclusive and multilingual models<br/>open benchmarks and evaluation"]
-  end
-  subgraph B["Data for AI · development data made usable by AI systems"]
-    direction TB
-    B1["Assessment<br/>AI-readiness assessment of a statistical office<br/>and the operational companion"]
-    B2["Standards and metadata<br/>AI-ready data framework · DDI, SDMX, DCAT,<br/>Croissant, schema.org"]
-    B3["Infrastructure<br/>MCP servers over official statistics<br/>Metadata Editor and NADA with AI add-ons"]
-    B4["Semantic knowledge<br/>Global Question Bank<br/>ontologies and knowledge graphs"]
-  end
-  A ~~~ B
-```
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/program-pillars-dark.svg">
+    <img src="docs/images/program-pillars.svg" alt="The two pillars of the program. AI for Data: data production; data quality and metadata; discovery and trustworthy dissemination; methods and open tools. Data for AI: assessment; standards and metadata; infrastructure; semantic knowledge." width="1200">
+  </picture>
+</p>
 
 The [AI-ready data framework](https://worldbank.github.io/ai4data/docs/ai-ready-framework) defines the attributes of AI-ready data under FAIR with two added dimensions, trustworthy and inclusive, and names the workstream that serves each. The [mapping to the GSBPM](https://worldbank.github.io/ai4data/docs/gsbpm-mapping) places each workstream in the statistical production process.
 
