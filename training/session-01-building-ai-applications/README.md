@@ -1,6 +1,6 @@
 # Session 01 · Building AI applications for research and data
 
-90 minutes of slides and guided notebook demonstrations, followed by 15 to 30 minutes of questions. Draft for team review.
+90 minutes of slides and guided notebook demonstrations, followed by 15 to 30 minutes of questions.
 
 ## Who it is for
 
