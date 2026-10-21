@@ -105,12 +105,16 @@ pip install ai4data[anomaly]
 # For dataset name harmonization and deduplication
 pip install ai4data[harmonization]
 
-# For figure/table snapshots and metadata (DocLayout-YOLO is the default)
+# For figure/table snapshots and metadata (requires a release with these extras)
 pip install "ai4data[data-snapshot-doclayoutyolo,data-snapshot-metadata]"
 
 # For all capabilities
 pip install ai4data[all]
 ```
+
+The Data Snapshot extras require a release containing the new module and are
+absent from `ai4data==0.1.0`. Until that release is published, follow the
+[source installation instructions](src/ai4data/data_snapshot/README.md#installation).
 
 ### Usage Example
 

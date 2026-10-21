@@ -7,21 +7,27 @@ transcription and submission to external services are not implemented.
 ## Installation
 
 Requires Python 3.11 or newer. Use your preferred Python environment and package
-manager. From the repository root, install the package with the
-`data-snapshot-doclayoutyolo` and `data-snapshot-metadata` extras.
+manager. Data Snapshot is part of `ai4data`, with optional extractor and metadata
+dependencies.
 
-For example, using Python's built-in `venv` and pip (skip environment creation
-if you already have an active environment):
+**Release availability:** `ai4data==0.1.0` does not include these extras. Once a
+release containing this module is published, the standard installation is:
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install -e ".[data-snapshot-doclayoutyolo,data-snapshot-metadata]"
+python -m pip install "ai4data[data-snapshot-doclayoutyolo,data-snapshot-metadata]"
 ```
 
+Until then, install the checkout from the repository root:
+
+```bash
+python -m pip install ".[data-snapshot-doclayoutyolo,data-snapshot-metadata]"
+```
+
+This builds and installs the package normally. Reinstall after changing the
+source. Contributors who want edits to take effect immediately can use the
+editable installation described under [Development](#development).
+
 For snapshot extraction only, omit `data-snapshot-metadata`.
-For a published release containing this module, use
-`python -m pip install "ai4data[data-snapshot-doclayoutyolo,data-snapshot-metadata]"`.
 
 Install only the extractor you need. Weights download on the first extractor
 run and are cached under `.cache/models/`, relative to the working directory.
@@ -64,7 +70,7 @@ Install it in its own environment, without `all` or other capability extras:
 
 ```bash
 python -m venv .venv-tfid
-.venv-tfid/bin/python -m pip install -e ".[data-snapshot-tfid]"
+.venv-tfid/bin/python -m pip install ".[data-snapshot-tfid]"
 .venv-tfid/bin/python -m ai4data.data_snapshot.extract_data_snapshot \
   --model=tfid --input=data/example.pdf
 ```
@@ -159,7 +165,8 @@ paths = run_pipeline("data/another.pdf", "output", metadata_provider="openai")
 ## Development
 
 Install `data-snapshot-metadata` and `pytest` to run the offline tests; model
-runtimes and weights are unnecessary:
+runtimes and weights are unnecessary. From the repository root, use an editable
+installation so source changes take effect without reinstalling:
 
 ```bash
 python -m pip install -e ".[data-snapshot-metadata]" pytest
