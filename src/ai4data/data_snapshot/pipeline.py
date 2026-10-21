@@ -46,6 +46,8 @@ def run_extraction(
         If the model identifier is not implemented.
     """
     normalized_name = model_name.strip().lower()
+    if normalized_name not in {"doclayoutyolo", "tfid", "yolo11", "yolo26"}:
+        raise ValueError(f"Unsupported model: {model_name}")
     pdf_paths = discover_pdfs(input_path)
     validate_unique_stems(pdf_paths)
     model_dir = Path(output_dir) / normalized_name

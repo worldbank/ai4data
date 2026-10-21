@@ -52,6 +52,33 @@ def test_create_adapter_rejects_unknown_model() -> None:
         create_adapter("unknown")
 
 
+@pytest.mark.parametrize("entry_point", ["run_extraction", "run_pipeline"])
+@pytest.mark.parametrize("model_name", ["unknown", "../other", "absolute"])
+def test_invalid_model_preserves_outputs_before_forced_cleanup(
+    tmp_path: Path, entry_point: str, model_name: str
+) -> None:
+    """Reject unsupported names and paths without deleting existing outputs."""
+    pdf_path = tmp_path / "report.pdf"
+    pdf_path.write_bytes(b"No rendering should occur for an invalid model.")
+    output_dir = tmp_path / "output"
+    output_dir.mkdir()
+    if model_name == "absolute":
+        model_name = str(tmp_path / "other")
+    model_dir = output_dir / model_name
+    snapshot_path = model_dir / "snapshots" / "report_table_000.png"
+    metadata_path = model_dir / "metadata" / "report_table_000.json"
+    snapshot_path.parent.mkdir(parents=True)
+    metadata_path.parent.mkdir(parents=True)
+    snapshot_path.write_bytes(b"keep snapshot")
+    metadata_path.write_bytes(b"keep metadata")
+
+    with pytest.raises(ValueError, match="Unsupported model:"):
+        getattr(pipeline, entry_point)(pdf_path, output_dir, model_name, force=True)
+
+    assert snapshot_path.read_bytes() == b"keep snapshot"
+    assert metadata_path.read_bytes() == b"keep metadata"
+
+
 def test_run_pipeline_skips_all_stages_for_existing_outputs(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
