@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "ai4data"
 description = "AI for Data - Data for AI"
-readme = { file = "README.md", content-type = "text/markdown" }
+readme = { file = "src/ai4data/README.md", content-type = "text/markdown" }
 license = { file = "LICENSE" }
 keywords = ["ai4data", "data4ai"]
 authors = [{ name = "Development Data Group", email = "aifordata@worldbank.org" }]
