@@ -2,9 +2,9 @@
 
 Materials for the training series of the AI for Data – Data for AI program: session plans, slide decks, notebooks, worked-example assets, demonstration scripts, and participant resources. Each session lives in its own folder and is self-contained.
 
-| Session | Title | Format | Status |
-|---|---|---|---|
-| 01 | [Building AI applications for research and data](session-01-building-ai-applications/README.md) | 90 minutes, slides and guided notebooks, plus 15 to 30 minutes of questions | Draft for team review |
+| Session | Title | Format |
+|---|---|---|
+| 01 | [Building AI applications for research and data](session-01-building-ai-applications/README.md) | 90 minutes, slides and guided notebooks, plus 15 to 30 minutes of questions |
 
 ### Session 01 notebooks
 
