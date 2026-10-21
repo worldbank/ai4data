@@ -14,6 +14,8 @@ def _auto_mock_classifier(monkeypatch, mock_classifier_pipeline, request):
         return
     if "test_cookbook" in str(request.node.fspath):
         return  # cookbook scripts are standalone and do not import ai4data
+    if "data_snapshot" in request.node.path.parts:
+        return  # snapshot tests inject their own detectors and API clients
     from ai4data.data_use.models.model_manager import ModelManager
 
     monkeypatch.setattr(

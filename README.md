@@ -105,6 +105,9 @@ pip install ai4data[anomaly]
 # For dataset name harmonization and deduplication
 pip install ai4data[harmonization]
 
+# For figure/table snapshots and metadata (DocLayout-YOLO is the default)
+pip install "ai4data[data-snapshot-doclayoutyolo,data-snapshot-metadata]"
+
 # For all capabilities
 pip install ai4data[all]
 ```
@@ -119,6 +122,8 @@ from ai4data import data_use, anomaly
 ```
 
 For detailed usage examples and API documentation, please refer to the [full documentation](https://worldbank.github.io/ai4data).
+
+For data snapshots, see the [Data Snapshot usage guide](src/ai4data/data_snapshot/README.md).
 
 ### JavaScript / TypeScript
 

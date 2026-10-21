@@ -14,6 +14,9 @@ This package provides various AI-powered tools for data analysis:
 - discovery: NADA catalog, metadata templates, and related discovery helpers
   Install with: uv pip install ai4data[discovery]
 
+- data_snapshot: Figure/table snapshots and Schema v1.4 metadata from PDFs
+  Install with: uv pip install ai4data[data-snapshot-doclayoutyolo,data-snapshot-metadata]
+
 For all capabilities:
   uv pip install ai4data[all]
 """
@@ -37,6 +40,7 @@ from . import data_use
 from . import anomaly
 from . import discovery
 from . import metadata
+from . import data_snapshot
 
 __all__ = [
     "__version__",
@@ -44,4 +48,5 @@ __all__ = [
     "anomaly",
     "discovery",
     "metadata",
+    "data_snapshot",
 ]

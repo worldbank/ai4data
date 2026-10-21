@@ -2,6 +2,7 @@ _build/
 sample.doc.json
 *.DS_Store
 data/
+/output/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -127,6 +128,7 @@ celerybeat.pid
 # Environments
 .env
 .venv
+/.venv-tfid/
 env/
 venv/
 ENV/
