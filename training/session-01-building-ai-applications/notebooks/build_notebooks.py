@@ -176,24 +176,32 @@ The next cell installs the session's tools and loads its helper module. The firs
 """),
     code(SETUP),
     md(STACK),
+    md("""
+The setup cell imported the helper module as `w` and created `model`, a LangChain chat model: a live one when a key is set, otherwise one that replays recorded answers. The helper functions used in this notebook, in the order they appear:
+
+| Call | What it does |
+|---|---|
+| `w.use(name)` | Names the recorded scenario for the next model call, so that the replay returns the right answer. Has no effect on a live model. |
+| `w.show(message, role=...)` | Draws a message as a chat bubble, with the answer rendered as Markdown. |
+| `w.indicator_lookup(indicator, country, start=...)` | Returns the observations of a World Development Indicators series for one country, from the session's data file. |
+| `w.latest(result)` | The last observation of such a result. |
+| `w.show_table(...)`, `w.show_claim_check(...)`, `w.show_prompt(...)` | Draw a table, the claims comparison, and the prompt as HTML. |
+| `w.load_documents()` | Loads the eight session documents as LangChain `Document` objects, with the file's header as metadata. |
+"""),
     md(id="section-1", text="""
 ## 1. The three parts of a prompt
 
 A call to a chat model sends a list of messages. The first is the system message, which the model treats as standing instructions for the whole exchange. The others are user messages. An application composes three parts into these messages:
 
-- **Instructions**: how the model should behave, written by the application's builders. Here they say to answer from the supplied context, to cite the document after each figure, and to say when something is missing.
+- **Instructions**: how the model should behave, written by the application's builders.
 - **Context**: the evidence for this question, selected by the application. Here it is documents; later it is passages and data records.
 - **Question**: the user's text.
 
-The parts are kept in separate slots because a different person changes each one, at a different time. LangChain's `ChatPromptTemplate` holds the slots, and `prompt | model` is the whole application at this stage.
+The parts are kept in separate slots because a different person changes each one, at a different time.
 
-@@EXPLAINER:prompt@@
-
-*The animation loops. Its text comes from this notebook: the instructions are from the cell below, the context and the answer are from section 3, and the question is the worked example. Section 6 shows the same three parts as the model received them.*
+The next cell writes three sets of instructions. The basic set only names the role. The grounded set adds the three rules this session depends on: answer from the context, cite the document after each figure, and say when something is missing. The clarifying set adds one more rule, for section 5.
 """),
     code('''
-from langchain_core.prompts import ChatPromptTemplate
-
 INSTRUCTIONS_BASIC = "You are a research assistant. Answer the question."
 
 INSTRUCTIONS_GROUNDED = """You are a research assistant for development data.
@@ -202,19 +210,32 @@ If the context does not contain what is needed, say so and give the closest avai
 
 INSTRUCTIONS_CLARIFY = INSTRUCTIONS_GROUNDED + """
 If the question is ambiguous, say which readings are possible and ask which one is meant before answering."""
+'''),
+    md("""
+A prompt template holds the three slots. `ChatPromptTemplate.from_messages` takes a list of `(role, text)` pairs, and each `{name}` in a text is a slot that is filled at call time. The instructions become the system message. The context and the question go together into one user message, in a fixed layout, so that the model can tell them apart. `prompt | model` joins the two steps into one object: the output of the template becomes the input of the model. That object, `chain`, is the whole application at this stage.
+"""),
+    code('''
+from langchain_core.prompts import ChatPromptTemplate
 
 prompt = ChatPromptTemplate.from_messages([
-    ("system", "{instructions}"),
-    ("human", "CONTEXT:\\n{context}\\n\\nQUESTION: {question}"),
+    ("system", "{instructions}"),                                   # the system message: the instructions slot
+    ("human", "CONTEXT:\\n{context}\\n\\nQUESTION: {question}"),      # one user message: the context and the question slots
 ])
-chain = prompt | model
+chain = prompt | model   # fill the template, then send the messages to the model
 
 w.show(w.MAIN_QUESTION, role="user")
 '''),
+    md("""
+@@EXPLAINER:prompt@@
+
+*The animation loops. Its text comes from this notebook: the instructions are from the cell above, the context and the answer are from section 3, and the question is the worked example. Section 6 shows the same three parts as the model received them.*
+"""),
     md(id="section-2", text="""
 ## 2. The model without context
 
-Without context, the model answers from training data: text it read before its training ended, compressed into its parameters. It holds no records, only patterns of text, so its figures are reconstructions. The cell sends the question with the basic instructions and no context.
+Without context, the model answers from training data: text it read before its training ended, compressed into its parameters. It holds no records, only patterns of text, so its figures are reconstructions.
+
+The next cell makes the first call. `chain.invoke` takes one dictionary with a value for each slot. The context slot gets the text `(none)`, so the model sees that no evidence was supplied. `w.use` names the recorded scenario first, so that the replay returns the answer recorded for this exact call.
 """),
     code('''
 w.use("nb01_zero_context")
@@ -222,18 +243,21 @@ answer = chain.invoke({"instructions": INSTRUCTIONS_BASIC, "context": "(none)", 
 w.show(answer)
 '''),
     md("""
-The answer cannot be judged without reference values. The next cell prints the official values from the World Development Indicators, and the cell after it sets six claims from the answer beside them.
+The answer cannot be judged without reference values. The next cell prints the official values from the World Development Indicators for the two measures the answer leans on most: the share of people using the internet and GDP per capita. `w.indicator_lookup` returns the observations of one series for one country, and the loop keeps the 2023 and 2024 values.
 """),
     code('''
 rows = []
-for ind in ["IT.NET.USER.ZS", "NY.GDP.PCAP.CD"]:
+for ind in ["IT.NET.USER.ZS", "NY.GDP.PCAP.CD"]:            # internet users (% of population), GDP per capita (current US$)
     fmt = "{:,.0f}" if ind == "NY.GDP.PCAP.CD" else "{:.1f}"
     for country in ["Kenya", "Rwanda"]:
-        r = w.indicator_lookup(ind, country, start=2023)
+        r = w.indicator_lookup(ind, country, start=2023)   # observations from 2023 on
         by_year = {o["year"]: fmt.format(o["value"]) for o in r["observations"]}
         rows.append((r["name"], country, by_year[2023], by_year[2024]))
 w.show_table(["Indicator", "Country", "2023", "2024"], rows, source="Source: World Bank, World Development Indicators.")
 '''),
+    md("""
+The next cell takes six claims from the answer and sets each beside the official value. Each row holds the claim, the model's words, the value from the data, and a verdict. `value` returns the latest observation of a series, and `growth` returns the growth rate of a given year.
+"""),
     code(CLAIMS_CELL),
     md("""
 Four of the six claims are close to the official values. Two are off: Kenya's internet share, given as roughly 40 percent against 35.0 in 2024, and Rwanda's 2024 growth, given as 9 to 10 percent against 7.2. The answer is hedged, structured, and ends with a reading list, and none of that helps a reader find the two wrong figures. Every figure is a rounded range, most carry no year, and the sources are institutions to consult, so no figure can be traced to a record. A different model or different instructions would change the wording. The figures would still be reconstructions, because the prompt contains no data.
@@ -241,13 +265,19 @@ Four of the six claims are close to the official values. Two are off: Kenya's in
     md(id="section-3", text="""
 ## 3. The same question with context
 
-Context is text that the application places in the prompt for the model to read. Under the grounded instructions, the model answers only from it and cites it. The cell places the four country briefs in the context slot, prints their size, and asks the question again.
+Context is text that the application places in the prompt for the model to read. Under the grounded instructions, the model answers only from it and cites it.
+
+The next cell builds the context. `w.load_documents` returns the eight session documents, each with an `id` in its metadata, and the cell keeps the four country briefs. Each brief is prefixed with its id in square brackets, which is the form the instructions ask the model to cite. The size is printed as characters and as an estimate of tokens, at four characters per token.
 """),
     code('''
 docs = {d.metadata["id"]: d for d in w.load_documents()}
 context = "\\n\\n".join(f"[{i}]\\n{docs[i].page_content}" for i in ["kenya-digital", "rwanda-digital", "kenya-economy", "rwanda-economy"])
-print(f"{len(context):,} characters of context, roughly {len(context)//4:,} tokens\\n")
-
+print(f"{len(context):,} characters of context, roughly {len(context)//4:,} tokens")
+'''),
+    md("""
+The call is the same as in section 2, with the grounded instructions in the first slot and the four briefs in the second.
+"""),
+    code('''
 w.use("nb01_with_context")
 answer = chain.invoke({"instructions": INSTRUCTIONS_GROUNDED, "context": context, "question": w.MAIN_QUESTION})
 w.show(answer)
@@ -263,7 +293,7 @@ Every figure now carries a citation to a brief, the comparison is specific, and 
     md(id="section-4", text="""
 ## 4. A question the evidence cannot answer
 
-An instruction sets the model's behaviour when the evidence falls short. The grounded instructions say: if the context does not contain what is needed, say so and give the closest available information. The cell asks for Kenya's internet use in 2025, and the brief ends at 2024.
+An instruction sets the model's behaviour when the evidence falls short. The grounded instructions say: if the context does not contain what is needed, say so and give the closest available information. The next cell supplies only the Kenya brief, which ends at 2024, and asks for 2025.
 """),
     code('''
 w.use("nb01_missing_info")
@@ -277,12 +307,13 @@ The model says that 2025 is absent, names 2024 as the latest year, and gives 35.
     md(id="section-5", text="""
 ## 5. An ambiguous question under two sets of instructions
 
-"How connected is Kenya?" has at least three readings: internet use, mobile subscriptions, or broadband coverage. A model picks a reading unless it is told to ask. The cell asks the question twice: with the basic instructions, and with an added instruction to list the readings and ask which one is meant.
+"How connected is Kenya?" has at least three readings: internet use, mobile subscriptions, or broadband coverage. A model picks a reading unless it is told to ask. The next cell asks the question twice with the same context: first with the basic instructions, then with the clarifying set, whose added rule tells the model to list the readings and ask which one is meant.
 """),
     code('''
 print("Without an instruction to clarify:\\n")
 w.use("nb01_ambiguous_no_instruction")
 w.show(chain.invoke({"instructions": INSTRUCTIONS_BASIC, "context": docs["kenya-digital"].page_content, "question": "How connected is Kenya?"}))
+
 print("\\n" + "=" * 100 + "\\nWith the instruction:\\n")
 w.use("nb01_ambiguous_with_instruction")
 w.show(chain.invoke({"instructions": INSTRUCTIONS_CLARIFY, "context": docs["kenya-digital"].page_content, "question": "How connected is Kenya?"}))
@@ -293,7 +324,7 @@ With the basic instructions, the model answers at length, covers two readings, a
     md(id="section-6", text="""
 ## 6. The prompt as sent to the model
 
-The cell prints the messages of the last call. The instructions arrive as the system message. The context and the question arrive together in one user message, in the colours of section 1. This is everything the model sees.
+`prompt.format_messages` fills the template with values and returns the message list without calling the model. The next cell does this for the last call of section 5 and draws the messages in the colours of section 1. The instructions arrive as the system message. The context and the question arrive together in one user message. This is everything the model sees.
 """),
     code('''
 messages = prompt.format_messages(instructions=INSTRUCTIONS_CLARIFY, context=docs["kenya-digital"].page_content, question="How connected is Kenya?")
@@ -320,7 +351,7 @@ A model reads a limited amount of text per call, called its context window and m
 ## Exercise
 
 1. Read the answers of sections 2 and 3 side by side. For each number, note whether it can be checked and where. Then decide which answer could be sent to a colleague, and give the reason.
-2. In the cell of section 1, add a sentence to `INSTRUCTIONS_GROUNDED`, for example "Answer in no more than three sentences." Run that cell again, then run the cell of section 6. The Instructions block now shows the added sentence exactly as the model would receive it. The recorded answers do not react to new instructions. With a live key in `WORKSHOP_API_KEY`, rerun section 3 to see how the answer changes.
+2. In the first cell of section 1, add a sentence to `INSTRUCTIONS_GROUNDED`, for example "Answer in no more than three sentences." Run that cell again, then run the cell of section 6. The Instructions block now shows the added sentence exactly as the model would receive it. The recorded answers do not react to new instructions. With a live key in `WORKSHOP_API_KEY`, rerun section 3 to see how the answer changes.
 """),
     md(LINKS),
 ]
