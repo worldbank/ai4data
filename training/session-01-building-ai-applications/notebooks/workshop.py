@@ -193,18 +193,47 @@ def mode(model: BaseChatModel) -> str:
     return f"live ({getattr(model, 'model_name', 'model')})"
 
 
-def show(message: BaseMessage | str, width: int = 100) -> None:
-    """Print a message, with the recorded-scenario label when it was replayed."""
+def _in_notebook() -> bool:
+    """True inside a Jupyter or Colab kernel, where display() renders; False in a terminal or a script."""
+    try:
+        from IPython import get_ipython
+
+        ip = get_ipython()
+        return ip is not None and "IPKernelApp" in ip.config
+    except Exception:
+        return False
+
+
+def show(message: BaseMessage | str, width: int = 100, markdown: bool = True) -> None:
+    """Show a message, with the recorded-scenario label when it was replayed.
+
+    In a notebook the text is rendered as Markdown, so lists, emphasis and headings in a
+    model's answer (or in a document) appear formatted; tags such as <claim ...> are shown
+    literally. Outside a notebook, or with markdown=False, the text is printed wrapped.
+    """
+    label = None
+    tool_calls = []
     if isinstance(message, BaseMessage):
         label = message.response_metadata.get("recorded") if hasattr(message, "response_metadata") else None
-        if label:
-            print(f"[recorded output: {label}]")
         text = message.content if isinstance(message.content, str) else json.dumps(message.content)
-        if getattr(message, "tool_calls", None):
-            for c in message.tool_calls:
-                print(f"-> tool call {c['name']}({json.dumps(c['args'])})")
+        tool_calls = list(getattr(message, "tool_calls", None) or [])
     else:
         text = message
+    if markdown and _in_notebook():
+        from IPython.display import Markdown
+
+        parts = []
+        if label:
+            parts.append(f"`[recorded output: {label}]`\n")
+        for c in tool_calls:
+            parts.append(f"`-> tool call {c['name']}({json.dumps(c['args'])})`\n")
+        parts.append(re.sub(r"<(?=[A-Za-z/])", "&lt;", text))  # HTML-like tags shown as text, not rendered
+        display(Markdown("\n".join(parts)))
+        return
+    if label:
+        print(f"[recorded output: {label}]")
+    for c in tool_calls:
+        print(f"-> tool call {c['name']}({json.dumps(c['args'])})")
     for para in text.split("\n"):
         print(textwrap.fill(para, width=width) if len(para) > width else para)
 
