@@ -14,34 +14,38 @@ dependencies.
 release containing this module is published, the standard installation is:
 
 ```bash
-python -m pip install "ai4data[data-snapshot-doclayoutyolo,data-snapshot-metadata]"
+python -m pip install "ai4data[data-snapshot,data-snapshot-metadata]"
 ```
 
 Until then, install the checkout from the repository root:
 
 ```bash
-python -m pip install ".[data-snapshot-doclayoutyolo,data-snapshot-metadata]"
+python -m pip install ".[data-snapshot,data-snapshot-metadata]"
 ```
 
 This builds and installs the package normally. Reinstall after changing the
 source. Contributors who want edits to take effect immediately can use the
 editable installation described under [Development](#development).
 
-For snapshot extraction only, omit `data-snapshot-metadata`.
+The `data-snapshot` extra includes DocLayout-YOLO. For snapshot extraction only,
+omit `data-snapshot-metadata`. For metadata from existing images, install only
+`data-snapshot-metadata`; it supports both OpenRouter and OpenAI without a model
+runtime or the reviewer's provider extras.
 
 Install only the extractor you need. Weights download on the first extractor
 run and are cached under `.cache/models/`, relative to the working directory.
 
 | Extractor | Extra | Weights | Inference size |
 | --- | --- | --- | ---: |
-| `doclayoutyolo` (default) | `data-snapshot-doclayoutyolo` | `juliozhao/DocLayout-YOLO-DocStructBench` | 1024 |
+| `doclayoutyolo` (default) | `data-snapshot` | `juliozhao/DocLayout-YOLO-DocStructBench` | 1024 |
 | `yolo11` | `data-snapshot-yolo11` | `Armaggheddon/yolo11-document-layout`, `yolo11m_doc_layout.pt` | 1280 |
 | `yolo26` | `data-snapshot-yolo26` | `Armaggheddon/yolo26-document-layout`, `yolo26m_doc_layout.pt` | 1280 |
 | `tfid` | `data-snapshot-tfid` | `yifeihu/TF-ID-large` | Model-defined |
 
-The `data-snapshot` extra supplies rendering and schema dependencies without a
-model runtime or metadata API SDK. `ai4data[all]` includes DocLayout-YOLO and
-snapshot metadata extraction; it excludes TF-ID.
+The shared `data-snapshot-core` extra supplies rendering and schema dependencies
+without a model runtime or metadata API SDK. It is included by every snapshot
+extra. `ai4data[all]` includes DocLayout-YOLO and snapshot metadata extraction;
+it excludes TF-ID.
 
 ### Metadata API setup
 

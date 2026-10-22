@@ -153,25 +153,26 @@ ollama = [
   "autogen-ext[ollama]>=0.7.5",
 ]
 
-# Data snapshots: keep extractor runtimes and metadata providers opt-in.
-data-snapshot = [
+# Shared dependencies for metadata-only and alternative extractor installs.
+data-snapshot-core = [
     "pillow>=11,<13",
     "pydantic>=2.13.5,<3",
     "pymupdf>=1.25,<2",
     "tqdm>=4.67,<5",
 ]
 data-snapshot-metadata = [
-    "ai4data[data-snapshot]",
+    "ai4data[data-snapshot-core]",
     "openai>=2.53,<3",
     "python-dotenv>=1,<2",
 ]
-data-snapshot-doclayoutyolo = [
-    "ai4data[data-snapshot]",
+# The default Data Snapshot extra bundles DocLayout-YOLO.
+data-snapshot = [
+    "ai4data[data-snapshot-core]",
     "doclayout-yolo==0.0.4",
     "huggingface-hub>=0.23,<2",
 ]
 data-snapshot-yolo11 = [
-    "ai4data[data-snapshot]",
+    "ai4data[data-snapshot-core]",
     "huggingface-hub>=0.23,<2",
     "ultralytics>=8.4,<9",
 ]
@@ -180,7 +181,7 @@ data-snapshot-yolo26 = [
 ]
 # TF-ID uses an older Transformers stack; install separately (see module README).
 data-snapshot-tfid = [
-    "ai4data[data-snapshot]",
+    "ai4data[data-snapshot-core]",
     "accelerate>=1,<2",
     "einops>=0.8,<1",
     "huggingface-hub>=0.23.2,<1",
@@ -197,7 +198,7 @@ all = [
 	"ai4data[metadata]",
 	"ai4data[discovery]",
 	"ai4data[metadata-reviewer]",
-    "ai4data[data-snapshot-doclayoutyolo,data-snapshot-metadata]",
+    "ai4data[data-snapshot,data-snapshot-metadata]",
 ]
 
 # Documentation (Docusaurus site in website/; notebooks are converted to Markdown

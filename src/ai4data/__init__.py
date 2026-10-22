@@ -15,7 +15,7 @@ This package provides various AI-powered tools for data analysis:
   Install with: uv pip install ai4data[discovery]
 
 - data_snapshot: Figure/table snapshots and Schema v1.4 metadata from PDFs
-  Install with: uv pip install ai4data[data-snapshot-doclayoutyolo,data-snapshot-metadata]
+  Install with: python -m pip install "ai4data[data-snapshot,data-snapshot-metadata]"
 
 For all capabilities:
   uv pip install ai4data[all]
