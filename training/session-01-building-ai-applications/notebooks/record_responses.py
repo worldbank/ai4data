@@ -8,6 +8,9 @@ One-step sequences are then collapsed into single items.
         python record_responses.py            # every notebook; the file is rewritten
     ... python record_responses.py 01 03      # only notebooks 01 and 03; their scenarios
                                               # replace the old ones, the rest are kept
+    ... python record_responses.py 01 --keep nb01_zero_context
+                                              # as above, but the named scenarios (comma-separated)
+                                              # keep their current recorded text
 
 Review the result before committing it: the recorded outputs are what
 participants read when they run the notebooks without a key.
@@ -36,7 +39,13 @@ def main() -> int:
     if TMP.exists():
         TMP.unlink()
     os.environ["WORKSHOP_RECORD"] = str(TMP)
-    prefixes = tuple(sys.argv[1:])
+    args = sys.argv[1:]
+    keep: set[str] = set()
+    if "--keep" in args:
+        i = args.index("--keep")
+        keep = {k for k in args[i + 1].split(",") if k}
+        args = args[:i] + args[i + 2:]
+    prefixes = tuple(args)
     paths = [p for p in sorted(HERE.glob("0*.ipynb")) if not prefixes or p.name.startswith(prefixes)]
     if not paths:
         print("no notebook matches", prefixes)
@@ -46,8 +55,10 @@ def main() -> int:
         nb = nbformat.read(nb_path, as_version=4)
         NotebookClient(nb, timeout=600, kernel_name=os.environ.get("WORKSHOP_KERNEL", "python3"), resources={"metadata": {"path": str(HERE)}}).execute()
     store = json.loads(TMP.read_text())
-    collapsed = {k: (v[0] if len(v) == 1 else v) for k, v in store.items()}
-    if prefixes and TARGET.exists():
+    collapsed = {k: (v[0] if len(v) == 1 else v) for k, v in store.items() if k not in keep}
+    if keep:
+        print(f"kept as recorded: {', '.join(sorted(keep))}")
+    if (prefixes or keep) and TARGET.exists():
         merged = json.loads(TARGET.read_text())
         merged.update(collapsed)
         print(f"replaced {len(collapsed)} scenarios: {', '.join(sorted(collapsed))}")
