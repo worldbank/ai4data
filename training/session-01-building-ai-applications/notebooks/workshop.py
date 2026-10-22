@@ -382,12 +382,18 @@ def make_embeddings():
 
 
 def mcp_server_transport():
-    """A FastMCP stdio transport that runs indicator_server.py with this interpreter."""
+    """A FastMCP stdio transport that runs indicator_server.py with this interpreter.
+
+    The server's error output goes to a log file next to the notebook. The default would be
+    the notebook's own stderr, which in Colab is a kernel stream without a file descriptor,
+    and the subprocess cannot be started with it ("fileno").
+    """
     import sys
 
     from fastmcp.client.transports import PythonStdioTransport
 
-    return PythonStdioTransport(MCP_SERVER, python_cmd=sys.executable, env={**os.environ, "FASTMCP_LOG_LEVEL": "ERROR"})
+    log_file = Path(MCP_SERVER).with_name("indicator_server.log")
+    return PythonStdioTransport(MCP_SERVER, python_cmd=sys.executable, env={**os.environ, "FASTMCP_LOG_LEVEL": "ERROR"}, log_file=log_file)
 
 
 def build_store(chunks: list[Document], embeddings=None) -> InMemoryVectorStore:

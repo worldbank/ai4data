@@ -24,7 +24,7 @@ Five minutes at the end of the session, after notebook 06. The demonstration sho
 1. **The tool calls.** Open the trace or the tool-call view, if the interface exposes it, and name the tools: search, metadata, data. Say that these are the Data360 MCP server's tools and that any MCP client can call them.
 2. **The citation.** Show where the number came from: the indicator, the country, the year, the source.
 3. **The mark beside the number.** Say what verified, flagged, and unmarked mean, and that an unmarked number receives no mark by design.
-4. **One limitation.** Pick one from the catalogue entry of the Data360 MCP server: search over the catalog can miss a series, and a dimension listed in metadata may have no data. Say how the evaluation suite catches it.
+4. **One limitation.** Pick one from the catalogue entry of the Data360 MCP server: search over the catalog can miss a series, and a dimension listed in metadata may have no data. Say how such a miss is caught before release: a fixed set of test questions with known answers, run against the application after every change, as the retrieval test in section 6 of notebook 03 does for the search.
 
 ## Engineering choices to mention
 

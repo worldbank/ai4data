@@ -68,7 +68,7 @@ The eight documents of the worked example, with their metadata, their role in th
 | Shared module the notebooks import: the worked-example data and tool, a recorded-output chat model, printing and evaluation helpers; the indicator MCP server | `notebooks/workshop.py`, `notebooks/indicator_server.py` | Drafted |
 | Slide deck, about 22 slides, with the outline as reviewable text | `slides/` | Drafted |
 | Data360 Chat demonstration: pretested queries and a fallback | `demo/` | Drafted; queries to pretest on the live application |
-| Participant resources: setup, glossary, evaluation examples, next steps | `resources/` | Drafted |
+| Participant resources: setup, glossary, test questions, next steps | `resources/` | Drafted |
 
 ## Technical choices
 
