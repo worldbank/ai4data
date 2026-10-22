@@ -602,42 +602,63 @@ The next cell installs the session's tools and loads its helper module. The firs
 """),
     code(SETUP),
     md("""
-The next cell rebuilds the store of notebook 02, because each Colab notebook starts with an empty session. It also defines the instructions, a prompt with a slot for the passages, and two functions: `make_rag` searches the store and asks the model, and `hits` only searches. `k` is the number of passages a search returns.
+The helper functions used in this notebook, in the order they appear. `w.use` and `w.show` are as in notebook 01.
+
+| Call | What it does |
+|---|---|
+| `w.load_documents()`, `w.split_sections(docs)`, `w.build_store(chunks)` | The three steps of notebook 02: load the documents, split them into section chunks, embed the chunks into an in-memory vector store. |
+| `store.similarity_search(q, k=...)` | LangChain's search: the `k` chunks whose vectors are closest to the question's. `similarity_search_with_score` also returns each score. |
+| `w.format_context(chunks)` | Joins chunks into the context text, each prefixed with its citation. |
+| `w.citation(chunk)` | The citation of a chunk: document id, section, and year, from its metadata. |
+| `w.print_hits(results)`, `w.show_ranking(...)`, `w.show_search_comparison(...)` | Print or draw search results. |
+| `w.load_questions()` | The eight evaluation questions of the session, each with its expected documents and numbers. |
+| `w.numbers_present(text, expected)`, `w.retrieval_hit(chunks, expected_docs)` | The two retrieval checks: how many expected numbers a text contains, and whether an expected document is among the chunks. |
+"""),
+    md("""
+Each Colab notebook starts with an empty session, so the next cell rebuilds the store of notebook 02 with the same three calls.
+"""),
+    code('''
+docs = w.load_documents()          # the eight session documents
+chunks = w.split_sections(docs)    # one chunk per Markdown section, metadata carried over
+store = w.build_store(chunks)      # a vector for every chunk, in memory
+print(len(chunks), "chunks in the store, the same collection as in notebook 02")
+'''),
+    md("""
+The application is the one of notebook 01 with retrieval in front of it. The instructions now speak of passages and of a citation form, which `w.format_context` writes before each passage. `make_rag` builds the chain: a search step that takes the question and returns the `k` closest chunks, formatted as context; a pass-through that forwards the question unchanged; the prompt; the model. `hits` runs the search alone and keeps the scores. The optional `where` is a filter on metadata, used in section 4.
 """),
     code('''
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableLambda, RunnablePassthrough
 
-docs = w.load_documents()
-chunks = w.split_sections(docs)
-store = w.build_store(chunks)
-print(len(chunks), "chunks in the store, the same collection as in notebook 02")
-
 INSTRUCTIONS = """You are a research assistant for development data.
 Answer only from the supplied passages. After each figure, cite the passage in the square-bracket form given.
 If the passages do not contain what is needed, say so."""
 
-prompt = ChatPromptTemplate.from_messages([("system", INSTRUCTIONS), ("human", "PASSAGES:\\n{context}\\n\\nQUESTION: {question}")])
+prompt = ChatPromptTemplate.from_messages([("system", INSTRUCTIONS), ("human", "PASSAGES:
+{context}
+
+QUESTION: {question}")])
 
 
 def make_rag(k=4, where=None):
     """RAG (retrieval-augmented generation): search the store, put the passages in the prompt, ask the model."""
-    retrieve = RunnableLambda(lambda q: store.similarity_search(q, k=k, filter=where))
+    retrieve = RunnableLambda(lambda q: store.similarity_search(q, k=k, filter=where))   # question -> k closest chunks
     return {"context": retrieve | w.format_context, "question": RunnablePassthrough()} | prompt | model
 
 
 def hits(question, k=4, where=None):
+    """The search alone: (chunk, score) pairs, best first."""
     return store.similarity_search_with_score(question, k=k, filter=where)
 '''),
     md(id="section-1", text="""
 ## 1. The main question answered from the store
 
-Retrieval scores every chunk by the distance between its vector and the question's vector, and returns the `k` closest. A vector is a list of numbers that summarises what a text is about, computed by the embedding model of notebook 02. The score printed with each passage is the cosine similarity: 1.0 means identical meaning and 0 means unrelated. The cell retrieves four passages for the main question and asks the model to answer from them.
+Retrieval scores every chunk by the distance between its vector and the question's vector, and returns the `k` closest. A vector is a list of numbers that summarises what a text is about, computed by the embedding model of notebook 02. The score printed with each passage is the cosine similarity: 1.0 means identical meaning and 0 means unrelated. The next cell shows the question, prints the four passages that `hits` returns for it with their scores, and then calls the chain, which repeats the same search inside and asks the model.
 """),
     code('''
 w.show(w.MAIN_QUESTION, role="user")
 print()
-w.print_hits(hits(w.MAIN_QUESTION, k=4))
+w.print_hits(hits(w.MAIN_QUESTION, k=4))     # what the model is about to read
 print()
 w.use("nb03_rag_main")
 w.show(make_rag(k=4).invoke(w.MAIN_QUESTION))
@@ -648,7 +669,7 @@ The answer opens by saying that the passages contain no economic indicators, and
     md(id="section-2", text="""
 ## 2. The ranking behind the answer
 
-A similarity search compares meanings. The question's vector lies closer to the internet chunks than to the economy chunks, because most of the question's words concern connectivity. The search ranks by this closeness alone. It cannot reserve places for the second half of a question, because it never identifies the halves. The cell ranks the ten closest chunks, colours each by topic, and marks the cut-off after the fourth.
+A similarity search compares meanings. The question's vector lies closer to the internet chunks than to the economy chunks, because most of the question's words concern connectivity. The search ranks by this closeness alone. It cannot reserve places for the second half of a question, because it never identifies the halves. The next cell asks for the ten closest chunks, labels each with its topic from a small dictionary keyed by document id, and draws the ranking with the cut-off after the fourth.
 """),
     code('''
 topic = {"kenya-digital": "internet", "rwanda-digital": "internet", "regional-2016": "internet", "internet-indicator": "internet",
@@ -661,14 +682,13 @@ w.show_ranking([(w.citation(d), score, topic[d.metadata["id"]]) for d, score in 
     md("""
 The four chunks above the line are three internet chunks, including the 2016 summary, and the mobile-money note. The first economy chunk is fifth at 0.570 against 0.591 for fourth place, and Kenya's GDP per capita is ninth. Raising `k` is a poor remedy: the ninth place costs nine passages, the coffee note enters at seventh, and every passage adds tokens.
 
-The fix is one search per half of the question, with the results merged. An application can split the question with a model; here the two halves are written by hand. The cell compares the single search with the merged search and marks which of the four needed figures each returns. The merged search returns eight passages where the single search returned four, and the 2016 summary and the mobile-money note are among them.
+The fix is one search per half of the question, with the results merged. An application can split the question with a model; here the two halves are written by hand. The next cell runs a search for each half, merges the results without duplicates, and compares the merged list with the single search of section 1. The comparison marks which of the four figures a correct answer needs appear in each list; `needed` comes from the evaluation file of the session, and `w.numbers_present` looks for each figure in the text of the passages.
 """),
     code('''
-# the question broken into its two parts: one smaller question for each
 sub_queries = ["internet use in Kenya and Rwanda, recent figures", "GDP per capita and economic growth in Kenya and Rwanda, recent figures"]
 merged = []
 for q in sub_queries:
-    for d in store.similarity_search(q, k=4):
+    for d in store.similarity_search(q, k=4):   # four passages per half
         if d not in merged:
             merged.append(d)
 
@@ -687,17 +707,21 @@ def column(title, tone, found):
 
 w.show_search_comparison(w.MAIN_QUESTION, [column("One search for the whole question: 4 passages", "bad", one_search),
                                            column(f"The question broken into two, one search each, merged: {len(merged)} passages", "good", merged)], checks)
-print()
+'''),
+    md("""
+The merged search returns eight passages where the single search returned four, and all four needed figures are among them. The 2016 summary and the mobile-money note are among them too. The next cell gives the merged passages to the model. It uses the prompt and the model directly, because the chain of `make_rag` would run its own search.
+"""),
+    code('''
 w.use("nb03_rag_two_queries")
 w.show((prompt | model).invoke({"context": w.format_context(merged), "question": w.MAIN_QUESTION}))
 '''),
     md("""
-The merged passages contain all four figures, and the answer covers both halves with a citation after each figure. The two extra passages did no harm: the model used the 2016 summary for a projection and said the projection could not be checked, and it reported that the mobile-money note holds no figures. Section 3 shows what happens when the 2016 summary is the passage an answer depends on.
+The answer covers both halves with a citation after each figure. The two extra passages did no harm: the model used the 2016 summary for a projection and said the projection could not be checked, and it reported that the mobile-money note holds no figures. Section 3 shows what happens when the 2016 summary is the passage an answer depends on.
 """),
     md(id="section-3", text="""
 ## 3. Outdated evidence in the ranking
 
-A vector encodes what a text is about and nothing about when it was written. A 2016 summary that uses the phrase "latest available figures" scores high for a question that uses the same phrase, whatever its date. The cell asks for the latest figures on internet use in Kenya and Rwanda with `k = 2`, prints the two passages with their scores, and shows the answer.
+A vector encodes what a text is about and nothing about when it was written. A 2016 summary that uses the phrase "latest available figures" scores high for a question that uses the same phrase, whatever its date. The next cell asks for the latest figures on internet use in Kenya and Rwanda with `k = 2`, prints the two passages with their scores, and shows the answer.
 """),
     code('''
 q = "What are the latest available figures for internet use in Kenya and Rwanda?"
@@ -716,10 +740,10 @@ The 2016 summary ranks first at 0.816 and Rwanda's 2026 brief second at 0.765. K
 2. **A reworded question.** Rewriting the question to resemble the expected passage changes the question's vector. The ranking can move either way.
 3. **Sorting by date after the search**, for a store without a filter. It does the same job as the filter and is not shown.
 
-The first cell runs the same search with and without the filter and marks which of the two needed figures each returns.
+The next cell defines the filter as a function of a chunk, `since_2020`, which the store calls on each chunk's metadata before scoring. It then runs the same search with and without the filter and marks which of the two needed figures each returns.
 """),
     code('''
-since_2020 = lambda d: str(d.metadata.get("date", "")) >= "2020"
+since_2020 = lambda d: str(d.metadata.get("date", "")) >= "2020"   # the filter: keep chunks dated 2020 or later
 expected = next(item for item in w.load_questions() if item["id"] == "q8")["expected_numbers"]
 countries = {"KEN": "Kenya", "RWA": "Rwanda"}
 checks = [f"{countries[e['country']]}, {e['year']}: {e['value']}" for e in expected]
@@ -735,12 +759,15 @@ def search(title, tone, where=None):
 w.show_search_comparison(q, [search("No filter", "bad"), search("Date filter: 2020 or later", "good", since_2020)], checks)
 '''),
     md("""
-With the filter, Kenya's brief replaces the summary and both 2024 figures are present. The next cell shows the answer from the filtered passages. The cell after it tries the reworded question without the filter.
+With the filter, Kenya's brief replaces the summary and both 2024 figures are present. The next cell passes the filter to `make_rag` and shows the answer from the filtered passages.
 """),
     code('''
 w.use("nb03_rag_filtered")
 w.show(make_rag(k=2, where=since_2020).invoke(q))
 '''),
+    md("""
+The second fix, rewording, is tried next without the filter. The question is rewritten in the vocabulary of the 2026 briefs.
+"""),
     code('''
 w.print_hits(hits("Kenya and Rwanda internet use 2024, percent of population", k=2))
 '''),
@@ -750,7 +777,7 @@ The reworded question puts the summary first at 0.871, above Rwanda's brief at 0
     md(id="section-5", text="""
 ## 5. A question outside the collection
 
-A similarity search ranks every chunk and returns the top `k`. It has no notion of a chunk being unrelated: the top three for an unanswerable question are the three least unrelated chunks. The cell asks for the population of Rwanda, which the collection holds, and for inflation in Uganda in 2023, which it does not, and prints three passages for each.
+A similarity search ranks every chunk and returns the top `k`. It has no notion of a chunk being unrelated: the top three for an unanswerable question are the three least unrelated chunks. The next cell asks for the population of Rwanda, which the collection holds, and for inflation in Uganda in 2023, which it does not, and prints three passages for each.
 """),
     code('''
 for q2 in ["What is the population of Rwanda?", "What was inflation in Uganda in 2023?"]:
@@ -764,7 +791,7 @@ The population question returns the right chunk first at 0.739. The inflation qu
     md(id="section-6", text="""
 ## 6. A test of the search without the model
 
-Retrieval can be tested alone, because its output is a list of passages that can be checked without reading an answer. The cell runs the eight evaluation questions through the search and makes two checks per question: whether an expected document is among the passages, and how many of the numbers a correct answer needs appear in them. `K` sets the number of passages.
+Retrieval can be tested alone, because its output is a list of passages that can be checked without reading an answer. The next cell runs the eight evaluation questions through the search and makes two checks per question. `w.retrieval_hit` reports whether one of the expected documents is among the passages. `w.numbers_present` counts how many of the numbers a correct answer needs appear in the passages' text. `K` sets the number of passages, and the exercise changes it.
 """),
     code('''
 K = 4   # passages returned by the search: try 2, then 8
