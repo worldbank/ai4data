@@ -712,7 +712,7 @@ def chat_html(question: str, answer: str, observations: dict[str, float], result
         else ""
     )
     return (
-        '<div style="background:#ffffff;border:1px solid #e1e6ee;border-radius:10px;padding:10px 14px">'
+        '<div class="tex2jax_ignore" style="background:#ffffff;border:1px solid #e1e6ee;border-radius:10px;padding:10px 14px">'
         f'<div style="{bubble};background:#e8eefb;margin-left:auto">{escape(question)}</div>'
         f'<div style="{bubble};background:#f3f4f6">{"".join(out)}</div>'
         '<div style="font:12.5px Helvetica,Arial,sans-serif;color:#5b6b85;margin-top:6px">'
