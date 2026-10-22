@@ -634,10 +634,7 @@ INSTRUCTIONS = """You are a research assistant for development data.
 Answer only from the supplied passages. After each figure, cite the passage in the square-bracket form given.
 If the passages do not contain what is needed, say so."""
 
-prompt = ChatPromptTemplate.from_messages([("system", INSTRUCTIONS), ("human", "PASSAGES:
-{context}
-
-QUESTION: {question}")])
+prompt = ChatPromptTemplate.from_messages([("system", INSTRUCTIONS), ("human", "PASSAGES:\\n{context}\\n\\nQUESTION: {question}")])
 
 
 def make_rag(k=4, where=None):
