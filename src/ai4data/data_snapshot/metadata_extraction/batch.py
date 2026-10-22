@@ -45,6 +45,13 @@ def extract_metadata_files(
     config_path = get_extraction_config_path(metadata_provider)
     output_paths: list[Path] = []
     paths = [Path(path) for path in snapshot_paths]
+    seen_stems: set[str] = set()
+    for path in paths:
+        if path.stem in seen_stems:
+            raise ValueError(
+                f"Snapshot image filename stems must be unique: {path.stem}"
+            )
+        seen_stems.add(path.stem)
 
     snapshot_progress = tqdm(paths, desc="Metadata", unit="snapshot")
     for snapshot_path in snapshot_progress:
