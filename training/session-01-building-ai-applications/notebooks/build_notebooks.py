@@ -287,7 +287,7 @@ w.use("nb01_ambiguous_with_instruction")
 w.show(chain.invoke({"instructions": INSTRUCTIONS_CLARIFY, "context": docs["kenya-digital"].page_content, "question": "How connected is Kenya?"}))
 '''),
     md("""
-With the basic instructions, the model chooses one reading and answers it with confidence. With the clarifying instructions, the model names the readings and asks before it answers. For a research application, the second behaviour is the one to specify. A confident answer to the wrong reading looks the same on the page as a confident answer to the right one, so the reader cannot detect the substitution. Asking costs one exchange and removes that risk.
+With the basic instructions, the model does not ask. It decides for itself what "connected" means, answers at length for two measures at once, and adds an analysis of growth that the question did not call for. With the clarifying instructions, the model names three readings and asks which one is meant before it answers. For a research application, the second behaviour is the one to specify. An answer to the reading the model chose looks as confident on the page as an answer to the reading the user meant, so the reader cannot detect the substitution. Asking costs one exchange and removes that risk.
 """),
     md(id="section-6", text="""
 ## 6. The prompt as sent to the model

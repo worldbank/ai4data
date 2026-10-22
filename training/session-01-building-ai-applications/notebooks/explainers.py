@@ -362,7 +362,7 @@ def before_after_svg():
                    wrap_lines("“I can't access live databases, so the figures below come from my training data. They are approximate and may be outdated… Internet users: roughly 40% (Kenya)…”", 66),
                    [("no citation", "#9a3a2f"), ("rounded ranges", "#9a3a2f"), ("two figures off", "#9a3a2f")]))
     p.append(panel(524, "With the four country briefs", CTX, ["question", "briefs as context"],
-                   wrap_lines("“In Kenya, the share of individuals using the internet rose from 7.2 percent of the population in 2010 to 35.0 percent in 2024 [kenya-digital]…”", 66),
+                   wrap_lines("“Kenya rose from 7.2% in 2010 to 35.0% in 2024 [kenya-digital]. Rwanda rose from 8.0% to 31.7% over the same period [rwanda-digital]…”", 66),
                    [("cites its source", CTX), ("dated", CTX), ("one measure", CTX)]))
     p.append("</svg>")
     return "".join(p)
