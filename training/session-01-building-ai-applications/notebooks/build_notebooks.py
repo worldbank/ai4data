@@ -154,13 +154,13 @@ The whole session works on one research question, so that every method can be ju
 
 ## Contents
 
-1. Section 1 defines the prompt and its three parts.
-2. Section 2 sends the question to the model with no evidence. The answer reads well, but it names no source, so none of its figures can be checked.
-3. Section 3 supplies four country briefs as context. The answer becomes specific and cites each figure.
-4. Section 4 asks a question that the briefs cannot answer and shows how an instruction makes the model say so.
-5. Section 5 asks a question with two meanings under two sets of instructions. With the second set, the model asks which meaning is intended before it answers.
-6. Section 6 prints the messages exactly as the model received them.
-7. Section 7 measures what the context cost in tokens and explains why a whole document collection cannot be supplied in the same way.
+1. [Section 1](#section-1) defines the prompt and its three parts.
+2. [Section 2](#section-2) sends the question to the model with no evidence. The answer reads well, but it names no source, so none of its figures can be checked.
+3. [Section 3](#section-3) supplies four country briefs as context. The answer becomes specific and cites each figure.
+4. [Section 4](#section-4) asks a question that the briefs cannot answer and shows how an instruction makes the model say so.
+5. [Section 5](#section-5) asks a question with two meanings under two sets of instructions. With the second set, the model asks which meaning is intended before it answers.
+6. [Section 6](#section-6) prints the messages exactly as the model received them.
+7. [Section 7](#section-7) measures what the context cost in tokens and explains why a whole document collection cannot be supplied in the same way.
 
 ## How to run it
 
@@ -172,6 +172,8 @@ The next cell installs the session's tools and loads its helper module. It takes
     code(SETUP),
     md(STACK),
     md("""
+<a id="section-1"></a>
+
 ## 1. The three parts of a prompt
 
 Every call to the model sends one prompt, and the prompt is assembled from three parts.
@@ -207,6 +209,8 @@ chain = prompt | model
 w.show(w.MAIN_QUESTION)
 '''),
     md("""
+<a id="section-2"></a>
+
 ## 2. The model without context
 
 This section establishes the baseline. The cell sends the question with the basic instructions and no evidence, so the model can only answer from what it absorbed during training.
@@ -236,6 +240,8 @@ Five of the six claims are close to the official figures, which is why the answe
 Different instructions would change the tone and the length of this answer, but the figures would still come from training, because the model has no other source.
 """),
     md("""
+<a id="section-3"></a>
+
 ## 3. The same question with context
 
 This section supplies evidence. The four country briefs from the session's document collection go into the context slot, and the instructions change to the grounded set, which requires a citation after each figure and allows the model to say when something is missing. The cell prints the size of the context before it calls the model.
@@ -257,6 +263,8 @@ w.show(answer)
     md("""
 The figures now come from the briefs, each figure carries a citation, and the comparison between the two countries is specific. The model's part in this improvement is small. The application chose the four briefs and placed them in the prompt, and the model wrote from that text. This division of labour holds for the rest of the session: the application decides what evidence the model sees, and the quality of the answer follows from that choice.
 
+<a id="section-4"></a>
+
 ## 4. A question the evidence cannot answer
 
 An application also has to behave well when the evidence does not contain the answer. The cell asks for Kenya's internet use in 2025, and the brief only goes up to 2024. The grounded instructions tell the model to say that the information is missing and to give the closest available figure, so the answer should name 2024 and say that 2025 is absent from the evidence.
@@ -268,6 +276,8 @@ answer = chain.invoke({"instructions": INSTRUCTIONS_GROUNDED, "context": docs["k
 w.show(answer)
 '''),
     md("""
+<a id="section-5"></a>
+
 ## 5. An ambiguous question under two sets of instructions
 
 "How connected is Kenya?" can mean internet use, mobile subscriptions, broadband coverage, or something else. The cell asks it twice: once with the basic instructions, and once with instructions that tell the model to list the possible readings and ask which one is meant.
@@ -283,6 +293,8 @@ w.show(chain.invoke({"instructions": INSTRUCTIONS_CLARIFY, "context": docs["keny
     md("""
 With the basic instructions, the model chooses one reading and answers it with confidence. With the clarifying instructions, the model names the readings and asks before it answers. For a research application, the second behaviour is the one to specify. A confident answer to the wrong reading looks the same on the page as a confident answer to the right one, so the reader cannot detect the substitution. Asking costs one exchange and removes that risk.
 
+<a id="section-6"></a>
+
 ## 6. The prompt as sent to the model
 
 The cell prints the messages that the prompt produced for the last call, with each part in its colour from section 1. The instructions arrive as the system message. The context and the question arrive together in the human message.
@@ -292,6 +304,8 @@ messages = prompt.format_messages(instructions=INSTRUCTIONS_CLARIFY, context=doc
 w.show_prompt(messages)
 '''),
     md("""
+<a id="section-7"></a>
+
 ## 7. The cost of context
 
 Section 3 reported the size of its context: four short briefs took about a thousand tokens. The obvious extension is to supply every document an organization holds in the same way, so that the model always has everything in front of it. That approach fails for three reasons.
