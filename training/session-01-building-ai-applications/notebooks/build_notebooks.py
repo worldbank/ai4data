@@ -94,14 +94,20 @@ def explainer_md(name: str) -> str:
         "toolloop": explainers.toolloop_svg,
         "workflows": explainers.workflows_svg,
         "claimtag": explainers.claimtag_svg,
+        "pcn": explainers.pcn_svg,
     }[name]()
     return f"![{explainers.ALT[name]}](data:image/svg+xml;base64,{base64.b64encode(svg.encode()).decode()})"
 
 
-def md(text: str):
+def md(text: str, id: str | None = None):
+    """A Markdown cell. `id` gives the cell a stable id, which a `#scrollTo=<id>` link targets in Colab."""
     text = re.sub(r"@@DIAGRAM:(\w+)@@", lambda m: diagram_md(m.group(1)), text)
     text = re.sub(r"@@EXPLAINER:(\w+)@@", lambda m: explainer_md(m.group(1)), text)
-    return new_markdown_cell(text.strip())
+    cell = new_markdown_cell(text.strip())
+    if id:
+        cell["id"] = id
+        cell["metadata"]["id"] = id
+    return cell
 
 
 def code(text: str):
@@ -110,21 +116,21 @@ def code(text: str):
 
 CLAIMS_CELL = '''
 def value(ind, country):
-    return w.latest(w.indicator_lookup(ind, country, start=2023))["value"]
+    o = w.latest(w.indicator_lookup(ind, country, start=2023))
+    return o["value"], o["year"]
 
 
-def growth(country):
-    return [o["value"] for o in w.indicator_lookup("NY.GDP.MKTP.KD.ZG", country, start=2015)["observations"]]
+def growth(country, year):
+    return next(o["value"] for o in w.indicator_lookup("NY.GDP.MKTP.KD.ZG", country, start=year)["observations"] if o["year"] == year)
 
 
 rows = [  # (claim, what the model said, what the data says, verdict)
-    ("Kenya · internet use", "“above 80 percent… when measured by subscriptions”",
-     f"{value('IT.NET.USER.ZS', 'Kenya'):.1f}% of people online; {value('IT.CEL.SETS.P2', 'Kenya'):.1f} mobile subscriptions per 100", "blends two measures"),
-    ("Kenya · GDP per capita", "“roughly 2,000 US dollars”", f"{value('NY.GDP.PCAP.CD', 'Kenya'):,.0f} US dollars", "close"),
-    ("Kenya · growth", "“around 5 percent a year over the past decade”", f"{sum(growth('Kenya')) / len(growth('Kenya')):.1f} percent a year, 2015 to 2024", "close"),
-    ("Rwanda · internet use", "“around 30 percent”", f"{value('IT.NET.USER.ZS', 'Rwanda'):.1f}% of people online", "close"),
-    ("Rwanda · GDP per capita", "“close to 1,000 US dollars”", f"{value('NY.GDP.PCAP.CD', 'Rwanda'):,.0f} US dollars", "close"),
-    ("Rwanda · growth", "“frequently above 7 percent”", f"above 7 percent in {sum(g > 7 for g in growth('Rwanda'))} of {len(growth('Rwanda'))} years, 2015 to 2024", "close"),
+    ("Kenya · internet use", "“roughly 40%” of the population", "{:.1f}% of people online in {}".format(*value("IT.NET.USER.ZS", "Kenya")), "above the data"),
+    ("Rwanda · internet use", "“roughly 30–40% (estimates vary widely)”", "{:.1f}% of people online in {}".format(*value("IT.NET.USER.ZS", "Rwanda")), "close"),
+    ("Kenya · GDP per capita", "“~$2,000–2,200”", "{:,.0f} US dollars in {}".format(*value("NY.GDP.PCAP.CD", "Kenya")), "close"),
+    ("Rwanda · GDP per capita", "“~$950–1,050”", "{:,.0f} US dollars in {}".format(*value("NY.GDP.PCAP.CD", "Rwanda")), "close"),
+    ("Kenya · GDP growth", "“~5% (2023), ~4–5% (2024)”", f"{growth('Kenya', 2023):.1f} percent in 2023, {growth('Kenya', 2024):.1f} percent in 2024", "close"),
+    ("Rwanda · GDP growth", "“~8% (2023), ~9–10% (2024)”", f"{growth('Rwanda', 2023):.1f} percent in 2023, {growth('Rwanda', 2024):.1f} percent in 2024", "2024 above the data"),
 ]
 w.show_claim_check(rows)
 '''
@@ -140,54 +146,64 @@ NB01 = [
 
 ## Objective
 
-See what a model does with a research question on its own, what changes when it is given instructions and context, and why instructions and context are the first two components of an application.
+A language model writes from two sources: the text in its prompt and what it learned in training. This notebook shows the difference. The same research question is asked with nothing but the question, then with evidence placed in the prompt. The two answers establish the first two components of an application: the instructions, which set the model's behaviour, and the context, which supplies the evidence. The application writes both, and the model reads them.
 
 ## The application after this notebook
 
 @@DIAGRAM:prompt@@
 
-The prompt is the one piece this notebook builds; the rest of the application is added in the notebooks that follow.
+The prompt is the only component this notebook builds. Later notebooks add the document store, retrieval, data tools, the agent loop, and the verifier around it.
 
-The worked example for the whole session is one question:
+The whole session uses one research question, so that each method is judged on the same case:
 
 > How have internet access and economic development evolved in Rwanda and Kenya? Compare the recent available data, summarize the main patterns, and cite the sources.
 
-## What you will see
+## Contents
 
-Four short scenes, each with a result you can read:
-
-1. The model answers from what it learned in training. The answer sounds right, but it names no source, so a reader cannot check it.
-2. The same question with four country briefs supplied. The answer is specific and cites its sources.
-3. A question the briefs cannot answer, and what the model does about it.
-4. A question with two meanings, and what changes when the instructions tell the model to ask.
+1. [Section 1](#scrollTo=section-1) defines the three parts of a prompt and who writes each.
+2. [Section 2](#scrollTo=section-2) asks the question with no evidence. Four of the six figures checked are close to the official values, two are off, and none can be traced to a source.
+3. [Section 3](#scrollTo=section-3) places four country briefs in the prompt. Every figure now carries a citation.
+4. [Section 4](#scrollTo=section-4) asks for a year the brief does not cover. The model says so and gives the closest year.
+5. [Section 5](#scrollTo=section-5) asks an ambiguous question. With one added instruction, the model asks which meaning is intended.
+6. [Section 6](#scrollTo=section-6) prints the messages as the model received them.
+7. [Section 7](#scrollTo=section-7) counts the tokens the context cost and explains why a whole collection cannot be supplied this way.
 
 ## How to run it
 
-Run the cells in order. Without an API key the model outputs are recorded ones, labelled `[recorded output: ...]`; each cell names its scenario with `w.use(...)` before calling the model. With a key in `WORKSHOP_API_KEY` the same cells call the model live.
+Run the cells in order. Without an API key, the model's outputs are recorded ones, labelled `[recorded output: ...]`. Each cell names its recorded scenario with `w.use(...)` before it calls the model. With a key in `WORKSHOP_API_KEY`, the same cells call the model live, the answer streams into its bubble as the model writes, and the wording differs from the recorded answers.
 """),
     md("""
-The next cell installs the session's tools and loads its helper module. It takes about a minute the first time, and you do not need to read it.
+The next cell installs the session's tools and loads its helper module. The first run takes about a minute. The cell is setup only.
 """),
     code(SETUP),
     md(STACK),
     md("""
-## 1. A prompt with three parts
+The setup cell imported the helper module as `w` and created `model`, a LangChain chat model: a live one when a key is set, otherwise one that replays recorded answers. The helper functions used in this notebook, in the order they appear:
 
-Three parts go into every call:
+| Call | What it does |
+|---|---|
+| `w.use(name)` | Names the recorded scenario for the next model call, so that the replay returns the right answer. Has no effect on a live model. |
+| `w.show(message, role=...)` | Draws a message as a chat bubble, with the text rendered as Markdown. |
+| `w.answer(chain, inputs)` | Calls the chain and draws the answer as a bubble. With a live model the tokens stream into the bubble; without a key the recorded answer is drawn at once. Returns the message. |
+| `w.indicator_lookup(indicator, country, start=...)` | Returns the observations of a World Development Indicators series for one country, from the session's data file. |
+| `w.latest(result)` | The last observation of such a result. |
+| `w.show_table(...)`, `w.show_claim_check(...)`, `w.show_prompt(...)` | Draw a table, the claims comparison, and the prompt as HTML. |
+| `w.load_documents()` | Loads the eight session documents as LangChain `Document` objects, with the file's header as metadata. |
+"""),
+    md(id="section-1", text="""
+## 1. The three parts of a prompt
 
-- **Instructions**: the system message. It tells the model how to behave: its role, how to cite, what to do when information is missing.
-- **Context**: the evidence supplied to the model, such as the documents or data it should answer from.
-- **Question**: what the user asks.
+A call to a chat model sends a list of messages. The first is the system message, which the model treats as standing instructions for the whole exchange. The others are user messages. An application composes three parts into these messages:
 
-LangChain's `ChatPromptTemplate` keeps them as separate slots, and `prompt | model` is the whole application for now. Keeping the parts separate is the first design decision, because each is changed by a different person for a different reason.
+- **Instructions**: how the model should behave, written by the application's builders.
+- **Context**: the evidence for this question, selected by the application. Here it is documents; later it is passages and data records.
+- **Question**: the user's text.
 
-@@EXPLAINER:prompt@@
+The parts are kept in separate slots because a different person changes each one, at a different time.
 
-*The animation loops. Its text comes from this notebook: the instructions from the cell below, the context and the answer from section 3, and the question from the worked example. Section 6 shows the same three parts as the model received them.*
+The next cell writes three sets of instructions. The basic set only names the role. The grounded set adds the three rules this session depends on: answer from the context, cite the document after each figure, and say when something is missing. The clarifying set adds one more rule, for section 5.
 """),
     code('''
-from langchain_core.prompts import ChatPromptTemplate
-
 INSTRUCTIONS_BASIC = "You are a research assistant. Answer the question."
 
 INSTRUCTIONS_GROUNDED = """You are a research assistant for development data.
@@ -196,139 +212,146 @@ If the context does not contain what is needed, say so and give the closest avai
 
 INSTRUCTIONS_CLARIFY = INSTRUCTIONS_GROUNDED + """
 If the question is ambiguous, say which readings are possible and ask which one is meant before answering."""
-
-prompt = ChatPromptTemplate.from_messages([
-    ("system", "{instructions}"),
-    ("human", "CONTEXT:\\n{context}\\n\\nQUESTION: {question}"),
-])
-chain = prompt | model
-
-w.show(w.MAIN_QUESTION)
 '''),
     md("""
-## 2. Zero context: the model answers from its training data
+A prompt template holds the three slots. `ChatPromptTemplate.from_messages` takes a list of `(role, text)` pairs, and each `{name}` in a text is a slot that is filled at call time. The instructions become the system message. The context and the question go together into one user message, in a fixed layout, so that the model can tell them apart. `prompt | model` joins the two steps into one object: the output of the template becomes the input of the model. That object, `chain`, is the whole application at this stage.
+"""),
+    code('''
+from langchain_core.prompts import ChatPromptTemplate
 
-The baseline. No evidence is supplied, so the model answers from what it absorbed in training.
+prompt = ChatPromptTemplate.from_messages([
+    ("system", "{instructions}"),                                   # the system message: the instructions slot
+    ("human", "CONTEXT:\\n{context}\\n\\nQUESTION: {question}"),      # one user message: the context and the question slots
+])
+chain = prompt | model   # fill the template, then send the messages to the model
+
+w.show(w.MAIN_QUESTION, role="user")
+'''),
+    md("""
+@@EXPLAINER:prompt@@
+
+*The animation's text is this notebook's: the instructions from the cell above, the context and the answer from section 3, and the question from the worked example.*
+"""),
+    md(id="section-2", text="""
+## 2. The model without context
+
+Without context, the model answers from training data: text it read before its training ended, compressed into its parameters. It holds no records, only patterns of text, so its figures are reconstructions.
+
+The next cell makes the first call. `w.answer` passes one dictionary with a value for each slot to the chain, and draws the reply. The context slot gets the text `(none)`, so the model sees that no evidence was supplied. `w.use` names the recorded scenario first, so that the replay returns the answer recorded for this exact call.
 """),
     code('''
 w.use("nb01_zero_context")
-answer = chain.invoke({"instructions": INSTRUCTIONS_BASIC, "context": "(none)", "question": w.MAIN_QUESTION})
-w.show(answer)
+answer = w.answer(chain, {"instructions": INSTRUCTIONS_BASIC, "context": "(none)", "question": w.MAIN_QUESTION})
 '''),
     md("""
-To judge that answer we need official figures to check it against. They come from the World Bank's World Development Indicators. The model never saw them; we use them only afterwards, to check its answer.
-
-1. The first cell prints the official figures for Kenya and Rwanda: the share of people using the internet, and GDP per capita.
-2. The second cell takes six claims from the model's answer and sets each one beside the matching official figure.
+The answer cannot be judged without reference values. The next cell prints the official values from the World Development Indicators for the two measures the answer leans on most: the share of people using the internet and GDP per capita. `w.indicator_lookup` returns the observations of one series for one country, and the loop keeps the 2023 and 2024 values.
 """),
     code('''
 rows = []
-for ind in ["IT.NET.USER.ZS", "NY.GDP.PCAP.CD"]:
+for ind in ["IT.NET.USER.ZS", "NY.GDP.PCAP.CD"]:            # internet users (% of population), GDP per capita (current US$)
     fmt = "{:,.0f}" if ind == "NY.GDP.PCAP.CD" else "{:.1f}"
     for country in ["Kenya", "Rwanda"]:
-        r = w.indicator_lookup(ind, country, start=2023)
+        r = w.indicator_lookup(ind, country, start=2023)   # observations from 2023 on
         by_year = {o["year"]: fmt.format(o["value"]) for o in r["observations"]}
         rows.append((r["name"], country, by_year[2023], by_year[2024]))
 w.show_table(["Indicator", "Country", "2023", "2024"], rows, source="Source: World Bank, World Development Indicators.")
 '''),
+    md("""
+The next cell takes six claims from the answer and sets each beside the official value. Each row holds the claim, the model's words, the value from the data, and a verdict. `value` returns the latest observation of a series, and `growth` returns the growth rate of a given year.
+"""),
     code(CLAIMS_CELL),
     md("""
-What to notice:
-
-- Five of the six claims are close to the data, so the answer sounds reliable.
-- One sentence blends two measures. "Above 80 percent" fits mobile subscriptions (126.5 per 100 people in 2024), not the share of people online (35.0 percent), and nothing in the answer tells the reader which one is meant.
-- No claim names a source or a year, so a reader cannot tell the sound figures from the blended one. The model hedges, which is the right behaviour for a model with no evidence, and of no use to a reader who needs a number they can check.
-
-Prompting changes the style of this answer. It cannot give the model data it does not have.
+Four of the six claims are close to the official values. Two are off: Kenya's internet share, given as roughly 40 percent against 35.0 in 2024, and Rwanda's 2024 growth, given as 9 to 10 percent against 7.2. The answer is hedged, structured, and ends with a reading list, and none of that helps a reader find the two wrong figures. Every figure is a rounded range, most carry no year, and the sources are institutions to consult, so no figure can be traced to a record. A different model or different instructions would change the wording. The figures would still be reconstructions, because the prompt contains no data.
 """),
-    md("""
+    md(id="section-3", text="""
 ## 3. The same question with context
 
-The four country briefs from the session's document collection are supplied as context. The instructions now require citations and allow the model to say when something is missing.
+Context is text that the application places in the prompt for the model to read. Under the grounded instructions, the model answers only from it and cites it.
+
+The next cell builds the context. `w.load_documents` returns the eight session documents, each with an `id` in its metadata, and the cell keeps the four country briefs. Each brief is prefixed with its id in square brackets, which is the form the instructions ask the model to cite. The size is printed as characters and as an estimate of tokens, at four characters per token.
 """),
     code('''
 docs = {d.metadata["id"]: d for d in w.load_documents()}
 context = "\\n\\n".join(f"[{i}]\\n{docs[i].page_content}" for i in ["kenya-digital", "rwanda-digital", "kenya-economy", "rwanda-economy"])
-print(f"{len(context):,} characters of context, roughly {len(context)//4:,} tokens\\n")
-
+print(f"{len(context):,} characters of context, roughly {len(context)//4:,} tokens")
+'''),
+    md("""
+The call is the same as in section 2, with the grounded instructions in the first slot and the four briefs in the second.
+"""),
+    code('''
 w.use("nb01_with_context")
-answer = chain.invoke({"instructions": INSTRUCTIONS_GROUNDED, "context": context, "question": w.MAIN_QUESTION})
-w.show(answer)
+answer = w.answer(chain, {"instructions": INSTRUCTIONS_GROUNDED, "context": context, "question": w.MAIN_QUESTION})
 '''),
     md("""
 @@EXPLAINER:before_after@@
 
-*The two answers, shortened. They are the recorded outputs of sections 2 and 3.*
+*Shortened excerpts of the recorded answers of sections 2 and 3.*
 """),
     md("""
-The figures now come from the briefs, each one is cited, and the comparison is specific. The model did none of the finding; the application did, by putting the right text in front of it.
+Every figure now carries a citation to a brief, the comparison is specific, and the model notes two statements in the briefs that it could not verify from the years listed. The application chose the four briefs and put them in the prompt. The model wrote from that text. For the rest of the session, the application decides what evidence the model sees, and the quality of the answer follows from that decision.
+"""),
+    md(id="section-4", text="""
+## 4. A question the evidence cannot answer
 
-## 4. Handling missing information
-
-An application has to behave well when the evidence does not contain the answer. The instruction "say so and give the closest available information" is what makes the difference.
+An instruction sets the model's behaviour when the evidence falls short. The grounded instructions say: if the context does not contain what is needed, say so and give the closest available information. The next cell supplies only the Kenya brief, prefixed with its id so that the model can cite it, and asks for 2025. The brief ends at 2024.
 """),
     code('''
 w.use("nb01_missing_info")
-answer = chain.invoke({"instructions": INSTRUCTIONS_GROUNDED, "context": docs["kenya-digital"].page_content,
-                       "question": "What share of Kenya's population used the internet in 2025?"})
-w.show(answer)
+brief = f"[kenya-digital]\\n{docs['kenya-digital'].page_content}"   # one brief, with its id so that the model can cite it
+answer = w.answer(chain, {"instructions": INSTRUCTIONS_GROUNDED, "context": brief,
+                          "question": "What share of Kenya's population used the internet in 2025?"})
 '''),
     md("""
-## 5. The ambiguous question under two sets of instructions
+The model says that 2025 is absent, names 2024 as the latest year, and gives 35.0 percent with a citation. The behaviour came from one sentence in the instructions.
+"""),
+    md(id="section-5", text="""
+## 5. An ambiguous question under two sets of instructions
 
-"How connected is Kenya?" can mean internet use, mobile subscriptions, broadband, or something else. Compare what the model does with the basic instructions and with an instruction to ask.
+"How connected is Kenya?" has at least three readings: internet use, mobile subscriptions, or broadband coverage. A model picks a reading unless it is told to ask. The next cell asks the question twice with the same context: first with the basic instructions, then with the clarifying set, whose added rule tells the model to list the readings and ask which one is meant.
 """),
     code('''
 print("Without an instruction to clarify:\\n")
 w.use("nb01_ambiguous_no_instruction")
-w.show(chain.invoke({"instructions": INSTRUCTIONS_BASIC, "context": docs["kenya-digital"].page_content, "question": "How connected is Kenya?"}))
+first = w.answer(chain, {"instructions": INSTRUCTIONS_BASIC, "context": brief, "question": "How connected is Kenya?"})
+
 print("\\n" + "=" * 100 + "\\nWith the instruction:\\n")
 w.use("nb01_ambiguous_with_instruction")
-w.show(chain.invoke({"instructions": INSTRUCTIONS_CLARIFY, "context": docs["kenya-digital"].page_content, "question": "How connected is Kenya?"}))
+second = w.answer(chain, {"instructions": INSTRUCTIONS_CLARIFY, "context": brief, "question": "How connected is Kenya?"})
 '''),
     md("""
-The first answer picks a reading and runs with it. The second names the readings and asks. For a research application the second is the behaviour to specify, because a confident answer to the wrong question looks the same as a confident answer to the right one.
+With the basic instructions, the model answers at length, covers two readings, and adds a growth analysis the question did not ask for. With the clarifying instruction, it names three readings and asks. An answer to the model's own reading looks as confident as an answer to the user's reading, so the user cannot tell them apart. For a research application, asking costs one exchange and removes that risk.
+"""),
+    md(id="section-6", text="""
+## 6. The prompt as sent to the model
 
-## 6. What the model received
-
-The messages the prompt produced for the last call, with each part in the colour it had in section 1: the instructions in the system message, then the context and the question in the human message.
+`prompt.format_messages` fills the template with values and returns the message list without calling the model. The next cell does this for the last call of section 5 and draws the messages in the colours of section 1. The instructions arrive as the system message. The context and the question arrive together in one user message. This is everything the model sees.
 """),
     code('''
-messages = prompt.format_messages(instructions=INSTRUCTIONS_CLARIFY, context=docs["kenya-digital"].page_content, question="How connected is Kenya?")
+messages = prompt.format_messages(instructions=INSTRUCTIONS_CLARIFY, context=brief, question="How connected is Kenya?")
 w.show_prompt(messages)
 '''),
-    md("""
-## 7. What context costs
+    md(id="section-7", text="""
+## 7. The cost of context
 
-Four short briefs took about a thousand tokens. A natural reaction at this point:
-
-> "So we can just give the AI all our documents as context!"
-
-It is the first idea most people have, and it does not work, for three reasons:
-
-- **It does not fit.** The context window, the amount of text a model can read in one call, has a limit. A real collection of thousands of documents is far larger.
-- **It costs more with every page.** Cost grows with every token, and the whole collection would be sent again with every question.
-- **The answer gets lost.** The passages that matter for one question are a small part of the whole, and the rest is noise around them.
-
-The next two notebooks prepare a collection so that the application can select what to supply.
+A model reads a limited amount of text per call, called its context window and measured in tokens. A token is a word or a part of a word, about four characters of English on average. The four briefs took about a thousand tokens. A collection of thousands of documents exceeds any window, the price of a call grows with its tokens, and the passages that answer one question are a small part of the whole. An application therefore selects, for each question, the part of the collection that the model should read. Notebooks 02 and 03 build that selection.
 
 @@EXPLAINER:desk@@
 
-*The token count is the one printed in section 3.*
+*The figure of about 1,024 tokens in the diagram is the size that section 3 printed for the four briefs.*
 """),
     md("""
 ## Key points
 
-- A prompt has three parts: instructions, context, and the question. Each is set by someone different, so they are kept separate.
-- Without context, the model answers from training. Most figures were close, one blended two measures, and none named a source, so a reader could not tell which to trust.
-- With context, the answer is specific and cites its sources. The model did none of the finding; the application did, by putting the right text in front of it.
-- Instructions shape behaviour: cite sources, say so when information is missing, ask when a question has more than one meaning. They cannot supply data the model does not have.
-- Giving the model everything does not work: the context window has a limit, cost grows with every token, and the answer gets lost. The application has to select what to supply, which the next notebooks cover.
+- A prompt has three parts: instructions, context, and the question. A different person writes each, so they are kept in separate slots.
+- Without context, the figures are reconstructions from training data. Four of the six checked were close, two were off, and none could be traced to a record.
+- With the briefs as context, every figure cited a brief. The application chose the evidence, and the model wrote from it.
+- Instructions set behaviour: cite, say when information is missing, ask when a question is ambiguous. They cannot supply data.
+- The context window limits what one call can read, so the application has to select the evidence. The next two notebooks build the selection.
 
 ## Exercise
 
-1. Read the answers of sections 2 and 3 side by side. For each number, note whether you could check it and where. Then say which answer you would send to a colleague, and why.
-2. In the cell of section 1, add a sentence to `INSTRUCTIONS_GROUNDED`, for example "Answer in no more than three sentences." Run that cell again, then run the cell of section 6. The Instructions block now shows your sentence, so you can see exactly what the model would receive. The recorded answers do not react to new instructions; with a live key in `WORKSHOP_API_KEY`, rerun section 3 to see how the answer changes.
+1. Read the answers of sections 2 and 3 side by side. For each number, note whether it can be checked and where. Then decide which answer could be sent to a colleague, and give the reason.
+2. In the first cell of section 1, add a sentence to `INSTRUCTIONS_GROUNDED`, for example "Answer in no more than three sentences." Run that cell again, then run the cell of section 6. The Instructions block now shows the added sentence exactly as the model would receive it. The recorded answers do not react to new instructions. With a live key in `WORKSHOP_API_KEY`, rerun section 3 to see how the answer changes.
 """),
     md(LINKS),
 ]
@@ -366,7 +389,7 @@ Four short scenes:
 Run the cells in order. This notebook only prepares material for the model that writes the answers, so it does not use that model, and no API key is needed. The model comes back in notebook 03. Everything below is computed when you run the cell. It does use a small embedding model, which turns text into numbers; it downloads about 90 MB the first time and runs inside the notebook.
 """),
     md("""
-The next cell installs the session's tools and loads its helper module. It takes about a minute the first time, and you do not need to read it.
+The next cell installs the session's tools and loads its helper module. The first run takes about a minute. The cell is setup only.
 """),
     code(SETUP_NO_MODEL),
     md("""
@@ -551,44 +574,61 @@ NB03 = [
 
 ## Objective
 
-Notebook 02 built the vector store and left two things open: a search for the latest figures puts the 2016 summary first, and nothing yet uses the date. This notebook puts the store to work. The application searches it for the chunks closest to a question, gives them to the model as context, and the model answers from them. A chunk that the search returns and the model reads is called a passage.
+A language model answers from the text in its prompt. Notebook 01 placed four briefs in the prompt by hand. A real collection holds thousands of documents and a prompt holds a few pages, so an application has to select the pages for each question. Notebook 02 prepared the collection for that selection: it split the eight documents into 21 section chunks, kept each document's date as metadata, and stored a vector for each chunk. This notebook performs the selection and the answer. The pattern is retrieval-augmented generation (RAG): retrieve the chunks closest to the question, add them to the prompt, and generate the answer from them. A retrieved chunk is called a passage.
 
-This pattern has a name: **retrieval-augmented generation**, or **RAG**. *Retrieval* is the search of the store, *augmented* means the search results are added to what the model is given, and *generation* is the model writing the answer. RAG has two halves: notebook 02 prepared the collection, and this notebook uses it to answer. The rest of the series builds on it. This notebook builds the second half, then shows three ways it goes wrong, and what fixes each.
+The notebook then shows three ways retrieval fails: a question with two parts, an outdated passage that outranks current ones, and a question the collection cannot answer. Each failure has a fix on the retrieval side, and the last section tests retrieval without the model.
 
 ## The application after this notebook
 
 @@DIAGRAM:retrieval@@
 
-Retrieval (the search) and the passages it returns are what this notebook adds, and the model's step becomes generation: together, the RAG pattern.
+Retrieval selects the passages. The model's step is now called generation, because the model writes from what retrieval supplied.
 
-## What you will see
+## Contents
 
-Four short scenes:
-
-1. The question from notebook 01 answered from the store. The answer cites its passages, but half of the question goes unanswered.
-2. Why the economy briefs never reached the model, and a fix that breaks the question into its parts and searches once for each.
-3. The 2016 summary outranking the 2026 briefs, and the date from notebook 02 removing it.
-4. A question the collection cannot answer still gets passages, and how to test a search without calling the model.
+1. [Section 1](#scrollTo=section-1) answers the main question from four retrieved passages. The answer covers internet use only.
+2. [Section 2](#scrollTo=section-2) shows the ranking behind that answer. The economy chunks fall below the cut-off, and one search per half of the question brings them back.
+3. [Section 3](#scrollTo=section-3) asks for the latest figures. The 2016 summary outranks the 2026 briefs, and the answer reports a 2015 value.
+4. [Section 4](#scrollTo=section-4) removes the summary with a filter on the date. Rewording the question does not remove it.
+5. [Section 5](#scrollTo=section-5) asks a question the collection cannot answer. The search returns passages anyway.
+6. [Section 6](#scrollTo=section-6) tests retrieval alone on the eight evaluation questions.
 
 ## How to run it
 
-Run the cells in order. The model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. The searches, rankings and tables are computed when you run the cell.
+Run the cells in order. Without an API key, the model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. With a key in `WORKSHOP_API_KEY`, the same cells call the model live, the answer streams into its bubble as the model writes, and the wording differs from the recorded answers. The searches, the rankings, and the tables are computed when a cell runs, in both modes.
 """),
     md("""
-The next cell installs the session's tools and loads its helper module. It takes about a minute the first time, and you do not need to read it.
+The next cell installs the session's tools and loads its helper module. The first run takes about a minute. The cell is setup only.
 """),
     code(SETUP),
     md("""
-The next cell builds the same store as notebook 02, in three lines. Each Colab notebook starts with an empty session, so the store from notebook 02 is not there to reuse; the three lines rebuild it. The cell also sets up the application: the instructions, a prompt, and two functions, one that searches the store and asks the model, and one that only searches. `k` is the number of passages a search returns; the model reads only those.
+The helper functions used in this notebook, in the order they appear. `w.use`, `w.show`, and `w.answer` are as in notebook 01.
+
+| Call | What it does |
+|---|---|
+| `w.load_documents()`, `w.split_sections(docs)`, `w.build_store(chunks)` | The three steps of notebook 02: load the documents, split them into section chunks, embed the chunks into an in-memory vector store. |
+| `store.similarity_search(q, k=...)` | LangChain's search: the `k` chunks whose vectors are closest to the question's. `similarity_search_with_score` also returns each score. |
+| `w.format_context(chunks)` | Joins chunks into the context text, each prefixed with its citation. |
+| `w.citation(chunk)` | The citation of a chunk: document id, section, and year, from its metadata. |
+| `w.print_hits(results)`, `w.show_ranking(...)`, `w.show_search_comparison(...)` | Print or draw search results. |
+| `w.load_questions()` | The eight evaluation questions of the session, each with its expected documents and numbers. |
+| `w.numbers_present(text, expected)`, `w.retrieval_hit(chunks, expected_docs)` | The two retrieval checks: how many expected numbers a text contains, and whether an expected document is among the chunks. |
+"""),
+    md("""
+Each Colab notebook starts with an empty session, so the next cell rebuilds the store of notebook 02 with the same three calls.
+"""),
+    code('''
+docs = w.load_documents()          # the eight session documents
+chunks = w.split_sections(docs)    # one chunk per Markdown section, metadata carried over
+store = w.build_store(chunks)      # a vector for every chunk, in memory
+print(len(chunks), "chunks in the store, the same collection as in notebook 02")
+'''),
+    md("""
+The application is the one of notebook 01 with retrieval in front of it. The instructions now speak of passages and of a citation form, which `w.format_context` writes before each passage. `make_rag` builds the chain: a search step that takes the question and returns the `k` closest chunks, formatted as context; a pass-through that forwards the question unchanged; the prompt; the model. `hits` runs the search alone and keeps the scores. The optional `where` is a filter on metadata, used in section 4.
 """),
     code('''
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableLambda, RunnablePassthrough
-
-docs = w.load_documents()
-chunks = w.split_sections(docs)
-store = w.build_store(chunks)
-print(len(chunks), "chunks in the store, the same collection as in notebook 02")
 
 INSTRUCTIONS = """You are a research assistant for development data.
 Answer only from the supplied passages. After each figure, cite the passage in the square-bracket form given.
@@ -599,32 +639,34 @@ prompt = ChatPromptTemplate.from_messages([("system", INSTRUCTIONS), ("human", "
 
 def make_rag(k=4, where=None):
     """RAG (retrieval-augmented generation): search the store, put the passages in the prompt, ask the model."""
-    retrieve = RunnableLambda(lambda q: store.similarity_search(q, k=k, filter=where))
+    retrieve = RunnableLambda(lambda q: store.similarity_search(q, k=k, filter=where))   # question -> k closest chunks
     return {"context": retrieve | w.format_context, "question": RunnablePassthrough()} | prompt | model
 
 
 def hits(question, k=4, where=None):
+    """The search alone: (chunk, score) pairs, best first."""
     return store.similarity_search_with_score(question, k=k, filter=where)
 '''),
-    md("""
-## 1. The question from notebook 01, answered from the store
+    md(id="section-1", text="""
+## 1. The main question answered from the store
 
-The question is the main one from notebook 01. The search returns the four chunks closest to it, and they become the passages the model reads. The cell prints the question, then the passages, so that the evidence the model saw is visible, then the model's answer.
+Retrieval scores every chunk by the distance between its vector and the question's vector, and returns the `k` closest. A vector is a list of numbers that summarises what a text is about, computed by the embedding model of notebook 02. The score printed with each passage is the cosine similarity: 1.0 means identical meaning and 0 means unrelated. The next cell shows the question, prints the four passages that `hits` returns for it with their scores, and then calls the chain through `w.answer`, which repeats the same search inside and asks the model.
 """),
     code('''
-w.show("Question: " + w.MAIN_QUESTION)
+w.show(w.MAIN_QUESTION, role="user")
 print()
-w.print_hits(hits(w.MAIN_QUESTION, k=4))
+w.print_hits(hits(w.MAIN_QUESTION, k=4))     # what the model is about to read
 print()
 w.use("nb03_rag_main")
-w.show(make_rag(k=4).invoke(w.MAIN_QUESTION))
+reply = w.answer(make_rag(k=4), w.MAIN_QUESTION)
 '''),
     md("""
-The answer cites its passages, and it is honest: it says the passages hold no figures on GDP or growth, so half of the question cannot be answered. The briefs with those figures are in the store. Why did they not come back?
+The answer opens by saying that the passages contain no economic indicators, and it covers internet use with a citation after each figure. The instructions require both behaviours. The GDP figures are in the store, in the two economy briefs, and retrieval did not return them. Section 2 shows why.
+"""),
+    md(id="section-2", text="""
+## 2. The ranking behind the answer
 
-## 2. Why half the question was lost
-
-The question asks about internet access and economic development. The search compares the whole question with every chunk, and keeps the four closest. The cell ranks the chunks for the question, coloured by topic, with a line after the first four, the ones that go to the model.
+A similarity search compares meanings. The question's vector lies closer to the internet chunks than to the economy chunks, because most of the question's words concern connectivity. The search ranks by this closeness alone. It cannot reserve places for the second half of a question, because it never identifies the halves. The next cell asks for the ten closest chunks, labels each with its topic from a small dictionary keyed by document id, and draws the ranking with the cut-off after the fourth.
 """),
     code('''
 topic = {"kenya-digital": "internet", "rwanda-digital": "internet", "regional-2016": "internet", "internet-indicator": "internet",
@@ -635,16 +677,15 @@ ranked = hits(w.MAIN_QUESTION, k=10)
 w.show_ranking([(w.citation(d), score, topic[d.metadata["id"]]) for d, score in ranked], k=4, legend=legend, question=w.MAIN_QUESTION)
 '''),
     md("""
-The top four are three internet chunks, one of them the 2016 summary, and the note on mobile money. The first economy chunk comes fifth, just below the line (0.570 against 0.591), and the one with Kenya's GDP per capita comes ninth. The search does not know that the question has two halves: it ranks chunks by their closeness to the whole question. Raising the number of passages is a poor fix: Kenya's GDP per capita appears only at nine passages, together with the coffee note and others, and every passage costs, as notebook 01 showed.
+The four chunks above the line are three internet chunks, including the 2016 summary, and the mobile-money note. The first economy chunk is fifth at 0.570 against 0.591 for fourth place, and Kenya's GDP per capita is ninth. Raising `k` is a poor remedy: the ninth place costs nine passages, the coffee note enters at seventh, and every passage adds tokens.
 
-The fix is on the search side: **break the question down into its parts, search once for each part, and merge the passages.** This question has two parts, internet use and the economy, so it becomes two smaller questions. Libraries can have a model write these smaller questions; here the two are written by hand so that the mechanism is visible. The cell shows the original search and the merged one side by side, and marks which of the four figures the question needs each of them brings back. The fix is not free: two searches of four chunks each give eight different passages, against four before, and the 2016 summary and the mobile-money note come along with them. The model ignores both here, but section 3 shows what happens when it does not.
+The fix is one search per half of the question, with the results merged. An application can split the question with a model; here the two halves are written by hand. The next cell runs a search for each half, merges the results without duplicates, and compares the merged list with the single search of section 1. The comparison marks which of the four figures a correct answer needs appear in each list; `needed` comes from the evaluation file of the session, and `w.numbers_present` looks for each figure in the text of the passages.
 """),
     code('''
-# the question broken into its two parts: one smaller question for each
 sub_queries = ["internet use in Kenya and Rwanda, recent figures", "GDP per capita and economic growth in Kenya and Rwanda, recent figures"]
 merged = []
 for q in sub_queries:
-    for d in store.similarity_search(q, k=4):
+    for d in store.similarity_search(q, k=4):   # four passages per half
         if d not in merged:
             merged.append(d)
 
@@ -663,39 +704,43 @@ def column(title, tone, found):
 
 w.show_search_comparison(w.MAIN_QUESTION, [column("One search for the whole question: 4 passages", "bad", one_search),
                                            column(f"The question broken into two, one search each, merged: {len(merged)} passages", "good", merged)], checks)
-print()
-w.use("nb03_rag_two_queries")
-w.show((prompt | model).invoke({"context": w.format_context(merged), "question": w.MAIN_QUESTION}))
 '''),
     md("""
-The merged passages bring back all four figures, where the single search brought two, and the answer covers both halves of the question.
+The merged search returns eight passages where the single search returned four, and all four needed figures are among them. The 2016 summary and the mobile-money note are among them too. The next cell gives the merged passages to the model. It calls `prompt | model` directly, because the chain of `make_rag` would run its own search.
+"""),
+    code('''
+w.use("nb03_rag_two_queries")
+reply = w.answer(prompt | model, {"context": w.format_context(merged), "question": w.MAIN_QUESTION})
+'''),
+    md("""
+The answer covers both halves with a citation after each figure. The two extra passages did no harm: the model used the 2016 summary for a projection and said the projection could not be checked, and it reported that the mobile-money note holds no figures. Section 3 shows what happens when the 2016 summary is the passage an answer depends on.
+"""),
+    md(id="section-3", text="""
+## 3. Outdated evidence in the ranking
 
-## 3. The 2016 summary outranks the briefs
-
-Notebook 02 ended with the 2016 summary ranking first. Here is what that costs. The question is "What are the latest available figures for internet use in Kenya and Rwanda?", and the 2016 summary contains the words "latest available figures". With two passages supplied, the Kenya figure comes from the 2016 summary (a 2015 value) and the Rwanda figure from a 2026 brief (a 2024 value), and the model reports both faithfully.
+A vector encodes what a text is about and nothing about when it was written. A 2016 summary that uses the phrase "latest available figures" scores high for a question that uses the same phrase, whatever its date. The next cell asks for the latest figures on internet use in Kenya and Rwanda with `k = 2`, prints the two passages with their scores, and shows the answer.
 """),
     code('''
 q = "What are the latest available figures for internet use in Kenya and Rwanda?"
 w.print_hits(hits(q, k=2))
 print()
 w.use("nb03_rag_outdated")
-w.show(make_rag(k=2).invoke(q))
+reply = w.answer(make_rag(k=2), q)
 '''),
     md("""
-The answer is faithful to its evidence and wrong for the reader: a 2015 figure presented as the latest. Nothing in the generation step can fix this; the evidence was selected badly.
+The 2016 summary ranks first at 0.816 and Rwanda's 2026 brief second at 0.765. Kenya's brief is absent, so the model's Kenya figure is the summary's: 16.6 percent in 2015. The model states that the summary dates from 2016 and that 16.6 is the most recent value in its passages. The answer is correct for its passages and wrong for the user, who asked for the latest figures while Kenya's 2024 value sits in the store. Generation cannot repair a selection made before the model saw anything. The fix belongs to retrieval.
+"""),
+    md(id="section-4", text="""
+## 4. Three fixes for outdated evidence
 
-## 4. Three ideas for fixing outdated evidence
+1. **A filter on the date.** The store checks metadata before it scores similarity, so a document dated before 2020 is never ranked. Notebook 02 kept the date for this.
+2. **A reworded question.** Rewriting the question to resemble the expected passage changes the question's vector. The ranking can move either way.
+3. **Sorting by date after the search**, for a store without a filter. It does the same job as the filter and is not shown.
 
-The fix is on the search side. Three ideas:
-
-1. **Filter on the date.** Tell the search to ignore documents dated before 2020. Notebook 02 kept each document's date as metadata, for this moment.
-2. **Reword the question** to look like the passage it should find, for example "internet use 2024, percent of population". It often helps, but not here.
-3. **Sort the results by date** after the search, when the store has no filter. It does the same job as the filter; it is not shown here.
-
-The notebook tries the first two. The first cell compares the same search without and with the date filter, and marks which of the two figures the question needs turn up.
+The next cell defines the filter as a function of a chunk, `since_2020`, which the store calls on each chunk's metadata before scoring. It then runs the same search with and without the filter and marks which of the two needed figures each returns.
 """),
     code('''
-since_2020 = lambda d: str(d.metadata.get("date", "")) >= "2020"
+since_2020 = lambda d: str(d.metadata.get("date", "")) >= "2020"   # the filter: keep chunks dated 2020 or later
 expected = next(item for item in w.load_questions() if item["id"] == "q8")["expected_numbers"]
 countries = {"KEN": "Kenya", "RWA": "Rwanda"}
 checks = [f"{countries[e['country']]}, {e['year']}: {e['value']}" for e in expected]
@@ -711,19 +756,25 @@ def search(title, tone, where=None):
 w.show_search_comparison(q, [search("No filter", "bad"), search("Date filter: 2020 or later", "good", since_2020)], checks)
 '''),
     md("""
-With the filter, the 2016 summary is gone and both figures come back. The model's answer from the filtered passages:
+With the filter, Kenya's brief replaces the summary and both 2024 figures are present. The next cell passes the filter to `make_rag` and shows the answer from the filtered passages.
 """),
     code('''
 w.use("nb03_rag_filtered")
-w.show(make_rag(k=2, where=since_2020).invoke(q))
+reply = w.answer(make_rag(k=2, where=since_2020), q)
 '''),
+    md("""
+The second fix, rewording, is tried next without the filter. The question is rewritten in the vocabulary of the 2026 briefs.
+"""),
     code('''
 w.print_hits(hits("Kenya and Rwanda internet use 2024, percent of population", k=2))
 '''),
     md("""
+The reworded question puts the summary first at 0.871, above Rwanda's brief at 0.833. The summary shares more vocabulary with the new wording than the brief does, so the rewording strengthened the match. The date is the only property that separates the summary from the briefs, and only metadata carries it.
+"""),
+    md(id="section-5", text="""
 ## 5. A question outside the collection
 
-A search always returns the closest chunks, even when none of them is close. Compare a question the collection can answer with one it cannot. The score shows how close a passage is to the question: higher is closer.
+A similarity search ranks every chunk and returns the top `k`. It has no notion of a chunk being unrelated: the top three for an unanswerable question are the three least unrelated chunks. The next cell asks for the population of Rwanda, which the collection holds, and for inflation in Uganda in 2023, which it does not, and prints three passages for each.
 """),
     code('''
 for q2 in ["What is the population of Rwanda?", "What was inflation in Uganda in 2023?"]:
@@ -732,11 +783,12 @@ for q2 in ["What is the population of Rwanda?", "What was inflation in Uganda in
     print()
 '''),
     md("""
-Both questions get three passages. The scores are lower for the question outside the collection, and a cut-off score could separate the two here, but a cut-off has to be set from examples on the embedding model in use. The second safeguard is the instruction from notebook 01 that tells the model to say when the passages do not answer the question; notebook 05 shows it at work. Applications use both.
+The population question returns the right chunk first at 0.739. The inflation question returns three GDP chunks about Kenya and Rwanda, the best at 0.534. The scores separate the two cases, and a cut-off between them would stop the second search from reaching the model. The cut-off depends on the embedding model and has to be set from examples. The second safeguard is the instruction from notebook 01 that tells the model to say when the passages do not answer, which notebook 05 shows in use. An application uses both.
+"""),
+    md(id="section-6", text="""
+## 6. A test of the search without the model
 
-## 6. Testing the search without the model
-
-A search can be tested before any model is involved. This is the retrieval half of RAG on its own, and the model is the generation half. For each of the eight evaluation questions, the cell makes two checks: did the passages include an expected document (one of them is enough), and do they contain the numbers an answer needs? `K` is the number of passages the search returns.
+Retrieval can be tested alone, because its output is a list of passages that can be checked without reading an answer. The next cell runs the eight evaluation questions through the search and makes two checks per question. `w.retrieval_hit` reports whether one of the expected documents is among the passages. `w.numbers_present` counts how many of the numbers a correct answer needs appear in the passages' text. `K` sets the number of passages, and the exercise changes it.
 """),
     code('''
 K = 4   # passages returned by the search: try 2, then 8
@@ -753,22 +805,22 @@ for item in w.load_questions():
 w.show_table(["id", "category", "expected document", "needed numbers"], rows, source=f"The search returns {K} passages per question.")
 '''),
     md("""
-Question q1, the main question, passes the first check, though only the two internet documents of its four expected ones came back, and fails the second at `K = 4`: documents of the right kind came back, but only two of the four numbers the answer needs. That is a retrieval problem, and no instruction to the model can fix it. When both checks pass and the answer is still wrong, the fault is in the generation: the instructions or the model, which notebook 06 measures. Keeping the two apart is what makes each one possible to improve.
+At `K = 4` every question has an expected document among its passages, and q1, the main question, has two of its four numbers: the problem of section 2. A missing number here cannot be fixed by any instruction to the model. When both checks pass and the answer is still wrong, the fault lies in generation: the instructions or the model. Testing the two halves separately shows which one to change. Notebook 06 adds a check of a different kind, of each number in the answer against its source record.
 """),
     md("""
 ## Key points
 
-- Retrieval-augmented generation (RAG), introduced at the top: search the store for the chunks closest to the question, give them to the model as passages, and have it answer from them, citing each.
-- What the search returns decides what the answer can say. For the main question the economy chunks ranked just below the line and never reached the model; breaking the question into its parts and searching once for each fixed it.
-- A search matches meaning, not age. The 2016 summary outranked the 2026 briefs, and rewording the question did not help; the date kept as metadata, used as a filter, did.
-- A search always returns something, even for a question the collection cannot answer. Two safeguards: a cut-off score set from examples, and an instruction telling the model to say when the passages do not answer.
-- A search can be tested without the model: check that the right documents and the needed numbers are among the passages. A miss there cannot be fixed by changing the instructions.
+- Retrieval scores every chunk by the distance between its vector and the question's, and returns the `k` closest as passages for the prompt.
+- A vector encodes meaning. A question with two parts matches the chunks of one part and misses the other; one search per part fixes it.
+- A vector encodes nothing about dates. A filter on metadata removes outdated passages; rewording the question does not.
+- A search returns the top `k` chunks even when none is related. A cut-off score stops unrelated passages from reaching the model, and an instruction tells the model to say when the passages do not answer.
+- Retrieval can be tested on its own by checking that the expected documents and numbers are among the passages. When a number is absent from the passages, the model never saw it, so no instruction to the model can put it in the answer; the fix is in retrieval.
 
 ## Exercise
 
-1. Look at the ranking in section 2. Which chunk takes fourth place, and is it a good use of one of the four slots?
-2. In the cell of section 6, set `K` to `2`, run it, then set it to `8` and run it again. Which questions lose numbers at 2, and which gain at 8? At 8, does every question find all the numbers it needs?
-3. Set `K` to `2` and look at q8, the question from section 3. Why does it pass at 4 and not at 2?
+1. Look at the ranking in section 2. Which chunk takes fourth place, and is it a good use of one of the four slots? Say what in the chunk explains its score.
+2. In the cell of section 6, set `K` to `2`, run it, then set it to `8` and run it again. Which questions lose numbers at 2, and which gain at 8? At 8, does every question find all of its needed numbers?
+3. Set `K` to `2` and look at q8, the question from section 3. Explain why it passes at 4 and fails at 2, using the two searches in section 4.
 """),
     md(LINKS),
 ]
@@ -813,7 +865,7 @@ Five short scenes:
 
 ## How to run it
 
-Run the cells in order. The model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. The tool results, tables and checks are computed when you run the cell. The last cell reaches a public server and needs the internet.
+Run the cells in order. Without an API key, the model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. With a key in `WORKSHOP_API_KEY`, the same cells call the model live, the answer streams into its bubble as the model writes, and the wording differs from the recorded answers. The tool results, tables and checks are computed when the cell runs. The last cell reaches a public server and needs the internet.
 """),
     code(SETUP),
     md("""
@@ -848,13 +900,13 @@ The model's own memory is a third way to get a number, and the weakest. The cell
 """),
     code('''
 w.use("nb04_from_memory")
-w.show(model.invoke("What was Rwanda's GDP per capita in 2023?"))
+reply = w.answer(model, "What was Rwanda's GDP per capita in 2023?")
 print()
 r = w.indicator_lookup("NY.GDP.PCAP.CD", "Rwanda", start=2023, end=2023)
 w.show_table(["year", "value"], [(o["year"], f"{o['value']:,.1f}") for o in r["observations"]], source=f"{r['name']} · {r['source']}")
 '''),
     md("""
-The answer from memory is close and hedged, and nothing tells a reader how close. The tool's answer is exact and carries its source. The application can now get an exact number, with its source, instead of hoping that a passage holds it.
+The answer from memory gives a range and a figure of about 966 dollars, hedged, and nothing tells a reader how far that is from the record. The tool's answer is exact, 1,061, and carries its source. The application can now get an exact number, with its source, instead of hoping that a passage holds it.
 
 ## 2. The tool, as the model sees it
 
@@ -898,8 +950,7 @@ messages = [SystemMessage(content=INSTRUCTIONS), HumanMessage(content="What was 
 
 w.use("nb04_tool_call")
 print("1. The model asks for the tool:")
-reply = model_with_tools.invoke(messages)
-w.show(reply)
+reply = w.answer(model_with_tools, messages)
 for call in reply.tool_calls:
     result = w.get_indicator.invoke(call["args"])
     print()
@@ -908,26 +959,29 @@ for call in reply.tool_calls:
     messages += [reply, ToolMessage(content=json.dumps(result), tool_call_id=call["id"])]
 print()
 print("3. The model writes its answer from the result:")
-final = model_with_tools.invoke(messages)
-w.show(final)
+final = w.answer(model_with_tools, messages)
 '''),
     md("""
 The application can now use a tool: the model asks, the application runs it, and the result goes back to the model.
 
 ## 4. Data that does not exist
 
-The planted problem: a year with no observation. The tool returns an empty list, and the instructions say what to do with it. The cell prints what the tool returned, then the model's answer.
+The planted problem: a year with no observation. The tool returns an empty list, and the instructions say what to do with it. The model may ask again, for example for a wider range of years, so the cell allows up to three rounds, prints each tool result, and then shows the answer.
 """),
     code('''
 messages = [SystemMessage(content=INSTRUCTIONS), HumanMessage(content="What share of Kenya's population used the internet in 2025?")]
 w.use("nb04_missing_year")
-reply = model_with_tools.invoke(messages)
-for call in reply.tool_calls:
-    result = w.get_indicator.invoke(call["args"])
-    print("tool result for 2025:", result["observations"])
-    messages += [reply, ToolMessage(content=json.dumps(result), tool_call_id=call["id"])]
+for round in range(3):   # the model may ask again, for example for a wider range of years
+    reply = model_with_tools.invoke(messages)
+    if not reply.tool_calls:
+        break
+    messages.append(reply)
+    for call in reply.tool_calls:
+        result = w.get_indicator.invoke(call["args"])
+        print(f"tool result for {call['args']}: {len(result['observations'])} observations")
+        messages.append(ToolMessage(content=json.dumps(result), tool_call_id=call["id"]))
 print()
-w.show(model_with_tools.invoke(messages))
+w.show(reply)
 '''),
     md("""
 ## 5. Structured output: an answer in a fixed shape
@@ -939,11 +993,11 @@ import re
 
 first = re.findall(r"\\d[\\d,]*\\.?\\d*", final.content)[0]
 print("The answer:")
-w.show(final.content)
+w.show(final.content, role="assistant")
 print("\\nThe dashboard's box: ", first)
 '''),
     md("""
-The box gets 2023, which is the year and not a figure. The sentence holds three figures for different years, and the words around them change from one answer to the next, so a program reading a sentence has to guess which one is wanted.
+The box gets 2023, which is the year and not a figure. The sentence holds a year and a figure, and the words around them change from one answer to the next, so a program reading a sentence has to guess which number is wanted.
 
 The fix is to stop asking for a sentence. We hand the model a **blank form** with a named box for each thing we need: a country, a year and a value for internet use, a year and a value for GDP per capita, a comparison, the sources. The model's job is to fill in the boxes, and the program reads each box by name. The blank form is called a **schema**, and an answer that follows one is a **structured output**. In code the form is a class written with a library called Pydantic, and `with_structured_output` sends it to the model with the request. The next cell gives the model the tool's data, asks it to fill in the form, and draws the blank form beside the filled one.
 """),
@@ -1018,7 +1072,7 @@ w.use("nb04_mcp")
 result = await agent.ainvoke({"messages": [HumanMessage(content="How has internet use in Rwanda changed since 2022?")]})
 w.print_trace(result)
 print()
-w.show(w.final_text(result))
+w.show(w.final_text(result), role="assistant")
 '''),
     md("""
 The application can now offer its tool to any program that speaks MCP.
@@ -1097,7 +1151,7 @@ Seven short scenes:
 
 ## How to run it
 
-Run the cells in order. The model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. The searches, the tool results, the tables and the checks are computed when you run the cell. The exercises at the end run without a key.
+Run the cells in order. Without an API key, the model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. With a key in `WORKSHOP_API_KEY`, the same cells call the model live, the answer streams into its bubble as the model writes, and the wording differs from the recorded answers. The searches, the tool results, the tables and the checks are computed when the cell runs. The exercises at the end run without a key.
 """),
     code(SETUP),
     code('''
@@ -1132,7 +1186,7 @@ def fixed_workflow(question):
     print(f"step 1: searched the documents, found {len(passages)} passages")
     series = [w.indicator_lookup(i, c, start=2010) for i in ["IT.NET.USER.ZS", "NY.GDP.PCAP.CD"] for c in ["Kenya", "Rwanda"]]
     print(f"step 2: looked up {len(series)} series: internet use and GDP per capita, for Kenya and Rwanda")
-    answer = compose.invoke({
+    answer = w.answer(compose, {
         "passages": "\\n\\n".join(f"{p['citation']}\\n{p['text']}" for p in passages),
         "data": json.dumps(series),
         "question": question,
@@ -1143,7 +1197,6 @@ def fixed_workflow(question):
 
 w.use("nb05_compose")
 workflow_answer, workflow_series = fixed_workflow(w.MAIN_QUESTION)
-w.show(workflow_answer)
 '''),
     md("""
 The application can now answer the main question with a fixed set of steps. It is predictable: the same question makes the same calls, so it is easy to test.
@@ -1159,7 +1212,7 @@ w.use("nb05_agent_main")
 result = agent.invoke({"messages": [HumanMessage(content=w.MAIN_QUESTION)]}, config={"recursion_limit": 10})
 w.show_trace(result)
 print()
-w.show(w.final_text(result))
+w.show(w.final_text(result), role="assistant")
 '''),
     md("""
 The model chose the same five calls that the workflow made. On a different question it would choose differently. That is the point of an agent, and also its risk: the calls are not known in advance.
@@ -1175,10 +1228,10 @@ w.use("nb05_agent_offscope")
 result = agent.invoke({"messages": [HumanMessage(content="How have Kenya's coffee export earnings changed in recent years?")]}, config={"recursion_limit": 10})
 w.show_trace(result)
 print()
-w.show(w.final_text(result))
+w.show(w.final_text(result), role="assistant")
 '''),
     md("""
-The agent made one search, read what came back, and declined to invent figures. The application can now say that it cannot answer, and what would be needed.
+The agent made one search and tried two indicator ids that the tool rejected, then declined to invent figures and said what it had looked for. The application can now say that it cannot answer, and what would be needed.
 
 ## 4. A call that fails
 
@@ -1189,7 +1242,7 @@ w.use("nb05_agent_error")
 result = agent.invoke({"messages": [HumanMessage(content="What share of Rwanda's population used the internet in 2023?")]}, config={"recursion_limit": 10})
 w.show_trace(result)
 print()
-w.show(w.final_text(result))
+w.show(w.final_text(result), role="assistant")
 '''),
     md("""
 The first row is the failed call, in round 1; the second is the retry that worked, in round 2. The application can now recover from a wrong call, as long as its tools return errors that the model can read.
@@ -1225,7 +1278,7 @@ The worked example has one shape, so a workflow is the right design for it. The 
 
 ## 7. Can we trust the numbers?
 
-Both designs produce an answer that holds several numbers. Some come straight from a tool, some come from a passage, and some are worked out by the model itself: "has risen by about 28 percentage points" is a subtraction, which no tool returned. The answer is plain text, and a reader, or a program, has no way to tell which number is which.
+Both designs produce an answer that holds several numbers. Some come straight from a tool, some come from a passage, and some are worked out by the model itself: "rose by about 23.7 percentage points" is a subtraction, which no tool returned. The answer is plain text, and a reader, or a program, has no way to tell which number is which.
 
 The tools have already laid some groundwork. Every figure the data tool returns carries a label, called a `claim_id`, made of the indicator, the country and the year. The cell shows the latest figure of each series that the workflow fetched.
 """),
@@ -1257,61 +1310,64 @@ The labels sit on the tool's side, and nothing in the answer points back to them
 # =============================================================================
 NB06 = [
     md("""
-# 06 · Making the application trustworthy
+# 06 · Verification
 
 **Session 01 · Building AI applications for research and data · notebook 6 of 6**
 
 ## Objective
 
-Notebook 05 ended on a question: what if every number in an answer carried its label, and a program checked each number against the record it names? The answer to the main question holds numbers from a tool, from a passage and from the model's own arithmetic, in plain text that does not say which is which. This notebook builds that check, and it is the last layer of trust. Retrieval found the right evidence (03), a tool returned exact figures (04), and a step limit and a trace bounded the agent (05). Now the numbers themselves are checked.
+Notebooks 01 to 05 put the right evidence in front of the model: context, retrieved passages, exact records from a data tool, and a bounded agent loop. The answer still contains numbers in plain text, and nothing in the application checks them against the records. This notebook adds the check.
 
-The protocol is **Proof-Carrying Numbers** (PCN), the program's approach to trustworthy data ([paper](https://arxiv.org/abs/2509.06902), [code](https://github.com/worldbank/pcn)): the model labels each number with the record it comes from, and a verifier checks each number against exactly that record. Then the notebook asks a second question, about the whole application and not one answer: how do we know that it behaves well across many questions, and that a change made it better and not worse? It answers with an evaluation suite, a fixed set of questions with known right evidence, run on two versions of the application and compared.
+Verification follows the Proof-Carrying Numbers protocol (PCN), the program's approach to trustworthy numbers ([paper](https://arxiv.org/abs/2509.06902), [code](https://github.com/worldbank/pcn)). The model writes every figure from the data tool inside a claim tag that names the record the figure came from and the rule for comparing the two. A verifier reads each tag, fetches the record, compares, and marks the number verified or flagged. A number without a tag is unmarked.
 
-Four terms, in plain words:
+Two terms:
 
-- A **claim tag** is a label that the model writes around a number: it names the record the number comes from, and how exactly to compare the two. The tag is the `claim_id` of notebook 05 with a little more.
-- A **verifier** reads the tags and checks each number against its record. The one here is `pcn-core`, the Python core of the PCN protocol. Each number gets a mark: **verified** (it matches its record), **flagged** (it does not) or **unmarked** (it has no tag, so there is nothing to check it against).
-- An **evaluation suite** is a fixed list of questions, each with the evidence and the behaviour that a good answer needs. The application runs on every question, and a table shows how it did.
-- A **configuration** is one version of the application. The suite compares two.
+- A **claim tag** is a label the model writes around a number. It names the record the number comes from and how to compare the two. It is the `claim_id` of notebook 05 with a comparison rule added.
+- A **verifier** reads the tags and checks each number against its record. Here it is `pcn-core`, the Python core of the protocol. Each number gets one mark: **verified** (it matches), **flagged** (it does not), or **unmarked** (no tag, so nothing to check against).
 
-Four kinds of check, and where each has appeared:
+The session has used three kinds of check:
 
 | Check | Question it answers | Where |
 |---|---|---|
 | Retrieval | Did the application find the right evidence? | Notebook 03, section 6 |
 | Grounding | Is the answer written from that evidence? | Citations in the answer |
 | Verification | Does each number match its source record? | Claim tags and `pcn-core`, this notebook |
-| Evaluation | Does the application behave across many questions? | The suite, this notebook |
 
 ## The application after this notebook
 
 @@DIAGRAM:verification@@
 
-## What you will see
+## Contents
 
-Five short scenes:
-
-1. A claim tag, step by step, and the model's answer to the main question with every number checked.
-2. A wrong number and a number with no tag: how the verifier marks them, and how a chatbot shows those marks to a reader.
-3. Two versions of the application, to be compared.
-4. The evaluation suite: the eight questions, and a table of results for each version.
-5. How to read the table, and what the suite does not cover.
+1. [Section 1](#scrollTo=section-1) shows a claim tag and the main question answered with every tagged number checked: 14 verified, none flagged, and 21 untagged numbers left unmarked.
+2. [Section 2](#scrollTo=section-2) replays an answer with one altered figure and one untagged figure, and shows the flag and the absence of a mark.
+3. [Section 3](#scrollTo=section-3) states what the check covers and what it leaves to the reader.
 
 ## How to run it
 
-Run the cells in order. The model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. The searches, the tool results, the checks and the tables are computed when you run the cell. The exercises at the end run without a key.
+Run the cells in order. Without an API key, the model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. With a key in `WORKSHOP_API_KEY`, the same cells call the model live, and the answers will differ in wording from the recorded ones. The checks and the tables are computed when a cell runs, in both modes. The exercises at the end run without a key.
+"""),
+    md("""
+The next cell installs the session's tools and loads its helper module. The first run takes about a minute. The cell is setup only.
 """),
     code(SETUP),
+    md("""
+The helper functions used in this notebook, in the order they appear. `w.use` and `w.show` are as in notebook 01.
+
+| Call | What it does |
+|---|---|
+| `w.indicator_lookup(indicator, country, start=...)` | The function behind the `get_indicator` tool of notebook 04; here its results are placed in the prompt directly. |
+| `w.observations_from_results(results)` | A dictionary from claim id to the value the tool returned. |
+| `w.show_chat(question, answer, observations, results, raw)` | The answer as a chatbot draws it, with a mark after each checked number. |
+| `w.verify(answer, observations)` | The verifier: one check per number in the answer, with its status. |
+| `w.show_checks(checks)` | The checks as a table. |
+"""),
+    md("""
+The next cell writes the instructions. The new rule is the claim tag. Its `id` is `indicator:country:year`, the key under which the tool returned the value. `policy="rounded"` with `decimals="1"` means that the record, rounded to one decimal, must equal the number shown; `policy="exact"` requires equality.
+"""),
     code('''
 import json
-from langchain.agents import create_agent
 from langchain_core.messages import HumanMessage, SystemMessage
-from langchain_core.prompts import ChatPromptTemplate
-
-docs = w.load_documents()
-store = w.build_store(w.split_sections(docs))   # the store of notebooks 02 and 03
-search_documents = w.make_search_tool(store, k=3, since="2020")   # the tools of notebooks 04 and 05
-tools = [search_documents, w.get_indicator]
 
 INSTRUCTIONS_CLAIMS = """You are a research assistant for development data.
 Use get_indicator for every statistic and search_documents for definitions and context. Do not quote figures from memory.
@@ -1320,14 +1376,14 @@ Write every number that comes from get_indicator inside a claim tag that names i
 Name the indicator and the source. If the tools do not provide what is needed, say so.
 If the question is ambiguous, ask which reading is meant."""
 '''),
-    md("""
+    md(id="section-1", text="""
 ## 1. Claim tags
 
-The instruction in the cell above asks the model to wrap each figure from the tool in a tag. The picture shows the parts of one tag, and what the verifier does with it: it takes the record named by the `claim_id`, compares it with the number inside the tag by the stated policy (rounded to some decimals, or exact), and marks the result. This is the Proof-Carrying Numbers protocol of the program, and `pcn-core` is its comparison code.
+A claim tag is a label around a number. The verifier takes the record named by the tag's id, applies the tag's rule, and compares the result with the number shown. The animation shows the three outcomes: a tagged figure that matches its record is verified, a tagged figure that differs is flagged, and a figure without a tag stays unmarked.
 
-@@EXPLAINER:claimtag@@
+@@EXPLAINER:pcn@@
 
-The next cell gives the model the four series that the main question needs and runs it. What comes back is drawn the way a chatbot would draw it: the answer as a reader sees it, with a small mark after each number that the application could check. Hover over a mark to see why it is there: which record the model named, where the tool got it, and how the two were compared. The labels themselves are folded away under the answer, for anyone who wants to see what the model really wrote.
+The next cell gives the model the four series the main question needs, placed in the prompt as notebook 04 did, and asks it to answer with tags. `w.observations_from_results` builds the dictionary from claim id to the value the tool returned, which is what the verifier compares against. `w.show_chat` draws the answer as a chatbot would: a mark after each checked number, a popover on hover or focus with the record and the rule, and, with `raw=True`, a fold that holds the tagged text as the model wrote it.
 """),
     code('''
 results = [w.indicator_lookup(i, c, start=2010) for i in ["IT.NET.USER.ZS", "NY.GDP.PCAP.CD"] for c in ["Kenya", "Rwanda"]]
@@ -1338,19 +1394,20 @@ reply = model.invoke([SystemMessage(content=INSTRUCTIONS_CLAIMS), HumanMessage(c
 w.show_chat(w.MAIN_QUESTION, reply.content, observations, results, raw=True)
 '''),
     md("""
-Every number carries a ✓. Behind each mark is a check that the application made on its own: the model named a record, the application looked the record up in what the tool returned, and compared the two by the rule in the label. The table lists those checks, one row per number: the record each label named, what the record holds, and the mark.
+The model put its figures in two tables, one tag per cell, and wrote four patterns under them. Every tagged number carries a ✓. The numbers in the patterns carry no mark: they are the same figures repeated without tags, or values the model computed, such as a gain of 27.8 points or a ratio of 1.95. The next cell lists every check as a table.
 """),
     code('''
 w.show_checks(w.verify(reply.content, observations))
 '''),
     md("""
-Why not simply look for a tool value equal to each number, without labels? Because a match by value cannot tell a source from a coincidence: "28", a subtraction the model did itself, equals Rwanda's 2022 value of 28.0, and a value-matching check would call that a source. With a label, the verifier reads which record the model meant instead of guessing. Years are not figures to check, so they are skipped. The application can now check every number that the model says comes from the tool.
+Fourteen numbers are verified, none is flagged, and 21 are unmarked. The record for Kenya's 2024 internet use holds 34.9762; rounded to one decimal it is 35.0, so the comparison holds. The 21 unmarked numbers are the repeats and the computed values in the patterns. A computed value has no single record to check against, so the protocol leaves it unmarked, and the reader sees that it was not checked. A check by value alone, without tags, could not tell a source from a coincidence: 28, a difference the model computed, equals Rwanda's 2022 internet share of 28.0. Years are not figures and are skipped.
 
-The picture and the cell above follow the program's JavaScript packages for the web, `@pcn-js/core` and `@pcn-js/ui` ([`worldbank/pcn`](https://github.com/worldbank/pcn)), whose `ClaimMark` component draws the ✓ and the hover in a real chatbot. The repository has a small demo chat app that uses it. The notebook imitates that view with plain HTML, and the marks come from the Python verifier.
+The chat view imitates `ClaimMark`, the component of the program's `@pcn-js/ui` package that draws the same marks in a web chatbot ([`worldbank/pcn`](https://github.com/worldbank/pcn)). The marks here come from the Python verifier.
+"""),
+    md(id="section-2", text="""
+## 2. A flagged number and an unmarked number
 
-## 2. A wrong number, and a number with no label
-
-Two things can go wrong, and the cell shows one of each. In this recorded answer, one labelled figure has been altered (Rwanda's internet use is given as 35.7 instead of 31.7), and one figure has no label because it did not come from the data: "about 70 percent … use mobile money". The verifier flags the first with a ⚠. The second it marks **unmarked**: it carries no claim, so there is nothing to check it against, and no mark is drawn, whether or not it happens to be right.
+A flag means that the number does not match the record named in its tag. An unmarked number carries no tag, so there is nothing to compare, and no mark is drawn whether or not the number is right. The next cell replays a hand-made answer with one of each: Rwanda's internet use altered to 35.7 against the record's 31.7, and a figure of about 70 percent for mobile money that did not come from the tool.
 """),
     code('''
 w.use("nb06_claims_error")
@@ -1359,118 +1416,26 @@ w.show_chat(w.MAIN_QUESTION, flawed.content, observations, results)
 w.show_checks(w.verify(flawed.content, observations))
 '''),
     md("""
-Hover over the ⚠: the tooltip shows the record the model named, the figure the tool returned, and that the two are not equal. "About 70 percent" carries nothing. That absence is part of the design. The protocol's own principle reads: *trust is earned only by proof, and the absence of a verification mark communicates uncertainty.* The same holds for the numbers of notebook 05 that the model worked out itself, such as a rise of "about 28 percentage points". They have no single record, so they stay unmarked, and a reader knows to look at them.
-
-What the check says nothing about: whether the record is the right one for the question, whether the method behind it is sound, or whether the sentence around the number interprets it correctly. Those stay with the reader. The application can now flag a number that does not match its record, and leave unmarked a number that has no record.
-
-## 3. Two versions of the application
-
-A check on one answer is not yet a measure of the application. The second half of the notebook compares two configurations on the same questions:
-
-| Configuration | What it uses | Built in |
-|---|---|---|
-| **A · retrieval only** | The search, then the model writes from the passages. No tools, no tags. | Notebook 03 |
-| **B · tools and claims** | The agent with both tools, the claim instructions above, and the verifier. | Notebooks 04 and 05, and this one |
-
-The cell defines both as functions that take a question and return the answer, the passages the search found, and the records the tools returned.
+The verifier flags 35.7 with a ⚠, and the popover shows the record, the value returned, and the failed comparison. The 70 carries no mark. The absence is deliberate. The protocol states the principle as: *trust is earned only by proof, and the absence of a verification mark communicates uncertainty.*
 """),
-    code('''
-INSTRUCTIONS_RAG = """You are a research assistant for development data.
-Answer only from the supplied passages and cite them in the square-bracket form given. If they do not contain what is needed, say so."""
-rag_prompt = ChatPromptTemplate.from_messages([("system", INSTRUCTIONS_RAG), ("human", "PASSAGES:\\n{context}\\n\\nQUESTION: {question}")])
-rag_chain = rag_prompt | model
-agent = create_agent(model, tools, system_prompt=INSTRUCTIONS_CLAIMS)
+    md(id="section-3", text="""
+## 3. What the check covers
 
-
-def app_rag(question, scenario):
-    hits = store.similarity_search(question, k=4)
-    w.use(scenario)
-    reply = rag_chain.invoke({"context": w.format_context(hits), "question": question})
-    return reply.content, hits, {}
-
-
-def app_tools(question, scenario):
-    w.use(scenario)
-    result = agent.invoke({"messages": [HumanMessage(content=question)]}, config={"recursion_limit": 10})
-    obs = w.observations_from_results(w.tool_results(result, "get_indicator"))
-    hits = store.similarity_search(question, k=4)  # for the retrieval column; the agent may or may not have searched
-    return w.final_text(result), hits, obs
-'''),
-    md("""
-The application can now be run as a function of a question, which is what a suite needs.
-
-## 4. The evaluation suite
-
-The suite is eight questions from `assets/questions.json`, each of a different kind: the main question, factual ones, an ambiguous one, a missing year, an out-of-scope one, a definition, and one where the evidence is outdated. Each has the documents and numbers a good answer should use, and the behaviour it should show.
-"""),
-    code('''
-questions = w.load_questions()
-w.show_table(["id", "kind", "question", "what a good answer does"], [(q["id"], q["category"], q["question"], q["behaviour"]) for q in questions])
-'''),
-    md("""
-For each question and each configuration, the table reports four things:
-
-- **retrieval**: did the four passages that the search found include an expected document?
-- **numbers**: how many of the expected numbers appear in the answer?
-- **cited**: does the answer cite a retrieved document, or name a source?
-- **verified / flagged / unmarked**: the verifier's counts (configuration B only, since only B uses tags).
-"""),
-    code('''
-def evaluate(app, prefix):
-    rows = []
-    for qd in questions:
-        answer, hits, obs = app(qd["question"], f"{prefix}_{qd['id']}")
-        found, total = w.numbers_present(answer, qd["expected_numbers"])
-        cited = w.grounded(answer, hits) or "WDI" in answer or "World Development Indicators" in answer
-        if obs:
-            checks = w.verify(answer, obs)
-            v, f, u = (sum(c.status == s for c in checks) for s in ("verified", "flagged", "unmarked"))
-            ver = f"{v} / {f} / {u}"
-        else:
-            ver = "not applicable" if prefix.endswith("rag") else "no tool data used"
-        rows.append(w.EvalRow(qd["id"], qd["category"], "hit" if w.retrieval_hit(hits, qd["expected_documents"]) else "miss", f"{found}/{total}" if total else "none expected", "yes" if cited else "no", ver))
-    return rows
-
-
-print("A · retrieval only\\n")
-w.show_eval(evaluate(app_rag, "nb06_rag"))
-print("\\nB · tools and claims\\n")
-w.show_eval(evaluate(app_tools, "nb06_tools"))
-'''),
-    md("""
-The application can now be measured across questions, and two versions of it compared.
-
-## 5. Reading the table
-
-- **q8, outdated evidence.** Both configurations "hit" on retrieval. Yet A answers from the 2016 summary, with 2015 figures, and finds none of the two expected numbers, while B fetches the series and reports 2024. No single column tells the whole story: retrieval alone said A was fine.
-- **q3, ambiguous.** Neither configuration should answer with a single number. B asks which measure is meant, as its instructions say. A answers without asking, with both measures at once. The numbers column shows "none expected" for both: the behaviour has to be read, not counted.
-- **q4, missing data.** Both say that 2025 is unavailable and give 2024. B's statement rests on an empty tool result.
-- **q5, out of scope.** Both give no number. A's retrieval "hit" is the coffee note, which is the expected document and contains no figures.
-- **Verified, flagged, unmarked.** In B every number that came from the data tool is verified, and nothing is flagged. In A there is nothing to verify against, because no number came from a tool.
-
-A table like this is what separates a demonstration from a measured application. It is rerun after every change to the instructions, the tools, the store or the model. For suites at scale, with a model as a judge for the behaviours that a rule cannot check, see the program's evaluation cookbook; libraries such as Ragas and DeepEval provide those judges.
-
-## 6. What the suite does not cover
-
-- Whether the application chose the right indicator for the question. A verified number from the wrong series is verified.
-- Whether the interpretation around the numbers is right.
-- Behaviour on questions that nobody wrote down. The suite grows from use: every failure found in use becomes a question.
+The verifier answers one question about each number: does it match the record it names? It says nothing about whether that record is the right one for the question, whether the method behind the record is sound, or whether the sentence around the number interprets it correctly. Those judgements remain with the reader, and the marks tell the reader which numbers need none of that scrutiny on the first question. A test of the application across many questions, with a fixed set of expected answers, is the subject of the program's [evaluation cookbook](https://worldbank.github.io/ai4data/cookbook/evaluation-suites/); notebook 03, section 6, showed the retrieval half of such a test.
 
 ## Key points
 
-- Notebook 05 could only match numbers to values, and guessed. A claim tag names the record that a number comes from, and the verifier compares the two: verified, flagged, or unmarked.
-- The rule is that an untagged number gets no mark. The verifier cannot say whether a number is right, only whether it matches the record it names.
-- Evaluation runs the application over questions with known evidence and expected behaviour, and is rerun on every change. One column is rarely enough: on q8 retrieval alone said the weaker version was fine.
-- The two configurations differ most on outdated evidence and on numbers: tools make numbers checkable, and retrieval alone does not.
+- A claim tag names the record a number comes from and the rule for comparing them. The verifier compares the two and marks the number verified or flagged. A number without a tag is unmarked.
+- An unmarked number is neither right nor wrong; it is unchecked, and the reader is told so.
+- Verification checks a number against its record. Whether the record answers the question, and whether the sentence reads it correctly, stay with the reader.
 
 ## Exercise
 
 All of these run without a key, on the answer of section 1 (`reply`).
 
-1. Take the answer of section 1 and change one number inside a tag: `tampered = reply.content.replace(">35.0<", ">35.7<")`, then `w.show_checks(w.verify(tampered, observations))`. Which mark changes, and what does the record hold?
-2. Remove all the tags: `plain = w.strip_claims(reply.content)`, then `w.show_checks(w.verify(plain, observations))`. What happens to every number, and why is it not a "verified" result?
-3. Change the policy of one tag from rounded to exact: `strict = reply.content.replace('policy="rounded" decimals="1"', 'policy="exact"', 1)`, then verify it. Why does 35.0 stop matching a record of 34.9762, and which policy would you want for a published percentage?
-4. Look at the eight questions of section 4. Which kind of question would you add next, and what would a good answer to it do? Failures found in use are the best source.
+1. Change one number inside a tag: `tampered = reply.content.replace(">35.0<", ">35.7<")`, then `w.show_checks(w.verify(tampered, observations))`. Which mark changes, and what does the record hold?
+2. Remove all the tags: `plain = w.strip_claims(reply.content)`, then `w.show_checks(w.verify(plain, observations))`. What happens to every number, and why is the result not a "verified" one?
+3. Change the policy of one tag from rounded to exact: `strict = reply.content.replace('policy="rounded" decimals="1"', 'policy="exact"', 1)`, then verify it. Why does 35.0 stop matching a record of 34.9762, and which policy suits a published percentage?
 """),
     md(LINKS),
 ]
@@ -1597,7 +1562,7 @@ This is the simplest version that works, and it leaves out what a full chatbot h
 - **Speed-ups**: reusing the model's work on text it has already read (a **KV cache**), and showing the answer as it is written.
 - **Better search**: re-ranking the passages, combining a search by words with the search by meaning, or rewriting the question before it is searched.
 - **Keeping the index**, so that the documents are not split and stored again each time the notebook starts.
-- **A test suite of your own questions**, as in notebook 06, to see whether a change made the application better.
+- **A test suite of your own questions**, as in section 6 of notebook 03 for retrieval, to see whether a change made the application better.
 
 ## Key points
 
@@ -1624,7 +1589,7 @@ ORDER = [
     ("03-retrieval-augmented-generation.ipynb", "03 · Retrieval-augmented generation", NB03),
     ("04-tools-and-structured-outputs.ipynb", "04 · Tools and structured outputs", NB04),
     ("05-workflows-and-agents.ipynb", "05 · Workflows and agents", NB05),
-    ("06-verification-and-evaluation.ipynb", "06 · Making the application trustworthy", NB06),
+    ("06-verification-and-evaluation.ipynb", "06 · Verification", NB06),
     ("07-lab-chat-with-your-documents.ipynb", "07 · Lab: chat with your documents", NB07),
 ]
 for (_, _, nb), (nxt_file, nxt_title, _) in zip(ORDER, ORDER[1:]):

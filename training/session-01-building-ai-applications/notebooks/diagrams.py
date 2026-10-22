@@ -45,7 +45,7 @@ ALT = {
     "tools": "Diagram: the question goes to a search of the store, which returns passages for the prompt; the prompt goes to the model. New in this notebook: the model can call the tool get_indicator with an indicator, a country and optional start and end years; the data it returns goes back into the prompt; the model answers with text or a structured output, a filled-in form that other software can read. Separately, the same tool is served over MCP to any MCP client, such as this notebook, a chatbot or a desktop assistant.",
     "agent": "Diagram: the question goes to a model that chooses the next step. It can call search_documents, the search of notebook 03 now offered as a tool, which returns passages, or get_indicator, the tool of notebook 04, which returns data. The results go back to the model, which writes the answer. New in this notebook: the model chooses the steps, a step limit and a trace bound and record the loop, and the answer ends on the question of whether its numbers can be trusted, which notebook 06 takes up.",
     "lab": "Diagram: your documents are split and stored; a question retrieves the closest passages; a small open model, running in the notebook, writes the answer from them; every number of the answer is looked up in the passages and gets a mark; the answer is shown with its sources. If no passage is close enough, the application says it could not find the answer.",
-    "verification": "Diagram: the question goes to the agent with tools of notebook 05, which writes an answer with claim tags; the verifier, pcn-core, puts a mark on each number: verified, flagged or unmarked. Separately, the evaluation suite of eight questions produces a table per question for each configuration of the application.",
+    "verification": "Diagram: the question goes to the agent with tools of notebook 05, which writes an answer with claim tags; the verifier, pcn-core, puts a mark on each number: verified, flagged or unmarked.",
 }
 
 
@@ -147,11 +147,9 @@ def flow(name: str, stage: int | None = None) -> Flow:
                 ("an", "answer with\nclaim tags", "hot"),
                 ("pcn", "verifier\n(pcn-core)", "hot"),
                 ("mk", "a mark on each number:\nverified, flagged, unmarked", "hot"),
-                ("ev", "evaluation suite:\neight questions", "hot"),
-                ("tb", "a table per question,\nfor each configuration", "hot"),
             ],
-            [("q", "ag"), ("ag", "an"), ("an", "pcn"), ("pcn", "mk"), ("ev", "tb")],
-            grid={"q": (0, 0), "ag": (1, 0), "an": (2, 0), "pcn": (3, 0), "mk": (4, 0), "ev": (3, 1), "tb": (4, 1)},
+            [("q", "ag"), ("ag", "an"), ("an", "pcn"), ("pcn", "mk")],
+            grid={"q": (0, 0), "ag": (1, 0), "an": (2, 0), "pcn": (3, 0), "mk": (4, 0)},
             caption="Light boxes: built in notebooks 01 to 05. Dark boxes: added in this notebook.",
         )
     if name == "lab":

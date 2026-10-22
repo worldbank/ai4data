@@ -13,9 +13,9 @@ Participants need no prior experience with language-model APIs. The notebooks ru
 
 ## What participants can do afterwards
 
-- Describe the components of an AI application and say which problem each one solves: instructions and context, prepared knowledge, retrieval, structured outputs and tools, workflows and agents, verification and evaluation.
+- Describe the components of an AI application and say which problem each one solves: instructions and context, prepared knowledge, retrieval, structured outputs and tools, workflows and agents, and verification.
 - Given a research or data question, choose an architecture and say what evidence would show that it works.
-- Rerun the six notebooks, change the question or the documents, and read the evaluation results.
+- Rerun the six notebooks, change the question or the documents, and read the verifier's marks and the retrieval checks.
 
 ## The worked example
 
@@ -36,7 +36,7 @@ Four problems are planted so that each capability has a reason to exist: an ambi
 | Retrieval and retrieval-augmented generation | 5 | 10 | 15 | 03 |
 | Structured outputs and tools | 5 | 10 | 15 | 04 |
 | Workflows and agents | 5 | 10 | 15 | 05 |
-| Grounding, verification, and evaluation | 4 | 6 | 10 | 06 |
+| Grounding and verification | 4 | 6 | 10 | 06 |
 | Data360 Chat and questions | 5 | 5 | 10 | demo |
 | Total | 37 | 53 | 90 | |
 
@@ -51,10 +51,12 @@ Questions are taken at the notebook transitions as well as at the end. Notebooks
 | 03 · Retrieval-augmented generation | [Open](https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-01-building-ai-applications/notebooks/03-retrieval-augmented-generation.ipynb) |
 | 04 · Tools and structured outputs | [Open](https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-01-building-ai-applications/notebooks/04-tools-and-structured-outputs.ipynb) |
 | 05 · Workflows and agents | [Open](https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-01-building-ai-applications/notebooks/05-workflows-and-agents.ipynb) |
-| 06 · Making the application trustworthy | [Open](https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-01-building-ai-applications/notebooks/06-verification-and-evaluation.ipynb) |
+| 06 · Verification | [Open](https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-01-building-ai-applications/notebooks/06-verification-and-evaluation.ipynb) |
 | 07 · Lab: chat with your documents | [Open](https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-01-building-ai-applications/notebooks/07-lab-chat-with-your-documents.ipynb) |
 
 Each notebook ends with a link to the next. Notebook 07 runs a small open model, so choose **Runtime > Change runtime type > T4 GPU** before you run it.
+
+The eight documents of the worked example, with their metadata, their role in the session, and the chunks that notebook 02 makes of them, are shown at [worldbank.github.io/ai4data/training/session-01/documents.html](https://worldbank.github.io/ai4data/training/session-01/documents.html). The page is generated from `assets/documents/` by `scripts/docs/build_training_pages.py` when the site is built.
 
 ## Materials
 
