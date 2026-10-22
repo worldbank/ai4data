@@ -234,6 +234,57 @@ def _markdown_html(text: str) -> str | None:
     return html
 
 
+def _bubble_html(role: str, text: str, label: str | None, tool_calls: list) -> str | None:
+    """A chat bubble: the role and the recorded label above, tool calls as code lines, the text as Markdown. None if the markdown library is missing."""
+    from html import escape
+
+    body = re.sub(r"<(?=[A-Za-z/])", "&lt;", text)  # HTML-like tags shown as text, not rendered
+    html = _markdown_html(body)
+    if html is None:
+        return None
+    name, bg, extra = _ROLES.get(role, (role, "#f3f4f6", ""))
+    meta = name + (f" · recorded output: {label}" if label else "")
+    calls = "".join(
+        f'<div style="font:12.5px Menlo,Consolas,monospace;color:#5b6b85;margin:2px 0">→ tool call {escape(c["name"])}({escape(json.dumps(c["args"]))})</div>'
+        for c in tool_calls
+    )
+    bubble = "padding:10px 14px;border-radius:14px;margin:6px 0;max-width:88%;font:14px/1.6 Helvetica,Arial,sans-serif;color:#16315a"
+    body_div = f'<div style="{bubble};background:{bg};{extra}">{html}</div>' if text.strip() else ""
+    return (
+        f'<div class="tex2jax_ignore" style="background:#ffffff;border:1px solid #e1e6ee;border-radius:10px;padding:8px 14px">'
+        f'<div style="font:12px Helvetica,Arial,sans-serif;color:#5b6b85;{"text-align:right" if extra else ""}">{escape(meta)}</div>'
+        f"{calls}{body_div}</div>"
+    )
+
+
+def answer(runnable, inputs, **kwargs):
+    """Call a chain or a model and show the answer as a chat bubble.
+
+    With a live model in a notebook, the tokens are streamed: the bubble appears with the
+    first words and grows until the answer is complete. Without a key, or outside a
+    notebook, the call is a plain `invoke` and the recorded answer is shown at once, as
+    `show` does. Returns the message either way.
+    """
+    if not (llm_available() and _in_notebook()):
+        message = runnable.invoke(inputs, **kwargs)
+        show(message)
+        return message
+    handle = display(HTML(_bubble_html("assistant", "", None, []) or ""), display_id=True)
+    if handle is None:  # no display front end to update: a plain call instead
+        message = runnable.invoke(inputs, **kwargs)
+        show(message)
+        return message
+    text, full = "", None
+    for chunk in runnable.stream(inputs, **kwargs):
+        full = chunk if full is None else full + chunk
+        content = chunk.content
+        text += content if isinstance(content, str) else "".join(p.get("text", "") for p in content if isinstance(p, dict))
+        handle.update(HTML(_bubble_html("assistant", text, None, []) or text))
+    tool_calls = list(getattr(full, "tool_calls", None) or [])
+    handle.update(HTML(_bubble_html("assistant", text, None, tool_calls) or text))
+    return full
+
+
 def show(message: BaseMessage | str, width: int = 100, markdown: bool = True, role: str | None = None) -> None:
     """Show a message, with the recorded-scenario label when it was replayed.
 
@@ -256,21 +307,9 @@ def show(message: BaseMessage | str, width: int = 100, markdown: bool = True, ro
         text = message
     if markdown and _in_notebook():
         body = re.sub(r"<(?=[A-Za-z/])", "&lt;", text)  # HTML-like tags shown as text, not rendered
-        html = _markdown_html(body) if role else None
+        html = _bubble_html(role, text, label, tool_calls) if role else None
         if html is not None:
-            name, bg, extra = _ROLES.get(role, (role, "#f3f4f6", ""))
-            meta = name + (f" · recorded output: {label}" if label else "")
-            calls = "".join(
-                f'<div style="font:12.5px Menlo,Consolas,monospace;color:#5b6b85;margin:2px 0">→ tool call {escape(c["name"])}({escape(json.dumps(c["args"]))})</div>'
-                for c in tool_calls
-            )
-            bubble = "padding:10px 14px;border-radius:14px;margin:6px 0;max-width:88%;font:14px/1.6 Helvetica,Arial,sans-serif;color:#16315a"
-            body_div = f'<div style="{bubble};background:{bg};{extra}">{html}</div>' if text.strip() else ""
-            display(HTML(
-                f'<div class="tex2jax_ignore" style="background:#ffffff;border:1px solid #e1e6ee;border-radius:10px;padding:8px 14px">'
-                f'<div style="font:12px Helvetica,Arial,sans-serif;color:#5b6b85;{"text-align:right" if extra else ""}">{escape(meta)}</div>'
-                f"{calls}{body_div}</div>"
-            ))
+            display(HTML(html))
             return
         from IPython.display import Markdown
 

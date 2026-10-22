@@ -169,7 +169,7 @@ The whole session uses one research question, so that each method is judged on t
 
 ## How to run it
 
-Run the cells in order. Without an API key, the model's outputs are recorded ones, labelled `[recorded output: ...]`. Each cell names its recorded scenario with `w.use(...)` before it calls the model. With a key in `WORKSHOP_API_KEY`, the same cells call the model live, and the answers will differ in wording from the recorded ones.
+Run the cells in order. Without an API key, the model's outputs are recorded ones, labelled `[recorded output: ...]`. Each cell names its recorded scenario with `w.use(...)` before it calls the model. With a key in `WORKSHOP_API_KEY`, the same cells call the model live, the answer streams into its bubble as the model writes, and the wording differs from the recorded answers.
 """),
     md("""
 The next cell installs the session's tools and loads its helper module. The first run takes about a minute. The cell is setup only.
@@ -182,7 +182,8 @@ The setup cell imported the helper module as `w` and created `model`, a LangChai
 | Call | What it does |
 |---|---|
 | `w.use(name)` | Names the recorded scenario for the next model call, so that the replay returns the right answer. Has no effect on a live model. |
-| `w.show(message, role=...)` | Draws a message as a chat bubble, with the answer rendered as Markdown. |
+| `w.show(message, role=...)` | Draws a message as a chat bubble, with the text rendered as Markdown. |
+| `w.answer(chain, inputs)` | Calls the chain and draws the answer as a bubble. With a live model the tokens stream into the bubble; without a key the recorded answer is drawn at once. Returns the message. |
 | `w.indicator_lookup(indicator, country, start=...)` | Returns the observations of a World Development Indicators series for one country, from the session's data file. |
 | `w.latest(result)` | The last observation of such a result. |
 | `w.show_table(...)`, `w.show_claim_check(...)`, `w.show_prompt(...)` | Draw a table, the claims comparison, and the prompt as HTML. |
@@ -235,12 +236,11 @@ w.show(w.MAIN_QUESTION, role="user")
 
 Without context, the model answers from training data: text it read before its training ended, compressed into its parameters. It holds no records, only patterns of text, so its figures are reconstructions.
 
-The next cell makes the first call. `chain.invoke` takes one dictionary with a value for each slot. The context slot gets the text `(none)`, so the model sees that no evidence was supplied. `w.use` names the recorded scenario first, so that the replay returns the answer recorded for this exact call.
+The next cell makes the first call. `w.answer` passes one dictionary with a value for each slot to the chain, and draws the reply. The context slot gets the text `(none)`, so the model sees that no evidence was supplied. `w.use` names the recorded scenario first, so that the replay returns the answer recorded for this exact call.
 """),
     code('''
 w.use("nb01_zero_context")
-answer = chain.invoke({"instructions": INSTRUCTIONS_BASIC, "context": "(none)", "question": w.MAIN_QUESTION})
-w.show(answer)
+answer = w.answer(chain, {"instructions": INSTRUCTIONS_BASIC, "context": "(none)", "question": w.MAIN_QUESTION})
 '''),
     md("""
 The answer cannot be judged without reference values. The next cell prints the official values from the World Development Indicators for the two measures the answer leans on most: the share of people using the internet and GDP per capita. `w.indicator_lookup` returns the observations of one series for one country, and the loop keeps the 2023 and 2024 values.
@@ -279,8 +279,7 @@ The call is the same as in section 2, with the grounded instructions in the firs
 """),
     code('''
 w.use("nb01_with_context")
-answer = chain.invoke({"instructions": INSTRUCTIONS_GROUNDED, "context": context, "question": w.MAIN_QUESTION})
-w.show(answer)
+answer = w.answer(chain, {"instructions": INSTRUCTIONS_GROUNDED, "context": context, "question": w.MAIN_QUESTION})
 '''),
     md("""
 @@EXPLAINER:before_after@@
@@ -297,9 +296,8 @@ An instruction sets the model's behaviour when the evidence falls short. The gro
 """),
     code('''
 w.use("nb01_missing_info")
-answer = chain.invoke({"instructions": INSTRUCTIONS_GROUNDED, "context": docs["kenya-digital"].page_content,
-                       "question": "What share of Kenya's population used the internet in 2025?"})
-w.show(answer)
+answer = w.answer(chain, {"instructions": INSTRUCTIONS_GROUNDED, "context": docs["kenya-digital"].page_content,
+                          "question": "What share of Kenya's population used the internet in 2025?"})
 '''),
     md("""
 The model says that 2025 is absent, names 2024 as the latest year, and gives 35.0 percent with a citation. The behaviour came from one sentence in the instructions.
@@ -312,11 +310,11 @@ The model says that 2025 is absent, names 2024 as the latest year, and gives 35.
     code('''
 print("Without an instruction to clarify:\\n")
 w.use("nb01_ambiguous_no_instruction")
-w.show(chain.invoke({"instructions": INSTRUCTIONS_BASIC, "context": docs["kenya-digital"].page_content, "question": "How connected is Kenya?"}))
+w.answer(chain, {"instructions": INSTRUCTIONS_BASIC, "context": docs["kenya-digital"].page_content, "question": "How connected is Kenya?"})
 
 print("\\n" + "=" * 100 + "\\nWith the instruction:\\n")
 w.use("nb01_ambiguous_with_instruction")
-w.show(chain.invoke({"instructions": INSTRUCTIONS_CLARIFY, "context": docs["kenya-digital"].page_content, "question": "How connected is Kenya?"}))
+w.answer(chain, {"instructions": INSTRUCTIONS_CLARIFY, "context": docs["kenya-digital"].page_content, "question": "How connected is Kenya?"})
 '''),
     md("""
 With the basic instructions, the model answers at length, covers two readings, and adds a growth analysis the question did not ask for. With the clarifying instruction, it names three readings and asks. An answer to the model's own reading looks as confident as an answer to the user's reading, so the user cannot tell them apart. For a research application, asking costs one exchange and removes that risk.
@@ -595,14 +593,14 @@ Retrieval selects the passages. The model's step is now called generation, becau
 
 ## How to run it
 
-Run the cells in order. Without an API key, the model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. With a key in `WORKSHOP_API_KEY`, the same cells call the model live, and the answers will differ in wording from the recorded ones. The searches, the rankings, and the tables are computed when a cell runs, in both modes.
+Run the cells in order. Without an API key, the model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. With a key in `WORKSHOP_API_KEY`, the same cells call the model live, the answer streams into its bubble as the model writes, and the wording differs from the recorded answers. The searches, the rankings, and the tables are computed when a cell runs, in both modes.
 """),
     md("""
 The next cell installs the session's tools and loads its helper module. The first run takes about a minute. The cell is setup only.
 """),
     code(SETUP),
     md("""
-The helper functions used in this notebook, in the order they appear. `w.use` and `w.show` are as in notebook 01.
+The helper functions used in this notebook, in the order they appear. `w.use`, `w.show`, and `w.answer` are as in notebook 01.
 
 | Call | What it does |
 |---|---|
@@ -650,7 +648,7 @@ def hits(question, k=4, where=None):
     md(id="section-1", text="""
 ## 1. The main question answered from the store
 
-Retrieval scores every chunk by the distance between its vector and the question's vector, and returns the `k` closest. A vector is a list of numbers that summarises what a text is about, computed by the embedding model of notebook 02. The score printed with each passage is the cosine similarity: 1.0 means identical meaning and 0 means unrelated. The next cell shows the question, prints the four passages that `hits` returns for it with their scores, and then calls the chain, which repeats the same search inside and asks the model.
+Retrieval scores every chunk by the distance between its vector and the question's vector, and returns the `k` closest. A vector is a list of numbers that summarises what a text is about, computed by the embedding model of notebook 02. The score printed with each passage is the cosine similarity: 1.0 means identical meaning and 0 means unrelated. The next cell shows the question, prints the four passages that `hits` returns for it with their scores, and then calls the chain through `w.answer`, which repeats the same search inside and asks the model.
 """),
     code('''
 w.show(w.MAIN_QUESTION, role="user")
@@ -658,7 +656,7 @@ print()
 w.print_hits(hits(w.MAIN_QUESTION, k=4))     # what the model is about to read
 print()
 w.use("nb03_rag_main")
-w.show(make_rag(k=4).invoke(w.MAIN_QUESTION))
+w.answer(make_rag(k=4), w.MAIN_QUESTION)
 '''),
     md("""
 The answer opens by saying that the passages contain no economic indicators, and it covers internet use with a citation after each figure. The instructions require both behaviours. The GDP figures are in the store, in the two economy briefs, and retrieval did not return them. Section 2 shows why.
@@ -706,11 +704,11 @@ w.show_search_comparison(w.MAIN_QUESTION, [column("One search for the whole ques
                                            column(f"The question broken into two, one search each, merged: {len(merged)} passages", "good", merged)], checks)
 '''),
     md("""
-The merged search returns eight passages where the single search returned four, and all four needed figures are among them. The 2016 summary and the mobile-money note are among them too. The next cell gives the merged passages to the model. It uses the prompt and the model directly, because the chain of `make_rag` would run its own search.
+The merged search returns eight passages where the single search returned four, and all four needed figures are among them. The 2016 summary and the mobile-money note are among them too. The next cell gives the merged passages to the model. It calls `prompt | model` directly, because the chain of `make_rag` would run its own search.
 """),
     code('''
 w.use("nb03_rag_two_queries")
-w.show((prompt | model).invoke({"context": w.format_context(merged), "question": w.MAIN_QUESTION}))
+w.answer(prompt | model, {"context": w.format_context(merged), "question": w.MAIN_QUESTION})
 '''),
     md("""
 The answer covers both halves with a citation after each figure. The two extra passages did no harm: the model used the 2016 summary for a projection and said the projection could not be checked, and it reported that the mobile-money note holds no figures. Section 3 shows what happens when the 2016 summary is the passage an answer depends on.
@@ -725,7 +723,7 @@ q = "What are the latest available figures for internet use in Kenya and Rwanda?
 w.print_hits(hits(q, k=2))
 print()
 w.use("nb03_rag_outdated")
-w.show(make_rag(k=2).invoke(q))
+w.answer(make_rag(k=2), q)
 '''),
     md("""
 The 2016 summary ranks first at 0.816 and Rwanda's 2026 brief second at 0.765. Kenya's brief is absent, so the model's Kenya figure is the summary's: 16.6 percent in 2015. The model states that the summary dates from 2016 and that 16.6 is the most recent value in its passages. The answer is correct for its passages and wrong for the user, who asked for the latest figures while Kenya's 2024 value sits in the store. Generation cannot repair a selection made before the model saw anything. The fix belongs to retrieval.
@@ -760,7 +758,7 @@ With the filter, Kenya's brief replaces the summary and both 2024 figures are pr
 """),
     code('''
 w.use("nb03_rag_filtered")
-w.show(make_rag(k=2, where=since_2020).invoke(q))
+w.answer(make_rag(k=2, where=since_2020), q)
 '''),
     md("""
 The second fix, rewording, is tried next without the filter. The question is rewritten in the vocabulary of the 2026 briefs.
@@ -865,7 +863,7 @@ Five short scenes:
 
 ## How to run it
 
-Run the cells in order. Without an API key, the model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. With a key in `WORKSHOP_API_KEY`, the same cells call the model live, and the answers will differ in wording from the recorded ones. The tool results, tables and checks are computed when the cell runs. The last cell reaches a public server and needs the internet.
+Run the cells in order. Without an API key, the model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. With a key in `WORKSHOP_API_KEY`, the same cells call the model live, the answer streams into its bubble as the model writes, and the wording differs from the recorded answers. The tool results, tables and checks are computed when the cell runs. The last cell reaches a public server and needs the internet.
 """),
     code(SETUP),
     md("""
@@ -1149,7 +1147,7 @@ Seven short scenes:
 
 ## How to run it
 
-Run the cells in order. Without an API key, the model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. With a key in `WORKSHOP_API_KEY`, the same cells call the model live, and the answers will differ in wording from the recorded ones. The searches, the tool results, the tables and the checks are computed when the cell runs. The exercises at the end run without a key.
+Run the cells in order. Without an API key, the model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. With a key in `WORKSHOP_API_KEY`, the same cells call the model live, the answer streams into its bubble as the model writes, and the wording differs from the recorded answers. The searches, the tool results, the tables and the checks are computed when the cell runs. The exercises at the end run without a key.
 """),
     code(SETUP),
     code('''
@@ -1350,7 +1348,7 @@ The session has used four kinds of check:
 
 ## How to run it
 
-Run the cells in order. Without an API key, the model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. With a key in `WORKSHOP_API_KEY`, the same cells call the model live, and the answers will differ in wording from the recorded ones. The checks and the tables are computed when a cell runs, in both modes. The exercises at the end run without a key.
+Run the cells in order. Without an API key, the model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. With a key in `WORKSHOP_API_KEY`, the same cells call the model live, the answer streams into its bubble as the model writes, and the wording differs from the recorded answers. The checks and the tables are computed when a cell runs, in both modes. The exercises at the end run without a key.
 """),
     md("""
 The next cell installs the session's tools and loads its helper module. The first run takes about a minute. The cell is setup only.
