@@ -51,7 +51,7 @@ Questions are taken at the notebook transitions as well as at the end. Notebooks
 | 03 · Retrieval-augmented generation | [Open](https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-01-building-ai-applications/notebooks/03-retrieval-augmented-generation.ipynb) |
 | 04 · Tools and structured outputs | [Open](https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-01-building-ai-applications/notebooks/04-tools-and-structured-outputs.ipynb) |
 | 05 · Workflows and agents | [Open](https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-01-building-ai-applications/notebooks/05-workflows-and-agents.ipynb) |
-| 06 · Making the application trustworthy | [Open](https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-01-building-ai-applications/notebooks/06-verification-and-evaluation.ipynb) |
+| 06 · Verification and evaluation | [Open](https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-01-building-ai-applications/notebooks/06-verification-and-evaluation.ipynb) |
 | 07 · Lab: chat with your documents | [Open](https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-01-building-ai-applications/notebooks/07-lab-chat-with-your-documents.ipynb) |
 
 Each notebook ends with a link to the next. Notebook 07 runs a small open model, so choose **Runtime > Change runtime type > T4 GPU** before you run it.
