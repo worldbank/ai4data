@@ -805,7 +805,7 @@ for item in w.load_questions():
 w.show_table(["id", "category", "expected document", "needed numbers"], rows, source=f"The search returns {K} passages per question.")
 '''),
     md("""
-At `K = 4` every question has an expected document among its passages, and q1, the main question, has two of its four numbers: the problem of section 2. A missing number here cannot be fixed by any instruction to the model. When both checks pass and the answer is still wrong, the fault lies in generation, which notebook 06 measures. Testing the two halves separately shows which one to change.
+At `K = 4` every question has an expected document among its passages, and q1, the main question, has two of its four numbers: the problem of section 2. A missing number here cannot be fixed by any instruction to the model. When both checks pass and the answer is still wrong, the fault lies in generation: the instructions or the model. Testing the two halves separately shows which one to change. Notebook 06 adds a check of a different kind, of each number in the answer against its source record.
 """),
     md("""
 ## Key points
@@ -1310,31 +1310,28 @@ The labels sit on the tool's side, and nothing in the answer points back to them
 # =============================================================================
 NB06 = [
     md("""
-# 06 · Verification and evaluation
+# 06 · Verification
 
 **Session 01 · Building AI applications for research and data · notebook 6 of 6**
 
 ## Objective
 
-Notebooks 01 to 05 put the right evidence in front of the model: context, retrieved passages, exact records from a data tool, and a bounded agent loop. The answer still contains numbers in plain text, and nothing in the application checks them against the records. This notebook adds the check, then measures the whole application.
+Notebooks 01 to 05 put the right evidence in front of the model: context, retrieved passages, exact records from a data tool, and a bounded agent loop. The answer still contains numbers in plain text, and nothing in the application checks them against the records. This notebook adds the check.
 
-Verification follows the Proof-Carrying Numbers protocol (PCN), the program's approach to trustworthy numbers ([paper](https://arxiv.org/abs/2509.06902), [code](https://github.com/worldbank/pcn)). The model writes every figure from the data tool inside a claim tag that names the record the figure came from and the rule for comparing the two. A verifier reads each tag, fetches the record, compares, and marks the number verified or flagged. A number without a tag is unmarked. Evaluation runs a fixed set of eight questions with known evidence through two configurations of the application and compares the results in one table.
+Verification follows the Proof-Carrying Numbers protocol (PCN), the program's approach to trustworthy numbers ([paper](https://arxiv.org/abs/2509.06902), [code](https://github.com/worldbank/pcn)). The model writes every figure from the data tool inside a claim tag that names the record the figure came from and the rule for comparing the two. A verifier reads each tag, fetches the record, compares, and marks the number verified or flagged. A number without a tag is unmarked.
 
-Four terms:
+Two terms:
 
 - A **claim tag** is a label the model writes around a number. It names the record the number comes from and how to compare the two. It is the `claim_id` of notebook 05 with a comparison rule added.
 - A **verifier** reads the tags and checks each number against its record. Here it is `pcn-core`, the Python core of the protocol. Each number gets one mark: **verified** (it matches), **flagged** (it does not), or **unmarked** (no tag, so nothing to check against).
-- An **evaluation suite** is a fixed list of questions, each with the evidence and the behaviour a correct answer needs.
-- A **configuration** is one version of the application. The suite compares two.
 
-The session has used four kinds of check:
+The session has used three kinds of check:
 
 | Check | Question it answers | Where |
 |---|---|---|
 | Retrieval | Did the application find the right evidence? | Notebook 03, section 6 |
 | Grounding | Is the answer written from that evidence? | Citations in the answer |
 | Verification | Does each number match its source record? | Claim tags and `pcn-core`, this notebook |
-| Evaluation | Does the application behave across many questions? | The suite, this notebook |
 
 ## The application after this notebook
 
@@ -1344,14 +1341,11 @@ The session has used four kinds of check:
 
 1. [Section 1](#scrollTo=section-1) shows a claim tag and the main question answered with every tagged number checked: 14 verified, none flagged, and 21 untagged numbers left unmarked.
 2. [Section 2](#scrollTo=section-2) replays an answer with one altered figure and one untagged figure, and shows the flag and the absence of a mark.
-3. [Section 3](#scrollTo=section-3) defines two configurations of the application: retrieval only, and tools with claims.
-4. [Section 4](#scrollTo=section-4) lists the eight evaluation questions and runs both configurations through them.
-5. [Section 5](#scrollTo=section-5) reads the table. Each configuration fails one question the other passes, and no single column shows it.
-6. [Section 6](#scrollTo=section-6) states what the suite does not cover.
+3. [Section 3](#scrollTo=section-3) states what the check covers and what it leaves to the reader.
 
 ## How to run it
 
-Run the cells in order. Without an API key, the model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. With a key in `WORKSHOP_API_KEY`, the same cells call the model live, the answer streams into its bubble as the model writes, and the wording differs from the recorded answers. The checks and the tables are computed when a cell runs, in both modes. The exercises at the end run without a key.
+Run the cells in order. Without an API key, the model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. With a key in `WORKSHOP_API_KEY`, the same cells call the model live, and the answers will differ in wording from the recorded ones. The checks and the tables are computed when a cell runs, in both modes. The exercises at the end run without a key.
 """),
     md("""
 The next cell installs the session's tools and loads its helper module. The first run takes about a minute. The cell is setup only.
@@ -1362,29 +1356,18 @@ The helper functions used in this notebook, in the order they appear. `w.use` an
 
 | Call | What it does |
 |---|---|
-| `w.make_search_tool(store, k, since)`, `w.get_indicator` | The two tools of notebooks 04 and 05: a search of the store with a date filter, and a lookup of a World Development Indicators series. |
-| `w.indicator_lookup(...)` | The function behind `get_indicator`, called directly in section 1. |
+| `w.indicator_lookup(indicator, country, start=...)` | The function behind the `get_indicator` tool of notebook 04; here its results are placed in the prompt directly. |
 | `w.observations_from_results(results)` | A dictionary from claim id to the value the tool returned. |
 | `w.show_chat(question, answer, observations, results, raw)` | The answer as a chatbot draws it, with a mark after each checked number. |
 | `w.verify(answer, observations)` | The verifier: one check per number in the answer, with its status. |
 | `w.show_checks(checks)` | The checks as a table. |
-| `w.tool_results(result, name)`, `w.final_text(result)` | The parsed tool results and the final answer of an agent run. |
-| `w.grounded(answer, passages)` | Whether the answer cites one of the retrieved passages. |
-| `w.EvalRow`, `w.show_eval(rows)` | One row of the evaluation table, and the table. |
 """),
     md("""
-The next cell rebuilds the store, creates the two tools of notebooks 04 and 05, and writes the instructions. The new rule is the claim tag. Its `id` is `indicator:country:year`, the key under which the tool returned the value. `policy="rounded"` with `decimals="1"` means that the record, rounded to one decimal, must equal the number shown; `policy="exact"` requires equality.
+The next cell writes the instructions. The new rule is the claim tag. Its `id` is `indicator:country:year`, the key under which the tool returned the value. `policy="rounded"` with `decimals="1"` means that the record, rounded to one decimal, must equal the number shown; `policy="exact"` requires equality.
 """),
     code('''
 import json
-from langchain.agents import create_agent
 from langchain_core.messages import HumanMessage, SystemMessage
-from langchain_core.prompts import ChatPromptTemplate
-
-docs = w.load_documents()
-store = w.build_store(w.split_sections(docs))   # the store of notebooks 02 and 03
-search_documents = w.make_search_tool(store, k=3, since="2020")   # the tools of notebooks 04 and 05
-tools = [search_documents, w.get_indicator]
 
 INSTRUCTIONS_CLAIMS = """You are a research assistant for development data.
 Use get_indicator for every statistic and search_documents for definitions and context. Do not quote figures from memory.
@@ -1400,7 +1383,7 @@ A claim tag is a label around a number. The verifier takes the record named by t
 
 @@EXPLAINER:pcn@@
 
-The next cell gives the model the four series the main question needs, placed in the prompt as notebook 04 did, and asks it to answer with tags. `w.observations_from_results` builds the dictionary from claim id to the value the tool returned, which is what the verifier compares against. `w.show_chat` draws the answer as a chatbot would: a mark after each checked number, a tooltip on hover with the record and the rule, and, with `raw=True`, a fold that holds the tagged text as the model wrote it.
+The next cell gives the model the four series the main question needs, placed in the prompt as notebook 04 did, and asks it to answer with tags. `w.observations_from_results` builds the dictionary from claim id to the value the tool returned, which is what the verifier compares against. `w.show_chat` draws the answer as a chatbot would: a mark after each checked number, a popover on hover or focus with the record and the rule, and, with `raw=True`, a fold that holds the tagged text as the model wrote it.
 """),
     code('''
 results = [w.indicator_lookup(i, c, start=2010) for i in ["IT.NET.USER.ZS", "NY.GDP.PCAP.CD"] for c in ["Kenya", "Rwanda"]]
@@ -1433,100 +1416,18 @@ w.show_chat(w.MAIN_QUESTION, flawed.content, observations, results)
 w.show_checks(w.verify(flawed.content, observations))
 '''),
     md("""
-The verifier flags 35.7 with a ⚠, and the tooltip shows the record, the value returned, and the failed comparison. The 70 carries no mark. The absence is deliberate. The protocol states the principle as: *trust is earned only by proof, and the absence of a verification mark communicates uncertainty.* The check says nothing about whether the record is the right one for the question, whether the method behind it is sound, or whether the sentence around the number interprets it correctly. Those judgements remain with the reader.
+The verifier flags 35.7 with a ⚠, and the popover shows the record, the value returned, and the failed comparison. The 70 carries no mark. The absence is deliberate. The protocol states the principle as: *trust is earned only by proof, and the absence of a verification mark communicates uncertainty.*
 """),
     md(id="section-3", text="""
-## 3. Two configurations of the application
+## 3. What the check covers
 
-A check on one answer does not measure the application. The rest of the notebook compares two configurations on the same questions:
-
-| Configuration | What it uses | Built in |
-|---|---|---|
-| **A · retrieval only** | The search, then the model writes from the passages. No tools, no tags. | Notebook 03 |
-| **B · tools and claims** | The agent with both tools, the claim instructions above, and the verifier. | Notebooks 04 and 05, and this one |
-
-The next cell defines each as a function of a question that returns the answer, the retrieved passages, and the tool observations. `app_rag` returns no observations, because nothing in A can be verified. `app_tools` reads the observations from the agent's calls to `get_indicator` with `w.tool_results`, and also retrieves passages, for the retrieval column of the table.
-"""),
-    code('''
-INSTRUCTIONS_RAG = """You are a research assistant for development data.
-Answer only from the supplied passages and cite them in the square-bracket form given. If they do not contain what is needed, say so."""
-rag_prompt = ChatPromptTemplate.from_messages([("system", INSTRUCTIONS_RAG), ("human", "PASSAGES:\\n{context}\\n\\nQUESTION: {question}")])
-rag_chain = rag_prompt | model
-agent = create_agent(model, tools, system_prompt=INSTRUCTIONS_CLAIMS)
-
-
-def app_rag(question, scenario):
-    hits = store.similarity_search(question, k=4)
-    w.use(scenario)
-    reply = rag_chain.invoke({"context": w.format_context(hits), "question": question})
-    return reply.content, hits, {}
-
-
-def app_tools(question, scenario):
-    w.use(scenario)
-    result = agent.invoke({"messages": [HumanMessage(content=question)]}, config={"recursion_limit": 10})
-    obs = w.observations_from_results(w.tool_results(result, "get_indicator"))
-    hits = store.similarity_search(question, k=4)  # for the retrieval column; the agent may or may not have searched
-    return w.final_text(result), hits, obs
-'''),
-    md(id="section-4", text="""
-## 4. The evaluation suite
-
-A suite is a fixed list of questions, each with the documents and numbers a correct answer uses and the behaviour it should show. The next cell lists the eight questions of the session, one per kind, from `assets/questions.json`.
-"""),
-    code('''
-questions = w.load_questions()
-w.show_table(["id", "kind", "question", "what a good answer does"], [(q["id"], q["category"], q["question"], q["behaviour"]) for q in questions])
-'''),
-    md("""
-The next cell runs both configurations through the eight questions. For each question it fills four columns: retrieval, whether an expected document is among the four passages (`w.retrieval_hit`); numbers, how many of the expected numbers appear in the answer (`w.numbers_present`); cited, whether the answer cites a retrieved passage or names the source (`w.grounded`); and the verifier's counts of verified, flagged, and unmarked numbers, for B only.
-"""),
-    code('''
-def evaluate(app, prefix):
-    rows = []
-    for qd in questions:
-        answer, hits, obs = app(qd["question"], f"{prefix}_{qd['id']}")
-        found, total = w.numbers_present(answer, qd["expected_numbers"])
-        cited = w.grounded(answer, hits) or "WDI" in answer or "World Development Indicators" in answer
-        if obs:
-            checks = w.verify(answer, obs)
-            v, f, u = (sum(c.status == s for c in checks) for s in ("verified", "flagged", "unmarked"))
-            ver = f"{v} / {f} / {u}"
-        else:
-            ver = "not applicable" if prefix.endswith("rag") else "no tool data used"
-        rows.append(w.EvalRow(qd["id"], qd["category"], "hit" if w.retrieval_hit(hits, qd["expected_documents"]) else "miss", f"{found}/{total}" if total else "none expected", "yes" if cited else "no", ver))
-    return rows
-
-
-print("A · retrieval only\\n")
-w.show_eval(evaluate(app_rag, "nb06_rag"))
-print("\\nB · tools and claims\\n")
-w.show_eval(evaluate(app_tools, "nb06_tools"))
-'''),
-    md(id="section-5", text="""
-## 5. Reading the table
-
-- **q1, the main question.** A finds two of the four numbers: at `k = 4` the economy chunks fall below the cut-off, as notebook 03 showed. B finds all four, with 16 numbers verified and 18 unmarked repeats and computed values.
-- **q6, which country grew faster in 2023.** A answers from the passages: Rwanda, 8.6 against 5.7 percent. B asks which two countries are meant and calls no tool, so it finds none of the two numbers. The question names no country. A had the passages, which do; the agent had nothing to infer the countries from.
-- **q3, the ambiguous question.** B names three readings, fetches two series, and reports both with tags: four numbers verified. A answers internet use only and says the passages hold nothing on subscriptions.
-- **q8, outdated evidence.** Both find the 2024 figures. At `k = 4` A retrieves both briefs and sets the 2016 summary aside.
-- **The retrieval column reads hit and the cited column reads yes on every row of both tables.** Neither column would have revealed the two failures.
-
-Each configuration fails one question that the other passes, and the table shows which. A table like this is rerun after every change to the instructions, the tools, the store, or the model. For suites at scale, with a model as a judge for the behaviours a rule cannot check, see the program's evaluation cookbook; libraries such as Ragas and DeepEval provide those judges.
-"""),
-    md(id="section-6", text="""
-## 6. What the suite does not cover
-
-- Whether the application chose the right indicator for the question. A verified number from the wrong series is still verified.
-- Whether the interpretation around the numbers is right.
-- Behaviour on questions that nobody wrote down. Each failure found in use is added to the suite as a question.
+The verifier answers one question about each number: does it match the record it names? It says nothing about whether that record is the right one for the question, whether the method behind the record is sound, or whether the sentence around the number interprets it correctly. Those judgements remain with the reader, and the marks tell the reader which numbers need none of that scrutiny on the first question. A test of the application across many questions, with a fixed set of expected answers, is the subject of the program's [evaluation cookbook](https://worldbank.github.io/ai4data/cookbook/evaluation-suites/); notebook 03, section 6, showed the retrieval half of such a test.
 
 ## Key points
 
 - A claim tag names the record a number comes from and the rule for comparing them. The verifier compares the two and marks the number verified or flagged. A number without a tag is unmarked.
 - An unmarked number is neither right nor wrong; it is unchecked, and the reader is told so.
-- A check on one answer is not a measure of the application. Evaluation runs fixed questions with known evidence through each configuration and compares the tables.
-- In the session's suite, retrieval only fails the main question and tools with claims fails the question that names no country. The retrieval and citation columns alone would have passed both.
+- Verification checks a number against its record. Whether the record answers the question, and whether the sentence reads it correctly, stay with the reader.
 
 ## Exercise
 
@@ -1535,7 +1436,6 @@ All of these run without a key, on the answer of section 1 (`reply`).
 1. Change one number inside a tag: `tampered = reply.content.replace(">35.0<", ">35.7<")`, then `w.show_checks(w.verify(tampered, observations))`. Which mark changes, and what does the record hold?
 2. Remove all the tags: `plain = w.strip_claims(reply.content)`, then `w.show_checks(w.verify(plain, observations))`. What happens to every number, and why is the result not a "verified" one?
 3. Change the policy of one tag from rounded to exact: `strict = reply.content.replace('policy="rounded" decimals="1"', 'policy="exact"', 1)`, then verify it. Why does 35.0 stop matching a record of 34.9762, and which policy suits a published percentage?
-4. Look at the eight questions of section 4. Which kind of question would be worth adding next, and what would a correct answer to it do?
 """),
     md(LINKS),
 ]
@@ -1662,7 +1562,7 @@ This is the simplest version that works, and it leaves out what a full chatbot h
 - **Speed-ups**: reusing the model's work on text it has already read (a **KV cache**), and showing the answer as it is written.
 - **Better search**: re-ranking the passages, combining a search by words with the search by meaning, or rewriting the question before it is searched.
 - **Keeping the index**, so that the documents are not split and stored again each time the notebook starts.
-- **A test suite of your own questions**, as in notebook 06, to see whether a change made the application better.
+- **A test suite of your own questions**, as in section 6 of notebook 03 for retrieval, to see whether a change made the application better.
 
 ## Key points
 
@@ -1689,7 +1589,7 @@ ORDER = [
     ("03-retrieval-augmented-generation.ipynb", "03 · Retrieval-augmented generation", NB03),
     ("04-tools-and-structured-outputs.ipynb", "04 · Tools and structured outputs", NB04),
     ("05-workflows-and-agents.ipynb", "05 · Workflows and agents", NB05),
-    ("06-verification-and-evaluation.ipynb", "06 · Verification and evaluation", NB06),
+    ("06-verification-and-evaluation.ipynb", "06 · Verification", NB06),
     ("07-lab-chat-with-your-documents.ipynb", "07 · Lab: chat with your documents", NB07),
 ]
 for (_, _, nb), (nxt_file, nxt_title, _) in zip(ORDER, ORDER[1:]):
