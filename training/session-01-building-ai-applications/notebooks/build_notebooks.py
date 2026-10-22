@@ -160,9 +160,9 @@ The whole session works on one research question, so that every method can be ju
 ## Contents
 
 1. [Section 1](#scrollTo=section-1) defines the prompt and its three parts.
-2. [Section 2](#scrollTo=section-2) sends the question to the model with no evidence. The answer is well organized and carefully hedged, but no figure is tied to a source or a year, so none of them can be checked.
+2. [Section 2](#scrollTo=section-2) sends the question to the model with no evidence. The answer is well organized and carefully hedged, but its figures are rounded ranges and none is tied to a source record, so none of them can be checked.
 3. [Section 3](#scrollTo=section-3) supplies four country briefs as context. The answer becomes specific and cites each figure.
-4. [Section 4](#scrollTo=section-4) asks a question that the briefs cannot answer and shows how an instruction makes the model say so.
+4. [Section 4](#scrollTo=section-4) asks a question that the brief cannot answer and shows how an instruction makes the model say so.
 5. [Section 5](#scrollTo=section-5) asks a question with two meanings under two sets of instructions. With the second set, the model asks which meaning is intended before it answers.
 6. [Section 6](#scrollTo=section-6) prints the messages exactly as the model received them.
 7. [Section 7](#scrollTo=section-7) measures what the context cost in tokens and explains why a whole document collection cannot be supplied in the same way.
@@ -236,7 +236,7 @@ w.show_table(["Indicator", "Country", "2023", "2024"], rows, source="Source: Wor
 '''),
     code(CLAIMS_CELL),
     md("""
-The answer is careful. It says that its figures come from training data, warns that they are approximate, distinguishes subscriptions from users, and ends with a reading list. Four of the six claims in the table land close to the official figures. Two do not: the share of Kenyans online is given as roughly 40 percent against 35.0 percent in 2024, and Rwanda's growth in 2024 is given as 9 to 10 percent against 7.2 percent. The reader has no way to tell these two from the other four. Every figure is a rounded range, no figure is tied to a year, and the sources at the end are institutions to consult, so no figure can be traced to a record. The hedging is correct behaviour for a model that has no evidence in front of it, and it leaves a reader who needs a citable number with the whole research task still to do.
+The answer is careful. It says that its figures come from training data, warns that they are approximate, distinguishes subscriptions from users, and ends with a reading list. Four of the six claims in the table land close to the official figures. Two do not: the share of Kenyans online is given as roughly 40 percent against 35.0 percent in 2024, and Rwanda's growth in 2024 is given as 9 to 10 percent against 7.2 percent. The reader has no way to tell these two from the other four. Every figure is a rounded range, most carry no year, and the sources at the end are institutions to consult, so no figure can be traced to a record. The hedging is correct behaviour for a model that has no evidence in front of it, and it leaves a reader who needs a citable number with the whole research task still to do.
 
 Different instructions would change the tone and the length of this answer, but the figures would still come from training, because the model has no other source.
 """),
@@ -317,7 +317,7 @@ The application therefore has to select, for each question, the small part of th
 ## Key points
 
 - A prompt has three parts: the instructions, the context, and the question. They are kept in separate slots because a different person changes each one.
-- Without context, the model answers from its training. The answer was well organized and hedged, four of its six figures were close to the official ones, two were off, and no figure was tied to a source or a year, so a reader could not tell which figures to trust.
+- Without context, the model answers from its training. The answer was well organized and hedged, four of its six figures were close to the official ones, two were off, and no figure was tied to a source record, so a reader could not tell which figures to trust.
 - With the four briefs as context, the answer became specific and cited each figure. The application produced that improvement by choosing the evidence, and the model wrote from what it was given.
 - Instructions shape the model's behaviour. They can require citations, make the model say when information is missing, and make it ask when a question has more than one meaning. They cannot supply data that the model lacks.
 - A whole collection cannot be supplied as context. The context window has a limit, the cost grows with every token, and the relevant passages get lost among the rest. The next notebooks build the selection step.

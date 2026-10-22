@@ -317,7 +317,7 @@ def prompt_svg():
              f'<rect x="604" y="160" width="110" height="60" rx="10" fill="{PALE}" stroke="{BLUE}" stroke-width="1.8"/>'
              f'<text x="659" y="196" text-anchor="middle" font-size="15" font-weight="700" fill="{BLUE}">model</text>')
     p.append(group(model, 9.4, 16.3, T, 1))
-    ans_lines = wrap_lines("In Kenya, the share of individuals using the internet rose from 7.2 percent of the population in 2010 to 35.0 percent in 2024 [kenya-digital].", 30)
+    ans_lines = wrap_lines("Kenya rose from 7.2% in 2010 to 35.0% in 2024 [kenya-digital]. Rwanda rose from 8.0% to 31.7% over the same period [rwanda-digital].", 30)
     answer = (f'<line x1="714" y1="190" x2="764" y2="190" stroke="{BLUE}" stroke-width="2" marker-end="url(#ar)"/>'
               f'<rect x="770" y="112" width="206" height="176" rx="10" fill="#ffffff" stroke="{BLUE}" stroke-width="1.8"/>'
               f'<text x="784" y="136" font-size="13" font-weight="700" fill="{BLUE}">Answer</text>'
@@ -599,7 +599,7 @@ ALT = {
     "chunking": "Animation: the same Kenya brief cut two ways. Fixed 400-character windows end on a stranded heading and mix two sections; section chunks keep each heading with its paragraph.",
     "embeddings": "Animation: a chunk of text becomes a list of numbers, then a dot on a map where similar meaning sits close together; a question becomes a star and the two closest chunks are retrieved.",
     "prompt": "Animation: instructions set by the developer, context supplied by the application and a question asked by the user are combined into one prompt, which goes to the model and produces an answer that cites its source.",
-    "before_after": "Diagram: the same question without context gets an answer with no source, no date and a blend of two measures; with the four country briefs as context it gets a dated answer that cites its source.",
+    "before_after": "Diagram: the same question without context gets a hedged answer of rounded ranges with no citation, two of its figures off; with the four country briefs as context it gets a dated answer that cites its source.",
     "metadata": "Diagram: one document in two parts. Its metadata, the header of the file, holds the date 2016-06-01; its text sounds current and ends 'The latest available figures are for 2015.' An application can filter and rank on the date field, but it does not read the text for age.",
     "toolloop": "Animation: the application sends the model the question and the list of tools; the model replies with a request for get_indicator with GDP per capita, Rwanda and 2023; the application runs the tool, which returns 1,061 with its source; the application hands that back and the model answers that it was 1,061 US dollars in 2023.",
     "workflows": "Diagram: in a workflow the order of the calls is written in code: search the documents, look up the four series, the model writes the answer, the same on every run. In an agent the model decides the next step: it asks for search_documents or get_indicator, gets the result back, and answers in text when it has enough; a step limit stops a loop that never ends and a trace lists every call.",
