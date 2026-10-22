@@ -375,14 +375,14 @@ Notebook 01 ended with a problem: an application cannot hand the model every doc
 
 It shows the pipeline this notebook builds, and where notebook 03 picks it up.
 
-## What you will see
+## Contents
 
-Four short scenes:
-
-1. The collection: eight documents, each with its text and information about it. One of them is ten years older than the rest, and its metadata records that.
-2. The same brief cut two ways, by length and by heading.
-3. Text turned into numbers that place it on a map of meaning.
-4. The same collection prepared badly and prepared well, searched with the same question.
+1. [Section 1](#scrollTo=section-1) loads the eight documents. Each has its text and a header of information about it.
+2. [Section 2](#scrollTo=section-2) shows what metadata records that the text cannot say about itself, such as the date of the oldest document.
+3. [Section 3](#scrollTo=section-3) cuts one brief two ways, by length and by heading, and compares the chunks.
+4. [Section 4](#scrollTo=section-4) turns chunks and a question into numbers and ranks the chunks by similarity.
+5. [Section 5](#scrollTo=section-5) searches the same collection prepared badly and prepared well, and counts which of the needed figures each search finds.
+6. [Section 6](#scrollTo=section-6) opens one record of the vector store: its text, its metadata, and its numbers.
 
 ## How to run it
 
@@ -395,7 +395,7 @@ The next cell installs the session's tools and loads its helper module. The firs
     md("""
 The tools in this notebook are LangChain's: `Document`, `MarkdownHeaderTextSplitter`, `RecursiveCharacterTextSplitter`, `HuggingFaceEmbeddings`, and `InMemoryVectorStore`.
 """),
-    md("""
+    md(id="section-1", text="""
 ## 1. The collection
 
 The collection is eight short documents. Each file has two parts: a header with information about the document (its id, title, type, country, date, and source), and the text itself. LangChain loads each file as a `Document`: the text is the `page_content`, and the header becomes the `metadata`.
@@ -409,7 +409,7 @@ for d in docs:
     m = d.metadata
     print(f"{m['id']:20s} {m['type']:16s} {str(m['date']):12s} {m['title']}")
 '''),
-    md("""
+    md(id="section-2", text="""
 ## 2. Metadata: what the text cannot say about itself
 
 Metadata is information about a document that is not in its text: when it was written, what kind of document it is, which country it covers, where its numbers come from.
@@ -429,7 +429,7 @@ for k in ("date", "type", "note"):
 print()
 w.show(d.page_content)
 '''),
-    md("""
+    md(id="section-3", text="""
 ## 3. Chunking: fixed windows against sections
 
 A chunk is the unit that is stored and searched: a search returns whole chunks. Two LangChain splitters on the same brief:
@@ -456,6 +456,8 @@ print("\\nmetadata:", sections[1].metadata["section"], "|", sections[1].metadata
     md("""
 Window 2 cuts by length, not by meaning. It starts in the middle of the Internet use section, carries no heading of its own, and ends with the heading of the next section, separated from the paragraph it introduces. A passage about internet use is then stored next to a mobile-subscriptions heading, and nothing in the chunk says which section it belongs to. The Mobile subscriptions section carries its title and heading, which both the retriever and the model can use.
 
+"""),
+    md(id="section-4", text="""
 ## 4. Embeddings
 
 An embedding turns a text into a list of numbers that places it on a map of meaning: texts with similar meaning land close together. The session uses a small embedding model through LangChain's `HuggingFaceEmbeddings`; it downloads about 90 MB on first use. The cell embeds a few sections and a question and ranks the sections by similarity.
@@ -480,6 +482,8 @@ for c, v in sorted(zip(sample, vectors), key=lambda cv: -float(cv[1] @ query)):
     md("""
 Sections about internet use score highest for a question about internet use, the mobile-subscription sections next, and growth last. The ranking depends on what the chunk text contains, which is why the splitter choice in section 3 matters here.
 
+"""),
+    md(id="section-5", text="""
 ## 5. What poor preparation does
 
 Two versions of the same collection, searched with the same question.
@@ -531,6 +535,8 @@ Prepared badly, the search does not find Kenya's latest figure. Its top three ch
 
 The second cell counts the same thing across all eight evaluation questions. The gap is smaller there, because for several questions both versions find what they need.
 
+"""),
+    md(id="section-6", text="""
 ## 6. What a vector store holds
 
 For each chunk, a vector store holds three things: its text, its metadata, and its numbers. The cell opens one record of the prepared collection, the Mobile subscriptions section of the Kenya brief.
@@ -853,22 +859,21 @@ Four terms, in plain words:
 
 The light boxes are what notebooks 01 to 03 built. The dark boxes are what this notebook adds: the tool call and the data it returns, the structured output, and the same tool served over MCP. Passages are for definitions and context. Numbers come from a tool over the data.
 
-## What you will see
+## Contents
 
-Five short scenes:
-
-1. The four figures that the main question needs: what the search of notebook 03 found, and what the tool returns.
-2. The tool as the model sees it, and an animation of the model asking for it, step by step.
-3. A year that has no data: the tool says so, and the model passes it on.
-4. A structured output: a program that misreads a sentence, then the same answer in a blank form that the model fills in, and what happens when a box is damaged.
-5. The same tool offered over MCP and used by an agent, and a call to the program's public server.
+1. [Section 1](#scrollTo=section-1) compares the search of notebook 03 with the tool on the four figures the main question needs.
+2. [Section 2](#scrollTo=section-2) shows the tool as the model sees it: a name, a description, and a form to fill in.
+3. [Section 3](#scrollTo=section-3) runs one exchange: the model asks, the application runs the tool, the result goes back.
+4. [Section 4](#scrollTo=section-4) asks for a year that has no data. The tool returns nothing and the model says so.
+5. [Section 5](#scrollTo=section-5) returns the answer as a structured output, with named fields that a program reads, and shows what happens when a field is damaged.
+6. [Section 6](#scrollTo=section-6) serves the same tool over MCP and calls it from a client and an agent.
 
 ## How to run it
 
 Run the cells in order. Without an API key, the model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. With a key in `WORKSHOP_API_KEY`, the same cells call the model live, the answer streams into its bubble as the model writes, and the wording differs from the recorded answers. The tool results, tables and checks are computed when the cell runs. The last cell reaches a public server and needs the internet.
 """),
     code(SETUP),
-    md("""
+    md(id="section-1", text="""
 ## 1. Search and tool, for the same four figures
 
 Section 6 of notebook 03 found that the main question needs four numbers: internet use and GDP per capita, for Kenya and Rwanda, in 2024. The cell rebuilds the store of notebook 03 in three lines, runs the same search for the four closest passages, and checks for each number whether it is in them. Beside it, the tool's answer for the same figure.
@@ -908,6 +913,8 @@ w.show_table(["year", "value"], [(o["year"], f"{o['value']:,.1f}") for o in r["o
     md("""
 The answer from memory gives a range and a figure of about 966 dollars, hedged, and nothing tells a reader how far that is from the record. The tool's answer is exact, 1,061, and carries its source. The application can now get an exact number, with its source, instead of hoping that a passage holds it.
 
+"""),
+    md(id="section-2", text="""
 ## 2. The tool, as the model sees it
 
 `get_indicator` is a Python function decorated with LangChain's `@tool`. Its docstring becomes the description the model reads, and its type hints become the form the model fills in: one field for each parameter. The cell shows both, and the five indicators the data holds.
@@ -928,7 +935,7 @@ w.show_table(["field", "type", "", "meaning"], fields, source="The form the mode
 print()
 w.show_table(["indicator id", "name"], [(i["id"], i["name"]) for i in w.list_indicators()], source="The series the tool can look up.")
 '''),
-    md("""
+    md(id="section-3", text="""
 ## 3. The model asks, the application runs the tool
 
 A model does not run tools. It replies with a request that names the tool and fills in the form, the application runs the tool, and the result goes back to the model, which then answers. The animation shows the exchange.
@@ -964,6 +971,8 @@ final = w.answer(model_with_tools, messages)
     md("""
 The application can now use a tool: the model asks, the application runs it, and the result goes back to the model.
 
+"""),
+    md(id="section-4", text="""
 ## 4. Data that does not exist
 
 The planted problem: a year with no observation. The tool returns an empty list, and the instructions say what to do with it. The model may ask again, for example for a wider range of years, so the cell allows up to three rounds, prints each tool result, and then shows the answer.
@@ -983,7 +992,7 @@ for round in range(3):   # the model may ask again, for example for a wider rang
 print()
 w.show(reply)
 '''),
-    md("""
+    md(id="section-5", text="""
 ## 5. Structured output: an answer in a fixed shape
 
 So far the model's answers are sentences, which suits a person. Suppose instead that a dashboard has a box labelled "GDP per capita, Rwanda" and must fill it from the model's answer. The cell does what a simple program might do: it takes the first number in the sentence from section 3.
@@ -1036,6 +1045,8 @@ except ValidationError as e:
     md("""
 The application can now return an answer that other software reads box by box, and reject one that breaks the form.
 
+"""),
+    md(id="section-6", text="""
 ## 6. The same tool over MCP
 
 MCP is the standard plug: a tool written once as a server can be used by any program that speaks the standard, whether a chatbot, a desktop assistant or an agent. `indicator_server.py` wraps `get_indicator` in a FastMCP server in a dozen lines. The FastMCP client below starts it, lists its tools and calls one.
@@ -1137,17 +1148,15 @@ Four terms, in plain words:
 
 @@DIAGRAM:agent@@
 
-## What you will see
+## Contents
 
-Seven short scenes:
-
-1. A workflow answering the main question, with each step printed as it runs.
-2. An agent answering the same question: the same calls, chosen by the model, shown as a trace table.
-3. A question that the tools cannot answer, and what the agent does.
-4. A call that fails, and how the agent recovers.
-5. A loop that never ends, stopped by the step limit.
-6. A comparison: when a workflow is the better design and when an agent is.
-7. A look at the answer: it mixes numbers from tools, passages and the model's own arithmetic. Can we trust them? The question for notebook 06.
+1. [Section 1](#scrollTo=section-1) answers the main question with a workflow: the steps are fixed in code.
+2. [Section 2](#scrollTo=section-2) answers it with an agent that chooses its own calls, and shows the trace.
+3. [Section 3](#scrollTo=section-3) asks a question the tools cannot answer, and shows what the agent does.
+4. [Section 4](#scrollTo=section-4) makes a call fail, and shows the agent recover from the error.
+5. [Section 5](#scrollTo=section-5) runs a loop that never ends, and stops it with the step limit.
+6. [Section 6](#scrollTo=section-6) compares the two designs and when each fits.
+7. [Section 7](#scrollTo=section-7) asks whether the numbers in the answer can be trusted, the question for notebook 06.
 
 ## How to run it
 
@@ -1170,7 +1179,7 @@ Use get_indicator for every statistic and search_documents for definitions, cont
 Name the indicator and the source with each figure; cite passages in the square-bracket form given.
 If the tools do not provide what is needed, say so. Do not quote figures from memory."""
 '''),
-    md("""
+    md(id="section-1", text="""
 ## 1. A workflow: the order is written in code
 
 The picture contrasts the two designs. In a workflow, the steps are written in code in advance: search the documents, look up the four series, then ask the model to write. The model is called once, at the end, and every run makes the same calls. The cell runs the workflow on the main question and prints each step as it happens.
@@ -1201,6 +1210,8 @@ workflow_answer, workflow_series = fixed_workflow(w.MAIN_QUESTION)
     md("""
 The application can now answer the main question with a fixed set of steps. It is predictable: the same question makes the same calls, so it is easy to test.
 
+"""),
+    md(id="section-2", text="""
 ## 2. An agent: the model chooses the steps
 
 In an agent, the model is offered the tools and their descriptions, and chooses. `create_agent` builds the loop with LangGraph: the model replies with the calls it wants, the loop runs them, the results go back to the model, and the loop stops when the model answers in text. The cell asks the same question, then shows the trace as a table, one row per call, grouped by round.
@@ -1219,6 +1230,8 @@ The model chose the same five calls that the workflow made. On a different quest
 
 The first column of the table is the round: one message from the model, which can ask for several tools at once. Here it asked for all five in its first message, so they share round 1; in section 4, a call that fails takes a second round to correct. The application can now let the model choose between its tools.
 
+"""),
+    md(id="section-3", text="""
 ## 3. A question the tools cannot answer
 
 A good agent searches, finds nothing usable, and says so. The question is about coffee exports. The collection holds one note on coffee that carries no figures, and the data tool has no series on exports.
@@ -1233,6 +1246,8 @@ w.show(w.final_text(result), role="assistant")
     md("""
 The agent made one search and tried two indicator ids that the tool rejected, then declined to invent figures and said what it had looked for. The application can now say that it cannot answer, and what would be needed.
 
+"""),
+    md(id="section-4", text="""
 ## 4. A call that fails
 
 The model asks for an indicator id that does not exist. The tool does not crash: it returns an error as data, with the list of valid ids. The model reads it and tries again. Returning errors as data is what lets the loop recover.
@@ -1247,6 +1262,8 @@ w.show(w.final_text(result), role="assistant")
     md("""
 The first row is the failed call, in round 1; the second is the retry that worked, in round 2. The application can now recover from a wrong call, as long as its tools return errors that the model can read.
 
+"""),
+    md(id="section-5", text="""
 ## 5. A loop that never ends
 
 A model can also keep calling tools without ever answering. The step limit stops it: after the given number of steps, the run ends with an error (`GraphRecursionError`), and the application decides what to do next. It can answer with what it has, ask the user, or give up. The recorded scenario below is a model that never stops: the cell sets the limit to 6, and the model keeps asking for tools until the loop is cut off.
@@ -1264,6 +1281,8 @@ except GraphRecursionError as e:
     md("""
 The application can now stop a loop that does not end, instead of waiting for it.
 
+"""),
+    md(id="section-6", text="""
 ## 6. Choosing between the two
 
 | | Workflow | Agent |
@@ -1276,6 +1295,8 @@ The application can now stop a loop that does not end, instead of waiting for it
 
 The worked example has one shape, so a workflow is the right design for it. The agent earns its place when users ask questions the designer did not anticipate, and only with a step limit, a trace, and tools that fail as data.
 
+"""),
+    md(id="section-7", text="""
 ## 7. Can we trust the numbers?
 
 Both designs produce an answer that holds several numbers. Some come straight from a tool, some come from a passage, and some are worked out by the model itself: "rose by about 23.7 percentage points" is a subtraction, which no tool returned. The answer is plain text, and a reader, or a program, has no way to tell which number is which.
@@ -1467,6 +1488,15 @@ The model is new: a small open one, **Qwen2.5-1.5B-Instruct**, that runs in the 
 
 @@DIAGRAM:lab@@
 
+## Contents
+
+1. [Section 1](#scrollTo=section-1) chooses the documents: the session's eight, or your own.
+2. [Section 2](#scrollTo=section-2) splits the documents into chunks and stores them.
+3. [Section 3](#scrollTo=section-3) loads the model that runs inside the notebook.
+4. [Section 4](#scrollTo=section-4) asks one question from code: retrieve, answer, and check every number.
+5. [Section 5](#scrollTo=section-5) asks three questions that show what the checks can and cannot tell you.
+6. [Section 6](#scrollTo=section-6) opens the chat box, where you ask your own questions.
+
 ## How to run it
 
 This notebook runs a real language model inside Colab, so it needs more than the others. No account key and no payment are needed. Do these steps in this order:
@@ -1479,7 +1509,7 @@ This notebook runs a real language model inside Colab, so it needs more than the
 If something goes wrong, click **Runtime > Restart session**, then run all again. The chat box in step 6 appears only in a running Colab or Jupyter notebook, so it is empty when you read the saved copy. To use your own documents, set `USE_MY_DOCUMENTS = True` in step 1 before you run all, and upload your files when asked.
 """),
     code(SETUP_NO_MODEL),
-    md("""
+    md(id="section-1", text="""
 ## 1. Choose the documents
 
 The session documents are used unless you say otherwise. The cell lists them. To use your own, set `USE_MY_DOCUMENTS = True` and run the cell again: Colab asks you to pick files. Plain text, Markdown and PDF files work, and a zip of several files is unpacked. A scanned PDF has no text to read, so it will not work. If you would like to see what a document looks like first, `lab.download_session_documents()` saves the eight session documents as a zip file, which you can open, change and upload again.
@@ -1492,7 +1522,7 @@ USE_MY_DOCUMENTS = False   # True: upload your own files (Colab asks you to pick
 paths = lab.upload_documents() if USE_MY_DOCUMENTS else lab.session_documents()
 w.show_table(["document", "size"], [(p.name, f"{p.stat().st_size / 1000:.1f} KB") for p in paths], source=f"{len(paths)} documents")
 '''),
-    md("""
+    md(id="section-2", text="""
 ## 2. Split and store
 
 As in notebook 02, each document is split into chunks, by section when it has headings and in windows of about 700 characters when it does not, and every chunk is stored with its meaning, so that a question can find it. The table shows what was made.
@@ -1502,7 +1532,7 @@ chunks = lab.prepare(paths)
 store = w.build_store(chunks)
 lab.chunk_table(chunks)
 '''),
-    md("""
+    md(id="section-3", text="""
 ## 3. The model
 
 The cell downloads the model on the first run and loads it. If Colab has given you a GPU, the model goes onto it and the cell says which one; if not, it runs on the CPU and the cell tells you how to switch. Because the model runs here, the documents are never sent anywhere. This cell has no saved output, because the message depends on the machine that runs it.
@@ -1511,7 +1541,7 @@ The cell downloads the model on the first run and loads it. If Colab has given y
 llm = lab.load_model()
 chat = lab.DocumentChat(llm, store, k=4, min_score=0.25)
 '''),
-    md("""
+    md(id="section-4", text="""
 ## 4. One question, asked from code
 
 `chat.ask(question)` does the whole round: it retrieves the closest passages, drops any that are not close enough (`min_score`), asks the model to answer from what is left, and looks up every number of the answer in those passages. The answer is shown as a chat. A ✓ after a number means that the number appears in one of the passages; hover over it to see where. A ⚠ means that it does not. Years and citations are not checked. Under the answer, the passages that the answer was written from can be opened.
@@ -1521,7 +1551,7 @@ from IPython.display import HTML, display
 
 display(HTML(lab.reply_html(chat.ask("What share of Rwanda's population used the internet in 2024?"))))
 '''),
-    md("""
+    md(id="section-5", text="""
 ## 5. What the checks can and cannot tell you
 
 Three questions on the session documents show the three situations that you will meet. They are asked from code, so that the answers are saved in this copy of the notebook.
@@ -1539,6 +1569,8 @@ for question in [
 - **A close passage with no numbers.** The coffee note is close to the question, so the model answers. It has no figures to give, and a model that is weak may say more than the note does. No mark can appear, because there are no numbers, and nothing here checks the sentences. This is what a check on numbers does not cover.
 - **Numbers.** The marks say whether each number is in a passage. They do not say that it is the right number for the question. In the saved copy of the third answer, the model wrote that Rwanda's GDP per capita "had risen to $803" by 2024. The figure 803 is in the Rwanda document, so it carries a ✓, but it is the figure for 2020: the value for 2024 is 1,060. The check found the number and could not see that the sentence puts it in the wrong year. Your own run may word the answers differently, and a small model makes this kind of slip often. In notebook 06 each number named its own record, with its country and year, which is the stronger check; here the check is what can be done on arbitrary documents.
 
+"""),
+    md(id="section-6", text="""
 ## 6. Chat
 
 Now use the application. Type a question in the box under the cell and press **Ask** (or Enter). Some to try on the session documents: *What is mobile money? How did Kenya's GDP per capita change between 2010 and 2020? Which sources mention coffee?* With your own documents, ask what you would ask a colleague who had read them. The chat box appears when you run the cell, so it is empty in a saved copy of this notebook.
