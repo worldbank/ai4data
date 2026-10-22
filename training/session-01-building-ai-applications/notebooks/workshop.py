@@ -28,7 +28,7 @@ import re
 import textwrap
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Literal, Any
 
 import frontmatter
 from langchain_core.callbacks import BaseCallbackHandler
@@ -516,7 +516,7 @@ class Observation(BaseModel):
 
 
 class CountrySummary(BaseModel):
-    country: str
+    country: Literal["KEN", "RWA"] = Field(description="ISO3 code of the country")
     internet_latest: Observation
     gdp_per_capita_latest: Observation
     trend: str = Field(description="One or two sentences on the trend since 2010")
