@@ -36,7 +36,7 @@ the program's workstreams provide a tool, the guide uses it.
 | [Metadata Editor](https://worldbank.github.io/metadata-editor-docs) and [NADA](https://nada.ihsn.org/) | Creating the record and publishing the file with its access type | Chapter 6 |
 | [Creative Commons BY 4.0](https://creativecommons.org/licenses/by/4.0/) | The licence for open synthetic files | Chapter 6 |
 | [UNECE, Synthetic Data for Official Statistics: A Starter Guide](https://unece.org/statistics/publications/synthetic-data-official-statistics-starter-guide) | The reference introduction and use cases for statistical organizations | Chapters [1](./purpose.mdx) and [7](./workflow.mdx) |
-| [Access chapter of the microdata cookbook](/cookbook/microdata-documentation/access) | Tiers, disclosure control records, and the access workflow | Chapters 1, 4, 6, and 7 |
+| Access chapter of the microdata cookbook | Tiers, disclosure control records, and the access workflow | Chapters 1, 4, 6, and 7 |
 
 ## Corrections
 

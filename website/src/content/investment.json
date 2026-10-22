@@ -3,8 +3,8 @@
     "Foundational": {
       "roles": [
         "Developer or data engineer",
-        "Data curator",
         "Subject-matter staff",
+        "Data curator",
         "Catalog or data manager",
         "Methodologist",
         "Dissemination officer",
@@ -15,16 +15,12 @@
         5
       ],
       "per_period": [
-        "minutes after that",
-        "minutes on each release"
+        "minutes after that"
       ],
       "per_item": [
         "About 30 minutes per indicator",
         "An hour per questionnaire",
         "Half an hour per document",
-        "Minutes per file",
-        "One hour per survey",
-        "Two to four hours per survey",
         "seconds per record"
       ],
       "recipes": [
@@ -39,30 +35,6 @@
           "chapter": "ai-ready-dissemination/understand",
           "time": "About 30 minutes per indicator",
           "skills": "Subject-matter statistician"
-        },
-        {
-          "title": "3.1 Check the data dictionary before release",
-          "chapter": "microdata-documentation/variables",
-          "time": "One hour the first time; minutes on each release",
-          "skills": "Data curator; Python"
-        },
-        {
-          "title": "2.1 Draft a dictionary from the data file",
-          "chapter": "microdata-documentation/produce",
-          "time": "Minutes per file",
-          "skills": "Data curator; Python"
-        },
-        {
-          "title": "2.2 Import files with their labels into the Metadata Editor",
-          "chapter": "microdata-documentation/produce",
-          "time": "One hour per survey",
-          "skills": "Data curator"
-        },
-        {
-          "title": "4.1 Attach the question text to every collected variable",
-          "chapter": "microdata-documentation/concepts",
-          "time": "Two to four hours per survey",
-          "skills": "Data curator with the questionnaire"
         },
         {
           "title": "6.1 Build the vocabulary",
@@ -124,34 +96,30 @@
       "roles": [
         "Developer or data engineer",
         "Data curator",
+        "Catalog or data manager",
         "Subject-matter staff",
         "Methodologist",
-        "Catalog or data manager",
-        "Management",
         "IT operations and security"
       ],
       "effort_days": [
-        6,
-        6
+        4,
+        4
       ],
       "per_period": [
         "Minutes per period",
         "Part of each round",
         "an hour per period to review",
-        "an hour per quarter",
         "minutes per run",
         "part of each release"
       ],
       "per_item": [
         "Half a day per source",
-        "Half a day per survey",
         "Half an hour per document",
         "Half an hour per table",
         "Minutes per document",
         "Minutes per source",
         "Minutes per variable",
         "One to two days per code list",
-        "Two to four hours per survey",
         "minutes per questionnaire"
       ],
       "recipes": [
@@ -172,36 +140,6 @@
           "chapter": "ai-ready-dissemination/understand",
           "time": "Half a day to set up; part of each release",
           "skills": "Data manager"
-        },
-        {
-          "title": "3.2 Convert the dictionary into the DDI-based schema",
-          "chapter": "microdata-documentation/variables",
-          "time": "One hour",
-          "skills": "Python"
-        },
-        {
-          "title": "3.3 Document missing codes, universes, and derivations",
-          "chapter": "microdata-documentation/variables",
-          "time": "Two to four hours per survey",
-          "skills": "Subject-matter statistician"
-        },
-        {
-          "title": "2.3 Recover question text and code lists from questionnaires and codebooks",
-          "chapter": "microdata-documentation/produce",
-          "time": "Half a day per survey; less with a pipeline",
-          "skills": "Data curator; developer for the extraction"
-        },
-        {
-          "title": "2.4 Order the documentation backlog",
-          "chapter": "microdata-documentation/produce",
-          "time": "One day, then an hour per quarter",
-          "skills": "Head of the microdata unit"
-        },
-        {
-          "title": "4.2 Map variables to concepts and classifications",
-          "chapter": "microdata-documentation/concepts",
-          "time": "One day per survey the first time",
-          "skills": "Subject-matter statistician; classification specialist"
         },
         {
           "title": "6.2 Map free text to the vocabulary",
@@ -291,17 +229,13 @@
     },
     "AI-native": {
       "roles": [
-        "Developer or data engineer",
-        "Data curator",
-        "Methodologist"
+        "Developer or data engineer"
       ],
       "effort_days": [
-        10,
-        15
+        5,
+        10
       ],
-      "per_period": [
-        "Ongoing"
-      ],
+      "per_period": [],
       "per_item": [],
       "recipes": [
         {
@@ -309,12 +243,6 @@
           "chapter": "ai-ready-dissemination/find",
           "time": "One to two weeks including evaluation",
           "skills": "Developer with Python; a server with a few GB of memory"
-        },
-        {
-          "title": "4.3 Reuse questions and concepts across surveys",
-          "chapter": "microdata-documentation/concepts",
-          "time": "Ongoing; one week to set up",
-          "skills": "Methodologist; data curator"
         }
       ]
     }
@@ -325,8 +253,8 @@
         "Developer or data engineer",
         "Methodologist",
         "Dissemination officer",
-        "Data curator",
         "Management",
+        "Data curator",
         "Subject-matter staff",
         "Catalog or data manager",
         "Disclosure control specialist"
@@ -344,7 +272,6 @@
       ],
       "per_item": [
         "About 30 minutes per indicator",
-        "Half a day per survey",
         "seconds per record"
       ],
       "recipes": [
@@ -403,18 +330,6 @@
           "skills": "Dissemination officer"
         },
         {
-          "title": "6.1 Draft the crosswalk between two rounds",
-          "chapter": "microdata-documentation/rounds",
-          "time": "Minutes to run; an hour to review",
-          "skills": "Data curator; Python"
-        },
-        {
-          "title": "7.1 Document the design, the weights, and the response",
-          "chapter": "microdata-documentation/fitness",
-          "time": "Half a day per survey",
-          "skills": "Survey methodologist"
-        },
-        {
           "title": "5.1 Compare the composition with population benchmarks",
           "chapter": "ml-ready-datasets/represent",
           "time": "An hour to set up; minutes per run",
@@ -426,8 +341,8 @@
       "roles": [
         "Developer or data engineer",
         "Data curator",
-        "Methodologist",
         "Dissemination officer",
+        "Methodologist",
         "Catalog or data manager",
         "Subject-matter staff",
         "Staff of the unit",
@@ -443,7 +358,6 @@
         "Minutes per batch",
         "Minutes per change",
         "Minutes per period",
-        "One hour per release",
         "minutes per batch",
         "minutes per month",
         "minutes per run",
@@ -451,8 +365,6 @@
       ],
       "per_item": [
         "Half a day per dataset",
-        "Half a day per survey",
-        "Half a day per variable",
         "One day per task",
         "One hour per component",
         "One to three minutes per issue",
@@ -544,24 +456,6 @@
           "skills": "Python"
         },
         {
-          "title": "6.2 Publish a correspondence table for a recoded variable",
-          "chapter": "microdata-documentation/rounds",
-          "time": "Half a day per variable",
-          "skills": "Subject-matter statistician; classification specialist"
-        },
-        {
-          "title": "7.2 Publish a quality statement in machine-readable fields",
-          "chapter": "microdata-documentation/fitness",
-          "time": "Half a day per survey",
-          "skills": "Survey methodologist; data curator"
-        },
-        {
-          "title": "7.3 Version each release and publish errata",
-          "chapter": "microdata-documentation/fitness",
-          "time": "One hour per release",
-          "skills": "Data curator"
-        },
-        {
           "title": "5.2 Report thin groups and the coverage of the label",
           "chapter": "ml-ready-datasets/represent",
           "time": "Half a day per dataset",
@@ -615,12 +509,11 @@
       "roles": [
         "Developer or data engineer",
         "Methodologist",
-        "Data curator",
         "Data scientist"
       ],
       "effort_days": [
-        15,
-        25
+        10,
+        15
       ],
       "per_period": [
         "repeat with each change"
@@ -652,12 +545,6 @@
           "skills": "Developer"
         },
         {
-          "title": "6.3 Harmonize variable names and definitions across rounds",
-          "chapter": "microdata-documentation/rounds",
-          "time": "One to two weeks for a survey program",
-          "skills": "Methodologist; data curator"
-        },
-        {
           "title": "5.3 Publish the model's error by group with the dataset",
           "chapter": "ml-ready-datasets/represent",
           "time": "One day",
@@ -686,9 +573,7 @@
         "Catalog or data manager",
         "Management",
         "Subject-matter staff",
-        "Data curator",
-        "IT operations and security",
-        "Methodologist"
+        "IT operations and security"
       ],
       "effort_days": [
         4,
@@ -699,7 +584,6 @@
         "seconds per run"
       ],
       "per_item": [
-        "Half a day per survey",
         "minutes per dataset"
       ],
       "recipes": [
@@ -722,12 +606,6 @@
           "skills": "Dissemination staff; speakers of each supported language"
         },
         {
-          "title": "1.1 Write the study record in the World Bank microdata schema",
-          "chapter": "microdata-documentation/find",
-          "time": "Half a day per survey",
-          "skills": "Data curator; the Metadata Editor or a text editor"
-        },
-        {
           "title": "3.1 Write the guidance resource",
           "chapter": "serving-statistics-to-agents/context",
           "time": "Half a day",
@@ -738,12 +616,6 @@
           "chapter": "monitoring-data-use/citations",
           "time": "Half a day to set up; minutes per dataset",
           "skills": "Catalog administrator"
-        },
-        {
-          "title": "7.1 Document the design, the weights, and the response",
-          "chapter": "microdata-documentation/fitness",
-          "time": "Half a day per survey",
-          "skills": "Survey methodologist"
         },
         {
           "title": "8.2 Cite to the document, the page, and the table",
@@ -769,16 +641,15 @@
       "roles": [
         "Developer or data engineer",
         "Dissemination officer",
-        "Data curator",
+        "Management",
         "Catalog or data manager",
         "IT operations and security",
-        "Subject-matter staff",
-        "Management",
-        "Methodologist"
+        "Data curator",
+        "Subject-matter staff"
       ],
       "effort_days": [
-        8,
-        36
+        6,
+        6
       ],
       "per_period": [
         "Half a day per period",
@@ -786,7 +657,6 @@
         "Minutes per record for review",
         "Minutes per run",
         "One hour per period plus follow-up",
-        "One hour per release",
         "Ongoing",
         "Part of each report",
         "Part of publication",
@@ -795,10 +665,7 @@
         "with each change"
       ],
       "per_item": [
-        "Half a day per survey",
-        "Half a day per survey by hand",
-        "Seconds per record",
-        "Two hours per survey once the catalog exists"
+        "Seconds per record"
       ],
       "recipes": [
         {
@@ -818,24 +685,6 @@
           "chapter": "ai-ready-dissemination/evaluate",
           "time": "Two hours",
           "skills": "Python"
-        },
-        {
-          "title": "1.2 Publish the record in a catalog with a persistent identifier",
-          "chapter": "microdata-documentation/find",
-          "time": "Two hours per survey once the catalog exists",
-          "skills": "Catalog administrator"
-        },
-        {
-          "title": "5.1 Group variables into themes",
-          "chapter": "microdata-documentation/navigate",
-          "time": "Half a day per survey by hand; minutes with the pipeline, plus review",
-          "skills": "Data curator; Python for the automated version"
-        },
-        {
-          "title": "5.2 Measure variable search with a known-variable question set",
-          "chapter": "microdata-documentation/navigate",
-          "time": "One day for the first 30 questions",
-          "skills": "Data curator; speakers of each supported language; Python"
         },
         {
           "title": "3.2 Serve code lists, the release calendar, and notes as resources",
@@ -878,18 +727,6 @@
           "chapter": "monitoring-data-use/act",
           "time": "One hour per period plus follow-up",
           "skills": "Dissemination officer"
-        },
-        {
-          "title": "7.2 Publish a quality statement in machine-readable fields",
-          "chapter": "microdata-documentation/fitness",
-          "time": "Half a day per survey",
-          "skills": "Survey methodologist; data curator"
-        },
-        {
-          "title": "7.3 Version each release and publish errata",
-          "chapter": "microdata-documentation/fitness",
-          "time": "One hour per release",
-          "skills": "Data curator"
         },
         {
           "title": "8.1 Make extracted tables findable",
@@ -961,8 +798,8 @@
         "IT operations and security"
       ],
       "effort_days": [
-        20,
-        30
+        16,
+        20
       ],
       "per_period": [
         "part of each release"
@@ -986,12 +823,6 @@
           "chapter": "ai-ready-dissemination/evaluate",
           "time": "One week to set up; part of each release",
           "skills": "Python; subject-matter reviewers"
-        },
-        {
-          "title": "5.3 Add semantic variable search across surveys",
-          "chapter": "microdata-documentation/navigate",
-          "time": "One to two weeks including evaluation",
-          "skills": "Developer with Python"
         },
         {
           "title": "9.3 Close the loop in the catalog",
@@ -1634,23 +1465,21 @@
     "Foundational": {
       "roles": [
         "Management",
-        "Disclosure control specialist",
         "Developer or data engineer",
         "Dissemination officer",
         "Catalog or data manager",
-        "Data curator"
+        "Disclosure control specialist"
       ],
       "effort_days": [
-        4,
-        4
+        2,
+        2
       ],
       "per_period": [
         "minutes after that",
         "part of each release"
       ],
       "per_item": [
-        "One to three days per dataset",
-        "One to three days per file"
+        "One to three days per dataset"
       ],
       "recipes": [
         {
@@ -1682,18 +1511,6 @@
           "chapter": "ml-ready-datasets/license",
           "time": "One to three days per dataset",
           "skills": "Disclosure control unit; dataset owner"
-        },
-        {
-          "title": "8.1 Adopt an access policy with tiers",
-          "chapter": "microdata-documentation/access",
-          "time": "One day to draft; approval time varies",
-          "skills": "Management; legal; disclosure control specialist"
-        },
-        {
-          "title": "8.2 Apply disclosure control and document it in the record",
-          "chapter": "microdata-documentation/access",
-          "time": "One to three days per file",
-          "skills": "Disclosure control specialist; data curator"
         }
       ]
     },
@@ -1701,17 +1518,14 @@
       "roles": [
         "Developer or data engineer",
         "Catalog or data manager",
-        "IT operations and security",
-        "Data curator"
+        "IT operations and security"
       ],
       "effort_days": [
         3,
         4
       ],
       "per_period": [],
-      "per_item": [
-        "One hour per survey"
-      ],
+      "per_item": [],
       "recipes": [
         {
           "title": "5.2 Return provenance with every API response",
@@ -1736,24 +1550,16 @@
           "chapter": "ml-ready-datasets/license",
           "time": "An hour",
           "skills": "Catalog administrator; developer"
-        },
-        {
-          "title": "8.3 State the conditions in every record",
-          "chapter": "microdata-documentation/access",
-          "time": "One hour per survey",
-          "skills": "Data curator"
         }
       ]
     },
     "AI-native": {
       "roles": [
-        "Developer or data engineer",
-        "Catalog or data manager",
-        "IT operations and security"
+        "Developer or data engineer"
       ],
       "effort_days": [
         12,
-        18
+        16
       ],
       "per_period": [],
       "per_item": [],
@@ -1775,12 +1581,6 @@
           "chapter": "ai-ready-dissemination/retrieve",
           "time": "One day for a prototype; a week to harden",
           "skills": "Python developer"
-        },
-        {
-          "title": "8.4 Define what automated and AI clients may access",
-          "chapter": "microdata-documentation/access",
-          "time": "One day",
-          "skills": "Catalog administrator; developer"
         }
       ]
     }

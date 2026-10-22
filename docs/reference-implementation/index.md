@@ -94,5 +94,5 @@ The tests in `tests/test_reference_end_to_end.py` run the pipeline in both modes
 
 - [Implementation hub](/hub): the areas the steps belong to.
 - [Dissemination cookbook](/cookbook/ai-ready-dissemination/): findability, retrieval, meaning, and trust, with the completeness checker the validation step follows.
-- [Microdata documentation cookbook](/cookbook/microdata-documentation/): the survey record and its catalog.
+- Microdata documentation cookbook: the survey record and its catalog.
 - [Agents cookbook](/cookbook/serving-statistics-to-agents/): the full design of a server over official statistics.
