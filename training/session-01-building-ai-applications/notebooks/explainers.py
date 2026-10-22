@@ -516,7 +516,8 @@ def workflows_svg():
         out = f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="9" fill="{fill}" stroke="{stroke}" stroke-width="1.8"/>'
         for i, t in enumerate(lines):
             yy = y + h / 2 + 5 + (i - (len(lines) - 1) / 2) * 17
-            out += f'<text x="{x + w / 2}" y="{yy}" text-anchor="middle" font-size="13.5" {"font-weight=\"700\" " if bold else ""}fill="{INK}">{escape(t)}</text>'
+            weight = 'font-weight="700" ' if bold else ""
+        out += f'<text x="{x + w / 2}" y="{yy}" text-anchor="middle" font-size="13.5" {weight}fill="{INK}">{escape(t)}</text>'
         return out
 
     def arrow(x1, y1, x2, y2, label="", col=BLUE, dy=-8):

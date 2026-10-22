@@ -140,30 +140,31 @@ NB01 = [
 
 ## Objective
 
-See what a model does with a research question on its own, what changes when it is given instructions and context, and why instructions and context are the first two components of an application.
+This notebook shows what a language model does with a research question when it receives nothing but the question, and what changes when the application gives it instructions and evidence. The purpose is to establish the first two components of an application, the instructions and the context, and to explain why both belong to the application.
 
 ## The application after this notebook
 
 @@DIAGRAM:prompt@@
 
-The prompt is the one piece this notebook builds; the rest of the application is added in the notebooks that follow.
+The prompt is the only component that this notebook builds. The question and the context go into the prompt, the prompt goes to the model, and the model produces the answer. Each later notebook adds one component around this core: a document store, a retrieval step, data tools, an agent loop, and a verifier.
 
-The worked example for the whole session is one question:
+The whole session works on one research question, so that every method can be judged on the same case:
 
 > How have internet access and economic development evolved in Rwanda and Kenya? Compare the recent available data, summarize the main patterns, and cite the sources.
 
-## What you will see
+## Contents
 
-Four short scenes, each with a result you can read:
-
-1. The model answers from what it learned in training. The answer sounds right, but it names no source, so a reader cannot check it.
-2. The same question with four country briefs supplied. The answer is specific and cites its sources.
-3. A question the briefs cannot answer, and what the model does about it.
-4. A question with two meanings, and what changes when the instructions tell the model to ask.
+1. Section 1 defines the prompt and its three parts.
+2. Section 2 sends the question to the model with no evidence. The answer reads well, but it names no source, so none of its figures can be checked.
+3. Section 3 supplies four country briefs as context. The answer becomes specific and cites each figure.
+4. Section 4 asks a question that the briefs cannot answer and shows how an instruction makes the model say so.
+5. Section 5 asks a question with two meanings under two sets of instructions. With the second set, the model asks which meaning is intended before it answers.
+6. Section 6 prints the messages exactly as the model received them.
+7. Section 7 measures what the context cost in tokens and explains why a whole document collection cannot be supplied in the same way.
 
 ## How to run it
 
-Run the cells in order. Without an API key the model outputs are recorded ones, labelled `[recorded output: ...]`; each cell names its scenario with `w.use(...)` before calling the model. With a key in `WORKSHOP_API_KEY` the same cells call the model live.
+Run the cells in order. Without an API key, the model's outputs are recorded ones, labelled `[recorded output: ...]`. Each cell names its recorded scenario with `w.use(...)` before it calls the model. With a key in `WORKSHOP_API_KEY`, the same cells call the model live, and the answers will differ in wording from the recorded ones.
 """),
     md("""
 The next cell installs the session's tools and loads its helper module. It takes about a minute the first time, and you do not need to read it.
@@ -171,19 +172,19 @@ The next cell installs the session's tools and loads its helper module. It takes
     code(SETUP),
     md(STACK),
     md("""
-## 1. A prompt with three parts
+## 1. The three parts of a prompt
 
-Three parts go into every call:
+Every call to the model sends one prompt, and the prompt is assembled from three parts.
 
-- **Instructions**: the system message. It tells the model how to behave: its role, how to cite, what to do when information is missing.
-- **Context**: the evidence supplied to the model, such as the documents or data it should answer from.
-- **Question**: what the user asks.
+- **Instructions** are the system message. They tell the model how to behave: what its role is, how it should cite evidence, and what it should do when the evidence does not contain the answer. The application's builders write them.
+- **Context** is the evidence that the application supplies with the question, such as the documents or the data records that the model should answer from. The application selects it for each question.
+- **The question** is the text that the user types.
 
-LangChain's `ChatPromptTemplate` keeps them as separate slots, and `prompt | model` is the whole application for now. Keeping the parts separate is the first design decision, because each is changed by a different person for a different reason.
+The three parts are kept in separate slots because a different person changes each of them for a different reason. The builders revise the instructions when the behaviour needs to change. The application fills the context for every question. The user supplies the question. LangChain's `ChatPromptTemplate` holds the three slots, and the expression `prompt | model` is the whole application at this stage.
 
 @@EXPLAINER:prompt@@
 
-*The animation loops. Its text comes from this notebook: the instructions from the cell below, the context and the answer from section 3, and the question from the worked example. Section 6 shows the same three parts as the model received them.*
+*The animation loops. Its text comes from this notebook: the instructions are from the cell below, the context and the answer are from section 3, and the question is the worked example. Section 6 shows the same three parts as the model received them.*
 """),
     code('''
 from langchain_core.prompts import ChatPromptTemplate
@@ -206,9 +207,9 @@ chain = prompt | model
 w.show(w.MAIN_QUESTION)
 '''),
     md("""
-## 2. Zero context: the model answers from its training data
+## 2. The model without context
 
-The baseline. No evidence is supplied, so the model answers from what it absorbed in training.
+This section establishes the baseline. The cell sends the question with the basic instructions and no evidence, so the model can only answer from what it absorbed during training.
 """),
     code('''
 w.use("nb01_zero_context")
@@ -216,10 +217,7 @@ answer = chain.invoke({"instructions": INSTRUCTIONS_BASIC, "context": "(none)", 
 w.show(answer)
 '''),
     md("""
-To judge that answer we need official figures to check it against. They come from the World Bank's World Development Indicators. The model never saw them; we use them only afterwards, to check its answer.
-
-1. The first cell prints the official figures for Kenya and Rwanda: the share of people using the internet, and GDP per capita.
-2. The second cell takes six claims from the model's answer and sets each one beside the matching official figure.
+The answer cannot be judged without reference figures. They come from the World Bank's World Development Indicators, which the model did not see. The next two cells put the model's claims beside those figures. The first cell prints the official values for Kenya and Rwanda: the share of people who use the internet, and GDP per capita. The second cell takes six claims from the answer and sets each one beside the matching official figure.
 """),
     code('''
 rows = []
@@ -233,18 +231,14 @@ w.show_table(["Indicator", "Country", "2023", "2024"], rows, source="Source: Wor
 '''),
     code(CLAIMS_CELL),
     md("""
-What to notice:
+Five of the six claims are close to the official figures, which is why the answer reads as reliable. The sixth sentence blends two measures. "Above 80 percent" fits mobile subscriptions, which stood at 126.5 per 100 people in 2024, and does not fit the share of people online, which was 35.0 percent. Nothing in the answer says which measure is meant, and no claim names a source or a year. A reader therefore has no way to separate the five sound figures from the blended one. The model hedges its figures, and hedging is the correct behaviour for a model that has no evidence in front of it. A reader who needs a number to check, however, is left with nothing to check.
 
-- Five of the six claims are close to the data, so the answer sounds reliable.
-- One sentence blends two measures. "Above 80 percent" fits mobile subscriptions (126.5 per 100 people in 2024), not the share of people online (35.0 percent), and nothing in the answer tells the reader which one is meant.
-- No claim names a source or a year, so a reader cannot tell the sound figures from the blended one. The model hedges, which is the right behaviour for a model with no evidence, and of no use to a reader who needs a number they can check.
-
-Prompting changes the style of this answer. It cannot give the model data it does not have.
+Different instructions would change the tone and the length of this answer, but the figures would still come from training, because the model has no other source.
 """),
     md("""
 ## 3. The same question with context
 
-The four country briefs from the session's document collection are supplied as context. The instructions now require citations and allow the model to say when something is missing.
+This section supplies evidence. The four country briefs from the session's document collection go into the context slot, and the instructions change to the grounded set, which requires a citation after each figure and allows the model to say when something is missing. The cell prints the size of the context before it calls the model.
 """),
     code('''
 docs = {d.metadata["id"]: d for d in w.load_documents()}
@@ -261,11 +255,11 @@ w.show(answer)
 *The two answers, shortened. They are the recorded outputs of sections 2 and 3.*
 """),
     md("""
-The figures now come from the briefs, each one is cited, and the comparison is specific. The model did none of the finding; the application did, by putting the right text in front of it.
+The figures now come from the briefs, each figure carries a citation, and the comparison between the two countries is specific. The model's part in this improvement is small. The application chose the four briefs and placed them in the prompt, and the model wrote from that text. This division of labour holds for the rest of the session: the application decides what evidence the model sees, and the quality of the answer follows from that choice.
 
-## 4. Handling missing information
+## 4. A question the evidence cannot answer
 
-An application has to behave well when the evidence does not contain the answer. The instruction "say so and give the closest available information" is what makes the difference.
+An application also has to behave well when the evidence does not contain the answer. The cell asks for Kenya's internet use in 2025, and the brief only goes up to 2024. The grounded instructions tell the model to say that the information is missing and to give the closest available figure, so the answer should name 2024 and say that 2025 is absent from the evidence.
 """),
     code('''
 w.use("nb01_missing_info")
@@ -274,9 +268,9 @@ answer = chain.invoke({"instructions": INSTRUCTIONS_GROUNDED, "context": docs["k
 w.show(answer)
 '''),
     md("""
-## 5. The ambiguous question under two sets of instructions
+## 5. An ambiguous question under two sets of instructions
 
-"How connected is Kenya?" can mean internet use, mobile subscriptions, broadband, or something else. Compare what the model does with the basic instructions and with an instruction to ask.
+"How connected is Kenya?" can mean internet use, mobile subscriptions, broadband coverage, or something else. The cell asks it twice: once with the basic instructions, and once with instructions that tell the model to list the possible readings and ask which one is meant.
 """),
     code('''
 print("Without an instruction to clarify:\\n")
@@ -287,30 +281,26 @@ w.use("nb01_ambiguous_with_instruction")
 w.show(chain.invoke({"instructions": INSTRUCTIONS_CLARIFY, "context": docs["kenya-digital"].page_content, "question": "How connected is Kenya?"}))
 '''),
     md("""
-The first answer picks a reading and runs with it. The second names the readings and asks. For a research application the second is the behaviour to specify, because a confident answer to the wrong question looks the same as a confident answer to the right one.
+With the basic instructions, the model chooses one reading and answers it with confidence. With the clarifying instructions, the model names the readings and asks before it answers. For a research application, the second behaviour is the one to specify. A confident answer to the wrong reading looks the same on the page as a confident answer to the right one, so the reader cannot detect the substitution. Asking costs one exchange and removes that risk.
 
-## 6. What the model received
+## 6. The prompt as sent to the model
 
-The messages the prompt produced for the last call, with each part in the colour it had in section 1: the instructions in the system message, then the context and the question in the human message.
+The cell prints the messages that the prompt produced for the last call, with each part in its colour from section 1. The instructions arrive as the system message. The context and the question arrive together in the human message.
 """),
     code('''
 messages = prompt.format_messages(instructions=INSTRUCTIONS_CLARIFY, context=docs["kenya-digital"].page_content, question="How connected is Kenya?")
 w.show_prompt(messages)
 '''),
     md("""
-## 7. What context costs
+## 7. The cost of context
 
-Four short briefs took about a thousand tokens. A natural reaction at this point:
+Section 3 reported the size of its context: four short briefs took about a thousand tokens. The obvious extension is to supply every document an organization holds in the same way, so that the model always has everything in front of it. That approach fails for three reasons.
 
-> "So we can just give the AI all our documents as context!"
+- **The collection does not fit.** A model reads a limited amount of text in one call, called its context window. A collection of thousands of documents is far larger than any window.
+- **The cost grows with every page.** The price of a call grows with the number of tokens, and the whole collection would be sent again with every question.
+- **The relevant text gets lost.** The passages that answer one question are a small part of the collection, and the rest surrounds them as noise.
 
-It is the first idea most people have, and it does not work, for three reasons:
-
-- **It does not fit.** The context window, the amount of text a model can read in one call, has a limit. A real collection of thousands of documents is far larger.
-- **It costs more with every page.** Cost grows with every token, and the whole collection would be sent again with every question.
-- **The answer gets lost.** The passages that matter for one question are a small part of the whole, and the rest is noise around them.
-
-The next two notebooks prepare a collection so that the application can select what to supply.
+The application therefore has to select, for each question, the small part of the collection that the model should read. Notebooks 02 and 03 build that selection: the first prepares the collection, and the second searches it.
 
 @@EXPLAINER:desk@@
 
@@ -319,16 +309,16 @@ The next two notebooks prepare a collection so that the application can select w
     md("""
 ## Key points
 
-- A prompt has three parts: instructions, context, and the question. Each is set by someone different, so they are kept separate.
-- Without context, the model answers from training. Most figures were close, one blended two measures, and none named a source, so a reader could not tell which to trust.
-- With context, the answer is specific and cites its sources. The model did none of the finding; the application did, by putting the right text in front of it.
-- Instructions shape behaviour: cite sources, say so when information is missing, ask when a question has more than one meaning. They cannot supply data the model does not have.
-- Giving the model everything does not work: the context window has a limit, cost grows with every token, and the answer gets lost. The application has to select what to supply, which the next notebooks cover.
+- A prompt has three parts: the instructions, the context, and the question. They are kept in separate slots because a different person changes each one.
+- Without context, the model answers from its training. Most of its figures were close to the official ones, one sentence blended two measures, and no figure named a source, so a reader could not tell which figures to trust.
+- With the four briefs as context, the answer became specific and cited each figure. The application produced that improvement by choosing the evidence, and the model wrote from what it was given.
+- Instructions shape the model's behaviour. They can require citations, make the model say when information is missing, and make it ask when a question has more than one meaning. They cannot supply data that the model lacks.
+- A whole collection cannot be supplied as context. The context window has a limit, the cost grows with every token, and the relevant passages get lost among the rest. The next notebooks build the selection step.
 
 ## Exercise
 
-1. Read the answers of sections 2 and 3 side by side. For each number, note whether you could check it and where. Then say which answer you would send to a colleague, and why.
-2. In the cell of section 1, add a sentence to `INSTRUCTIONS_GROUNDED`, for example "Answer in no more than three sentences." Run that cell again, then run the cell of section 6. The Instructions block now shows your sentence, so you can see exactly what the model would receive. The recorded answers do not react to new instructions; with a live key in `WORKSHOP_API_KEY`, rerun section 3 to see how the answer changes.
+1. Read the answers of sections 2 and 3 side by side. For each number, note whether it can be checked and where. Then decide which answer could be sent to a colleague, and give the reason.
+2. In the cell of section 1, add a sentence to `INSTRUCTIONS_GROUNDED`, for example "Answer in no more than three sentences." Run that cell again, then run the cell of section 6. The Instructions block now shows the added sentence exactly as the model would receive it. The recorded answers do not react to new instructions. With a live key in `WORKSHOP_API_KEY`, rerun section 3 to see how the answer changes.
 """),
     md(LINKS),
 ]
