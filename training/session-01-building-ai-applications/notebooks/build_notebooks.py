@@ -292,11 +292,12 @@ Every figure now carries a citation to a brief, the comparison is specific, and 
     md(id="section-4", text="""
 ## 4. A question the evidence cannot answer
 
-An instruction sets the model's behaviour when the evidence falls short. The grounded instructions say: if the context does not contain what is needed, say so and give the closest available information. The next cell supplies only the Kenya brief, which ends at 2024, and asks for 2025.
+An instruction sets the model's behaviour when the evidence falls short. The grounded instructions say: if the context does not contain what is needed, say so and give the closest available information. The next cell supplies only the Kenya brief, prefixed with its id so that the model can cite it, and asks for 2025. The brief ends at 2024.
 """),
     code('''
 w.use("nb01_missing_info")
-answer = w.answer(chain, {"instructions": INSTRUCTIONS_GROUNDED, "context": docs["kenya-digital"].page_content,
+brief = f"[kenya-digital]\\n{docs['kenya-digital'].page_content}"   # one brief, with its id so that the model can cite it
+answer = w.answer(chain, {"instructions": INSTRUCTIONS_GROUNDED, "context": brief,
                           "question": "What share of Kenya's population used the internet in 2025?"})
 '''),
     md("""
@@ -310,11 +311,11 @@ The model says that 2025 is absent, names 2024 as the latest year, and gives 35.
     code('''
 print("Without an instruction to clarify:\\n")
 w.use("nb01_ambiguous_no_instruction")
-w.answer(chain, {"instructions": INSTRUCTIONS_BASIC, "context": docs["kenya-digital"].page_content, "question": "How connected is Kenya?"})
+first = w.answer(chain, {"instructions": INSTRUCTIONS_BASIC, "context": brief, "question": "How connected is Kenya?"})
 
 print("\\n" + "=" * 100 + "\\nWith the instruction:\\n")
 w.use("nb01_ambiguous_with_instruction")
-w.answer(chain, {"instructions": INSTRUCTIONS_CLARIFY, "context": docs["kenya-digital"].page_content, "question": "How connected is Kenya?"})
+second = w.answer(chain, {"instructions": INSTRUCTIONS_CLARIFY, "context": brief, "question": "How connected is Kenya?"})
 '''),
     md("""
 With the basic instructions, the model answers at length, covers two readings, and adds a growth analysis the question did not ask for. With the clarifying instruction, it names three readings and asks. An answer to the model's own reading looks as confident as an answer to the user's reading, so the user cannot tell them apart. For a research application, asking costs one exchange and removes that risk.
@@ -325,7 +326,7 @@ With the basic instructions, the model answers at length, covers two readings, a
 `prompt.format_messages` fills the template with values and returns the message list without calling the model. The next cell does this for the last call of section 5 and draws the messages in the colours of section 1. The instructions arrive as the system message. The context and the question arrive together in one user message. This is everything the model sees.
 """),
     code('''
-messages = prompt.format_messages(instructions=INSTRUCTIONS_CLARIFY, context=docs["kenya-digital"].page_content, question="How connected is Kenya?")
+messages = prompt.format_messages(instructions=INSTRUCTIONS_CLARIFY, context=brief, question="How connected is Kenya?")
 w.show_prompt(messages)
 '''),
     md(id="section-7", text="""
@@ -656,7 +657,7 @@ print()
 w.print_hits(hits(w.MAIN_QUESTION, k=4))     # what the model is about to read
 print()
 w.use("nb03_rag_main")
-w.answer(make_rag(k=4), w.MAIN_QUESTION)
+reply = w.answer(make_rag(k=4), w.MAIN_QUESTION)
 '''),
     md("""
 The answer opens by saying that the passages contain no economic indicators, and it covers internet use with a citation after each figure. The instructions require both behaviours. The GDP figures are in the store, in the two economy briefs, and retrieval did not return them. Section 2 shows why.
@@ -708,7 +709,7 @@ The merged search returns eight passages where the single search returned four, 
 """),
     code('''
 w.use("nb03_rag_two_queries")
-w.answer(prompt | model, {"context": w.format_context(merged), "question": w.MAIN_QUESTION})
+reply = w.answer(prompt | model, {"context": w.format_context(merged), "question": w.MAIN_QUESTION})
 '''),
     md("""
 The answer covers both halves with a citation after each figure. The two extra passages did no harm: the model used the 2016 summary for a projection and said the projection could not be checked, and it reported that the mobile-money note holds no figures. Section 3 shows what happens when the 2016 summary is the passage an answer depends on.
@@ -723,7 +724,7 @@ q = "What are the latest available figures for internet use in Kenya and Rwanda?
 w.print_hits(hits(q, k=2))
 print()
 w.use("nb03_rag_outdated")
-w.answer(make_rag(k=2), q)
+reply = w.answer(make_rag(k=2), q)
 '''),
     md("""
 The 2016 summary ranks first at 0.816 and Rwanda's 2026 brief second at 0.765. Kenya's brief is absent, so the model's Kenya figure is the summary's: 16.6 percent in 2015. The model states that the summary dates from 2016 and that 16.6 is the most recent value in its passages. The answer is correct for its passages and wrong for the user, who asked for the latest figures while Kenya's 2024 value sits in the store. Generation cannot repair a selection made before the model saw anything. The fix belongs to retrieval.
@@ -758,7 +759,7 @@ With the filter, Kenya's brief replaces the summary and both 2024 figures are pr
 """),
     code('''
 w.use("nb03_rag_filtered")
-w.answer(make_rag(k=2, where=since_2020), q)
+reply = w.answer(make_rag(k=2, where=since_2020), q)
 '''),
     md("""
 The second fix, rewording, is tried next without the filter. The question is rewritten in the vocabulary of the 2026 briefs.

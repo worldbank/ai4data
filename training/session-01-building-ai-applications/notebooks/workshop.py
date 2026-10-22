@@ -282,7 +282,7 @@ def answer(runnable, inputs, **kwargs):
         handle.update(HTML(_bubble_html("assistant", text, None, []) or text))
     tool_calls = list(getattr(full, "tool_calls", None) or [])
     handle.update(HTML(_bubble_html("assistant", text, None, tool_calls) or text))
-    return full
+    return AIMessage(content=text, tool_calls=tool_calls, id=getattr(full, "id", None))
 
 
 def show(message: BaseMessage | str, width: int = 100, markdown: bool = True, role: str | None = None) -> None:
