@@ -204,22 +204,74 @@ def _in_notebook() -> bool:
         return False
 
 
-def show(message: BaseMessage | str, width: int = 100, markdown: bool = True) -> None:
+_ROLES = {  # role -> (label, bubble background, extra bubble style)
+    "assistant": ("assistant", "#f3f4f6", ""),
+    "user": ("user", "#e8eefb", "margin-left:auto"),
+    "system": ("system", "#fff7e6", ""),
+    "tool": ("tool result", "#eef7f1", ""),
+}
+
+
+def _markdown_html(text: str) -> str | None:
+    """Markdown rendered to HTML with inline styles, so it looks the same in Jupyter, JupyterLab and Colab. None if the markdown library is missing."""
+    try:
+        import markdown as md_lib
+    except ImportError:
+        return None
+    html = md_lib.markdown(text, extensions=["tables", "fenced_code", "sane_lists"])
+    styles = {
+        "h1": "font-size:1.3em;margin:10px 0 6px", "h2": "font-size:1.15em;margin:10px 0 6px", "h3": "font-size:1.05em;margin:8px 0 4px",
+        "p": "margin:6px 0", "ul": "margin:6px 0 6px 22px;padding:0", "ol": "margin:6px 0 6px 22px;padding:0", "li": "margin:2px 0",
+        "table": "border-collapse:collapse;margin:8px 0;font-size:0.95em",
+        "th": "border:1px solid #d5dbe5;padding:4px 8px;text-align:left;background:#eef1f6",
+        "td": "border:1px solid #d5dbe5;padding:4px 8px;vertical-align:top",
+        "pre": "background:#eef1f6;padding:8px 10px;border-radius:6px;overflow-x:auto",
+        "code": "font-family:Menlo,Consolas,monospace;font-size:0.95em",
+        "blockquote": "margin:6px 0;padding-left:12px;border-left:3px solid #d5dbe5;color:#5b6b85",
+    }
+    for tag, style in styles.items():
+        html = re.sub(rf"<{tag}(?=[\s>])", f'<{tag} style="{style}"', html)
+    return html
+
+
+def show(message: BaseMessage | str, width: int = 100, markdown: bool = True, role: str | None = None) -> None:
     """Show a message, with the recorded-scenario label when it was replayed.
 
-    In a notebook the text is rendered as Markdown, so lists, emphasis and headings in a
-    model's answer (or in a document) appear formatted; tags such as <claim ...> are shown
-    literally. Outside a notebook, or with markdown=False, the text is printed wrapped.
+    In a notebook, a chat message (or a string with a `role`) is drawn as a chat bubble, the way a
+    chatbot would show it: the role and the recorded label above, tool calls as code lines, and the
+    text rendered as Markdown inside the bubble. A plain string is rendered as Markdown without a
+    bubble, so documents and chunks keep their own shape. Tags such as <claim ...> are shown literally.
+    Outside a notebook, or with markdown=False, the text is printed wrapped.
     """
+    from html import escape
+
     label = None
     tool_calls = []
     if isinstance(message, BaseMessage):
         label = message.response_metadata.get("recorded") if hasattr(message, "response_metadata") else None
         text = message.content if isinstance(message.content, str) else json.dumps(message.content)
         tool_calls = list(getattr(message, "tool_calls", None) or [])
+        role = role or {"ai": "assistant", "human": "user", "system": "system", "tool": "tool"}.get(message.type, message.type)
     else:
         text = message
     if markdown and _in_notebook():
+        body = re.sub(r"<(?=[A-Za-z/])", "&lt;", text)  # HTML-like tags shown as text, not rendered
+        html = _markdown_html(body) if role else None
+        if html is not None:
+            name, bg, extra = _ROLES.get(role, (role, "#f3f4f6", ""))
+            meta = name + (f" · recorded output: {label}" if label else "")
+            calls = "".join(
+                f'<div style="font:12.5px Menlo,Consolas,monospace;color:#5b6b85;margin:2px 0">→ tool call {escape(c["name"])}({escape(json.dumps(c["args"]))})</div>'
+                for c in tool_calls
+            )
+            bubble = "padding:10px 14px;border-radius:14px;margin:6px 0;max-width:88%;font:14px/1.6 Helvetica,Arial,sans-serif;color:#16315a"
+            body_div = f'<div style="{bubble};background:{bg};{extra}">{html}</div>' if text.strip() else ""
+            display(HTML(
+                f'<div class="tex2jax_ignore" style="background:#ffffff;border:1px solid #e1e6ee;border-radius:10px;padding:8px 14px">'
+                f'<div style="font:12px Helvetica,Arial,sans-serif;color:#5b6b85;{"text-align:right" if extra else ""}">{escape(meta)}</div>'
+                f"{calls}{body_div}</div>"
+            ))
+            return
         from IPython.display import Markdown
 
         parts = []
@@ -227,9 +279,7 @@ def show(message: BaseMessage | str, width: int = 100, markdown: bool = True) ->
             parts.append(f"`[recorded output: {label}]`\n")
         for c in tool_calls:
             parts.append(f"`-> tool call {c['name']}({json.dumps(c['args'])})`\n")
-        body = re.sub(r"<(?=[A-Za-z/])", "&lt;", text)  # HTML-like tags shown as text, not rendered
-        body = body.replace("$", "\\$")  # a pair of dollar signs would otherwise be rendered as LaTeX
-        parts.append(body)
+        parts.append(body.replace("$", "\\$"))  # a pair of dollar signs would otherwise be rendered as LaTeX
         display(Markdown("\n".join(parts)))
         return
     if label:

@@ -209,7 +209,7 @@ prompt = ChatPromptTemplate.from_messages([
 ])
 chain = prompt | model
 
-w.show(w.MAIN_QUESTION)
+w.show(w.MAIN_QUESTION, role="user")
 '''),
     md(id="section-2", text="""
 ## 2. The model without context
@@ -609,7 +609,7 @@ def hits(question, k=4, where=None):
 The question is the main one from notebook 01. The search returns the four chunks closest to it, and they become the passages the model reads. The cell prints the question, then the passages, so that the evidence the model saw is visible, then the model's answer.
 """),
     code('''
-w.show("Question: " + w.MAIN_QUESTION)
+w.show(w.MAIN_QUESTION, role="user")
 print()
 w.print_hits(hits(w.MAIN_QUESTION, k=4))
 print()
@@ -936,7 +936,7 @@ import re
 
 first = re.findall(r"\\d[\\d,]*\\.?\\d*", final.content)[0]
 print("The answer:")
-w.show(final.content)
+w.show(final.content, role="assistant")
 print("\\nThe dashboard's box: ", first)
 '''),
     md("""
@@ -1015,7 +1015,7 @@ w.use("nb04_mcp")
 result = await agent.ainvoke({"messages": [HumanMessage(content="How has internet use in Rwanda changed since 2022?")]})
 w.print_trace(result)
 print()
-w.show(w.final_text(result))
+w.show(w.final_text(result), role="assistant")
 '''),
     md("""
 The application can now offer its tool to any program that speaks MCP.
@@ -1156,7 +1156,7 @@ w.use("nb05_agent_main")
 result = agent.invoke({"messages": [HumanMessage(content=w.MAIN_QUESTION)]}, config={"recursion_limit": 10})
 w.show_trace(result)
 print()
-w.show(w.final_text(result))
+w.show(w.final_text(result), role="assistant")
 '''),
     md("""
 The model chose the same five calls that the workflow made. On a different question it would choose differently. That is the point of an agent, and also its risk: the calls are not known in advance.
@@ -1172,7 +1172,7 @@ w.use("nb05_agent_offscope")
 result = agent.invoke({"messages": [HumanMessage(content="How have Kenya's coffee export earnings changed in recent years?")]}, config={"recursion_limit": 10})
 w.show_trace(result)
 print()
-w.show(w.final_text(result))
+w.show(w.final_text(result), role="assistant")
 '''),
     md("""
 The agent made one search, read what came back, and declined to invent figures. The application can now say that it cannot answer, and what would be needed.
@@ -1186,7 +1186,7 @@ w.use("nb05_agent_error")
 result = agent.invoke({"messages": [HumanMessage(content="What share of Rwanda's population used the internet in 2023?")]}, config={"recursion_limit": 10})
 w.show_trace(result)
 print()
-w.show(w.final_text(result))
+w.show(w.final_text(result), role="assistant")
 '''),
     md("""
 The first row is the failed call, in round 1; the second is the retry that worked, in round 2. The application can now recover from a wrong call, as long as its tools return errors that the model can read.
