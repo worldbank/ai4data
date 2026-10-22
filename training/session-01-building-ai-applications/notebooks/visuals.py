@@ -220,9 +220,13 @@ def form_rows(model, value=None, depth=0):
 
     rows = []
     for name, field in model.model_fields.items():
-        inner = typing.get_args(field.annotation)
-        kind = inner[0] if inner else field.annotation
-        many = bool(inner)
+        if typing.get_origin(field.annotation) is typing.Literal:   # a box with a fixed set of allowed values
+            kind, inner, many = field.annotation, (), False
+            plain[getattr(kind, "__name__", "")] = " or ".join(map(str, typing.get_args(kind)))
+        else:
+            inner = typing.get_args(field.annotation)
+            kind = inner[0] if inner else field.annotation
+            many = bool(inner)
         entry = getattr(value, name, None) if value is not None else None
         if hasattr(kind, "model_fields"):
             parts = [f for f, fi in kind.model_fields.items() if f not in ("indicator", "country")]
@@ -235,7 +239,7 @@ def form_rows(model, value=None, depth=0):
             for item in items:
                 rows += form_rows(kind, item, depth + 1)
         elif value is None:
-            rows.append((depth, name, ("list of " if many else "") + plain.get(kind.__name__, kind.__name__)))
+            rows.append((depth, name, ("list of " if many else "") + plain.get(getattr(kind, "__name__", ""), getattr(kind, "__name__", str(kind)))))
         else:
             text = "; ".join(map(str, entry)) if many else shown(entry)
             rows.append((depth, name, text if len(text) < 60 else text[:57] + "..."))

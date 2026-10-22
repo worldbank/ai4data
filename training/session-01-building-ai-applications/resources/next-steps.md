@@ -14,7 +14,7 @@ The decision guide from the deck:
 | Other software must read the answer | A structured output with a schema | 04 |
 | The task needs several steps or several tools | A workflow in code, or a bounded loop | 05 |
 | Readers need to trust the numbers | Claims and verification | 06 |
-| The application must keep working after changes | An evaluation suite | 06 |
+| The application must keep working after changes | A test on fixed questions with known answers | 03 for retrieval; the evaluation cookbook for the whole application |
 
 The techniques combine. Most applications in research and data use instructions, retrieval, one or two tools, and a suite, and never need a general agent.
 
@@ -34,7 +34,7 @@ Questions to ask of any application proposed to you, with the notebook that show
 - What does the application do when the data does not exist, or the question is ambiguous? (01, 04)
 - How is retrieval tested, separately from the answers? (03)
 - What bounds the loop, and can a run be inspected afterwards? (05)
-- What is in the evaluation suite, and when was it last run? (06)
+- Which fixed questions is the application tested on, and when were they last run? (03)
 - What does a verified mark say, and what does it leave to the reader? (06)
 
 An application that cannot answer these is a demonstration.

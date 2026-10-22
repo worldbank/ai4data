@@ -28,7 +28,7 @@ import re
 import textwrap
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Literal, Any
 
 import frontmatter
 from langchain_core.callbacks import BaseCallbackHandler
@@ -193,18 +193,138 @@ def mode(model: BaseChatModel) -> str:
     return f"live ({getattr(model, 'model_name', 'model')})"
 
 
-def show(message: BaseMessage | str, width: int = 100) -> None:
-    """Print a message, with the recorded-scenario label when it was replayed."""
+def _in_notebook() -> bool:
+    """True inside a Jupyter or Colab kernel, where display() renders; False in a terminal or a script."""
+    try:
+        from IPython import get_ipython
+
+        ip = get_ipython()
+        return ip is not None and "IPKernelApp" in ip.config
+    except Exception:
+        return False
+
+
+_ROLES = {  # role -> (label, bubble background, extra bubble style)
+    "assistant": ("assistant", "#f3f4f6", ""),
+    "user": ("user", "#e8eefb", "margin-left:auto"),
+    "system": ("system", "#fff7e6", ""),
+    "tool": ("tool result", "#eef7f1", ""),
+}
+
+
+def _markdown_html(text: str) -> str | None:
+    """Markdown rendered to HTML with inline styles, so it looks the same in Jupyter, JupyterLab and Colab. None if the markdown library is missing."""
+    try:
+        import markdown as md_lib
+    except ImportError:
+        return None
+    html = md_lib.markdown(text, extensions=["tables", "fenced_code", "sane_lists"])
+    styles = {
+        "h1": "font-size:1.3em;margin:10px 0 6px", "h2": "font-size:1.15em;margin:10px 0 6px", "h3": "font-size:1.05em;margin:8px 0 4px",
+        "p": "margin:6px 0", "ul": "margin:6px 0 6px 22px;padding:0", "ol": "margin:6px 0 6px 22px;padding:0", "li": "margin:2px 0",
+        "table": "border-collapse:collapse;margin:8px 0;font-size:0.95em",
+        "th": "border:1px solid #d5dbe5;padding:4px 8px;text-align:left;background:#eef1f6",
+        "td": "border:1px solid #d5dbe5;padding:4px 8px;vertical-align:top",
+        "pre": "background:#eef1f6;padding:8px 10px;border-radius:6px;overflow-x:auto",
+        "code": "font-family:Menlo,Consolas,monospace;font-size:0.95em",
+        "blockquote": "margin:6px 0;padding-left:12px;border-left:3px solid #d5dbe5;color:#5b6b85",
+    }
+    for tag, style in styles.items():
+        html = re.sub(rf"<{tag}(?=[\s>])", f'<{tag} style="{style}"', html)
+    return html
+
+
+def _bubble_html(role: str, text: str, label: str | None, tool_calls: list) -> str | None:
+    """A chat bubble: the role and the recorded label above, tool calls as code lines, the text as Markdown. None if the markdown library is missing."""
+    from html import escape
+
+    body = re.sub(r"<(?=[A-Za-z/])", "&lt;", text)  # HTML-like tags shown as text, not rendered
+    html = _markdown_html(body)
+    if html is None:
+        return None
+    name, bg, extra = _ROLES.get(role, (role, "#f3f4f6", ""))
+    meta = name + (f" · recorded output: {label}" if label else "")
+    calls = "".join(
+        f'<div style="font:12.5px Menlo,Consolas,monospace;color:#5b6b85;margin:2px 0">→ tool call {escape(c["name"])}({escape(json.dumps(c["args"]))})</div>'
+        for c in tool_calls
+    )
+    bubble = "padding:10px 14px;border-radius:14px;margin:6px 0;max-width:88%;font:14px/1.6 Helvetica,Arial,sans-serif;color:#16315a"
+    body_div = f'<div style="{bubble};background:{bg};{extra}">{html}</div>' if text.strip() else ""
+    return (
+        f'<div class="tex2jax_ignore" style="background:#ffffff;border:1px solid #e1e6ee;border-radius:10px;padding:8px 14px">'
+        f'<div style="font:12px Helvetica,Arial,sans-serif;color:#5b6b85;{"text-align:right" if extra else ""}">{escape(meta)}</div>'
+        f"{calls}{body_div}</div>"
+    )
+
+
+def answer(runnable, inputs, **kwargs):
+    """Call a chain or a model and show the answer as a chat bubble.
+
+    With a live model in a notebook, the tokens are streamed: the bubble appears with the
+    first words and grows until the answer is complete. Without a key, or outside a
+    notebook, the call is a plain `invoke` and the recorded answer is shown at once, as
+    `show` does. Returns the message either way.
+    """
+    if not (llm_available() and _in_notebook()):
+        message = runnable.invoke(inputs, **kwargs)
+        show(message)
+        return message
+    handle = display(HTML(_bubble_html("assistant", "", None, []) or ""), display_id=True)
+    if handle is None:  # no display front end to update: a plain call instead
+        message = runnable.invoke(inputs, **kwargs)
+        show(message)
+        return message
+    text, full = "", None
+    for chunk in runnable.stream(inputs, **kwargs):
+        full = chunk if full is None else full + chunk
+        content = chunk.content
+        text += content if isinstance(content, str) else "".join(p.get("text", "") for p in content if isinstance(p, dict))
+        handle.update(HTML(_bubble_html("assistant", text, None, []) or text))
+    tool_calls = list(getattr(full, "tool_calls", None) or [])
+    handle.update(HTML(_bubble_html("assistant", text, None, tool_calls) or text))
+    return AIMessage(content=text, tool_calls=tool_calls, id=getattr(full, "id", None))
+
+
+def show(message: BaseMessage | str, width: int = 100, markdown: bool = True, role: str | None = None) -> None:
+    """Show a message, with the recorded-scenario label when it was replayed.
+
+    In a notebook, a chat message (or a string with a `role`) is drawn as a chat bubble, the way a
+    chatbot would show it: the role and the recorded label above, tool calls as code lines, and the
+    text rendered as Markdown inside the bubble. A plain string is rendered as Markdown without a
+    bubble, so documents and chunks keep their own shape. Tags such as <claim ...> are shown literally.
+    Outside a notebook, or with markdown=False, the text is printed wrapped.
+    """
+    from html import escape
+
+    label = None
+    tool_calls = []
     if isinstance(message, BaseMessage):
         label = message.response_metadata.get("recorded") if hasattr(message, "response_metadata") else None
-        if label:
-            print(f"[recorded output: {label}]")
         text = message.content if isinstance(message.content, str) else json.dumps(message.content)
-        if getattr(message, "tool_calls", None):
-            for c in message.tool_calls:
-                print(f"-> tool call {c['name']}({json.dumps(c['args'])})")
+        tool_calls = list(getattr(message, "tool_calls", None) or [])
+        role = role or {"ai": "assistant", "human": "user", "system": "system", "tool": "tool"}.get(message.type, message.type)
     else:
         text = message
+    if markdown and _in_notebook():
+        body = re.sub(r"<(?=[A-Za-z/])", "&lt;", text)  # HTML-like tags shown as text, not rendered
+        html = _bubble_html(role, text, label, tool_calls) if role else None
+        if html is not None:
+            display(HTML(html))
+            return
+        from IPython.display import Markdown
+
+        parts = []
+        if label:
+            parts.append(f"`[recorded output: {label}]`\n")
+        for c in tool_calls:
+            parts.append(f"`-> tool call {c['name']}({json.dumps(c['args'])})`\n")
+        parts.append(body.replace("$", "\\$"))  # a pair of dollar signs would otherwise be rendered as LaTeX
+        display(Markdown("\n".join(parts)))
+        return
+    if label:
+        print(f"[recorded output: {label}]")
+    for c in tool_calls:
+        print(f"-> tool call {c['name']}({json.dumps(c['args'])})")
     for para in text.split("\n"):
         print(textwrap.fill(para, width=width) if len(para) > width else para)
 
@@ -262,12 +382,18 @@ def make_embeddings():
 
 
 def mcp_server_transport():
-    """A FastMCP stdio transport that runs indicator_server.py with this interpreter."""
+    """A FastMCP stdio transport that runs indicator_server.py with this interpreter.
+
+    The server's error output goes to a log file next to the notebook. The default would be
+    the notebook's own stderr, which in Colab is a kernel stream without a file descriptor,
+    and the subprocess cannot be started with it ("fileno").
+    """
     import sys
 
     from fastmcp.client.transports import PythonStdioTransport
 
-    return PythonStdioTransport(MCP_SERVER, python_cmd=sys.executable, env={**os.environ, "FASTMCP_LOG_LEVEL": "ERROR"})
+    log_file = Path(MCP_SERVER).with_name("indicator_server.log")
+    return PythonStdioTransport(MCP_SERVER, python_cmd=sys.executable, env={**os.environ, "FASTMCP_LOG_LEVEL": "ERROR"}, log_file=log_file)
 
 
 def build_store(chunks: list[Document], embeddings=None) -> InMemoryVectorStore:
@@ -396,7 +522,7 @@ class Observation(BaseModel):
 
 
 class CountrySummary(BaseModel):
-    country: str
+    country: Literal["KEN", "RWA"] = Field(description="ISO3 code of the country")
     internet_latest: Observation
     gdp_per_capita_latest: Observation
     trend: str = Field(description="One or two sentences on the trend since 2010")
@@ -534,6 +660,11 @@ def show_checks(checks: list[ClaimCheck]) -> None:
     show_table(["number", "claim_id", "the record holds", "mark"], rows, source=f"{counts['verified']} verified, {counts['flagged']} flagged, {counts['unmarked']} unmarked")
 
 
+import itertools as _itertools
+
+_CHAT_IDS = _itertools.count(1)
+
+
 def chat_html(question: str, answer: str, observations: dict[str, float], results: list[dict[str, Any]] | None = None, raw: bool = False) -> str:
     """The question and the answer as a chatbot draws them: a green check after each verified number, an amber warning after each flagged one, nothing after a number without a tag.
 
@@ -547,7 +678,7 @@ def chat_html(question: str, answer: str, observations: dict[str, float], result
         for o in r.get("observations", []):
             about[o["claim_id"]] = (r.get("name", r["indicator"]), r.get("source", ""))
     marks = iter(c for c in verify(answer, observations) if c.claim_id)
-    out, pos = [], 0
+    out, pos, spans = [], 0, []
     for m in CLAIM_RE.finditer(answer):
         out.append(escape(answer[pos:m.start()]))
         check = next(marks)
@@ -560,19 +691,31 @@ def chat_html(question: str, answer: str, observations: dict[str, float], result
         else:
             rule, expect = f"rounded to {d} decimal{'s' if d != 1 else ''}", None if truth is None else f"{round(truth, d):,.{d}f}"
         name, source = about.get(cid, (indicator, ""))
-        lines = [f"The model named the record {cid}", f"Record: {name}, {country}, {year}"]
+        rows = [("Record", cid), ("Indicator", f"{name}, {country}, {year}")]
         if source:
-            lines.append(f"Source: {source}")
+            rows.append(("Source", source))
         if truth is None:
-            glyph, colour = "⚠", "#d97706"
-            lines = [f"The model named the record {cid}", "No such record came back from the tool", "Not verified"]
+            glyph, colour, verdict = "\u26a0", "#d97706", "Not verified: no such record came back from the tool"
         else:
-            lines += [f"Returned by the tool: {truth:g}", f"Display rule: {rule}, which gives {expect}", f"Shown in the answer: {shown}"]
-            glyph, colour = ("✓", "#16a34a") if check.status == "verified" else ("⚠", "#d97706")
-            lines.append("They are equal: verified" if check.status == "verified" else "They are not equal: not verified")
-        out.append(f'<span style="border-bottom:2px dotted {colour};cursor:help" title="{escape(chr(10).join(lines))}">{escape(shown)}<b style="color:{colour};margin-left:2px">{glyph}</b></span>')
+            rows += [("Returned by the tool", f"{truth:g}"), ("Display rule", f"{rule}, which gives {expect}"), ("Shown in the answer", shown)]
+            glyph, colour = ("\u2713", "#16a34a") if check.status == "verified" else ("\u26a0", "#d97706")
+            verdict = "Verified: the two are equal" if check.status == "verified" else "Not verified: the two differ"
+        tip = (f'<span class="pcn-tip" role="tooltip"><span class="pcn-tip-head" style="color:{colour}">{glyph} {escape(verdict)}</span>'
+               + "".join(f'<span class="pcn-row"><span class="pcn-k">{escape(k)}</span><span class="pcn-v">{escape(v)}</span></span>' for k, v in rows) + "</span>")
+        spans.append(f'<span class="pcn-mark" tabindex="0" style="border-bottom:2px dotted {colour}">{escape(shown)}<b style="color:{colour};margin-left:2px">{glyph}</b>{tip}</span>')
+        out.append(spans[-1])
         pos = m.end()
     out.append(escape(answer[pos:]))
+    # Render the answer as Markdown (tables, bold, lists) with each marked number put back in place.
+    # A placeholder stands in for every tag while the Markdown is converted, so the marks survive inside table cells.
+    counter = iter(range(len(spans)))
+    with_placeholders = CLAIM_RE.sub(lambda _m: f"PCNMARK{next(counter)}PCN", answer)
+    with_placeholders = re.sub(r"<(?=[A-Za-z/])", "&lt;", with_placeholders)   # any other HTML-like tag is shown as text
+    rendered = _markdown_html(with_placeholders)
+    if rendered is not None:
+        for i, span in enumerate(spans):
+            rendered = rendered.replace(f"PCNMARK{i}PCN", span)
+        out = [rendered]
     bubble = "padding:10px 14px;border-radius:14px;margin:6px 0;max-width:88%;font:14px/1.6 Helvetica,Arial,sans-serif;color:#16315a"
     fold = (
         '<details style="margin-top:8px;font:12.5px Helvetica,Arial,sans-serif;color:#5b6b85"><summary style="cursor:pointer">What the model actually wrote (open to see the labels)</summary>'
@@ -580,13 +723,35 @@ def chat_html(question: str, answer: str, observations: dict[str, float], result
         if raw
         else ""
     )
+    card_id = f"pcn-chat-{next(_CHAT_IDS)}"
+    style = (
+        "<style>"
+        ".pcn-mark{position:relative;cursor:help;white-space:nowrap}"
+        ".pcn-mark:focus{outline:2px solid #2f5f9e;outline-offset:2px}"
+        ".pcn-tip{display:none;position:absolute;left:0;top:calc(100% + 6px);z-index:20;width:330px;max-width:80vw;white-space:normal;"
+        "background:#ffffff;color:#16315a;border:1px solid #d5dbe5;border-radius:10px;box-shadow:0 8px 24px rgba(22,49,90,.16);padding:10px 12px;"
+        "font:12.5px/1.45 Helvetica,Arial,sans-serif;text-align:left}"
+        ".pcn-mark:hover .pcn-tip,.pcn-mark:focus .pcn-tip,.pcn-mark:focus-within .pcn-tip{display:block}"
+        ".pcn-tip-head{display:block;font-weight:700;font-size:13px;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid #eef1f6}"
+        ".pcn-row{display:grid;grid-template-columns:118px 1fr;gap:8px;padding:2px 0}"
+        ".pcn-detail .pcn-tip-head{display:block;font-weight:700;font-size:13px;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid #eef1f6}"
+        ".pcn-k{color:#6b7280}"
+        ".pcn-v{font-family:Menlo,Consolas,monospace;font-size:12px;overflow-wrap:anywhere}"
+        "</style>"
+    )
     return (
-        '<div style="background:#ffffff;border:1px solid #e1e6ee;border-radius:10px;padding:10px 14px">'
+        style
+        + f'<div id="{card_id}" class="tex2jax_ignore" style="background:#ffffff;border:1px solid #e1e6ee;border-radius:10px;padding:10px 14px">'
         f'<div style="{bubble};background:#e8eefb;margin-left:auto">{escape(question)}</div>'
         f'<div style="{bubble};background:#f3f4f6">{"".join(out)}</div>'
         '<div style="font:12.5px Helvetica,Arial,sans-serif;color:#5b6b85;margin-top:6px">'
-        '<b style="color:#16a34a">✓</b> verified · <b style="color:#d97706">⚠</b> does not match its record · no mark: no label. Hover a mark to see why.</div>'
+        '<b style="color:#16a34a">✓</b> verified · <b style="color:#d97706">⚠</b> does not match its record · no mark: no label. Hover or focus a mark to see the check.</div>'
+        f'<div class="pcn-detail" style="margin-top:8px;padding:10px 12px;border:1px dashed #d5dbe5;border-radius:10px;font:12.5px/1.45 Helvetica,Arial,sans-serif;color:#6b7280">'
+        'The check behind a mark appears here when the mark is hovered or focused.</div>'
         f"{fold}</div>"
+        f"<script>(function(){{var card=document.getElementById('{card_id}');if(!card)return;var panel=card.querySelector('.pcn-detail');"
+        "card.querySelectorAll('.pcn-mark').forEach(function(m){var tip=m.querySelector('.pcn-tip');function show(){panel.innerHTML=tip.innerHTML;panel.style.color='#16315a';}"
+        "m.addEventListener('mouseenter',show);m.addEventListener('focus',show);});})();</script>"
     )
 
 
