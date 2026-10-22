@@ -312,7 +312,7 @@ A model reads a limited amount of text per call, called its context window and m
 ## Key points
 
 - A prompt has three parts: instructions, context, and the question. A different person writes each, so they are kept in separate slots.
-- Without context, the figures are reconstructions from training data. Four of six were close, two were off, and none could be traced to a record.
+- Without context, the figures are reconstructions from training data. Four of the six checked were close, two were off, and none could be traced to a record.
 - With the briefs as context, every figure cited a brief. The application chose the evidence, and the model wrote from it.
 - Instructions set behaviour: cite, say when information is missing, ask when a question is ambiguous. They cannot supply data.
 - The context window limits what one call can read, so the application has to select the evidence. The next two notebooks build the selection.
@@ -756,10 +756,10 @@ At `K = 4` every question has an expected document among its passages, and q1, t
 ## Key points
 
 - Retrieval scores every chunk by the distance between its vector and the question's, and returns the `k` closest as passages for the prompt.
-- A vector encodes meaning. A question with two parts matches one of them, and one search per part fixes it.
+- A vector encodes meaning. A question with two parts matches the chunks of one part and misses the other; one search per part fixes it.
 - A vector encodes nothing about dates. A filter on metadata removes outdated passages; rewording the question does not.
-- A search returns the top `k` even when nothing is related. A cut-off score and an instruction to the model cover that case.
-- Retrieval is tested alone, against expected documents and numbers. A miss there is a retrieval problem, whatever the instructions say.
+- A search returns the top `k` chunks even when none is related. A cut-off score stops unrelated passages from reaching the model, and an instruction tells the model to say when the passages do not answer.
+- Retrieval can be tested on its own by checking that the expected documents and numbers are among the passages. When a number is absent from the passages, the model never saw it, so no instruction to the model can put it in the answer; the fix is in retrieval.
 
 ## Exercise
 
