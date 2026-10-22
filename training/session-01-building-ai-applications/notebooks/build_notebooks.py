@@ -172,7 +172,7 @@ The whole session works on one research question, so that every method can be ju
 Run the cells in order. Without an API key, the model's outputs are recorded ones, labelled `[recorded output: ...]`. Each cell names its recorded scenario with `w.use(...)` before it calls the model. With a key in `WORKSHOP_API_KEY`, the same cells call the model live, and the answers will differ in wording from the recorded ones.
 """),
     md("""
-The next cell installs the session's tools and loads its helper module. It takes about a minute the first time, and you do not need to read it.
+The next cell installs the session's tools and loads its helper module. The first run takes about a minute. The cell is setup only.
 """),
     code(SETUP),
     md(STACK),
@@ -363,7 +363,7 @@ Four short scenes:
 Run the cells in order. This notebook only prepares material for the model that writes the answers, so it does not use that model, and no API key is needed. The model comes back in notebook 03. Everything below is computed when you run the cell. It does use a small embedding model, which turns text into numbers; it downloads about 90 MB the first time and runs inside the notebook.
 """),
     md("""
-The next cell installs the session's tools and loads its helper module. It takes about a minute the first time, and you do not need to read it.
+The next cell installs the session's tools and loads its helper module. The first run takes about a minute. The cell is setup only.
 """),
     code(SETUP_NO_MODEL),
     md("""
@@ -569,10 +569,10 @@ Retrieval and the returned passages are the parts this notebook adds, and the mo
 
 ## How to run it
 
-Run the cells in order. The model's answers are recorded ones, labelled with their scenario, as in notebook 01. The searches, the rankings, and the tables are computed when a cell runs, so their numbers are live.
+Run the cells in order. Without an API key, the model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. With a key in `WORKSHOP_API_KEY`, the same cells call the model live, and the answers will differ in wording from the recorded ones. The searches, the rankings, and the tables are computed when a cell runs, in both modes.
 """),
     md("""
-The next cell installs the session's tools and loads its helper module. It takes about a minute the first time, and you do not need to read it.
+The next cell installs the session's tools and loads its helper module. The first run takes about a minute. The cell is setup only.
 """),
     code(SETUP),
     md("""
@@ -817,7 +817,7 @@ Five short scenes:
 
 ## How to run it
 
-Run the cells in order. The model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. The tool results, tables and checks are computed when you run the cell. The last cell reaches a public server and needs the internet.
+Run the cells in order. Without an API key, the model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. With a key in `WORKSHOP_API_KEY`, the same cells call the model live, and the answers will differ in wording from the recorded ones. The tool results, tables and checks are computed when the cell runs. The last cell reaches a public server and needs the internet.
 """),
     code(SETUP),
     md("""
@@ -1101,7 +1101,7 @@ Seven short scenes:
 
 ## How to run it
 
-Run the cells in order. The model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. The searches, the tool results, the tables and the checks are computed when you run the cell. The exercises at the end run without a key.
+Run the cells in order. Without an API key, the model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. With a key in `WORKSHOP_API_KEY`, the same cells call the model live, and the answers will differ in wording from the recorded ones. The searches, the tool results, the tables and the checks are computed when the cell runs. The exercises at the end run without a key.
 """),
     code(SETUP),
     code('''
@@ -1303,7 +1303,7 @@ Five short scenes:
 
 ## How to run it
 
-Run the cells in order. The model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. The searches, the tool results, the checks and the tables are computed when you run the cell. The exercises at the end run without a key.
+Run the cells in order. Without an API key, the model's answers are recorded ones, labelled `[recorded output: ...]`, as in notebook 01. With a key in `WORKSHOP_API_KEY`, the same cells call the model live, and the answers will differ in wording from the recorded ones. The searches, the tool results, the checks and the tables are computed when the cell runs. The exercises at the end run without a key.
 """),
     code(SETUP),
     code('''
