@@ -227,7 +227,9 @@ def show(message: BaseMessage | str, width: int = 100, markdown: bool = True) ->
             parts.append(f"`[recorded output: {label}]`\n")
         for c in tool_calls:
             parts.append(f"`-> tool call {c['name']}({json.dumps(c['args'])})`\n")
-        parts.append(re.sub(r"<(?=[A-Za-z/])", "&lt;", text))  # HTML-like tags shown as text, not rendered
+        body = re.sub(r"<(?=[A-Za-z/])", "&lt;", text)  # HTML-like tags shown as text, not rendered
+        body = body.replace("$", "\\$")  # a pair of dollar signs would otherwise be rendered as LaTeX
+        parts.append(body)
         display(Markdown("\n".join(parts)))
         return
     if label:
