@@ -899,13 +899,13 @@ The model's own memory is a third way to get a number, and the weakest. The cell
 """),
     code('''
 w.use("nb04_from_memory")
-w.show(model.invoke("What was Rwanda's GDP per capita in 2023?"))
+reply = w.answer(model, "What was Rwanda's GDP per capita in 2023?")
 print()
 r = w.indicator_lookup("NY.GDP.PCAP.CD", "Rwanda", start=2023, end=2023)
 w.show_table(["year", "value"], [(o["year"], f"{o['value']:,.1f}") for o in r["observations"]], source=f"{r['name']} · {r['source']}")
 '''),
     md("""
-The answer from memory is close and hedged, and nothing tells a reader how close. The tool's answer is exact and carries its source. The application can now get an exact number, with its source, instead of hoping that a passage holds it.
+The answer from memory gives a range and a figure of about 966 dollars, hedged, and nothing tells a reader how far that is from the record. The tool's answer is exact, 1,061, and carries its source. The application can now get an exact number, with its source, instead of hoping that a passage holds it.
 
 ## 2. The tool, as the model sees it
 
@@ -949,8 +949,7 @@ messages = [SystemMessage(content=INSTRUCTIONS), HumanMessage(content="What was 
 
 w.use("nb04_tool_call")
 print("1. The model asks for the tool:")
-reply = model_with_tools.invoke(messages)
-w.show(reply)
+reply = w.answer(model_with_tools, messages)
 for call in reply.tool_calls:
     result = w.get_indicator.invoke(call["args"])
     print()
@@ -959,26 +958,29 @@ for call in reply.tool_calls:
     messages += [reply, ToolMessage(content=json.dumps(result), tool_call_id=call["id"])]
 print()
 print("3. The model writes its answer from the result:")
-final = model_with_tools.invoke(messages)
-w.show(final)
+final = w.answer(model_with_tools, messages)
 '''),
     md("""
 The application can now use a tool: the model asks, the application runs it, and the result goes back to the model.
 
 ## 4. Data that does not exist
 
-The planted problem: a year with no observation. The tool returns an empty list, and the instructions say what to do with it. The cell prints what the tool returned, then the model's answer.
+The planted problem: a year with no observation. The tool returns an empty list, and the instructions say what to do with it. The model may ask again, for example for a wider range of years, so the cell allows up to three rounds, prints each tool result, and then shows the answer.
 """),
     code('''
 messages = [SystemMessage(content=INSTRUCTIONS), HumanMessage(content="What share of Kenya's population used the internet in 2025?")]
 w.use("nb04_missing_year")
-reply = model_with_tools.invoke(messages)
-for call in reply.tool_calls:
-    result = w.get_indicator.invoke(call["args"])
-    print("tool result for 2025:", result["observations"])
-    messages += [reply, ToolMessage(content=json.dumps(result), tool_call_id=call["id"])]
+for round in range(3):   # the model may ask again, for example for a wider range of years
+    reply = model_with_tools.invoke(messages)
+    if not reply.tool_calls:
+        break
+    messages.append(reply)
+    for call in reply.tool_calls:
+        result = w.get_indicator.invoke(call["args"])
+        print(f"tool result for {call['args']}: {len(result['observations'])} observations")
+        messages.append(ToolMessage(content=json.dumps(result), tool_call_id=call["id"]))
 print()
-w.show(model_with_tools.invoke(messages))
+w.show(reply)
 '''),
     md("""
 ## 5. Structured output: an answer in a fixed shape
@@ -994,7 +996,7 @@ w.show(final.content, role="assistant")
 print("\\nThe dashboard's box: ", first)
 '''),
     md("""
-The box gets 2023, which is the year and not a figure. The sentence holds three figures for different years, and the words around them change from one answer to the next, so a program reading a sentence has to guess which one is wanted.
+The box gets 2023, which is the year and not a figure. The sentence holds a year and a figure, and the words around them change from one answer to the next, so a program reading a sentence has to guess which number is wanted.
 
 The fix is to stop asking for a sentence. We hand the model a **blank form** with a named box for each thing we need: a country, a year and a value for internet use, a year and a value for GDP per capita, a comparison, the sources. The model's job is to fill in the boxes, and the program reads each box by name. The blank form is called a **schema**, and an answer that follows one is a **structured output**. In code the form is a class written with a library called Pydantic, and `with_structured_output` sends it to the model with the request. The next cell gives the model the tool's data, asks it to fill in the form, and draws the blank form beside the filled one.
 """),
@@ -1183,7 +1185,7 @@ def fixed_workflow(question):
     print(f"step 1: searched the documents, found {len(passages)} passages")
     series = [w.indicator_lookup(i, c, start=2010) for i in ["IT.NET.USER.ZS", "NY.GDP.PCAP.CD"] for c in ["Kenya", "Rwanda"]]
     print(f"step 2: looked up {len(series)} series: internet use and GDP per capita, for Kenya and Rwanda")
-    answer = compose.invoke({
+    answer = w.answer(compose, {
         "passages": "\\n\\n".join(f"{p['citation']}\\n{p['text']}" for p in passages),
         "data": json.dumps(series),
         "question": question,
@@ -1194,7 +1196,6 @@ def fixed_workflow(question):
 
 w.use("nb05_compose")
 workflow_answer, workflow_series = fixed_workflow(w.MAIN_QUESTION)
-w.show(workflow_answer)
 '''),
     md("""
 The application can now answer the main question with a fixed set of steps. It is predictable: the same question makes the same calls, so it is easy to test.
@@ -1229,7 +1230,7 @@ print()
 w.show(w.final_text(result), role="assistant")
 '''),
     md("""
-The agent made one search, read what came back, and declined to invent figures. The application can now say that it cannot answer, and what would be needed.
+The agent made one search and tried two indicator ids that the tool rejected, then declined to invent figures and said what it had looked for. The application can now say that it cannot answer, and what would be needed.
 
 ## 4. A call that fails
 
@@ -1276,7 +1277,7 @@ The worked example has one shape, so a workflow is the right design for it. The 
 
 ## 7. Can we trust the numbers?
 
-Both designs produce an answer that holds several numbers. Some come straight from a tool, some come from a passage, and some are worked out by the model itself: "has risen by about 28 percentage points" is a subtraction, which no tool returned. The answer is plain text, and a reader, or a program, has no way to tell which number is which.
+Both designs produce an answer that holds several numbers. Some come straight from a tool, some come from a passage, and some are worked out by the model itself: "rose by about 23.7 percentage points" is a subtraction, which no tool returned. The answer is plain text, and a reader, or a program, has no way to tell which number is which.
 
 The tools have already laid some groundwork. Every figure the data tool returns carries a label, called a `claim_id`, made of the indicator, the country and the year. The cell shows the latest figure of each series that the workflow fetched.
 """),
