@@ -654,6 +654,11 @@ def show_checks(checks: list[ClaimCheck]) -> None:
     show_table(["number", "claim_id", "the record holds", "mark"], rows, source=f"{counts['verified']} verified, {counts['flagged']} flagged, {counts['unmarked']} unmarked")
 
 
+import itertools as _itertools
+
+_CHAT_IDS = _itertools.count(1)
+
+
 def chat_html(question: str, answer: str, observations: dict[str, float], results: list[dict[str, Any]] | None = None, raw: bool = False) -> str:
     """The question and the answer as a chatbot draws them: a green check after each verified number, an amber warning after each flagged one, nothing after a number without a tag.
 
@@ -680,17 +685,18 @@ def chat_html(question: str, answer: str, observations: dict[str, float], result
         else:
             rule, expect = f"rounded to {d} decimal{'s' if d != 1 else ''}", None if truth is None else f"{round(truth, d):,.{d}f}"
         name, source = about.get(cid, (indicator, ""))
-        lines = [f"The model named the record {cid}", f"Record: {name}, {country}, {year}"]
+        rows = [("Record", cid), ("Indicator", f"{name}, {country}, {year}")]
         if source:
-            lines.append(f"Source: {source}")
+            rows.append(("Source", source))
         if truth is None:
-            glyph, colour = "⚠", "#d97706"
-            lines = [f"The model named the record {cid}", "No such record came back from the tool", "Not verified"]
+            glyph, colour, verdict = "\u26a0", "#d97706", "Not verified: no such record came back from the tool"
         else:
-            lines += [f"Returned by the tool: {truth:g}", f"Display rule: {rule}, which gives {expect}", f"Shown in the answer: {shown}"]
-            glyph, colour = ("✓", "#16a34a") if check.status == "verified" else ("⚠", "#d97706")
-            lines.append("They are equal: verified" if check.status == "verified" else "They are not equal: not verified")
-        spans.append(f'<span style="border-bottom:2px dotted {colour};cursor:help" title="{escape(chr(10).join(lines))}">{escape(shown)}<b style="color:{colour};margin-left:2px">{glyph}</b></span>')
+            rows += [("Returned by the tool", f"{truth:g}"), ("Display rule", f"{rule}, which gives {expect}"), ("Shown in the answer", shown)]
+            glyph, colour = ("\u2713", "#16a34a") if check.status == "verified" else ("\u26a0", "#d97706")
+            verdict = "Verified: the two are equal" if check.status == "verified" else "Not verified: the two differ"
+        tip = (f'<span class="pcn-tip" role="tooltip"><span class="pcn-tip-head" style="color:{colour}">{glyph} {escape(verdict)}</span>'
+               + "".join(f'<span class="pcn-row"><span class="pcn-k">{escape(k)}</span><span class="pcn-v">{escape(v)}</span></span>' for k, v in rows) + "</span>")
+        spans.append(f'<span class="pcn-mark" tabindex="0" style="border-bottom:2px dotted {colour}">{escape(shown)}<b style="color:{colour};margin-left:2px">{glyph}</b>{tip}</span>')
         out.append(spans[-1])
         pos = m.end()
     out.append(escape(answer[pos:]))
@@ -711,13 +717,35 @@ def chat_html(question: str, answer: str, observations: dict[str, float], result
         if raw
         else ""
     )
+    card_id = f"pcn-chat-{next(_CHAT_IDS)}"
+    style = (
+        "<style>"
+        ".pcn-mark{position:relative;cursor:help;white-space:nowrap}"
+        ".pcn-mark:focus{outline:2px solid #2f5f9e;outline-offset:2px}"
+        ".pcn-tip{display:none;position:absolute;left:0;top:calc(100% + 6px);z-index:20;width:330px;max-width:80vw;white-space:normal;"
+        "background:#ffffff;color:#16315a;border:1px solid #d5dbe5;border-radius:10px;box-shadow:0 8px 24px rgba(22,49,90,.16);padding:10px 12px;"
+        "font:12.5px/1.45 Helvetica,Arial,sans-serif;text-align:left}"
+        ".pcn-mark:hover .pcn-tip,.pcn-mark:focus .pcn-tip,.pcn-mark:focus-within .pcn-tip{display:block}"
+        ".pcn-tip-head{display:block;font-weight:700;font-size:13px;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid #eef1f6}"
+        ".pcn-row{display:grid;grid-template-columns:118px 1fr;gap:8px;padding:2px 0}"
+        ".pcn-detail .pcn-tip-head{display:block;font-weight:700;font-size:13px;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid #eef1f6}"
+        ".pcn-k{color:#6b7280}"
+        ".pcn-v{font-family:Menlo,Consolas,monospace;font-size:12px;overflow-wrap:anywhere}"
+        "</style>"
+    )
     return (
-        '<div class="tex2jax_ignore" style="background:#ffffff;border:1px solid #e1e6ee;border-radius:10px;padding:10px 14px">'
+        style
+        + f'<div id="{card_id}" class="tex2jax_ignore" style="background:#ffffff;border:1px solid #e1e6ee;border-radius:10px;padding:10px 14px">'
         f'<div style="{bubble};background:#e8eefb;margin-left:auto">{escape(question)}</div>'
         f'<div style="{bubble};background:#f3f4f6">{"".join(out)}</div>'
         '<div style="font:12.5px Helvetica,Arial,sans-serif;color:#5b6b85;margin-top:6px">'
-        '<b style="color:#16a34a">✓</b> verified · <b style="color:#d97706">⚠</b> does not match its record · no mark: no label. Hover a mark to see why.</div>'
+        '<b style="color:#16a34a">✓</b> verified · <b style="color:#d97706">⚠</b> does not match its record · no mark: no label. Hover or focus a mark to see the check.</div>'
+        f'<div class="pcn-detail" style="margin-top:8px;padding:10px 12px;border:1px dashed #d5dbe5;border-radius:10px;font:12.5px/1.45 Helvetica,Arial,sans-serif;color:#6b7280">'
+        'The check behind a mark appears here when the mark is hovered or focused.</div>'
         f"{fold}</div>"
+        f"<script>(function(){{var card=document.getElementById('{card_id}');if(!card)return;var panel=card.querySelector('.pcn-detail');"
+        "card.querySelectorAll('.pcn-mark').forEach(function(m){var tip=m.querySelector('.pcn-tip');function show(){panel.innerHTML=tip.innerHTML;panel.style.color='#16315a';}"
+        "m.addEventListener('mouseenter',show);m.addEventListener('focus',show);});})();</script>"
     )
 
 
