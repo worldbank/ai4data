@@ -229,7 +229,7 @@ w.show(w.MAIN_QUESTION, role="user")
     md("""
 @@EXPLAINER:prompt@@
 
-*The animation loops. Its text comes from this notebook: the instructions are from the cell above, the context and the answer are from section 3, and the question is the worked example. Section 6 shows the same three parts as the model received them.*
+*The animation's text is this notebook's: the instructions from the cell above, the context and the answer from section 3, and the question from the worked example.*
 """),
     md(id="section-2", text="""
 ## 2. The model without context
@@ -284,7 +284,7 @@ answer = w.answer(chain, {"instructions": INSTRUCTIONS_GROUNDED, "context": cont
     md("""
 @@EXPLAINER:before_after@@
 
-*The two answers, shortened. They are the recorded outputs of sections 2 and 3.*
+*Shortened excerpts of the recorded answers of sections 2 and 3.*
 """),
     md("""
 Every figure now carries a citation to a brief, the comparison is specific, and the model notes two statements in the briefs that it could not verify from the years listed. The application chose the four briefs and put them in the prompt. The model wrote from that text. For the rest of the session, the application decides what evidence the model sees, and the quality of the answer follows from that decision.
@@ -336,7 +336,7 @@ A model reads a limited amount of text per call, called its context window and m
 
 @@EXPLAINER:desk@@
 
-*The token count is the one printed in section 3.*
+*The figure of about 1,024 tokens in the diagram is the size that section 3 printed for the four briefs.*
 """),
     md("""
 ## Key points
