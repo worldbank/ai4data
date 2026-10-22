@@ -359,8 +359,8 @@ def before_after_svg():
                            f'<text x="{x0 + 72 + 130 * i}" y="276" text-anchor="middle" font-size="11.5" font-weight="700" fill="{c}">{escape(t)}</text>' for i, (t, c) in enumerate(tags)))
         return "".join(out)
     p.append(panel(24, "Without context", "#9a3a2f", ["question"],
-                   wrap_lines("“Kenya is one of East Africa's most connected economies. Internet penetration is often reported above 80 percent of the population when measured by subscriptions…”", 66),
-                   [("no source", "#9a3a2f"), ("no date", "#9a3a2f"), ("blends measures", "#9a3a2f")]))
+                   wrap_lines("“I can't access live databases, so the figures below come from my training data. They are approximate and may be outdated… Internet users: roughly 40% (Kenya)…”", 66),
+                   [("no citation", "#9a3a2f"), ("rounded ranges", "#9a3a2f"), ("two figures off", "#9a3a2f")]))
     p.append(panel(524, "With the four country briefs", CTX, ["question", "briefs as context"],
                    wrap_lines("“In Kenya, the share of individuals using the internet rose from 7.2 percent of the population in 2010 to 35.0 percent in 2024 [kenya-digital]…”", 66),
                    [("cites its source", CTX), ("dated", CTX), ("one measure", CTX)]))

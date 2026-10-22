@@ -115,21 +115,21 @@ def code(text: str):
 
 CLAIMS_CELL = '''
 def value(ind, country):
-    return w.latest(w.indicator_lookup(ind, country, start=2023))["value"]
+    o = w.latest(w.indicator_lookup(ind, country, start=2023))
+    return o["value"], o["year"]
 
 
-def growth(country):
-    return [o["value"] for o in w.indicator_lookup("NY.GDP.MKTP.KD.ZG", country, start=2015)["observations"]]
+def growth(country, year):
+    return next(o["value"] for o in w.indicator_lookup("NY.GDP.MKTP.KD.ZG", country, start=year)["observations"] if o["year"] == year)
 
 
 rows = [  # (claim, what the model said, what the data says, verdict)
-    ("Kenya · internet use", "“above 80 percent… when measured by subscriptions”",
-     f"{value('IT.NET.USER.ZS', 'Kenya'):.1f}% of people online; {value('IT.CEL.SETS.P2', 'Kenya'):.1f} mobile subscriptions per 100", "blends two measures"),
-    ("Kenya · GDP per capita", "“roughly 2,000 US dollars”", f"{value('NY.GDP.PCAP.CD', 'Kenya'):,.0f} US dollars", "close"),
-    ("Kenya · growth", "“around 5 percent a year over the past decade”", f"{sum(growth('Kenya')) / len(growth('Kenya')):.1f} percent a year, 2015 to 2024", "close"),
-    ("Rwanda · internet use", "“around 30 percent”", f"{value('IT.NET.USER.ZS', 'Rwanda'):.1f}% of people online", "close"),
-    ("Rwanda · GDP per capita", "“close to 1,000 US dollars”", f"{value('NY.GDP.PCAP.CD', 'Rwanda'):,.0f} US dollars", "close"),
-    ("Rwanda · growth", "“frequently above 7 percent”", f"above 7 percent in {sum(g > 7 for g in growth('Rwanda'))} of {len(growth('Rwanda'))} years, 2015 to 2024", "close"),
+    ("Kenya · internet use", "“roughly 40%” of the population", "{:.1f}% of people online in {}".format(*value("IT.NET.USER.ZS", "Kenya")), "above the data"),
+    ("Rwanda · internet use", "“roughly 30–40% (estimates vary widely)”", "{:.1f}% of people online in {}".format(*value("IT.NET.USER.ZS", "Rwanda")), "close"),
+    ("Kenya · GDP per capita", "“~$2,000–2,200”", "{:,.0f} US dollars in {}".format(*value("NY.GDP.PCAP.CD", "Kenya")), "close"),
+    ("Rwanda · GDP per capita", "“~$950–1,050”", "{:,.0f} US dollars in {}".format(*value("NY.GDP.PCAP.CD", "Rwanda")), "close"),
+    ("Kenya · GDP growth", "“~5% (2023), ~4–5% (2024)”", f"{growth('Kenya', 2023):.1f} percent in 2023, {growth('Kenya', 2024):.1f} percent in 2024", "close"),
+    ("Rwanda · GDP growth", "“~8% (2023), ~9–10% (2024)”", f"{growth('Rwanda', 2023):.1f} percent in 2023, {growth('Rwanda', 2024):.1f} percent in 2024", "2024 above the data"),
 ]
 w.show_claim_check(rows)
 '''
@@ -160,7 +160,7 @@ The whole session works on one research question, so that every method can be ju
 ## Contents
 
 1. [Section 1](#scrollTo=section-1) defines the prompt and its three parts.
-2. [Section 2](#scrollTo=section-2) sends the question to the model with no evidence. The answer reads well, but it names no source, so none of its figures can be checked.
+2. [Section 2](#scrollTo=section-2) sends the question to the model with no evidence. The answer is well organized and carefully hedged, but no figure is tied to a source or a year, so none of them can be checked.
 3. [Section 3](#scrollTo=section-3) supplies four country briefs as context. The answer becomes specific and cites each figure.
 4. [Section 4](#scrollTo=section-4) asks a question that the briefs cannot answer and shows how an instruction makes the model say so.
 5. [Section 5](#scrollTo=section-5) asks a question with two meanings under two sets of instructions. With the second set, the model asks which meaning is intended before it answers.
@@ -236,7 +236,7 @@ w.show_table(["Indicator", "Country", "2023", "2024"], rows, source="Source: Wor
 '''),
     code(CLAIMS_CELL),
     md("""
-Five of the six claims are close to the official figures, which is why the answer reads as reliable. The sixth sentence blends two measures. "Above 80 percent" fits mobile subscriptions, which stood at 126.5 per 100 people in 2024, and does not fit the share of people online, which was 35.0 percent. Nothing in the answer says which measure is meant, and no claim names a source or a year. A reader therefore has no way to separate the five sound figures from the blended one. The model hedges its figures, and hedging is the correct behaviour for a model that has no evidence in front of it. A reader who needs a number to check, however, is left with nothing to check.
+The answer is careful. It says that its figures come from training data, warns that they are approximate, distinguishes subscriptions from users, and ends with a reading list. Four of the six claims in the table land close to the official figures. Two do not: the share of Kenyans online is given as roughly 40 percent against 35.0 percent in 2024, and Rwanda's growth in 2024 is given as 9 to 10 percent against 7.2 percent. The reader has no way to tell these two from the other four. Every figure is a rounded range, no figure is tied to a year, and the sources at the end are institutions to consult, so no figure can be traced to a record. The hedging is correct behaviour for a model that has no evidence in front of it, and it leaves a reader who needs a citable number with the whole research task still to do.
 
 Different instructions would change the tone and the length of this answer, but the figures would still come from training, because the model has no other source.
 """),
@@ -317,7 +317,7 @@ The application therefore has to select, for each question, the small part of th
 ## Key points
 
 - A prompt has three parts: the instructions, the context, and the question. They are kept in separate slots because a different person changes each one.
-- Without context, the model answers from its training. Most of its figures were close to the official ones, one sentence blended two measures, and no figure named a source, so a reader could not tell which figures to trust.
+- Without context, the model answers from its training. The answer was well organized and hedged, four of its six figures were close to the official ones, two were off, and no figure was tied to a source or a year, so a reader could not tell which figures to trust.
 - With the four briefs as context, the answer became specific and cited each figure. The application produced that improvement by choosing the evidence, and the model wrote from what it was given.
 - Instructions shape the model's behaviour. They can require citations, make the model say when information is missing, and make it ask when a question has more than one meaning. They cannot supply data that the model lacks.
 - A whole collection cannot be supplied as context. The context window has a limit, the cost grows with every token, and the relevant passages get lost among the rest. The next notebooks build the selection step.
