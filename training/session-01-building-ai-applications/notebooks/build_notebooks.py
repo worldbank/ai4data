@@ -145,27 +145,27 @@ NB01 = [
 
 ## Objective
 
-This notebook shows what a language model does with a research question when it receives nothing but the question, and what changes when the application gives it instructions and evidence. The purpose is to establish the first two components of an application, the instructions and the context, and to explain why both belong to the application.
+A language model writes from two sources: the text in its prompt and what it learned in training. This notebook shows the difference. The same research question is asked with nothing but the question, then with evidence placed in the prompt. The two answers establish the first two components of an application: the instructions, which set the model's behaviour, and the context, which supplies the evidence. The application writes both, and the model reads them.
 
 ## The application after this notebook
 
 @@DIAGRAM:prompt@@
 
-The prompt is the only component that this notebook builds. The question and the context go into the prompt, the prompt goes to the model, and the model produces the answer. Each later notebook adds one component around this core: a document store, a retrieval step, data tools, an agent loop, and a verifier.
+The prompt is the only component this notebook builds. Later notebooks add the document store, retrieval, data tools, the agent loop, and the verifier around it.
 
-The whole session works on one research question, so that every method can be judged on the same case:
+The whole session uses one research question, so that each method is judged on the same case:
 
 > How have internet access and economic development evolved in Rwanda and Kenya? Compare the recent available data, summarize the main patterns, and cite the sources.
 
 ## Contents
 
-1. [Section 1](#scrollTo=section-1) defines the prompt and its three parts.
-2. [Section 2](#scrollTo=section-2) sends the question to the model with no evidence. The answer is well organized and carefully hedged, but its figures are rounded ranges and none is tied to a source record, so none of them can be checked.
-3. [Section 3](#scrollTo=section-3) supplies four country briefs as context. The answer becomes specific and cites each figure.
-4. [Section 4](#scrollTo=section-4) asks a question that the brief cannot answer and shows how an instruction makes the model say so.
-5. [Section 5](#scrollTo=section-5) asks a question with two meanings under two sets of instructions. With the second set, the model asks which meaning is intended before it answers.
-6. [Section 6](#scrollTo=section-6) prints the messages exactly as the model received them.
-7. [Section 7](#scrollTo=section-7) measures what the context cost in tokens and explains why a whole document collection cannot be supplied in the same way.
+1. [Section 1](#scrollTo=section-1) defines the three parts of a prompt and who writes each.
+2. [Section 2](#scrollTo=section-2) asks the question with no evidence. Four of the six figures checked are close to the official values, two are off, and none can be traced to a source.
+3. [Section 3](#scrollTo=section-3) places four country briefs in the prompt. Every figure now carries a citation.
+4. [Section 4](#scrollTo=section-4) asks for a year the brief does not cover. The model says so and gives the closest year.
+5. [Section 5](#scrollTo=section-5) asks an ambiguous question. With one added instruction, the model asks which meaning is intended.
+6. [Section 6](#scrollTo=section-6) prints the messages as the model received them.
+7. [Section 7](#scrollTo=section-7) counts the tokens the context cost and explains why a whole collection cannot be supplied this way.
 
 ## How to run it
 
@@ -179,13 +179,13 @@ The next cell installs the session's tools and loads its helper module. The firs
     md(id="section-1", text="""
 ## 1. The three parts of a prompt
 
-Every call to the model sends one prompt, and the prompt is assembled from three parts.
+A call to a chat model sends a list of messages. The first is the system message, which the model treats as standing instructions for the whole exchange. The others are user messages. An application composes three parts into these messages:
 
-- **Instructions** are the system message. They tell the model how to behave: what its role is, how it should cite evidence, and what it should do when the evidence does not contain the answer. The application's builders write them.
-- **Context** is the evidence that the application supplies with the question, such as the documents or the data records that the model should answer from. The application selects it for each question.
-- **The question** is the text that the user types.
+- **Instructions**: how the model should behave, written by the application's builders. Here they say to answer from the supplied context, to cite the document after each figure, and to say when something is missing.
+- **Context**: the evidence for this question, selected by the application. Here it is documents; later it is passages and data records.
+- **Question**: the user's text.
 
-The three parts are kept in separate slots because a different person changes each of them for a different reason. The builders revise the instructions when the behaviour needs to change. The application fills the context for every question. The user supplies the question. LangChain's `ChatPromptTemplate` holds the three slots, and the expression `prompt | model` is the whole application at this stage.
+The parts are kept in separate slots because a different person changes each one, at a different time. LangChain's `ChatPromptTemplate` holds the slots, and `prompt | model` is the whole application at this stage.
 
 @@EXPLAINER:prompt@@
 
@@ -214,7 +214,7 @@ w.show(w.MAIN_QUESTION, role="user")
     md(id="section-2", text="""
 ## 2. The model without context
 
-This section establishes the baseline. The cell sends the question with the basic instructions and no evidence, so the model can only answer from what it absorbed during training.
+Without context, the model answers from training data: text it read before its training ended, compressed into its parameters. It holds no records, only patterns of text, so its figures are reconstructions. The cell sends the question with the basic instructions and no context.
 """),
     code('''
 w.use("nb01_zero_context")
@@ -222,7 +222,7 @@ answer = chain.invoke({"instructions": INSTRUCTIONS_BASIC, "context": "(none)", 
 w.show(answer)
 '''),
     md("""
-The answer cannot be judged without reference figures. They come from the World Bank's World Development Indicators, which the model did not see. The next two cells put the model's claims beside those figures. The first cell prints the official values for Kenya and Rwanda: the share of people who use the internet, and GDP per capita. The second cell takes six claims from the answer and sets each one beside the matching official figure.
+The answer cannot be judged without reference values. The next cell prints the official values from the World Development Indicators, and the cell after it sets six claims from the answer beside them.
 """),
     code('''
 rows = []
@@ -236,14 +236,12 @@ w.show_table(["Indicator", "Country", "2023", "2024"], rows, source="Source: Wor
 '''),
     code(CLAIMS_CELL),
     md("""
-The answer is careful. It says that its figures come from training data, warns that they are approximate, distinguishes subscriptions from users, and ends with a reading list. Four of the six claims in the table land close to the official figures. Two do not: the share of Kenyans online is given as roughly 40 percent against 35.0 percent in 2024, and Rwanda's growth in 2024 is given as 9 to 10 percent against 7.2 percent. The reader has no way to tell these two from the other four. Every figure is a rounded range, most carry no year, and the sources at the end are institutions to consult, so no figure can be traced to a record. The hedging is correct behaviour for a model that has no evidence in front of it, and it leaves a reader who needs a citable number with the whole research task still to do.
-
-Different instructions would change the tone and the length of this answer, but the figures would still come from training, because the model has no other source.
+Four of the six claims are close to the official values. Two are off: Kenya's internet share, given as roughly 40 percent against 35.0 in 2024, and Rwanda's 2024 growth, given as 9 to 10 percent against 7.2. The answer is hedged, structured, and ends with a reading list, and none of that helps a reader find the two wrong figures. Every figure is a rounded range, most carry no year, and the sources are institutions to consult, so no figure can be traced to a record. A different model or different instructions would change the wording. The figures would still be reconstructions, because the prompt contains no data.
 """),
     md(id="section-3", text="""
 ## 3. The same question with context
 
-This section supplies evidence. The four country briefs from the session's document collection go into the context slot, and the instructions change to the grounded set, which requires a citation after each figure and allows the model to say when something is missing. The cell prints the size of the context before it calls the model.
+Context is text that the application places in the prompt for the model to read. Under the grounded instructions, the model answers only from it and cites it. The cell places the four country briefs in the context slot, prints their size, and asks the question again.
 """),
     code('''
 docs = {d.metadata["id"]: d for d in w.load_documents()}
@@ -260,12 +258,12 @@ w.show(answer)
 *The two answers, shortened. They are the recorded outputs of sections 2 and 3.*
 """),
     md("""
-The figures now come from the briefs, each figure carries a citation, and the comparison between the two countries is specific. The model's part in this improvement is small. The application chose the four briefs and placed them in the prompt, and the model wrote from that text. This division of labour holds for the rest of the session: the application decides what evidence the model sees, and the quality of the answer follows from that choice.
+Every figure now carries a citation to a brief, the comparison is specific, and the model notes two statements in the briefs that it could not verify from the years listed. The application chose the four briefs and put them in the prompt. The model wrote from that text. For the rest of the session, the application decides what evidence the model sees, and the quality of the answer follows from that decision.
 """),
     md(id="section-4", text="""
 ## 4. A question the evidence cannot answer
 
-An application also has to behave well when the evidence does not contain the answer. The cell asks for Kenya's internet use in 2025, and the brief only goes up to 2024. The grounded instructions tell the model to say that the information is missing and to give the closest available figure, so the answer should name 2024 and say that 2025 is absent from the evidence.
+An instruction sets the model's behaviour when the evidence falls short. The grounded instructions say: if the context does not contain what is needed, say so and give the closest available information. The cell asks for Kenya's internet use in 2025, and the brief ends at 2024.
 """),
     code('''
 w.use("nb01_missing_info")
@@ -273,10 +271,13 @@ answer = chain.invoke({"instructions": INSTRUCTIONS_GROUNDED, "context": docs["k
                        "question": "What share of Kenya's population used the internet in 2025?"})
 w.show(answer)
 '''),
+    md("""
+The model says that 2025 is absent, names 2024 as the latest year, and gives 35.0 percent with a citation. The behaviour came from one sentence in the instructions.
+"""),
     md(id="section-5", text="""
 ## 5. An ambiguous question under two sets of instructions
 
-"How connected is Kenya?" can mean internet use, mobile subscriptions, broadband coverage, or something else. The cell asks it twice: once with the basic instructions, and once with instructions that tell the model to list the possible readings and ask which one is meant.
+"How connected is Kenya?" has at least three readings: internet use, mobile subscriptions, or broadband coverage. A model picks a reading unless it is told to ask. The cell asks the question twice: with the basic instructions, and with an added instruction to list the readings and ask which one is meant.
 """),
     code('''
 print("Without an instruction to clarify:\\n")
@@ -287,12 +288,12 @@ w.use("nb01_ambiguous_with_instruction")
 w.show(chain.invoke({"instructions": INSTRUCTIONS_CLARIFY, "context": docs["kenya-digital"].page_content, "question": "How connected is Kenya?"}))
 '''),
     md("""
-With the basic instructions, the model does not ask. It decides for itself what "connected" means, answers at length for two measures at once, and adds an analysis of growth that the question did not call for. With the clarifying instructions, the model names three readings and asks which one is meant before it answers. For a research application, the second behaviour is the one to specify. An answer to the reading the model chose looks as confident on the page as an answer to the reading the user meant, so the reader cannot detect the substitution. Asking costs one exchange and removes that risk.
+With the basic instructions, the model answers at length, covers two readings, and adds a growth analysis the question did not ask for. With the clarifying instruction, it names three readings and asks. An answer to the model's own reading looks as confident as an answer to the user's reading, so the user cannot tell them apart. For a research application, asking costs one exchange and removes that risk.
 """),
     md(id="section-6", text="""
 ## 6. The prompt as sent to the model
 
-The cell prints the messages that the prompt produced for the last call, with each part in its colour from section 1. The instructions arrive as the system message. The context and the question arrive together in the human message.
+The cell prints the messages of the last call. The instructions arrive as the system message. The context and the question arrive together in one user message, in the colours of section 1. This is everything the model sees.
 """),
     code('''
 messages = prompt.format_messages(instructions=INSTRUCTIONS_CLARIFY, context=docs["kenya-digital"].page_content, question="How connected is Kenya?")
@@ -301,13 +302,7 @@ w.show_prompt(messages)
     md(id="section-7", text="""
 ## 7. The cost of context
 
-Section 3 reported the size of its context: four short briefs took about a thousand tokens. The obvious extension is to supply every document an organization holds in the same way, so that the model always has everything in front of it. That approach fails for three reasons.
-
-- **The collection does not fit.** A model reads a limited amount of text in one call, called its context window. A collection of thousands of documents is far larger than any window.
-- **The cost grows with every page.** The price of a call grows with the number of tokens, and the whole collection would be sent again with every question.
-- **The relevant text gets lost.** The passages that answer one question are a small part of the collection, and the rest surrounds them as noise.
-
-The application therefore has to select, for each question, the small part of the collection that the model should read. Notebooks 02 and 03 build that selection: the first prepares the collection, and the second searches it.
+A model reads a limited amount of text per call, called its context window and measured in tokens. A token is a word or a part of a word, about four characters of English on average. The four briefs took about a thousand tokens. A collection of thousands of documents exceeds any window, the price of a call grows with its tokens, and the passages that answer one question are a small part of the whole. An application therefore selects, for each question, the part of the collection that the model should read. Notebooks 02 and 03 build that selection.
 
 @@EXPLAINER:desk@@
 
@@ -316,11 +311,11 @@ The application therefore has to select, for each question, the small part of th
     md("""
 ## Key points
 
-- A prompt has three parts: the instructions, the context, and the question. They are kept in separate slots because a different person changes each one.
-- Without context, the model answers from its training. The answer was well organized and hedged, four of its six figures were close to the official ones, two were off, and no figure was tied to a source record, so a reader could not tell which figures to trust.
-- With the four briefs as context, the answer became specific and cited each figure. The application produced that improvement by choosing the evidence, and the model wrote from what it was given.
-- Instructions shape the model's behaviour. They can require citations, make the model say when information is missing, and make it ask when a question has more than one meaning. They cannot supply data that the model lacks.
-- A whole collection cannot be supplied as context. The context window has a limit, the cost grows with every token, and the relevant passages get lost among the rest. The next notebooks build the selection step.
+- A prompt has three parts: instructions, context, and the question. A different person writes each, so they are kept in separate slots.
+- Without context, the figures are reconstructions from training data. Four of six were close, two were off, and none could be traced to a record.
+- With the briefs as context, every figure cited a brief. The application chose the evidence, and the model wrote from it.
+- Instructions set behaviour: cite, say when information is missing, ask when a question is ambiguous. They cannot supply data.
+- The context window limits what one call can read, so the application has to select the evidence. The next two notebooks build the selection.
 
 ## Exercise
 
@@ -548,24 +543,24 @@ NB03 = [
 
 ## Objective
 
-Notebook 02 prepared the collection: it split the eight documents into section chunks, kept each document's date as metadata, and placed the chunks in a vector store. It ended on an open problem. A search for the latest figures put the 2016 regional summary first, and nothing used the date yet. This notebook uses the store to answer questions. For each question, the application searches the store for the chunks closest to it, places those chunks in the prompt as context, and the model writes the answer from them. A chunk that the search returns and the model reads is called a passage.
+A language model answers from the text in its prompt. Notebook 01 placed four briefs in the prompt by hand. A real collection holds thousands of documents and a prompt holds a few pages, so an application has to select the pages for each question. Notebook 02 prepared the collection for that selection: it split the eight documents into 21 section chunks, kept each document's date as metadata, and stored a vector for each chunk. This notebook performs the selection and the answer. The pattern is retrieval-augmented generation (RAG): retrieve the chunks closest to the question, add them to the prompt, and generate the answer from them. A retrieved chunk is called a passage.
 
-The pattern is called retrieval-augmented generation, or RAG. Retrieval is the search of the store, augmentation is the addition of the search results to the prompt, and generation is the model writing the answer. Notebook 02 built the first half of the pattern, the prepared collection. This notebook builds the second half, then shows three ways the pattern fails and the fix for each.
+The notebook then shows three ways retrieval fails: a question with two parts, an outdated passage that outranks current ones, and a question the collection cannot answer. Each failure has a fix on the retrieval side, and the last section tests retrieval without the model.
 
 ## The application after this notebook
 
 @@DIAGRAM:retrieval@@
 
-Retrieval and the returned passages are the parts this notebook adds, and the model's step becomes generation. Together they form the RAG pattern.
+Retrieval selects the passages. The model's step is now called generation, because the model writes from what retrieval supplied.
 
 ## Contents
 
-1. [Section 1](#scrollTo=section-1) answers the main question from the store. The answer cites its passages and says that half of the question cannot be answered from them.
-2. [Section 2](#scrollTo=section-2) shows the ranking behind that answer. The economy chunks sit below the cut-off, so the model never saw them. Searching once for each part of the question brings them back.
-3. [Section 3](#scrollTo=section-3) asks for the latest figures and shows the 2016 summary outranking the 2026 briefs. The model reports a 2015 value because that is what it was given.
-4. [Section 4](#scrollTo=section-4) tries two fixes for outdated evidence. Rewording the question does not help, and a filter on the date kept in notebook 02 removes the summary.
-5. [Section 5](#scrollTo=section-5) asks two questions the collection cannot answer and shows that the search returns passages anyway.
-6. [Section 6](#scrollTo=section-6) tests the search on the eight evaluation questions without calling the model.
+1. [Section 1](#scrollTo=section-1) answers the main question from four retrieved passages. The answer covers internet use only.
+2. [Section 2](#scrollTo=section-2) shows the ranking behind that answer. The economy chunks fall below the cut-off, and one search per half of the question brings them back.
+3. [Section 3](#scrollTo=section-3) asks for the latest figures. The 2016 summary outranks the 2026 briefs, and the answer reports a 2015 value.
+4. [Section 4](#scrollTo=section-4) removes the summary with a filter on the date. Rewording the question does not remove it.
+5. [Section 5](#scrollTo=section-5) asks a question the collection cannot answer. The search returns passages anyway.
+6. [Section 6](#scrollTo=section-6) tests retrieval alone on the eight evaluation questions.
 
 ## How to run it
 
@@ -576,7 +571,7 @@ The next cell installs the session's tools and loads its helper module. The firs
 """),
     code(SETUP),
     md("""
-The next cell builds the same store as notebook 02 in three lines. A Colab notebook starts with an empty session, so the store from notebook 02 is not available here, and the three lines rebuild it from the documents. The cell also sets up the application: the instructions, a prompt with a slot for the passages, and two functions. The first function searches the store and asks the model. The second only searches, and returns the chunks with their scores. The number `k` is how many passages a search returns, and the model reads only those.
+The next cell rebuilds the store of notebook 02, because each Colab notebook starts with an empty session. It also defines the instructions, a prompt with a slot for the passages, and two functions: `make_rag` searches the store and asks the model, and `hits` only searches. `k` is the number of passages a search returns.
 """),
     code('''
 from langchain_core.prompts import ChatPromptTemplate
@@ -606,7 +601,7 @@ def hits(question, k=4, where=None):
     md(id="section-1", text="""
 ## 1. The main question answered from the store
 
-The question is the main one from notebook 01. The cell prints the question, then the four chunks closest to it with their similarity scores, then the model's answer written from those four passages. A score is the cosine similarity between the question and a chunk, and a higher score means a closer match.
+Retrieval scores every chunk by the distance between its vector and the question's vector, and returns the `k` closest. A vector is a list of numbers that summarises what a text is about, computed by the embedding model of notebook 02. The score printed with each passage is the cosine similarity: 1.0 means identical meaning and 0 means unrelated. The cell retrieves four passages for the main question and asks the model to answer from them.
 """),
     code('''
 w.show(w.MAIN_QUESTION, role="user")
@@ -617,12 +612,12 @@ w.use("nb03_rag_main")
 w.show(make_rag(k=4).invoke(w.MAIN_QUESTION))
 '''),
     md("""
-The answer cites a passage after every figure, and it opens by saying what it cannot do: the passages contain no economic indicators, so it covers internet access only. That is the correct behaviour under these instructions, and its figures are right. Half of the question still went unanswered, although the briefs with the GDP figures are in the store. Section 2 shows why they were not returned.
+The answer opens by saying that the passages contain no economic indicators, and it covers internet use with a citation after each figure. The instructions require both behaviours. The GDP figures are in the store, in the two economy briefs, and retrieval did not return them. Section 2 shows why.
 """),
     md(id="section-2", text="""
 ## 2. The ranking behind the answer
 
-The question asks about internet access and economic development together. The search compares the whole question with every chunk and keeps the four closest. The cell ranks the ten closest chunks for the question, colours each one by topic, and draws the cut-off line after the fourth, which is where the model stopped seeing them.
+A similarity search compares meanings. The question's vector lies closer to the internet chunks than to the economy chunks, because most of the question's words concern connectivity. The search ranks by this closeness alone. It cannot reserve places for the second half of a question, because it never identifies the halves. The cell ranks the ten closest chunks, colours each by topic, and marks the cut-off after the fourth.
 """),
     code('''
 topic = {"kenya-digital": "internet", "rwanda-digital": "internet", "regional-2016": "internet", "internet-indicator": "internet",
@@ -633,9 +628,9 @@ ranked = hits(w.MAIN_QUESTION, k=10)
 w.show_ranking([(w.citation(d), score, topic[d.metadata["id"]]) for d, score in ranked], k=4, legend=legend, question=w.MAIN_QUESTION)
 '''),
     md("""
-The four chunks above the line are three internet chunks, one of them the 2016 summary, and the mobile-money note. The first economy chunk is fifth at 0.570, against 0.591 for the fourth, and the chunk with Kenya's GDP per capita is ninth. The search has no notion that the question has two halves. It ranks every chunk by its closeness to the whole question, and the internet half dominates the match. Returning more passages is a poor remedy: Kenya's GDP per capita appears only when nine passages are returned, the coffee note comes along in seventh place, and every passage adds tokens and cost, as notebook 01 showed.
+The four chunks above the line are three internet chunks, including the 2016 summary, and the mobile-money note. The first economy chunk is fifth at 0.570 against 0.591 for fourth place, and Kenya's GDP per capita is ninth. Raising `k` is a poor remedy: the ninth place costs nine passages, the coffee note enters at seventh, and every passage adds tokens.
 
-The fix acts on the search. The question is broken into its two parts, internet use and the economy, each part is searched once, and the passages are merged. Libraries can have a model write the smaller questions; here they are written by hand so that the mechanism is visible. The cell shows the single search and the merged search side by side and marks which of the four figures the question needs each one brings back. The merged search has a cost. Two searches of four chunks each give eight different passages, against four before, and the 2016 summary and the mobile-money note come along with them.
+The fix is one search per half of the question, with the results merged. An application can split the question with a model; here the two halves are written by hand. The cell compares the single search with the merged search and marks which of the four needed figures each returns. The merged search returns eight passages where the single search returned four, and the 2016 summary and the mobile-money note are among them.
 """),
     code('''
 # the question broken into its two parts: one smaller question for each
@@ -666,12 +661,12 @@ w.use("nb03_rag_two_queries")
 w.show((prompt | model).invoke({"context": w.format_context(merged), "question": w.MAIN_QUESTION}))
 '''),
     md("""
-The merged passages contain all four figures, where the single search contained two, and the answer covers both halves of the question with a citation after every figure. The two extra passages were used as well. The model drew on the 2016 summary for its projection and noted that the projection cannot be checked against the supplied data, and it reported that the mobile-money note holds no figures. Section 3 shows what happens when the 2016 summary is the passage an answer depends on.
+The merged passages contain all four figures, and the answer covers both halves with a citation after each figure. The two extra passages did no harm: the model used the 2016 summary for a projection and said the projection could not be checked, and it reported that the mobile-money note holds no figures. Section 3 shows what happens when the 2016 summary is the passage an answer depends on.
 """),
     md(id="section-3", text="""
 ## 3. Outdated evidence in the ranking
 
-Notebook 02 ended with the 2016 summary ranking first for a question about the latest figures. This section shows the effect of that ranking on an answer. The question is "What are the latest available figures for internet use in Kenya and Rwanda?", and the 2016 summary contains the words "latest available figures". The search returns two passages. The cell prints them with their scores, then the answer.
+A vector encodes what a text is about and nothing about when it was written. A 2016 summary that uses the phrase "latest available figures" scores high for a question that uses the same phrase, whatever its date. The cell asks for the latest figures on internet use in Kenya and Rwanda with `k = 2`, prints the two passages with their scores, and shows the answer.
 """),
     code('''
 q = "What are the latest available figures for internet use in Kenya and Rwanda?"
@@ -681,18 +676,16 @@ w.use("nb03_rag_outdated")
 w.show(make_rag(k=2).invoke(q))
 '''),
     md("""
-The 2016 summary ranks first at 0.816 and Rwanda's 2026 brief second at 0.765. Kenya's brief is not among the two, so the model's Kenya figure comes from the summary: 16.6 percent in 2015. The model is careful about it. It says that the summary dates from 2016, that the passages hold no later Kenya figure, and that 16.6 is the most recent value it can report. Rwanda's figure, 31.7 percent in 2024, comes from the brief. The answer is faithful to its passages and still wrong for the reader, who asked for the latest figures while the 2024 value for Kenya sits in the store. The generation step cannot repair this, because the passages were selected before the model saw them. The fix has to act on the search.
+The 2016 summary ranks first at 0.816 and Rwanda's 2026 brief second at 0.765. Kenya's brief is absent, so the model's Kenya figure is the summary's: 16.6 percent in 2015. The model states that the summary dates from 2016 and that 16.6 is the most recent value in its passages. The answer is correct for its passages and wrong for the user, who asked for the latest figures while Kenya's 2024 value sits in the store. Generation cannot repair a selection made before the model saw anything. The fix belongs to retrieval.
 """),
     md(id="section-4", text="""
 ## 4. Three fixes for outdated evidence
 
-Three fixes act on the search side.
-
-1. **A filter on the date.** The search ignores documents dated before 2020. Notebook 02 kept each document's date as metadata for this purpose.
-2. **A reworded question.** The question is rewritten to resemble the expected passage, for example "internet use 2024, percent of population". This often helps, and the cells below show that it does not help here.
+1. **A filter on the date.** The store checks metadata before it scores similarity, so a document dated before 2020 is never ranked. Notebook 02 kept the date for this.
+2. **A reworded question.** Rewriting the question to resemble the expected passage changes the question's vector. The ranking can move either way.
 3. **Sorting by date after the search**, for a store without a filter. It does the same job as the filter and is not shown.
 
-The first cell compares the same search without and with the date filter, and marks which of the two figures the question needs turn up.
+The first cell runs the same search with and without the filter and marks which of the two needed figures each returns.
 """),
     code('''
 since_2020 = lambda d: str(d.metadata.get("date", "")) >= "2020"
@@ -711,7 +704,7 @@ def search(title, tone, where=None):
 w.show_search_comparison(q, [search("No filter", "bad"), search("Date filter: 2020 or later", "good", since_2020)], checks)
 '''),
     md("""
-With the filter, the 2016 summary is gone, Kenya's brief takes its place, and both 2024 figures are present. The next cell shows the model's answer from the filtered passages. The cell after it tries the reworded question without the filter.
+With the filter, Kenya's brief replaces the summary and both 2024 figures are present. The next cell shows the answer from the filtered passages. The cell after it tries the reworded question without the filter.
 """),
     code('''
 w.use("nb03_rag_filtered")
@@ -721,12 +714,12 @@ w.show(make_rag(k=2, where=since_2020).invoke(q))
 w.print_hits(hits("Kenya and Rwanda internet use 2024, percent of population", k=2))
 '''),
     md("""
-The reworded question still puts the 2016 summary first, at 0.871, above Rwanda's brief at 0.833. The summary uses the same vocabulary as the question, so rewording strengthens the match. The date is the only property that separates the summary from the briefs, and the search can use it only because notebook 02 kept it.
+The reworded question puts the summary first at 0.871, above Rwanda's brief at 0.833. The summary shares more vocabulary with the new wording than the brief does, so the rewording strengthened the match. The date is the only property that separates the summary from the briefs, and only metadata carries it.
 """),
     md(id="section-5", text="""
 ## 5. A question outside the collection
 
-A search always returns the closest chunks, even when none of them is close. The cell asks two questions: one the collection can answer, the population of Rwanda, and one it cannot, inflation in Uganda in 2023. Each gets three passages with their scores.
+A similarity search ranks every chunk and returns the top `k`. It has no notion of a chunk being unrelated: the top three for an unanswerable question are the three least unrelated chunks. The cell asks for the population of Rwanda, which the collection holds, and for inflation in Uganda in 2023, which it does not, and prints three passages for each.
 """),
     code('''
 for q2 in ["What is the population of Rwanda?", "What was inflation in Uganda in 2023?"]:
@@ -735,12 +728,12 @@ for q2 in ["What is the population of Rwanda?", "What was inflation in Uganda in
     print()
 '''),
     md("""
-Both questions get three passages. For the population question the right chunk comes first at 0.739. For the inflation question the best score is 0.534, and all three passages are about GDP per capita in Kenya and Rwanda, which say nothing about Uganda. A cut-off score would separate these two cases, and the cut-off has to be set from examples, because it depends on the embedding model in use. The second safeguard is the instruction from notebook 01 that tells the model to say when the passages do not answer the question. Notebook 05 shows that instruction at work. Applications use both.
+The population question returns the right chunk first at 0.739. The inflation question returns three GDP chunks about Kenya and Rwanda, the best at 0.534. The scores separate the two cases, and a cut-off between them would stop the second search from reaching the model. The cut-off depends on the embedding model and has to be set from examples. The second safeguard is the instruction from notebook 01 that tells the model to say when the passages do not answer, which notebook 05 shows in use. An application uses both.
 """),
     md(id="section-6", text="""
 ## 6. A test of the search without the model
 
-The search can be tested before any model is involved, because retrieval is the first half of RAG and the model is the second. For each of the eight evaluation questions, the cell makes two checks: whether the passages include at least one of the expected documents, and how many of the numbers a good answer needs appear in the passages. `K` is the number of passages the search returns.
+Retrieval can be tested alone, because its output is a list of passages that can be checked without reading an answer. The cell runs the eight evaluation questions through the search and makes two checks per question: whether an expected document is among the passages, and how many of the numbers a correct answer needs appear in them. `K` sets the number of passages.
 """),
     code('''
 K = 4   # passages returned by the search: try 2, then 8
@@ -757,16 +750,16 @@ for item in w.load_questions():
 w.show_table(["id", "category", "expected document", "needed numbers"], rows, source=f"The search returns {K} passages per question.")
 '''),
     md("""
-At `K = 4`, every question passes the first check, and the main question q1 fails the second: its passages hold two of the four numbers the answer needs, the two internet figures, which is the problem section 2 found. That is a retrieval problem, and no instruction to the model can fix it. When both checks pass and an answer is still wrong, the fault is in the generation step, the instructions or the model, which notebook 06 measures. Testing the two halves separately shows which one to change.
+At `K = 4` every question has an expected document among its passages, and q1, the main question, has two of its four numbers: the problem of section 2. A missing number here cannot be fixed by any instruction to the model. When both checks pass and the answer is still wrong, the fault lies in generation, which notebook 06 measures. Testing the two halves separately shows which one to change.
 """),
     md("""
 ## Key points
 
-- Retrieval-augmented generation searches the store for the chunks closest to the question, places them in the prompt as passages, and has the model answer from them with a citation after each figure.
-- The search decides what the answer can say. For the main question the economy chunks ranked below the cut-off and never reached the model. Searching once for each part of the question brought them back.
-- A similarity search ranks by meaning and ignores the date. The 2016 summary outranked the 2026 briefs, rewording the question strengthened the match, and a filter on the date kept as metadata removed the summary.
-- A search always returns something, even for a question the collection cannot answer. Two safeguards apply: a cut-off score set from examples, and an instruction that tells the model to say when the passages do not answer.
-- The search can be tested without the model, by checking that the expected documents and the needed numbers are among the passages. A miss there cannot be fixed by changing the instructions.
+- Retrieval scores every chunk by the distance between its vector and the question's, and returns the `k` closest as passages for the prompt.
+- A vector encodes meaning. A question with two parts matches one of them, and one search per part fixes it.
+- A vector encodes nothing about dates. A filter on metadata removes outdated passages; rewording the question does not.
+- A search returns the top `k` even when nothing is related. A cut-off score and an instruction to the model cover that case.
+- Retrieval is tested alone, against expected documents and numbers. A miss there is a retrieval problem, whatever the instructions say.
 
 ## Exercise
 
