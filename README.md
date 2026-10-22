@@ -211,6 +211,10 @@ Each capability is an optional extra.
 | `metadata` | Schema mapping, PDF-to-metadata extraction, and metadata augmentation |
 | `discovery` | NADA catalog access, metadata templates, and PDF helpers |
 | `metadata-reviewer` | The five-agent review pipeline, combined with one provider extra: `openai`, `anthropic`, `azure`, or `ollama` |
+| `data-snapshot-doclayoutyolo` | Figure and table images from PDFs with the default DocLayout-YOLO extractor |
+| `data-snapshot-metadata` | Validated Data Snapshot Metadata Schema v1.4 metadata from snapshot images through OpenRouter or OpenAI |
+
+For the Data Snapshot pipeline, combine `data-snapshot-doclayoutyolo` and `data-snapshot-metadata`. These extras are absent from `ai4data==0.1.0`; until a release includes them, follow the [source installation instructions](src/ai4data/data_snapshot/README.md#installation). In this checkout, `all` includes DocLayout-YOLO and snapshot metadata extraction. TF-ID is installed separately; the [usage guide](src/ai4data/data_snapshot/README.md) describes its dependency requirements and the three commands.
 
 <details>
 <summary>Example: review a metadata record</summary>
@@ -330,7 +334,7 @@ Synthetic tabular and relational data generation is in a separate repository, [R
 
 ```
 ai4data/
-├── src/ai4data/          Python package: anomaly, data_use, discovery, metadata (augmentation, reviewer)
+├── src/ai4data/          Python package: anomaly, data_use, data_snapshot, discovery, metadata (augmentation, reviewer)
 ├── packages/ai4data/     JavaScript packages: @ai4data/core, @ai4data/search
 ├── reference/end_to_end/ Reference implementation with committed sample runs
 ├── cookbook/             Cookbook sources and their scripts

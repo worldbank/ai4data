@@ -26,6 +26,15 @@ Each capability is an optional extra.
 | `metadata` | Schema mapping, PDF-to-metadata extraction, and metadata augmentation |
 | `discovery` | NADA catalog access, metadata templates, and PDF helpers |
 | `metadata-reviewer` | The five-agent metadata review pipeline, combined with one provider extra: `openai`, `anthropic`, `azure`, or `ollama` |
+| `data-snapshot-doclayoutyolo` | Figure and table images from PDFs with the default DocLayout-YOLO extractor |
+| `data-snapshot-metadata` | Validated Schema v1.4 metadata from snapshot images through OpenRouter or OpenAI |
+
+For the Data Snapshot pipeline, combine `data-snapshot-doclayoutyolo` and
+`data-snapshot-metadata`. These extras are absent from `ai4data==0.1.0`; until a
+release includes them, install the checkout as described in the
+[Data Snapshot usage guide](https://github.com/worldbank/ai4data/blob/main/src/ai4data/data_snapshot/README.md).
+In this checkout, `all` includes DocLayout-YOLO and snapshot metadata extraction.
+TF-ID requires a separate environment; the guide lists its installation steps.
 
 ## Examples
 
@@ -53,6 +62,9 @@ issues = job.wait_sync(timeout=300)
 The documentation site describes each module: monitoring of data use,
 anomaly detection and explanation, data discoverability, metadata
 augmentation, and the Metadata Reviewer user manual.
+Data Snapshot documentation currently covers repository installation and usage;
+concepts, methods, worked examples, and user guides for the published site are
+planned in a separate PR.
 
 ## License
 
