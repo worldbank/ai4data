@@ -595,6 +595,77 @@ def claimtag_svg():
     return "".join(p)
 
 
+
+# --------------------------------------------------------------- notebook 06: Proof-Carrying Numbers, animated
+def pcn_svg():
+    """Animated picture: the model tags a figure, the verifier checks it; a wrong figure is flagged; an untagged figure stays unmarked."""
+    W, H, T = 1000, 440, 24.0
+    GREEN, AMBER = "#2f8f5b", "#d9822b"
+    p = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" style="max-width:100%;height:auto" font-family="{SANS}">',
+         f'<defs><marker id="ar" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="{BLUE}"/></marker></defs>',
+         f'<rect width="{W}" height="{H}" rx="12" fill="#ffffff" stroke="#e1e6ee"/>',
+         f'<text x="24" y="34" font-size="17" font-weight="700" fill="{INK}">How Proof-Carrying Numbers checks an answer</text>']
+    # left: what the model wrote (tags included) and what the reader sees (marks)
+    p.append(f'<text x="24" y="66" font-size="12.5" font-weight="700" fill="{GREY}">WHAT THE MODEL WROTE</text>')
+    p.append(f'<text x="24" y="214" font-size="12.5" font-weight="700" fill="{GREY}">WHAT THE READER SEES</text>')
+    raw = [
+        (0.4, ['Internet use reached <claim id="IT.NET.USER.ZS:KEN:2024"', 'policy="rounded" decimals="1">35.0</claim> percent in Kenya.']),
+        (12.4, ['In Rwanda it reached <claim id="IT.NET.USER.ZS:RWA:2024"', 'policy="rounded" decimals="1">35.7</claim> percent.']),
+        (18.4, ['About 70 percent of adults use mobile money.']),
+    ]
+    y = 86
+    for start, lines in raw:
+        block = "".join(f'<text x="24" y="{y + 15 * i}" font-size="11.5" font-family="{MONO}" fill="{INK}" xml:space="preserve">{escape(l)}</text>' for i, l in enumerate(lines))
+        p.append(group(block, start, T, T, 0))
+        y += 15 * len(lines) + 12
+    reader = [  # (appears, mark appears, sentence, number, mark glyph, mark colour, note)
+        (0.4, 10.0, "Internet use reached ", "35.0", " percent in Kenya.", "✓", GREEN, "verified"),
+        (12.4, 16.8, "In Rwanda it reached ", "35.7", " percent.", "⚠", AMBER, "flagged"),
+        (18.4, 21.6, "About ", "70", " percent of adults use mobile money.", "", GREY, "unmarked"),
+    ]
+    y = 236
+    for start, when, a, num, b, glyph, col, note in reader:
+        plain = f'<text x="24" y="{y}" font-size="13.5" fill="{INK}">{escape(a)}<tspan font-weight="700">{num}</tspan>{escape(b)}</text>'
+        marked = (f'<text x="24" y="{y}" font-size="13.5" fill="{INK}">{escape(a)}<tspan font-weight="700" style="text-decoration:underline dotted {col}">{num}</tspan>'
+                  f'<tspan font-weight="700" fill="{col}"> {glyph}</tspan>{escape(b)}</text>'
+                  f'<text x="500" y="{y}" text-anchor="end" font-size="11.5" font-weight="700" fill="{col}">{note}</text>')
+        p.append(group(plain, start, when, T, 0))
+        p.append(group(marked, when, T, T, 0))
+        y += 26
+    # right: the verifier's three steps, filled per scene
+    bx, bw = 556, 420
+    heads = [(84, "The tag names a record"), (160, "The record holds"), (236, "The rule, then the comparison")]
+    for by, label in heads:
+        p.append(f'<rect x="{bx}" y="{by}" width="{bw}" height="60" rx="10" fill="{PALE}" stroke="{BLUE}" stroke-width="1.6"/>'
+                 f'<text x="{bx + 14}" y="{by + 20}" font-size="12" fill="{GREY}">{label}</text>')
+        if by != 236:
+            p.append(f'<line x1="{bx + bw / 2}" y1="{by + 60}" x2="{bx + bw / 2}" y2="{by + 74}" stroke="{BLUE}" stroke-width="2" marker-end="url(#ar)"/>')
+    p.append(f'<text x="{bx}" y="66" font-size="12.5" font-weight="700" fill="{GREY}">WHAT THE VERIFIER DOES</text>')
+    scenes = [  # (s, e, tag line, record line, rule line, verdict, colour)
+        (6.4, 12.0, "IT.NET.USER.ZS:KEN:2024", "34.9762", "rounded to 1 decimal: 35.0 = 35.0", "verified ✓", GREEN),
+        (13.2, 18.0, "IT.NET.USER.ZS:RWA:2024", "31.7033", "rounded to 1 decimal: 31.7 ≠ 35.7", "flagged ⚠", AMBER),
+        (19.2, 24.0, "no tag around 70", "nothing to fetch", "no rule to apply, no comparison", "unmarked", GREY),
+    ]
+    for s0, e0, tag, rec, rule, verdict, col in scenes:
+        steps = [(84, tag, MONO), (160, rec, MONO), (236, rule, SANS)]
+        for i, (by, text, font) in enumerate(steps):
+            el = f'<text x="{bx + 14}" y="{by + 44}" font-size="15" font-weight="700" font-family="{font}" fill="{INK}">{escape(text)}</text>'
+            p.append(group(el, s0 + 1.2 * i, e0, T, 0))
+        res = (f'<rect x="{bx}" y="312" width="{bw}" height="46" rx="10" fill="{col}" fill-opacity="0.14" stroke="{col}" stroke-width="1.8"/>'
+               f'<text x="{bx + bw / 2}" y="{342}" text-anchor="middle" font-size="18" font-weight="700" fill="{col}">{verdict}</text>')
+        p.append(group(res, s0 + 3.6, e0, T, 0))
+    caps = [
+        ("1  ·  The model writes each figure from the data tool inside a claim tag: the record's id and the comparison rule", 0, 6.0),
+        ("2  ·  The verifier fetches the record the tag names, applies the rule, and compares the two", 6.0, 12.0),
+        ("3  ·  A tagged figure that differs from its record is flagged", 12.0, 18.0),
+        ("4  ·  A figure without a tag is unmarked: nothing to check it against, and the reader sees that it was not checked", 18.0, 24.0),
+    ]
+    for label, s0, e0 in caps:
+        p.append(group(f'<text x="24" y="{H - 24}" font-size="14.5" font-weight="700" fill="{BLUE}">{escape(label)}</text>', s0, e0, T, 0))
+    p.append("</svg>")
+    return "".join(p)
+
+
 ALT = {
     "chunking": "Animation: the same Kenya brief cut two ways. Fixed 400-character windows end on a stranded heading and mix two sections; section chunks keep each heading with its paragraph.",
     "embeddings": "Animation: a chunk of text becomes a list of numbers, then a dot on a map where similar meaning sits close together; a question becomes a star and the two closest chunks are retrieved.",
@@ -603,6 +674,7 @@ ALT = {
     "metadata": "Diagram: one document in two parts. Its metadata, the header of the file, holds the date 2016-06-01; its text sounds current and ends 'The latest available figures are for 2015.' An application can filter and rank on the date field, but it does not read the text for age.",
     "toolloop": "Animation: the application sends the model the question and the list of tools; the model replies with a request for get_indicator with GDP per capita, Rwanda and 2023; the application runs the tool, which returns 1,061 with its source; the application hands that back and the model answers that it was 1,061 US dollars in 2023.",
     "workflows": "Diagram: in a workflow the order of the calls is written in code: search the documents, look up the four series, the model writes the answer, the same on every run. In an agent the model decides the next step: it asks for search_documents or get_indicator, gets the result back, and answers in text when it has enough; a step limit stops a loop that never ends and a trace lists every call.",
+    "pcn": "Animation: the model writes 35.0 inside a claim tag that names the record IT.NET.USER.ZS:KEN:2024 and the rule rounded to one decimal; the verifier fetches the record, 34.9762, rounds it to 35.0 and marks the number verified. A second figure, 35.7 for Rwanda, differs from its record, 31.7033, and is flagged. A third figure, about 70 percent, has no tag and stays unmarked.",
     "claimtag": "Diagram: a claim tag wraps a number and carries the claim_id, which names the indicator, the country and the year, and a policy that says how to compare, here rounded to one decimal. The verifier takes the record, 34.9762, rounds it to one decimal, gets 35.0, finds it equal to the number shown, and marks it verified.",
     "desk": "Diagram: the four briefs of this notebook, about 1,024 tokens, fit inside the model's context window, while a real collection of thousands of documents cannot, so the application must choose what the model reads.",
 }

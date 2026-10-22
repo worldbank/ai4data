@@ -667,7 +667,7 @@ def chat_html(question: str, answer: str, observations: dict[str, float], result
         for o in r.get("observations", []):
             about[o["claim_id"]] = (r.get("name", r["indicator"]), r.get("source", ""))
     marks = iter(c for c in verify(answer, observations) if c.claim_id)
-    out, pos = [], 0
+    out, pos, spans = [], 0, []
     for m in CLAIM_RE.finditer(answer):
         out.append(escape(answer[pos:m.start()]))
         check = next(marks)
@@ -690,9 +690,20 @@ def chat_html(question: str, answer: str, observations: dict[str, float], result
             lines += [f"Returned by the tool: {truth:g}", f"Display rule: {rule}, which gives {expect}", f"Shown in the answer: {shown}"]
             glyph, colour = ("✓", "#16a34a") if check.status == "verified" else ("⚠", "#d97706")
             lines.append("They are equal: verified" if check.status == "verified" else "They are not equal: not verified")
-        out.append(f'<span style="border-bottom:2px dotted {colour};cursor:help" title="{escape(chr(10).join(lines))}">{escape(shown)}<b style="color:{colour};margin-left:2px">{glyph}</b></span>')
+        spans.append(f'<span style="border-bottom:2px dotted {colour};cursor:help" title="{escape(chr(10).join(lines))}">{escape(shown)}<b style="color:{colour};margin-left:2px">{glyph}</b></span>')
+        out.append(spans[-1])
         pos = m.end()
     out.append(escape(answer[pos:]))
+    # Render the answer as Markdown (tables, bold, lists) with each marked number put back in place.
+    # A placeholder stands in for every tag while the Markdown is converted, so the marks survive inside table cells.
+    counter = iter(range(len(spans)))
+    with_placeholders = CLAIM_RE.sub(lambda _m: f"PCNMARK{next(counter)}PCN", answer)
+    with_placeholders = re.sub(r"<(?=[A-Za-z/])", "&lt;", with_placeholders)   # any other HTML-like tag is shown as text
+    rendered = _markdown_html(with_placeholders)
+    if rendered is not None:
+        for i, span in enumerate(spans):
+            rendered = rendered.replace(f"PCNMARK{i}PCN", span)
+        out = [rendered]
     bubble = "padding:10px 14px;border-radius:14px;margin:6px 0;max-width:88%;font:14px/1.6 Helvetica,Arial,sans-serif;color:#16315a"
     fold = (
         '<details style="margin-top:8px;font:12.5px Helvetica,Arial,sans-serif;color:#5b6b85"><summary style="cursor:pointer">What the model actually wrote (open to see the labels)</summary>'

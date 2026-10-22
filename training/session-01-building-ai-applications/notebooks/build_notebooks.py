@@ -94,6 +94,7 @@ def explainer_md(name: str) -> str:
         "toolloop": explainers.toolloop_svg,
         "workflows": explainers.workflows_svg,
         "claimtag": explainers.claimtag_svg,
+        "pcn": explainers.pcn_svg,
     }[name]()
     return f"![{explainers.ALT[name]}](data:image/svg+xml;base64,{base64.b64encode(svg.encode()).decode()})"
 
@@ -1395,9 +1396,9 @@ If the question is ambiguous, ask which reading is meant."""
     md(id="section-1", text="""
 ## 1. Claim tags
 
-A claim tag is a label around a number. The verifier takes the record named by the tag's id, applies the tag's rule, and compares the result with the number shown. The picture shows one tag and what the verifier does with it.
+A claim tag is a label around a number. The verifier takes the record named by the tag's id, applies the tag's rule, and compares the result with the number shown. The animation shows the three outcomes: a tagged figure that matches its record is verified, a tagged figure that differs is flagged, and a figure without a tag stays unmarked.
 
-@@EXPLAINER:claimtag@@
+@@EXPLAINER:pcn@@
 
 The next cell gives the model the four series the main question needs, placed in the prompt as notebook 04 did, and asks it to answer with tags. `w.observations_from_results` builds the dictionary from claim id to the value the tool returned, which is what the verifier compares against. `w.show_chat` draws the answer as a chatbot would: a mark after each checked number, a tooltip on hover with the record and the rule, and, with `raw=True`, a fold that holds the tagged text as the model wrote it.
 """),
