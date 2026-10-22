@@ -13,13 +13,13 @@ Six notebooks build one application step by step. Open them in Google Colab from
 | [03 · Retrieval-augmented generation](../notebooks/03-retrieval-augmented-generation.ipynb) | Retrieval, citations, a retrieval failure and its fixes | 20 min |
 | [04 · Connecting the application to data and tools](../notebooks/04-tools-and-structured-outputs.ipynb) | A data tool, tool calls, a typed output | 20 min |
 | [05 · Workflows and agents](../notebooks/05-workflows-and-agents.ipynb) | Two tools, a fixed workflow and a bounded loop | 20 min |
-| [06 · Making the application trustworthy](../notebooks/06-verification-and-evaluation.ipynb) | Claim verification, an evaluation suite | 20 min |
+| [06 · Verification](../notebooks/06-verification-and-evaluation.ipynb) | Claim tags and a verifier for every number | 15 min |
 
 Every notebook is committed with its outputs, so it can be read without running anything. The notebooks are built on LangChain, LangGraph, FastMCP, Pydantic, and the program's `pcn-core`; `notebooks/requirements.txt` lists the versions.
 
 ## Running without a key
 
-The notebooks run in a fresh Colab environment with no API key. Model outputs are then recorded ones, labelled `[recorded output: ...]`, replayed by a LangChain chat model that stands in for the live one. Everything else runs for real: the vector store, retrieval, the data tool, the MCP server, the schemas, the agent graph, the verifier, and the evaluation.
+The notebooks run in a fresh Colab environment with no API key. Model outputs are then recorded ones, labelled `[recorded output: ...]`, replayed by a LangChain chat model that stands in for the live one. Everything else runs for real: the vector store, retrieval, the data tool, the MCP server, the schemas, the agent graph, and the verifier.
 
 ## Running with a key
 
@@ -57,5 +57,5 @@ Each notebook ends with one exercise. In recorded mode some exercises ask for a 
 ## Further reading
 
 - [Glossary](glossary.md)
-- [Evaluation examples](evaluation-examples.md): what the evaluation table reports and how to read it
+- [Testing on fixed questions](evaluation-examples.md): the eight questions of the session, and how an application is tested against them
 - [Next steps](next-steps.md): where to go after the session, by role
