@@ -1,5 +1,6 @@
 import Head from '@docusaurus/Head';
 import Link from '@docusaurus/Link';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import useGlobalData from '@docusaurus/useGlobalData';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
@@ -24,18 +25,19 @@ function chapterLabel(path, cookbookPath) {
 }
 
 export default function Unlisted() {
+  const base = useBaseUrl('/');   // the plugin's doc paths carry the site's base path
   const globalData = useGlobalData();
   const docsPlugins = globalData['docusaurus-plugin-content-docs'] || {};
   const allDocs = Object.values(docsPlugins).flatMap((plugin) => (plugin.versions || []).flatMap((v) => v.docs || []));
   const hidden = hiddenCookbooks.map((id) => {
     const card = allCookbooks.find((c) => c.id === id);
-    const prefix = `/cookbook/${id}/`;
+    const prefix = `${base}cookbook/${id}/`;
     const chapters = allDocs
       .filter((d) => d.path.startsWith(prefix) && d.path !== prefix)
       .sort((a, b) => a.path.localeCompare(b.path));
     return {id, card, prefix, chapters};
   });
-  const otherUnlisted = allDocs.filter((d) => d.unlisted && !hiddenCookbooks.some((id) => d.path.startsWith(`/cookbook/${id}/`)));
+  const otherUnlisted = allDocs.filter((d) => d.unlisted && !hiddenCookbooks.some((id) => d.path.startsWith(`${base}cookbook/${id}/`)));
 
   return (
     <Layout title="Unlisted pages" description="The pages of this site that exist without being listed: hidden cookbooks and standalone drafts, with direct links for reviewers.">
