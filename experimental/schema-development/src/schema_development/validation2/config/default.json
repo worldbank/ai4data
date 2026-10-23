@@ -1,0 +1,10 @@
+{
+  "model": "gpt-5.5",
+  "max_output_tokens": 8000,
+  "service_tier": "flex",
+  "prompt_cache_key": "schema-validation2-v1-1-1-model-facing",
+  "timeout": 900.0,
+  "reasoning": {
+    "effort": "medium"
+  }
+}
