@@ -1,5 +1,9 @@
 # data-snapshot
 
+This is the research and evaluation package. For the practical PDF-to-snapshot
+and metadata workflow, use [`ai4data.data_snapshot`](../../src/ai4data/data_snapshot/README.md).
+Keep this package's Python 3.10 environment separate from the production module.
+
 Data snapshot toolkit for PDF documents.
 
 This package provides the source code for [Benchmarking Open-Source Layout Detection Models for Data Snapshot Extraction from Institutional Documents](https://arxiv.org/abs/2606.06242).

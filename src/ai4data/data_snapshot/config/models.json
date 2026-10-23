@@ -1,0 +1,22 @@
+{
+  "doclayoutyolo": {
+    "repo_id": "juliozhao/DocLayout-YOLO-DocStructBench",
+    "filename": "doclayout_yolo_docstructbench_imgsz1024.pt",
+    "cache_dir": ".cache/models"
+  },
+  "yolo11": {
+    "repo_id": "Armaggheddon/yolo11-document-layout",
+    "filename": "yolo11m_doc_layout.pt",
+    "cache_dir": ".cache/models"
+  },
+  "yolo26": {
+    "repo_id": "Armaggheddon/yolo26-document-layout",
+    "filename": "yolo26m_doc_layout.pt",
+    "cache_dir": ".cache/models"
+  },
+  "tfid": {
+    "model_id": "yifeihu/TF-ID-large",
+    "revision": "a91ffef47039768b2deff82681b75d77252703f2",
+    "cache_dir": ".cache/models/tfid"
+  }
+}
