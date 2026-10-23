@@ -3,7 +3,7 @@ import {isHiddenCookbook, isHiddenPath, isIndexedCookbook} from './visibility';
 // Cookbooks listed on the /cookbook landing page. Each cookbook is a folder
 // under /cookbook with its own sidebar in sidebars-cookbook.js. The ids in
 // website/cookbook-visibility.json are dropped from every list exported here.
-const allCookbooks = [
+export const allCookbooks = [
   {
     id: 'ai-ready-dissemination',
     version: '0.1',

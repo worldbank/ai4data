@@ -104,6 +104,8 @@ const config = {
             '/ai4data/nso-roadmap/**',
             '/ai4data/modern-nso',
             '/ai4data/modern-nso/**',
+            '/ai4data/unlisted',
+            '/ai4data/unlisted/**',
             ...hiddenCookbooks.map((id) => `/ai4data/cookbook/${id}/**`),
             ...draftCookbooks.flatMap((id) => [`/ai4data/cookbook/${id}/`, `/ai4data/cookbook/${id}/**`]),
           ],
@@ -282,6 +284,7 @@ const config = {
         ignoreFiles: [
           'modern-nso',
           'nso-roadmap',
+          'unlisted',
           ...hiddenCookbooks.map((id) => new RegExp(`^cookbook/${id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(/|$)`)),
         ],
       }),
