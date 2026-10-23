@@ -4,6 +4,8 @@ import argparse
 import sys
 from pathlib import Path
 
+from dotenv import load_dotenv
+
 from ai4data.data_snapshot.inputs import discover_snapshot_images
 from ai4data.data_snapshot.metadata_extraction import extract_metadata_files
 from ai4data.data_snapshot.pipeline import run_extraction, run_pipeline
@@ -189,6 +191,7 @@ def _run_snapshot_command(
 ) -> int:
     """Run one PDF command and print its output paths."""
     args = parser.parse_args(argv)
+    load_dotenv(Path.cwd() / ".env", override=False)
     try:
         if end_to_end:
             paths = run_pipeline(

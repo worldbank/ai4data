@@ -158,12 +158,12 @@ data-snapshot-core = [
     "pillow>=11,<13",
     "pydantic>=2.13.5,<3",
     "pymupdf>=1.25,<2",
+    "python-dotenv>=1,<2",
     "tqdm>=4.67,<5",
 ]
 data-snapshot-metadata = [
     "ai4data[data-snapshot-core]",
     "openai>=2.53,<3",
-    "python-dotenv>=1,<2",
 ]
 # The default Data Snapshot extra bundles DocLayout-YOLO.
 data-snapshot = [

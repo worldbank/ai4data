@@ -1,23 +1,33 @@
 """Detect figure and table snapshots with DocLayout-YOLO."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
 from ai4data.data_snapshot.adapters.yolo26 import YOLO26Adapter, YOLO26Config
-
-MODEL_REPO_ID = "juliozhao/DocLayout-YOLO-DocStructBench"
-MODEL_FILENAME = "doclayout_yolo_docstructbench_imgsz1024.pt"
-MODEL_CACHE_DIR = Path(".cache/models")
+from ai4data.data_snapshot.model_config import get_model_setting
 
 
 @dataclass(frozen=True)
 class DocLayoutYOLOConfig(YOLO26Config):
-    """Configure DocLayout-YOLO inference with official defaults."""
+    """Configure DocLayout-YOLO inference with official defaults.
 
-    repo_id: str = MODEL_REPO_ID
-    filename: str = MODEL_FILENAME
-    cache_dir: str | Path = MODEL_CACHE_DIR
+    Notes
+    -----
+    Inherits the YOLO26 configuration parameters. Omitted model location fields
+    use ``AI4DATA_SNAPSHOT_DOCLAYOUTYOLO_*`` environment variables at construction
+    time. Explicit arguments take precedence.
+    """
+
+    repo_id: str = field(
+        default_factory=lambda: get_model_setting("doclayoutyolo", "repo_id")
+    )
+    filename: str = field(
+        default_factory=lambda: get_model_setting("doclayoutyolo", "filename")
+    )
+    cache_dir: str | Path = field(
+        default_factory=lambda: Path(get_model_setting("doclayoutyolo", "cache_dir"))
+    )
     conf: float = 0.2
     imgsz: int = 1024
 

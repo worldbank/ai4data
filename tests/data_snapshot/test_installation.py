@@ -1,7 +1,10 @@
 """Check namespace imports and installed command entry points without models."""
 
+import json
 import subprocess
 import sys
+from importlib import import_module
+from importlib.resources import files
 from pathlib import Path
 
 import pytest
@@ -70,3 +73,72 @@ def test_packaged_resources_are_available() -> None:
     resources = files("ai4data.data_snapshot.metadata_extraction")
     for prompt in ("system.md", "user.md"):
         assert resources.joinpath("prompts", prompt).read_text(encoding="utf-8")
+    model_defaults = json.loads(
+        files("ai4data.data_snapshot")
+        .joinpath("config", "models.json")
+        .read_text(encoding="utf-8")
+    )
+    assert set(model_defaults) == {"doclayoutyolo", "yolo11", "yolo26", "tfid"}
+    assert all(
+        isinstance(value, str) and value.strip()
+        for settings in model_defaults.values()
+        for value in settings.values()
+    )
+
+
+@pytest.mark.parametrize(
+    ("module", "config_name"),
+    [
+        ("doclayoutyolo", "DocLayoutYOLOConfig"),
+        ("yolo11", "YOLO11Config"),
+        ("yolo26", "YOLO26Config"),
+        ("tfid", "TFIDConfig"),
+    ],
+)
+def test_model_configuration_environment_precedence(
+    module: str, config_name: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Resolve per-model defaults at construction time, below explicit settings."""
+    adapter_module = import_module(f"ai4data.data_snapshot.adapters.{module}")
+    config_type = getattr(adapter_module, config_name)
+    prefix = f"AI4DATA_SNAPSHOT_{module.upper()}_"
+    defaults = json.loads(
+        files("ai4data.data_snapshot")
+        .joinpath("config", "models.json")
+        .read_text(encoding="utf-8")
+    )[module]
+    defaults["cache_dir"] = Path(defaults["cache_dir"])
+    for other in ("DOCLAYOUTYOLO", "YOLO11", "YOLO26", "TFID"):
+        for field in defaults:
+            monkeypatch.setenv(f"AI4DATA_SNAPSHOT_{other}_{field.upper()}", "other")
+    for field in defaults:
+        monkeypatch.delenv(prefix + field.upper())
+    config = config_type()
+    assert {field: getattr(config, field) for field in defaults} == defaults
+
+    for field in defaults:
+        monkeypatch.setenv(prefix + field.upper(), "")
+    assert config_type() == config
+
+    from ai4data.data_snapshot import model_config
+
+    alternate_defaults = {field: f"preset-{field}" for field in defaults}
+    monkeypatch.setattr(
+        model_config, "_load_model_defaults", lambda: {module: alternate_defaults}
+    )
+    config = config_type()
+    assert {
+        field: str(getattr(config, field)) for field in defaults
+    } == alternate_defaults
+
+    for value in ("first", "second"):
+        for field in defaults:
+            monkeypatch.setenv(prefix + field.upper(), f"{value}-{field}")
+        config = config_type()
+        assert {field: str(getattr(config, field)) for field in defaults} == {
+            field: f"{value}-{field}" for field in defaults
+        }
+
+    explicit = {field: f"explicit-{field}" for field in defaults}
+    config = config_type(**explicit)
+    assert {field: getattr(config, field) for field in defaults} == explicit

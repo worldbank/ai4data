@@ -3,17 +3,14 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
 from PIL import Image
 
 from ai4data.data_snapshot.detection import Detection
-
-MODEL_REPO_ID = "Armaggheddon/yolo26-document-layout"
-MODEL_FILENAME = "yolo26m_doc_layout.pt"
-MODEL_CACHE_DIR = Path(".cache/models")
+from ai4data.data_snapshot.model_config import get_model_setting
 
 _LABELS = {
     "figure": "figure",
@@ -48,6 +45,11 @@ class YOLO26Config:
     min_area : float
         Minimum normalized bounding-box area retained as a snapshot.
 
+    Notes
+    -----
+    Omitted model location fields are read from ``AI4DATA_SNAPSHOT_YOLO26_*``
+    environment variables at construction time. Explicit arguments take precedence.
+
     Raises
     ------
     ValueError
@@ -55,9 +57,13 @@ class YOLO26Config:
     """
 
     model_path: str | Path | None = None
-    repo_id: str = MODEL_REPO_ID
-    filename: str = MODEL_FILENAME
-    cache_dir: str | Path = MODEL_CACHE_DIR
+    repo_id: str = field(default_factory=lambda: get_model_setting("yolo26", "repo_id"))
+    filename: str = field(
+        default_factory=lambda: get_model_setting("yolo26", "filename")
+    )
+    cache_dir: str | Path = field(
+        default_factory=lambda: Path(get_model_setting("yolo26", "cache_dir"))
+    )
     device: str = "cpu"
     conf: float = 0.25
     iou: float = 0.7

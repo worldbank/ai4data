@@ -47,6 +47,56 @@ without a model runtime or metadata API SDK. It is included by every snapshot
 extra. `ai4data[all]` includes DocLayout-YOLO and snapshot metadata extraction;
 it excludes TF-ID.
 
+### Model configuration
+
+Default model locations are stored in the packaged
+[`config/models.json`](config/models.json), rather than in the adapters' Python
+code. No local configuration file is required to use these defaults.
+
+Override model locations with environment variables or a `.env` file in the
+working directory. Both PDF commands load that file before creating a detector;
+exported environment variables take precedence over `.env`. When running from
+the repository root, put `.env` alongside `pyproject.toml`. It is Git-ignored.
+
+Each row below lists the supported variable names and their defaults:
+
+| Extractor | Environment variable | Default |
+| --- | --- | --- |
+| DocLayout-YOLO | `AI4DATA_SNAPSHOT_DOCLAYOUTYOLO_REPO_ID` | `juliozhao/DocLayout-YOLO-DocStructBench` |
+| | `AI4DATA_SNAPSHOT_DOCLAYOUTYOLO_FILENAME` | `doclayout_yolo_docstructbench_imgsz1024.pt` |
+| | `AI4DATA_SNAPSHOT_DOCLAYOUTYOLO_CACHE_DIR` | `.cache/models` |
+| YOLO11 | `AI4DATA_SNAPSHOT_YOLO11_REPO_ID` | `Armaggheddon/yolo11-document-layout` |
+| | `AI4DATA_SNAPSHOT_YOLO11_FILENAME` | `yolo11m_doc_layout.pt` |
+| | `AI4DATA_SNAPSHOT_YOLO11_CACHE_DIR` | `.cache/models` |
+| YOLO26 | `AI4DATA_SNAPSHOT_YOLO26_REPO_ID` | `Armaggheddon/yolo26-document-layout` |
+| | `AI4DATA_SNAPSHOT_YOLO26_FILENAME` | `yolo26m_doc_layout.pt` |
+| | `AI4DATA_SNAPSHOT_YOLO26_CACHE_DIR` | `.cache/models` |
+| TF-ID | `AI4DATA_SNAPSHOT_TFID_MODEL_ID` | `yifeihu/TF-ID-large` |
+| | `AI4DATA_SNAPSHOT_TFID_REVISION` | `a91ffef47039768b2deff82681b75d77252703f2` |
+| | `AI4DATA_SNAPSHOT_TFID_CACHE_DIR` | `.cache/models/tfid` |
+
+For example, save DocLayout-YOLO weights in a shared cache:
+
+```dotenv
+AI4DATA_SNAPSHOT_DOCLAYOUTYOLO_CACHE_DIR=/path/to/model-cache
+```
+
+Unset or empty variables use the packaged JSON defaults. Environment overrides
+are read whenever a configuration is constructed, rather than at module import.
+Precedence is explicit Python arguments, then environment variables, then JSON
+defaults. For a local customization, use an environment override rather than
+editing the installed JSON, which can be replaced during package upgrades:
+
+```python
+from ai4data.data_snapshot.adapters.doclayoutyolo import DocLayoutYOLOConfig
+
+config = DocLayoutYOLOConfig(cache_dir="/path/to/model-cache")
+```
+
+Python callers using `.env` should call `dotenv.load_dotenv` with the file path
+before constructing a configuration or running extraction; automatic loading
+of model settings from `.env` is provided by the PDF commands.
+
 ### Metadata API setup
 
 Required only for end-to-end and metadata-only runs. Set the appropriate key
@@ -80,8 +130,10 @@ python -m venv .venv-tfid
 ```
 
 For end-to-end TF-ID runs, also install `data-snapshot-metadata` in that same
-environment. TF-ID executes model-provided code at the pinned revision
-`a91ffef47039768b2deff82681b75d77252703f2`.
+environment. TF-ID executes model-provided code at the configured revision,
+defaulting to the pinned commit `a91ffef47039768b2deff82681b75d77252703f2`.
+Changing `AI4DATA_SNAPSHOT_TFID_MODEL_ID` or `AI4DATA_SNAPSHOT_TFID_REVISION`
+changes which remote model code is executed.
 
 ## Commands
 

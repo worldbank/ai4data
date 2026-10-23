@@ -2,18 +2,15 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
 from PIL import Image
 
 from ai4data.data_snapshot.adapters.yolo26 import _clamp, _normalize_bbox
+from ai4data.data_snapshot.model_config import get_model_setting
 from ai4data.data_snapshot.detection import Detection
-
-MODEL_ID_DEFAULT = "yifeihu/TF-ID-large"
-MODEL_REVISION_DEFAULT = "a91ffef47039768b2deff82681b75d77252703f2"
-MODEL_CACHE_DIR = Path(".cache/models/tfid")
 
 _LABELS = {
     "1": "figure",
@@ -37,7 +34,8 @@ class TFIDConfig:
     model_id : str
         Hugging Face model identifier.
     revision : str
-        Pinned Hugging Face model revision containing the remote model code.
+        Hugging Face model revision containing the remote model code.
+        Defaults to a pinned commit.
     cache_dir : str | Path
         Repository-local Hugging Face model cache.
     device : str
@@ -45,15 +43,22 @@ class TFIDConfig:
     min_area : float
         Minimum normalized bounding-box area retained as a snapshot.
 
+    Notes
+    -----
+    Omitted model location fields are read from ``AI4DATA_SNAPSHOT_TFID_*``
+    environment variables at construction time. Explicit arguments take precedence.
+
     Raises
     ------
     ValueError
         If the minimum area is outside the inclusive unit interval.
     """
 
-    model_id: str = MODEL_ID_DEFAULT
-    revision: str = MODEL_REVISION_DEFAULT
-    cache_dir: str | Path = MODEL_CACHE_DIR
+    model_id: str = field(default_factory=lambda: get_model_setting("tfid", "model_id"))
+    revision: str = field(default_factory=lambda: get_model_setting("tfid", "revision"))
+    cache_dir: str | Path = field(
+        default_factory=lambda: Path(get_model_setting("tfid", "cache_dir"))
+    )
     device: str = "cpu"
     min_area: float = 0.008
 

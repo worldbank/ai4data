@@ -1,10 +1,40 @@
 """Test the pipeline command-line interfaces."""
 
+from collections.abc import Callable
 from pathlib import Path
 
 import pytest
 
 from ai4data.data_snapshot import cli
+
+
+@pytest.mark.parametrize("command", [cli.main, cli.snapshot_main])
+@pytest.mark.parametrize("exported_repo", [None, "exported/repository"])
+def test_pdf_commands_load_env_before_creating_detector(
+    command: Callable[[list[str]], int],
+    exported_repo: str | None,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Load working-directory settings for both PDF commands without inference."""
+    from ai4data.data_snapshot.adapters.doclayoutyolo import DocLayoutYOLOConfig
+
+    monkeypatch.chdir(tmp_path)
+    key = "AI4DATA_SNAPSHOT_DOCLAYOUTYOLO_REPO_ID"
+    monkeypatch.delenv("PYTHON_DOTENV_DISABLED", raising=False)
+    monkeypatch.setenv(key, exported_repo or "temporary")
+    if exported_repo is None:
+        monkeypatch.delenv(key)
+    (tmp_path / ".env").write_text(f"{key}=file/repository\n", encoding="utf-8")
+
+    def check_config(*args: object, **kwargs: object) -> list[Path]:
+        """Inspect the configuration before the mocked operation runs."""
+        assert DocLayoutYOLOConfig().repo_id == (exported_repo or "file/repository")
+        return []
+
+    monkeypatch.setattr(cli, "run_pipeline", check_config)
+    monkeypatch.setattr(cli, "run_extraction", check_config)
+    assert command(["--input=example.pdf"]) == 0
 
 
 @pytest.mark.parametrize(
