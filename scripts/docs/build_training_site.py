@@ -154,7 +154,7 @@ class Site:
             url = url.strip()
             if url.startswith(SITE + "/"):
                 path = "/" + url[len(SITE) + 1:]
-                # Static files (the documents page) are not routes; pathname:// keeps the link as is.
+                # Static .html files are not routes; pathname:// keeps the link as is.
                 return f"pathname://{path}" if re.search(r"\.html(#|$)", path) else path
             if url.startswith(SITE):
                 return "/"

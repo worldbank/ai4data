@@ -1,18 +1,12 @@
 #!/usr/bin/env python3
-"""Build the standalone HTML pages of the training series for the docs site.
+"""Document collection data and pages for the training series.
 
-Reads the worked-example documents of session 01 and writes a page that shows each
-document with its metadata, its role in the session, and the chunks that notebook 02
-makes of it, each labelled with the citation the application writes when it uses the
-chunk. The site build runs this script before Docusaurus, and the output lands under
-website/static so that it is served as is.
+Reads the worked-example documents of a session with their roles (assets/documents/roles.json)
+and splits each document into the chunks that notebook 02 makes of it, each labelled with the
+citation the application writes when it uses the chunk. build_training_site.py calls
+viewer_data() to build the Document collection page of the Training section.
 
-    python3 scripts/docs/build_training_pages.py                 # website/static/training/session-01/documents.html
-    python3 scripts/docs/build_training_pages.py --artifact OUT  # body-only page with embedded logos, for a Claude artifact
-
-The roles of the documents and the notes on them are read from assets/documents/roles.json.
-The Training section of the site shows the same collection on its Document collection page,
-through viewer_data(), which build_training_site.py calls for every session with a roles.json.
+    python3 scripts/docs/build_training_pages.py --artifact OUT  # standalone page with embedded logos, for a Claude artifact
 
 No dependencies beyond the standard library: the documents use headings, paragraphs
 and bullet lists only, and the chunking mirrors workshop.split_sections (one chunk per
@@ -30,7 +24,6 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 SESSION = REPO / "training" / "session-01-building-ai-applications"
 DOCS = SESSION / "assets" / "documents"
-SITE_OUT = REPO / "website" / "static" / "training" / "session-01" / "documents.html"
 LOGO = REPO / "website" / "static" / "img" / "program-logo.png"
 LOGO_DARK = REPO / "website" / "static" / "img" / "program-logo-dark.png"
 
@@ -273,21 +266,12 @@ def viewer_data(docs_dir: Path) -> dict:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--artifact", type=Path, help="write a body-only page with embedded logos to this path instead of the site page")
+    ap.add_argument("--artifact", type=Path, required=True, help="write a standalone page with embedded logos to this path")
     args = ap.parse_args()
     docs = [read_document(p) for p in sorted(DOCS.glob("*.md"))]
-    if args.artifact:
-        page = build(docs, data_uri(LOGO), data_uri(LOGO_DARK), site_links=True)
-        args.artifact.write_text(page, encoding="utf-8")
-        print(f"wrote {args.artifact} ({len(page):,} bytes)")
-        return 0
-    page = build(docs, "/ai4data/img/program-logo.png", "/ai4data/img/program-logo-dark.png", site_links=True)
-    full = ('<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n'
-            '<meta name="description" content="The eight documents of the worked example in session 01 of the AI for Data training series, with their metadata, their role, and their retrieval chunks.">\n'
-            '<link rel="icon" href="/ai4data/img/favicon.ico">\n' + page.split("\n", 1)[0] + "\n</head>\n<body>\n" + page.split("\n", 1)[1] + "</body>\n</html>\n")
-    SITE_OUT.parent.mkdir(parents=True, exist_ok=True)
-    SITE_OUT.write_text(full, encoding="utf-8")
-    print(f"wrote {SITE_OUT.relative_to(REPO)} ({len(full):,} bytes)")
+    page = build(docs, data_uri(LOGO), data_uri(LOGO_DARK), site_links=True)
+    args.artifact.write_text(page, encoding="utf-8")
+    print(f"wrote {args.artifact} ({len(page):,} bytes)")
     return 0
 
 
