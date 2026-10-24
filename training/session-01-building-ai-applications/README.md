@@ -2,7 +2,7 @@
 
 90 minutes of slides and guided notebook demonstrations, followed by 15 to 30 minutes of questions.
 
-The [preface](preface.md) sets out the ideas behind the session, its intended readers, and the place of each notebook in its argument.
+The [preface](preface.md) explains the problem addressed in the session and the ideas developed in its notebooks. It also describes how readers with different backgrounds and levels of technical experience can use the session.
 
 ## Who it is for
 
