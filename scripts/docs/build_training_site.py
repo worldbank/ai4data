@@ -11,7 +11,8 @@ Docusaurus, through `npm run convert-notebooks`.
 
 What the script does to the source:
 
-- The series README becomes the section's index page, and each session README
+- The series README becomes the section's index page, the preface follows it,
+  and each session README
   becomes the session's overview page. Sections listed in OMIT_SECTIONS are
   left off the site.
 - Each notebook becomes a page with its committed outputs, an "Open in Colab"
@@ -297,6 +298,7 @@ def build() -> None:
     # Register every page first so that links between them resolve in any order.
     plan = []
     site.add(SRC / "README.md", OUT / "index.md")
+    site.add(SRC / "preface.md", OUT / "preface.md")
     for folder in sessions:
         dest = OUT / session_slug(folder)
         site.add(folder / "README.md", dest / "index.md")
@@ -323,6 +325,7 @@ def build() -> None:
                   note=f"The pages of this section are generated from the [training folder]({TREE}/training) "
                        "of the repository. The slide decks, the demonstration scripts, and the scripts that "
                        "regenerate the notebooks are kept there.")
+    markdown_page(site, SRC / "preface.md", OUT / "preface.md", position=2)
     for folder, dest, nb_out, pages in plan:
         title, _ = split_title((folder / "README.md").read_text(encoding="utf-8"))
         write(dest / "_category_.json", json.dumps(
