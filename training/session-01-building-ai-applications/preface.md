@@ -1,4 +1,4 @@
-# From fluent answers to verifiable answers
+# How AI chatbots work
 
 This preface explains the problem addressed in session 01, the readers for whom that problem matters, and the three ideas developed in the notebooks. It ends with notes on running the notebooks and a short description of each one.
 
@@ -12,7 +12,7 @@ Researchers and analysts receive figures from applications of this kind and need
 
 ## The application around the model
 
-An application is the software that surrounds a language model. It decides which material reaches the model with each question, and it processes the answer afterwards. The session builds such an application in stages and adds one component in each notebook.
+An AI chatbot consists of a language model and the software around it, which the session calls the application. The application decides which material reaches the model with each question, and it processes the answer afterwards. The session builds such an application in stages and adds one component in each notebook.
 
 ### Grounding
 
