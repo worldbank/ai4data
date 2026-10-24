@@ -3,6 +3,10 @@ on:
   push:
     branches:
       - main
+  # Pull requests build the site without deploying it. The build fails when a published
+  # route has no page and no redirect, or when a new route is missing from
+  # website/published-routes.txt (see website/README.md).
+  pull_request:
 
 jobs:
   build-site:
@@ -39,6 +43,7 @@ jobs:
 
   deploy-site:
     needs: build-site
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
       pages: write
       id-token: write

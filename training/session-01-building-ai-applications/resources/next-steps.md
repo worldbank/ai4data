@@ -48,4 +48,8 @@ An application that cannot answer these is a demonstration.
 
 ## Later sessions in the series
 
-To be announced. Suggested topics from this session's questions are collected in the session README of the next session when it is created.
+The [series page](https://worldbank.github.io/ai4data/training/) lists the planned sessions. Three of them take up topics that this session introduces.
+
+- **Session 03 · Evaluating AI systems.** Notebook 03, section 6, tests the search on fixed questions, and notebook 06 leaves tests of a whole application out of scope. Session 03 covers the testing of complete applications.
+- **Session 05 · Building trustworthy AI applications.** This session extends the verification of figures in notebook 06.
+- **Session 06 · All about context: Why AI is really a search problem.** This session returns to the preparation of documents in notebook 02 and the selection of passages in notebook 03.

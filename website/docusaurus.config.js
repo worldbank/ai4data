@@ -4,6 +4,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {themes as prismThemes} from 'prism-react-renderer';
 import codeImport from 'remark-code-import';
+import publishedRoutes from './plugins/published-routes.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '..');
@@ -76,7 +77,10 @@ const config = {
     },
   },
   themes: ['@docusaurus/theme-mermaid'],
-  clientModules: [path.join(__dirname, 'src/clientModules/fonts.js')],
+  clientModules: [
+    path.join(__dirname, 'src/clientModules/fonts.js'),
+    path.join(__dirname, 'src/clientModules/pcnDetail.js'),
+  ],
 
   i18n: {
     defaultLocale: 'en',
@@ -111,7 +115,14 @@ const config = {
           ],
         },
         theme: {
-          customCss: './src/css/custom.css',
+          // The second stylesheet holds the styles of the training notebook outputs and is
+          // written by scripts/docs/build_training_site.py before the build.
+          customCss: [
+            './src/css/custom.css',
+            ...(fs.existsSync(path.join(__dirname, 'generated/training-outputs.css'))
+              ? ['./generated/training-outputs.css']
+              : []),
+          ],
         },
       }),
     ],
@@ -159,6 +170,12 @@ const config = {
             label: 'Cookbook',
             position: 'left',
             activeBaseRegex: '/cookbook/',
+          },
+          {
+            to: '/training/',
+            label: 'Training',
+            position: 'left',
+            activeBaseRegex: '/training/',
           },
           {
             type: 'docSidebar',
@@ -241,6 +258,7 @@ const config = {
 
   plugins: [
     hideCookbookFiles,
+    publishedRoutes,
     [
       '@docusaurus/plugin-content-docs',
       /** @type {import('@docusaurus/plugin-content-docs').Options} */
@@ -272,6 +290,17 @@ const config = {
       }),
     ],
     [
+      '@docusaurus/plugin-content-docs',
+      /** @type {import('@docusaurus/plugin-content-docs').Options} */
+      ({
+        // Generated from training/ by scripts/docs/build_training_site.py.
+        id: 'training',
+        path: 'generated/training',
+        routeBasePath: 'training',
+        sidebarPath: path.join(__dirname, 'sidebars-training.js'),
+      }),
+    ],
+    [
       '@easyops-cn/docusaurus-search-local',
       /** @type {import('@easyops-cn/docusaurus-search-local').PluginOptions} */
       ({
@@ -279,7 +308,7 @@ const config = {
         indexDocs: true,
         indexBlog: false,
         indexPages: true,
-        docsRouteBasePath: ['/docs', '/pift-toolkit', '/cookbook'],
+        docsRouteBasePath: ['/docs', '/pift-toolkit', '/cookbook', '/training'],
         // Unlisted pages and hidden cookbooks stay out of the site search.
         ignoreFiles: [
           'modern-nso',
