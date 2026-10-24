@@ -58,7 +58,7 @@ Questions are taken at the notebook transitions as well as at the end. Notebooks
 
 Each notebook ends with a link to the next. Notebook 07 runs a small open model, so choose **Runtime > Change runtime type > T4 GPU** before you run it.
 
-The eight documents of the worked example, with their metadata, their role in the session, and the chunks that notebook 02 makes of them, are shown at [worldbank.github.io/ai4data/training/session-01/documents.html](https://worldbank.github.io/ai4data/training/session-01/documents.html). The page is generated from `assets/documents/` by `scripts/docs/build_training_pages.py` when the site is built.
+The eight documents of the worked example, with their metadata, their role in the session, and the chunks that notebook 02 makes of them, are shown on the [Document collection](https://worldbank.github.io/ai4data/training/session-01/documents) page of the docs site. The page is generated from `assets/documents/` when the site is built.
 
 ## Materials
 

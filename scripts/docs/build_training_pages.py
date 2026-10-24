@@ -263,6 +263,24 @@ def build(docs: list[dict], logo_light: str, logo_dark: str, site_links: bool) -
 """
 
 
+def viewer_data() -> dict:
+    """The document collection as data, for the Document collection page of the Training section."""
+    by = {d["metadata"]["id"]: d for d in (read_document(p) for p in sorted(DOCS.glob("*.md")))}
+    groups = []
+    for key, label, blurb, ids in ROLES:
+        docs = []
+        for i in ids:
+            m = by[i]["metadata"]
+            docs.append({
+                "id": i, "title": m["title"], "year": m["date"][:4], "note": NOTE[i],
+                "metadata": [[k, m.get(k, "")] for k in META_KEYS],
+                "chunks": [{"citation": c["citation"], "characters": len(c["text"]), "html": render_markdown(c["text"])}
+                           for c in split_sections(by[i])],
+            })
+        groups.append({"key": key, "label": label, "description": blurb, "documents": docs})
+    return {"groups": groups}
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--artifact", type=Path, help="write a body-only page with embedded logos to this path instead of the site page")

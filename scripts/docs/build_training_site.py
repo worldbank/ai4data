@@ -35,6 +35,7 @@ import html
 import json
 import re
 import shutil
+import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
@@ -188,6 +189,39 @@ def slides_page(src: Path, out: Path, *, position: float) -> None:
     )
     write(out, front_matter(title=deck["title"], sidebar_label="Slides", sidebar_position=position,
                             custom_edit_url=f"{BLOB}/{rel}") + body)
+
+
+def documents_page(out: Path, *, position: float) -> None:
+    """The Document collection page: the worked-example documents in the DocumentViewer component."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import build_training_pages
+    write(out.with_suffix(".json"), json.dumps(build_training_pages.viewer_data(), indent=1, ensure_ascii=False))
+    rel = build_training_pages.DOCS.relative_to(REPO).as_posix()
+    write(out, "\n".join([
+        "---",
+        "title: Document collection",
+        "sidebar_label: Document collection",
+        f"sidebar_position: {position}",
+        f"custom_edit_url: {TREE}/{rel}",
+        "---",
+        "",
+        "import DocumentViewer from '@site/src/components/training/DocumentViewer';",
+        f"import data from './{out.with_suffix('.json').name}';",
+        "",
+        "This page shows the eight documents of the worked example. They were written for the workshop from World "
+        "Development Indicators values retrieved on 13 October 2026, and none of them is an official publication. "
+        "The application built in notebooks 02 to 07 searches only this collection.",
+        "",
+        "Notebook 02 splits each document at its headings into chunks. When the application uses a chunk in an answer, "
+        "it cites the chunk as `[document id · section · year]`. Each chunk on this page is labelled with that citation.",
+        "",
+        "<DocumentViewer data={data} />",
+        "",
+        f"The source files are in [`{rel}`]({TREE}/{rel}) on GitHub. The figures in the briefs are rounded from "
+        f"[`indicators.csv`]({BLOB}/{build_training_pages.SESSION.relative_to(REPO).as_posix()}/assets/indicators.csv), "
+        "and the 2016 summary reproduces the 2015 values.",
+        "",
+    ]))
 
 
 # --- Notebooks ----------------------------------------------------------------
@@ -348,7 +382,7 @@ def build() -> None:
     for folder, dest, nb_out, pages in plan:
         title, _ = split_title((folder / "README.md").read_text(encoding="utf-8"))
         write(dest / "_category_.json", json.dumps(
-            {"label": title.split(" · ")[0], "position": int(re.sub(r"\D", "", dest.name) or 99) + 1,
+            {"label": title.replace("Session ", "", 1), "position": int(re.sub(r"\D", "", dest.name) or 99) + 1,
              "collapsed": False}, indent=2))
         markdown_page(site, folder / "README.md", dest / "index.md", position=1,
                       label=title.split(" · ", 1)[-1],
@@ -367,6 +401,8 @@ def build() -> None:
                  "link": {"type": "doc", "id": f"{dest.name}/resources/index"}}, indent=2))
         for src, out, label, position in pages:
             markdown_page(site, src, out, position=position, label=label)
+        if (folder / "assets" / "documents").is_dir() and folder.name == "session-01-building-ai-applications":
+            documents_page(dest / "documents.mdx", position=3.5)
         if (folder / "slides" / "canva.json").exists():
             slides_page(folder / "slides" / "canva.json", dest / "slides.md", position=1.5)
         print(f"training site: {dest.relative_to(REPO)} ({len(nb_out)} notebooks, {len(pages)} pages)")
