@@ -3,6 +3,7 @@
 - `deck.pptx`: the deck, 20 slides.
 - `outline.md`: the text of every slide with its demonstration pointer and speaker notes. This is the file to review and comment on.
 - `build_deck.js`: the source of both. Edit the script, then regenerate.
+- `canva.json`: the public view link of the deck presented in the session, which is kept in Canva. The docs site shows it on the session's Slides page in Canva's embedded viewer.
 
 ## Regenerating
 
