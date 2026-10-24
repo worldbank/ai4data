@@ -5,6 +5,11 @@ Materials for the training series of the AI for Data – Data for AI program: se
 | Session | Title | Format |
 |---|---|---|
 | 01 | [Building AI applications for research and data](session-01-building-ai-applications/README.md) | 90 minutes, slides and guided notebooks, plus 15 to 30 minutes of questions |
+| 02 | Building specialized small AI using synthetic data | Planned |
+| 03 | Evaluating AI systems | Planned |
+| 04 | Applying AI to metadata curation and data quality | Planned |
+| 05 | Building trustworthy AI applications | Planned |
+| 06 | All about context: Why AI is really a search problem | Planned |
 
 ### Session 01 notebooks
 
