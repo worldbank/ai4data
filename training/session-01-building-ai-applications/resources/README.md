@@ -57,5 +57,5 @@ Each notebook ends with one exercise. In recorded mode some exercises ask for a 
 ## Further reading
 
 - [Glossary](glossary.md)
-- [Testing on fixed questions](evaluation-examples.md): the eight questions of the session, and how an application is tested against them
+- [Testing on fixed questions](testing-on-fixed-questions.md): the eight questions of the session, and how an application is tested against them
 - [Next steps](next-steps.md): where to go after the session, by role

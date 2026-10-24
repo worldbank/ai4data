@@ -7,7 +7,11 @@ Markdown copy of them into website/generated/training/ (gitignored), which the
 `training` docs instance of the site reads. The site build runs it before
 Docusaurus, through `npm run convert-notebooks`.
 
-    python3 scripts/docs/build_training_site.py
+    python3 scripts/docs/build_training_site.py            # warnings are printed
+    python3 scripts/docs/build_training_site.py --strict   # warnings fail the run
+
+The conventions a session folder follows are described in training/AUTHORING.md, and
+check_session() reports the ones the build depends on.
 
 What the script does to the source:
 
@@ -54,17 +58,47 @@ OMIT_SECTIONS = {
     "session": ["Roles", "Definition of ready"],
 }
 
-# Participant-facing Markdown pages of a session: (source, output, sidebar label, sidebar
-# position). Positions are within the session, where the notebooks are 2 and the
-# participant resources 3, or within the resources category.
+# Fixed pages of a session: (source, output, sidebar label, sidebar position). Positions
+# are within the session: the overview is 1, the preface 1, the slides 1.5, the notebooks 2,
+# the participant resources 3, the document collection 3.5, and the worked-example data 4.
 SESSION_PAGES = [
     ("preface.md", "preface.md", "Preface", 1),
-    ("resources/README.md", "resources/index.md", "Participant guide", 1),
-    ("resources/glossary.md", "resources/glossary.md", None, 2),
-    ("resources/evaluation-examples.md", "resources/testing-on-fixed-questions.md", None, 3),
-    ("resources/next-steps.md", "resources/next-steps.md", None, 4),
     ("assets/README.md", "worked-example-data.md", "Worked-example data", 4),
 ]
+
+WARNINGS: list[str] = []
+
+
+def warn(path: Path, message: str) -> None:
+    WARNINGS.append(f"{path.relative_to(REPO).as_posix()}: {message}")
+
+
+def resource_pages(folder: Path) -> list[tuple[Path, str, str | None, int]]:
+    """Every Markdown file in resources/, as (source, output, sidebar label, position).
+
+    The README is the category's first page, under the label "Participant guide". The other
+    files follow in the order in which the README first links to them, and files that it
+    does not link to follow in alphabetical order. A file's name is its page's URL."""
+    res = folder / "resources"
+    if not res.is_dir():
+        return []
+    for other in sorted(res.iterdir()):
+        if other.suffix != ".md":
+            warn(other, "only Markdown files in resources/ become pages; this file stays on GitHub")
+    files = sorted(p for p in res.glob("*.md") if p.name != "README.md")
+    readme = res / "README.md"
+    linked = []
+    if readme.exists():
+        for target in re.findall(r"\]\(([^)#\s]+\.md)(?:#[^)]*)?\)", readme.read_text(encoding="utf-8")):
+            path = (res / target).resolve()
+            if path.parent == res.resolve() and path.exists() and path not in linked:
+                linked.append(path)
+    else:
+        warn(res, "resources/ has no README.md, so the Participant resources category has no first page")
+    order = linked + [p.resolve() for p in files if p.resolve() not in linked]
+    pages = [(readme, "resources/index.md", "Participant guide", 1)] if readme.exists() else []
+    pages += [(p, f"resources/{p.stem}.md", None, i) for i, p in enumerate(order, start=2)]
+    return pages
 
 
 def slugify(text: str) -> str:
@@ -127,6 +161,7 @@ class Site:
             if colab_to_page:
                 base, _, frag = url.partition("#")
                 if base in self.colab:
+                    frag = frag.removeprefix("scrollTo=")
                     return self.relative(out, self.colab[base]) + (f"#{frag}" if frag else "")
             if url.startswith("#scrollTo="):
                 return "#" + url[len("#scrollTo="):]
@@ -191,35 +226,37 @@ def slides_page(src: Path, out: Path, *, position: float) -> None:
                             custom_edit_url=f"{BLOB}/{rel}") + body)
 
 
-def documents_page(out: Path, *, position: float) -> None:
-    """The Document collection page: the worked-example documents in the DocumentViewer component."""
+def documents_page(site: Site, docs_dir: Path, out: Path, *, position: float) -> None:
+    """The Document collection page: a session's worked-example documents in the DocumentViewer component.
+
+    `docs_dir/roles.json` groups the documents by role and holds the page's text: `intro`, a
+    list of paragraphs, and `sources`, a paragraph on where the figures come from."""
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     import build_training_pages
-    write(out.with_suffix(".json"), json.dumps(build_training_pages.viewer_data(), indent=1, ensure_ascii=False))
-    rel = build_training_pages.DOCS.relative_to(REPO).as_posix()
+    roles_file = docs_dir / "roles.json"
+    roles = json.loads(roles_file.read_text(encoding="utf-8"))
+    write(out.with_suffix(".json"), json.dumps(build_training_pages.viewer_data(docs_dir), indent=1, ensure_ascii=False))
+    rel = docs_dir.relative_to(REPO).as_posix()
+    text = "\n\n".join(roles.get("intro", []))
+    sources = f"The source files are in [`{rel}`]({TREE}/{rel}) on GitHub."
+    if roles.get("sources"):
+        sources += " " + roles["sources"]
     write(out, "\n".join([
         "---",
         "title: Document collection",
         "sidebar_label: Document collection",
         f"sidebar_position: {position}",
-        f"custom_edit_url: {TREE}/{rel}",
+        f"custom_edit_url: {BLOB}/{roles_file.relative_to(REPO).as_posix()}",
         "---",
         "",
         "import DocumentViewer from '@site/src/components/training/DocumentViewer';",
         f"import data from './{out.with_suffix('.json').name}';",
         "",
-        "This page shows the eight documents of the worked example. They were written for the workshop from World "
-        "Development Indicators values retrieved on 13 October 2026, and none of them is an official publication. "
-        "The application built in notebooks 02 to 07 searches only this collection.",
-        "",
-        "Notebook 02 splits each document at its headings into chunks. When the application uses a chunk in an answer, "
-        "it cites the chunk as `[document id · section · year]`. Each chunk on this page is labelled with that citation.",
+        site.rewrite_links(text, roles_file, out, colab_to_page=False),
         "",
         "<DocumentViewer data={data} />",
         "",
-        f"The source files are in [`{rel}`]({TREE}/{rel}) on GitHub. The figures in the briefs are rounded from "
-        f"[`indicators.csv`]({BLOB}/{build_training_pages.SESSION.relative_to(REPO).as_posix()}/assets/indicators.csv), "
-        "and the 2016 summary reproduces the 2015 values.",
+        site.rewrite_links(sources, roles_file, out, colab_to_page=False),
         "",
     ]))
 
@@ -336,6 +373,99 @@ def render_output(output: dict, save_image) -> list[str]:
     return []
 
 
+# --- Checks -------------------------------------------------------------------
+# The conventions of training/AUTHORING.md that the build depends on. A session that breaks
+# one still builds, with a page missing or a link that does not resolve, so each is reported.
+
+def cell_ids(nb: dict) -> set[str]:
+    return {c.get("metadata", {}).get("id") or c.get("id", "") for c in nb["cells"]} - {""}
+
+
+def check_session(folder: Path) -> None:
+    number = int(re.match(r"session-(\d+)", folder.name).group(1))
+    readme = folder / "README.md"
+    if not readme.exists():
+        warn(folder, "the session folder has no README.md, which is the session's overview page")
+    else:
+        title, _ = split_title(readme.read_text(encoding="utf-8"))
+        m = re.match(r"Session (\d+) · \S", title)
+        if not m or int(m.group(1)) != number:
+            warn(readme, f"the title should read 'Session {number:02d} · <title of the session>', found '{title}'")
+    series = (SRC / "README.md").read_text(encoding="utf-8")
+    if f"]({folder.name}/README.md)" not in series:
+        warn(SRC / "README.md", f"the series table does not link to {folder.name}/README.md")
+    if not (folder / "preface.md").exists():
+        warn(folder, "the session has no preface.md")
+
+    nb_dir = folder / "notebooks"
+    notebooks = {}
+    for path in sorted(nb_dir.glob("*.ipynb")) if nb_dir.is_dir() else []:
+        if not re.match(r"\d\d-", path.name):
+            warn(path, "only notebooks named NN-short-name.ipynb become pages")
+            continue
+        notebooks[path] = json.loads(path.read_text(encoding="utf-8"))
+    for path, nb in notebooks.items():
+        cells = nb["cells"]
+        found, _ = split_title(source_text(cells[0])) if cells else ("Untitled", "")
+        if not re.match(rf"{path.name[:2]} · \S", found):
+            warn(path, f"the first cell should hold the title '# {path.name[:2]} · <title>', found '{found}'")
+        ids = cell_ids(nb)
+        for cell in cells:
+            if cell["cell_type"] != "markdown":
+                continue
+            text = source_text(cell)
+            cid = cell.get("metadata", {}).get("id") or cell.get("id", "")
+            if cid.startswith("section-") and not re.search(r"^#{2,3}\s", text, re.MULTILINE):
+                warn(path, f"cell {cid} has no ## or ### heading, so its section has no anchor on the site")
+            for url, frag in re.findall(r"\]\(([^)#\s]*)#scrollTo=([^)\s]+)\)", text):
+                if not url:
+                    target = path
+                elif url.startswith(COLAB + "/"):
+                    target = REPO / url[len(COLAB) + 1:]
+                else:
+                    continue
+                if target not in notebooks:
+                    warn(path, f"a link points to {target.name}, which is not a notebook of this session")
+                elif frag not in cell_ids(notebooks[target]):
+                    warn(path, f"a link points to #scrollTo={frag} in {target.name}, which has no cell with that id")
+            for url in re.findall(r"\]\((" + re.escape(COLAB) + r"/[^)#\s]+)", text):
+                if not (REPO / url[len(COLAB) + 1:]).exists():
+                    warn(path, f"a Colab link points to a file that does not exist: {url[len(COLAB) + 1:]}")
+
+    for page in [folder / "preface.md", *sorted((folder / "resources").glob("*.md"))]:
+        if page.exists() and split_title(page.read_text(encoding="utf-8"))[0] == "Untitled":
+            warn(page, "the page has no '# Title' line")
+
+    canva = folder / "slides" / "canva.json"
+    if canva.exists():
+        deck = json.loads(canva.read_text(encoding="utf-8"))
+        url = deck.get("view_url", "")
+        if "title" not in deck or not url:
+            warn(canva, "canva.json needs a 'title' and a 'view_url'")
+        elif not re.match(r"https://www\.canva\.com/design/[^/]+/[^/]+/view", url):
+            warn(canva, "view_url should be a public view link of the form https://www.canva.com/design/<id>/<token>/view")
+
+    docs_dir = folder / "assets" / "documents"
+    if docs_dir.is_dir():
+        roles_file = docs_dir / "roles.json"
+        files = {p.stem for p in docs_dir.glob("*.md")}
+        if not roles_file.exists():
+            warn(docs_dir, "the documents have no roles.json, so the session has no Document collection page")
+        else:
+            roles = json.loads(roles_file.read_text(encoding="utf-8"))
+            listed = [d["id"] for g in roles.get("groups", []) for d in g.get("documents", [])]
+            for missing in sorted(set(listed) - files):
+                warn(roles_file, f"lists '{missing}', but there is no {missing}.md")
+            for unlisted in sorted(files - set(listed)):
+                warn(roles_file, f"does not list {unlisted}.md, so the page does not show it")
+        for doc in sorted(docs_dir.glob("*.md")):
+            head = re.match(r"---\n(.*?)\n---\n", doc.read_text(encoding="utf-8"), re.S)
+            keys = {line.partition(":")[0].strip() for line in head.group(1).splitlines()} if head else set()
+            for key in ("id", "title", "date"):
+                if key not in keys:
+                    warn(doc, f"the document's front matter has no '{key}'")
+
+
 # --- Build --------------------------------------------------------------------
 
 def session_slug(folder: Path) -> str:
@@ -368,10 +498,11 @@ def build() -> None:
             site.add(nb, out)
             nb_out.append((nb, out))
         pages = []
-        for src_rel, out_rel, label, position in SESSION_PAGES:
-            if (folder / src_rel).exists():
-                site.add(folder / src_rel, dest / out_rel)
-                pages.append((folder / src_rel, dest / out_rel, label, position))
+        fixed = [(folder / src_rel, out_rel, label, position) for src_rel, out_rel, label, position in SESSION_PAGES]
+        for src, out_rel, label, position in fixed + resource_pages(folder):
+            if src.exists():
+                site.add(src, dest / out_rel)
+                pages.append((src, dest / out_rel, label, position))
         plan.append((folder, dest, nb_out, pages))
 
     markdown_page(site, SRC / "README.md", OUT / "index.md", position=1, label="Training series",
@@ -380,6 +511,7 @@ def build() -> None:
                        "of the repository. The slide decks, the demonstration scripts, and the scripts that "
                        "regenerate the notebooks are kept there.")
     for folder, dest, nb_out, pages in plan:
+        check_session(folder)
         title, _ = split_title((folder / "README.md").read_text(encoding="utf-8"))
         write(dest / "_category_.json", json.dumps(
             {"label": title.replace("Session ", "", 1), "position": int(re.sub(r"\D", "", dest.name) or 99) + 1,
@@ -401,8 +533,9 @@ def build() -> None:
                  "link": {"type": "doc", "id": f"{dest.name}/resources/index"}}, indent=2))
         for src, out, label, position in pages:
             markdown_page(site, src, out, position=position, label=label)
-        if (folder / "assets" / "documents").is_dir() and folder.name == "session-01-building-ai-applications":
-            documents_page(dest / "documents.mdx", position=3.5)
+        docs_dir = folder / "assets" / "documents"
+        if (docs_dir / "roles.json").exists():
+            documents_page(site, docs_dir, dest / "documents.mdx", position=3.5)
         if (folder / "slides" / "canva.json").exists():
             slides_page(folder / "slides" / "canva.json", dest / "slides.md", position=1.5)
         print(f"training site: {dest.relative_to(REPO)} ({len(nb_out)} notebooks, {len(pages)} pages)")
@@ -412,3 +545,7 @@ def build() -> None:
 
 if __name__ == "__main__":
     build()
+    for line in WARNINGS:
+        print(f"training site: warning: {line}")
+    if WARNINGS and "--strict" in sys.argv:
+        raise SystemExit(f"training site: {len(WARNINGS)} warnings (see training/AUTHORING.md)")

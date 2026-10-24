@@ -10,6 +10,10 @@ website/static so that it is served as is.
     python3 scripts/docs/build_training_pages.py                 # website/static/training/session-01/documents.html
     python3 scripts/docs/build_training_pages.py --artifact OUT  # body-only page with embedded logos, for a Claude artifact
 
+The roles of the documents and the notes on them are read from assets/documents/roles.json.
+The Training section of the site shows the same collection on its Document collection page,
+through viewer_data(), which build_training_site.py calls for every session with a roles.json.
+
 No dependencies beyond the standard library: the documents use headings, paragraphs
 and bullet lists only, and the chunking mirrors workshop.split_sections (one chunk per
 Markdown section, headings kept, "intro" for text before the first section).
@@ -30,30 +34,11 @@ SITE_OUT = REPO / "website" / "static" / "training" / "session-01" / "documents.
 LOGO = REPO / "website" / "static" / "img" / "program-logo.png"
 LOGO_DARK = REPO / "website" / "static" / "img" / "program-logo-dark.png"
 
-ROLES = [
-    ("evidence", "Relevant evidence",
-     "The four country briefs. Their figures are rounded from the indicator data, and a correct answer to the main question cites them.",
-     ["kenya-digital", "rwanda-digital", "kenya-economy", "rwanda-economy"]),
-    ("definition", "Definition",
-     "A note on the definition of the internet-users indicator and on the comparability of its values across years.",
-     ["internet-indicator"]),
-    ("outdated", "Outdated",
-     "A 2016 summary with figures for 2015 and expectations that later data did not confirm. It outranks the current briefs for a question about the latest figures, and its date in the metadata removes it.",
-     ["regional-2016"]),
-    ("distractor", "Distractors",
-     "Two notes on related topics without the requested indicators. The coffee note is the retrieval failure case; the mobile-money note is a plausible wrong passage.",
-     ["coffee", "mobile-money"]),
-]
-NOTE = {
-    "kenya-digital": "Relevant evidence for internet use and mobile subscriptions in Kenya.",
-    "rwanda-digital": "Relevant evidence for internet use and mobile subscriptions in Rwanda.",
-    "kenya-economy": "Relevant evidence for GDP per capita and growth in Kenya.",
-    "rwanda-economy": "Relevant evidence for GDP per capita and growth in Rwanda.",
-    "internet-indicator": "Definition of the indicator; the source for the question on its metadata.",
-    "regional-2016": "Outdated figures; shows why dates in metadata matter.",
-    "coffee": "Irrelevant to the question; shows a retrieval failure.",
-    "mobile-money": "Related topic without the requested indicators; a plausible distractor.",
-}
+# The role of each document in the session, and the text of the Document collection page.
+ROLES_FILE = DOCS / "roles.json"
+_roles = json.loads(ROLES_FILE.read_text(encoding="utf-8"))
+ROLES = [(g["key"], g["label"], g["description"], [d["id"] for d in g["documents"]]) for g in _roles["groups"]]
+NOTE = {d["id"]: d["note"] for g in _roles["groups"] for d in g["documents"]}
 META_KEYS = ["id", "type", "country", "date", "source", "note"]
 
 
@@ -263,21 +248,26 @@ def build(docs: list[dict], logo_light: str, logo_dark: str, site_links: bool) -
 """
 
 
-def viewer_data() -> dict:
-    """The document collection as data, for the Document collection page of the Training section."""
-    by = {d["metadata"]["id"]: d for d in (read_document(p) for p in sorted(DOCS.glob("*.md")))}
+def viewer_data(docs_dir: Path) -> dict:
+    """A session's document collection as data, for the Document collection page of the Training section.
+
+    `docs_dir` holds the documents (*.md) and roles.json, which groups them by their role in the session."""
+    roles = json.loads((docs_dir / "roles.json").read_text(encoding="utf-8"))
+    by = {d["metadata"]["id"]: d for d in (read_document(p) for p in sorted(docs_dir.glob("*.md")))}
     groups = []
-    for key, label, blurb, ids in ROLES:
+    for g in roles["groups"]:
         docs = []
-        for i in ids:
-            m = by[i]["metadata"]
+        for entry in g["documents"]:
+            doc = by[entry["id"]]
+            m = doc["metadata"]
             docs.append({
-                "id": i, "title": m["title"], "year": m["date"][:4], "note": NOTE[i],
-                "metadata": [[k, m.get(k, "")] for k in META_KEYS],
+                "id": entry["id"], "title": m.get("title", entry["id"]), "year": str(m.get("date", ""))[:4],
+                "note": entry.get("note", ""),
+                "metadata": [[k, m[k]] for k in META_KEYS if k in m],
                 "chunks": [{"citation": c["citation"], "characters": len(c["text"]), "html": render_markdown(c["text"])}
-                           for c in split_sections(by[i])],
+                           for c in split_sections(doc)],
             })
-        groups.append({"key": key, "label": label, "description": blurb, "documents": docs})
+        groups.append({"key": g["key"], "label": g["label"], "description": g.get("description", ""), "documents": docs})
     return {"groups": groups}
 
 

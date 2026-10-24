@@ -13,7 +13,7 @@ Materials for the training series of the AI for Data – Data for AI program: se
 
 ### Session 01 notebooks
 
-They open in Google Colab from the `main` branch of `worldbank/ai4data`, and each ends with a link to the next one. For the lab (07), choose a T4 GPU runtime before you run it; the notebook explains how.
+They open in Google Colab from the `main` branch of `worldbank/ai4data`, and each ends with a link to the next one. The lab (07) needs a T4 GPU runtime, and the notebook explains how to select one.
 
 | Notebook | Open in Colab |
 |---|---|
@@ -30,17 +30,18 @@ They open in Google Colab from the `main` branch of `worldbank/ai4data`, and eac
 ```
 session-NN-short-name/
   README.md        session plan: audience, objectives, timing, what to prepare, definition of ready
-  slides/          the deck (.pptx) and its outline (outline.md), which is the reviewable text of every slide
+  preface.md       the problem the session addresses, its readers, its ideas, and the notebooks
+  slides/          the deck and its outline, or canva.json with the public view link of a deck kept in Canva
   notebooks/       the notebooks, a shared module they import, and the script that regenerates them
-  assets/          the worked example: data, metadata, documents, questions, recorded model outputs
+  assets/          the worked example: data, metadata, documents with their roles.json, questions, recorded model outputs
   demo/            scripts for live demonstrations, with pretested inputs and fallbacks
-  resources/       what participants take home: setup guide, glossary, exercises, next steps
+  resources/       what participants take home: a README as the participant guide, glossary, exercises, next steps
 ```
 
 ## Conventions
 
 - **One worked example per session.** Every notebook and every slide of a session uses the same question, the same data, and the same documents, so that what changes between steps is the capability being added.
-- **Runnable without credentials.** Every notebook runs in a fresh Colab environment with no API key. Model calls fall back to recorded outputs that are labelled as such; everything else, from the vector store to the MCP server, runs for real. A live key, when available, is read from the environment and never written into a notebook.
+- **Runnable without credentials.** Every notebook runs in a fresh Colab environment with no API key. Model calls fall back to recorded outputs that are labelled as such; everything else, from the vector store to the MCP server, runs in full. A live key, when available, is read from the environment and never written into a notebook.
 - **Popular libraries over custom code.** Sessions use the libraries participants will meet in their own work (LangChain, LangGraph, FastMCP, Pydantic, and the program's own packages such as `pcn-core`), and write custom code only for what those do not provide.
 - **Real data, labelled.** Statistical values come from a named source with the retrieval date recorded. Documents written for a workshop say so in their header, state where their figures come from, and are never presented as publications.
 - **Cached outputs.** Notebooks are committed with their outputs so that reviewers and participants can read them without running them. The regeneration script reruns them in fallback mode.
@@ -54,6 +55,4 @@ A session is ready for delivery when its definition-of-ready checklist in the se
 
 ## Adding a session
 
-Copy the layout above, write the session README first, agree the worked example, then build the notebooks and the deck against it.
-
-The Training section of the docs site is generated from these folders by `scripts/docs/build_training_site.py` at every site build. A folder named `session-NN-short-name` appears there as session NN, with its README as the overview page, its `preface.md` as the preface, its numbered notebooks as pages with their committed outputs, and the participant resources and the assets README as further pages.
+Copy the layout above, write the session README first, agree the worked example, then build the notebooks and the deck against it. [AUTHORING.md](AUTHORING.md) describes the file names, titles, and formats that the Training section of the docs site expects, the writing rules for the session's text, and the checks to run before a pull request.
