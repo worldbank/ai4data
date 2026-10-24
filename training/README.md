@@ -2,8 +2,6 @@
 
 Materials for the training series of the AI for Data – Data for AI program: session plans, slide decks, notebooks, worked-example assets, demonstration scripts, and participant resources. Each session has its own folder, and that folder holds all of the session's materials.
 
-The [preface](preface.md) describes the audiences of the series, the ways to take part at different technical levels, and the reasons for each session.
-
 | Session | Title | Format |
 |---|---|---|
 | 01 | [Building AI applications for research and data](session-01-building-ai-applications/README.md) | 90 minutes, slides and guided notebooks, plus 15 to 30 minutes of questions |
@@ -53,4 +51,4 @@ A session is ready for delivery when its definition-of-ready checklist in the se
 
 Copy the layout above, write the session README first, agree the worked example, then build the notebooks and the deck against it.
 
-The Training section of the docs site is generated from these folders by `scripts/docs/build_training_site.py` at every site build. A folder named `session-NN-short-name` appears there as session NN, with its README as the overview page, its numbered notebooks as pages with their committed outputs, and the participant resources and the assets README as further pages.
+The Training section of the docs site is generated from these folders by `scripts/docs/build_training_site.py` at every site build. A folder named `session-NN-short-name` appears there as session NN, with its README as the overview page, its `preface.md` as the preface, its numbered notebooks as pages with their committed outputs, and the participant resources and the assets README as further pages.

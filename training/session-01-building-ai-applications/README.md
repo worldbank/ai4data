@@ -2,6 +2,8 @@
 
 90 minutes of slides and guided notebook demonstrations, followed by 15 to 30 minutes of questions.
 
+The [preface](preface.md) explains why the session is useful to participants with different backgrounds and technical levels, and why each notebook is part of it.
+
 ## Who it is for
 
 Two audiences at once:
