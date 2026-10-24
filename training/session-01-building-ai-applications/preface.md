@@ -4,7 +4,7 @@ This preface sets out the ideas behind session 01, its intended readers, and the
 
 ## The problem
 
-A language model writes fluent text on almost any subject, figures included. Fluency is a property of the wording, and it tells a reader nothing about the evidence behind the figures. A figure recalled from training and a figure copied from a published table read the same way on the page.
+A language model writes fluent text on almost any subject, figures included. Fluency is a property of the wording, and it tells a reader nothing about the evidence behind the figures. The text of an answer does not show where a figure came from. A reader of the answer alone cannot tell whether the model took a figure from a published table or reproduced it from patterns learned in training.
 
 For anyone who uses such answers in research, analysis, or decisions, two questions follow. How does an answer come to rest on evidence? How can a reader tell whether it does?
 
