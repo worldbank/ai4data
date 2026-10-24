@@ -42,7 +42,7 @@ Links between these files are written as relative links to the source files, for
 
 ## Notebooks
 
-- **File name and title.** A notebook is named `NN-short-name.ipynb`, and its first cell begins with `# NN · <title>`. The page URL is formed from the title.
+- **File name and title.** A notebook is named `NN-short-name.ipynb`, and its first cell begins with `# NN · <title>`. The page URL is formed from the title, so a new title after the session is published needs a redirect from the old URL (see [Addresses of published pages](#addresses-of-published-pages)).
 - **Sections.** Each numbered section starts a Markdown cell whose metadata `id` is `section-N` and whose first line is `## N. <section title>`. The site gives that heading the anchor `#section-N`.
 - **Links to sections.** A contents list links to a section as `[N. <title>](#scrollTo=section-N)`, which Colab follows inside the notebook. A link to another notebook of the session uses its Colab address on the `main` branch, `https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/<session folder>/notebooks/<file>`, with an optional `#scrollTo=section-N`. On the site, both kinds of link lead to the corresponding page and heading.
 - **Outputs.** Notebooks are committed with their outputs, and the site shows those outputs. Without an API key, every notebook runs in a fresh Colab environment and replays recorded model answers.
@@ -94,6 +94,10 @@ The writing rules of the [cookbook authoring guide](../cookbook/authoring/index.
 
 The materials contain no names of colleagues, no API keys or other credentials, no confidential documents, and no delivery dates.
 
+## Addresses of published pages
+
+Once a session is on the site, its page addresses are listed in `website/published-routes.txt`, and the site build fails when one of them stops resolving. A page moves when its source file is renamed or moved, when a notebook title changes, or when a resource file is renamed. In each case, an entry in `website/redirects.json` maps the old address to the new one. The process is described in `website/README.md`, under "Changing or removing a page".
+
 ## Checks before a pull request
 
 The site build runs the generator, which prints a warning for each convention of this guide that a session breaks. The strict run turns the warnings into an error:
@@ -107,7 +111,8 @@ npx docusaurus serve --port 3400 --no-open
 The served site is at `http://localhost:3400/ai4data/training/`. Before the pull request:
 
 1. The strict run reports no warnings, and the site build succeeds.
-2. Every page of the session opens from the sidebar, and the section links of each notebook lead to their headings.
-3. The notebooks run in a fresh Colab environment without an API key.
-4. The session has a row in the table of `training/README.md`.
-5. The text of the touched files has been checked against the writing rules above.
+2. `npm run routes:update` has added the new pages to `website/published-routes.txt`, and every moved page has an entry in `website/redirects.json`.
+3. Every page of the session opens from the sidebar, and the section links of each notebook lead to their headings.
+4. The notebooks run in a fresh Colab environment without an API key.
+5. The session has a row in the table of `training/README.md`.
+6. The text of the touched files has been checked against the writing rules above.
