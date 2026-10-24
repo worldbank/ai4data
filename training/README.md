@@ -1,6 +1,6 @@
 # Training series
 
-Materials for the training series of the AI for Data – Data for AI program: session plans, slide decks, notebooks, worked-example assets, demonstration scripts, and participant resources. Each session lives in its own folder and is self-contained.
+Materials for the training series of the AI for Data – Data for AI program: session plans, slide decks, notebooks, worked-example assets, demonstration scripts, and participant resources. Each session has its own folder, and that folder holds all of the session's materials.
 
 | Session | Title | Format |
 |---|---|---|
