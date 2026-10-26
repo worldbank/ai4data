@@ -21,14 +21,14 @@ export default function Videos() {
       <main className={styles.page}>
         <Heading as="h1">Videos</Heading>
         <p className={styles.lede}>
-          The program makes short videos that explain its methods and tools. Each video takes one
-          method, shows it at work on a real example, and explains the problem that the method
-          addresses. A video is an introduction to the method. The documentation describes the method
-          in full, and the code that implements it is linked from each entry.
+          The AI for Data – Data for AI program publishes short explainer videos alongside its
+          documentation. Each video introduces one method or tool from the program, such as
+          Proof-Carrying Numbers, through a worked example on public World Bank data. It shows the
+          problem that the method solves and then walks through how the method works, step by step.
         </p>
         <p className={styles.lede}>
-          A transcript of the narration follows each video, for readers who prefer text or who want
-          to quote a passage.
+          Each entry below links to the documentation, which describes the method in full, and to
+          the code that implements it. The full text of the narration is under each video.
         </p>
 
         {videos.map((v) => (
