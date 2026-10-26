@@ -259,3 +259,4 @@
 /training/session-01/slides
 /training/session-01/worked-example-data
 /unlisted
+/videos

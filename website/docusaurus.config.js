@@ -178,6 +178,11 @@ const config = {
             activeBaseRegex: '/training/',
           },
           {
+            to: '/videos',
+            label: 'Videos',
+            position: 'left',
+          },
+          {
             type: 'docSidebar',
             sidebarId: 'docsSidebar',
             position: 'left',
@@ -225,6 +230,7 @@ const config = {
               {label: 'Tools', to: '/tools'},
               {label: 'Reference implementation', to: '/docs/reference-implementation/'},
               {label: 'Cookbook', to: '/cookbook/'},
+              {label: 'Videos', to: '/videos'},
             ],
           },
           {
