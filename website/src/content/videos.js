@@ -34,6 +34,33 @@ export const videos = [
       "The PCN library implements this check.",
     ],
   },
+  {
+    id: 'gistembed-explainer',
+    title: 'GISTEmbed: Small AI for search',
+    youtube: 'f-fsbT9q308',
+    duration: '2:56',
+    published: 'October 2026',
+    kind: 'methods',
+    area: 'Access',
+    voice: 'synthetic',
+    summary:
+      'Search by meaning runs on an embedding model, and small models of this kind can run on an ordinary computer. The video shows how GISTEmbed trains a small embedding model with a large model as its guide: during training, the guide keeps texts that belong close to a question from being pushed away from it, so the small model does not learn the wrong lesson.',
+    links: [
+      {label: 'Code', href: 'https://github.com/worldbank/GISTEmbed'},
+      {label: 'Models', href: 'https://huggingface.co/collections/ai4data/gistembed'},
+      {label: 'Paper', href: 'https://arxiv.org/abs/2402.16829'},
+    ],
+    transcript: [
+      "People search in their own words. Someone asks how fast the economy expanded last year. The report that answers says that real GDP growth accelerated to 6.3 percent. The two share no words, so a search for matching words misses it. A search by meaning finds it, because both are about how much the economy grew.",
+      "Search by meaning runs on an embedding model. The model reads each text and gives it a place on a map of meaning. Texts about the same subject land close together, and texts about different subjects land far apart. The question gets a place too, and the search returns the texts nearest to it. Each place is stored as a list of numbers, called a vector.",
+      "Large embedding models draw this map well, but they need powerful hardware for every search. Small AI means models small enough to run on an ordinary computer. This one is about fifteen times smaller. A small model answers quickly and costs little to run. It can also keep documents on an organization's own machines, which matters for confidential data. GISTEmbed trains a small model to draw a better map, with a large model as its guide.",
+      "A model learns the map from pairs of a question and a text that answers it, a small group of pairs at a time. For each question, training pulls its answer closer on the map. Every other text in the group is pushed away. This needs no extra labels, so training on millions of pairs works this way.",
+      "Some of the pushed-away texts belong close. The question here is about capital cities, and another pair in the group holds a sentence on Canberra, the capital of Australia. Pushing it away teaches the small model that capital cities and Canberra are unrelated. Training data is far too large to check by hand, so wrong lessons like this slip in.",
+      "GISTEmbed adds a check. Before each push, a large model, the guide, scores how close each text is to the question. The question's own answer, Ottawa, sets the bar. A text that the guide scores above the answer is left out of the push. The sentence on Canberra and the question about Australia stay where they are. Every other text is still pushed away, so the small model keeps learning from the rest.",
+      "The small model learns from the guide's sense of meaning, and the wrong lessons are filtered out. The guide is needed only during training. Search then runs on the small model alone, with its speed and its low cost. The guide's own mistakes pass through, so the choice of guide matters. The training needs only pairs of a question and an answer, so an organization can use its own documents.",
+      "GISTEmbed is open source, and Sentence Transformers includes it as GISTEmbedLoss.",
+    ],
+  },
 ];
 
 export const videoById = (id) => videos.find((v) => v.id === id);
