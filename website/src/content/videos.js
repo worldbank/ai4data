@@ -1,4 +1,4 @@
-// Videos of the program, listed on /videos by kind (concepts, methods,
+// Videos listed on /videos by kind (concepts, methods,
 // walkthroughs) and embedded with
 // <Video id="..." /> (src/components/Video). Each record names the YouTube
 // video, its area in the hub, the documentation and code of the method,

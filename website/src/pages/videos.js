@@ -6,7 +6,7 @@ import Video from '@site/src/components/Video';
 import {videos} from '@site/src/content/videos';
 import styles from './videos.module.css';
 
-// The catalogue of the program's videos, grouped by kind. Records are in
+// The catalogue of videos, grouped by kind. Records are in
 // src/content/videos.js; the same component embeds a video on other pages.
 
 function VideoLink({link}) {
@@ -17,7 +17,7 @@ function VideoLink({link}) {
 // videos is left out.
 const KINDS = [
   ['concepts', 'Concepts'],
-  ['methods', 'Program methods and tools'],
+  ['methods', 'Methods and tools'],
   ['walkthroughs', 'Walkthroughs'],
 ];
 
@@ -55,22 +55,21 @@ export default function Videos() {
   return (
     <Layout
       title="Videos"
-      description="Videos of the AI for Data – Data for AI program: explainers of concepts behind AI applications that answer from data, explainers of the program’s methods and tools, and walkthroughs of its products and site.">
+      description="Videos that explain how AI applications work with data and how the methods and tools in the tools catalogue work, with walkthroughs of products and of this site.">
       <main className={styles.page}>
         <Heading as="h1">Videos</Heading>
         <p className={styles.lede}>
-          This page collects the videos of the AI for Data – Data for AI program. They are of three
-          kinds: explainers of general concepts behind AI applications that answer from data, such as
-          retrieval-augmented generation, tools and agents; explainers of the methods and tools in
-          the program&rsquo;s <Link to="/tools">tools catalogue</Link>, such as the AI-readiness
-          assessment, the Metadata Editor, the Data360 MCP server and Proof-Carrying Numbers; and
-          walkthroughs that show a product or a page of this site in use.
+          These videos explain how AI applications work with data, and how the methods and tools in
+          the <Link to="/tools">tools catalogue</Link> work. Concept videos cover ideas such as
+          retrieval-augmented generation, tools and agents. Method and tool videos cover entries such
+          as the AI-readiness assessment, the Metadata Editor, the Data360 MCP server and
+          Proof-Carrying Numbers. Walkthroughs show a product or a page of this site in use.
         </p>
         <p className={styles.lede}>
           The explainers work through real examples, mostly on public World Bank data and
           publications, and show the problem that a technique addresses before the steps that address
-          it. Each entry links to the documentation and code that the video relates to, and the full
-          text of the narration is under each video.
+          it. Each entry links to the related documentation and code, and the full text of the
+          narration is under each video.
         </p>
 
         {KINDS.map(([kind, heading]) => {
