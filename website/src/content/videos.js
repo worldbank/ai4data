@@ -1,10 +1,9 @@
 // Explainer videos of the program, listed on /videos and embedded with
 // <Video id="..." /> (src/components/Video). Each record names the YouTube
 // video, its area in the hub, the documentation and code of the method,
-// and the transcript of its narration.
-//
-// The narration of every video is read by a synthetic voice (Kokoro, voice
-// af_heart). The videos page states this once for all records.
+// and the transcript of its narration. `voice` is 'synthetic' for a
+// narration read by a text-to-speech voice and 'recorded' for a person's
+// voice; the videos page shows a note for synthetic narration.
 
 export const videos = [
   {
@@ -14,8 +13,9 @@ export const videos = [
     duration: '4:35',
     published: 'October 2026',
     area: 'Verification',
+    voice: 'synthetic',
     summary:
-      'How Proof-Carrying Numbers checks each figure in an answer from an AI chatbot against the data the chatbot was given: claim ids on the data, claim tags in the answer, the verifier, the marks a reader sees, and the judgement that remains with the reader.',
+      'An AI chatbot that answers from statistics can write a figure that differs from its source, and a reader cannot tell this from the text of the answer. The video shows how Proof-Carrying Numbers links each figure in an answer to the record it came from, how a verifier checks the figure against that record, and what the check leaves to the judgement of the reader.',
     links: [
       {label: 'Documentation', to: '/docs/pcn/'},
       {label: 'Code', href: 'https://github.com/worldbank/pcn'},

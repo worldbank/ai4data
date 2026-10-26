@@ -17,17 +17,18 @@ export default function Videos() {
   return (
     <Layout
       title="Videos"
-      description="Explainer videos of the AI for Data – Data for AI program, with links to the documentation and code of each method and a transcript of the narration.">
+      description="Short videos that explain the methods and tools of the AI for Data – Data for AI program on real examples, with links to the documentation and code and a transcript of each video.">
       <main className={styles.page}>
         <Heading as="h1">Videos</Heading>
         <p className={styles.lede}>
-          This page lists the program&rsquo;s explainer videos. Each entry gives the length, the area of
-          the <Link to="/hub">implementation hub</Link>, links to the documentation and code of the
-          method, and a transcript of the narration.
+          The program makes short videos that explain its methods and tools. Each video takes one
+          method, shows it at work on a real example, and explains the problem that the method
+          addresses. A video is an introduction to the method. The documentation describes the method
+          in full, and the code that implements it is linked from each entry.
         </p>
-        <p className={styles.note}>
-          The narration is read by a synthetic voice (Kokoro, voice af_heart). The videos are hosted
-          on YouTube and embedded from its privacy-enhanced domain.
+        <p className={styles.lede}>
+          A transcript of the narration follows each video, for readers who prefer text or who want
+          to quote a passage.
         </p>
 
         {videos.map((v) => (
@@ -35,6 +36,7 @@ export default function Videos() {
             <Heading as="h2" id={v.id}>{v.title}</Heading>
             <p className={styles.meta}>
               {v.area} · {v.duration} · {v.published}
+              {v.voice === 'synthetic' && ' · Narrated by a synthetic voice'}
             </p>
             <Video id={v.id} />
             <p className={styles.summary}>{v.summary}</p>

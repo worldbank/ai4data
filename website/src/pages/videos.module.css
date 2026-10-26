@@ -7,10 +7,6 @@
   max-width: 70ch;
   color: var(--ifm-color-emphasis-700);
 }
-.note {
-  font-size: 0.9rem;
-  color: var(--ifm-color-emphasis-700);
-}
 .video {
   margin-top: 2.5rem;
 }
