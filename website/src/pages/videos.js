@@ -61,9 +61,10 @@ export default function Videos() {
         <p className={styles.lede}>
           This page collects the videos of the AI for Data – Data for AI program. They are of three
           kinds: explainers of general concepts behind AI applications that answer from data, such as
-          retrieval-augmented generation, tools and agents; explainers of the program&rsquo;s own
-          methods and tools, such as Proof-Carrying Numbers; and walkthroughs that show a product or a
-          page of this site in use.
+          retrieval-augmented generation, tools and agents; explainers of the methods and tools in
+          the program&rsquo;s <Link to="/tools">tools catalogue</Link>, such as the AI-readiness
+          assessment, the Metadata Editor, the Data360 MCP server and Proof-Carrying Numbers; and
+          walkthroughs that show a product or a page of this site in use.
         </p>
         <p className={styles.lede}>
           The explainers work through real examples, mostly on public World Bank data and
