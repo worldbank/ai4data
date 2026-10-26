@@ -1,4 +1,4 @@
-# ai4data.data_use
+# Data Use
 
 Extracts **dataset mentions** from text and PDFs, and says how each mention is
 used. Two ways to use it:
