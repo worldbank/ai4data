@@ -48,23 +48,31 @@ class ModelManager:
     """
 
     DEFAULT_MODEL_ID = "fastino/gliner2-large-v1"
+    DEFAULT_ENTITY_MODEL_ID = "rafmacalaba/gliner_agents_v3"
+    DEFAULT_METADATA_MODEL_ID = "rafmacalaba/lfm2.5-350M-focus-metadata"
     DEFAULT_ADAPTER_ID = "ai4data/datause-extraction"
     DEFAULT_CLASSIFIER_ID = "ai4data/datause-classifier"
     _base_cache: Dict[str, GLiNER2] = {}
     _adapter_path_cache: Dict[str, str] = {}
     _active_adapter: Dict[int, Optional[str]] = {}
     _classifier_cache: Dict[str, object] = {}
+    _entity_cache: Dict[str, object] = {}
+    _metadata_cache: Dict[str, object] = {}
     _lock = threading.Lock()
 
     def __init__(
         self,
         cache_dir: Optional[str] = None,
         adapter_id: Optional[str] = DEFAULT_ADAPTER_ID,
+        device: Optional[str] = None,
     ):
         self.cache_dir = cache_dir
         self.adapter_id = adapter_id
+        self.device = device  # None = best available (cuda, mps, cpu)
 
     def _map_location(self) -> str:
+        if self.device:
+            return self.device
         if torch.cuda.is_available():
             return "cuda"
         if torch.backends.mps.is_available():
@@ -84,6 +92,45 @@ class ModelManager:
                 except Exception as exc:
                     raise RuntimeError(f"Failed to load model '{model_id}': {exc}") from exc
             return self._base_cache[model_id]
+
+    def load_entity_model(self, model_id: Optional[str] = None):
+        """Load (once) and cache the GLiNER entity model (NAMED/DESCRIPTIVE/VAGUE_DATA)."""
+        model_id = model_id or self.DEFAULT_ENTITY_MODEL_ID
+        with self._lock:
+            if model_id not in self._entity_cache:
+                from gliner import GLiNER
+
+                kwargs = {"cache_dir": self.cache_dir} if self.cache_dir else {}
+                try:
+                    model = GLiNER.from_pretrained(model_id, **kwargs)
+                except Exception as exc:
+                    raise RuntimeError(f"Failed to load model '{model_id}': {exc}") from exc
+                model.to(self._map_location())
+                self._entity_cache[model_id] = model
+            return self._entity_cache[model_id]
+
+    def load_metadata_model(self, model_id: Optional[str] = None):
+        """Load (once) and cache the LFM metadata model as ``(tokenizer, model)``.
+
+        The repo root holds the merged weights, so plain transformers is enough.
+        """
+        model_id = model_id or self.DEFAULT_METADATA_MODEL_ID
+        with self._lock:
+            if model_id not in self._metadata_cache:
+                from transformers import AutoModelForCausalLM, AutoTokenizer
+
+                kwargs = {"cache_dir": self.cache_dir} if self.cache_dir else {}
+                try:
+                    tokenizer = AutoTokenizer.from_pretrained(model_id, **kwargs)
+                    model = AutoModelForCausalLM.from_pretrained(
+                        model_id, trust_remote_code=True, dtype=torch.bfloat16, **kwargs
+                    )
+                except Exception as exc:
+                    raise RuntimeError(f"Failed to load model '{model_id}': {exc}") from exc
+                model.to(self._map_location())
+                model.eval()
+                self._metadata_cache[model_id] = (tokenizer, model)
+            return self._metadata_cache[model_id]
 
     def _adapter_path(self, adapter_id: str) -> str:
         """Download (once) and cache the adapter repo path."""
@@ -222,3 +269,5 @@ class ModelManager:
             self._adapter_path_cache.clear()
             self._active_adapter.clear()
             self._classifier_cache.clear()
+            self._entity_cache.clear()
+            self._metadata_cache.clear()
