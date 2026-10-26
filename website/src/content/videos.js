@@ -1,4 +1,5 @@
-// Explainer videos of the program, listed on /videos and embedded with
+// Videos of the program, listed on /videos by kind (concepts, methods,
+// walkthroughs) and embedded with
 // <Video id="..." /> (src/components/Video). Each record names the YouTube
 // video, its area in the hub, the documentation and code of the method,
 // and the transcript of its narration. `voice` is 'synthetic' for a
@@ -12,6 +13,7 @@ export const videos = [
     youtube: 'dAXahKS3eg0',
     duration: '4:35',
     published: 'October 2026',
+    kind: 'methods',
     area: 'Verification',
     voice: 'synthetic',
     summary:

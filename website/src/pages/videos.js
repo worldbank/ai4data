@@ -6,58 +6,84 @@ import Video from '@site/src/components/Video';
 import {videos} from '@site/src/content/videos';
 import styles from './videos.module.css';
 
-// The catalogue of explainer videos. Records are in src/content/videos.js;
-// the same component embeds a video on the documentation page of its method.
+// The catalogue of the program's videos, grouped by kind. Records are in
+// src/content/videos.js; the same component embeds a video on other pages.
 
 function VideoLink({link}) {
   return link.href ? <a href={link.href}>{link.label}</a> : <Link to={link.to}>{link.label}</Link>;
+}
+
+// The kinds of video, in the order the page lists them. A kind with no
+// videos is left out.
+const KINDS = [
+  ['concepts', 'Concepts'],
+  ['methods', 'Program methods and tools'],
+  ['walkthroughs', 'Walkthroughs'],
+];
+
+function VideoEntry({v}) {
+  return (
+    <article className={styles.video}>
+      <Heading as="h3" id={v.id}>{v.title}</Heading>
+      <p className={styles.meta}>
+        {v.area} · {v.duration} · {v.published}
+        {v.voice === 'synthetic' && ' · Narrated by a synthetic voice'}
+      </p>
+      <Video id={v.id} />
+      <p className={styles.summary}>{v.summary}</p>
+      <ul className={styles.links}>
+        {v.links.map((l) => (
+          <li key={l.label}>
+            <VideoLink link={l} />
+          </li>
+        ))}
+        <li>
+          <a href={`https://youtu.be/${v.youtube}`}>Open on YouTube</a>
+        </li>
+      </ul>
+      <details className={styles.transcript}>
+        <summary>Transcript</summary>
+        {v.transcript.map((p, i) => (
+          <p key={i}>{p}</p>
+        ))}
+      </details>
+    </article>
+  );
 }
 
 export default function Videos() {
   return (
     <Layout
       title="Videos"
-      description="Short videos that explain the methods and tools of the AI for Data – Data for AI program on real examples, with links to the documentation and code and a transcript of each video.">
+      description="Videos of the AI for Data – Data for AI program: explainers of concepts behind AI applications that answer from data, explainers of the program’s methods and tools, and walkthroughs of its products and site.">
       <main className={styles.page}>
         <Heading as="h1">Videos</Heading>
         <p className={styles.lede}>
-          The AI for Data – Data for AI program publishes short explainer videos alongside its
-          documentation. Each video introduces one method or tool from the program, such as
-          Proof-Carrying Numbers, through a worked example on public World Bank data. It shows the
-          problem that the method solves and then walks through how the method works, step by step.
+          This page collects the videos of the AI for Data – Data for AI program. They are of three
+          kinds: explainers of general concepts behind AI applications that answer from data, such as
+          retrieval-augmented generation, tools and agents; explainers of the program&rsquo;s own
+          methods and tools, such as Proof-Carrying Numbers; and walkthroughs that show a product or a
+          page of this site in use.
         </p>
         <p className={styles.lede}>
-          Each entry below links to the documentation, which describes the method in full, and to
-          the code that implements it. The full text of the narration is under each video.
+          The explainers work through real examples, mostly on public World Bank data and
+          publications, and show the problem that a technique addresses before the steps that address
+          it. Each entry links to the documentation and code that the video relates to, and the full
+          text of the narration is under each video.
         </p>
 
-        {videos.map((v) => (
-          <section key={v.id} className={styles.video}>
-            <Heading as="h2" id={v.id}>{v.title}</Heading>
-            <p className={styles.meta}>
-              {v.area} · {v.duration} · {v.published}
-              {v.voice === 'synthetic' && ' · Narrated by a synthetic voice'}
-            </p>
-            <Video id={v.id} />
-            <p className={styles.summary}>{v.summary}</p>
-            <ul className={styles.links}>
-              {v.links.map((l) => (
-                <li key={l.label}>
-                  <VideoLink link={l} />
-                </li>
+        {KINDS.map(([kind, heading]) => {
+          const list = videos.filter((v) => v.kind === kind);
+          if (!list.length) return null;
+          return (
+            <section key={kind} className={styles.kind}>
+              <Heading as="h2" id={kind}>{heading}</Heading>
+              {list.map((v) => (
+                <VideoEntry key={v.id} v={v} />
               ))}
-              <li>
-                <a href={`https://youtu.be/${v.youtube}`}>Open on YouTube</a>
-              </li>
-            </ul>
-            <details className={styles.transcript}>
-              <summary>Transcript</summary>
-              {v.transcript.map((p, i) => (
-                <p key={i}>{p}</p>
-              ))}
-            </details>
-          </section>
-        ))}
+            </section>
+          );
+        })}
       </main>
     </Layout>
   );
