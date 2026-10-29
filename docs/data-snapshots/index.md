@@ -7,7 +7,24 @@ description: The Data Snapshots tool extracts analytical figures and tables from
 
 # Data Snapshots
 
-## Overview
+## The Challenge
+
+Valuable information in institutional documents often appears in visual artifacts
+rather than narrative text. Text extraction alone can miss a chart's structure,
+a map's legend, or the relationships in a table. A useful extraction must preserve
+enough context to interpret the artifact.
+
+Generic layout detectors identify regions that look like figures or tables, but
+they can also select decorative photographs or tables of contents. They may split
+a composite dashboard into separate fragments or omit a title, legend, or
+footnote. These problems motivate the Data Snapshots
+[extraction benchmark](https://arxiv.org/abs/2606.06242v1).
+
+Document-level metadata describes the parent report, but cannot fully describe
+each artifact's variables, units, geographic coverage, or represented period.
+Snapshot-level metadata supplies that more specific description.
+
+## What is a Data Snapshot?
 
 A **data snapshot** is a bounded visual region in a document that contains
 information for analytical interpretation or reuse. Examples include statistical
@@ -28,23 +45,6 @@ page 12 (PDF page 15), as used in the
 [data-snapshot dataset](https://huggingface.co/datasets/ai4data/data-snapshot).
 Metadata generation is optional; the JSON is illustrative. Select the figure to
 view it at full size.*
-
-## The Challenge
-
-Valuable information in institutional documents often appears in visual artifacts
-rather than narrative text. Text extraction alone can miss a chart's structure,
-a map's legend, or the relationships in a table. A useful extraction must preserve
-enough context to interpret the artifact.
-
-Generic layout detectors identify regions that look like figures or tables, but
-they can also select decorative photographs or tables of contents. They may split
-a composite dashboard into separate fragments or omit a title, legend, or
-footnote. These problems motivate the Data Snapshots
-[extraction benchmark](https://arxiv.org/abs/2606.06242v1).
-
-Document-level metadata describes the parent report, but cannot fully describe
-each artifact's variables, units, geographic coverage, or represented period.
-Snapshot-level metadata supplies that more specific description.
 
 ## How It Works
 
