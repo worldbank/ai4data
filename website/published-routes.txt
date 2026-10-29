@@ -199,6 +199,8 @@
 /docs/anomaly/explanation/motivation
 /docs/data-discoverability
 /docs/data-discoverability/embedding-fine-tuning
+/docs/data-snapshots
+/docs/data-snapshots/metadata-schema
 /docs/data_use
 /docs/gsbpm-mapping
 /docs/inclusive-ai
