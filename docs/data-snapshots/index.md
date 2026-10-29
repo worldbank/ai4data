@@ -20,6 +20,15 @@ each image. This makes individual analytical artifacts accessible for inspection
 organization, and reuse. The workflow is intended for researchers, data
 practitioners, and developers working with document collections.
 
+[![A sample PDF page, the same page with a Figure bounding box, its extracted chart, and illustrative semantic metadata JSON.](/img/snapshot/workflow-overview.svg)](/img/snapshot/workflow-overview.svg)
+
+*Sample page and crop from
+[Policy Research Working Paper 4771](https://documents.worldbank.org/curated/en/937071468314370786/pdf/The-typology-of-partial-credit-guarantee-funds-around-the-world.pdf#page=15),
+page 12 (PDF page 15), as used in the
+[data-snapshot dataset](https://huggingface.co/datasets/ai4data/data-snapshot).
+Metadata generation is optional; the JSON is illustrative. Select the figure to
+view it at full size.*
+
 ## The Challenge
 
 Valuable information in institutional documents often appears in visual artifacts
@@ -46,8 +55,8 @@ flowchart LR
     A[PDF document] --> B[Page rendering]
     B --> C[Layout detection]
     C --> D[Snapshot PNG images]
-    D --> E[Semantic metadata extraction (optional)]
-    E --> F[Metadata JSON]
+    D --> E["Semantic metadata extraction (optional)"]
+    E --> F[JSON Metadata]
 ```
 
 1. **Page rendering.** The tool converts each PDF page into an image that the
@@ -130,25 +139,19 @@ python -m ai4data.data_snapshot.extract_data_snapshot --input=data/example.pdf
 ```
 
 **Metadata-only extraction.** This command generates missing metadata from
-existing snapshot images, without rerunning the PDF detector:
+existing snapshot images, without rerunning the snapshot extraction:
 
 ```bash
 python -m ai4data.data_snapshot.extract_metadata \
   --input=output/doclayoutyolo/snapshots
 ```
 
-The examples are alternative starting points. After a snapshot-only run, use the
-metadata-only command to add JSON: PDF commands skip documents with existing
-outputs. **`--force` deletes matching outputs before processing and does not
-restore them after a failure.** The
-[README's rerun guidance](https://github.com/worldbank/ai4data/blob/main/src/ai4data/data_snapshot/README.md#outputs-and-reruns)
-explains replacement and recovery. Add `--help` to any command for its options.
+Add `--help` to any command for its options.
 
 ### Example outputs
 
 For `example.pdf`, a run that finds one figure and one table would produce this
-directory structure after metadata extraction. This is an illustrative layout,
-not recorded model output:
+directory structure after metadata extraction:
 
 ```text
 output/doclayoutyolo/
@@ -156,19 +159,6 @@ output/doclayoutyolo/
 ├── snapshots/example_table_000.png
 ├── metadata/example_figure_000.json
 └── metadata/example_table_000.json
-```
-
-The following illustrative metadata excerpt describes an imagined table titled
-"Population by year", with units of persons and years in columns. It uses valid
-Schema v1.4 structures and contains no transcribed observations:
-
-```json
-{
-  "title": "Population by year",
-  "variables": [{"name": "Population", "unit": {"source_text": "Persons"}}],
-  "dimensions": [{"name": "Year", "presentation_roles": ["column"]}],
-  "visualization_types": [{"normalized_value": "table"}]
-}
 ```
 
 The [Metadata Schema reference](metadata-schema.md) explains the fields, nested
@@ -184,16 +174,15 @@ structures, and validation rules. Unsupported metadata fields can remain null.
   correctness, so metadata needs review against the image.
 - Numerical transcription and verification of table cells or chart values are
   outside the current module.
-- There is no complete built-in review or catalog publication workflow.
+- There is no complete built-in review or catalog publication workflow yet.
   `submit_snapshot` is a placeholder that prints paths without submitting files.
 - The pipeline saves crops and semantic metadata, but does not persist detection
   sidecars with source-page coordinates or extraction history. Applications that
   need those provenance records must retain them separately.
-
-The published extraction benchmark evaluates detected regions, not the accuracy
-of the current semantic metadata extractor. Improved contextual boundaries,
-metadata review, and integrations with discovery or publication systems are
-possible future extensions, not capabilities supplied by the current module.
+- The published extraction benchmark evaluates detected regions, not the accuracy
+  of the current semantic metadata extractor. 
+- Improved contextual boundaries, metadata review, and integrations with discovery or publication
+  systems are possible future extensions, not capabilities supplied by the current module.
 
 ## References and Resources
 
