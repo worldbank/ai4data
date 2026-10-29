@@ -90,6 +90,11 @@ const sidebars = {
       label: 'Efficient and Inclusive AI Applications',
       items: ['inclusive-ai/inclusive-ai'],
     },
+    {
+      type: 'category',
+      label: 'Data Snapshots',
+      items: ['data-snapshots/index', 'data-snapshots/metadata-schema'],
+    },
 
     {
       type: 'html',
