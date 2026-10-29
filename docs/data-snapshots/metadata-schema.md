@@ -9,29 +9,17 @@ description: The current production Data Snapshot Metadata Schema v1.4 defines s
 
 ## Purpose and scope
 
-This page documents the current production schema used by the
-[Data Snapshots tool](index.md). A record describes the analytical content visible
-in one snapshot image, including its title, variables, units, context, and sources.
-The schema describes the represented data; it does not transcribe numerical
-observations, reconstruct table cells, or digitize chart values.
+The **Data Snapshot Metadata Schema v1.4** defines the structure of semantic metadata used by the [Data Snapshots tool](index.md). Each record describes the analytical content of a single snapshot image, including its title, variables, units, geographic and temporal coverage, and sources. The schema describes what the snapshot represents; it does not transcribe numerical observations, reconstruct table cells, or digitize chart values.
 
-The metadata extractor uses image-visible evidence. Filenames, directory names,
-and parent-document metadata are excluded from its evidence. The `provenance`
-field describes derivation sources and credited agents visible in the snapshot,
-not source-file coordinates or the pipeline's execution history.
+Metadata generation relies on evidence visible within the snapshot image. Filenames, directory names, and parent-document metadata are not supplied to the model as evidence. The `provenance` field describes derivation sources and credited agents visible in the snapshot, rather than source-file coordinates or pipeline execution history.
 
-**Data Snapshot Metadata Schema v1.4** describes one snapshot using its visible
-content. The canonical validator and field definitions are the
-[Pydantic models](https://github.com/worldbank/ai4data/blob/main/src/ai4data/data_snapshot/metadata_schema/models.py).
-The exported JSON Schema identifies Draft 2020-12 and schema version `1.4`.
-The version is schema metadata, not a required property of each record.
+The [canonical Pydantic models](https://github.com/worldbank/ai4data/blob/main/src/ai4data/data_snapshot/metadata_schema/models.py) define the schema's fields and validation rules. The exported JSON Schema follows Draft 2020-12 and identifies schema version `1.4`. This version is schema metadata and is not a required property of individual records.
 
 ## Fields
 
-All top-level fields are optional and nullable. Missing and null values represent
-unavailable information. Non-null lists require at least one item, and unknown
-fields are rejected. An empty top-level record is structurally valid; it does not
-demonstrate a useful or complete extraction.
+The schema defines the following top-level metadata fields. All fields are optional and nullable, allowing records to represent information that is unavailable or not applicable to a particular snapshot.
+
+Non-null lists must contain at least one item, and unknown fields are rejected. Although an empty record is structurally valid, it does not necessarily represent a useful or complete metadata extraction.
 
 | Field | Non-null type | Meaning |
 |---|---|---|
@@ -58,12 +46,13 @@ demonstrate a useful or complete extraction.
 
 ## Nested structures and field boundaries
 
-`Variable` keeps the measured concept separate from its qualifiers. `unit` retains
-the displayed expression and can add a code and magnitude exponent; `currency`
-retains currency wording and an optional code. A variable requires a name, unit,
-currency, or statistical form. Analytical and axis roles additionally require a
-name. `Dimension` describes what groups or organizes the measures, such as year,
-sex, or region, including visible `categories` and `category_groups`.
+Several metadata fields use nested structures to represent related information while preserving important semantic distinctions.
+
+The `Variable` structure describes measured concepts and their associated properties. Its `unit` field preserves the displayed expression and may include a code and magnitude exponent, while `currency` retains the displayed currency and an optional code. A variable must contain at least a name, unit, currency, or statistical form. Variables assigned analytical or axis roles must also have a name.
+
+The `Dimension` structure describes how measurements are grouped or organized, such as by year, sex, or region. It can represent individual `categories`, one-level category groupings (`category_groups`), and presentation roles within tables.
+
+The following table summarizes selected nested structures and their representation rules.
 
 | Structure | Fields or vocabulary | Rule |
 |---|---|---|
@@ -73,47 +62,36 @@ sex, or region, including visible `categories` and `category_groups`.
 | `Variable.multi_axis_assignments` | `dimension`, `position`, `position_index` | Distinguishes multiple axes; x uses top/bottom, y uses left/right, and the index starts at one nearest the plot. |
 | Normalized terms | `source_text`, `normalized_value` | Preserves source wording separately from an allowed normalized value. |
 | `CodedTerm` | `source_text`, `code`, `scheme`, `uri` | Requires text, a code, or a URI; code and scheme must occur together. |
-| `TemporalExpression` | `source_text`, `start`, `end`, `relation`, `precision` | Normalized bounds require a relation and precision; point, interval, and open-ended interval have different boundary requirements. |
+| `TemporalExpression` | `source_text`, `start`, `end`, `relation`, `precision` | Normalized bounds require a relation and precision; point, interval, and open-ended intervals have different boundary requirements. |
 | `GeographicCoverage` | `scope`, `locations`, `level` | Separates the overall area from additional places and reporting level. |
 | `Provenance` | `sources`, `attributions` | Separates derivation datasets from credited agents. |
 
-The complete vocabularies for visualization types, statistical forms, geographic
-levels, and reporting intervals are defined in the canonical models. Their field
-metadata also records links to standards and the relationship of each mapping.
-Those mappings do not imply that every application-owned vocabulary is a direct
-copy of an external standard or that a record is certified by that standard.
+The schema distinguishes between source-visible information and normalized representations. The `source_text` field is reserved for wording or symbols actually visible in the snapshot. For example, an inferred visualization type can be recorded in `normalized_value` without inventing corresponding source text.
 
-`source_text` is reserved for wording or symbols actually visible in the image.
-An inferred visualization form belongs in `normalized_value`, without invented
-source wording. Temporal coverage describes when the represented data apply,
-not the document's publication date. Roles, sources, notes, and category headings
-retain their distinct meanings rather than being copied into several fields.
+Similar distinctions apply to other fields. Temporal coverage describes the period represented by the data, not the document's publication date. Analytical roles, data sources, interpretive notes, and category headings should retain their intended meanings rather than being duplicated across fields.
+
+The complete controlled vocabularies for visualization types, statistical forms, geographic levels, and reporting intervals are defined in the [canonical Pydantic models](https://github.com/worldbank/ai4data/blob/main/src/ai4data/data_snapshot/metadata_schema/models.py). These models also document mappings to relevant standards. Such mappings do not imply that every vocabulary is directly adopted from an external standard or that schema-valid records are certified as compliant with those standards.
 
 ## Example and validation
 
-This example uses the snapshot `policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.png`
-from the [Data Snapshot dataset](https://huggingface.co/datasets/ai4data/data-snapshot).
-It shows labor-force status after the COVID-19 outbreak for Urban Nationals and
-Shona, with employed and unemployed populations represented as percentages.
-The [source policy brief and its PDF](https://reliefweb.int/report/kenya/policy-brief-stateless-citizens-journey-shona-community-kenya)
-are hosted on ReliefWeb.
+### Example metadata record
+
+The following example illustrates how Data Snapshot Metadata Schema v1.4 represents the analytical content of a real data snapshot.
+
+The snapshot, sourced from a [policy brief on the Shona community in Kenya](https://reliefweb.int/report/kenya/policy-brief-stateless-citizens-journey-shona-community-kenya), compares labor-force status between Urban Nationals and Shona following the COVID-19 outbreak. It presents employed and unemployed populations as percentages across five periods. The extracted image is available in the [Data Snapshot dataset](https://huggingface.co/datasets/ai4data/data-snapshot).
 
 [![Figure 1: Labor force status after the COVID-19 outbreak for people aged 18–64, comparing Urban Nationals and Shona across five periods.](/img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.png)](/img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.png)
 
-The following human-reviewed metadata is from
-[Data Snapshot Metadata Gold](https://huggingface.co/datasets/ai4data/data_snapshot_metadata_gold). The
-record validates against the current production Schema v1.4 model. It describes
-the chart's variables, groups, coverage, and source without transcribing its
-numerical observations.
+The metadata record below comes from the human-reviewed [Data Snapshot Metadata Gold](https://huggingface.co/datasets/ai4data/data_snapshot_metadata_gold) dataset and validates against the production Schema v1.4. It describes the chart's variables, population groups, temporal coverage, and sources without transcribing the numerical observations.
 
-[Open the gold metadata JSON](/img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.json).
+[Open the complete metadata JSON](/img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.json).
 
 ```json file=../../website/static/img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.json
 ```
 
-For an existing metadata file named `metadata.json`, the following code validates
-it and prints a representation that omits unavailable values. It does not modify
-the file or call a model:
+### Validating a metadata record
+
+The production schema is implemented using Pydantic. The following example validates an existing `metadata.json` file and prints its contents, excluding fields with null values:
 
 ```python
 from pathlib import Path
@@ -126,17 +104,17 @@ metadata = DataSnapshotMetadata.model_validate_json(
 print(metadata.model_dump_json(indent=2, exclude_none=True))
 ```
 
-`DataSnapshotMetadata.model_json_schema(mode="validation")` returns the schema
-for the installed version. JSON Schema carries the exported structural rules;
-format assertions require a format-aware validator. Python additionally applies
-Unicode NFC normalization, outer whitespace trimming, stable exact deduplication,
-and checks for URI syntax, language-tag casing and uniqueness, calendar dates,
-and chronological ordering. Neither validator establishes external registry
-membership, source-grounding, or semantic correctness.
+This operation does not modify the original file or invoke a language model.
+
+The schema can also be exported as JSON Schema using `DataSnapshotMetadata.model_json_schema(mode="validation")`. The exported schema defines structural constraints, while format assertions require a format-aware validator.
+
+Pydantic additionally applies Unicode NFC normalization, leading and trailing whitespace trimming, and stable exact deduplication. It also validates URI syntax, language-tag formatting and uniqueness, calendar dates, and chronological ordering.
+
+**Schema validation ensures that metadata conforms to the required representation, but does not establish factual accuracy or completeness.** It also does not verify external registry membership or whether extracted values are supported by the source image. These properties require separate checks.
 
 ## References
 
-- *Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs* (publication pending) documents the schema-development methodology. The schema in the paper ends with a flat schema, whereas production uses Schema v1.4, with the nested structures and validation rules documented on this page.
+- *Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs* (publication pending) documents the schema-development methodology. The paper presents an earlier, flat 37-field schema, while the current production Schema v1.4 uses a nested representation.
 - [Experimental schema-development workflow](https://github.com/ajdajd/data-snapshot/blob/main/notebooks/schema_discovery/README.md) preserves the research code and versioned artifacts.
 - [Canonical Pydantic models](https://github.com/worldbank/ai4data/blob/main/src/ai4data/data_snapshot/metadata_schema/models.py) define every field, vocabulary, example, and validation rule.
 - [Metadata extraction](https://github.com/worldbank/ai4data/blob/main/src/ai4data/data_snapshot/metadata_extraction/extraction.py) derives the model-facing response format from the canonical schema and validates completed responses.

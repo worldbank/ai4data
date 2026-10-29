@@ -7,35 +7,17 @@ description: The Data Snapshots tool extracts analytical figures and tables from
 
 # Data Snapshots
 
+Data Snapshots is a tool for extracting analytical figures and tables from PDF documents as PNG images and optionally generating structured semantic metadata about their content. The resulting files can be inspected individually or used in downstream data discovery and analysis workflows.
+
 ## The Challenge
 
-Valuable information in institutional documents often appears in visual artifacts
-rather than narrative text. Text extraction alone can miss a chart's structure,
-a map's legend, or the relationships in a table. A useful extraction must preserve
-enough context to interpret the artifact.
+Institutional reports often contain valuable analytical information in figures and tables that text-based extraction cannot fully capture. Extracting these artifacts requires preserving their visual structure and contextual information, including titles, legends, and footnotes.
 
-Generic layout detectors identify regions that look like figures or tables, but
-they can also select decorative photographs or tables of contents. They may split
-a composite dashboard into separate fragments or omit a title, legend, or
-footnote. These problems motivate the Data Snapshots
-[extraction benchmark](https://arxiv.org/abs/2606.06242v1).
-
-Document-level metadata describes the parent report, but cannot fully describe
-each artifact's variables, units, geographic coverage, or represented period.
-Snapshot-level metadata supplies that more specific description.
+Generic layout detectors can identify figures and tables, but may also select irrelevant content, fragment composite visualizations, or omit important context. Furthermore, document-level metadata cannot adequately describe the variables, units, geographic coverage, or time periods represented by individual artifacts.
 
 ## What is a Data Snapshot?
 
-A **data snapshot** is a bounded visual region in a document that contains
-information for analytical interpretation or reuse. Examples include statistical
-tables, analytical charts, maps, dashboards, and composite figures. Its title,
-legend, caption, or footnote may be needed to understand the information it holds.
-
-The Data Snapshots tool takes institutional PDFs as input, extracts figure and
-table regions as PNG images, and optionally generates semantic metadata JSON for
-each image. This makes individual analytical artifacts accessible for inspection,
-organization, and reuse. The workflow is intended for researchers, data
-practitioners, and developers working with document collections.
+A **data snapshot** is a bounded visual region within a document containing structured or semi-structured information intended for analytical interpretation or reuse. Examples include statistical tables, analytical charts, maps, dashboards, and composite figures. Contextual elements such as titles, legends, captions, and footnotes may be necessary to interpret the artifact.
 
 [![A sample PDF page, the same page with a Figure bounding box, its extracted chart, and illustrative semantic metadata JSON.](/img/snapshot/workflow-overview.svg)](/img/snapshot/workflow-overview.svg)
 
@@ -63,7 +45,7 @@ flowchart LR
    detector can inspect.
 2. **Layout detection and cropping.** DocLayout-YOLO, the default detector,
    locates figure and table regions. The tool saves those regions as PNG images.
-   Alternative detectors are available through separate installation extras.
+   Other supported detectors include YOLO11, YOLO26, and TF-ID-Large.
 3. **Semantic metadata extraction.** A vision-language model, which processes
    images and text instructions, describes the content of each snapshot. It uses
    evidence visible within the image, including labels, legends, and notes.
@@ -77,17 +59,11 @@ documents the supported detectors, configuration, and Python interfaces.
 
 ## Using the Outputs
 
-The tool produces snapshot images and semantic metadata files. These can become
-inputs to other workflows:
+The tool produces snapshot images and, optionally, semantic metadata files. These outputs can support several downstream applications:
 
-- Curators can organize figures and tables by their subjects, variables, units,
-  or geographic and temporal coverage.
-- Developers can use the images and metadata to build searchable collections of
-  analytical artifacts.
-- Researchers can retrieve relevant figures and tables and inspect their content
-  alongside the source documents.
-- Other tools can use the snapshots for numerical extraction and analysis or
-  integrate them into broader data discovery workflows.
+- **Organization and indexing**: Use metadata to categorize snapshots by subject, variables, units, geographic coverage, and time periods.
+- **Search and retrieval**: Build systems that help researchers find relevant analytical figures and tables across document collections.
+- **Downstream processing**: Use extracted snapshots as inputs to numerical transcription, further analysis, and other data discovery workflows.
 
 Search, numerical transcription, catalogs, and publication services are downstream
 applications; the production module does not implement them. The PNG preserves
@@ -162,27 +138,18 @@ output/doclayoutyolo/
 ```
 
 The [Metadata Schema reference](metadata-schema.md) explains the fields, nested
-structures, and validation rules. Unsupported metadata fields can remain null.
+structures, and validation rules. Metadata fields without supporting evidence in the snapshot may be null.
 
 ## Limitations and Future Directions
 
-- Layout detectors can return irrelevant content or incomplete boundaries.
-  Review crops against their source pages, especially composite figures and
-  artifacts whose interpretation depends on titles, legends, or footnotes.
-- Metadata generation can omit visible information or produce incorrect
-  interpretations. Structural schema validation does not establish semantic
-  correctness, so metadata needs review against the image.
-- Numerical transcription and verification of table cells or chart values are
-  outside the current module.
-- There is no complete built-in review or catalog publication workflow yet.
-  `submit_snapshot` is a placeholder that prints paths without submitting files.
-- The pipeline saves crops and semantic metadata, but does not persist detection
-  sidecars with source-page coordinates or extraction history. Applications that
-  need those provenance records must retain them separately.
-- The published extraction benchmark evaluates detected regions, not the accuracy
-  of the current semantic metadata extractor. 
-- Improved contextual boundaries, metadata review, and integrations with discovery or publication
-  systems are possible future extensions, not capabilities supplied by the current module.
+The current Data Snapshots workflow has several limitations:
+
+- **Snapshot detection.** Layout detectors may extract irrelevant content, miss analytical artifacts, or capture incomplete regions. Composite figures and contextual elements such as titles, legends, and footnotes are particularly challenging. Extracted images should be reviewed against their source pages.
+- **Metadata accuracy.** Metadata extraction may omit visible information or generate incorrect interpretations. Validation against the metadata schema ensures structural consistency but does not guarantee factual accuracy or completeness.
+- **Workflow scope.** The tool produces snapshot images and semantic metadata but does not perform numerical transcription, verify individual observations, or provide built-in review and catalog publication workflows.
+- **Provenance and evaluation.** The pipeline does not persist source-page coordinates or extraction history alongside its outputs. Additionally, the published extraction benchmark evaluates layout detection and spatial accuracy, not the accuracy of the current metadata extraction process.
+
+Future improvements could include more complete snapshot boundaries, metadata quality assessment and review, extraction provenance tracking, and integration with downstream discovery and publication systems. These remain potential extensions rather than capabilities of the current tool.
 
 ## References and Resources
 
