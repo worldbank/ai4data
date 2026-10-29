@@ -91,29 +91,24 @@ retain their distinct meanings rather than being copied into several fields.
 
 ## Example and validation
 
-This illustrative record describes an imagined table headed "Population by
-year", labeled "Table 1", with years in columns, units of persons, and visible
-coverage of 2020–2024. It contains no numerical observations and is not a model
-output or a gold annotation.
+This example uses the snapshot `policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.png`
+from the [Data Snapshot dataset](https://huggingface.co/datasets/ai4data/data-snapshot).
+It shows labor-force status after the COVID-19 outbreak for Urban Nationals and
+Shona, with employed and unemployed populations represented as percentages.
+The [source policy brief and its PDF](https://reliefweb.int/report/kenya/policy-brief-stateless-citizens-journey-shona-community-kenya)
+are hosted on ReliefWeb.
 
-```json
-{
-  "title": "Population by year",
-  "document_label": "Table 1",
-  "variables": [{"name": "Population", "unit": {"source_text": "Persons"}}],
-  "dimensions": [{"name": "Year", "presentation_roles": ["column"]}],
-  "visualization_types": [{"normalized_value": "table"}],
-  "temporal_coverage": {
-    "period": {
-      "source_text": "2020–2024",
-      "start": "2020",
-      "end": "2024",
-      "relation": "interval",
-      "precision": "year"
-    }
-  },
-  "languages": [{"tag": "en"}]
-}
+[![Figure 1: Labor force status after the COVID-19 outbreak for people aged 18–64, comparing Urban Nationals and Shona across five periods.](/img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.png)](/img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.png)
+
+The following human-reviewed metadata is from
+[Data Snapshot Metadata Gold](https://huggingface.co/datasets/ai4data/data_snapshot_metadata_gold). The
+record validates against the current production Schema v1.4 model. It describes
+the chart's variables, groups, coverage, and source without transcribing its
+numerical observations.
+
+[Open the gold metadata JSON](/img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.json).
+
+```json file=../../website/static/img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.json
 ```
 
 For an existing metadata file named `metadata.json`, the following code validates
@@ -139,24 +134,10 @@ and checks for URI syntax, language-tag casing and uniqueness, calendar dates,
 and chronological ordering. Neither validator establishes external registry
 membership, source-grounding, or semantic correctness.
 
-## Relationship to schema-development research
+## References
 
-*Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology
-with Multimodal LLMs* describes an earlier, flat schema developed through
-artifact-driven discovery and human adjudication. Publication on arXiv is pending.
-
-Production Schema v1.4 uses the nested structures and validation rules documented
-here. The paper's historical validation findings do not independently validate
-all subsequent representation and implementation changes. The production
-Pydantic models remain the source of truth for this contract.
-
-The [experimental schema-development workflow](https://github.com/ajdajd/data-snapshot/blob/main/notebooks/schema_discovery/README.md)
-preserves the research process and versioned artifacts. The research package's
-Unified Evaluation Schema v1.3 is a separate contract for layout annotations and
-predictions; it is not this semantic metadata schema.
-
-## Implementation references
-
+- *Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs* (publication pending) documents the schema-development methodology. The schema in the paper ends with a flat schema, whereas production uses Schema v1.4, with the nested structures and validation rules documented on this page.
+- [Experimental schema-development workflow](https://github.com/ajdajd/data-snapshot/blob/main/notebooks/schema_discovery/README.md) preserves the research code and versioned artifacts.
 - [Canonical Pydantic models](https://github.com/worldbank/ai4data/blob/main/src/ai4data/data_snapshot/metadata_schema/models.py) define every field, vocabulary, example, and validation rule.
 - [Metadata extraction](https://github.com/worldbank/ai4data/blob/main/src/ai4data/data_snapshot/metadata_extraction/extraction.py) derives the model-facing response format from the canonical schema and validates completed responses.
 - [Metadata file writing](https://github.com/worldbank/ai4data/blob/main/src/ai4data/data_snapshot/metadata_extraction/batch.py) saves validated records as JSON.

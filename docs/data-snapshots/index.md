@@ -189,7 +189,7 @@ structures, and validation rules. Unsupported metadata fields can remain null.
 **Scientific background**
 
 - [Benchmarking Open-Source Layout Detection Models for Data Snapshot Extraction from Institutional Documents](https://arxiv.org/abs/2606.06242v1) defines the extraction task and reports the benchmark methods, results, and limitations.
-- *Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs* describes the schema-development methodology. Publication on arXiv is pending.
+- *Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs*  (publication pending) documents the schema-development methodology.
 
 **Documentation, code, and data**
 
