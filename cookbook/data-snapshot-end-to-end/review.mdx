@@ -46,7 +46,7 @@ A review of saved files alone cannot discover every missed artifact. The source 
 
 1. Compare all source pages with the candidate image inventory when assessing coverage. Inspect the selected page at [full size](pathname:///cookbook-files/data-snapshot-end-to-end/shona-page-4.webp).
 2. Check titles, row and column headings, scales, legends, footnotes, and sources for truncation or omission.
-3. Identify irrelevant candidates, split composites, merged adjacent artifacts, and small analytical regions removed by filtering.
+3. Identify irrelevant candidates, split composites, merged adjacent artifacts, and missing small analytical regions.
 
 **Worked example.** The cover photograph in the sample PDF is labelled `figure` by the layout detector, yet it is not an analytical data snapshot. On PDF page 4, the selected chart and table are analytical, but their captions lie outside the data snapshots. Both limitations were observed in the recorded run.
 
@@ -64,7 +64,7 @@ The image boundary determines what the model can observe. A document title, coun
 2. For an absent field, check whether the relevant information is visible in the data snapshot and whether the concept applies.
 3. Check each non-null field against the data snapshot, especially titles, units, percentages, time ranges, and roles.
 
-**Worked example.** The figure's metadata assigns the axis label `Percent of population` to `title`. Comparing the field with the image shows that it is an inappropriate title; the actual caption is outside the data snapshot.
+**Worked example.** The chart-title finding in [Recipe 3.2](./metadata.mdx#recipe-3-2) illustrates a populated field that misinterprets visible text. Comparing the JSON with the image reveals the problem.
 
 The following examples connect the observed issues to the content that needs checking.
 
@@ -94,7 +94,7 @@ Numerical extraction and verification are later steps in the [document cookbook]
 
 - Reviewing only successful data snapshots conceals missed artifacts.
 - Assuming that every detected region is complete can hide omitted captions or notes.
-- Treating a null country field as an error ignores the image-only contract.
+- Treating a null `geographic_coverage` field as an error can be misleading when no location is visible in the data snapshot.
 
 ## Verification
 

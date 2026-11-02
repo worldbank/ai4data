@@ -8,6 +8,7 @@ description: This chapter prepares the source PDF, Python environment, dependenc
 
 import Recipe from '@site/src/components/Cookbook/Recipe';
 import Checklist from '@site/src/components/Cookbook/Checklist';
+import Link from '@docusaurus/Link';
 
 # 1. Environment and source documents
 
@@ -22,7 +23,7 @@ The production package renders PDF pages, detects candidate regions, and saves d
 ## Target state
 
 - The source PDF is available locally.
-- An isolated Python environment with the detector and metadata dependencies needed for the exercise.
+- An isolated Python environment contains the detector and metadata dependencies needed for the exercise.
 
 ## Maturity levels
 
@@ -55,37 +56,38 @@ The sample PDF used in the tutorial is *From Stateless to Citizens: The Journey 
 
 </Recipe>
 
-<span id="recipe-1-2" />
+<Link id="recipe-1-2" />
 
 <Recipe title="1.2 Install the selected stages" level="AI-ready" skills="Developer and data curator" time="Thirty minutes for setup; dependency installation time varies">
 
 **Result:** The Python environment can import the workflow and expose its command help.
 
-Python 3.11 or later is required. From a checkout of the repository, the following installation includes DocLayout-YOLO and the metadata SDK. A base `ai4data` installation does not supply all optional dependencies.
+Python 3.11 or later is required. Activate an isolated Python environment before installation. From a checkout of the repository, the following installation includes DocLayout-YOLO and the metadata SDK. A base `ai4data` installation does not supply all optional dependencies. Reinstall a normal source installation after changing Python or configuration files.
 
 ```bash
 python -m pip install ".[data-snapshot,data-snapshot-metadata]"
 ```
 
-1. Activate an isolated Python environment before installation. Reinstall a normal source installation after changing Python or configuration files.
-2. Run `python -m ai4data.data_snapshot.extract_data_snapshot --help` and inspect `--model`, `--device`, `--dpi`, and `--output-dir`.
-3. For metadata requests, configure the selected provider's credentials:
+1. Run `python -m ai4data.data_snapshot.extract_data_snapshot --help` and inspect `--model`, `--device`, `--dpi`, and `--output-dir`.
+2. For metadata requests, configure the selected provider's credentials:
 
    - For the default OpenRouter provider, set `OPENROUTER_API_KEY` in the environment or the working directory's `.env`.
    - To use OpenAI instead, select it with `--metadata-provider=openai` and set `OPENAI_API_KEY`.
    - Only the selected provider's key is needed. Exported variables take precedence over `.env`.
 
-4. Keep credentials outside downloadable examples and version control. Metadata requests send the data snapshot to the selected external provider and consume credits; local snapshot detection makes no metadata requests.
+3. Keep credentials outside downloadable examples and version control. Metadata requests send the data snapshot to the selected external provider and consume credits; local snapshot detection makes no metadata requests.
 
 **Worked example.** The recorded run used DocLayout-YOLO 0.0.4 with cached default DocStructBench weights and CPU inference. Its rendering resolution was 300 dots per inch (DPI), which specifies the density of pixels used to represent the PDF page. The source-installation path is used because the extras are not yet part of the official release.
 
-**What this does not do.** Installation and help checks do not validate detection quality or external model availability. Model weights will download on the first inference run.
+**What this does not do.** Installation and help checks do not validate detection quality or external model availability. Missing model weights are downloaded when needed; cached weights are reused.
 
 </Recipe>
 
 ## Implementation options
 
-If working with snapshot extraction only, `data-snapshot-metadata` may be omitted. Conversely, if images are already present, data snapshot extraction may be skipped and only install `data-snapshot-metadata`. The `data-snapshot-core` extra is sufficient for schema validation and PDF/image utilities without a detector or provider SDK.
+- For snapshot-only extraction, omit `data-snapshot-metadata`.
+- For metadata extraction from existing images, install `data-snapshot-metadata` without a detector extra.
+- The `data-snapshot-core` extra is sufficient for schema validation and PDF/image utilities without a detector or provider SDK.
 
 ## Resources
 
@@ -96,6 +98,7 @@ If working with snapshot extraction only, `data-snapshot-metadata` may be omitte
 ## Common mistakes
 
 - Installing all detector stacks together can introduce avoidable dependency conflicts. Consult the [production README](https://github.com/worldbank/ai4data/blob/main/src/ai4data/data_snapshot/README.md) for detailed installation guidance.
+- Installing dependencies in a different Python environment from the one used for extraction can cause missing-module errors.
 - Sending every page to a paid provider bypasses the data snapshot-review step and increases request volume.
 
 ## Verification

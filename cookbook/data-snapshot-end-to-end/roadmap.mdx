@@ -43,7 +43,7 @@ The sample PDF used in the tutorial illustrates two opportunities: the cover pho
 
 **Result:** A detector comparison shows whether a new model improves the starting point for extraction.
 
-The models in [chapter 7](./models.mdx) provide the current choices. New layout models may improve detection or identify useful components such as captions and footnotes. While newer models report strong results on standard reference datasets, their performance on data snapshot extraction still need to be tested.
+The models in [chapter 7](./models.mdx) provide the current choices. New layout models may improve detection or identify useful components such as captions and footnotes. While newer models report strong results on standard reference datasets, their performance on data snapshot extraction still needs to be tested.
 
 Integrating a new model requires an adapter that translates its output into the pipeline's common detection format. The official [`SnapshotDetector` interface and `Detection` type](https://github.com/worldbank/ai4data/blob/main/src/ai4data/data_snapshot/detection.py) define that format: `figure` or `table` labels, normalized bounding boxes, and confidence scores. The [existing adapters](https://github.com/worldbank/ai4data/tree/main/src/ai4data/data_snapshot/adapters) show how supported models implement it.
 
@@ -109,7 +109,7 @@ Retain the simplest combination that improves the intended workflow. These propo
 ## Resources
 
 - The [production README](https://github.com/worldbank/ai4data/blob/main/src/ai4data/data_snapshot/README.md) describes current interfaces and detector support.
-- The [HuggingFace dataset](https://huggingface.co/datasets/ai4data/data-snapshot) provide the source PDFs, human annotations, and the benchmark data format.
+- The [Hugging Face dataset](https://huggingface.co/datasets/ai4data/data-snapshot) provides the source PDFs, human annotations, and the benchmark data format.
 - The [benchmark paper](https://arxiv.org/html/2606.06242v1) describes the document corpora, detection metrics, spatial accuracy, and representative failure modes.
 
 ## Common mistakes

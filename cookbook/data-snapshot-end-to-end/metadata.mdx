@@ -8,6 +8,7 @@ description: This chapter generates semantic metadata for two selected data snap
 
 import Recipe from '@site/src/components/Cookbook/Recipe';
 import Checklist from '@site/src/components/Cookbook/Checklist';
+import Link from '@docusaurus/Link';
 
 # 3. Semantic metadata extraction
 
@@ -17,7 +18,7 @@ import Checklist from '@site/src/components/Cookbook/Checklist';
 
 The two data snapshots selected in [chapter 2](./snapshots.mdx) are the inputs to the metadata stage. This stage uses a vision-language model, which processes an image together with text instructions. Its response is validated against the canonical Data Snapshot Metadata Schema v1.4 before a JSON file is saved.
 
-Metadata fields describe analytical meaning: measured variables, their units, grouping dimensions, temporal coverage, visible sources, and related context. They do not hold a reconstructed numerical dataset. Missing and null fields represent unavailable information. Validation only checks for structural integrity and do not establish that the model interpreted the image correctly.
+Metadata fields describe analytical meaning: measured variables, their units, grouping dimensions, temporal coverage, visible sources, and related context. They do not hold a reconstructed numerical dataset. Missing and null fields represent unavailable information. Validation only checks for structural integrity and does not establish that the model interpreted the image correctly.
 
 ## Target state
 
@@ -33,7 +34,7 @@ Metadata fields describe analytical meaning: measured variables, their units, gr
 | **AI-native** | An organization integrates model-assisted metadata generation with validation and human review before reuse. Additional integration is needed to monitor semantic quality and manage corrections. |
 
 :::info[Running example]
-Only the chart `figure_001` and table `table_000` selected in chapter 2 are submitted for metadata extraction. Each has a corresponding raw JSON record. The figure response uses its vertical-axis label as the title, demonstrating why a schema-valid response still needs inspection.
+Only the chart `figure_001` and table `table_000` selected in chapter 2 are submitted for metadata extraction. Each has a corresponding raw JSON record for inspection.
 :::
 
 ## Recipes
@@ -73,7 +74,7 @@ python -m ai4data.data_snapshot.extract_metadata \
 
 </Recipe>
 
-<span id="recipe-3-2" />
+<Link id="recipe-3-2" />
 
 <Recipe title="3.2 Validate and interpret a metadata record" level="AI-ready" skills="Developer and data curator" time="Twenty minutes for local validation and interpretation">
 
@@ -81,33 +82,32 @@ python -m ai4data.data_snapshot.extract_metadata \
 
 The metadata extraction script already validates each response against the production Pydantic model before saving its JSON file. Repeating validation is optional. Schema validation checks field types and validation rules; reviewing the data snapshot is still necessary to assess whether the metadata is accurate and useful.
 
-1. Open the full [figure JSON](pathname:///cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_figure_001.json) and [table JSON](pathname:///cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.json), also displayed below. Compare them with the actual data snapshots and the [schema reference](/docs/data-snapshots/metadata-schema/).
+1. Open the full [figure JSON](pathname:///cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_figure_001.json) and [table JSON](pathname:///cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.json). Compare them with the actual data snapshots and the [schema reference](/docs/data-snapshots/metadata-schema/).
 
-<details>
-<summary>Recorded figure metadata</summary>
+   The saved responses can be inspected below without another provider request. Both blocks are imported from the downloadable JSON files.
 
-```json file=../../website/static/cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_figure_001.json
-```
+   <details>
+   <summary>Recorded figure metadata</summary>
 
-</details>
+   ```json file=../../website/static/cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_figure_001.json
+   ```
 
-<details>
-<summary>Recorded table metadata</summary>
+   </details>
 
-```json file=../../website/static/cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.json
-```
+   <details>
+   <summary>Recorded table metadata</summary>
 
-</details>
+   ```json file=../../website/static/cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.json
+   ```
+
+   </details>
 
 2. Inspect `variables` for measured concepts and units, `dimensions` for population groups or year columns, and `visualization_types` for the represented form.
 3. Distinguish source wording in `source_text` from a controlled representation in `normalized_value`. A normalized interpretation must not be passed off as printed wording.
 
-**Worked example.** The figure record identifies employed and unemployed populations and the two population groups. Its `title` is `Percent of population`, which is visibly the vertical-axis label. This is because the title and caption is outside the data snapshot. The record can validate while this field remains questionable. The model's geographical coverage is null; the document's Kenya context is not provided as extra evidence.
+**Worked example.** The figure record identifies employed and unemployed populations and the two population groups. Its `title` is `Percent of population`, which is visibly the vertical-axis label. The model may have confused this prominent label with a title, particularly because the printed caption is outside the data snapshot. The record can validate while this field remains questionable. The model's geographical coverage is null; the document's Kenya context is not provided as extra evidence.
 
 The table's `title` is `null`, while its metadata identifies variables such as `Median age` and `Mean household size`, a `Year` dimension with 2019 and 2024 categories, and `table` as the visualization type. Its title and source are outside the data snapshot, but that observation does not establish why the model returned a null title. The table illustrates missing title metadata alongside useful descriptions; the figure illustrates a questionable inference from an axis label. Inspecting each data snapshot alongside its JSON distinguishes an unpopulated field from a populated field that misinterprets visible text.
-
-The recorded responses can be inspected below without running the provider again. Both blocks are imported from the downloadable raw JSON files.
-
 
 <details>
 <summary>Optional: validate a saved JSON record yourself</summary>
@@ -146,18 +146,19 @@ The top-level Python `extract_metadata(image_path, config_path=...)` returns an 
 
 - Equating schema validation with factual verification leaves interpretation errors undetected.
 - Submitting incomplete data snapshots that omit titles, footnotes, or legends can lead to incomplete or inaccurate metadata.
+- Assuming an ordinary metadata rerun validates existing JSON files leaves invalid records unchecked.
 
 ## Verification
 
 - Match each selected PNG to a JSON file with exactly the same stem in the metadata directory. The recorded exercise has two selected-image responses; the remaining detector candidates intentionally have no metadata.
 - If repeating validation locally, run `inspect_metadata.py` on each downloaded JSON. A zero exit status and a display of populated fields indicate that the record satisfies the canonical model; the script should leave the input file unchanged.
-- Compare the figure response with the data snapshot. Confirm that `title` contains the axis label `Percent of population` and retain this finding for the review in chapter 4.
+- Compare populated fields with the visible text and structure of each data snapshot to identify questionable interpretations.
 
 ## Checklist
 
 <Checklist id="data-snapshot-end-to-end-metadata" items={[
   "Each of the two selected data snapshots has a matching raw JSON record.",
   "Both records passed the pipeline's schema validation.",
-  "The questionable figure title has been identified by comparison with the data snapshot.",
+  "The title field has been checked against the visible labels and caption context.",
   "Schema validity and interpretation of visible content are treated as separate checks."
 ]} />

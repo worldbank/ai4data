@@ -51,7 +51,7 @@ The correct recovery command depends on which files already exist. A fresh outpu
 | Metadata-only | Skips each image with an existing JSON. | Deletes that JSON before attempting replacement and preserves the image. |
 
 1. Inspect missing or invalid records before choosing a command. A successful skip is not a completeness check.
-2. Use metadata-only execution on missing selected records after a metadata failure. A `snapshots` directory or an image directly inside it defaults to the sibling `metadata` directory.
+2. Use metadata-only execution on missing selected records after a metadata failure. To replace an existing invalid JSON, target its image with the metadata-only command and add `--force`; an ordinary rerun would skip that JSON. Preserve any needed original before replacement. A `snapshots` directory or an image directly inside it defaults to the sibling `metadata` directory.
 3. Use a new destination when comparing settings. If replacement is intended, preserve any needed previous results before `--force`.
 4. Expect forced deletion to occur before model loading or replacement succeeds. Failure does not restore the old files.
 
@@ -80,7 +80,7 @@ The source links and worked examples in this guide state what was processed and 
 
 ## Implementation options
 
-The Python metadata API returns structured errors, including incomplete-response details where available. The batch writer saves validated JSON through a temporary file and replacement, but this does not make an entire PDF job atomic. Preserve failed-request diagnostics separately when operating beyond this small exercise.
+The Python metadata API returns structured errors, including incomplete-response details where available. The batch writer saves each validated JSON through a temporary file and replacement. This protects the individual file while it is being saved; a later failure can still leave the overall run incomplete. Preserve failed-request diagnostics separately when operating beyond this small exercise.
 
 ## Resources
 
@@ -90,6 +90,7 @@ The Python metadata API returns structured errors, including incomplete-response
 
 - Using a PDF command with `--force` to fill missing metadata deletes working data snapshots. Metadata-only recovery avoids that deletion.
 - Assuming skipped JSON is valid hides corrupted or obsolete records.
+- Using metadata-only `--force` on a whole directory regenerates existing records and can cause unnecessary paid requests.
 
 ## Verification
 

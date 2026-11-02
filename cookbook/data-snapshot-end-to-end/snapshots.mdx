@@ -15,9 +15,9 @@ import Checklist from '@site/src/components/Cookbook/Checklist';
 
 ## Rationale
 
-PDF pages are rendered as Python objects before the detector runs. The detector returns a class, confidence, and normalized rectangle (or "bounding boxes") for each retained region. Normalized coordinates describe the left, top, right, and bottom edges as fractions of page width and height, measured from the top-left corner.
+PDF pages are rendered as images in memory before the detector runs. The detector returns a label, confidence score, and bounding box with normalized coordinates for each retained region. Normalized coordinates describe the left, top, right, and bottom edges as fractions of page width and height, measured from the top-left corner.
 
-The production workflow crops these rectangles directly and saves each to disk as PNG files. It does not pad boxes, merge panels, or persist page coordinates.
+The production workflow crops these rectangles directly and saves each region as a PNG file. It does not pad boxes, merge panels, or persist page coordinates.
 
 ## Target state
 
@@ -55,7 +55,7 @@ If a compatible NVIDIA GPU and CUDA runtime are available, select GPU inference 
 
 1. Use a fresh destination so that an earlier file does not cause the entire PDF to be skipped.
 2. Run the command and inspect progress and printed paths. A directory can also be passed to the `--input` parameter which will search recursively for PDFs.
-3. Keep source filename stems unique across a runs, including subdirectories; outputs are flattened into one model directory.
+3. Keep source filename stems unique within a run, including across subdirectories; outputs are flattened into one model directory.
 
 **Worked example.** The recorded run saved `figure_000.png` through `figure_006.png` and `table_000.png`, each prefixed by the complete PDF stem. `figure_000` is the cover photograph, `figure_001` is the chart on PDF page 4, and `table_000` is the demographic table on that same page. These counts describe saved detector outputs. The photograph demonstrates why human review is still needed.
 
@@ -87,15 +87,15 @@ The figure counter and table counter are independent and start at zero. They con
 
 1. Open the [source page](pathname:///cookbook-files/data-snapshot-end-to-end/shona-page-4.webp), the [figure data snapshot](pathname:///cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_figure_001.png), and the [table data snapshot](pathname:///cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.png).
 
-[![PDF page 4 containing the chart and demographic table](/cookbook-files/data-snapshot-end-to-end/shona-page-4.webp)](/cookbook-files/data-snapshot-end-to-end/shona-page-4.webp)
+   [![PDF page 4 containing the chart and demographic table](/cookbook-files/data-snapshot-end-to-end/shona-page-4.webp)](/cookbook-files/data-snapshot-end-to-end/shona-page-4.webp)
 
 2. Check the chart's series legend, horizontal period labels, vertical percentage scale, and both population-group panels.
 
-[![Actual chart data snapshot with two population panels and an employment-status legend](/cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_figure_001.png)](/cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_figure_001.png)
+   [![Actual chart data snapshot with two population panels and an employment-status legend](/cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_figure_001.png)](/cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_figure_001.png)
 
 3. Check that the table retains its five demographic rows and both year columns. Compare the image with the page to identify excluded captions or source notes.
 
-[![Actual demographic table data snapshot with 2019 and 2024 columns](/cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.png)](/cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.png)
+   [![Actual demographic table data snapshot with 2019 and 2024 columns](/cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.png)](/cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.png)
 
 4. Record quality observations separately and preserve the produced data snapshot.
 
@@ -123,7 +123,7 @@ The two selected PNG data snapshots now provide the image inputs for [chapter 3]
 ## Common mistakes
 
 - Reading the filename index as a printed figure number points to the wrong artifact.
-- Counting every figure-labelled candidate image as analytical content.
+- Counting every figure-labelled candidate image as analytical content includes irrelevant detections.
 - Missed context can make the data snapshot incomplete.
 
 ## Verification

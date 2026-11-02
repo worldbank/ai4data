@@ -15,6 +15,10 @@ description: This page identifies the representation contracts and references us
 
 ## Evaluation and provenance
 
+| Standard or contract | Use | World Bank use | In this guide |
+|---|---|---|---|
+| [Unified Evaluation Schema v1.3](https://huggingface.co/datasets/ai4data/data-snapshot#schema) | This format represents document and page identifiers, figure/table labels, and normalized bounding boxes for evaluation. | The released Data Snapshot dataset uses it for human annotations. | Chapter 8 describes the export needed to compare a new detector with those annotations. |
+
 | Reference | Use | In this guide |
 |---|---|---|
 | [Snapshot benchmark paper](https://arxiv.org/html/2606.06242v1) | This reference defines analytical regions and distinguishes detection from spatial extraction quality. | Chapters 4 and 8 describe review and future evaluation. |

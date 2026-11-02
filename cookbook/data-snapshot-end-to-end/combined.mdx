@@ -102,9 +102,8 @@ output/cookbook-data-snapshot-combined/doclayoutyolo/
 
 1. Match files by their complete stems because source names can contain underscores.
 2. Inspect missing JSON as a possible incomplete metadata stage. The PNG may still be valid.
-3. Page coordinates and provider usage logs are not written in this tree.
 
-Metadata responses are validated against Schema v1.4 before their JSON files are saved. Repeating validation is optional; [Recipe 3.2](./metadata.mdx#recipe-3-2) explains how to inspect the fields and check a saved record locally. Validation does not establish factual accuracy. Data snapshots missing titles, footnotes, or legends can produce incomplete or inaccurate metadata because the model receives only the image, without source-document metadata.
+Page coordinates and provider usage logs are not written in these folders. Metadata responses are validated against Schema v1.4 before their JSON files are saved. Repeating validation is optional; [Recipe 3.2](./metadata.mdx#recipe-3-2) explains how to inspect the fields and check a saved record locally. Data snapshots missing titles, footnotes, or legends can produce incomplete or inaccurate metadata because the model receives only the image, without source-document metadata.
 
 **Worked example.** Each successfully processed data snapshot has a PNG in `snapshots/` and a matching JSON in `metadata/`. With directory input, files from all input PDFs share these folders, with each source PDF's filename stem identifying its outputs.
 
@@ -145,6 +144,7 @@ For per-image diagnostics, provider-reported token usage, or a custom metadata c
 
 - Running combined execution after snapshot-only in the same root skips the PDF and leaves missing JSON unfilled.
 - Assuming that every image has metadata can hide a partial failure.
+- Reusing PDF filename stems across input subdirectories causes an error before extraction starts.
 
 ## Verification
 

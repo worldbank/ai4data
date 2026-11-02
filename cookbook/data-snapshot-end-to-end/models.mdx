@@ -54,7 +54,7 @@ For example, install YOLOv11 with `python -m pip install ".[data-snapshot-yolo11
 
 The following tables are reproduced from the [benchmark paper](https://arxiv.org/abs/2606.06242). They summarize benchmark results across all documents.
 
-Detection metrics measure how reliably a model finds relevant data snapshots: higher precision means fewer irrelevant detections, while higher recall means fewer missed snapshots. Spatial accuracy measures how closely the extracted boundaries match the intended region, including whether useful context is omitted or unrelated content is included. See [Section 5 and Figure 2](https://arxiv.org/html/2606.06242v1#S5) for metric definitions, benchmark conditions, and visual examples.
+Detection metrics measure how reliably a model finds relevant data snapshots: precision is the proportion of detections that are correct, while recall is the proportion of reference snapshots found. Spatial accuracy measures how closely the extracted boundaries match the intended region, including whether useful context is omitted or unrelated content is included. These spatial metrics cover matched detections only. See [Section 5 and Figure 2](https://arxiv.org/html/2606.06242v1#S5) for metric definitions, benchmark conditions, and visual examples.
 
 **Figures**
 
