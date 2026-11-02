@@ -17,7 +17,7 @@ import Checklist from '@site/src/components/Cookbook/Checklist';
 
 The package has conservative skip rules and destructive forced replacement. These rules prevent accidental overwrites during ordinary reruns, but they do not prove that an existing run is complete. A single matching output is enough to skip a PDF, and an existing metadata JSON is skipped without checking whether it is valid.
 
-Operational reliability therefore depends on checking output completeness and choosing the right stage for recovery. Requests are sequential, retries are disabled, and the metadata writer stops after the first failed image. Earlier data snapshots and completed JSON records remain available for inspection and selective continuation.
+Operational reliability therefore depends on checking output completeness and choosing the right stage for recovery. Requests are sequential, there are no automatic retries, and the metadata writer stops after the first failed image. Earlier data snapshots and completed JSON records remain available for inspection and selective continuation.
 
 ## Target state
 
@@ -85,20 +85,16 @@ The Python metadata API returns structured errors, including incomplete-response
 ## Resources
 
 - The [production README](https://github.com/worldbank/ai4data/blob/main/src/ai4data/data_snapshot/README.md) documents installation, supported commands, and Python interfaces.
-- The [schema reference](/docs/data-snapshots/metadata-schema/) explains the metadata fields and validation boundaries.
-- The [benchmark paper](https://arxiv.org/html/2606.06242v1) defines analytical snapshots and reports detection and spatial evaluation.
 
 ## Common mistakes
 
 - Using a PDF command with `--force` to fill missing metadata deletes working data snapshots. Metadata-only recovery avoids that deletion.
 - Assuming skipped JSON is valid hides corrupted or obsolete records.
-- Publishing a dollar estimate without billing evidence confuses configuration limits with measured cost.
 
 ## Verification
 
 - Inspect which selected images already have JSON files before choosing recovery. In the recorded example, the other six candidates intentionally lack metadata and do not constitute failed requests.
 - Compare the intended command with the rerun table. Filling a missing selected JSON should use metadata-only execution; any planned `--force` replacement should account for files deleted before success is known.
-- Check the recorded detector, device, DPI, provider, and image selection. A bounded two-image plan should contain no directory-wide metadata or combined invocation.
 
 ## Checklist
 
