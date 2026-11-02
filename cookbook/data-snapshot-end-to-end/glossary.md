@@ -25,8 +25,6 @@ description: Terms used in the data-snapshot-end-to-end cookbook, in plain langu
 
 **Confidence.** A number between 0 and 1 that a model returns with its output to say how sure it is; the basis of a threshold rule.
 
-**Confidence threshold.** The model confidence above which a code is accepted automatically, set from the measured accuracy curve.
-
 **Coverage.** The share of a reference list of known uses that the collected documents contain.
 
 **Data snapshot.** A bounded visual region of a document page containing structured or semi-structured information for analytical interpretation or operational reuse, such as a statistical table, chart, analytical map, or monitoring dashboard. A crop should retain the context needed to interpret it.
@@ -35,7 +33,7 @@ description: Terms used in the data-snapshot-end-to-end cookbook, in plain langu
 
 **Decision.** A curator's recorded verdict on a suggestion: accept, edit (with the final text), or reject (with a reason).
 
-**Gap.** The distance between a dimension's current level and its target, measured in levels and in the number of questions below the target's value.
+**Evaluation set.** Decided records kept to test changes to prompts, manifests, rubrics, and models.
 
 **Gate.** The rule that decides whether a change ships, applied to a paired comparison of the evaluation suite before and after the change.
 
@@ -48,8 +46,6 @@ description: Terms used in the data-snapshot-end-to-end cookbook, in plain langu
 **Label.** The column a model is trained to predict: the occupation code, the transcribed value, the series a question refers to.
 
 **Language model.** A model that reads and writes text; used in these guides to draft, flag, code, explain, and translate, with a person deciding.
-
-**Leakage.** Any way the answer reaches a model other than through its features: shared groups across splits, a feature that encodes the label, duplicated inputs.
 
 **Map.** The table of model-assisted tasks with phase, role, review, data sensitivity, model location, and owner.
 
@@ -76,8 +72,6 @@ description: Terms used in the data-snapshot-end-to-end cookbook, in plain langu
 **Split.** The division of a dataset into a training part (the model learns from it), a validation part (the model builder chooses settings on it), and a test part (touched once, to report a score).
 
 **Structured output.** A model's answer returned as data in a declared shape (a JSON object with named fields that conforms to a schema) so that a script can validate, read, and aggregate it.
-
-**Threshold.** The value of a score (a confidence, a similarity, a garble rate) at which the rule changes what happens to an item; set from measurements.
 
 **Token.** The unit in which language models read and write text, roughly three quarters of a word; prices, context limits, and throughput are counted in tokens.
 
