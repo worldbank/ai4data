@@ -72,7 +72,7 @@ The source links and worked examples in this guide state what was processed and 
 3. Record actual provider billing separately if cost measurements are needed. Token usage is available through the Python `ExtractionResult` when returned by the provider, but ordinary JSON output files do not retain it.
 4. Check the provider preset before a rerun. Changing the model or its settings can change its response and billing.
 
-**Worked example.** This guide uses one local detector run and successful metadata requests for only the selected figure and table. It reports no monetary cost estimate. The combined invocation is unexecuted and the other detectors are instructions, so those paths incur no demonstration charges.
+**Worked example.** This guide uses one local detector run and successful metadata requests for only the selected figure and table. It reports no monetary cost estimate.
 
 **What this does not do.** The workflow has no total-token or monetary enforcement switch and cannot guarantee identical future model responses.
 

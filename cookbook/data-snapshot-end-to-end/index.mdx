@@ -36,7 +36,7 @@ The shortest path uses the recorded example's default configuration and the two 
 3. Generate metadata for only those two data snapshots and validate the JSON in [chapter 3](./metadata.mdx). Allow about thirty minutes for selection, submission, and local inspection, plus provider waiting time. The downloadable responses can also be inspected without making new requests.
 4. Review the source pages, data snapshots, and raw responses in [chapter 4](./review.mdx). Allow about forty minutes to identify missing context and questionable metadata and consider the suggested next steps.
 
-[Chapter 5](./combined.mdx) then explains the supported combined command and its expected output tree; the cookbook does not execute it. [Chapter 6](./operation.mdx) covers recovery and request control, [chapter 7](./models.mdx) explains model selection and alternatives, and [chapter 8](./roadmap.mdx) describes proposed improvements. All times are indicative estimates of human work. They are not measured model runtimes or provider latency.
+[Chapter 5](./combined.mdx) then explains the supported combined command and its expected output tree. [Chapter 6](./operation.mdx) covers recovery and request control, [chapter 7](./models.mdx) explains model selection and alternatives, and [chapter 8](./roadmap.mdx) describes proposed improvements. All times are indicative estimates of human work. They are not measured model runtimes or provider latency.
 
 ## Chapters and questions
 
@@ -46,7 +46,7 @@ The shortest path uses the recorded example's default configuration and the two 
 | [2. Snapshot extraction](./snapshots.mdx) | How are figures and tables extracted as images? | Candidate PNG outputs, selected data snapshots, and missing context |
 | [3. Semantic metadata extraction](./metadata.mdx) | How is a data snapshot described in structured metadata? | Two selected requests, raw JSON, and schema validation |
 | [4. Data snapshot and metadata review](./review.mdx) | Are the extracted outputs fit for use? | Source comparison, candidate completeness, and metadata accuracy |
-| [5. Combined execution and output structure](./combined.mdx) | How are both stages invoked together? | Unexecuted invocation and expected output pairs |
+| [5. Combined execution and output structure](./combined.mdx) | How are both stages invoked together? | One-step execution for a PDF or directory and expected output pairs |
 | [6. Recovery and controlled execution](./operation.mdx) | How can the pipeline be operated reliably? | Partial failures, skip rules, safe reruns, and request scope |
 | [7. Model selection and tradeoffs](./models.mdx) | Which detector, device, and metadata model fit the task? | Default configuration, optional alternatives, and compatibility limits |
 | [8. Extraction improvements and future models](./roadmap.mdx) | What should improve next and how should changes be assessed? | Proposed classifier, evaluation planning, and future update criteria |
@@ -67,7 +67,7 @@ The recorded detector output contains seven figure-labelled candidate images and
 
 ## Scope of the examples
 
-The figure and table data snapshots are actual production outputs; their metadata records come from separate selected-image requests. The combined example is unexecuted and its file tree is explicitly conditional. Other detectors are documented but not benchmarked here. The second-stage classifier and improvement roadmap are proposed extensions. The example was run on 30 October 2026 using DocLayout-YOLO 0.0.4, CPU, 300 DPI, and the unchanged packaged OpenRouter preset. The two JSON files are unedited model responses, with interpretation findings in [chapter 3](./metadata.mdx) and review observations in [chapter 4](./review.mdx).
+The figure and table data snapshots are actual production outputs; their metadata records come from separate selected-image requests. The combined section shows the expected output layout for both stages. Other detectors are documented but not benchmarked here. The second-stage classifier and improvement roadmap are proposed extensions. The example was run on 30 October 2026 using DocLayout-YOLO 0.0.4, CPU, 300 DPI, and the unchanged packaged OpenRouter preset. The two JSON files are unedited model responses, with interpretation findings in [chapter 3](./metadata.mdx) and review observations in [chapter 4](./review.mdx).
 
 ## Files
 

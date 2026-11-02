@@ -3,7 +3,7 @@ id: combined
 title: "5. Combined execution and output structure"
 sidebar_label: "5. Combined execution and output structure"
 sidebar_position: 6
-description: This chapter explains the supported combined command and its expected output layout while distinguishing the unexecuted example from recorded staged results.
+description: This chapter combines snapshot and metadata extraction in one command for a PDF or a directory of PDFs and explains the expected output layout.
 ---
 
 import Recipe from '@site/src/components/Cookbook/Recipe';
@@ -15,14 +15,14 @@ import Checklist from '@site/src/components/Cookbook/Checklist';
 
 ## Rationale
 
-The separate stages in chapters 2 to 4 show how to select data snapshots, inspect metadata, and review the results before choosing a wider request scope. The combined command first extracts data snapshots and then requests metadata for the newly extracted images. It is convenient once the input, detector, provider, and review process are understood. It is also less selective than the two-image exercise: all newly detected regions are sent to metadata extraction.
+The previous chapters showed snapshot extraction, metadata extraction, and output inspection step by step. This chapter brings the two extraction stages together in one command: it extracts data snapshots from the PDF, then generates metadata for the resulting images.
 
-The combined example here is supported by the implementation but deliberately unexecuted. Its directory tree illustrates expected naming and stage relationships. The recorded evidence in this guide comes from snapshot-only extraction and the two selected metadata-only requests.
+The example uses one PDF to show the command and expected output structure. The same command can process a directory of PDFs, searching its subdirectories recursively. This extends the workflow to a collection of documents without running separate commands for each stage or PDF.
 
 ## Target state
 
-- The reader can identify the combined entry point and its cost implications.
-- Expected combined output is distinguished from recorded example artifacts.
+- The reader can use the end-to-end runner for a PDF or directory of PDFs.
+- The reader can locate the resulting images and metadata files and account for paid metadata requests.
 
 ## Maturity levels
 
@@ -33,29 +33,38 @@ The combined example here is supported by the implementation but deliberately un
 | **AI-native** | An organization integrates both stages with monitored request volume, output checks, and human review. The combined command alone does not provide that wider operational system. |
 
 :::info[Running example]
-For the sample PDF used in the tutorial, the combined invocation specifies a fresh `output/shona-combined` root and is not executed for this guide. Its abbreviated tree shows where the already familiar chart and table pairs would appear if extraction and metadata requests succeeded.
+The sample PDF used in the tutorial illustrates the combined command and expected PNG and JSON output structure. The tree shows all eight image files and their matching metadata filenames.
 :::
 
 ## Recipes
 
-<Recipe title="5.1 Prepare a combined invocation" level="AI-ready" skills="Developer and data curator" time="Ten minutes to prepare the optional invocation; execution time varies">
+<Recipe title="5.1 Run both extraction stages with one command" level="AI-ready" skills="Developer and data curator" time="Ten minutes to prepare the command; execution time varies">
 
-**Result:** The reader has a supported command and a fresh destination.
+**Result:** One command performs snapshot extraction and then metadata extraction for the supplied input.
 
-A fresh destination matters because PDF-level skip logic applies before metadata extraction. The following invocation is an instruction for readers; it was not executed for the cookbook.
+The command below processes the sample PDF through both stages. Use a fresh output directory because PDFs with existing matching outputs are skipped. Confirm that the selected provider's API key is set as described in [Recipe 1.2](./preparation.mdx#recipe-1-2).
+
+:::warning[Token costs]
+Metadata requests incur token costs for every newly extracted image, including irrelevant detections. A directory containing multiple PDFs can generate many requests.
+:::
 
 ```bash
 python -m ai4data.data_snapshot \
   --input=data/policy_brief_on_shona_community_from_stateless_to_citizens.pdf \
-  --output-dir=output/shona-combined --model=doclayoutyolo --device=cpu \
+  --output-dir=output/cookbook-data-snapshot-combined \
+  --device=cpu \
   --metadata-provider=openrouter
 ```
 
-1. Confirm that the source can be sent as extracted images to the provider and that the number of candidate images is acceptable.
-2. Use a new output root and record the configuration. GPU selection changes local detection. The provider operates the metadata service.
-3. After execution, check every saved data snapshot and metadata record. A detector false positive can also incur a metadata request.
+If a compatible NVIDIA GPU and CUDA runtime are available, select GPU inference with `--device=cuda:0`. The recorded example uses CPU. An unavailable CUDA device causes an error; there is no automatic CPU fallback.
 
-**Worked example.** The guide does not execute this command. If a run reproduces the observed eight candidate images and every metadata request succeeds, the output would have eight PNGs and eight JSONs, including a record for the photograph. This is a conditional expectation; only the selected two-image requests were performed.
+To process a collection, set the `--input` parameter to a directory containing PDFs. Subdirectories are searched recursively. Each PDF must have a unique filename stem, including across subdirectories, because outputs share the same detector folders.
+
+1. Confirm that the input PDFs are ready and set `--input` to the PDF or directory
+2. Choose a fresh output destination and set the `--output` parameter to it.
+3. Run the command, then inspect the generated images and JSON files.
+
+**Worked example.** A successful combined run of the sample PDF produces eight PNGs and eight JSON files.
 
 **What this does not do.** The combined command does not roll back an entire run after failure. Extraction errors can prevent metadata processing; metadata errors stop at the failing image while earlier files remain.
 
@@ -65,15 +74,27 @@ python -m ai4data.data_snapshot \
 
 **Result:** The relationship between data snapshot and metadata filenames is explicit.
 
-The expected structure below is abbreviated to the two target artifacts. Other detections would also appear. The observed data snapshot filenames are used, but the complete combined result has not been generated.
+The tree below shows the full expected layout for the sample PDF's seven figure-labelled images and one table-labelled image, with a matching JSON file for each successful metadata request.
 
 ```text
-output/shona-combined/doclayoutyolo/
+output/cookbook-data-snapshot-combined/doclayoutyolo/
 ├── snapshots/
+│   ├── policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.png
 │   ├── policy_brief_on_shona_community_from_stateless_to_citizens_figure_001.png
+│   ├── policy_brief_on_shona_community_from_stateless_to_citizens_figure_002.png
+│   ├── policy_brief_on_shona_community_from_stateless_to_citizens_figure_003.png
+│   ├── policy_brief_on_shona_community_from_stateless_to_citizens_figure_004.png
+│   ├── policy_brief_on_shona_community_from_stateless_to_citizens_figure_005.png
+│   ├── policy_brief_on_shona_community_from_stateless_to_citizens_figure_006.png
 │   └── policy_brief_on_shona_community_from_stateless_to_citizens_table_000.png
 └── metadata/
+    ├── policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.json
     ├── policy_brief_on_shona_community_from_stateless_to_citizens_figure_001.json
+    ├── policy_brief_on_shona_community_from_stateless_to_citizens_figure_002.json
+    ├── policy_brief_on_shona_community_from_stateless_to_citizens_figure_003.json
+    ├── policy_brief_on_shona_community_from_stateless_to_citizens_figure_004.json
+    ├── policy_brief_on_shona_community_from_stateless_to_citizens_figure_005.json
+    ├── policy_brief_on_shona_community_from_stateless_to_citizens_figure_006.json
     └── policy_brief_on_shona_community_from_stateless_to_citizens_table_000.json
 ```
 
@@ -81,38 +102,41 @@ output/shona-combined/doclayoutyolo/
 2. Inspect missing JSON as a possible incomplete metadata stage. The PNG may still be valid.
 3. Page coordinates and provider usage logs are not written in this tree.
 
-**Worked example.** The actual staged exercise has all eight detector outputs in the local run directory but metadata for only the selected chart and table. The downloadable folder contains those selected pairs, the source-page image, and the inspection helper. Neither folder is claimed to be a complete combined run.
+**Worked example.** Each successfully processed data snapshot has a PNG in `snapshots/` and a matching JSON in `metadata/`. With directory input, files from all input PDFs share these folders, with each source PDF's filename stem identifying its outputs.
 
-**What this does not do.** A directory tree is a format illustration. It does not establish detection coverage, metadata completeness, or successful execution.
+**What this does not do.** Matching filenames do not establish metadata accuracy. The image and JSON still need inspection together.
 
 </Recipe>
 
 ## Implementation options
 
-Python callers can use `run_pipeline(input_path, output_dir, model_name="doclayoutyolo", device="cpu", metadata_provider="openrouter")`. It returns new snapshot paths followed by metadata paths. A fully skipped PDF command returns no new paths. Use the separate commands when a curator needs to select data snapshots before incurring metadata costs.
+Directory input extends the workflow to multiple PDFs; processing remains sequential. Use a new output directory when changing the input collection or configuration to preserve earlier results.
+
+Use the separate commands when a curator needs to select data snapshots before incurring metadata costs.
+
+Python callers can use `run_pipeline(input_path, output_dir, model_name="doclayoutyolo", device="cpu", metadata_provider="openrouter")`. It returns new snapshot paths followed by metadata paths. A fully skipped PDF command returns no new paths.
 
 ## Resources
 
 - The [production README](https://github.com/worldbank/ai4data/blob/main/src/ai4data/data_snapshot/README.md) documents installation, supported commands, and Python interfaces.
 - The [schema reference](/docs/data-snapshots/metadata-schema/) explains the metadata fields and validation boundaries.
-- The [benchmark paper](https://arxiv.org/html/2606.06242v1) defines analytical snapshots and reports detection and spatial evaluation.
 
 ## Common mistakes
 
 - Running combined execution after snapshot-only in the same root skips the PDF and leaves missing JSON unfilled.
-- Treating a schematic tree as recorded output invents evidence.
-- Expecting a combined run to filter out photographs adds a stage that does not exist.
+- Assuming that every image has metadata can hide a partial failure.
 
 ## Verification
 
-- Compare the proposed command with the staged example. Its destination should be `output/shona-combined`, distinct from `output/cookbook-data-snapshot`, so the prior data snapshots would not trigger PDF-level skipping.
-- Read the expected tree by matching complete PNG and JSON stems. It should illustrate the selected pairs while leaving clear that other newly detected regions would also be processed.
-- If the command is run later, inspect its actual files and failures before describing it as successful. The current tree remains an unexecuted illustration.
+- Use `output/cookbook-data-snapshot-combined` as a fresh destination, separate from `output/cookbook-data-snapshot`, so the prior data snapshots do not trigger PDF-level skipping.
+- Read the expected tree by matching complete PNG and JSON stems. For directory input, check the outputs belonging to each PDF's filename stem.
+- Check that each generated PNG has a matching JSON. Investigate missing metadata files or reported errors before treating the run as complete.
 
 ## Checklist
 
 <Checklist id="data-snapshot-end-to-end-combined" items={[
-  "A fresh destination is chosen for any later combined run.",
+  "A fresh destination is chosen for the combined run.",
+  "The input is a single PDF or a directory with unique PDF filename stems.",
   "The request volume includes all newly extracted candidates.",
-  "The expected tree is distinguished from the actual staged outputs."
+  "The generated PNG and JSON files are matched by filename."
 ]} />
