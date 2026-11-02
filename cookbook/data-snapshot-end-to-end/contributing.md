@@ -11,7 +11,7 @@ Contributions follow the [cookbook authoring guide](/cookbook/authoring/). A rec
 
 ## Evidence for a change
 
-A command must trace to the production CLI or API. An executed example must retain its source, settings, raw outputs, and human review status. Mock outputs, reviewed gold records, unexecuted instructions, and proposed development must be labelled separately. Credentials must never appear in fixtures or requests committed to the repository.
+A command must trace to the production CLI or API. An executed example must retain its source, settings, and raw outputs. Mock outputs, reviewed gold records, unexecuted instructions, and proposed development must be labelled separately. Credentials must never appear in fixtures or requests committed to the repository.
 
 ## Recipe template
 

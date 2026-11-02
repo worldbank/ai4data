@@ -66,7 +66,6 @@ python -m ai4data.data_snapshot.extract_metadata \
 
 1. Submit only the two selected data snapshots using the commands above. Passing the whole `snapshots` directory instead would process every discovered image, including the cover photograph.
 2. Open the generated JSON files in `output/cookbook-data-snapshot/doclayoutyolo/metadata/`.
-3. Preserve the raw model records and keep human review notes separately.
 
 **Worked example.** Metadata extraction was run locally for the selected figure and table. The two resulting JSON records are included in this cookbook and displayed in [Recipe 3.2](#recipe-3-2) for inspection without another paid request.
 
@@ -159,6 +158,6 @@ The top-level Python `extract_metadata(image_path, config_path=...)` returns an 
 <Checklist id="data-snapshot-end-to-end-metadata" items={[
   "Each of the two selected data snapshots has a matching raw JSON record.",
   "Both records passed the pipeline's schema validation.",
-  "The questionable figure title is flagged in review notes while the raw JSON is preserved.",
+  "The questionable figure title has been identified by comparison with the data snapshot.",
   "Schema validity and interpretation of visible content are treated as separate checks."
 ]} />

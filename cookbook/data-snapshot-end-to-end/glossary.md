@@ -35,12 +35,6 @@ description: Terms used in the data-snapshot-end-to-end cookbook, in plain langu
 
 **Decision.** A curator's recorded verdict on a suggestion: accept, edit (with the final text), or reject (with a reason).
 
-**Disclosure control.** The measurement and reduction of the risk that a released file identifies a person or business or reveals something about one: removal of identifiers, top-coding, coarsening of geography, suppression of rare combinations; applied before any release.
-
-**Feature.** A column a model may use as input.
-
-**Flagged.** The status of an extracted value that failed a check and awaits correction with the page open.
-
 **Gap.** The distance between a dimension's current level and its target, measured in levels and in the number of questions below the target's value.
 
 **Gate.** The rule that decides whether a change ships, applied to a paired comparison of the evaluation suite before and after the change.
@@ -48,6 +42,8 @@ description: Terms used in the data-snapshot-end-to-end cookbook, in plain langu
 **GPU.** A graphics processing unit, the processor on which language models run fast; its memory decides which model fits.
 
 **Inventory.** The list of documents with their type, year, page count, text-layer status, and counts of tables and figures.
+
+**Issue.** The review pipeline's output: a detected problem with a category, a severity from 1 to 5, the current value, and a proposed value.
 
 **Label.** The column a model is trained to predict: the occupation code, the transcribed value, the series a question refers to.
 
@@ -84,8 +80,6 @@ description: Terms used in the data-snapshot-end-to-end cookbook, in plain langu
 **Threshold.** The value of a score (a confidence, a similarity, a garble rate) at which the rule changes what happens to an item; set from measurements.
 
 **Token.** The unit in which language models read and write text, roughly three quarters of a word; prices, context limits, and throughput are counted in tokens.
-
-**Trace.** The logged record of one question: tools called, series used, answer, whether the agent declined, latency.
 
 **Use.** A document whose analysis, decision, or statement depends on the data, as opposed to a mention that cites them as context.
 
