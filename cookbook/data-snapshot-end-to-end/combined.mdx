@@ -123,7 +123,7 @@ The combined command supports the detector options from chapter 2 and the provid
 | `--model` | Selects the detector; the default is `doclayoutyolo`. [Chapter 7](./models.mdx) explains model choices and their dependencies. |
 | `--device` | Selects local detector inference on `cpu` by default or an available device such as `cuda:0`. Metadata inference runs at the external provider. |
 | `--dpi` | Sets a positive rendering resolution; the default is 300. Higher resolution consumes more rendering memory and storage. |
-| `--metadata-provider` | Selects the packaged `openrouter` preset by default or `openai`. Provider and model configuration is covered in chapter 7. |
+| `--metadata-provider` | Selects the packaged `openrouter` preset by default or `openai`. Provider selection is covered in chapter 7. |
 | `--force` or `-f` | Replaces matching snapshot and metadata outputs for the input PDFs. |
 
 `--force` deletes matching images and JSON files before extraction starts. A failed run does not restore them. Use a fresh output directory to preserve earlier results; [chapter 6](./operation.mdx) explains recovery and rerun behavior.
