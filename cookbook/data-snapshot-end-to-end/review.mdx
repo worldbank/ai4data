@@ -61,8 +61,8 @@ A review of saved files alone cannot discover every missed artifact. The source 
 The image boundary determines what the model can observe. A document title, country, date, or source outside that boundary should not be silently supplied as though it was extracted from the data snapshot. Source-document metadata belongs in a separate record describing the parent publication. It is not supplied to the metadata model in this workflow.
 
 1. (Optional) Repeat the local validation check in [Recipe 3.2](./metadata.mdx#recipe-3-2) if the saved JSON needs checking. The extraction script already validates each response before saving it.
-2. Check each non-null field against the data snapshot, especially titles, units, percentages, time ranges, and roles.
-3. For an absent field, check whether the relevant information is visible in the data snapshot and whether the concept applies.
+2. For an absent field, check whether the relevant information is visible in the data snapshot and whether the concept applies.
+3. Check each non-null field against the data snapshot, especially titles, units, percentages, time ranges, and roles.
 
 **Worked example.** The figure's metadata assigns the axis label `Percent of population` to `title`. Comparing the field with the image shows that it is an inappropriate title; the actual caption is outside the data snapshot.
 
@@ -79,7 +79,7 @@ The following examples connect the observed issues to the content that needs che
 
 </Recipe>
 
-After the two image–JSON pairs have been inspected, [chapter 5](./combined.mdx) explains the supported combined invocation and its broader request scope. That invocation remains unexecuted in this guide.
+After the two image–JSON pairs have been inspected, [chapter 5](./combined.mdx) explains how to run both extraction stages with one command for a PDF or directory of PDFs.
 
 ## Implementation options
 
