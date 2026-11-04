@@ -45,7 +45,7 @@ The one illustrative transition from P001 to P002 supports a rule tally. It give
 
 Count operations on persistent rule IDs. An amendment changes the instruction under an existing ID. A retirement removes an active rule from the next policy and reserves its ID. For round `r`, the accepted rule-change count is `C_r = A_r + M_r + R_r`, where `A_r` counts additions, `M_r` counts amendments, and `R_r` counts retirements. Track the active total separately.
 
-1. Compare the starting and candidate policies by ID. Classify each rule once as added, amended, retired, or unchanged.
+1. Compare the starting and candidate policies by rule ID. In round 001, compare [P001](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md) with [P002](pathname:///cookbook-files/data-snapshot-metadata-council/002_policy.md). Classify each rule once as added, amended, retired, or unchanged.
 2. Reconcile the active total with the prior active count plus additions minus retirements. Store reasons and finding IDs alongside accepted changes.
 3. Record failure modes and unresolved issues, including rejected proposals. Keep batch membership and review coverage available to interpret any future change in frequency.
 
@@ -82,7 +82,7 @@ Plan a paired comparison by applying both policies to the same images with the f
 3. Report disagreements, case counts, and uncertainty. Define what evidence would justify proceeding and which unresolved failures require further work.
 4. Record the evaluation status separately from the development stopping decision.
 
-**Worked example.** D1, D2, C1, and C2 are used to explain policy development. The evaluation brief would reserve other source documents and would compare P001 and P002 on the same held-out data snapshots. The published gold release has a single train split, so the team must establish evaluation independence separately.
+**Worked example.** D1, D2, C1, and C2 are used to explain policy development. The evaluation brief would reserve other source documents and compare [P001](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md) and [P002](pathname:///cookbook-files/data-snapshot-metadata-council/002_policy.md) on the same held-out data snapshots. The published gold release has a single train split, so the team must establish evaluation independence separately.
 
 **What this does not do.** The comparison is proposed. Distinguishability judging is a separate future question, and model fine-tuning is outside this design.
 

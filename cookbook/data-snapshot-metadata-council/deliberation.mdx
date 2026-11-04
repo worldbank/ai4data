@@ -45,7 +45,7 @@ Three illustrative council members propose changes based on D1, D2, and C2. C1 s
 
 A council member needs the image and generated metadata to judge whether a finding is persuasive. The judge summarizes relevant comparisons, so the council can investigate issues while full Discovery references stay in the judge and human review contexts.
 
-1. Gather the images, P001, S001, and extraction outputs. Add the findings and human decisions prepared in [chapter 3](./diagnosis.mdx).
+1. Gather the images, [starting policy (P001)](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md), S001, and extraction outputs. Add the findings and human decisions prepared in [chapter 3](./diagnosis.mdx).
 2. Give each member its own session. Collect all first proposals before sharing proposals among members.
 3. Request the finding, visible evidence, and failure mode. Ask the member to specify whether to add, amend, retain, or retire a rule and to name the affected ID or mark it as a new rule. Include the expected benefit and a counterexample or risk. Record proposed gold or schema challenges for human review.
 
@@ -80,13 +80,13 @@ The orchestrator reads the full deliberation and drafts the next policy. The rou
 1. Evaluate each proposal against the cited evidence, known counterexamples, and human decisions. Record accept, reject, or defer with a reason.
 2. Keep the ID of an amended rule. Allocate a new ID for a new rule. Reserve retired IDs permanently.
 3. Write the next policy and state as separate files. Record rejected proposals and unresolved questions in the findings. Carry forward the decisions and questions the next batch needs.
-4. Confirm that the manifest points to the candidate policy and still identifies the executed policy for the original records.
+4. Confirm that the manifest points to the [candidate policy (P002)](pathname:///cookbook-files/data-snapshot-metadata-council/002_policy.md) and still identifies [P001](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md) as the policy used for the original records.
 
 **Worked example.** The orchestrator accepts the narrowed R02 amendment. D1 supports distinguishing a caption from an axis label, and C1 supports dropping the fallback. P002 records the resulting rule under the same ID.
 
 > **R02** Use an identifiable visible title or caption for the title. Treat axes, legends, and group headings according to their visual roles. Record a printed figure or table identifier separately as the document label.
 
-The orchestrator also amends R03 and adds R05, which requires evidence for each unit association. S002 carries the unresolved counted entity in C2 and the need to test unit associations on fresh images. [Candidate policy](pathname:///cookbook-files/data-snapshot-metadata-council/002_policy.md) · [Updated state](pathname:///cookbook-files/data-snapshot-metadata-council/002_experiment_state.md) · [Round findings](pathname:///cookbook-files/data-snapshot-metadata-council/001_round_findings.md)
+The orchestrator also amends R03 and adds R05, which requires evidence for each unit association. S002 carries the unresolved counted entity in C2 and the need to test unit associations on fresh images. [Updated state](pathname:///cookbook-files/data-snapshot-metadata-council/002_experiment_state.md) · [Round findings](pathname:///cookbook-files/data-snapshot-metadata-council/001_round_findings.md)
 
 **What this does not do.** Synthesis produces a candidate for the next batch. Human authorization still governs any gold or schema change.
 

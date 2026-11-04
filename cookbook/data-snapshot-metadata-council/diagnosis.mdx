@@ -52,7 +52,7 @@ Use the following assessment questions as a fixed rubric for both batches. On Di
 | Uncertainty | Which interpretations remain plausible, or what evidence would resolve the question? |
 | Human escalation | Does a consequential ambiguity, unresolved reference dispute, or proposed schema change require human adjudication before proceeding? |
 
-1. Provide the image, generated metadata, executed policy, and schema. Include the full human annotation for Discovery. Mark reference comparison unavailable for Challenge.
+1. Provide the image, generated metadata, schema, and policy used for extraction. In round 001, that policy is [P001](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md). Include the full human annotation for Discovery. Mark reference comparison unavailable for Challenge.
 2. Record the fields examined in `review_scope`. For each finding, identify its kind, field, visual evidence location, applicable rule IDs, and assessment. Use `uncertainty` for a short description of what the evidence leaves open, or null when nothing material remains uncertain for that finding.
 3. Set `human_attention` to true when a person needs to resolve the finding before the round can proceed. Use `attention_reason` to explain the decision for either value.
 4. Share the finding with the council once any required human decision is recorded. Include the image evidence needed to inspect the issue and keep the full annotation in the judge and human review materials.
@@ -77,7 +77,7 @@ F01 and F02 can go to the council because the layout resolves the field-role que
 
 Use the same rubric for escalated and spot-checked cases. The value `human_attention: false` means the finding can proceed without immediate human adjudication. An extraction error can still be present, as F01 shows. Human spot checks can reveal missed errors or narrow review coverage.
 
-1. Review escalated findings and select additional cases for a spot check. Inspect the image, output, policy used for extraction, and reference where available. Record which fields were checked.
+1. Review escalated findings and select additional cases for a spot check. Inspect the image, output, policy used for extraction ([P001](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md) in round 001), and reference where available. Record which fields were checked.
 2. Record a decision and its reason. For an approved gold or schema correction, record the old and new versions and preserve the original evidence.
 3. Pass the decision and its reason to the council and orchestrator. In [chapter 4](./deliberation.mdx), these summaries accompany the findings used to propose rule changes.
 

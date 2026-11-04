@@ -52,7 +52,7 @@ Plan a separate Pi session for each model role. Specify the files and fields eac
 | Validate stage records | Generated records, expected IDs, schema or stage contract | Valid records and explicit failures. Confirm coverage and uniqueness. |
 | Write the next versions and ledger | Synthesis, prior policy, human dispositions | Versioned policy, state, findings, and rule counts with resolvable references. |
 
-1. Give the reference extractor and judge fixed configurations. Specify how the harness passes the current policy to the extractor and checks its output against the schema.
+1. Give the reference extractor and judge fixed configurations. Specify how the harness passes the current policy to the extractor and checks its output against the schema. The policy used in the example is [P001](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md).
 2. Specify that the judge receives full Discovery references. Limit council sessions to the evidence and findings prepared for them. Restrict file, shell, and network access so council tools cannot retrieve the full annotations.
 3. Separate the three initial council contexts. Enable the critique stage only once all initial proposals are recorded. Route the revisions to the distinct synthesis model.
 
@@ -81,7 +81,7 @@ A stage is complete when its required records have been checked and saved. Savin
 3. Pause for escalations that require a human decision before deliberation, such as F03. Record the disposition and obtain authorization before using a changed reference or schema.
 4. Make the transition to the next version explicit. Preserve the prior policy and records so an interrupted write cannot replace them.
 
-**Worked example.** If the judge saved valid reviews for D1, D2, and C1 but missed C2, deliberation would wait. The runner would reuse the three saved reviews and request C2's review using P001 and the same rubric.
+**Worked example.** If the judge saved valid reviews for D1, D2, and C1 but missed C2, deliberation would wait. The runner would reuse the three saved reviews and request C2's review using [P001](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md) and the same rubric.
 
 **What this does not do.** The transition table does not demonstrate that retries, model calls, or Pi sessions work in this repository. Those behaviors require implementation and testing.
 
