@@ -17,9 +17,9 @@ import Checklist from '@site/src/components/Cookbook/Checklist';
 
 Chapter 1 follows D1’s title error through a round prepared for the walkthrough. This chapter shows how to set up a round so the judge can tell which image the extractor saw and which instructions it followed. Two snapshots of the same table can show different captions or notes, so any human-reviewed annotation needs to describe the exact image the extractor received.
 
-The sample register identifies each image, its source PDF, and any matching annotation. The starting policy, schema, and model settings specify how the extractor will run. The starting state records what the team carries into the round, such as prior decisions and open questions. The manifest links these files to the results so the original settings and instructions can be checked after the policy changes.
+The sample register identifies each image, its source PDF, and any matching annotation. The starting policy, schema, and model settings specify how the extractor will run. The starting state records what the team carries into the round, such as prior decisions and open questions. The manifest lists these inputs and the files the round is expected to produce.
 
-This setup gives the judge and council a shared starting point. In [Chapter 3](./diagnosis.mdx), the judge checks the output against the data snapshot, the policy in effect, and the human-reviewed annotation when available. In [Chapter 4](./deliberation.mdx), the council uses the judge’s findings and the data snapshot evidence to propose changes to that policy.
+The prepared batch and manifest are the starting point for configuring the proposed Pi workflow. That workflow would load the inputs, run the extractor, and pass the resulting metadata to the judge. Because the findings refer back to the same snapshots and starting policy, the council can later use them to propose changes to the instructions the extractor received.
 
 ## Target state
 
@@ -123,9 +123,9 @@ Open the [round manifest](pathname:///cookbook-files/data-snapshot-metadata-coun
 | Human review | Human decisions on escalated findings and any recorded spot checks. |
 | Judge reviews | One structured review per sample, with its reference-comparison status and findings. |
 
-1. Use the same sample and round IDs in the extraction and review records. Keep the metadata payload separate from experiment bookkeeping.
-2. Resolve every path in the manifest and confirm its recorded version. Keep P001 and its extractions available after P002 is written.
-3. Keep the sample register with the experiment files. Share only the files and fields each role needs, as shown in [chapter 3](./diagnosis.mdx).
+1. Record the round ID and sample IDs that will appear in the extraction and review records. Keep the metadata payload separate from experiment bookkeeping.
+2. Check that each input path resolves to the expected file and version. Specify where the round will write its outputs.
+3. Keep the sample register with the manifest so the proposed workflow can locate the images and the annotations available for the judge.
 
 **Worked example.** The D2 extraction record names its sample and P001. The judge can use the sample ID to locate the image and reference in the register, and the policy ID to locate the instructions in effect for that record. [Illustrative extraction records](pathname:///cookbook-files/data-snapshot-metadata-council/001_extractions.jsonl)
 
@@ -154,12 +154,12 @@ Open the [round manifest](pathname:///cookbook-files/data-snapshot-metadata-coun
 
 - Resolve all four image paths and compare their hashes with the sample register.
 - Validate each Discovery reference against the schema and verify the matching image by inspection.
-- Verify that the extraction rows and manifest name P001 and that P002 is a round output.
+- Verify that the manifest points to the starting policy and state and lists where the round will save the extraction records and judge reviews.
 
 ## Checklist
 
 <Checklist id="data-snapshot-metadata-council-preparation" items={[
   'The register identifies the exact data snapshots and references.',
   'The starting policy, state, schema, and settings are recorded.',
-  'The manifest distinguishes inputs and outputs and resolves all artifact paths.'
+  'The manifest points to the prepared inputs and names the expected output files.'
 ]} />
