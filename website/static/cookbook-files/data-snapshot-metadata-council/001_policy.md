@@ -1,6 +1,6 @@
 # Extraction policy P001
 
-Evidence status: illustrative. This teaching policy is an initial condition for round 001. It is separate from the packaged production prompts.
+Evidence status: illustrative. This is the initial policy for round 001.
 
 Apply the active rules to the supplied image and return a single Data Snapshot Metadata Schema v1.4 record.
 

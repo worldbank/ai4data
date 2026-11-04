@@ -14,11 +14,13 @@ description: Plan an experiment in which a model council proposes evidence-based
 This guide documents a proposed experiment. The snapshots and published human-reviewed annotations are real. All round extractions, reviews, deliberations, and policy revisions are illustrative. The council experiment has not been executed.
 :::
 
-The current Data Snapshot metadata extraction pipeline can produce records that conform to the schema but still assign an axis label to the title field or infer a value the data snapshot does not support. These errors can help identify where the extraction policy, the instructions that guide the model, needs to be more precise.
+Metadata extracted from a data snapshot can conform to the schema even when the model assigns an axis label to the title field or infers a value that the snapshot does not support. These errors can help identify where the *extraction policy*, the instructions that guide the model, needs to be more precise.
 
-This guide proposes an experiment that uses a council of models to refine the extraction policy. The council uses findings from each review round to propose and critique changes to the policy. The walkthrough illustrates one round of policy refinement.
+This guide proposes an experiment that uses a council of models to refine an initial extraction policy. The council uses findings from each review round to propose and critique changes. The experiment aims to develop a metadata extraction pipeline by pairing a fixed reference extractor with the final policy. The guide starts with a prepared example so the team can see how an error becomes a candidate rule before setting up a round.
 
 ## Prerequisites
+
+The walkthrough uses the examples supplied with the guide. For a round using the team's own data, the following are needed.
 
 - Familiarity with multimodal model inference, prompts, structured outputs, and basic evaluation.
 - Existing data snapshots, their source references, and the [Data Snapshot Metadata Schema v1.4 reference](/docs/data-snapshots/metadata-schema/).
@@ -26,17 +28,17 @@ This guide proposes an experiment that uses a council of models to refine the ex
 
 ## First steps
 
-1. Assign responsibilities and trace the round using [the workflow chapter](./workflow.mdx). Allow about an hour.
-2. Verify the four images, reference associations, and versioned starting conditions using [the preparation chapter](./preparation.mdx). Allow about two hours.
-3. Compare the illustrative outputs and findings, then trace the decisions through [diagnosis](./diagnosis.mdx) and [deliberation](./deliberation.mdx). Allow about two hours for discussion.
+1. Start with the prepared D1 example in [the workflow chapter](./workflow.mdx). Follow one title error from the data snapshot to a proposed policy revision. Allow about an hour.
+2. Use [the preparation chapter](./preparation.mdx) to set up a round. Verify the data snapshots and their references, then record the starting policy and settings. Allow about two hours.
+3. Use [diagnosis](./diagnosis.mdx) to establish what went wrong and [deliberation](./deliberation.mdx) to decide what to change. Allow about two hours for discussion.
 
-The [self-assessment](./start-here.mdx) helps identify a starting point. The final chapters specify proposed orchestration and the evidence needed before adopting a revised policy.
+Once the review workflow is clear, [chapter 5](./orchestration.mdx) shows where agent orchestration and tools fit. [Chapter 6](./progress.mdx) explains when to stop revising and how to evaluate the result. The [self-assessment](./start-here.mdx) helps teams decide where to start.
 
 ## Chapters and questions
 
 | Chapter | Question | Practical topics |
 |---|---|---|
-| [1. Purpose and experimental workflow](./workflow.mdx) | What can council-guided policy development establish? | Role responsibilities and the first complete round |
+| [1. Policy refinement workflow](./workflow.mdx) | How can an extraction error guide a policy revision? | A prepared example that connects an extraction error to a candidate rule |
 | [2. Experiment inputs and artifacts](./preparation.mdx) | What must be prepared before the first round? | Snapshot identity, sample roles, starting versions, and artifact contracts |
 | [3. Diagnostic assessment and human review](./diagnosis.mdx) | How are extraction problems assessed and escalated? | Judge rubric, evidence, escalations, and spot checks |
 | [4. Council deliberation and policy revision](./deliberation.mdx) | How does deliberation produce an auditable policy revision? | Independent proposals, cross-critique, revisions, and synthesis |
@@ -94,7 +96,6 @@ While the guide is unlisted, use the local development preview for downloads or 
 
 | Resource | Purpose |
 |---|---|
-| [Data Snapshot end-to-end cookbook](/cookbook/data-snapshot-end-to-end/) | Generate snapshots and metadata with the existing pipeline. |
 | [Extracting Data from Documents](/cookbook/data-from-documents/) | Learn how to extract and verify numerical observations. |
 | [Publishing ML-Ready Datasets](/cookbook/ml-ready-datasets/) | Document and version datasets and plan splits. |
 | [Evaluation Suites for Statistical AI](/cookbook/evaluation-suites/) | Design independent quality assessment. |

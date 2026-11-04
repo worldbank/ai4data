@@ -7,8 +7,6 @@ description: Terms used in this guide.
 
 # Glossary
 
-**Adapter.** A small set of trained parameters added to a model for a task, so that fine-tuning fits on modest hardware (parameter-efficient fine-tuning).
-
 **Agent.** An AI system that calls tools to complete a task; here an assistant that calls the organization's data API or MCP server to answer a question about statistics.
 
 **AI-ready.** Data and metadata that software, including AI systems, can find, retrieve, interpret, and cite without manual steps. See the [AI-ready data framework](/docs/ai-ready-framework).
@@ -26,8 +24,6 @@ description: Terms used in this guide.
 **DDI.** The Data Documentation Initiative, the standard for documenting surveys and their variables, value labels, and files; the World Bank microdata schema is based on it.
 
 **Decision.** A curator's recorded verdict on a suggestion: accept, edit (with the final text), or reject (with a reason).
-
-**Decision point.** The step at which a named person decides on a model's output (a code, a proposal, an explanation, a draft).
 
 **Evaluation set.** Decided records kept to test changes to prompts, manifests, rubrics, and models.
 

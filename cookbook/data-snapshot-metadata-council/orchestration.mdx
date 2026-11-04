@@ -17,7 +17,7 @@ import Checklist from '@site/src/components/Cookbook/Checklist';
 
 Pi is the proposed harness, the software that would start model sessions, coordinate stages, and record handoffs. The orchestrator model from [chapter 4](./deliberation.mdx) would write the next policy and state. The harness would check and save those outputs before starting the next stage.
 
-Give scripts or tools the steps with exact rules, such as checking sample IDs or assigning version numbers. The current metadata command uses packaged prompts and saves each successful extraction as a validated JSON file. It skips images that already have an output file by default. Applying a versioned policy and assembling the round's JSON Lines records would require separate integration.
+Give scripts or tools the steps with exact rules, such as checking sample IDs or assigning version numbers. For each round, the harness would pass the selected policy and data snapshots to the fixed reference extractor. It would validate the resulting metadata against the schema and save the records with the policy version used for extraction.
 
 ## Target state
 
@@ -52,13 +52,13 @@ Plan a separate Pi session for each model role. Specify the files and fields eac
 | Validate stage records | Generated records, expected IDs, schema or stage contract | Valid records and explicit failures. Confirm coverage and uniqueness. |
 | Write the next versions and ledger | Synthesis, prior policy, human dispositions | Versioned policy, state, findings, and rule counts with resolvable references. |
 
-1. Give the reference extractor and judge fixed configurations. Define how a future adapter would pass a versioned policy while keeping the schema and extractor settings fixed.
+1. Give the reference extractor and judge fixed configurations. Specify how the harness passes the current policy to the extractor and checks its output against the schema.
 2. Specify that the judge receives full Discovery references. Limit council sessions to the evidence and findings prepared for them. Restrict file, shell, and network access so council tools cannot retrieve the full annotations.
 3. Separate the three initial council contexts. Enable the critique stage only once all initial proposals are recorded. Route the revisions to the distinct synthesis model.
 
 **Worked example.** The selection operation would load the four registered images and verify their hashes. The D2 judge packet would contain the complete annotation. A council packet would contain D2's image, extraction, relevant findings, and H01 summary. The register remains an audit artifact because it contains paths to the full references.
 
-**What this does not do.** This recipe specifies the design. It supplies neither an executable harness nor a way to pass P001 to the current metadata command.
+**What this does not do.** This recipe specifies the proposed harness. Its tools and handoffs still need to be implemented and tested.
 
 </Recipe>
 
@@ -96,7 +96,7 @@ A stage is complete when its required records have been checked and saved. Savin
 
 - The [Pi CLI integration guide](https://pi.dev/docs/latest/cli-integration) documents interfaces for external controllers.
 - The [Pi documentation](https://pi.dev/docs/latest) describes tool permissions and session interfaces.
-- The [production metadata workflow](/cookbook/data-snapshot-end-to-end/metadata) explains the repository's existing extraction interface and schema validation.
+- The [schema reference](/docs/data-snapshots/metadata-schema/) describes the structure and validation rules for extraction output.
 
 ## Common mistakes
 

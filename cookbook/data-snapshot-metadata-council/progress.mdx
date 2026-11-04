@@ -17,7 +17,7 @@ import Checklist from '@site/src/components/Cookbook/Checklist';
 
 Rule changes and recurring failure modes describe the development process. Fewer accepted changes on comparable batches can signal that the policy is stabilizing. The same pattern can result from easier batches, shared model blind spots, or issues the council keeps deferring.
 
-Independent quality evaluation asks a different question. It compares policies under controlled conditions on examples kept outside policy development. Development records explain what changed and why. An evaluation measures what effect the candidate has on the intended task.
+At the end of development, the fixed reference extractor and the final policy form the metadata extraction pipeline. Independent evaluation compares the initial and final policies on examples kept outside policy development. That comparison helps the team decide whether to adopt the resulting pipeline.
 
 ## Target state
 
@@ -78,7 +78,7 @@ Choose a review window and a practical definition of marginal policy change befo
 Plan a paired comparison by applying both policies to the same images with the fixed reference extractor. Set aside the evaluation images and annotations before development. Keep data snapshots from the same source document together, and group near-duplicate documents where appropriate.
 
 1. Define the field-level assessment and review rubric before running the comparison. Include unsupported claims, omissions, and errors that matter to downstream users.
-2. Compare the baseline and candidate with identical model and schema settings. Arrange independent human assessment, preferably without showing which policy produced the record.
+2. Compare the experiment's initial and final policies with identical model and schema settings. Arrange independent human assessment, preferably without showing which policy produced the record.
 3. Report disagreements, case counts, and uncertainty. Define what evidence would justify proceeding and which unresolved failures require further work.
 4. Record the evaluation status separately from the development stopping decision.
 

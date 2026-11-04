@@ -79,13 +79,13 @@ Use the human-reviewed metadata release to identify candidate Discovery samples.
 
 **Result:** The experiment has a versioned starting policy, state, and settings to hold fixed.
 
-The policy states what the extractor should do. The cumulative state carries decisions and unresolved questions between rounds. Keep the two separate so that a record of deliberation cannot silently change the instructions applied to an image.
+The initial policy is the prompt and set of rules the reference extractor will use for the first batch. The cumulative state carries decisions and unresolved questions between rounds. Keep the two separate so that a record of deliberation cannot silently change the instructions applied to an image.
 
 1. Choose the schema and fixed reference extractor. Record provider and model identifier, model revision when available, request settings, and output format. Record the diagnostic judge and rubric as well.
-2. Write the starting rules with persistent IDs. Specify the image evidence boundary and how to handle unsupported fields.
+2. Draft the initial policy for the selected model and schema. Give each rule a stable ID. Specify what the model may use as evidence and how it should handle unsupported fields.
 3. Initialize the state with the objective, current versions, access policy, and any prior decisions. Start with an empty history when this is the first round.
 
-**Worked example.** P001 is a simplified teaching policy. Its four illustrative rules are separate from the packaged production prompts. S001 contains the objective and access boundary, with no prior extractions or decisions. The illustrated manifest leaves model identities and execution timestamps null because it represents a teaching round. [Initial policy](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md) · [Initial experiment state](pathname:///cookbook-files/data-snapshot-metadata-council/001_experiment_state.md)
+**Worked example.** P001 is the initial policy for the illustrative round. It contains four rules. S001 contains the objective and access boundary, with no prior extractions or decisions. The manifest leaves model identities and execution timestamps null because it represents a teaching round. [Initial policy](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md) · [Initial experiment state](pathname:///cookbook-files/data-snapshot-metadata-council/001_experiment_state.md)
 
 **What this does not do.** Recording versions and settings makes the experiment traceable. A hosted model may still return different outputs on repeated requests.
 

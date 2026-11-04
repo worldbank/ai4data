@@ -1,84 +1,74 @@
 ---
 id: workflow
-title: "1. Purpose and experimental workflow"
-sidebar_label: "1. Experimental workflow"
+title: "1. Policy refinement workflow"
+sidebar_label: "1. Policy refinement"
 sidebar_position: 2
-description: Defines the experiment's purpose, decision rights, and path from a starting policy to a candidate revision.
+description: Uses a prepared example to show how an extraction error leads to a candidate policy revision.
 ---
 
 import Recipe from '@site/src/components/Cookbook/Recipe';
 import Checklist from '@site/src/components/Cookbook/Checklist';
 
-# 1. Purpose and experimental workflow
+# 1. Policy refinement workflow
 
-**Question:** What can council-guided policy development establish?
+**Question:** How can an extraction error guide a policy revision?
 
 ## Rationale
 
-The Data Snapshot pipeline describes the contents of a data snapshot in structured semantic metadata. A valid record can still assign a visible phrase to the wrong field or infer context outside the crop. A team can use these problems to develop its extraction policy, the prompts and rules that guide the model's interpretation.
+Consider a chart whose axis label ends up in the title field. Correcting that record fixes one example. Refining the extraction policy means writing an instruction that could help on other charts too. In this case, the instruction needs to distinguish a title from an axis label and account for data snapshots where no title is visible.
 
-In the proposed experiment, the reference extractor is the fixed model that applies the policy to each batch. Holding the model fixed makes the policy the intended change across rounds.
+The proposed experiment makes that reasoning explicit. A review identifies what went wrong and points to evidence in the data snapshot. A council of models proposes ways to address the problem, then challenges each proposal with other examples. A separate model, the orchestrator, combines the revised proposals into a candidate policy.
 
-In a model council, models from different families or with different strengths propose independent explanations for a failure. They then critique each other's proposals and test the rules against counterexamples. A separate model, the orchestrator, combines the revised recommendations into a candidate policy.
-
-This design adds inference and coordination costs. Different models can still make correlated errors or offer inconsistent recommendations. Human supervision remains necessary, and an independent evaluation would establish whether the revised policy generalizes.
+The same extractor applies the policy each round so the team can focus on the instructions. Council review adds model calls and coordination, and members can share the same blind spots. An independent evaluation is needed to learn whether the candidate policy improves extraction.
 
 ## Target state
 
-- The team can explain what each role reads, produces, and decides.
-- A round can be traced from its executed policy through evidence and review to a candidate policy for a new batch.
+- The team can explain why the example's title error calls for a clearer instruction.
+- A round connects the policy used for extraction, the evidence from review, and a candidate revision for the next batch.
 
 ## Maturity levels
 
 | Level | Steps |
 |---|---|
-| **Foundational** | Write the development objective and walk through one round with a human reviewer. |
-| **AI-ready** | Define role-specific inputs and name the artifacts needed to reconstruct each decision. |
-| **AI-native** | Specify automated handoffs with explicit validation and human decision points. |
+| **Foundational** | Identify a field that needs clearer guidance and trace one proposed revision. |
+| **AI-ready** | Record the policy versions, evidence, and review decisions behind a revision. |
+| **AI-native** | Design automated handoffs that check the evidence and preserve human review. |
 
 :::info[Running example]
-Round 001 uses two Discovery snapshots with human-reviewed annotations and two unlabeled Challenge snapshots. The Shona labor-force chart, D1, anchors the walkthrough. All round outputs and decisions in this guide are illustrative.
+This chapter starts with the Shona labor-force chart, D1, and its illustrative extraction. The data snapshot and example outputs are already supplied. Chapter 2 covers how to prepare the full batch.
 :::
 
 ## Recipes
 
-<Recipe title="1.1 Assign responsibilities for policy development" level="Foundational" skills="Experiment lead and metadata reviewer" time="30 minutes">
+<Recipe title="1.1 Identify the policy problem in D1" level="Foundational" skills="Experiment lead and metadata reviewer" time="30 minutes">
 
-**Result:** A brief records the objective and assigns each decision to a role.
+**Result:** A question identifies a field that needs clearer guidance and the behavior a revised policy should support.
 
-Write the objective as a development question. For example, a team can ask which rules help the reference extractor assign visible text to the correct field. A development objective guides proposals, while an independent evaluation later measures the result.
+Use the prepared D1 data snapshot and its illustrative title value, “Percent of population.” A policy change can help when the model misinterprets visible evidence. When information falls outside the snapshot, the policy can clarify when to leave a field unset. [D1 data snapshot](pathname:///img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.png)
 
-| Role | Responsibility |
-|---|---|
-| Reference extractor | Apply the current policy to each snapshot using the fixed schema and model. |
-| Diagnostic judge | Assess generated metadata against image evidence, policy, and schema. On Discovery samples, compare with the full human-reviewed reference annotation (gold). |
-| Human reviewer | Review escalations and selected unflagged cases. Authorize any corrections to gold annotations or the schema. |
-| Model council | Inspect images, outputs, judge findings, and scoped review decisions. Propose, critique, and revise policy changes. |
-| Orchestrator | Synthesize the deliberation into the next policy, updated state, and round findings. |
+1. Locate “Percent of population” in D1. Compare its placement with the caption above the chart.
+2. Read the starting rule, R02. It says, “Record a visible title and document label when present.” Identify what distinction the model needs to make to follow that rule.
+3. Write a question that would also make sense for another data snapshot. Check that it identifies the field and the behavior to improve.
 
-1. Identify the human reviewer who will resolve issues raised for review.
-2. Decide what the extractor may use as evidence and which model settings to hold fixed. Assign a separate model to judge the outputs using a shared set of review questions.
-3. Choose council members with different model families or strengths. Assign a separate model to combine their recommendations and record what each role receives.
+**Worked example.** In D1's illustrative extraction, the title is “Percent of population,” which the chart prints along the vertical axis. The caption appears above the plot. P001 asks for a visible title but gives little guidance on how to tell a caption from an axis label. The development question is how the extractor should identify a title when one is visible and leave the field unset when none is visible.
 
-**Worked example.** The D1 image and extraction are available to the judge and council, while the full D1 annotation is available to the judge and human reviewer. The role templates specify how the judge communicates its finding to the council. [Proposed role instructions](pathname:///cookbook-files/data-snapshot-metadata-council/role-instructions.md)
-
-**What this does not do.** Assigning roles establishes decision rights. The orchestration design must enforce the access boundaries during execution.
+**What this does not do.** One example can motivate a rule change. Its value on other data snapshots needs a separate check.
 
 </Recipe>
 
-<Recipe title="1.2 Trace the first round and its handoff" level="Foundational" skills="Experiment lead" time="30 minutes">
+<Recipe title="1.2 Trace a policy revision through one round" level="Foundational" skills="Experiment lead" time="30 minutes">
 
-**Result:** A workflow map identifies the starting conditions and where the first round ends.
+**Result:** A workflow map shows how an extraction issue reaches the candidate policy and identifies who handles each step.
 
-Discovery samples have human-reviewed annotations for comparison. Challenge samples have no gold annotation in the batch. Both show whether a value is supported by the image and follows the policy. The experiment state carries forward prior decisions and open questions.
+An experiment round starts with a policy and ends with a candidate revision. Each role handles a different part of that path. The extractor produces the record, the review establishes what the evidence supports, and the council considers what to change in the instructions.
 
-1. Establish policy P001 and experiment state S001. Select the two batches for round 001.
-2. Apply P001 with the fixed reference extractor and record which policy produced each output.
-3. Ask the judge to review the outputs. Have the human review escalated issues and selected unflagged records.
-4. Give council members the approved evidence. Collect independent proposals, cross-critiques, and revised recommendations in that order.
-5. Have the orchestrator synthesize policy P002, state S002, and round findings. Carry the new policy and state to the next Discovery and fresh Challenge batches.
+1. Find the round's starting policy, state, and batch in the manifest linked below. The state holds prior decisions and open questions. The batch includes Discovery samples with human-reviewed annotations and Challenge samples without those annotations.
+2. Identify which policy the fixed reference extractor used for D1. That policy tells reviewers what instructions were in effect.
+3. Follow the diagnostic finding. The judge compares the output with the image, policy, and schema. For a Discovery sample such as D1, the judge also receives the full human-reviewed annotation, or gold reference. The human reviewer resolves escalated issues, spot-checks other records, and approves any changes to gold or schema.
+4. Follow the finding to the council. Council members use the snapshots, outputs, judge findings, and relevant human decisions to propose and critique changes. The full gold references stay with the judge and human reviewer.
+5. Compare the original rule with the candidate rule produced by the orchestrator. The candidate policy and updated state are the starting point for the next round.
 
-**Worked example.** In round 001, D1's extraction is tied to P001. The judge's finding informs a title rule in candidate policy P002. Start the trace with the inputs in [chapter 2](./preparation.mdx). [Round 001 manifest](pathname:///cookbook-files/data-snapshot-metadata-council/001_manifest.json)
+**Worked example.** D1's illustrative extraction uses P001. The judge records the title error as F01. The council considers how to distinguish captions from axis labels, and the orchestrator incorporates the revised title rule into candidate policy P002. The original output stays linked to P001. [Chapter 2](./preparation.mdx) shows how to prepare the inputs for this round. [Round 001 manifest](pathname:///cookbook-files/data-snapshot-metadata-council/001_manifest.json)
 
 **What this does not do.** This trace shows how a candidate rule reaches the next round. Its effect on extraction quality requires a subsequent comparison.
 
@@ -89,13 +79,10 @@ Discovery samples have human-reviewed annotations for comparison. Challenge samp
 - Begin with a supervised walkthrough that uses written handoffs. Add machine-readable records once each handoff has a clear contract.
 - Use the role and artifact contracts as the basis of the proposed Pi integration in [chapter 5](./orchestration.mdx).
 
-## World Bank examples
-
-- The [Data Snapshot end-to-end cookbook](/cookbook/data-snapshot-end-to-end/) explains how the existing pipeline produces data snapshots and metadata records.
-
 ## Resources
 
 - The [schema reference](/docs/data-snapshots/metadata-schema/) explains the extraction output contract.
+- The [role instructions](pathname:///cookbook-files/data-snapshot-metadata-council/role-instructions.md) specify what each role receives and produces.
 
 ## Common mistakes
 
@@ -105,13 +92,14 @@ Discovery samples have human-reviewed annotations for comparison. Challenge samp
 
 ## Verification
 
+- Check that the development question names the field and the behavior to improve.
 - Trace a sample from the registered image to its extraction, diagnostic review, and any resulting policy decision.
 - Check that the map assigns full gold access and correction authority to the intended roles.
 
 ## Checklist
 
 <Checklist id="data-snapshot-metadata-council-workflow" items={[
-  'The experiment brief names the policy development objective and assigns every role.',
+  'The development question identifies an extraction problem the policy can address.',
   'The workflow starts with a policy, state, and two sample batches.',
   'The policy used for extraction and the candidate policy are distinguishable.'
 ]} />
