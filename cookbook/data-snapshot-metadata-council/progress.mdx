@@ -43,9 +43,11 @@ The one illustrative transition from P001 to P002 supports a rule tally. It give
 
 **Result:** The round findings reconcile the policy diff and document the issues to monitor.
 
-Count operations on persistent rule IDs. An amendment changes the instruction under an existing ID. A retirement removes an active rule from the next policy and reserves its ID. For round `r`, the accepted rule-change count is `C_r = A_r + M_r + R_r`, where `A_r` counts additions, `M_r` counts amendments, and `R_r` counts retirements. Track the active total separately.
+Look for R02 in the [starting policy (P001)](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md) and the [candidate policy (P002)](pathname:///cookbook-files/data-snapshot-metadata-council/002_policy.md). The wording changes under the same ID, so R02 counts as an amendment. R05 appears only in P002, so it counts as an addition. A retirement removes an active rule from the next policy and reserves its ID.
 
-1. Compare the starting and candidate policies by rule ID. In round 001, compare [P001](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md) with [P002](pathname:///cookbook-files/data-snapshot-metadata-council/002_policy.md). Classify each rule once as added, amended, retired, or unchanged.
+For round `r`, the accepted rule-change count is `C_r = A_r + M_r + R_r`, where `A_r` counts additions, `M_r` counts amendments, and `R_r` counts retirements. Track the active total separately.
+
+1. Compare the starting and candidate policies by rule ID. Classify each rule once as added, amended, retired, or unchanged.
 2. Reconcile the active total with the prior active count plus additions minus retirements. Store reasons and finding IDs alongside accepted changes.
 3. Record failure modes and unresolved issues, including rejected proposals. Keep batch membership and review coverage available to interpret any future change in frequency.
 
@@ -59,13 +61,15 @@ Count operations on persistent rule IDs. An amendment changes the instruction un
 
 **Result:** A stopping procedure identifies the evidence to review and how to record a decision.
 
-Choose a review window and a practical definition of marginal policy change before observing a trend. A team may consider both the size and significance of changes. Review recurring failure modes alongside counts so a persistent high-impact issue cannot disappear into an aggregate.
+Finding F04 leaves an open question in the [cumulative state (S002)](pathname:///cookbook-files/data-snapshot-metadata-council/002_experiment_state.md). Will the proposed unit rule also work on figures and mixed-unit tables in future batches? Check open issues like this alongside rule counts when deciding whether to stop.
+
+Choose how many rounds to review and what would count as a minor change before observing a trend. Consider how much the policy changed and how consequential those changes were.
 
 1. Compare accepted changes and recurrent issues over the chosen window. Check batch composition, rubric and model versions, and the scope of review.
 2. Inspect unresolved disagreements and severe failures. Ask whether they need different evidence, human adjudication, or a change to the planned scope.
 3. Record the decision to continue, pause, or close development with its reason, remaining issues, and next assessment.
 
-**Worked example.** Round 001 gives the reviewer three accepted changes and one unresolved question about unit guidance. S002 identifies figures and mixed-unit tables to check in future batches. The reviewer would need observations across rounds before deciding whether the policy had stabilized. [Cumulative state](pathname:///cookbook-files/data-snapshot-metadata-council/002_experiment_state.md)
+**Worked example.** Round 001 gives the reviewer three accepted changes and a concrete question for future batches. A later review would check whether unsupported unit values recur and whether fixing them still requires policy changes. A single round gives no trend to assess.
 
 **What this does not do.** The cookbook does not prescribe a universal threshold or demonstrate convergence across rounds.
 
@@ -75,14 +79,16 @@ Choose a review window and a practical definition of marginal policy change befo
 
 **Result:** An evaluation brief specifies the sample separation, comparison, and evidence required for adoption.
 
-Plan a paired comparison by applying both policies to the same images with the fixed reference extractor. Set aside the evaluation images and annotations before development. Keep data snapshots from the same source document together, and group near-duplicate documents where appropriate.
+Consider a comparison of the [starting policy (P001)](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md) and the [candidate policy (P002)](pathname:///cookbook-files/data-snapshot-metadata-council/002_policy.md). For each reserved image, the fixed reference extractor would produce one metadata record under each policy. This is a paired comparison because both policies are tested on the same examples.
+
+Set aside the evaluation images and annotations before development. Keep data snapshots from the same source document together, and group near-duplicate documents where appropriate.
 
 1. Define the field-level assessment and review rubric before running the comparison. Include unsupported claims, omissions, and errors that matter to downstream users.
 2. Compare the experiment's initial and final policies with identical model and schema settings. Arrange independent human assessment, preferably without showing which policy produced the record.
 3. Report disagreements, case counts, and uncertainty. Define what evidence would justify proceeding and which unresolved failures require further work.
 4. Record the evaluation status separately from the development stopping decision.
 
-**Worked example.** D1, D2, C1, and C2 are used to explain policy development. The evaluation brief would reserve other source documents and compare [P001](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md) and [P002](pathname:///cookbook-files/data-snapshot-metadata-council/002_policy.md) on the same held-out data snapshots. The published gold release has a single train split, so the team must establish evaluation independence separately.
+**Worked example.** D1, D2, C1, and C2 are development examples. The evaluation brief would reserve other source documents and have reviewers check both records for each data snapshot against the same rubric. The published gold release has a single train split, so the team must establish evaluation independence separately.
 
 **What this does not do.** The comparison is proposed. Distinguishability judging is a separate future question, and model fine-tuning is outside this design.
 

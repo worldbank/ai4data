@@ -42,6 +42,14 @@ The D1 title error and D2 standard-error error illustrate diagnostic findings. T
 
 **Result:** A set of review questions and a record format capture the evidence, assessment, and need for human review.
 
+Compare the illustrative metadata below with the evidence visible in the [data snapshots in Chapter 2](./preparation.mdx). Each finding explains what the image supports for the fields shown.
+
+| Sample | Selected illustrative output | Visual evidence and diagnostic finding |
+|---|---|---|
+| D1 | `title = "Percent of population"` | **F01.** The phrase runs along the vertical axis. A separate caption above the chart identifies the labor-force figure. The words appear in the image, but their placement contradicts the assigned title role. |
+| D2 | `Log PCE` is an `outcome`. `Monsoon Onset` is a `predictor`. `SE` appears as its own variable. | **F02.** The table identifies Log PCE as the dependent variable and lists Monsoon Onset as a regression term. Under both lag specifications, `Coef` and `SE` label the coefficient and standard error reported for each term. The output treats `SE` as a variable in its own right. |
+| C2 | `name = "Number of countries"`, `unit.source_text = "countries"` | **F04.** The scale has ticks but no unit label. The category labels and legend identify groupings without establishing what is counted. The entity remains uncertain, but the image gives enough evidence to flag the unsupported wording under R01 and R04. |
+
 Use the following assessment questions as a fixed rubric for both batches. On Discovery, a difference from the human reference prompts a check against the image and can reveal a reference issue. On Challenge, the judge applies the same checks using the image, schema, and policy.
 
 | Check | Question |
@@ -57,15 +65,7 @@ Use the following assessment questions as a fixed rubric for both batches. On Di
 3. Set `human_attention` to true when a person needs to resolve the finding before the round can proceed. Use `attention_reason` to explain the decision for either value.
 4. Share the finding with the council once any required human decision is recorded. Include the image evidence needed to inspect the issue and keep the full annotation in the judge and human review materials.
 
-**Worked example.** The table pairs selected fields from the illustrative P001 outputs with evidence from the four data snapshots in [chapter 2](./preparation.mdx). Each finding covers the field or fields shown.
-
-| Sample | Selected illustrative output | Visual evidence and diagnostic finding |
-|---|---|---|
-| D1 | `title = "Percent of population"` | **F01.** The phrase runs along the vertical axis. A separate caption above the chart identifies the labor-force figure. The words appear in the image, but their placement contradicts the assigned title role. |
-| D2 | `Log PCE` is an `outcome`. `Monsoon Onset` is a `predictor`. `SE` appears as its own variable. | **F02.** The table identifies Log PCE as the dependent variable and lists Monsoon Onset as a regression term. Under both lag specifications, `Coef` and `SE` label the coefficient and standard error reported for each term. The output treats `SE` as a variable in its own right. |
-| C2 | `name = "Number of countries"`, `unit.source_text = "countries"` | **F04.** The scale has ticks but no unit label. The category labels and legend identify groupings without establishing what is counted. The entity remains uncertain, but the image gives enough evidence to flag the unsupported wording under R01 and R04. |
-
-F01 and F02 can go to the council because the layout resolves the field-role questions. F04 can also go to the council because the unsupported value can remain unset under P001. None requires a reference or schema decision. [Illustrative extraction records](pathname:///cookbook-files/data-snapshot-metadata-council/001_extractions.jsonl) · [Illustrative judge reviews](pathname:///cookbook-files/data-snapshot-metadata-council/001_judge_reviews.jsonl)
+**Worked example.** F01 and F02 can go to the council because the layout resolves the field-role questions. F04 can also go to the council because the unsupported value can remain unset under P001. These findings can proceed with `human_attention` set to false. [Illustrative extraction records](pathname:///cookbook-files/data-snapshot-metadata-council/001_extractions.jsonl) · [Illustrative judge reviews](pathname:///cookbook-files/data-snapshot-metadata-council/001_judge_reviews.jsonl)
 
 **What this does not do.** Judge findings are provisional assessments. The abbreviated review scopes in the example do not demonstrate full-record coverage or judge accuracy.
 
@@ -75,13 +75,15 @@ F01 and F02 can go to the council because the layout resolves the field-role que
 
 **Result:** A review record documents decisions and identifies what information can carry forward.
 
-Use the same rubric for escalated and spot-checked cases. The value `human_attention: false` means the finding can proceed without immediate human adjudication. An extraction error can still be present, as F01 shows. Human spot checks can reveal missed errors or narrow review coverage.
+The note below D2’s regression table says “See notes to table 1.” D2 shows significance stars beside some estimates, but the referenced notes are outside the data snapshot. The illustrative judge flags the question of what thresholds the stars represent as F03 and sets `human_attention` to true.
+
+Use the same rubric to review escalated cases like F03 and to spot-check other records. A spot check can reveal errors that the judge missed or fields it did not examine.
 
 1. Review escalated findings and select additional cases for a spot check. Inspect the image, output, policy used for extraction ([P001](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md) in round 001), and reference where available. Record which fields were checked.
 2. Record a decision and its reason. For an approved gold or schema correction, record the old and new versions and preserve the original evidence.
 3. Pass the decision and its reason to the council and orchestrator. In [chapter 4](./deliberation.mdx), these summaries accompany the findings used to propose rule changes.
 
-**Worked example.** F03 escalates D2's interpretation note because assigning significance thresholds to the stars would affect how a reader interprets the estimates. Both the illustrative extraction and gold preserve “See notes to table 1.” The data snapshot omits the referenced notes. In H01, the reviewer keeps the cross-reference and leaves the thresholds unspecified. The gold and schema versions stay the same.
+**Worked example.** Both the illustrative extraction and gold preserve D2’s cross-reference. In H01, the reviewer keeps it and leaves the thresholds unspecified because the image does not establish them. The gold and schema versions stay the same.
 
 C1 has an empty findings list for the reviewed fields. H02 still checks its median-age unit and year categories and confirms that the title can remain null for C1. That spot check covers the named fields only. [Illustrative human review](pathname:///cookbook-files/data-snapshot-metadata-council/001_human_review.md)
 

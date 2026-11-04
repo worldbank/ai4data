@@ -42,7 +42,9 @@ The round 001 manifest and role instructions supply the inputs for the proposed 
 
 **Result:** An integration specification separates model work from deterministic tool behavior.
 
-Plan a separate Pi session for each model role. Specify the files and fields each session receives and the checks the tools perform before passing work to the next role.
+Consider what two Pi sessions would receive for D2. The judge needs the image, extraction, and full human-reviewed annotation. A council member needs the image, extraction, relevant findings, and the summary of human decision H01. Those two sets of inputs are examples of role packets.
+
+Plan a separate session for each model role. Specify how tools assemble and check each packet before passing it to the session.
 
 | Proposed operation | Input | Output and completion check |
 |---|---|---|
@@ -56,7 +58,7 @@ Plan a separate Pi session for each model role. Specify the files and fields eac
 2. Specify that the judge receives full Discovery references. Limit council sessions to the evidence and findings prepared for them. Restrict file, shell, and network access so council tools cannot retrieve the full annotations.
 3. Separate the three initial council contexts. Enable the critique stage only once all initial proposals are recorded. Route the revisions to the distinct synthesis model.
 
-**Worked example.** The selection operation would load the four registered images and verify their hashes. The D2 judge packet would contain the complete annotation. A council packet would contain D2's image, extraction, relevant findings, and H01 summary. The register remains an audit artifact because it contains paths to the full references.
+**Worked example.** The selection tool would verify D2’s image against the checksum in the sample register. The packet assembly tool would use that register to locate the full annotation for the judge and share only the authorized files and fields with the council.
 
 **What this does not do.** This recipe specifies the proposed harness. Its tools and handoffs still need to be implemented and tested.
 
@@ -66,7 +68,7 @@ Plan a separate Pi session for each model role. Specify the files and fields eac
 
 **Result:** The workflow has a transition table and an explicit recovery procedure.
 
-A stage is complete when its required records have been checked and saved. Saving results as they arrive lets the runner reuse completed work after an interruption.
+Suppose the judge saves valid reviews for D1, D2, and C1, and then the round is interrupted before it saves C2’s review. The three saved records are available for reuse, but the batch is still waiting for one review. Use checkpoints to record what is ready and what must happen before deliberation can start.
 
 | Transition | Gate |
 |---|---|
@@ -81,7 +83,7 @@ A stage is complete when its required records have been checked and saved. Savin
 3. Pause for escalations that require a human decision before deliberation, such as F03. Record the disposition and obtain authorization before using a changed reference or schema.
 4. Make the transition to the next version explicit. Preserve the prior policy and records so an interrupted write cannot replace them.
 
-**Worked example.** If the judge saved valid reviews for D1, D2, and C1 but missed C2, deliberation would wait. The runner would reuse the three saved reviews and request C2's review using [P001](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md) and the same rubric.
+**Worked example.** On resuming, the runner would keep the three saved reviews and request C2’s review using [P001](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md) and the same rubric. The round could move to deliberation once the review is valid and saved and any required human decisions are recorded.
 
 **What this does not do.** The transition table does not demonstrate that retries, model calls, or Pi sessions work in this repository. Those behaviors require implementation and testing.
 

@@ -42,7 +42,18 @@ D1 is the Shona labor-force figure. D2 is the rural Indonesia regression table. 
 
 **Result:** A sample register documents the exact images, annotation availability, and source attribution.
 
-Use the human-reviewed metadata release to identify candidate Discovery samples. Layout annotations identify a region on a PDF page. Semantic references describe the contents of the data snapshot using Schema v1.4.
+Consider D2, the rural Indonesia regression table in the gallery below. This excerpt from the [sample register](pathname:///cookbook-files/data-snapshot-metadata-council/samples.json) shows where the table appears in the PDF and which human-reviewed metadata record accompanies it.
+
+```json
+{
+  "sample_id": "D2",
+  "split": "discovery",
+  "pdf_page": 25,
+  "gold_reference": "cookbook-files/data-snapshot-metadata-council/document_11174028_table_007.json"
+}
+```
+
+Use the human-reviewed metadata release to identify candidate Discovery samples. Layout annotations identify a region on a PDF page. Semantic references such as D2’s describe the contents of the data snapshot using Schema v1.4.
 
 1. Open the source PDF and the selected image. Record the PDF page, source document ID, snapshot path, and SHA-256 checksum, which identifies the exact image bytes. Give the model a sample ID such as D1 that reveals no source information.
 2. For Discovery, verify the annotation against visible cues such as the title, headings, and notes. Record the reference revision. For Challenge, document the gold listing checked and leave the reference empty.
@@ -79,13 +90,15 @@ Use the human-reviewed metadata release to identify candidate Discovery samples.
 
 **Result:** The experiment has a versioned starting policy, state, and settings to hold fixed.
 
-The initial policy is the prompt and set of rules the reference extractor will use for the first batch. The cumulative state carries decisions and unresolved questions between rounds. Keep the two separate so that a record of deliberation cannot silently change the instructions applied to an image.
+Open the [starting policy (P001)](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md) and the [starting state (S001)](pathname:///cookbook-files/data-snapshot-metadata-council/001_experiment_state.md). Rule R01 in P001 tells the extractor to use the image as its evidence and leave unsupported fields unset or null where the schema permits. S001 records the objective and who can access the human-reviewed annotations.
+
+Keep these files separate. The policy gives the extractor its instructions. The state carries decisions and unresolved questions between rounds.
 
 1. Choose the schema and fixed reference extractor. Record provider and model identifier, model revision when available, request settings, and output format. Record the diagnostic judge and rubric as well.
 2. Draft the initial policy for the selected model and schema. Use the [illustrative starting policy (P001)](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md) as an example. Give each rule a stable ID. Specify what the model may use as evidence and how it should handle unsupported fields.
 3. Initialize the state with the objective, current versions, access policy, and any prior decisions. Start with an empty history when this is the first round.
 
-**Worked example.** P001 is the initial policy for the illustrative round. It contains four rules. S001 contains the objective and access boundary, with no prior extractions or decisions. The manifest leaves model identities and execution timestamps null because it represents a teaching round. [Initial experiment state](pathname:///cookbook-files/data-snapshot-metadata-council/001_experiment_state.md)
+**Worked example.** P001 starts with four rules. S001 starts with an empty history because this is the first round. The manifest leaves model identities and execution timestamps null because the round is illustrative.
 
 **What this does not do.** Recording versions and settings makes the experiment traceable. A hosted model may still return different outputs on repeated requests.
 
@@ -95,7 +108,7 @@ The initial policy is the prompt and set of rules the reference extractor will u
 
 **Result:** A round manifest connects the eight artifact types to the batch and its versioned inputs.
 
-The manifest is the index of inputs and outputs for the round. Resolve its file paths from the folder containing `001_manifest.json`. Use the listed policy and state IDs to distinguish the starting files from the versions written for the next round.
+Open the [round manifest](pathname:///cookbook-files/data-snapshot-metadata-council/001_manifest.json). Under `artifacts.policy`, `used` points to `001_policy.md` and `next` points to `002_policy.md`. These two entries distinguish the policy that produced the extraction records from the candidate for the next round. Resolve manifest paths from the folder containing `001_manifest.json`.
 
 | Artifact type | Contents and lifecycle |
 |---|---|
@@ -112,7 +125,7 @@ The manifest is the index of inputs and outputs for the round. Resolve its file 
 2. Resolve every path in the manifest and confirm its recorded version. Keep P001 and its extractions available after P002 is written.
 3. Keep the sample register with the experiment files. Share only the files and fields each role needs, as shown in [chapter 3](./diagnosis.mdx).
 
-**Worked example.** The manifest records P001 and S001 as inputs to the illustrative round and P002 and S002 as outputs of deliberation. Each extraction row names its sample and P001. These identifiers let the judge review a result against the policy in effect for that record. [Round manifest](pathname:///cookbook-files/data-snapshot-metadata-council/001_manifest.json) · [Illustrative extraction records](pathname:///cookbook-files/data-snapshot-metadata-council/001_extractions.jsonl)
+**Worked example.** The D2 extraction record names its sample and P001. The judge can use the sample ID to locate the image and reference in the register, and the policy ID to locate the instructions in effect for that record. [Illustrative extraction records](pathname:///cookbook-files/data-snapshot-metadata-council/001_extractions.jsonl)
 
 **What this does not do.** The manifest records association and provenance. Image support and policy compliance require review.
 

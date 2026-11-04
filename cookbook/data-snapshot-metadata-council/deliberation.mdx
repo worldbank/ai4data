@@ -43,13 +43,15 @@ Three illustrative council members propose changes based on D1, D2, and C2. C1 s
 
 **Result:** The deliberation record contains independently written proposals based on the same evidence.
 
-A council member needs the image and generated metadata to judge whether a finding is persuasive. The judge summarizes relevant comparisons, so the council can investigate issues while full Discovery references stay in the judge and human review contexts.
+Start with F01. The illustrative extraction puts “Percent of population” in D1’s `title` field. The judge points to its placement beside the vertical axis and the separate caption at the top. A council member can check that finding against the image and decide whether the policy needs clearer instructions.
+
+Give each council member the image, output, and judge’s summary. Keep full Discovery references in the judge and human review contexts.
 
 1. Gather the images, [starting policy (P001)](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md), S001, and extraction outputs. Add the findings and human decisions prepared in [chapter 3](./diagnosis.mdx).
 2. Give each member its own session. Collect all first proposals before sharing proposals among members.
 3. Request the finding, visible evidence, and failure mode. Ask the member to specify whether to add, amend, retain, or retire a rule and to name the affected ID or mark it as a new rule. Include the expected benefit and a counterexample or risk. Record proposed gold or schema challenges for human review.
 
-**Worked example.** In the illustrative P001 extraction for D1, `title` is “Percent of population.” F01 locates those words beside the vertical axis and identifies the separate caption at the top. Member A proposes amending R02 so the extractor uses the caption when the layout distinguishes it from the axis label. A also proposes a short generic title when the data snapshot has no title. That second clause aims to keep the field useful, but it needs a counterexample check. [Illustrative deliberation record](pathname:///cookbook-files/data-snapshot-metadata-council/001_deliberation.md)
+**Worked example.** Member A proposes amending R02 so the extractor uses the caption when the layout distinguishes it from the axis label. A also proposes a short generic title when the data snapshot has no title. That second clause aims to keep the field useful, but it needs a counterexample check. [Illustrative deliberation record](pathname:///cookbook-files/data-snapshot-metadata-council/001_deliberation.md)
 
 **What this does not do.** Independent contexts help preserve distinct first responses. Models may still share assumptions, training data, or systematic errors.
 
@@ -59,7 +61,11 @@ A council member needs the image and generated metadata to judge whether a findi
 
 **Result:** Each proposal has cross-critiques and a revised recommendation that addresses them.
 
-A useful critique tests the proposed wording against a concrete image or policy boundary. Ask each member to explain where a rule would damage another case as well as where it would help.
+Consider Member A’s proposal to “Use a short generic title when a data snapshot has no title to keep the field populated.” Try applying it to C1.
+
+![C1 shows a Shona demographics table with 2019 and 2024 columns and no visible title.](../../website/static/cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.png)
+
+Ask each member to test proposed wording against the evidence this way. A critique should show where the rule helps or where it would lead to an unsupported value.
 
 1. Share the frozen first proposals with the other members. Request a critique of each proposal that identifies the evidence or counterexample.
 2. Ask each member to revise its own recommendation. Record both versions so the orchestrator can see how the rationale changed.
@@ -75,16 +81,18 @@ A useful critique tests the proposed wording against a concrete image or policy 
 
 **Result:** The round produces a candidate policy, cumulative state, and findings with an audit trail.
 
-The orchestrator reads the full deliberation and drafts the next policy. The round findings explain the decisions for this batch, and the updated experiment state carries lessons and open questions into the next batch.
+In the [candidate policy (P002)](pathname:///cookbook-files/data-snapshot-metadata-council/002_policy.md), the orchestrator keeps R02’s ID and revises its wording after the council examines D1 and C1.
+
+> **R02** Use an identifiable visible title or caption for the title. Treat axes, legends, and group headings according to their visual roles. Record a printed figure or table identifier separately as the document label.
+
+The policy records the new instruction. The round findings explain why it changed, and the updated state carries decisions and open questions into the next batch.
 
 1. Evaluate each proposal against the cited evidence, known counterexamples, and human decisions. Record accept, reject, or defer with a reason.
 2. Keep the ID of an amended rule. Allocate a new ID for a new rule. Reserve retired IDs permanently.
 3. Write the next policy and state as separate files. Record rejected proposals and unresolved questions in the findings. Carry forward the decisions and questions the next batch needs.
 4. Confirm that the manifest points to the [candidate policy (P002)](pathname:///cookbook-files/data-snapshot-metadata-council/002_policy.md) and still identifies [P001](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md) as the policy used for the original records.
 
-**Worked example.** The orchestrator accepts the narrowed R02 amendment. D1 supports distinguishing a caption from an axis label, and C1 supports dropping the fallback. P002 records the resulting rule under the same ID.
-
-> **R02** Use an identifiable visible title or caption for the title. Treat axes, legends, and group headings according to their visual roles. Record a printed figure or table identifier separately as the document label.
+**Worked example.** The round findings record why the orchestrator accepts the narrower R02 amendment. D1 supports distinguishing a caption from an axis label, and C1 supports dropping the fallback.
 
 The orchestrator also amends R03 and adds R05, which requires evidence for each unit association. S002 carries the unresolved counted entity in C2 and the need to test unit associations on fresh images. [Updated state](pathname:///cookbook-files/data-snapshot-metadata-council/002_experiment_state.md) · [Round findings](pathname:///cookbook-files/data-snapshot-metadata-council/001_round_findings.md)
 

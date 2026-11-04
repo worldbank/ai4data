@@ -44,7 +44,19 @@ This chapter starts with the Shona labor-force chart, D1, and its illustrative e
 
 **Result:** A question identifies a field that needs clearer guidance and the behavior a revised policy should support.
 
-Use the prepared D1 data snapshot and its illustrative title value, “Percent of population.” A policy change can help when the model misinterprets visible evidence. When information falls outside the snapshot, the policy can clarify when to leave a field unset. [D1 data snapshot](pathname:///img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.png)
+Consider the prepared D1 data snapshot.
+
+![Shona labor-force chart with separate lines for employed and unemployed people in two population groups.](../../website/static/img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.png)
+
+Then suppose its metadata includes the following field:
+
+```json
+{
+  "title": "Percent of population"
+}
+```
+
+A policy change can help when the model misinterprets visible evidence. When information falls outside the snapshot, the policy can clarify when to leave a field unset.
 
 1. Locate “Percent of population” in D1. Compare its placement with the caption above the chart.
 2. Find rule R02 in the [starting policy (P001)](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md). It says, “Record a visible title and document label when present.” Identify what distinction the model needs to make to follow that rule.
@@ -60,7 +72,7 @@ Use the prepared D1 data snapshot and its illustrative title value, “Percent o
 
 **Result:** A workflow map shows how an extraction issue reaches the candidate policy and identifies who handles each step.
 
-An experiment round starts with a policy and ends with a candidate revision. Each role handles a different part of that path. The extractor produces the record, the review establishes what the evidence supports, and the council considers what to change in the instructions.
+Start with the title issue from Recipe 1.1. In illustrative round 001, the extractor applies P001 to D1, the judge records the title error as F01, and the orchestrator uses the council’s recommendation to write a revised title rule in P002. Follow that trail to see which records each role reads and writes.
 
 1. Open the [round 001 manifest](pathname:///cookbook-files/data-snapshot-metadata-council/001_manifest.json) to find the starting policy, state, and batch. The state holds prior decisions and open questions. The batch includes Discovery samples with human-reviewed annotations and Challenge samples without those annotations.
 2. Open [P001](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md), the policy the fixed reference extractor used for D1. It tells reviewers what instructions were in effect.
@@ -68,7 +80,7 @@ An experiment round starts with a policy and ends with a candidate revision. Eac
 4. Follow the finding to the council. Council members use the snapshots, outputs, judge findings, and relevant human decisions to propose and critique changes. The full gold references stay with the judge and human reviewer.
 5. Compare the original rule with R02 in the [candidate policy (P002)](pathname:///cookbook-files/data-snapshot-metadata-council/002_policy.md) produced by the orchestrator. The candidate policy and updated state are the starting point for the next round.
 
-**Worked example.** D1's illustrative extraction uses P001. The judge records the title error as F01. The council considers how to distinguish captions from axis labels, and the orchestrator incorporates the revised title rule into candidate policy P002. The original output stays linked to P001. [Chapter 2](./preparation.mdx) shows how to prepare the inputs for this round.
+**Worked example.** The manifest links D1’s original output to P001. P002 contains the revised rule and goes forward to the next round with the updated state. Keeping those records separate lets a reviewer check which instructions produced the output. [Chapter 2](./preparation.mdx) shows how to prepare the inputs.
 
 **What this does not do.** This trace shows how a candidate rule reaches the next round. Its effect on extraction quality requires a subsequent comparison.
 
