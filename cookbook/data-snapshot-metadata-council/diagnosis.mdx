@@ -1,0 +1,120 @@
+---
+id: diagnosis
+title: "3. Diagnostic assessment and human review"
+sidebar_label: "3. Diagnosis and review"
+sidebar_position: 4
+description: Separates schema validity, evidence support, and policy compliance and defines human adjudication.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 3. Diagnostic assessment and human review
+
+**Question:** How are extraction problems assessed and escalated?
+
+## Rationale
+
+Structural validation checks whether a metadata payload satisfies the schema. A diagnostic review checks the relationship between a field, the image, and the instructions used to produce the record. A populated field may have the right type yet represent the wrong part of the image.
+
+The diagnostic judge performs a first assessment. The judge can compare against a human-reviewed record on Discovery, while the Challenge review relies on the image, policy, and schema. A human can adjudicate disputed references, identify schema questions, and check cases the judge did not flag.
+
+## Target state
+
+- Each review names the sample, examined fields, evidence, uncertainty, and escalation status.
+- Human decisions record the disposition and any authorized change to gold or schema.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Compare extracted fields with the image and document the reasons for escalation. |
+| **AI-ready** | Use a fixed diagnostic rubric and structured finding and decision records. |
+| **AI-native** | Specify a gated review stage with separate inputs for Discovery, Challenge, and council roles. |
+
+:::info[Running example]
+The D1 title error and D2 standard-error error illustrate diagnostic findings. The D2 note illustrates an escalation. The selected C1 fields illustrate a human spot check on an unflagged review.
+:::
+
+## Recipes
+
+<Recipe title="3.1 Specify a diagnostic review" level="AI-ready" skills="Metadata reviewer and ML engineer" time="45 minutes">
+
+**Result:** A fixed rubric and review format separate evidence, interpretation, and routing.
+
+Use the following assessment questions as a fixed rubric for both batches. On Discovery, a difference from the human reference prompts a check against the image and can reveal a reference issue. On Challenge, the judge applies the same checks using the image, schema, and policy.
+
+| Check | Question |
+|---|---|
+| Evidence support | Does the visible image support the value and the role assigned to it? |
+| Metadata completeness | Which relevant values supported by the crop are missing? Distinguish schema requirements, relevant optional fields, and details the crop cannot establish. |
+| Policy compliance | Does the output follow the rules in the executed policy? Cite the applicable rule IDs. |
+| Uncertainty | Which interpretations remain plausible, or what evidence would resolve the question? |
+| Human escalation | Does a consequential ambiguity, unresolved reference dispute, or proposed schema change require human adjudication before proceeding? |
+
+1. Provide the image, generated metadata, executed policy, and schema. Include the full human annotation for Discovery. Mark reference comparison unavailable for Challenge.
+2. Record the fields examined in `review_scope`. For each finding, identify its kind, field, visual evidence location, applicable rule IDs, and assessment. Use `uncertainty` for a short description of what the evidence leaves open, or null when nothing material remains uncertain for that finding.
+3. Set `human_attention` when the finding requires adjudication and use `attention_reason` to explain either decision. Route well-supported extraction findings that need no adjudication to the council for possible policy changes.
+4. Prepare a scoped finding for the council. Review it for unnecessary disclosure of reference values, while retaining enough evidence to inspect the issue.
+
+**Worked example.** The table pairs excerpts from the illustrative P001 payloads with observations from the actual crops. Each excerpt shows selected fields from a Schema v1.4 record. The associated finding assesses only the stated scope.
+
+| Sample | Selected illustrative output | Visual evidence and diagnostic finding |
+|---|---|---|
+| D1 | `title = "Percent of population"` | **F01.** The phrase runs along the vertical axis. A separate caption above the chart identifies the labor-force figure. The words appear in the image, but their placement contradicts the assigned title role. |
+| D2 | `Log PCE` is an `outcome`. `Monsoon Onset` is a `predictor`. `SE` appears as its own variable. | **F02.** The table identifies Log PCE as the dependent variable. Monsoon Onset is a regression term in a row. Under both lag specifications, `Coef` and `SE` label the statistics reported for those terms. The output treats `SE` as a measured concept and misses its association with the row variable. |
+| C2 | `name = "Number of countries"`, `unit.source_text = "countries"` | **F04.** The scale has ticks but no unit label. The category labels and legend identify groupings without establishing what is counted. The entity remains uncertain, but the crop gives enough evidence to flag the unsupported wording under R01 and R04. |
+
+F01 and F02 can go to the council because the layout resolves the field-role questions. F04 can also go to the council because the unsupported value can remain unset under P001. None requires a reference or schema decision. [Illustrative extraction records](pathname:///cookbook-files/data-snapshot-metadata-council/001_extractions.jsonl) · [Illustrative judge reviews](pathname:///cookbook-files/data-snapshot-metadata-council/001_judge_reviews.jsonl)
+
+**What this does not do.** Judge findings are provisional assessments. The abbreviated review scopes in the example do not demonstrate full-record coverage or judge accuracy.
+
+</Recipe>
+
+<Recipe title="3.2 Record the human decision and its scope" level="Foundational" skills="Metadata reviewer" time="30 minutes">
+
+**Result:** A review record documents decisions and identifies what information can carry forward.
+
+Use the same rubric for escalated and spot-checked cases. The value `human_attention: false` means the finding can proceed without immediate human adjudication. An extraction error can still be present, as F01 shows. Human spot checks can reveal missed errors or narrow review coverage.
+
+1. Select flagged cases and a documented subset of cases without flags. Inspect the image, output, current instructions, and reference where available.
+2. Record a decision and its reason. For an approved gold or schema correction, record the old and new versions and preserve the original evidence.
+3. Share a scoped decision summary with the council and orchestrator. Retain full references and detailed adjudication materials in the authorized review context.
+
+**Worked example.** F03 escalates D2's interpretation note because assigning significance thresholds to the stars would affect how a reader interprets the estimates. Both the illustrative extraction and gold preserve “See notes to table 1.” The crop omits the referenced notes. H01 adjudicates whether the visible cross-reference suffices. It retains that line, leaves thresholds unspecified, and retains the gold and schema versions.
+
+C1 has an empty findings list for the reviewed fields. H02 still checks its median-age unit and year categories and confirms that the title can remain null for this crop. That spot check covers the named fields only. [Illustrative human review](pathname:///cookbook-files/data-snapshot-metadata-council/001_human_review.md)
+
+**What this does not do.** These authored decisions demonstrate the record structure. They supply neither verified model behavior nor a measured judge agreement rate.
+
+</Recipe>
+
+## Implementation options
+
+- Use a table to try the rubric on a small set of images. Move to a JSON Lines contract when reviews are handed off automatically.
+- Calibrate the diagnostic judge separately against reviewed cases before relying on its coverage. Record rubric changes as changes to the experiment conditions.
+
+## Resources
+
+- [Evaluation Suites for Statistical AI](/cookbook/evaluation-suites/judges) describes how to validate model-based graders against people.
+- The [role instructions](pathname:///cookbook-files/data-snapshot-metadata-council/role-instructions.md) provide the proposed input and output boundaries.
+
+## Common mistakes
+
+- Counting a structurally valid record as correct bypasses the image evidence.
+- Interpreting an unflagged record as fully reviewed overstates the judge's coverage.
+- Letting a diagnosis revise policy or gold collapses distinct responsibilities.
+
+## Verification
+
+- Check that Discovery and Challenge reviews declare the correct reference status.
+- Trace each escalation to a human disposition or an explicitly open case.
+- Verify that council-facing findings cite image evidence and omit complete annotations.
+
+## Checklist
+
+<Checklist id="data-snapshot-metadata-council-diagnosis" items={[
+  'The judge receives the right evidence for each batch.',
+  'Each finding identifies a field, evidence, and escalation status.',
+  'Human review covers flagged cases and selected unflagged cases.'
+]} />
