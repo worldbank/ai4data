@@ -11,13 +11,15 @@ import Checklist from '@site/src/components/Cookbook/Checklist';
 
 # 2. Experiment inputs and artifacts
 
-**Question:** What must be prepared before the first round?
+**Question:** What must be prepared before starting the experiment?
 
 ## Rationale
 
-A metadata record describes the data snapshot supplied to the extractor. Cropping the same table in different ways can expose different captions, notes, or values. The register identifies the exact snapshot and its source PDF. The reference annotation must describe that same image.
+Chapter 1 follows D1’s title error through a round prepared for the walkthrough. This chapter shows how to set up a round so the judge can tell which image the extractor saw and which instructions it followed. Two snapshots of the same table can show different captions or notes, so any human-reviewed annotation needs to describe the exact image the extractor received.
 
-The initial policy, schema, model configuration, and experiment state establish the conditions for the first round. Versioned records make it possible to identify those conditions even after the policy has changed.
+The sample register identifies each image, its source PDF, and any matching annotation. The starting policy, schema, and model settings specify how the extractor will run. The starting state records what the team carries into the round, such as prior decisions and open questions. The manifest links these files to the results so the original settings and instructions can be checked after the policy changes.
+
+This setup gives the judge and council a shared starting point. In [Chapter 3](./diagnosis.mdx), the judge checks the output against the data snapshot, the policy in effect, and the human-reviewed annotation when available. In [Chapter 4](./deliberation.mdx), the council uses the judge’s findings and the data snapshot evidence to propose changes to that policy.
 
 ## Target state
 
