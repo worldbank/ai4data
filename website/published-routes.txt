@@ -82,6 +82,17 @@
 /cookbook/data-snapshot-end-to-end/roadmap
 /cookbook/data-snapshot-end-to-end/snapshots
 /cookbook/data-snapshot-end-to-end/standards
+/cookbook/data-snapshot-metadata-council
+/cookbook/data-snapshot-metadata-council/contributing
+/cookbook/data-snapshot-metadata-council/deliberation
+/cookbook/data-snapshot-metadata-council/diagnosis
+/cookbook/data-snapshot-metadata-council/glossary
+/cookbook/data-snapshot-metadata-council/orchestration
+/cookbook/data-snapshot-metadata-council/preparation
+/cookbook/data-snapshot-metadata-council/progress
+/cookbook/data-snapshot-metadata-council/standards
+/cookbook/data-snapshot-metadata-council/start-here
+/cookbook/data-snapshot-metadata-council/workflow
 /cookbook/evaluation-suites
 /cookbook/evaluation-suites/answers
 /cookbook/evaluation-suites/contributing
