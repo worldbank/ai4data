@@ -31,7 +31,7 @@ Cross-critique asks where a rule would fail or alter a reasonable extraction. Th
 |---|---|
 | **Foundational** | Use a written deliberation record and review the proposed changes side by side. |
 | **AI-ready** | Use stable finding and rule IDs and capture each stage of deliberation separately. |
-| **AI-native** | Specify isolated role contexts, a proposal completion gate, and verified writes for the next policy and state. |
+| **AI-native** | Specify separate model sessions, checks that all proposals are in, and validation before saving the next policy and state. |
 
 :::info[Running example]
 Three illustrative council members propose changes based on D1, D2, and C2. C1 supplies a counterexample to an overbroad title fallback. The orchestrator synthesizes P002 and S002 for the next batch.
@@ -41,12 +41,12 @@ Three illustrative council members propose changes based on D1, D2, and C2. C1 s
 
 <Recipe title="4.1 Collect independent proposals" level="AI-ready" skills="Experiment lead and ML engineer" time="40 minutes">
 
-**Result:** The deliberation record contains distinct proposals grounded in the same authorized evidence.
+**Result:** The deliberation record contains independently written proposals based on the same evidence.
 
 A council member needs the image and generated metadata to judge whether a finding is persuasive. The judge summarizes relevant comparisons, so the council can investigate issues while full Discovery references stay in the judge and human review contexts.
 
-1. Prepare the authorized images, P001, S001, outputs, findings, and scoped human decisions. Include relevant prior decisions when there are any.
-2. Give members separate contexts. Collect all first proposals before sharing proposals among members.
+1. Gather the images, P001, S001, and extraction outputs. Add the findings and human decisions prepared in [chapter 3](./diagnosis.mdx).
+2. Give each member its own session. Collect all first proposals before sharing proposals among members.
 3. Request the finding, visible evidence, and failure mode. Ask the member to specify whether to add, amend, retain, or retire a rule and to name the affected ID or mark it as a new rule. Include the expected benefit and a counterexample or risk. Record proposed gold or schema challenges for human review.
 
 **Worked example.** In the illustrative P001 extraction for D1, `title` is “Percent of population.” F01 locates those words beside the vertical axis and identifies the separate caption at the top. Member A proposes amending R02 so the extractor uses the caption when the layout distinguishes it from the axis label. A also proposes a short generic title when the crop has none. That second clause aims to keep the field useful, but it needs a counterexample check. [Illustrative deliberation record](pathname:///cookbook-files/data-snapshot-metadata-council/001_deliberation.md)
@@ -75,11 +75,11 @@ A useful critique tests the proposed wording against a concrete image or policy 
 
 **Result:** The round produces a candidate policy, cumulative state, and findings with an audit trail.
 
-The orchestrator has a separate synthesis role. It reads the proposals, cross-critiques, revisions, evidence, and scoped decisions. It reconciles them into a coherent policy and records decisions that need to survive the round.
+The orchestrator reads the full deliberation and drafts the next policy. The round findings explain the decisions for this batch, and the updated experiment state carries lessons and open questions into the next batch.
 
 1. Evaluate each proposal against the cited evidence, known counterexamples, and human decisions. Record accept, reject, or defer with a reason.
 2. Keep the ID of an amended rule. Allocate a new ID for a new rule. Reserve retired IDs permanently.
-3. Write the next policy and updated state as separate artifacts. Record rejected proposals and unresolved questions in the findings and carry durable lessons to the state.
+3. Write the next policy and state as separate files. Record rejected proposals and unresolved questions in the findings. Carry forward the decisions and questions the next batch needs.
 4. Confirm that the manifest points to the candidate policy and still identifies the executed policy for the original records.
 
 **Worked example.** The orchestrator accepts the narrowed R02 amendment. D1 supports distinguishing a caption from an axis label, and C1 supports dropping the fallback. P002 records the resulting rule under the same ID.
@@ -95,11 +95,10 @@ The orchestrator also amends R03 and adds R05, which requires evidence for each 
 ## Implementation options
 
 - Start with a structured Markdown record that preserves the order of contributions.
-- Use validated proposal envelopes if a runner needs to join proposals and critiques automatically. Keep the evidence references and reasons readable.
+- Use structured proposal records if software needs to match proposals and critiques automatically. Keep the evidence references and reasons readable.
 
 ## Resources
 
-- The [revised system design](https://docs.google.com/document/d/1XXrr7E1D43TI_612nRybOiF0Zf-MsI_nZuxWEdQ-ETk/edit) defines the sequence of deliberation and synthesis.
 - The [role instructions](pathname:///cookbook-files/data-snapshot-metadata-council/role-instructions.md) define the proposed council and orchestrator handoffs.
 
 ## Common mistakes

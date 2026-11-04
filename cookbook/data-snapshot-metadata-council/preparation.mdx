@@ -30,7 +30,7 @@ The initial policy, schema, model configuration, and experiment state establish 
 |---|---|
 | **Foundational** | Review a small set of images and prepare a written baseline policy. |
 | **AI-ready** | Register samples, record checksums, and link policy and state versions through a manifest. |
-| **AI-native** | Specify a deterministic admission check and versioned artifact writes as prerequisites for model calls. |
+| **AI-native** | Specify automatic checks that verify the inputs and their versions before model calls. |
 
 :::info[Running example]
 D1 is the Shona labor-force figure. D2 is the rural Indonesia regression table. C1 is the cropped Shona demographics table. C2 is the WPS4771 guarantee-systems chart. The four images are real. Round 001 is an illustrative exercise.
@@ -42,9 +42,9 @@ D1 is the Shona labor-force figure. D2 is the rural Indonesia regression table. 
 
 **Result:** A sample register documents the exact images, annotation availability, and source attribution.
 
-Use the human-reviewed semantic release to identify candidate Discovery samples. Layout annotations can locate a chart or table in a PDF. They describe regions, whereas the semantic references describe the meaning of an image under Schema v1.4.
+Use the human-reviewed metadata release to identify candidate Discovery samples. Layout annotations identify a region on a PDF page. Semantic references describe the contents of the crop using Schema v1.4.
 
-1. Open the PDF and the selected image. Record the PDF page, source identifier, crop path, and checksum. Use an opaque sample ID when sending the image to a model.
+1. Open the source PDF and the selected image. Record the PDF page, source document ID, crop path, and SHA-256 checksum, which identifies the exact image bytes. Give the model a sample ID such as D1 that reveals no source information.
 2. For Discovery, verify the annotation against visible cues such as the title, headings, and notes. Record the reference revision. For Challenge, document the gold listing checked and leave the reference empty.
 3. Record the selection method and reserve separate documents for future evaluation. Group related crops and duplicate or near-duplicate documents when planning that separation.
 
@@ -91,26 +91,26 @@ The policy states what the extractor should do. The cumulative state carries dec
 
 </Recipe>
 
-<Recipe title="2.3 Define the artifact contracts" level="AI-ready" skills="ML engineer" time="40 minutes">
+<Recipe title="2.3 Link the round files in a manifest" level="AI-ready" skills="ML engineer" time="40 minutes">
 
 **Result:** A round manifest connects the eight artifact types to the batch and its versioned inputs.
 
-The number in an artifact filename provides a convenient handle. The manifest determines the relationship between artifacts, including when a round produces a policy with a new number.
+The manifest is the index of inputs and outputs for the round. Resolve its file paths from the folder containing `001_manifest.json`. Use the listed policy and state IDs to distinguish the starting files from the versions written for the next round.
 
 | Artifact type | Contents and lifecycle |
 |---|---|
 | Extraction policy | P001 is applied in round 001. P002 is synthesized for future use. |
 | Cumulative experiment state | S001 enters the round. S002 carries decisions and open questions forward. |
-| Extraction results | One JSON Lines record per sample, with the executed policy and a semantic metadata payload. |
+| Extraction results | One record per sample in JSON Lines format, with one JSON object per line. Each record identifies the policy used and contains its metadata output. |
 | Round findings | Key issues, decision rationale, rule counts, rejected proposals, and open questions. |
 | Council deliberation | Independent proposals, cross-critiques, revisions, and the orchestrator synthesis. |
 | Round manifest | Batch membership, model and schema settings, status, timestamps where applicable, and artifact references. |
-| Human review | Recorded interventions and spot checks. The file may be absent when no intervention is needed. |
+| Human review | Human decisions on escalated findings and any recorded spot checks. |
 | Judge reviews | One structured review per sample, with its reference-comparison status and findings. |
 
 1. Use the same sample and round IDs in the extraction and review records. Keep the metadata payload separate from experiment bookkeeping.
 2. Resolve every path in the manifest and confirm its recorded version. Keep P001 and its extractions available after P002 is written.
-3. Define a reduced handoff for each role. Keep the full sample register and the annotation paths in the audit context.
+3. Keep the sample register with the experiment files. Share only the files and fields each role needs, as shown in [chapter 3](./diagnosis.mdx).
 
 **Worked example.** The manifest records P001 and S001 as inputs to the illustrative round and P002 and S002 as outputs of deliberation. Each extraction row names its sample and P001. These identifiers let the judge review a result against the policy in effect for that record. [Round manifest](pathname:///cookbook-files/data-snapshot-metadata-council/001_manifest.json) · [Illustrative extraction records](pathname:///cookbook-files/data-snapshot-metadata-council/001_extractions.jsonl)
 

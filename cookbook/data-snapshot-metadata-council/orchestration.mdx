@@ -15,9 +15,9 @@ import Checklist from '@site/src/components/Cookbook/Checklist';
 
 ## Rationale
 
-Pi is the proposed orchestration harness. It would start role sessions, coordinate stages, and record handoffs. The orchestrator model from the deliberation chapter would synthesize council recommendations into the next policy and state. The harness would check and save those outputs before advancing the workflow.
+Pi is the proposed harness, the software that would start model sessions, coordinate stages, and record handoffs. The orchestrator model from [chapter 4](./deliberation.mdx) would write the next policy and state. The harness would check and save those outputs before starting the next stage.
 
-A conversational entry point can start a round. Sample selection, input checks, role access, version assignment, and artifact writes still need explicit tool behavior. The repository's metadata extractor validates structured output, but its public interface uses packaged prompts. Applying a versioned policy file to the fixed extractor requires future integration.
+Give scripts or tools the steps with exact rules, such as checking sample IDs or assigning version numbers. The current metadata command uses packaged prompts and saves each successful extraction as a validated JSON file. It skips images that already have an output file by default. Applying a versioned policy and assembling the round's JSON Lines records would require separate integration.
 
 ## Target state
 
@@ -42,7 +42,7 @@ The round 001 manifest and role instructions supply the inputs for the proposed 
 
 **Result:** An integration specification separates model work from deterministic tool behavior.
 
-Start with distinct Pi role invocations and a small set of tools with explicit inputs and outputs. For a Python controller, Pi's RPC interface is another option. An application in TypeScript can consider the SDK. These are candidate integration surfaces, each requiring a tested configuration before running the experiment.
+Plan a separate Pi session for each model role. Specify the files and fields each session receives and the checks the tools perform before passing work to the next role.
 
 | Proposed operation | Input | Output and completion check |
 |---|---|---|
@@ -53,12 +53,12 @@ Start with distinct Pi role invocations and a small set of tools with explicit i
 | Write the next versions and ledger | Synthesis, prior policy, human dispositions | Versioned policy, state, findings, and rule counts with resolvable references. |
 
 1. Give the reference extractor and judge fixed configurations. Define how a future adapter would pass a versioned policy while keeping the schema and extractor settings fixed.
-2. Run the judge with the full Discovery references in its authorized context. Give council roles only staged evidence and scoped findings. Restrict file, shell, and network access to prevent retrieving gold through tools.
+2. Specify that the judge receives full Discovery references. Limit council sessions to the evidence and findings prepared for them. Restrict file, shell, and network access so council tools cannot retrieve the full annotations.
 3. Separate the three initial council contexts. Enable the critique stage only once all initial proposals are recorded. Route the revisions to the distinct synthesis model.
 
 **Worked example.** The selection operation would load the four registered images and verify their hashes. The D2 judge packet would contain the complete annotation. A council packet would contain D2's image, extraction, relevant findings, and H01 summary. The register remains an audit artifact because it contains paths to the full references.
 
-**What this does not do.** These contracts specify future integration. The current metadata API does not accept the policy file as an argument, and the example contains no executable Pi harness.
+**What this does not do.** This recipe specifies the design. It supplies neither an executable harness nor a way to pass P001 to the current metadata command.
 
 </Recipe>
 
@@ -66,7 +66,7 @@ Start with distinct Pi role invocations and a small set of tools with explicit i
 
 **Result:** The workflow has a transition table and an explicit recovery procedure.
 
-A stage is complete when its required records have been validated and persisted. A successful tool exit or fluent model answer alone is insufficient. Persisting intermediate results lets the runner resume without repeating unrelated requests.
+A stage is complete when its required records have been checked and saved. Saving results as they arrive lets the runner reuse completed work after an interruption.
 
 | Transition | Gate |
 |---|---|
@@ -77,11 +77,11 @@ A stage is complete when its required records have been validated and persisted.
 | Synthesize to handoff | Validate the new versions, tally rule changes, and persist the findings before advancing. |
 
 1. Record stage status and the artifact path or failure reason. Store an attempt separately if a model call needs retrying.
-2. Resume from the first incomplete gate with the original input versions. Check whether a request already produced a persisted result before retrying.
+2. Resume the first incomplete stage with the original input versions. Reuse validated results from those inputs. If an interrupted request left no valid result, record the retry as a new attempt.
 3. Pause for escalations that require a human decision before deliberation, such as F03. Record the disposition and obtain authorization before using a changed reference or schema.
 4. Make the transition to the next version explicit. Preserve the prior policy and records so an interrupted write cannot replace them.
 
-**Worked example.** If the proposed judge stage returned D1, D2, and C1 reviews but missed C2, the completeness gate would block deliberation. The runner would keep the three validated reviews and recover the missing C2 review using P001 and the same rubric. This is a proposed recovery scenario.
+**Worked example.** If the judge saved valid reviews for D1, D2, and C1 but missed C2, deliberation would wait. The runner would reuse the three saved reviews and request C2's review using P001 and the same rubric.
 
 **What this does not do.** The transition table does not demonstrate that retries, model calls, or Pi sessions work in this repository. Those behaviors require implementation and testing.
 
@@ -89,7 +89,7 @@ A stage is complete when its required records have been validated and persisted.
 
 ## Implementation options
 
-- Use explicit Pi invocations with scoped inputs for an initial integration. Choose RPC or SDK integration if the application needs programmatic session control.
+- Use separate Pi invocations with limited inputs. If an application needs to start or manage sessions from code, consider Pi's remote procedure call (RPC) interface or software development kit (SDK).
 - Keep deterministic checks and version writes in ordinary scripts or constrained tools. Use process isolation or an equivalent control when a role could otherwise read restricted files.
 
 ## Resources

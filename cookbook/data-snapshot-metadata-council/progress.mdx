@@ -45,7 +45,7 @@ The one illustrative transition from P001 to P002 supports a rule tally. It give
 
 Count operations on persistent rule IDs. An amendment changes the instruction under an existing ID. A retirement removes an active rule from the next policy and reserves its ID. For round `r`, the accepted rule-change count is `C_r = A_r + M_r + R_r`, where `A_r` counts additions, `M_r` counts amendments, and `R_r` counts retirements. Track the active total separately.
 
-1. Compare the two policies by ID and classify additions, amendments, retirements, and unchanged rules. Count each ID at most once per operation.
+1. Compare the starting and candidate policies by ID. Classify each rule once as added, amended, retired, or unchanged.
 2. Reconcile the active total with the prior active count plus additions minus retirements. Store reasons and finding IDs alongside accepted changes.
 3. Record failure modes and unresolved issues, including rejected proposals. Keep batch membership and review coverage available to interpret any future change in frequency.
 
@@ -65,7 +65,7 @@ Choose a review window and a practical definition of marginal policy change befo
 2. Inspect unresolved disagreements and severe failures. Ask whether they need different evidence, human adjudication, or a change to the planned scope.
 3. Record the decision to continue, pause, or close development with its reason, remaining issues, and next assessment.
 
-**Worked example.** The round 001 record can identify changes and unresolved issues. A stopping review would need further evidence before interpreting stability. S002 gives the next reviewer a specific question to follow on figures and mixed-unit tables. [Cumulative state](pathname:///cookbook-files/data-snapshot-metadata-council/002_experiment_state.md)
+**Worked example.** Round 001 gives the reviewer three accepted changes and one unresolved question about unit guidance. S002 identifies figures and mixed-unit tables to check in future batches. The reviewer would need observations across rounds before deciding whether the policy had stabilized. [Cumulative state](pathname:///cookbook-files/data-snapshot-metadata-council/002_experiment_state.md)
 
 **What this does not do.** The cookbook does not prescribe a universal threshold or demonstrate convergence across rounds.
 
@@ -75,7 +75,7 @@ Choose a review window and a practical definition of marginal policy change befo
 
 **Result:** An evaluation brief specifies the sample separation, comparison, and evidence required for adoption.
 
-Use paired extraction on the same held-out images with the fixed reference extractor. Pairing gives each policy the same comparison cases. Keep the images and references outside the policy-development loop. Separate by source document and related templates where appropriate, so near-duplicates do not leak into development.
+Plan a paired comparison by applying both policies to the same images with the fixed reference extractor. Set aside the evaluation images and annotations before development. Keep crops from the same source document together, and group near-duplicate documents where appropriate.
 
 1. Define the field-level assessment and review rubric before running the comparison. Include unsupported claims, omissions, and errors that matter to downstream users.
 2. Compare the baseline and candidate with identical model and schema settings. Arrange independent human assessment, preferably without showing which policy produced the record.

@@ -13,8 +13,6 @@ description: Terms used in this guide.
 
 **Annotation.** Optional properties on a tool that describe its behaviour (for example that it is read-only); hints that clients treat as untrusted unless the server is trusted.
 
-**API.** Application programming interface: the address at which a program asks a system for data and receives it in a structured form.
-
 **Candidate.** A model shortlisted for a task, with its licence classified and its card checked, to be run on the suite.
 
 **Checksum.** A fingerprint of a file's content (here SHA-256) that changes if one byte of the file changes; used to prove that a file is as released.
@@ -29,8 +27,6 @@ description: Terms used in this guide.
 
 **Decision point.** The step at which a named person decides on a model's output (a code, a proposal, an explanation, a draft).
 
-**Disclosure control.** The measurement and reduction of the risk that a released file identifies a person or business or reveals something about one: removal of identifiers, top-coding, coarsening of geography, suppression of rare combinations; applied before any release.
-
 **Evaluation set.** Decided records kept to test changes to prompts, manifests, rubrics, and models.
 
 **Fine-tuning.** Changing a model's weights by training it further on the organization's own labelled examples, so that it does one task better or follows the organization's conventions.
@@ -42,8 +38,6 @@ description: Terms used in this guide.
 **Grader.** A language model, with a rubric, that scores answers the automatic checks cannot score; validated against human scores before use.
 
 **Grader (judge).** A language model that scores answers with a rubric where no script can; validated against human scores before use.
-
-**Grounding.** Restricting a language model to what was retrieved or given for the task: an answer that uses only the retrieved records, a draft that uses only what the record and its named sources support.
 
 **Grouped split.** A draw of whole groups (households, documents) into the parts of a dataset, so that no group is divided between training and test.
 
@@ -64,6 +58,8 @@ description: Terms used in this guide.
 **Maturity level.** One of three states used in this guide: foundational, AI-ready, AI-native.
 
 **ML-ready dataset.** A fixed, versioned set of examples with a documented structure, a stated purpose, a split for training and testing, a statement of whom the examples represent, and a licence that covers model training.
+
+**Paired comparison.** The same questions through two versions, so that differences are between versions.
 
 **Prompt.** The instructions and context given to a language model for one task; kept as a versioned file when it is part of a workflow.
 

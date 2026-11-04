@@ -15,9 +15,9 @@ import Checklist from '@site/src/components/Cookbook/Checklist';
 
 ## Rationale
 
-Structural validation checks whether a metadata payload satisfies the schema. A diagnostic review checks the relationship between a field, the image, and the instructions used to produce the record. A populated field may have the right type yet represent the wrong part of the image.
+Schema validation checks the structure of a metadata record. The judge then checks whether the field represents what the image shows and follows the policy used to produce it. For example, both a caption and an axis label are text, so schema validation alone cannot tell which belongs in the title field.
 
-The diagnostic judge performs a first assessment. The judge can compare against a human-reviewed record on Discovery, while the Challenge review relies on the image, policy, and schema. A human can adjudicate disputed references, identify schema questions, and check cases the judge did not flag.
+The diagnostic judge makes the first assessment. The human reviewer resolves findings that require a decision and spot-checks other cases.
 
 ## Target state
 
@@ -40,7 +40,7 @@ The D1 title error and D2 standard-error error illustrate diagnostic findings. T
 
 <Recipe title="3.1 Specify a diagnostic review" level="AI-ready" skills="Metadata reviewer and ML engineer" time="45 minutes">
 
-**Result:** A fixed rubric and review format separate evidence, interpretation, and routing.
+**Result:** A set of review questions and a record format capture the evidence, assessment, and need for human review.
 
 Use the following assessment questions as a fixed rubric for both batches. On Discovery, a difference from the human reference prompts a check against the image and can reveal a reference issue. On Challenge, the judge applies the same checks using the image, schema, and policy.
 
@@ -54,15 +54,15 @@ Use the following assessment questions as a fixed rubric for both batches. On Di
 
 1. Provide the image, generated metadata, executed policy, and schema. Include the full human annotation for Discovery. Mark reference comparison unavailable for Challenge.
 2. Record the fields examined in `review_scope`. For each finding, identify its kind, field, visual evidence location, applicable rule IDs, and assessment. Use `uncertainty` for a short description of what the evidence leaves open, or null when nothing material remains uncertain for that finding.
-3. Set `human_attention` when the finding requires adjudication and use `attention_reason` to explain either decision. Route well-supported extraction findings that need no adjudication to the council for possible policy changes.
-4. Prepare a scoped finding for the council. Review it for unnecessary disclosure of reference values, while retaining enough evidence to inspect the issue.
+3. Set `human_attention` to true when a person needs to resolve the finding before the round can proceed. Use `attention_reason` to explain the decision for either value.
+4. Share the finding with the council once any required human decision is recorded. Include the image evidence needed to inspect the issue and keep the full annotation in the judge and human review materials.
 
-**Worked example.** The table pairs excerpts from the illustrative P001 payloads with observations from the actual crops. Each excerpt shows selected fields from a Schema v1.4 record. The associated finding assesses only the stated scope.
+**Worked example.** The table pairs selected fields from the illustrative P001 outputs with evidence from the actual crops in [chapter 2](./preparation.mdx). Each finding covers the field or fields shown.
 
 | Sample | Selected illustrative output | Visual evidence and diagnostic finding |
 |---|---|---|
 | D1 | `title = "Percent of population"` | **F01.** The phrase runs along the vertical axis. A separate caption above the chart identifies the labor-force figure. The words appear in the image, but their placement contradicts the assigned title role. |
-| D2 | `Log PCE` is an `outcome`. `Monsoon Onset` is a `predictor`. `SE` appears as its own variable. | **F02.** The table identifies Log PCE as the dependent variable. Monsoon Onset is a regression term in a row. Under both lag specifications, `Coef` and `SE` label the statistics reported for those terms. The output treats `SE` as a measured concept and misses its association with the row variable. |
+| D2 | `Log PCE` is an `outcome`. `Monsoon Onset` is a `predictor`. `SE` appears as its own variable. | **F02.** The table identifies Log PCE as the dependent variable and lists Monsoon Onset as a regression term. Under both lag specifications, `Coef` and `SE` label the coefficient and standard error reported for each term. The output treats `SE` as a variable in its own right. |
 | C2 | `name = "Number of countries"`, `unit.source_text = "countries"` | **F04.** The scale has ticks but no unit label. The category labels and legend identify groupings without establishing what is counted. The entity remains uncertain, but the crop gives enough evidence to flag the unsupported wording under R01 and R04. |
 
 F01 and F02 can go to the council because the layout resolves the field-role questions. F04 can also go to the council because the unsupported value can remain unset under P001. None requires a reference or schema decision. [Illustrative extraction records](pathname:///cookbook-files/data-snapshot-metadata-council/001_extractions.jsonl) · [Illustrative judge reviews](pathname:///cookbook-files/data-snapshot-metadata-council/001_judge_reviews.jsonl)
@@ -77,11 +77,11 @@ F01 and F02 can go to the council because the layout resolves the field-role que
 
 Use the same rubric for escalated and spot-checked cases. The value `human_attention: false` means the finding can proceed without immediate human adjudication. An extraction error can still be present, as F01 shows. Human spot checks can reveal missed errors or narrow review coverage.
 
-1. Select flagged cases and a documented subset of cases without flags. Inspect the image, output, current instructions, and reference where available.
+1. Review escalated findings and select additional cases for a spot check. Inspect the image, output, policy used for extraction, and reference where available. Record which fields were checked.
 2. Record a decision and its reason. For an approved gold or schema correction, record the old and new versions and preserve the original evidence.
-3. Share a scoped decision summary with the council and orchestrator. Retain full references and detailed adjudication materials in the authorized review context.
+3. Pass the decision and its reason to the council and orchestrator. In [chapter 4](./deliberation.mdx), these summaries accompany the findings used to propose rule changes.
 
-**Worked example.** F03 escalates D2's interpretation note because assigning significance thresholds to the stars would affect how a reader interprets the estimates. Both the illustrative extraction and gold preserve “See notes to table 1.” The crop omits the referenced notes. H01 adjudicates whether the visible cross-reference suffices. It retains that line, leaves thresholds unspecified, and retains the gold and schema versions.
+**Worked example.** F03 escalates D2's interpretation note because assigning significance thresholds to the stars would affect how a reader interprets the estimates. Both the illustrative extraction and gold preserve “See notes to table 1.” The crop omits the referenced notes. In H01, the reviewer keeps the cross-reference and leaves the thresholds unspecified. The gold and schema versions stay the same.
 
 C1 has an empty findings list for the reviewed fields. H02 still checks its median-age unit and year categories and confirms that the title can remain null for this crop. That spot check covers the named fields only. [Illustrative human review](pathname:///cookbook-files/data-snapshot-metadata-council/001_human_review.md)
 
