@@ -466,3 +466,15 @@ chapters. Edit terms here; never edit the generated pages.
 
 **Zero-shot model.** A model that performs a task from a description of the labels alone, without examples of that task in its training.
 <!-- match: zero-shot -->
+
+**Council deliberation.** Independent proposals, cross-critiques, and revisions by distinct models that examine extraction evidence before an orchestrator synthesizes a candidate policy.
+
+**Cumulative experiment state.** The compact record of accepted decisions, known failure modes, and unresolved questions carried forward from one experiment round to the next.
+
+**Diagnostic judge.** A model that assesses the generated metadata against the supplied image, schema, and extraction policy and compares it with a full human reference when available.
+
+**Discovery sample.** A snapshot whose human-reviewed semantic annotation is available to the diagnostic judge and human reviewer during policy development.
+
+**Extraction policy.** The versioned prompts and rules that guide the reference extractor in describing a snapshot.
+
+**Round manifest.** The machine-readable inventory of a round's sample IDs, settings, versions, status, and artifact paths.

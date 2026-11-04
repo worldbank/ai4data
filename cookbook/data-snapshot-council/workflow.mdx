@@ -1,0 +1,114 @@
+---
+id: workflow
+title: "1. Purpose and experimental workflow"
+sidebar_label: "1. Experimental workflow"
+sidebar_position: 2
+description: Defines the experiment's purpose, decision rights, and path from a starting policy to a candidate revision.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 1. Purpose and experimental workflow
+
+**Question:** What can council-guided policy development establish?
+
+## Rationale
+
+The Data Snapshot pipeline describes the contents of a cropped document image in structured semantic metadata. A valid record can still assign a visible phrase to the wrong field or infer context outside the crop. A team can use these problems to develop its extraction policy, the prompts and rules that guide the model's interpretation.
+
+The proposed experiment uses several multimodal models to develop the policy. A fixed reference extractor applies the policy to each batch, which makes the policy the intended variable of interest. A separate diagnostic judge assesses the outputs. Human review and independent model proposals give the orchestrator several sources of evidence for deciding what the next policy should say.
+
+## Target state
+
+- The team can explain what each role reads, produces, and decides.
+- A round can be traced from its executed policy through evidence and review to a candidate policy for a new batch.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Write the development objective and walk through one round with a human reviewer. |
+| **AI-ready** | Define role-specific inputs and name the artifacts needed to reconstruct each decision. |
+| **AI-native** | Specify automated handoffs with explicit validation and human decision points. |
+
+:::info[Running example]
+Round 001 uses two Discovery snapshots with human-reviewed annotations and two unlabeled Challenge snapshots. The Shona labor-force chart, D1, anchors the walkthrough. All round outputs and decisions in this guide are illustrative.
+:::
+
+## Recipes
+
+<Recipe title="1.1 Assign responsibilities for policy development" level="Foundational" skills="Experiment lead and metadata reviewer" time="30 minutes">
+
+**Result:** A brief records the objective and identifies the authority for each decision.
+
+Write the objective as a development question. For example, a team can ask which rules help the reference extractor assign visible text to the correct field. A development objective guides proposals, while an independent evaluation later measures the result.
+
+| Role | Responsibility |
+|---|---|
+| Reference extractor | Apply the current policy to each snapshot using the fixed schema and model. |
+| Diagnostic judge | Assess generated metadata against image evidence, policy, and schema. Compare with the full annotation on Discovery samples. |
+| Human reviewer | Review escalations and selected unflagged cases. Authorize any corrections to gold annotations or the schema. |
+| Model council | Inspect images, outputs, judge findings, and scoped review decisions. Propose, critique, and revise policy changes. |
+| Orchestrator | Synthesize the deliberation into the next policy, updated state, and round findings. |
+
+1. Assign a person to approve the experiment's starting inputs and act on escalations.
+2. Set the image evidence boundary and decide how to keep the extractor fixed across rounds. Define a separate diagnostic role and a rubric.
+3. Choose council members with different model families or other documented sources of diversity. Record the separate orchestrator role and specify how each context receives its inputs.
+
+**Worked example.** The D1 image and extraction are available to the judge and council, while the full D1 annotation is available to the judge and human reviewer. The role templates specify how the judge communicates its finding to the council. [Proposed role instructions](pathname:///cookbook-files/data-snapshot-council/role-instructions.md)
+
+**What this does not do.** Assigning roles establishes decision rights. The orchestration design must enforce the access boundaries during execution.
+
+</Recipe>
+
+<Recipe title="1.2 Trace the first round and its handoff" level="Foundational" skills="Experiment lead" time="30 minutes">
+
+**Result:** A workflow map identifies the starting conditions and where the first round ends.
+
+Discovery samples support comparison with human-reviewed annotations. Challenge samples expose cases without such a comparison. Both can provide evidence about image grounding and policy compliance.
+
+1. Establish policy P001 and experiment state S001. Select the two batches for round 001.
+2. Apply P001 with the fixed reference extractor and record which policy produced each output.
+3. Ask the judge to review the outputs. Have the human review escalated issues and selected unflagged records.
+4. Give council members the approved evidence. Collect independent proposals, cross-critiques, and revised recommendations in that order.
+5. Have the orchestrator synthesize policy P002, state S002, and round findings. Carry the new policy and state to the next Discovery and fresh Challenge batches.
+
+**Worked example.** The illustrative P001 extraction for D1 uses the vertical axis label as the title. The judge identifies the printed caption as competing evidence. Deliberation clarifies the title rule in P002. The D1 record remains associated with P001, and the walkthrough ends before P002 is applied. [Round 001 manifest](pathname:///cookbook-files/data-snapshot-council/001_manifest.json)
+
+**What this does not do.** This trace shows how a candidate rule reaches the next round. Its effect on extraction quality requires a subsequent comparison.
+
+</Recipe>
+
+## Implementation options
+
+- Begin with a supervised walkthrough that uses written handoffs. Add machine-readable records once each handoff has a clear contract.
+- Use the role and artifact contracts as the basis of the proposed Pi integration in [chapter 5](./orchestration.mdx).
+
+## World Bank examples
+
+- The [Data Snapshot end-to-end cookbook](/cookbook/data-snapshot-end-to-end/) explains how the existing pipeline produces crops and metadata records.
+
+## Resources
+
+- The [revised system design](https://docs.google.com/document/d/1XXrr7E1D43TI_612nRybOiF0Zf-MsI_nZuxWEdQ-ETk/edit) defines the proposed roles and development loop.
+- The [schema reference](/docs/data-snapshots/metadata-schema/) explains the extraction output contract.
+
+## Common mistakes
+
+- Changing the reference extractor during a policy comparison makes it harder to attribute differences.
+- Giving council members the full gold records bypasses the judge-mediated workflow.
+- Treating P002 as the source of the round 001 extraction breaks the evidence trail.
+
+## Verification
+
+- Trace a sample from the registered image to its extraction, diagnostic review, and any resulting policy decision.
+- Check that the map assigns full gold access and correction authority to the intended roles.
+
+## Checklist
+
+<Checklist id="data-snapshot-council-workflow" items={[
+  'The experiment brief names the policy development objective and assigns every role.',
+  'The workflow starts with a policy, state, and two sample batches.',
+  'The policy used for extraction and the candidate policy are distinguishable.'
+]} />

@@ -169,6 +169,17 @@ export const allCookbooks = [
     chapters: 6,
     to: '/cookbook/ai-assistants-at-work/',
   },
+  {
+    id: 'data-snapshot-council',
+    version: '0.1',
+    date: 'November 2026',
+    audience: 'Data scientists, ML engineers, and AI application developers',
+    title: 'Practical Guide to Council-Based Optimization for Data Snapshot Metadata Extraction',
+    description:
+      'Design a supervised experiment that uses a multimodal model council to revise data snapshot extraction policy.',
+    chapters: 6,
+    to: '/cookbook/data-snapshot-council/',
+  },
 ];
 
 export const cookbooks = allCookbooks.filter((c) => !isHiddenCookbook(c.id));
@@ -194,7 +205,7 @@ export function cookbookPage(pathname) {
 const allGroups = [
   {
     title: 'Data products that AI can use',
-    ids: ['ai-ready-dissemination', 'microdata-documentation', 'data-from-documents', 'data-snapshot-end-to-end', 'ml-ready-datasets'],
+    ids: ['ai-ready-dissemination', 'microdata-documentation', 'data-from-documents', 'data-snapshot-end-to-end', 'data-snapshot-council', 'ml-ready-datasets'],
   },
   {
     title: 'Metadata and interfaces',

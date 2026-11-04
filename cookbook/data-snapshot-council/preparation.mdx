@@ -1,0 +1,150 @@
+---
+id: preparation
+title: "2. Experiment inputs and artifacts"
+sidebar_label: "2. Inputs and artifacts"
+sidebar_position: 3
+description: Shows how to register images and references, fix the starting conditions, and identify round artifacts.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 2. Experiment inputs and artifacts
+
+**Question:** What must be prepared before the first round?
+
+## Rationale
+
+A metadata record describes the image supplied to the extractor. Two crops of the same table can expose different captions, notes, or values. A register needs to identify the exact crop and preserve its relationship to the source PDF. A semantic reference needs to describe that same image.
+
+The initial policy, schema, model configuration, and experiment state establish the conditions for the first round. Versioned records make it possible to identify those conditions even after the policy has changed.
+
+## Target state
+
+- Each sample has an unambiguous image, provenance, role in the batch, and reference status.
+- The manifest names the inputs and identifies the outputs of the proposed round.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Review a small set of images and prepare a written baseline policy. |
+| **AI-ready** | Register samples, record checksums, and link policy and state versions through a manifest. |
+| **AI-native** | Specify a deterministic admission check and versioned artifact writes as prerequisites for model calls. |
+
+:::info[Running example]
+D1 is the Shona labor-force figure. D2 is the rural Indonesia regression table. C1 is the cropped Shona demographics table. C2 is the WPS4771 guarantee-systems chart. The four images are real. Round 001 is an illustrative exercise.
+:::
+
+## Recipes
+
+<Recipe title="2.1 Register the Discovery and Challenge samples" level="Foundational" skills="Data curator or experiment lead" time="45 minutes">
+
+**Result:** A sample register documents the exact images, annotation availability, and source attribution.
+
+Use the human-reviewed semantic release to identify candidate Discovery samples. Layout annotations can locate a chart or table in a PDF. They describe regions, whereas the semantic references describe the meaning of an image under Schema v1.4.
+
+1. Open the PDF and the selected image. Record the PDF page, source identifier, crop path, and checksum. Use an opaque sample ID when sending the image to a model.
+2. For Discovery, verify the annotation against visible cues such as the title, headings, and notes. Record the reference revision. For Challenge, document the gold listing checked and leave the reference empty.
+3. Record the selection method and reserve separate documents for future evaluation. Group related crops and duplicate or near-duplicate documents when planning that separation.
+
+**Worked example.** D1 is the crop with its caption and source. C1 shares its source PDF but uses the narrower production table crop without the caption or source line. D2's title, dependent variable, lag headings, and footer match the published semantic reference. C2 matches Figure 3 of WPS4771 on PDF page 15, printed page 12. The semantic gold release contains no matching C2 record. [Sample register](pathname:///cookbook-files/data-snapshot-council/samples.json) · [Attribution and reuse notes](pathname:///cookbook-files/data-snapshot-council/README.md)
+
+**What this does not do.** A four-image batch supports a walkthrough. Its mix of document sources and crop types cannot establish representativeness.
+
+</Recipe>
+
+<details>
+<summary>Inspect the four source crops</summary>
+
+**D1.** The Shona labor-force chart retains its caption above the plot and its source below the legend.
+
+![Labor-force chart with separate lines for employed and unemployed people in two population groups.](../../website/static/img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.png)
+
+**D2.** The rural Indonesia regression table places coefficient and standard-error columns under each lag specification.
+
+![Table 3, Rural farm households, with Log PCE as the dependent variable and one-lag and two-lag column groups.](../../website/static/cookbook-files/data-snapshot-council/document_11174028_table_007.png)
+
+**C1.** The crop shows year columns and row labels, including the median-age unit, while the caption lies outside the crop.
+
+![Shona demographics table with 2019 and 2024 columns and no title visible in the crop.](../../website/static/cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.png)
+
+**C2.** The chart has a printed caption, two categories, and a legend. The vertical axis carries tick values without a unit label.
+
+![Figure 3, Type of guarantee systems, with grouped bars for MUTUAL and PUBLIC and legend entries HIGH and LOW_MIDDLE.](../../website/static/cookbook-files/data-snapshot-council/document_10000660_figure_002.png)
+
+</details>
+
+<Recipe title="2.2 Freeze the starting policy and state" level="AI-ready" skills="ML engineer and metadata reviewer" time="45 minutes">
+
+**Result:** The experiment has a versioned starting policy, state, and settings to hold fixed.
+
+The policy states what the extractor should do. The cumulative state carries decisions and unresolved questions between rounds. Keep the two separate so that a record of deliberation cannot silently change the instructions applied to an image.
+
+1. Choose the schema and fixed reference extractor. Record provider and model identifier, model revision when available, request settings, and output format. Record the diagnostic judge and rubric as well.
+2. Write the starting rules with persistent IDs. Specify the image evidence boundary and how to handle unsupported fields.
+3. Initialize the state with the objective, current versions, access policy, and any prior decisions. Start with an empty history when this is the first round.
+
+**Worked example.** P001 starts with four rules. S001 contains the objective and access boundary, with no prior extractions or decisions. The illustrated manifest leaves model identities and execution timestamps null because it represents a teaching round. [Initial policy](pathname:///cookbook-files/data-snapshot-council/001_policy.md) · [Initial experiment state](pathname:///cookbook-files/data-snapshot-council/001_experiment_state.md)
+
+**What this does not do.** Recording versions and settings makes the experiment traceable. A hosted model may still return different outputs on repeated requests.
+
+</Recipe>
+
+<Recipe title="2.3 Define the artifact contracts" level="AI-ready" skills="ML engineer" time="40 minutes">
+
+**Result:** A round manifest connects the eight artifact types to the batch and its versioned inputs.
+
+The number in an artifact filename provides a convenient handle. The manifest determines the relationship between artifacts, including when a round produces a policy with a new number.
+
+| Artifact type | Contents and lifecycle |
+|---|---|
+| Extraction policy | P001 is applied in round 001. P002 is synthesized for future use. |
+| Cumulative experiment state | S001 enters the round. S002 carries decisions and open questions forward. |
+| Extraction results | One JSON Lines record per sample, with the executed policy and a semantic metadata payload. |
+| Round findings | Key issues, decision rationale, rule counts, rejected proposals, and open questions. |
+| Council deliberation | Independent proposals, cross-critiques, revisions, and the orchestrator synthesis. |
+| Round manifest | Batch membership, model and schema settings, status, timestamps where applicable, and artifact references. |
+| Human review | Recorded interventions and spot checks. The file may be absent when no intervention is needed. |
+| Judge reviews | One structured review per sample, with its reference-comparison status and findings. |
+
+1. Use the same sample and round IDs in the extraction and review records. Keep the metadata payload separate from experiment bookkeeping.
+2. Resolve every path in the manifest and confirm its recorded version. Keep P001 and its extractions available after P002 is written.
+3. Define a reduced handoff for each role. Keep the full sample register and the annotation paths in the audit context.
+
+**Worked example.** Round 001 names P001 as the executed policy, even though the manifest also lists P002. Each extraction row names its sample and P001. The state entries separately point to S001 and S002. [Round manifest](pathname:///cookbook-files/data-snapshot-council/001_manifest.json) · [Illustrative extraction records](pathname:///cookbook-files/data-snapshot-council/001_extractions.jsonl)
+
+**What this does not do.** The manifest records association and provenance. Image support and policy compliance require review.
+
+</Recipe>
+
+## Implementation options
+
+- A small team can start with a spreadsheet for the register and exported JSON for the manifest. Agree on stable IDs before moving to scripts.
+- Use deterministic selection and checksum checks for repeated batches. Keep role access separate from the public layout of the example files.
+
+## Resources
+
+- The [Data Snapshot corpus](https://huggingface.co/datasets/ai4data/data-snapshot) provides source documents, crops, and layout annotations.
+- The [semantic gold release](https://huggingface.co/datasets/ai4data/data_snapshot_metadata_gold) provides human-reviewed references and a pinned v1.4 schema.
+- The [Data Snapshot schema reference](/docs/data-snapshots/metadata-schema/) documents metadata fields and their validation boundaries.
+
+## Common mistakes
+
+- Joining by filename alone can pair a different crop with the annotation.
+- Recording the proposed policy as the executed policy breaks comparisons.
+- Treating a public dataset split name as evidence of evaluation independence can conceal prior use.
+
+## Verification
+
+- Resolve all four image paths and compare their hashes with the sample register.
+- Validate each Discovery reference against the schema and verify the matching image by inspection.
+- Verify that the extraction rows and manifest name P001 and that P002 is a round output.
+
+## Checklist
+
+<Checklist id="data-snapshot-council-preparation" items={[
+  'The register identifies the exact crops and references.',
+  'The starting policy, state, schema, and settings are recorded.',
+  'The manifest distinguishes inputs and outputs and resolves all artifact paths.'
+]} />
