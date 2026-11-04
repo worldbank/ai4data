@@ -6,7 +6,7 @@ Evidence status: illustrative. These findings describe the authored walkthrough.
 |---|---|---|---|
 | F01 | D1 | Axis label promoted to title | Amend R02 to use visual role and preserve the document label separately. |
 | F02 | D2 | Standard error treated as a variable | Amend R03 to attach the statistical form where the layout supports its association. |
-| F03 | D2 | Meaning of stars lies beyond the crop | H01 keeps the visible note and leaves thresholds unspecified. Gold and schema stay at the pinned versions. |
+| F03 | D2 | Meaning of stars is unclear from the data snapshot | H01 keeps the visible note and leaves thresholds unspecified. Gold and schema stay at the pinned versions. |
 | F04 | C2 | Counted entity inferred from an unlabeled scale | Add R05. The intended entity remains unspecified and the rule needs testing on fresh samples. |
 
 | Rule-change tally | Count | Rule IDs |

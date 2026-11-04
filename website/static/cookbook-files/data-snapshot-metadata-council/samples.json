@@ -12,7 +12,7 @@
       "source_document": "policy_brief_on_shona_community_from_stateless_to_citizens",
       "source_pdf": "https://reliefweb.int/attachments/831aca28-6777-4cb9-9b84-8976c63061fb/Policy%20Brief%20on%20Shona%20community_From%20Stateless%20to%20Citizens.pdf",
       "pdf_page": 4,
-      "provenance": "Corpus crop snapshots/unhcr/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.png. Reused from the schema reference.",
+      "provenance": "Corpus data snapshot at snapshots/unhcr/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.png. Reused from the schema reference.",
       "gold_reference": "img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.json",
       "gold_sha256": "51dfda0524c013cfb50a372a669cad8fb416ebdcdb3605d5169e3acf9d9d66d6"
     },
@@ -25,7 +25,7 @@
       "source_document": "document_11174028",
       "source_pdf": "https://documents.worldbank.org/curated/en/421651468260134997/pdf/WPS5070.pdf",
       "pdf_page": 25,
-      "provenance": "Corpus crop snapshots/prwp/document_11174028_table_007.png. Gold prwp/table/document_11174028_table_007.json.",
+      "provenance": "Corpus data snapshot at snapshots/prwp/document_11174028_table_007.png. Gold prwp/table/document_11174028_table_007.json.",
       "gold_reference": "cookbook-files/data-snapshot-metadata-council/document_11174028_table_007.json",
       "gold_sha256": "8c3a4f4efd87ff80126a9f5a791c6ef9dee80c25a0bcec2103cc0018ec769f17"
     },
@@ -38,7 +38,7 @@
       "source_document": "policy_brief_on_shona_community_from_stateless_to_citizens",
       "source_pdf": "https://reliefweb.int/attachments/831aca28-6777-4cb9-9b84-8976c63061fb/Policy%20Brief%20on%20Shona%20community_From%20Stateless%20to%20Citizens.pdf",
       "pdf_page": 4,
-      "provenance": "Production crop from the end-to-end cookbook. Its caption and source line lie outside this crop. The corpus table of the same basename has different boundaries.",
+      "provenance": "Data snapshot from the end-to-end cookbook. The caption and source line lie outside the image. The corpus table of the same basename has different boundaries.",
       "gold_reference": null,
       "gold_sha256": null
     },
@@ -51,7 +51,7 @@
       "source_document": "document_10000660",
       "source_pdf": "https://documents.worldbank.org/curated/en/937071468314370786/pdf/The-typology-of-partial-credit-guarantee-funds-around-the-world.pdf",
       "pdf_page": 15,
-      "provenance": "WPS4771, printed page 12, Figure 3. Corpus crop snapshots/prwp/document_10000660_figure_002.png. No matching entry in the pinned semantic gold listing.",
+      "provenance": "WPS4771, printed page 12, Figure 3. Corpus data snapshot at snapshots/prwp/document_10000660_figure_002.png. No matching entry in the pinned semantic gold listing.",
       "gold_reference": null,
       "gold_sha256": null
     }

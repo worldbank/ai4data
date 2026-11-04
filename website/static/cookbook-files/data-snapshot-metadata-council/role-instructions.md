@@ -15,7 +15,7 @@ Use the same rubric for Discovery and Challenge.
 | Check | What to record |
 |---|---|
 | Evidence support | Whether the image supports the value and its assigned meaning, with a precise visual location. |
-| Metadata completeness | Relevant omissions within the review scope. Distinguish schema requirements, relevant optional fields, and information the crop cannot establish. |
+| Metadata completeness | Relevant omissions within the review scope. Distinguish schema requirements, relevant optional fields, and information the data snapshot cannot establish. |
 | Policy compliance | How the output relates to the executed policy. Cite applicable rule IDs. |
 | Uncertainty | What the image leaves unresolved and, if known, what evidence would settle it. |
 | Human escalation | Whether a consequential ambiguity, unresolved reference dispute, or proposed schema change needs adjudication before proceeding. |

@@ -8,16 +8,16 @@ The input packet contains the four snapshot images, P001, S001, generated metada
 
 | Member | Proposal |
 |---|---|
-| A | **Amend R02.** F01 shows that D1's vertical-axis text was promoted to the title despite the separate caption above the plot. Distinguishing the two roles would prevent that substitution. Use a short generic title when a crop has none to keep the field populated. Check whether a crop such as C1 supports that fallback. |
+| A | **Amend R02.** F01 shows that D1's vertical-axis text was promoted to the title despite the separate caption above the plot. Distinguishing the two roles would prevent that substitution. Use a short generic title when a data snapshot has no title to keep the field populated. Check whether C1 supports that fallback. |
 | B | **Amend R03.** F02 shows that Coef and SE are column headings under both lag specifications, yet the output makes SE a standalone variable. Attach those statistics to the represented variables and preserve the lag groupings. Check whether a less explicit table layout would support the same association. |
-| C | **Add a unit rule.** F04 shows that C2's bars have numerical labels but the axis lacks a unit label. Distinguish scale and printed values from the unit and entity measured. Leaving the unit unspecified whenever the axis lacks a unit would avoid the inference in C2. Check whether units are stated elsewhere in a crop. |
+| C | **Add a unit rule.** F04 shows that C2's bars have numerical labels but the axis lacks a unit label. Distinguish scale and printed values from the unit and entity measured. Leaving the unit unspecified whenever the axis lacks a unit would avoid the inference in C2. Check whether units are stated elsewhere in the data snapshot. |
 
 ## Cross-critiques
 
 | Member | Critiques of the other proposals |
 |---|---|
 | A | B should constrain the attachment rule to cases where the layout supports it. C should allow a unit clearly stated in a caption or row heading. |
-| B | A's generic title would supply wording C1's crop does not show. C's proposed restriction is too broad for mixed-unit tables. |
+| B | A's generic title would supply wording C1 does not show. C's proposed restriction is too broad for mixed-unit tables. |
 | C | A should treat the document label separately. B should preserve the visible cross-reference in D2 and avoid expanding what the stars mean, consistent with H01. |
 
 ## Revised proposals

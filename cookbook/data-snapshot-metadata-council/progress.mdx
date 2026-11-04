@@ -75,14 +75,14 @@ Choose a review window and a practical definition of marginal policy change befo
 
 **Result:** An evaluation brief specifies the sample separation, comparison, and evidence required for adoption.
 
-Plan a paired comparison by applying both policies to the same images with the fixed reference extractor. Set aside the evaluation images and annotations before development. Keep crops from the same source document together, and group near-duplicate documents where appropriate.
+Plan a paired comparison by applying both policies to the same images with the fixed reference extractor. Set aside the evaluation images and annotations before development. Keep data snapshots from the same source document together, and group near-duplicate documents where appropriate.
 
 1. Define the field-level assessment and review rubric before running the comparison. Include unsupported claims, omissions, and errors that matter to downstream users.
 2. Compare the baseline and candidate with identical model and schema settings. Arrange independent human assessment, preferably without showing which policy produced the record.
 3. Report disagreements, case counts, and uncertainty. Define what evidence would justify proceeding and which unresolved failures require further work.
 4. Record the evaluation status separately from the development stopping decision.
 
-**Worked example.** D1, D2, C1, and C2 are used to explain policy development. The evaluation brief would reserve other source documents and would compare P001 and P002 on the same held-out crops. The published gold release has a single train split, so the team must establish evaluation independence separately.
+**Worked example.** D1, D2, C1, and C2 are used to explain policy development. The evaluation brief would reserve other source documents and would compare P001 and P002 on the same held-out data snapshots. The published gold release has a single train split, so the team must establish evaluation independence separately.
 
 **What this does not do.** The comparison is proposed. Distinguishability judging is a separate future question, and model fine-tuning is outside this design.
 

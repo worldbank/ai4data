@@ -15,7 +15,7 @@ import Checklist from '@site/src/components/Cookbook/Checklist';
 
 ## Rationale
 
-A metadata record describes the image supplied to the extractor. Two crops of the same table can expose different captions, notes, or values. A register needs to identify the exact crop and preserve its relationship to the source PDF. A semantic reference needs to describe that same image.
+A metadata record describes the data snapshot supplied to the extractor. Cropping the same table in different ways can expose different captions, notes, or values. The register identifies the exact snapshot and its source PDF. The reference annotation must describe that same image.
 
 The initial policy, schema, model configuration, and experiment state establish the conditions for the first round. Versioned records make it possible to identify those conditions even after the policy has changed.
 
@@ -33,7 +33,7 @@ The initial policy, schema, model configuration, and experiment state establish 
 | **AI-native** | Specify automatic checks that verify the inputs and their versions before model calls. |
 
 :::info[Running example]
-D1 is the Shona labor-force figure. D2 is the rural Indonesia regression table. C1 is the cropped Shona demographics table. C2 is the WPS4771 guarantee-systems chart. The four images are real. Round 001 is an illustrative exercise.
+D1 is the Shona labor-force figure. D2 is the rural Indonesia regression table. C1 is the Shona demographics table snapshot. C2 is the WPS4771 guarantee-systems chart. The four images are real. Round 001 is an illustrative exercise.
 :::
 
 ## Recipes
@@ -42,20 +42,20 @@ D1 is the Shona labor-force figure. D2 is the rural Indonesia regression table. 
 
 **Result:** A sample register documents the exact images, annotation availability, and source attribution.
 
-Use the human-reviewed metadata release to identify candidate Discovery samples. Layout annotations identify a region on a PDF page. Semantic references describe the contents of the crop using Schema v1.4.
+Use the human-reviewed metadata release to identify candidate Discovery samples. Layout annotations identify a region on a PDF page. Semantic references describe the contents of the data snapshot using Schema v1.4.
 
-1. Open the source PDF and the selected image. Record the PDF page, source document ID, crop path, and SHA-256 checksum, which identifies the exact image bytes. Give the model a sample ID such as D1 that reveals no source information.
+1. Open the source PDF and the selected image. Record the PDF page, source document ID, snapshot path, and SHA-256 checksum, which identifies the exact image bytes. Give the model a sample ID such as D1 that reveals no source information.
 2. For Discovery, verify the annotation against visible cues such as the title, headings, and notes. Record the reference revision. For Challenge, document the gold listing checked and leave the reference empty.
-3. Record the selection method and reserve separate documents for future evaluation. Group related crops and duplicate or near-duplicate documents when planning that separation.
+3. Record the selection method and reserve separate documents for future evaluation. Group related data snapshots and duplicate or near-duplicate documents when planning that separation.
 
-**Worked example.** D1 is the crop with its caption and source. C1 shares its source PDF but uses the narrower production table crop without the caption or source line. D2's title, dependent variable, lag headings, and footer match the published semantic reference. C2 matches Figure 3 of WPS4771 on PDF page 15, printed page 12. The semantic gold release contains no matching C2 record. [Sample register](pathname:///cookbook-files/data-snapshot-metadata-council/samples.json) · [Attribution and reuse notes](pathname:///cookbook-files/data-snapshot-metadata-council/README.md)
+**Worked example.** D1 retains its caption and source line. C1 comes from the same PDF. It uses the narrower table snapshot from the end-to-end cookbook, which omits the caption and source line. D2's title, dependent variable, lag headings, and footer match the published semantic reference. C2 matches Figure 3 of WPS4771 on PDF page 15, printed page 12. The semantic gold release contains no matching C2 record. [Sample register](pathname:///cookbook-files/data-snapshot-metadata-council/samples.json) · [Attribution and reuse notes](pathname:///cookbook-files/data-snapshot-metadata-council/README.md)
 
-**What this does not do.** A four-image batch supports a walkthrough. Its mix of document sources and crop types cannot establish representativeness.
+**What this does not do.** A four-image batch supports a walkthrough. Its mix of document sources and snapshot types cannot establish representativeness.
 
 </Recipe>
 
 <details>
-<summary>Inspect the four source crops</summary>
+<summary>Inspect the four data snapshots</summary>
 
 **D1.** The Shona labor-force chart retains its caption above the plot and its source below the legend.
 
@@ -65,9 +65,9 @@ Use the human-reviewed metadata release to identify candidate Discovery samples.
 
 ![Table 3, Rural farm households, with Log PCE as the dependent variable and one-lag and two-lag column groups.](../../website/static/cookbook-files/data-snapshot-metadata-council/document_11174028_table_007.png)
 
-**C1.** The crop shows year columns and row labels, including the median-age unit, while the caption lies outside the crop.
+**C1.** The snapshot shows year columns and row labels, including the median-age unit. The caption lies outside the crop.
 
-![Shona demographics table with 2019 and 2024 columns and no title visible in the crop.](../../website/static/cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.png)
+![Shona demographics table with 2019 and 2024 columns and no visible title.](../../website/static/cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.png)
 
 **C2.** The chart has a printed caption, two categories, and a legend. The vertical axis carries tick values without a unit label.
 
@@ -125,13 +125,13 @@ The manifest is the index of inputs and outputs for the round. Resolve its file 
 
 ## Resources
 
-- The [Data Snapshot corpus](https://huggingface.co/datasets/ai4data/data-snapshot) provides source documents, crops, and layout annotations.
+- The [Data Snapshot corpus](https://huggingface.co/datasets/ai4data/data-snapshot) provides source documents, data snapshots, and layout annotations.
 - The [semantic gold release](https://huggingface.co/datasets/ai4data/data_snapshot_metadata_gold) provides human-reviewed references and a pinned v1.4 schema.
 - The [Data Snapshot schema reference](/docs/data-snapshots/metadata-schema/) documents metadata fields and their validation boundaries.
 
 ## Common mistakes
 
-- Joining by filename alone can pair a different crop with the annotation.
+- Joining by filename alone can pair a different data snapshot with the annotation.
 - Recording the proposed policy as the executed policy breaks comparisons.
 - Treating a public dataset split name as evidence of evaluation independence can conceal prior use.
 
@@ -144,7 +144,7 @@ The manifest is the index of inputs and outputs for the round. Resolve its file 
 ## Checklist
 
 <Checklist id="data-snapshot-metadata-council-preparation" items={[
-  'The register identifies the exact crops and references.',
+  'The register identifies the exact data snapshots and references.',
   'The starting policy, state, schema, and settings are recorded.',
   'The manifest distinguishes inputs and outputs and resolves all artifact paths.'
 ]} />

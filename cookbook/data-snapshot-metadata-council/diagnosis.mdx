@@ -47,7 +47,7 @@ Use the following assessment questions as a fixed rubric for both batches. On Di
 | Check | Question |
 |---|---|
 | Evidence support | Does the visible image support the value and the role assigned to it? |
-| Metadata completeness | Which relevant values supported by the crop are missing? Distinguish schema requirements, relevant optional fields, and details the crop cannot establish. |
+| Metadata completeness | Which relevant values supported by the data snapshot are missing? Distinguish schema requirements, relevant optional fields, and details the image cannot establish. |
 | Policy compliance | Does the output follow the rules in the executed policy? Cite the applicable rule IDs. |
 | Uncertainty | Which interpretations remain plausible, or what evidence would resolve the question? |
 | Human escalation | Does a consequential ambiguity, unresolved reference dispute, or proposed schema change require human adjudication before proceeding? |
@@ -57,13 +57,13 @@ Use the following assessment questions as a fixed rubric for both batches. On Di
 3. Set `human_attention` to true when a person needs to resolve the finding before the round can proceed. Use `attention_reason` to explain the decision for either value.
 4. Share the finding with the council once any required human decision is recorded. Include the image evidence needed to inspect the issue and keep the full annotation in the judge and human review materials.
 
-**Worked example.** The table pairs selected fields from the illustrative P001 outputs with evidence from the actual crops in [chapter 2](./preparation.mdx). Each finding covers the field or fields shown.
+**Worked example.** The table pairs selected fields from the illustrative P001 outputs with evidence from the four data snapshots in [chapter 2](./preparation.mdx). Each finding covers the field or fields shown.
 
 | Sample | Selected illustrative output | Visual evidence and diagnostic finding |
 |---|---|---|
 | D1 | `title = "Percent of population"` | **F01.** The phrase runs along the vertical axis. A separate caption above the chart identifies the labor-force figure. The words appear in the image, but their placement contradicts the assigned title role. |
 | D2 | `Log PCE` is an `outcome`. `Monsoon Onset` is a `predictor`. `SE` appears as its own variable. | **F02.** The table identifies Log PCE as the dependent variable and lists Monsoon Onset as a regression term. Under both lag specifications, `Coef` and `SE` label the coefficient and standard error reported for each term. The output treats `SE` as a variable in its own right. |
-| C2 | `name = "Number of countries"`, `unit.source_text = "countries"` | **F04.** The scale has ticks but no unit label. The category labels and legend identify groupings without establishing what is counted. The entity remains uncertain, but the crop gives enough evidence to flag the unsupported wording under R01 and R04. |
+| C2 | `name = "Number of countries"`, `unit.source_text = "countries"` | **F04.** The scale has ticks but no unit label. The category labels and legend identify groupings without establishing what is counted. The entity remains uncertain, but the image gives enough evidence to flag the unsupported wording under R01 and R04. |
 
 F01 and F02 can go to the council because the layout resolves the field-role questions. F04 can also go to the council because the unsupported value can remain unset under P001. None requires a reference or schema decision. [Illustrative extraction records](pathname:///cookbook-files/data-snapshot-metadata-council/001_extractions.jsonl) · [Illustrative judge reviews](pathname:///cookbook-files/data-snapshot-metadata-council/001_judge_reviews.jsonl)
 
@@ -81,9 +81,9 @@ Use the same rubric for escalated and spot-checked cases. The value `human_atten
 2. Record a decision and its reason. For an approved gold or schema correction, record the old and new versions and preserve the original evidence.
 3. Pass the decision and its reason to the council and orchestrator. In [chapter 4](./deliberation.mdx), these summaries accompany the findings used to propose rule changes.
 
-**Worked example.** F03 escalates D2's interpretation note because assigning significance thresholds to the stars would affect how a reader interprets the estimates. Both the illustrative extraction and gold preserve “See notes to table 1.” The crop omits the referenced notes. In H01, the reviewer keeps the cross-reference and leaves the thresholds unspecified. The gold and schema versions stay the same.
+**Worked example.** F03 escalates D2's interpretation note because assigning significance thresholds to the stars would affect how a reader interprets the estimates. Both the illustrative extraction and gold preserve “See notes to table 1.” The data snapshot omits the referenced notes. In H01, the reviewer keeps the cross-reference and leaves the thresholds unspecified. The gold and schema versions stay the same.
 
-C1 has an empty findings list for the reviewed fields. H02 still checks its median-age unit and year categories and confirms that the title can remain null for this crop. That spot check covers the named fields only. [Illustrative human review](pathname:///cookbook-files/data-snapshot-metadata-council/001_human_review.md)
+C1 has an empty findings list for the reviewed fields. H02 still checks its median-age unit and year categories and confirms that the title can remain null for C1. That spot check covers the named fields only. [Illustrative human review](pathname:///cookbook-files/data-snapshot-metadata-council/001_human_review.md)
 
 **What this does not do.** These authored decisions demonstrate the record structure. They supply neither verified model behavior nor a measured judge agreement rate.
 

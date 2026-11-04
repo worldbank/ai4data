@@ -21,7 +21,7 @@ This practical guide takes a team from preparing a batch through drafting a revi
 ## Prerequisites
 
 - Familiarity with multimodal model inference, prompts, structured outputs, and basic evaluation.
-- Existing snapshot crops, their source references, and the [Data Snapshot Metadata Schema v1.4 reference](/docs/data-snapshots/metadata-schema/).
+- Existing data snapshots, their source references, and the [Data Snapshot Metadata Schema v1.4 reference](/docs/data-snapshots/metadata-schema/).
 - A human reviewer who understands the metadata schema and can assess extraction issues against the source evidence.
 
 ## First steps
@@ -37,7 +37,7 @@ The [self-assessment](./start-here.mdx) helps identify a starting point. The fin
 | Chapter | Question | Practical topics |
 |---|---|---|
 | [1. Purpose and experimental workflow](./workflow.mdx) | What can council-guided policy development establish? | Role responsibilities and the first complete round |
-| [2. Experiment inputs and artifacts](./preparation.mdx) | What must be prepared before the first round? | Crop identity, sample roles, starting versions, and artifact contracts |
+| [2. Experiment inputs and artifacts](./preparation.mdx) | What must be prepared before the first round? | Snapshot identity, sample roles, starting versions, and artifact contracts |
 | [3. Diagnostic assessment and human review](./diagnosis.mdx) | How are extraction problems assessed and escalated? | Judge rubric, evidence, escalations, and spot checks |
 | [4. Council deliberation and policy revision](./deliberation.mdx) | How does deliberation produce an auditable policy revision? | Independent proposals, cross-critique, revisions, and synthesis |
 | [5. Pi orchestration and deterministic controls](./orchestration.mdx) | How could the proposed workflow be coordinated reliably? | Role contexts, tool contracts, validation, and recovery |
@@ -57,8 +57,8 @@ The [self-assessment](./start-here.mdx) helps identify a starting point. The fin
 |---|---|---|
 | D1 | Discovery | The Shona labor-force chart distinguishes a caption from an axis label. |
 | D2 | Discovery | The WPS5070 rural Indonesia regression table distinguishes variables, statistics, and lag groupings. |
-| C1 | Challenge | The Shona demographics table has row-specific units and a crop that excludes the caption. |
-| C2 | Challenge | The WPS4771 guarantee-systems chart shows categories and legend entries but leaves the counted entity unspecified in the crop. |
+| C1 | Challenge | The Shona demographics table shows row-specific units but omits the caption. |
+| C2 | Challenge | The WPS4771 guarantee-systems chart shows categories and legend entries but does not identify the counted entity. |
 
 The sample register pins the dataset revisions, source pages, and image fingerprints. The [preparation chapter](./preparation.mdx) explains the pairings and reuse information.
 
@@ -73,11 +73,11 @@ While the guide is unlisted, use the local development preview for downloads or 
 | File | Used in |
 |---|---|
 | [Attribution and reuse notes](pathname:///cookbook-files/data-snapshot-metadata-council/README.md) | Source attribution and artifact overview |
-| [Sample register](pathname:///cookbook-files/data-snapshot-metadata-council/samples.json) | Exact crops, source documents, annotation availability, and checksums |
+| [Sample register](pathname:///cookbook-files/data-snapshot-metadata-council/samples.json) | Exact data snapshots, source documents, annotation availability, and checksums |
 | [Role instructions](pathname:///cookbook-files/data-snapshot-metadata-council/role-instructions.md) | Templates for extraction, diagnosis, review, deliberation, and synthesis |
 | [D1 image](pathname:///img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.png) and [D1 gold](pathname:///img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.json) | Shona labor-force chart and its published annotation |
 | [D2 image](pathname:///cookbook-files/data-snapshot-metadata-council/document_11174028_table_007.png) and [D2 gold](pathname:///cookbook-files/data-snapshot-metadata-council/document_11174028_table_007.json) | Rural Indonesia regression table and its published annotation |
-| [C1 image](pathname:///cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.png) | Shona demographic table crop |
+| [C1 image](pathname:///cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.png) | Shona demographics table snapshot |
 | [C2 image](pathname:///cookbook-files/data-snapshot-metadata-council/document_10000660_figure_002.png) | WPS4771 guarantee-systems chart |
 | [Initial policy P001](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md) and [candidate P002](pathname:///cookbook-files/data-snapshot-metadata-council/002_policy.md) | Starting instructions and proposed revision |
 | [Initial state S001](pathname:///cookbook-files/data-snapshot-metadata-council/001_experiment_state.md) and [state S002](pathname:///cookbook-files/data-snapshot-metadata-council/002_experiment_state.md) | Initial conditions and handoff to the next round |
