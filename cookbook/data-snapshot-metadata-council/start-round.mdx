@@ -1,0 +1,119 @@
+---
+id: start-round
+title: "3. Round configuration and startup"
+sidebar_label: "3. Configuration and startup"
+sidebar_position: 4
+description: Shows how the proposed Pi workflow would turn a prepared batch into extraction records and judge findings.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 3. Round configuration and startup
+
+**Question:** How would the prepared batch become extraction records and judge findings?
+
+## Rationale
+
+[Chapter 2](./preparation.mdx) ends with a batch, a starting policy, and a manifest. This chapter shows how those inputs reach the extractor and judge in the proposed Pi workflow. Pi would start the model sessions, while scripts or tools would do checks with fixed rules, such as matching sample IDs and validating each metadata record against the schema.
+
+A record can pass schema validation even when it assigns the wrong role to visible text. The judge uses a fixed set of review questions to check the record against the data snapshot and the policy. Saving the extractions and findings gives the human reviewer a record of what was assessed. A finding that needs a human decision pauses the workflow before the council begins.
+
+## Target state
+
+- The proposed startup sequence identifies what the extractor and judge receive, what they return, and what the tools check.
+- The extraction and review records can be traced to the prepared batch and policy. A finding that needs human judgment has a clear stopping point.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Trace the prepared records from the manifest through extraction and diagnosis. |
+| **AI-ready** | Specify the checks that each record must pass and when the round pauses. |
+| **AI-native** | Design scoped Pi sessions and tools that can resume from validated records. |
+
+:::info[Running example]
+The round 001 files illustrate what a startup would read and save. The walkthrough uses the supplied records. The Pi workflow is proposed.
+:::
+
+## Recipes
+
+<Recipe title="3.1 Connect the manifest to extraction and diagnosis" level="AI-native" skills="Application developer and experiment lead" time="60 minutes">
+
+**Result:** A startup plan identifies the inputs and expected output of each model session.
+
+Open the [round 001 manifest](pathname:///cookbook-files/data-snapshot-metadata-council/001_manifest.json). It lists D1 and D2 as Discovery samples and C1 and C2 as Challenge samples. Its `artifacts.policy.used` entry points to [P001](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md). Follow D2 through the two sessions.
+
+| Session | D2 inputs | Expected record |
+|---|---|---|
+| Reference extractor | D2 image, P001, and Schema v1.4 | A metadata record that the runner tags with D2 and P001 in the [extraction records](pathname:///cookbook-files/data-snapshot-metadata-council/001_extractions.jsonl). |
+| Diagnostic judge | The same image, policy, and schema, plus the D2 extraction, the full human-reviewed annotation, and the review questions | A D2 review in the [judge reviews](pathname:///cookbook-files/data-snapshot-metadata-council/001_judge_reviews.jsonl). |
+
+1. Before startup, use the manifest and register to check the sample IDs, image hashes, policy and schema versions, and configured model settings. The illustrative manifest leaves the model settings unassigned. For a future run, supply the selected model settings and provider access before launching the sessions.
+2. Plan a separate Pi session for the extractor and the judge. Pass the registered image and current policy to the extractor. Use a script or constrained tool to validate the metadata against the schema and save it with the round, sample, and policy IDs.
+3. Pass the validated extraction and its evidence to the judge with the [supplied review questions and role instructions](pathname:///cookbook-files/data-snapshot-metadata-council/role-instructions.md#diagnostic-judge). Include the full annotation for Discovery samples. For Challenge samples, mark reference comparison as unavailable.
+4. Save one review per sample. Check that every expected sample has one extraction and one review under the intended policy before handing the batch to human review.
+
+**Worked example.** The startup plan for D2 sends the registered table image to the extractor under P001. Once the metadata record passes validation, the judge receives it with the same image and the full D2 annotation. The two supplied records carry the same sample and policy IDs, so the review can be traced to the extraction it assesses.
+
+**What this does not do.** The supplied records show the expected files for a startup plan. The project-specific Pi workflow still needs implementation and testing.
+
+</Recipe>
+
+<Recipe title="3.2 Inspect the judge records and identify the pause" level="AI-ready" skills="Application developer and metadata reviewer" time="40 minutes">
+
+**Result:** A startup check identifies whether the round can proceed or needs a human decision.
+
+Find F03 in D2’s [illustrative judge review](pathname:///cookbook-files/data-snapshot-metadata-council/001_judge_reviews.jsonl). These fields identify the issue and signal a pause.
+
+```json
+{
+  "finding_id": "F03",
+  "field": "interpretive_notes",
+  "human_attention": true
+}
+```
+
+The supplied review questions cover what the image supports, which relevant fields are missing, whether the output follows the policy, and which uncertainties need human judgment. In D2, the judge points to the stars and the footer that refers to the notes to table 1. The image leaves their thresholds open.
+
+1. Match the review records to the extraction records by round, sample, and policy IDs. Check that Discovery reviews report a reference comparison and Challenge reviews mark it as unavailable.
+2. Check that each finding identifies the affected field, visible evidence, applicable rules, and any uncertainty. Read `attention_reason` to understand why the judge did or did not flag it for human review.
+3. If a sample has no valid extraction or review, keep the stage incomplete. Send the findings and their evidence to the human reviewer. A finding with `human_attention` set to true blocks deliberation until the reviewer records a decision.
+
+**Worked example.** The illustrative D2 review gives the team a clear next step. F03 asks whether the visible cross-reference is enough for the metadata, so the workflow would pause at human review. [Chapter 4](./review-findings.mdx) takes up that decision and shows how to spot-check a case without an escalation.
+
+**What this does not do.** A complete set of review records establishes which samples and fields were checked. Judge accuracy needs its own assessment.
+
+</Recipe>
+
+## Implementation options
+
+- A controller can start separate Pi processes for the two roles or use Pi’s remote procedure call (RPC) interface when it needs to control an ongoing process. Use ordinary scripts or constrained tools for validation and file writes.
+- Save validated records as each stage finishes. If C2’s review is missing after an interruption, retain the other valid reviews and request C2’s review using the same policy and review questions.
+
+## Resources
+
+- The [Pi CLI integration guide](https://pi.dev/docs/latest/cli-integration) describes the interfaces a controller can use to start or manage Pi.
+- The [Pi documentation](https://pi.dev/docs/latest) covers model configuration, session management, and process permissions.
+- The [schema reference](/docs/data-snapshots/metadata-schema/) describes the structure and validation rules for extraction output.
+- [Evaluation Suites for Statistical AI](/cookbook/evaluation-suites/judges) describes how to validate model-based graders against people.
+
+## Common mistakes
+
+- Allowing a model session to select samples or rewrite the manifest can change the recorded conditions.
+- Passing the human-reviewed annotation to the extractor gives it information outside the registered image.
+- Treating an incomplete review stage as ready for deliberation hides missing evidence.
+
+## Verification
+
+- Trace D2 from the manifest to the extraction and review records and check that their sample and policy IDs agree.
+- Check that the proposed sessions receive only the files each role needs.
+- Use F03 and a missing C2 review to check that the workflow design pauses for the right reason in each case.
+
+## Checklist
+
+<Checklist id="data-snapshot-metadata-council-orchestration" items={[
+  'The proposed startup uses the batch, policy, and settings recorded in the manifest.',
+  'Each extraction and review can be traced to the expected sample and policy.',
+  'Incomplete records and required human decisions block deliberation.'
+]} />

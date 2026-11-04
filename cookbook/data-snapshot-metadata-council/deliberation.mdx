@@ -1,23 +1,23 @@
 ---
 id: deliberation
-title: "4. Council deliberation and policy revision"
-sidebar_label: "4. Deliberation and revision"
-sidebar_position: 5
+title: "5. Council deliberation and the next policy"
+sidebar_label: "5. Council and next policy"
+sidebar_position: 6
 description: Defines independent proposals, cross-critique, revisions, and the synthesis of a new policy.
 ---
 
 import Recipe from '@site/src/components/Cookbook/Recipe';
 import Checklist from '@site/src/components/Cookbook/Checklist';
 
-# 4. Council deliberation and policy revision
+# 5. Council deliberation and the next policy
 
-**Question:** How does deliberation produce an auditable policy revision?
+**Question:** How do the reviewed findings become a policy for the next round?
 
 ## Rationale
 
-A finding identifies a problem on a particular image. A rule needs to help with comparable problems on other images. Several models can propose different explanations or boundaries for the same rule. Independent first proposals preserve those differences long enough for the council to examine them.
+The findings and human decisions from [Chapter 4](./review-findings.mdx) explain what happened on particular images. The council’s task is to turn those observations into instructions that will also help on other data snapshots. Several models may draw different lessons from the same evidence. Collecting their first proposals independently gives the council several approaches to consider.
 
-Cross-critique asks where a rule would fail or alter a reasonable extraction. The orchestrator uses the revised recommendations and their evidence to decide what belongs in the candidate policy and what should remain an open question.
+Council members then test one another’s proposals against other images. This is how the council can keep a change that helps D1 without introducing an unsupported title for C1. The orchestrator uses the revised proposals to produce the candidate policy and records what changed, why, and which questions the next round needs to address.
 
 ## Target state
 
@@ -39,16 +39,16 @@ Three illustrative council members propose changes based on D1, D2, and C2. C1 s
 
 ## Recipes
 
-<Recipe title="4.1 Collect independent proposals" level="AI-ready" skills="Experiment lead and ML engineer" time="40 minutes">
+<Recipe title="5.1 Collect independent proposals" level="AI-ready" skills="Experiment lead and ML engineer" time="40 minutes">
 
 **Result:** The deliberation record contains independently written proposals based on the same evidence.
 
-Start with F01. The illustrative extraction puts “Percent of population” in D1’s `title` field. The judge points to its placement beside the vertical axis and the separate caption at the top. A council member can check that finding against the image and decide whether the policy needs clearer instructions.
+Start with F01 in the [judge reviews](pathname:///cookbook-files/data-snapshot-metadata-council/001_judge_reviews.jsonl). The judge points to “Percent of population” beside D1’s vertical axis and to the separate caption above the chart. A council member can check the finding against the image and propose clearer instructions.
 
 Give each council member the image, output, and judge’s summary. Keep full Discovery references in the judge and human review contexts.
 
-1. Gather the images, [starting policy (P001)](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md), S001, and extraction outputs. Add the findings and human decisions prepared in [chapter 3](./diagnosis.mdx).
-2. Give each member its own session. Collect all first proposals before sharing proposals among members.
+1. Gather the images, [starting policy (P001)](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md), [starting state (S001)](pathname:///cookbook-files/data-snapshot-metadata-council/001_experiment_state.md), and [extraction outputs](pathname:///cookbook-files/data-snapshot-metadata-council/001_extractions.jsonl). Add the findings and human decisions cleared for the council in Chapter 4.
+2. Give each member its own session with access limited to those materials. Collect all first proposals before sharing proposals among members.
 3. Request the finding, visible evidence, and failure mode. Ask the member to specify whether to add, amend, retain, or retire a rule and to name the affected ID or mark it as a new rule. Include the expected benefit and a counterexample or risk. Record proposed gold or schema challenges for human review.
 
 **Worked example.** Member A proposes amending R02 so the extractor uses the caption when the layout distinguishes it from the axis label. A also proposes a short generic title when the data snapshot has no title. That second clause aims to keep the field useful, but it needs a counterexample check. [Illustrative deliberation record](pathname:///cookbook-files/data-snapshot-metadata-council/001_deliberation.md)
@@ -57,7 +57,7 @@ Give each council member the image, output, and judge’s summary. Keep full Dis
 
 </Recipe>
 
-<Recipe title="4.2 Cross-critique proposals and record revisions" level="AI-ready" skills="Experiment lead" time="30 minutes">
+<Recipe title="5.2 Cross-critique proposals and record revisions" level="AI-ready" skills="Experiment lead" time="30 minutes">
 
 **Result:** Each proposal has cross-critiques and a revised recommendation that addresses them.
 
@@ -77,24 +77,25 @@ Ask each member to test proposed wording against the evidence this way. A critiq
 
 </Recipe>
 
-<Recipe title="4.3 Synthesize the next policy and experiment state" level="AI-ready" skills="Experiment lead and metadata reviewer" time="45 minutes">
+<Recipe title="5.3 Check the next policy and experiment state" level="AI-ready" skills="Experiment lead and metadata reviewer" time="45 minutes">
 
 **Result:** The round produces a candidate policy, cumulative state, and findings with an audit trail.
 
-In the [candidate policy (P002)](pathname:///cookbook-files/data-snapshot-metadata-council/002_policy.md), the orchestrator keeps R02’s ID and revises its wording after the council examines D1 and C1.
-
-> **R02** Use an identifiable visible title or caption for the title. Treat axes, legends, and group headings according to their visual roles. Record a printed figure or table identifier separately as the document label.
+Start with Member A’s revised proposal in the [deliberation record](pathname:///cookbook-files/data-snapshot-metadata-council/001_deliberation.md). A keeps the distinction between a caption and an axis label and drops the generic title fallback after reviewing C1. This is the recommendation the orchestrator needs to assess.
 
 The policy records the new instruction. The round findings explain why it changed, and the updated state carries decisions and open questions into the next batch.
 
-1. Evaluate each proposal against the cited evidence, known counterexamples, and human decisions. Record accept, reject, or defer with a reason.
-2. Keep the ID of an amended rule. Allocate a new ID for a new rule. Reserve retired IDs permanently.
-3. Write the next policy and state as separate files. Record rejected proposals and unresolved questions in the findings. Carry forward the decisions and questions the next batch needs.
-4. Confirm that the manifest points to the [candidate policy (P002)](pathname:///cookbook-files/data-snapshot-metadata-council/002_policy.md) and still identifies [P001](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md) as the policy used for the original records.
+1. Check the orchestrator’s decision on each proposal against the cited evidence, known counterexamples, and human decisions. The [round findings](pathname:///cookbook-files/data-snapshot-metadata-council/001_round_findings.md) should say what was accepted, rejected, or deferred and why.
+2. Compare the [candidate policy (P002)](pathname:///cookbook-files/data-snapshot-metadata-council/002_policy.md) with [P001](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md). An amendment keeps the rule ID, an addition gets a new one, and a retired ID stays reserved.
+3. Check the [updated state (S002)](pathname:///cookbook-files/data-snapshot-metadata-council/002_experiment_state.md) for decisions and open questions the next batch needs. Confirm that the [manifest](pathname:///cookbook-files/data-snapshot-metadata-council/001_manifest.json) identifies P002 and S002 as outputs and still identifies P001 as the policy used for extraction.
 
 **Worked example.** The round findings record why the orchestrator accepts the narrower R02 amendment. D1 supports distinguishing a caption from an axis label, and C1 supports dropping the fallback.
 
+> **R02** Use an identifiable visible title or caption for the title. Treat axes, legends, and group headings according to their visual roles. Record a printed figure or table identifier separately as the document label.
+
 The orchestrator also amends R03 and adds R05, which requires evidence for each unit association. S002 carries the unresolved counted entity in C2 and the need to test unit associations on fresh images. [Updated state](pathname:///cookbook-files/data-snapshot-metadata-council/002_experiment_state.md) · [Round findings](pathname:///cookbook-files/data-snapshot-metadata-council/001_round_findings.md)
+
+[Chapter 6](./progress.mdx) uses those records to decide whether to run another batch, investigate an issue, or move to independent evaluation.
 
 **What this does not do.** Synthesis produces a candidate for the next batch. Human authorization still governs any gold or schema change.
 
@@ -120,6 +121,7 @@ The orchestrator also amends R03 and adds R05, which requires evidence for each 
 - Confirm that the record contains all stages and that revised proposals follow the cross-critiques.
 - Check that every accepted rule change has an evidence link and a rationale.
 - Compare the policy diff, state, and findings for agreement on IDs and dispositions.
+- Check that the proposed workflow saves the candidate policy, state, and findings before advancing to the next round.
 
 ## Checklist
 

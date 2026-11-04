@@ -1,7 +1,7 @@
 ---
 id: preparation
-title: "2. Experiment inputs and artifacts"
-sidebar_label: "2. Inputs and artifacts"
+title: "2. Round preparation"
+sidebar_label: "2. Round preparation"
 sidebar_position: 3
 description: Shows how to register images and references, fix the starting conditions, and identify round artifacts.
 ---
@@ -9,7 +9,7 @@ description: Shows how to register images and references, fix the starting condi
 import Recipe from '@site/src/components/Cookbook/Recipe';
 import Checklist from '@site/src/components/Cookbook/Checklist';
 
-# 2. Experiment inputs and artifacts
+# 2. Round preparation
 
 **Question:** What must be prepared before starting the experiment?
 
@@ -19,7 +19,7 @@ Chapter 1 follows D1’s title error through a round prepared for the walkthroug
 
 The sample register identifies each image, its source PDF, and any matching annotation. The starting policy, schema, and model settings specify how the extractor will run. The starting state records what the team carries into the round, such as prior decisions and open questions. The manifest lists these inputs and the files the round is expected to produce.
 
-The prepared batch and manifest are the starting point for configuring the proposed Pi workflow. That workflow would load the inputs, run the extractor, and pass the resulting metadata to the judge. Because the findings refer back to the same snapshots and starting policy, the council can later use them to propose changes to the instructions the extractor received.
+The prepared batch and manifest are the starting point for [configuring the round in Chapter 3](./start-round.mdx). The proposed Pi workflow would load those inputs, run the extractor, and pass the resulting metadata to the judge. Because the findings refer back to the same snapshots and starting policy, the council can later use them to propose changes to the instructions the extractor received.
 
 ## Target state
 

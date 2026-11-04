@@ -90,8 +90,10 @@
 /cookbook/data-snapshot-metadata-council/orchestration
 /cookbook/data-snapshot-metadata-council/preparation
 /cookbook/data-snapshot-metadata-council/progress
+/cookbook/data-snapshot-metadata-council/review-findings
 /cookbook/data-snapshot-metadata-council/standards
 /cookbook/data-snapshot-metadata-council/start-here
+/cookbook/data-snapshot-metadata-council/start-round
 /cookbook/data-snapshot-metadata-council/workflow
 /cookbook/evaluation-suites
 /cookbook/evaluation-suites/answers

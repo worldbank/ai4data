@@ -7,8 +7,6 @@ description: Terms used in this guide.
 
 # Glossary
 
-**Agent.** An AI system that calls tools to complete a task; here an assistant that calls the organization's data API or MCP server to answer a question about statistics.
-
 **AI-ready.** Data and metadata that software, including AI systems, can find, retrieve, interpret, and cite without manual steps. See the [AI-ready data framework](/docs/ai-ready-framework).
 
 **Annotation.** Optional properties on a tool that describe its behaviour (for example that it is read-only); hints that clients treat as untrusted unless the server is trusted.
@@ -38,8 +36,6 @@ description: Terms used in this guide.
 **Grader (judge).** A language model that scores answers with a rubric where no script can; validated against human scores before use.
 
 **Grouped split.** A draw of whole groups (households, documents) into the parts of a dataset, so that no group is divided between training and test.
-
-**Harness.** A program that sends questions to an agent connected to the server and logs the traces.
 
 **Inventory.** The list of documents with their type, year, page count, text-layer status, and counts of tables and figures.
 
@@ -86,8 +82,6 @@ description: Terms used in this guide.
 **Trace.** The logged record of one question: tools called, series used, answer, whether the agent declined, latency.
 
 **Use.** A document whose analysis, decision, or statement depends on the data, as opposed to a mention that cites them as context.
-
-**Verified.** The status of an extracted value that matched a printed label, a total, a derivation, or a catalog value.
 
 **Council deliberation.** Independent proposals, cross-critiques, and revisions by distinct models that examine extraction evidence before an orchestrator synthesizes a candidate policy.
 

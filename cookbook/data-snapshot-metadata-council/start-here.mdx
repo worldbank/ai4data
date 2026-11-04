@@ -17,7 +17,7 @@ Select the statement that describes the team's current design for each chapter. 
   questions={[
     {
       id: 'workflow',
-      title: '1. Policy refinement',
+      title: '1. One round at a glance',
       question: 'Can the team trace an extraction problem to a proposed rule change?',
       options: [
         'The link between an extraction finding and a policy change is unclear.',
@@ -28,7 +28,7 @@ Select the statement that describes the team's current design for each chapter. 
     },
     {
       id: 'preparation',
-      title: '2. Inputs and artifacts',
+      title: '2. Round preparation',
       question: 'Can the team reconstruct the conditions of a round?',
       options: [
         'Data snapshots, references, and versions are scattered.',
@@ -38,19 +38,30 @@ Select the statement that describes the team's current design for each chapter. 
       ],
     },
     {
-      id: 'diagnosis',
-      title: '3. Diagnosis and review',
-      question: 'How are problems diagnosed and adjudicated?',
+      id: 'start-round',
+      title: '3. Round configuration and startup',
+      question: 'How would the team start the round and know when to pause?',
       options: [
-        'Schema validation is the only check.',
-        'A reviewer compares fields with the image and records decisions.',
-        'The team has a fixed diagnostic rubric, scoped findings, and a human review procedure.',
-        'The workflow design enforces role access and records escalations and spot checks.',
+        'There is no sequence from the prepared batch to judge findings.',
+        'The team can trace the supplied records through extraction and diagnosis.',
+        'The plan specifies which records must be present and which findings pause the round.',
+        'The proposed Pi design specifies scoped sessions and recovery from validated records.',
+      ],
+    },
+    {
+      id: 'review-findings',
+      title: '4. Human review of findings',
+      question: 'Can the team resolve flagged findings and check selected unflagged cases?',
+      options: [
+        'The team has no human review procedure.',
+        'A reviewer compares flagged fields with the image and records decisions.',
+        'The team links escalations, decisions, and spot checks to the affected samples.',
+        'The workflow design checks that blocking decisions are recorded and council inputs are scoped.',
       ],
     },
     {
       id: 'deliberation',
-      title: '4. Deliberation and revision',
+      title: '5. Council deliberation and the next policy',
       question: 'How does a finding become a candidate change?',
       options: [
         'The prompt changes without a decision record.',
@@ -60,19 +71,8 @@ Select the statement that describes the team's current design for each chapter. 
       ],
     },
     {
-      id: 'orchestration',
-      title: '5. Pi orchestration',
-      question: 'How would the team coordinate and recover a round?',
-      options: [
-        'The steps depend on one conversation or operator.',
-        'The sequence and human checkpoints are written down.',
-        'Each stage has a contract, completion check, and recovery plan.',
-        'The Pi design specifies scoped model sessions and deterministic tools that enforce these contracts.',
-      ],
-    },
-    {
       id: 'progress',
-      title: '6. Progress and evaluation',
+      title: '6. Decisions after a round',
       question: 'What evidence would justify stopping development or adopting a policy?',
       options: [
         'The team relies on informal impressions.',

@@ -1,7 +1,7 @@
 ---
 id: progress
-title: "6. Progress, stopping, and independent evaluation"
-sidebar_label: "6. Progress and evaluation"
+title: "6. Decisions after a round"
+sidebar_label: "6. Decisions after a round"
 sidebar_position: 7
 description: Shows how to count rule changes, interpret stopping signals, and design an independent quality comparison.
 ---
@@ -9,15 +9,17 @@ description: Shows how to count rule changes, interpret stopping signals, and de
 import Recipe from '@site/src/components/Cookbook/Recipe';
 import Checklist from '@site/src/components/Cookbook/Checklist';
 
-# 6. Progress, stopping, and independent evaluation
+# 6. Decisions after a round
 
-**Question:** When should development stop, and what evidence is still needed?
+**Question:** Should the team run another batch, investigate an open issue, or move to independent evaluation?
 
 ## Rationale
 
-Rule changes and recurring failure modes describe the development process. Fewer accepted changes on comparable batches can signal that the policy is stabilizing. The same pattern can result from easier batches, shared model blind spots, or issues the council keeps deferring.
+The candidate policy and findings from [Chapter 5](./deliberation.mdx) give the team a basis for deciding what to do next. Another batch can test a revised rule on fresh images. A consequential issue may need more evidence or human review before another batch is useful.
 
-At the end of development, the fixed reference extractor and the final policy form the metadata extraction pipeline. Independent evaluation compares the initial and final policies on examples kept outside policy development. That comparison helps the team decide whether to adopt the resulting pipeline.
+Fewer changes on comparable batches can suggest that the policy is stabilizing. Easier batches or repeatedly deferred problems can produce the same pattern, so review recurring failures alongside the rule counts.
+
+When development ends, the fixed reference extractor and the final policy form the metadata extraction pipeline. Independent evaluation compares the initial and final policies on data snapshots kept outside development. That comparison gives the team separate evidence about extraction quality for an adoption decision.
 
 ## Target state
 
@@ -57,19 +59,19 @@ For round `r`, the accepted rule-change count is `C_r = A_r + M_r + R_r`, where 
 
 </Recipe>
 
-<Recipe title="6.2 Specify a stopping decision" level="Foundational" skills="Experiment lead and metadata reviewer" time="30 minutes">
+<Recipe title="6.2 Decide whether to continue, investigate, or evaluate" level="Foundational" skills="Experiment lead and metadata reviewer" time="30 minutes">
 
-**Result:** A stopping procedure identifies the evidence to review and how to record a decision.
+**Result:** A decision records the next action, its reason, and any unresolved issues.
 
 Finding F04 leaves an open question in the [cumulative state (S002)](pathname:///cookbook-files/data-snapshot-metadata-council/002_experiment_state.md). Will the proposed unit rule also work on figures and mixed-unit tables in future batches? Check open issues like this alongside rule counts when deciding whether to stop.
 
 Choose how many rounds to review and what would count as a minor change before observing a trend. Consider how much the policy changed and how consequential those changes were.
 
-1. Compare accepted changes and recurrent issues over the chosen window. Check batch composition, rubric and model versions, and the scope of review.
+1. Compare accepted changes and recurrent issues in the [round findings](pathname:///cookbook-files/data-snapshot-metadata-council/001_round_findings.md) over the chosen window. Check batch composition, rubric and model versions, and the scope of review.
 2. Inspect unresolved disagreements and severe failures. Ask whether they need different evidence, human adjudication, or a change to the planned scope.
-3. Record the decision to continue, pause, or close development with its reason, remaining issues, and next assessment.
+3. Record the decision and its reason. Continue with a fresh batch if it can test the current policy. Investigate first if a consequential issue needs other evidence or human review. If the evidence supports closing development, record the final policy and move to the independent comparison.
 
-**Worked example.** Round 001 gives the reviewer three accepted changes and a concrete question for future batches. A later review would check whether unsupported unit values recur and whether fixing them still requires policy changes. A single round gives no trend to assess.
+**Worked example.** The illustrative decision is to continue with a fresh batch that can test R05 on figures and mixed-unit tables. Round 001 has three accepted changes and gives the team a specific open question in F04. A later review would check whether unsupported unit values recur and whether fixing them still requires policy changes.
 
 **What this does not do.** The cookbook does not prescribe a universal threshold or demonstrate convergence across rounds.
 
