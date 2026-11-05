@@ -48,6 +48,10 @@ Links between these files are written as relative links to the source files, for
 - **Outputs.** Notebooks are committed with their outputs, and the site shows those outputs. Without an API key, every notebook runs in a fresh Colab environment and replays recorded model answers.
 - **Output types.** Text and stream outputs appear as text blocks, Markdown outputs as Markdown, and images as image files. HTML outputs keep their markup. Scripts inside HTML outputs are removed, and an interactive output needs a client module in `website/src/clientModules/` for its behaviour on the site; `pcnDetail.js` is the example. `<style>` blocks are moved to a generated stylesheet. Widget outputs are left out.
 
+## Interactive figures
+
+A session README can place interactive figures on its overview page. A line of the form `<!-- figure: name -->` places the figure `name` of `website/src/components/training/Figures/`, which reads its data from the session's `assets/overview.json`. GitHub shows nothing for that line, so the text around it describes the figure's content. A page with figures is compiled as MDX, so its text contains no `<` and no `{` outside code.
+
 ## Slides
 
 The Slides page shows a deck kept in Canva. `slides/canva.json` holds the page title and the public view link of the deck:
