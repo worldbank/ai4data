@@ -21,7 +21,35 @@ export default function DistillationResults({data}) {
   const speedH = data.speed.length * rowH + 50;
   return (
     <figure className={styles.figure}>
-      <p className={styles.title}>How well each model assigns topics</p>
+      <p className={styles.title}>The student compared with large models</p>
+      <p className={styles.caption}>
+        The student and three large models assigned topics to the same 300 report abstracts.
+      </p>
+      <div className={styles.tiles}>
+        <div className={styles.tile}>
+          <p className={styles.tileLabel}>Score (F1, from 0 to 1)</p>
+          <p className={styles.tileRow}><span><span className={clsx(styles.dot, styles.small)} /> Student</span><strong>0.52</strong></p>
+          <p className={styles.tileRow}><span><span className={clsx(styles.dot, styles.large)} /> Large models</span><strong>0.52–0.53</strong></p>
+          <p className={styles.tileNote}>
+            The score is high when the assigned topics are correct and few recorded topics are missed.
+          </p>
+        </div>
+        <div className={styles.tile}>
+          <p className={styles.tileLabel}>Time for one abstract</p>
+          <p className={styles.tileRow}><span><span className={clsx(styles.dot, styles.small)} /> Student</span><strong>0.19 s</strong></p>
+          <p className={styles.tileRow}><span><span className={clsx(styles.dot, styles.large)} /> Large models</span><strong>0.5–3.9 s</strong></p>
+          <p className={styles.tileNote}>The student on four threads of a processor (CPU); on a GPU it takes 7 milliseconds.</p>
+        </div>
+        <div className={styles.tile}>
+          <p className={styles.tileLabel}>What it runs on</p>
+          <p className={styles.tileRow}><span><span className={clsx(styles.dot, styles.small)} /> Student</span><strong>Processor (CPU)</strong></p>
+          <p className={styles.tileRow}><span><span className={clsx(styles.dot, styles.large)} /> Large models</span><strong>GPU or hosted service</strong></p>
+          <p className={styles.tileNote}>The student needs 0.57 GB of memory, no GPU, and no internet connection.</p>
+        </div>
+      </div>
+      <details className={styles.deeper}>
+      <summary>Go deeper: the score and the time of each model</summary>
+      <p className={styles.title} style={{marginTop: 12}}>How well each model assigns topics</p>
       <p className={styles.caption}>
         F1 score on 300 report abstracts, from 0 to 1. The score is high when the assigned topics are correct and
         few of the recorded topics are missed. Student scores are the mean of three training runs.
@@ -75,6 +103,7 @@ export default function DistillationResults({data}) {
         include the network and the service's queue. The CPU time was measured with four threads of a server processor
         on 100 of the abstracts, and the time of Qwen3.8-27B on 50.
       </p>
+      </details>
     </figure>
   );
 }

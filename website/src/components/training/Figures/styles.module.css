@@ -501,13 +501,331 @@ button.chip[aria-pressed='true'] {
   max-width: 260px;
 }
 
+/* Buttons, inputs, and collapsed "go deeper" parts */
+.primaryButton {
+  border: 0;
+  border-radius: 8px;
+  padding: 7px 14px;
+  background: var(--small);
+  color: #fff;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primaryButton:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.textInput {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--ifm-background-surface-color);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.deeper {
+  margin-top: 18px;
+  padding: 10px 14px;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  background: transparent;
+}
+
+.deeper > summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.deeper[open] > summary {
+  margin-bottom: 8px;
+}
+
+/* Where a model can run */
+.modelLine {
+  font-size: 0.9rem;
+}
+
+.machines {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.machine {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+
+.machineFits {
+  opacity: 1;
+  border-color: var(--fill);
+  box-shadow: inset 0 3px 0 var(--fill);
+}
+
+.machineIcon {
+  width: 46px;
+  height: 36px;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.figure .machineName {
+  margin: 6px 0 0;
+  font-weight: 700;
+}
+
+.figure .machineSub {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.squares {
+  display: grid;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.square {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 2px;
+  background: var(--ifm-color-emphasis-200);
+  overflow: hidden;
+}
+
+.squareFill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--fill);
+}
+
+.bigMemory {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  background: repeating-linear-gradient(45deg, var(--ifm-color-emphasis-200) 0 6px, transparent 6px 10px);
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.figure .verdict {
+  margin: 0 0 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.machine dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 2px 10px;
+  margin: auto 0 0;
+  font-size: 0.8rem;
+}
+
+.machine dt {
+  color: var(--muted);
+}
+
+.machine dd {
+  margin: 0;
+}
+
+/* Learning from examples */
+.learnControls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+  margin-bottom: 12px;
+}
+
+.learnControls .slider {
+  margin: 0;
+  flex: 1;
+  min-width: 220px;
+}
+
+.latest {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.85rem;
+}
+
+.latest > li {
+  margin: 4px 0 0;
+  animation: appear 0.4s ease;
+}
+
+.wordTable {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 10px;
+  align-items: start;
+  font-size: 0.85rem;
+}
+
+.wordTopic {
+  font-weight: 600;
+  padding-top: 2px;
+}
+
+.dotRows {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 260px);
+  gap: 3px 8px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.dotLabel {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.dotGrid {
+  display: grid;
+  grid-template-columns: repeat(15, 1fr);
+  gap: 3px;
+}
+
+.testDot {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  border: 1px solid var(--line);
+  transition: background 0.3s ease;
+}
+
+.testRight {
+  background: var(--small);
+  border-color: var(--small);
+}
+
+/* Synthetic data */
+.story {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+}
+
+.storyCard {
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  height: 100%;
+}
+
+.storyModel {
+  border: 2px solid var(--large);
+}
+
+.storyArrow {
+  color: var(--faint);
+  font-size: 1.6rem;
+}
+
+.sentences > li {
+  animation: appear 0.4s ease;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+/* Results */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.tile {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--panel);
+}
+
+.figure .tileLabel {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.figure .tileRow {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 8px;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.tileRow > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tileRow strong {
+  padding-left: 16px;
+  color: var(--ink);
+  font-size: 1.15rem;
+  line-height: 1.3;
+}
+
+.figure .tileNote {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
 @media (max-width: 760px) {
   .figure {
     padding: 14px;
   }
 
-  .tasks {
+  .tasks,
+  .machines,
+  .tiles {
     grid-template-columns: 1fr;
+  }
+
+  .story {
+    grid-template-columns: 1fr;
+  }
+
+  .storyArrow {
+    transform: rotate(90deg);
+    justify-self: center;
   }
 
   .steps {
@@ -520,8 +838,15 @@ button.chip[aria-pressed='true'] {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .packet {
+  .packet,
+  .latest > li,
+  .sentences > li {
     animation: none;
+  }
+
+  .machine,
+  .testDot {
+    transition: none;
   }
 
   .barFill {

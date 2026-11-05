@@ -1,15 +1,14 @@
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.css';
 
-// One request of the worked example written twice by the same large model: once with the
-// topic names allowed in the sentences and once with them avoided. Four steps: the plan,
-// the prompt, the sentences, and what each set gave the small model.
+// One request of the worked example: a list of topics goes to a large model, which writes
+// sentences with their topics. Under "go deeper", the same request written with topic
+// names avoided, and what each version gave the small model.
 const SETS = [
   ['allow', 'Topic names allowed'],
   ['avoid', 'Topic names avoided'],
 ];
-const STEPS = ['Choose the topics', 'Ask the large model', 'Read the sentences', 'Compare the two sets'];
 
 const escape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -38,122 +37,129 @@ function Bars({rows, max, format, current}) {
   );
 }
 
-export default function SyntheticData({data}) {
+function Sentence({s, highlight}) {
+  return (
+    <li className={styles.sentence}>
+      {highlight ? <Highlighted text={s.text} terms={s.labels} /> : s.text}
+      <ul className={styles.chips}>
+        {s.labels.map((l) => <li key={l} className={styles.chip}>{l}</li>)}
+      </ul>
+    </li>
+  );
+}
+
+function Deeper({data}) {
   const [names, setNames] = useState('allow');
-  const [step, setStep] = useState(0);
-  const [topic, setTopic] = useState(null);
   const [full, setFull] = useState(false);
   const set = data.sets[names];
-  const shown = set.sentences.filter((s) => !topic || s.labels.includes(topic));
-  const named = set.sentences.filter((s) => s.named).length;
   const rule = data.prompt[names].split('\n').find((line) => line.startsWith('- ') && /topic names/.test(line));
-
   return (
-    <figure className={styles.figure}>
-      <p className={styles.title}>From a list of topics to labelled training sentences</p>
-      <p className={styles.caption}>
-        One request of the worked example, written twice by the large model {data.writer} with one rule changed.
-        Switch between the two versions and go through the four steps.
+    <details className={styles.deeper}>
+      <summary>Go deeper: two wordings of the same request</summary>
+      <p>
+        The same request was sent twice with one rule changed. Switch between the two versions; topic names in the
+        sentences are highlighted.
       </p>
       <div className={styles.segmented} role="group" aria-label="Writing rule">
         {SETS.map(([key, label]) => (
-          <button key={key} type="button" aria-pressed={names === key} onClick={() => setNames(key)}>
-            {label}
-          </button>
+          <button key={key} type="button" aria-pressed={names === key} onClick={() => setNames(key)}>{label}</button>
         ))}
       </div>
-      <ol className={styles.steps}>
-        {STEPS.map((label, i) => (
-          <li key={label}>
-            <button type="button" aria-current={step === i ? 'step' : undefined} onClick={() => setStep(i)}>
-              <span className={styles.stepNumber}>Step {i + 1}</span>
-              {label}
-            </button>
-          </li>
-        ))}
-      </ol>
-
-      {step === 0 && (
+      <p className={styles.rule}>{rule ? rule.slice(2) : ''}</p>
+      <button type="button" className={styles.linkButton} onClick={() => setFull(!full)}>
+        {full ? 'Hide the full prompt' : 'Show the full prompt'}
+      </button>
+      {full && (
+        <div className={styles.prompt} style={{marginTop: 8}}>
+          <Highlighted text={data.prompt[names]} terms={rule ? [rule] : []} />
+        </div>
+      )}
+      <ul className={styles.sentences} style={{marginTop: 12, maxHeight: 300}}>
+        {set.sentences.slice(0, 8).map((s) => <Sentence key={s.text} s={s} highlight />)}
+      </ul>
+      <div className={styles.twoCol} style={{marginTop: 14}}>
         <div>
-          <p>
-            The worked example has {data.labels} topics. Each request picks eight of them and asks for 20 sentences
-            about those eight. There are {data.requests.toLocaleString('en')} requests in all. This one picks:
-          </p>
+          <p><strong>Sentences that name one of their topics</strong>, all 1,000 requests</p>
+          <Bars current={names} max={1} format={(v) => `${Math.round(v * 1000) / 10}%`}
+            rows={SETS.map(([key, label]) => ({key, label, value: data.sets[key].named / data.sets[key].total}))} />
+        </div>
+        <div>
+          <p><strong>Score of a small model trained on each version</strong>, 300 real abstracts (F1, 0 to 1)</p>
+          <Bars current={names} max={0.6} format={(v) => v.toFixed(3)}
+            rows={SETS.map(([key, label]) => ({key, label, value: mean(data.sets[key].report_f1)}))} />
+        </div>
+      </div>
+      <p className={styles.source}>
+        The score for names allowed is the mean of three training runs; the score for names avoided comes from one run.
+      </p>
+    </details>
+  );
+}
+
+export default function SyntheticData({data}) {
+  const sentences = data.sets.allow.sentences;
+  const [shown, setShown] = useState(0);
+  const [running, setRunning] = useState(false);
+  const timer = useRef(null);
+
+  useEffect(() => {
+    if (!running) return undefined;
+    if (shown >= sentences.length) {
+      setRunning(false);
+      return undefined;
+    }
+    timer.current = setTimeout(() => setShown(shown + 1), shown === 0 ? 300 : 650);
+    return () => clearTimeout(timer.current);
+  }, [running, shown, sentences.length]);
+
+  const start = () => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setShown(sentences.length);
+    } else {
+      setShown(0);
+      setRunning(true);
+    }
+  };
+
+  return (
+    <figure className={styles.figure}>
+      <p className={styles.title}>A large model writes practice examples</p>
+      <p className={styles.caption}>
+        One request from the worked example. The request names eight topics; the large model {data.writer} writes
+        20 sentences and lists the topics of each one.
+      </p>
+      <div className={styles.story}>
+        <div className={styles.storyCard}>
+          <span className={styles.stepNumber}>The request</span>
+          <p style={{margin: '4px 0 8px'}}>Write 20 sentences about these topics:</p>
           <ul className={styles.chips}>
-            {data.topics.map((t) => (
-              <li key={t} className={styles.chip}>{t}</li>
-            ))}
+            {data.topics.map((t) => <li key={t} className={styles.chip}>{t}</li>)}
           </ul>
         </div>
-      )}
-
-      {step === 1 && (
-        <div>
-          <p>
-            The request, called a prompt, lists the eight topics and asks the model to list the topics of each
-            sentence. It also sets rules for the writing. The two versions differ in this rule:
-          </p>
-          <p className={styles.rule}>{rule ? rule.slice(2) : ''}</p>
-          <button type="button" className={styles.linkButton} onClick={() => setFull(!full)}>
-            {full ? 'Hide the full prompt' : 'Show the full prompt'}
+        <div className={styles.storyArrow} aria-hidden="true">→</div>
+        <div className={clsx(styles.storyCard, styles.storyModel)}>
+          <span className={styles.stepNumber}>The large model</span>
+          <p style={{margin: '4px 0 10px'}}>{data.writer}</p>
+          <button type="button" className={styles.primaryButton} onClick={start} disabled={running}>
+            {shown ? 'Write them again' : 'Write the sentences'}
           </button>
-          {full && (
-            <div className={styles.prompt} style={{marginTop: 8}}>
-              <Highlighted text={data.prompt[names]} terms={rule ? [rule] : []} />
-            </div>
-          )}
         </div>
+      </div>
+      <p style={{margin: '14px 0 6px'}}>
+        <strong>Practice sentences</strong> {shown ? `${shown} of ${sentences.length}` : ''}
+      </p>
+      {shown === 0 ? (
+        <p className={styles.source}>Press the button to show the sentences one by one.</p>
+      ) : (
+        <ul className={styles.sentences} aria-live="polite">
+          {sentences.slice(0, shown).map((s) => <Sentence key={s.text} s={s} />)}
+        </ul>
       )}
-
-      {step === 2 && (
-        <div>
-          <p>
-            The model wrote {set.sentences.length} sentences, each with its topics below it. In {named} of them,
-            the name of a topic appears in the sentence (highlighted). Select a topic to show only its sentences.
-          </p>
-          <ul className={styles.chips} style={{marginBottom: 12}}>
-            {data.topics.map((t) => (
-              <li key={t}>
-                <button type="button" className={styles.chip} aria-pressed={topic === t}
-                  onClick={() => setTopic(topic === t ? null : t)}>
-                  {t}
-                </button>
-              </li>
-            ))}
-          </ul>
-          <ul className={styles.sentences}>
-            {shown.map((s) => (
-              <li key={s.text} className={styles.sentence}>
-                <Highlighted text={s.text} terms={s.labels} />
-                <ul className={styles.chips}>
-                  {s.labels.map((l) => (
-                    <li key={l} className={clsx(styles.chip, l === topic && styles.chipMatch)}>{l}</li>
-                  ))}
-                </ul>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {step === 3 && (
-        <div className={styles.twoCol}>
-          <div>
-            <p><strong>Sentences that name one of their topics</strong>, all 1,000 requests</p>
-            <Bars current={names} max={1} format={(v) => `${Math.round(v * 1000) / 10}%`}
-              rows={SETS.map(([key, label]) => ({key, label, value: data.sets[key].named / data.sets[key].total}))} />
-          </div>
-          <div>
-            <p><strong>Score of a small model trained on each set</strong>, on 300 real report abstracts (F1, from 0 to 1)</p>
-            <Bars current={names} max={0.6} format={(v) => v.toFixed(3)}
-              rows={SETS.map(([key, label]) => ({key, label, value: mean(data.sets[key].report_f1)}))} />
-          </div>
-          <p style={{gridColumn: '1 / -1', fontSize: '0.88rem'}}>
-            The model trained on the sentences with names allowed scored higher on the real abstracts. The score for names allowed is the mean of three training runs; the
-            score for names avoided comes from one run.
-          </p>
-        </div>
-      )}
+      <p className={styles.source}>
+        The worked example repeats this for {data.requests.toLocaleString('en')} requests, each with eight of the{' '}
+        {data.labels} topics. Together they give about 20,000 labelled sentences.
+      </p>
+      <Deeper data={data} />
     </figure>
   );
 }

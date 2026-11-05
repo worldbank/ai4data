@@ -142,9 +142,8 @@ function LabelChips({labels, reference, measured}) {
   );
 }
 
-export default function Distillation({data}) {
-  const [phase, setPhase] = useState('train');
-  const [doc, setDoc] = useState(0);
+function Explorer({data}) {
+  const [doc, setDoc] = useState(1);
   const [threshold, setThreshold] = useState(data.threshold);
   const [open, setOpen] = useState(false);
   const d = data.documents[doc];
@@ -152,26 +151,15 @@ export default function Distillation({data}) {
   const chosen = d.student.slice(0, data.top).filter((s) => s.score >= threshold).map((s) => s.label);
 
   return (
-    <figure className={styles.figure}>
-      <p className={styles.title}>A large model teaches a small one</p>
-      <p className={styles.caption}>
-        The teacher is needed only while the student learns. Switch between the two stages.
-      </p>
-      <div className={styles.segmented} role="group" aria-label="Phase">
-        {PHASES.map(([key, label]) => (
-          <button key={key} type="button" aria-pressed={phase === key} onClick={() => setPhase(key)}>{label}</button>
-        ))}
-      </div>
-      <Flow phase={phase} />
-
-      <p className={styles.title} style={{marginTop: 22}}>The student at work on six report abstracts</p>
-      <p className={styles.caption}>
+    <details className={styles.deeper}>
+      <summary>Go deeper: five more abstracts, the score threshold, and the answers of three large models</summary>
+      <p className={styles.caption} style={{marginTop: 10}}>
         Select an abstract. The student scores every topic from 0 to 1 and assigns the topics above the dashed
         line. Move the slider to raise or lower the line. ✓ marks a topic recorded for the report in the World Bank
         documents database.
       </p>
       <div className={styles.docTabs} role="group" aria-label="Abstracts">
-        {data.documents.map((x, i) => (
+        {data.documents.map((x, i) => i > 0 && (
           <button key={x.id} type="button" aria-pressed={i === doc}
             onClick={() => { setDoc(i); setOpen(false); }}>
             {shortTitle(x.title)}
@@ -239,6 +227,78 @@ export default function Distillation({data}) {
           </p>
         </div>
       </div>
+    </details>
+  );
+}
+
+function Worked({data}) {
+  const d = data.documents[0];
+  const max = d.student[0].score;
+  const chosen = d.student.slice(0, data.top).filter((x) => x.score >= data.threshold);
+  const right = chosen.filter((x) => d.reference.includes(x.label)).length;
+  return (
+    <div>
+      <p className={styles.title} style={{marginTop: 22}}>The student at work on one real abstract</p>
+      <p className={styles.caption}>
+        The student reads the abstract and gives every topic a score. Topics with a clear score are assigned; the
+        check marks show the topics recorded for this report in the World Bank documents database.
+      </p>
+      <div className={styles.detail}>
+        <a href={d.url}><strong>{d.title}</strong></a> ({d.year})
+        <p className={styles.abstract} style={{marginTop: 6, maxHeight: '4.8em'}}>{d.text}</p>
+      </div>
+      <div className={styles.twoCol} style={{marginTop: 14}}>
+        <div>
+          <p><strong>Student's highest scores</strong></p>
+          <div className={styles.bars} style={{gridTemplateColumns: 'minmax(120px, max-content) 1fr max-content'}}>
+            {d.student.slice(0, 6).map((x) => {
+              const pick = chosen.some((c) => c.label === x.label);
+              return (
+                <React.Fragment key={x.label}>
+                  <span style={{fontWeight: pick ? 700 : 400, color: pick ? undefined : 'var(--muted)'}}>{x.label}</span>
+                  <span className={styles.barTrack}>
+                    <span className={styles.barFill}
+                      style={{width: `${(x.score / max) * 100}%`, minWidth: 3, background: pick ? 'var(--small)' : 'var(--line)'}} />
+                  </span>
+                  <span className={styles.barValue}>{pick ? 'assigned' : ''}</span>
+                </React.Fragment>
+              );
+            })}
+          </div>
+        </div>
+        <div>
+          <p><strong>Result</strong></p>
+          <div className={styles.answers}>
+            <span>Recorded topics</span>
+            <LabelChips labels={d.reference} reference={d.reference} measured={data.measured} />
+            <span><span className={clsx(styles.dot, styles.small)} /> Student</span>
+            <LabelChips labels={chosen.map((x) => x.label)} reference={d.reference} measured={data.measured} />
+          </div>
+          <p style={{marginTop: 10, fontSize: '0.9rem'}}>
+            The student assigned {chosen.length} topics, and {right} of them are recorded for the report.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function Distillation({data}) {
+  const [phase, setPhase] = useState('train');
+  return (
+    <figure className={styles.figure}>
+      <p className={styles.title}>A large model teaches a small one</p>
+      <p className={styles.caption}>
+        The teacher is needed only while the student learns. Switch between the two stages.
+      </p>
+      <div className={styles.segmented} role="group" aria-label="Stage">
+        {PHASES.map(([key, label]) => (
+          <button key={key} type="button" aria-pressed={phase === key} onClick={() => setPhase(key)}>{label}</button>
+        ))}
+      </div>
+      <Flow phase={phase} />
+      <Worked data={data} />
+      <Explorer data={data} />
     </figure>
   );
 }

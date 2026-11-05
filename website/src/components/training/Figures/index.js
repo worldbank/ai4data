@@ -1,5 +1,6 @@
 import React from 'react';
-import SizeScale from './SizeScale';
+import WhereItRuns from './WhereItRuns';
+import Learn from './Learn';
 import TaskFit from './TaskFit';
 import SyntheticData from './SyntheticData';
 import Distillation from './Distillation';
@@ -10,8 +11,9 @@ import DistillationResults from './DistillationResults';
 // line with <TrainingFigure name="name" data={figures} />, where `figures` is the
 // session's assets/overview.json.
 const FIGURES = {
-  'small-ai-scale': (data) => <SizeScale data={data.smallAI} />,
+  'where-it-runs': (data) => <WhereItRuns data={data.smallAI} />,
   'small-ai-tasks': (data) => <TaskFit data={data.smallAI} />,
+  'learn-from-examples': (data) => <Learn data={data.learn} />,
   'synthetic-data': (data) => <SyntheticData data={data.synthetic} />,
   distillation: (data) => <Distillation data={data.distillation} />,
   'distillation-results': (data) => <DistillationResults data={data.distillation} />,
