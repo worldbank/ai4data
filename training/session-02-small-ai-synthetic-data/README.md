@@ -14,11 +14,11 @@ The figure shows the three steps that this session follows to build a small mode
 
 ## Why a small model
 
-The chat assistants in wide use today run on [large language models](#terms). These models can write, translate, summarize, and answer questions on almost any subject. The largest have more than 100 billion [parameters](#terms) and run in data centers, so each request travels over the internet to the company that runs the model.
+The chat assistants in wide use today run on [large language models](#terms). These models can write, translate, summarize, and answer questions on almost any subject. The largest have more than 100 billion [parameters](#terms) and run in data centers, so each request travels over the internet to the company that runs the model. The companies behind the best-known chat assistants generally do not publish the size of their main models.
 
-A small model has far fewer parameters and is trained for one task. The World Bank's World Development Report 2026 uses the term [small AI](#terms) for such models. A small model can run on a laptop or on an organization's own server, so the documents do not leave the organization. It works without an internet connection, and it needs no paid service and no [GPU](#terms).
+A small model has far fewer parameters and is often trained for one task. The World Bank's World Development Report 2026 uses the term [small AI](#terms) for AI that is small in size or narrow in scope and is built to run where power, internet connectivity, and digital devices are scarce. A small model can run on a laptop or on an organization's own server, so the documents do not leave the organization. Once built, it works without an internet connection, and it runs without a paid service or a [GPU](#terms). Building it has a cost: a large model writes the examples, and the training runs on a GPU.
 
-A model has to fit in the memory of the computer that runs it. The figure draws memory as squares of 1 GB. The small model of the example needs about half of one square. A large model of the size used as teacher in the example needs about 31 squares, more than a laptop holds.
+A model has to fit in the memory of the computer that runs it. The report gives rounded memory ranges for three kinds of computer: about 2 to 20 GB for a phone or laptop, 20 to 200 GB for a single server, and more than 200 GB in a data center. The figure draws memory as squares of 1 GB. The small model of the example needs about half of one square. Qwen3.8-27B, one of the teachers of the example, needs about 31 squares in the 8-bit version used here, more than a laptop holds.
 
 <!-- figure: where-it-runs -->
 
@@ -42,9 +42,9 @@ The wording of the request also affects the result. The "go deeper" part of the 
 
 <!-- figure: learn-from-examples -->
 
-With one example per topic, the model gives 17 of the 60 reports the right topic, close to the 15 expected from a random guess. With ten examples per topic it gets 31 right, and with forty it gets 34. The model in the figure counts words only, and it stops improving after about 20 examples per topic. The small model built in the session is a more capable kind of model, which takes the meaning of whole sentences into account. It learns from all 20,000 examples and all 86 topics.
+With one example per topic, the model gives 17 of the 60 reports the right topic, close to the 15 expected from a random guess. With ten examples per topic it gets 31 right, and with forty it gets 34. The model in the figure counts words only, and it stops improving after about 20 examples per topic. The small model built in the session is a more capable kind of model, which takes the meaning of whole sentences into account. It learns all 86 topics from about 20,000 examples, and from another 12,000 to 15,000 in further rounds.
 
-This way of training is called [distillation](#terms). A large model passes a skill to a small one: the large model acts as the teacher and the small model as the student. In its original form, described by Hinton, Vinyals, and Dean (2015), the student learns to give the teacher's answers on the same inputs. In this session the teacher also writes the examples of step 1.
+This way of training is called [distillation](#terms). A large model passes a skill to a small one: the large model acts as the teacher and the small model as the student. In its original form, described by Hinton, Vinyals, and Dean (2015), the student learns to match the teacher's probability for every possible answer, which carries more information than the teacher's top answer alone. In this session the teacher also writes the examples of step 1.
 
 ## Step 3: the small model at work
 
@@ -74,18 +74,18 @@ Before a team relies on a small model, it checks the following points:
 ## Terms
 
 - **Abstract**: The short summary at the start of a report.
-- **Distillation**: Training a small model to give the answers of a large model. The large model is called the teacher and the small model the student.
-- **GPU**: A graphics processor. Large models run on GPUs, which cost more and use more power than an ordinary processor.
+- **Distillation**: Training a small model to reproduce the answers of a large model. The large model is called the teacher and the small model the student.
+- **GPU**: A graphics processor, now also used to run AI models. Large models run on GPUs or similar chips, which cost more and use more power than an ordinary processor.
 - **Labelled example**: An example together with the right answer. In this session, a sentence together with its topics.
 - **Large language model**: A model trained on a very large amount of text. It can write, translate, summarize, and answer questions. Chat assistants run on such models.
 - **Model**: A computer program that has learned a task from examples. A programmer does not write its rules.
 - **Parameter**: One of the internal numbers of a model, adjusted during training. The number of parameters measures the size of a model.
-- **Small AI**: The term of the World Development Report 2026 for models that are small in size, narrow in scope, or both, and that can run where computing power, connectivity, and devices are limited.
+- **Small AI**: The term of the World Development Report 2026 for AI that is small in size or narrow in scope and is built to run where power, internet connectivity, and digital devices are scarce. The report notes that a large model in the cloud, reached by voice call or text message from a basic phone, can serve the same purpose.
 - **Synthetic data**: Examples written by a computer program. In this session a large language model writes them.
 - **Training**: The step in which a model adjusts its parameters until its answers match a set of labelled examples.
 
 ## Sources
 
-- World Bank. 2026. *World Development Report 2026: The Promise of Artificial Intelligence*. Washington, DC: World Bank. Box O.1 and spotlight 1.
+- World Bank. 2026. *World Development Report 2026: The Promise of Artificial Intelligence*. Washington, DC: World Bank. doi:10.1596/978-1-4648-2331-2. Box O.1, "Small AI, big impact", and spotlight 1, table S1.1.
 - Hinton, Geoffrey, Oriol Vinyals, and Jeff Dean. 2015. "Distilling the Knowledge in a Neural Network." arXiv:1503.02531.
 - The data behind the figures are in [assets/overview.json](assets/overview.json).

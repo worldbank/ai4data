@@ -46,7 +46,7 @@ export default function DistillationResults({data}) {
           <p className={styles.tileLead}>The student runs on an ordinary processor, without an internet connection.</p>
           <p className={styles.tileRow}><span><span className={clsx(styles.dot, styles.small)} /> Student</span><strong>Processor (CPU)</strong></p>
           <p className={styles.tileRow}><span><span className={clsx(styles.dot, styles.large)} /> Large models</span><strong>GPU or hosted service</strong></p>
-          <p className={styles.tileNote}>The student needs 0.57 GB of memory. A GPU is a graphics processor, used to run large models.</p>
+          <p className={styles.tileNote}>The student needs 0.57 GB of memory. A GPU is a graphics processor, now also used to run AI models.</p>
         </div>
       </div>
       <details className={styles.deeper}>

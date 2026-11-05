@@ -91,8 +91,8 @@ export default function WhereItRuns({data}) {
         })}
       </div>
       <p className={styles.source}>
-        Memory ranges rounded for typical computers, following {data.source} Hosted chat assistants do not publish
-        the size of their models.
+        Memory ranges are rounded orders of magnitude for typical computers, following {data.source} The companies
+        behind hosted chat assistants generally do not publish the size of their main models.
       </p>
     </figure>
   );

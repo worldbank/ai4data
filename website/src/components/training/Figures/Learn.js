@@ -202,7 +202,7 @@ export default function Learn({data}) {
             <Curve points={curve} n={n} />
             <p className={styles.source}>
               The dashed line at 25% is a random guess. After about 20 examples per topic this model stops improving.
-              The model built in the session learns more from each example and reads about 20,000 of them.
+              The model built in the session learns more from each example and reads more than 30,000 of them.
             </p>
           </div>
           <div>

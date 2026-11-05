@@ -1,6 +1,6 @@
 {
  "smallAI": {
-  "source": "World Bank, World Development Report 2026, spotlight 1.",
+  "source": "World Bank, World Development Report 2026, spotlight 1, table S1.1.",
   "machines": {
    "models": [
     {
@@ -16,7 +16,7 @@
      "kind": "large",
      "params": "27 billion parameters",
      "gb": 31,
-     "memory": "about 31 GB of memory",
+     "memory": "about 31 GB of memory in the 8-bit version used in the example (about 56 GB at full 16-bit precision)",
      "role": "Qwen3.8-27B, one of the teachers in the worked example, is this size."
     },
     {
@@ -32,14 +32,14 @@
     {
      "key": "device",
      "label": "Phone or laptop",
-     "memory": "Up to about 20 GB",
+     "memory": "About 2 to 20 GB",
      "gb": 20,
      "internet": "Not needed",
      "text": "Stays on the device"
     },
     {
      "key": "server",
-     "label": "A server",
+     "label": "A single server",
      "memory": "About 20 to 200 GB",
      "gb": 200,
      "internet": "Local network only",
