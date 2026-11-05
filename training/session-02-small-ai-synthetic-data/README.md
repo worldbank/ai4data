@@ -1,49 +1,61 @@
 # Session 02 · Building specialized small AI using synthetic data
 
-This session is in preparation. This page sets out its three ideas: small AI, synthetic training data, and model distillation. Each idea is illustrated with figures from the worked example of the session, in which a small model learns to assign topics to the abstracts of World Bank reports.
+This session is in preparation. This page introduces its three ideas in order: small AI, synthetic training data, and model distillation. It assumes no background in AI. One worked example runs through all three ideas: a small model learns to assign topics, such as Urban Development or Migration, to the abstracts of World Bank reports. An abstract is the short summary at the start of a report.
 
 On the docs site, the figures on this page are interactive. On GitHub they are not shown, and the text describes their content.
 
 ## What small AI is
 
-The World Development Report 2026, *The Promise of Artificial Intelligence*, describes small AI in box O.1 and spotlight 1. The report gives two meanings of "small". In the technology industry, small refers to model size: a small language model is trained to approach the performance of a large one with far fewer parameters, the internal values that store what a model has learned. Small can also refer to scope: a model built for one narrow task, such as identifying a crop disease or screening a medical image. In both meanings, the report describes small AI as built to run where power, internet connectivity, and digital devices are scarce.
+An AI model is a computer program that has learned a task from examples. A programmer does not write its rules. During training, the model adjusts a large set of internal numbers, called parameters, until its answers match the examples. The number of parameters is the usual measure of a model's size.
 
-Size decides where a model can run. The report gives three bands: a model of up to 10 billion parameters runs on a phone or laptop without a connection; a model of 10 to 100 billion parameters needs a single server on a local network; a larger model runs in a data center and needs a constant internet connection. The smallest model about as capable as the first ChatGPT went from 540 billion parameters in 2022 to 3.8 billion in 2024.
+The chat assistants in wide use today run on large language models with tens or hundreds of billions of parameters. These models can write, translate, summarize, and answer questions on almost any subject. They run in data centers, and each request travels over the internet to the company that runs the model.
+
+A small model has far fewer parameters and is usually trained for one task. It can run on a laptop, a phone, or an organization's own server, without an internet connection. The World Bank's World Development Report 2026 uses the term small AI for models that are small in size, narrow in scope, or both, and that can run where computing power, connectivity, and devices are limited.
+
+The size of a model determines the computer needed to run it. The figure places the three models of the worked example on a scale of size, divided into three ranges: models that fit on a phone or laptop, models that need a server, and models that need a data center.
 
 <!-- figure: small-ai-scale -->
 
-The model built in this session has 142 million parameters, about one seventieth of the upper limit of the first band. The two large language models used to train it, Qwen3.8-27B and Gemma 4 31B, run on one GPU each of a single server.
+The small model of the worked example has 142 million parameters and needs 0.57 GB of memory. The two large models used to train it have about 30 billion parameters each, and each one needs a computer with a graphics processor (GPU) built for AI work.
 
-The report distinguishes a model from an application, which wraps a model in an interface that people use. A small AI application can be built on a small model that runs on a phone, as in Nuru and Cough Against TB, or on a large model in the cloud reached over text or a voice call, as in Rori and Ask Viamo Anything. The applications built on a single-task model are usually predictive: they pick a label. The report notes that a single-task model is easier to build and simpler to evaluate than a general-purpose one. The classifier of this session is of that kind.
+A small model is a good candidate when the answer comes from a fixed list, such as a set of topics or codes, and when the same task is repeated many times. It also suits work where the data should stay inside the organization or where the internet connection is poor. A large model is the better choice when the answer is new text, such as a summary or a reply, or when the questions cannot be listed in advance. The figure sorts six tasks from development work between the two kinds of model.
 
-<!-- figure: small-ai-applications -->
+<!-- figure: small-ai-tasks -->
 
-The report also sets out the limits of small AI. A smaller model can do less than a larger one, especially on complex or open-ended tasks. It also fails more often in conditions that differ from those of its training data. The report's example is a screening tool for diabetic eye disease that rejected more than one fifth of the images taken by nurses, because the lighting in the clinic differed from that of its training images. The report concludes that a tool should be tested where it will be used, with a higher bar for a high-stakes task than for an everyday one.
+A small model does only the one task of its training. Like any model, it can also fail on material that differs from its training examples, such as documents in another language or photos taken in different light. A small model therefore has to be tested on real data from the place where it will be used before anyone relies on it.
 
 ## Synthetic training data
 
-A classifier learns from labelled examples, each a text with its topics. Few organizations have thousands of labelled examples for a new task. In this session a large language model writes them. Each request to the model lists eight of the 86 topics and asks for 20 sentences about them, each labelled with its topics. A thousand requests give about 20,000 labelled sentences.
+A model learns a task from examples that carry the right answer, called labelled examples. In the worked example, each labelled example is a sentence together with its topics. Training a model this way takes thousands of examples, and few organizations have that many for a new task.
 
-How the sentences are written changes what the small model learns. The figure follows one request written twice by Qwen3.8-27B with one rule changed: in the first set, the sentences may use the topic names, and in the second, they must describe the subject in other words. With names allowed, 73 percent of the sentences contain the name of one of their topics; with names avoided, 8.9 percent do. The small model trained on the first set scored higher on real report abstracts: a micro F1 of 0.476 against 0.417.
+Synthetic data are examples written by a computer program. In this session a large language model writes them. Each request to the model picks eight of the 86 topics and asks for 20 sentences about them, with the topics of each sentence listed. A thousand requests give about 20,000 labelled sentences.
+
+The figure follows one request through four steps: the choice of topics, the request to the model, the sentences returned, and a comparison. The request was written twice with one rule changed. In the first version the sentences may use the topic names. In the second, they must describe the subject in other words. With names allowed, 73 percent of the sentences contain a topic name; with names avoided, 8.9 percent do.
 
 <!-- figure: synthetic-data -->
 
-Before training, a script checks the sentences: it removes labels that are not in the list of topics, sentences without a label, and duplicates, and it counts the sentences that name their topics. The checks found no unknown labels, unlabelled sentences, or duplicates in either set.
+Each version was used to train a small model, and both models were tested on 300 real abstracts. The test uses the F1 score, which runs from 0 to 1. The score is high when the assigned topics are correct and few of the recorded topics are missed. The model trained with names allowed scored 0.476, and the model trained with names avoided scored 0.417. The wording of the synthetic examples changed what the model learned, and the test on real documents is what showed the difference.
+
+Before training, a script also checks the sentences. It removes sentences without a topic, topics outside the list of 86, and duplicate sentences. In both versions these checks found nothing to remove.
 
 ## Model distillation
 
-Knowledge distillation trains a small model, the student, to reproduce the behaviour of a large one, the teacher. In its original form the student learns from the teacher's output probabilities on the same inputs. In this session the teacher writes the inputs as well: the large model writes the sentences and assigns their topics, and the small model learns from them. The large model is used only while the small model is built. The small model then labels documents on its own, on a CPU or a GPU of the organization, without sending the text to a service.
+Distillation passes a skill from a large model to a small one. The large model acts as a teacher and the small model as a student. In its original form, described by Hinton, Vinyals, and Dean (2015), the student learns to give the same answers as the teacher on the same inputs. In this session the teacher also writes the practice material: it writes the sentences and lists their topics, and the student learns from them.
+
+The teacher is needed only while the student learns. Afterwards the student works alone on the organization's own computer, and the documents stay there. The first part of the figure shows the two stages.
 
 <!-- figure: distillation -->
 
-The small model is evaluated on 300 abstracts of World Bank reports, with the topics recorded for them in the documents database as the reference. Trained on the first 20,296 sentences, it reached a micro F1 of 0.468. Further rounds of generation raised the score to 0.521. In each round, an agent read the small model's errors on a separate set of abstracts and asked the large models for sentences on the topics that the small model confused. Three large models asked directly for the topics of the same abstracts scored between 0.523 and 0.530. The small model labels an abstract in 7 milliseconds on a GPU and in 0.19 seconds on four CPU threads.
+The second part of the figure shows the student at work on six real abstracts. The student gives every topic a score from 0 to 1 and assigns the topics whose score passes a threshold, up to five topics. A slider moves the threshold. The answers of three large models, asked directly for the topics of the same abstracts, are shown for comparison.
+
+On the 300 test abstracts, the student trained on the first 20,296 sentences scored 0.468. Further rounds of training raised the score to 0.521. In each round, a program built on a large model read the student's mistakes on a separate set of abstracts and asked the teachers for more sentences on the topics involved in those mistakes. The three large models asked directly scored between 0.523 and 0.530. The student assigns the topics of an abstract in 7 milliseconds on a GPU and in 0.19 seconds on an ordinary processor (CPU). The large models take between 0.5 and 3.9 seconds.
 
 <!-- figure: distillation-results -->
 
-The comparison has limits. The reference topics of an abstract are those recorded in the documents database. An abstract can be about a topic that the record does not list, and the figure with six abstracts shows examples. The 300 abstracts cover 44 of the 86 topics, so the scores say nothing about the other 42. On a second task of the same experiments, occupation titles coded to the ISCO classification, the small model trailed the best large model by 0.15.
+These results come from one task. The topics recorded for a report in the World Bank documents database serve as the right answers, and a record can omit a topic that the abstract covers. The 300 test abstracts cover 44 of the 86 topics, so the scores say nothing about the other 42. On a second task in the same experiments, coding job titles to the ISCO occupation classification, the student scored 0.15 below the best large model.
 
 ## Sources
 
-- World Bank. 2026. *World Development Report 2026: The Promise of Artificial Intelligence*. Washington, DC: World Bank. Box O.1, "Small AI, big impact", and spotlight 1, "Small AI, Big Impact", with tables S1.1 to S1.3.
+- World Bank. 2026. *World Development Report 2026: The Promise of Artificial Intelligence*. Washington, DC: World Bank. Box O.1 and spotlight 1.
 - Hinton, Geoffrey, Oriol Vinyals, and Jeff Dean. 2015. "Distilling the Knowledge in a Neural Network." arXiv:1503.02531.
-- The figures of the worked example are in [assets/overview.json](assets/overview.json).
+- The data behind the figures are in [assets/overview.json](assets/overview.json).

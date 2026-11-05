@@ -1,6 +1,6 @@
 import React from 'react';
 import SizeScale from './SizeScale';
-import Applications from './Applications';
+import TaskFit from './TaskFit';
 import SyntheticData from './SyntheticData';
 import Distillation from './Distillation';
 import DistillationResults from './DistillationResults';
@@ -11,7 +11,7 @@ import DistillationResults from './DistillationResults';
 // session's assets/overview.json.
 const FIGURES = {
   'small-ai-scale': (data) => <SizeScale data={data.smallAI} />,
-  'small-ai-applications': (data) => <Applications data={data.smallAI} />,
+  'small-ai-tasks': (data) => <TaskFit data={data.smallAI} />,
   'synthetic-data': (data) => <SyntheticData data={data.synthetic} />,
   distillation: (data) => <Distillation data={data.distillation} />,
   'distillation-results': (data) => <DistillationResults data={data.distillation} />,

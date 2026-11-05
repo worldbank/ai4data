@@ -2,9 +2,8 @@ import React, {useState} from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.css';
 
-// Model size against where a model can run: the three bands of WDR 2026 table S1.1 on a
-// log scale of parameters, the models used in the session placed on it, and the shrink
-// of the smallest model about as capable as the first ChatGPT.
+// Model size against the computer a model needs: three size ranges on a log scale of
+// parameters, with the models of the worked example placed on it.
 const W = 680;
 const LEFT = 12;
 const RIGHT = 12;
@@ -51,17 +50,16 @@ export default function SizeScale({data}) {
 
   const model = selected.type === 'model' ? data.models[selected.index] : null;
   const band = selected.type === 'band' ? data.bands[selected.index] : bandOf(data.bands, model.params);
-  const shrinkFrom = x(data.shrink.from);
-  const shrinkTo = x(data.shrink.to);
   const isSelected = (type, index) => selected.type === type && selected.index === index;
 
   return (
     <figure className={styles.figure}>
-      <p className={styles.title}>Model size and where a model can run</p>
+      <p className={styles.title}>Model size and the computer a model needs</p>
       <p className={styles.caption}>
-        Bands from WDR 2026, table S1.1. Select a band or a model to see its requirements.
+        Each mark on the scale is ten times the one before. Select a size range or a model to show the memory and
+        the connection needed.
       </p>
-      <div className={styles.segmented} role="group" aria-label="Bands">
+      <div className={styles.segmented} role="group" aria-label="Size ranges">
         {data.bands.map((b, i) => (
           <button key={b.key} type="button" aria-pressed={isSelected('band', i)}
             onClick={() => setSelected({type: 'band', index: i})}>
@@ -79,7 +77,7 @@ export default function SizeScale({data}) {
       </div>
       <div className={styles.scroll}>
       <svg className={styles.svg} viewBox={`0 0 ${W} 222`} role="img"
-        aria-label="Log scale of model parameters from 50 million to 3 trillion, divided into the bands phone or laptop, single server, and data center, with the models of the session placed on it.">
+        aria-label="Log scale of model parameters from 50 million to 3 trillion, divided into the ranges phone or laptop, one server, and data center, with the models of the worked example placed on it.">
         {data.bands.map((b, i) => {
           const x0 = x(Math.max(b.from, MIN));
           const x1 = x(Math.min(b.to, MAX));
@@ -95,18 +93,6 @@ export default function SizeScale({data}) {
             </g>
           );
         })}
-        <path className={styles.shrink}
-          d={`M${shrinkFrom},${TOP + 92} C${shrinkFrom - 60},${TOP + 62} ${shrinkTo + 80},${TOP + 62} ${shrinkTo + 8},${TOP + 88}`}
-          markerEnd="url(#shrink-head)" />
-        <defs>
-          <marker id="shrink-head" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <path d="M0,0 L10,5 L0,10 z" fill="var(--faint)" />
-          </marker>
-        </defs>
-        <circle cx={shrinkFrom} cy={TOP + 93} r={4} fill="var(--faint)" />
-        <text x={(shrinkFrom + shrinkTo) / 2 + 20} y={TOP + 64} textAnchor="middle" className={styles.tick}>
-          {formatParams(data.shrink.from)} to {formatParams(data.shrink.to)}
-        </text>
         {data.models.map((m, i) => {
           const cx = x(m.params);
           const place = LABEL_PLACEMENT[i % LABEL_PLACEMENT.length];
@@ -132,7 +118,7 @@ export default function SizeScale({data}) {
             <text x={x(p)} y={AXIS + 20} textAnchor="middle" className={styles.tick}>{label}</text>
           </g>
         ))}
-        <text x={W / 2} y={AXIS + 40} textAnchor="middle" className={styles.tick}>Parameters (log scale)</text>
+        <text x={W / 2} y={AXIS + 40} textAnchor="middle" className={styles.tick}>Number of parameters</text>
       </svg>
       </div>
       <div className={styles.detail} aria-live="polite">
@@ -144,9 +130,9 @@ export default function SizeScale({data}) {
               <dd>{formatParams(model.params)}</dd>
               <dt>Memory</dt>
               <dd>{model.memory}</dd>
-              <dt>Band</dt>
-              <dd>{band.label}, connectivity needed: {band.connectivity.toLowerCase()}</dd>
-              <dt>Role in the session</dt>
+              <dt>Runs on</dt>
+              <dd>{band.label}</dd>
+              <dt>Role in the example</dt>
               <dd>{model.role}</dd>
             </dl>
           </>
@@ -167,10 +153,9 @@ export default function SizeScale({data}) {
       <div className={styles.legend}>
         <span><span className={clsx(styles.dot, styles.small)} /> small model</span>
         <span><span className={clsx(styles.dot, styles.large)} /> large model</span>
-        <span>Dashed arrow: {data.shrink.text}, {data.shrink.years}</span>
       </div>
       <p className={styles.source}>
-        {data.hosted} The figures for the bands are rounded orders of magnitude for typical cases. Source: {data.source}
+        The ranges are rounded for typical cases. {data.source}
       </p>
     </figure>
   );

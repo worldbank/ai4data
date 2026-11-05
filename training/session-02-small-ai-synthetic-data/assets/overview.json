@@ -1,6 +1,6 @@
 {
  "smallAI": {
-  "source": "World Bank. 2026. World Development Report 2026: The Promise of Artificial Intelligence. Box O.1 and spotlight 1.",
+  "source": "Size ranges: World Bank, World Development Report 2026, spotlight 1.",
   "bands": [
    {
     "key": "device",
@@ -15,7 +15,7 @@
     "key": "server",
     "from": 10000000000.0,
     "to": 100000000000.0,
-    "label": "Single server",
+    "label": "One server",
     "params": "10–100 billion",
     "memory": "20–200 GB",
     "connectivity": "Local network, no internet"
@@ -32,86 +32,60 @@
   ],
   "models": [
    {
-    "name": "Small model of this session",
-    "detail": "DeBERTa-v3-small with a classification layer for 86 topics",
+    "name": "Small model",
+    "detail": "DeBERTa-v3-small with a layer that scores 86 topics",
     "params": 141961046,
-    "memory": "0.57 GB of weights",
+    "memory": "0.57 GB",
     "kind": "small",
-    "role": "Assigns topics to documents. Trained in this session on sentences written by Qwen3.8-27B."
+    "role": "The student. It assigns topics to documents after training on sentences written by the large models."
    },
    {
     "name": "Qwen3.8-27B",
-    "detail": "open-weight language model, FP8 weights",
+    "detail": "open-weight large language model",
     "params": 27000000000.0,
-    "memory": "31 GB of weights",
+    "memory": "31 GB",
     "kind": "large",
-    "role": "Writes the training sentences. Served on one H100 GPU of the team's own server."
+    "role": "A teacher. It writes the practice sentences, on one GPU of the team's own server."
    },
    {
     "name": "Gemma 4 31B",
-    "detail": "open-weight language model, FP8 weights",
+    "detail": "open-weight large language model",
     "params": 31000000000.0,
-    "memory": "33 GB of weights",
+    "memory": "33 GB",
     "kind": "large",
-    "role": "Labels sentences in the targeted rounds. Served on a second H100 GPU of the same server."
+    "role": "A teacher. It checks the topics of sentences in later rounds, on a second GPU of the same server."
    }
   ],
-  "shrink": {
-   "from": 540000000000.0,
-   "to": 3800000000.0,
-   "years": "2022 to 2024",
-   "text": "The smallest model about as capable as the first ChatGPT"
-  },
-  "hosted": "Gemini 3.8 Flash and Claude Sonnet 5.5 run as hosted services; their sizes are not published.",
-  "applications": [
+  "tasks": [
    {
-    "name": "Nuru",
-    "sector": "Agriculture",
-    "task": "Diagnoses crop disease from a leaf photo",
-    "runs": "Small model on phone, offline",
-    "where": "device",
-    "kind": "predictive"
+    "task": "Assign topics from a fixed list to thousands of project documents",
+    "fit": "small",
+    "why": "The answer comes from a fixed list, and the same task repeats for every document. This is the worked example of the session."
    },
    {
-    "name": "Cough Against TB",
-    "sector": "Health",
-    "task": "Screens for tuberculosis from a cough",
-    "runs": "Small model on phone, offline",
-    "where": "device",
-    "kind": "predictive"
+    "task": "Recognize a crop disease from a photo of a leaf, in a field without internet",
+    "fit": "small",
+    "why": "The answer is one of a known set of diseases, and the model has to run on a phone without a connection."
    },
    {
-    "name": "PROMPTS",
-    "sector": "Health",
-    "task": "Answers new and expectant mothers' questions in Swahili",
-    "runs": "Small model on its own server, over text",
-    "where": "server",
-    "kind": "generative"
+    "task": "Mark the urgent messages among those sent to a helpline",
+    "fit": "small",
+    "why": "There are two answers and many messages. The messages hold personal data, which can stay on the organization's own computer."
    },
    {
-    "name": "Rori",
-    "sector": "Education",
-    "task": "Tutors mathematics by text",
-    "runs": "Large model in cloud, over text",
-    "where": "cloud",
-    "kind": "generative"
+    "task": "Code the job titles written in a survey to an occupation classification",
+    "fit": "small",
+    "why": "The answer is a code from a fixed classification, and a survey has thousands of answers. Codes assigned by people on a sample are needed to check the model."
    },
    {
-    "name": "Ask Viamo Anything",
-    "sector": "Advisory",
-    "task": "Answers spoken questions on a call",
-    "runs": "Large model in cloud, over voice call",
-    "where": "cloud",
-    "kind": "generative"
+    "task": "Draft the summary of a 150-page project document",
+    "fit": "large",
+    "why": "The answer is new text, and the document is long and varied. A model trained on a wide range of text writes better summaries."
    },
    {
-    "name": "Topic classifier of this session",
-    "sector": "Documents and data",
-    "task": "Assigns topics to report abstracts",
-    "runs": "Small model on the organization's own computer, offline",
-    "where": "device",
-    "kind": "predictive",
-    "session": true
+    "task": "Answer any question a citizen asks about public services",
+    "fit": "large",
+    "why": "The questions cannot be listed in advance. A small model can do a narrower part of the work, such as sending each question to the office that answers it."
    }
   ]
  },
@@ -902,12 +876,12 @@
   ],
   "scores": [
    {
-    "model": "Small model, first set of sentences",
+    "model": "Student, first set of sentences",
     "kind": "small",
     "f1": 0.468
    },
    {
-    "model": "Small model, after targeted rounds",
+    "model": "Student, after further rounds",
     "kind": "small",
     "f1": 0.521
    },
@@ -929,20 +903,20 @@
   ],
   "speed": [
    {
-    "model": "Small model",
-    "where": "one H100 GPU",
+    "model": "Student",
+    "where": "one GPU",
     "kind": "small",
     "seconds": 0.0072
    },
    {
-    "model": "Small model",
-    "where": "four CPU threads",
+    "model": "Student",
+    "where": "CPU, 4 threads",
     "kind": "small",
     "seconds": 0.19
    },
    {
     "model": "Qwen3.8-27B",
-    "where": "one H100 GPU, own server",
+    "where": "one GPU, own server",
     "kind": "large",
     "seconds": 0.5
    },

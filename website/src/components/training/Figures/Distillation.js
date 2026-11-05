@@ -6,8 +6,8 @@ import styles from './styles.module.css';
 // small model then labels documents alone), followed by six report abstracts with the
 // reference topics, the small model's scores, and the answers of three large models.
 const PHASES = [
-  ['train', 'Training: the large model teaches'],
-  ['use', 'Use: the small model works alone'],
+  ['train', '1. Training: the teacher prepares examples'],
+  ['use', '2. Use: the student works alone'],
 ];
 
 // Two layouts of the same diagram: a row for wide columns and a column for phones.
@@ -42,11 +42,11 @@ const LAYOUTS = {
   },
 };
 const LABELS = {
-  large: ['Large model', 'writes and labels', 'large'],
-  data: ['Training sentences', 'with their topics', ''],
-  small: ['Small model', 'learns, then labels', 'small'],
+  large: ['Teacher', 'large model', 'large'],
+  data: ['Practice sentences', 'with their topics', ''],
+  small: ['Student', 'small model', 'small'],
   out: ['Topics', 'for each document', ''],
-  docs: ['Documents', '', ''],
+  docs: ['New documents', '', ''],
 };
 const ACTIVE = {train: ['large', 'data', 'small'], use: ['small', 'docs', 'out']};
 
@@ -82,8 +82,8 @@ function Flow({phase}) {
     <svg className={clsx(styles.svg, styles.flow)} viewBox={layout.view} role="img"
       style={{maxWidth: layout === LAYOUTS.narrow ? 360 : undefined, margin: '0 auto'}}
       aria-label={phase === 'train'
-        ? 'Training phase: the large model writes and labels sentences, and the small model learns from them.'
-        : 'Use phase: documents go to the small model, which assigns topics without the large model.'}>
+        ? 'Training: the teacher, a large model, writes practice sentences with their topics, and the student, a small model, learns from them.'
+        : 'Use: new documents go to the student, which assigns their topics without the teacher.'}>
       <defs>
         <marker id="flow-head" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
           <path d="M0,0 L10,5 L0,10 z" fill="var(--faint)" />
@@ -153,8 +153,10 @@ export default function Distillation({data}) {
 
   return (
     <figure className={styles.figure}>
-      <p className={styles.title}>Distillation from a large model to a small one</p>
-      <p className={styles.caption}>The large model is needed during development. Afterwards the small model runs alone.</p>
+      <p className={styles.title}>A large model teaches a small one</p>
+      <p className={styles.caption}>
+        The teacher is needed only while the student learns. Switch between the two stages.
+      </p>
       <div className={styles.segmented} role="group" aria-label="Phase">
         {PHASES.map(([key, label]) => (
           <button key={key} type="button" aria-pressed={phase === key} onClick={() => setPhase(key)}>{label}</button>
@@ -162,9 +164,11 @@ export default function Distillation({data}) {
       </div>
       <Flow phase={phase} />
 
-      <p className={styles.title} style={{marginTop: 18}}>The small model and the large models on six report abstracts</p>
+      <p className={styles.title} style={{marginTop: 22}}>The student at work on six report abstracts</p>
       <p className={styles.caption}>
-        Select an abstract. The reference topics come from the documents database; ✓ marks a topic in the reference.
+        Select an abstract. The student scores every topic from 0 to 1 and assigns the topics above the dashed
+        line. Move the slider to raise or lower the line. ✓ marks a topic recorded for the report in the World Bank
+        documents database.
       </p>
       <div className={styles.docTabs} role="group" aria-label="Abstracts">
         {data.documents.map((x, i) => (
@@ -184,7 +188,7 @@ export default function Distillation({data}) {
 
       <div className={styles.twoCol} style={{marginTop: 14}}>
         <div>
-          <p><strong>Small model</strong>: its eight highest scores</p>
+          <p><strong>Student</strong>: the eight highest scores</p>
           <div className={styles.bars}>
             {d.student.map((s) => {
               const pick = chosen.includes(s.label);
@@ -210,16 +214,16 @@ export default function Distillation({data}) {
               onChange={(e) => setThreshold(Number(e.target.value))} />
           </label>
           <p className={styles.source} style={{marginTop: 0}}>
-            The model assigns the topics scored at or above the threshold (dashed line), at most {data.top}. The
-            threshold of {data.threshold} was chosen on a separate set of abstracts.
+            The student assigns at most {data.top} topics. The starting line of {data.threshold} was chosen on a
+            separate set of abstracts.
           </p>
         </div>
         <div>
           <p><strong>Answers</strong></p>
           <div className={styles.answers}>
-            <span>Reference</span>
+            <span>Recorded topics</span>
             <LabelChips labels={d.reference} reference={d.reference} measured={data.measured} />
-            <span><span className={clsx(styles.dot, styles.small)} /> Small model</span>
+            <span><span className={clsx(styles.dot, styles.small)} /> Student</span>
             <LabelChips labels={chosen} reference={d.reference} measured={data.measured} />
             {Object.entries(d.teachers).map(([name, labels]) => (
               <React.Fragment key={name}>
@@ -229,8 +233,9 @@ export default function Distillation({data}) {
             ))}
           </div>
           <p className={styles.source}>
-            Grey topics are not scored: none of the 300 reference abstracts has them. The large models were asked
-            directly, with the list of topics in the prompt.
+            Below the student, three large models asked directly for the topics, with the list of topics in the
+            prompt. Grey topics do not appear among the topics recorded for the 300 test abstracts, so they are
+            not scored.
           </p>
         </div>
       </div>

@@ -233,69 +233,42 @@ button.chip[aria-pressed='true'] {
   min-width: 560px;
 }
 
-/* Size scale */
-.shrink {
-  stroke: var(--faint);
-  stroke-width: 2;
-  fill: none;
-  stroke-dasharray: 6 5;
-  animation: dash 1.2s linear infinite;
-}
-
-@keyframes dash {
-  to {
-    stroke-dashoffset: -22;
-  }
-}
-
-/* Applications grid */
-.grid {
+/* Task sorting */
+.tasks {
   display: grid;
-  grid-template-columns: 120px repeat(3, minmax(0, 1fr));
-  gap: 6px;
-  font-size: 0.85rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
 }
 
-.gridHead {
-  padding: 6px 8px;
-  color: var(--muted);
-  font-weight: 600;
+.tasks > li {
+  margin: 0;
 }
 
-.cell {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-height: 74px;
-  padding: 8px;
-  border-radius: 8px;
-  background: var(--panel);
-}
-
-.app {
-  text-align: left;
+.task {
+  padding: 12px 14px;
   border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 6px 8px;
-  background: var(--ifm-background-surface-color);
-  color: var(--ink);
-  font: inherit;
-  font-size: 0.82rem;
-  cursor: pointer;
+  border-radius: 10px;
 }
 
-.app[aria-pressed='true'] {
-  box-shadow: 0 0 0 2px var(--ink);
+.task .segmented {
+  margin-bottom: 0;
 }
 
-.appSession {
-  border: 2px solid var(--small);
+.taskText {
+  font-weight: 600;
+  font-size: 0.92rem;
 }
 
-.appSector {
-  display: block;
-  color: var(--muted);
-  font-size: 0.75rem;
+.taskWhy {
+  margin: 10px 0 0;
+  font-size: 0.88rem;
+}
+
+.figure .taskWhy {
+  margin-bottom: 0;
 }
 
 /* Synthetic data */
@@ -350,6 +323,14 @@ button.chip[aria-pressed='true'] {
   padding: 12px 14px;
   border-radius: 8px;
   background: var(--panel);
+}
+
+.rule {
+  padding: 10px 14px;
+  border-left: 3px solid var(--large);
+  border-radius: 0 8px 8px 0;
+  background: var(--large-soft);
+  font-size: 0.9rem;
 }
 
 .prompt mark,
@@ -525,12 +506,8 @@ button.chip[aria-pressed='true'] {
     padding: 14px;
   }
 
-  .grid {
+  .tasks {
     grid-template-columns: 1fr;
-  }
-
-  .gridHead:empty {
-    display: none;
   }
 
   .steps {
@@ -543,7 +520,6 @@ button.chip[aria-pressed='true'] {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .shrink,
   .packet {
     animation: none;
   }

@@ -21,8 +21,11 @@ export default function DistillationResults({data}) {
   const speedH = data.speed.length * rowH + 50;
   return (
     <figure className={styles.figure}>
-      <p className={styles.title}>Accuracy on 300 report abstracts</p>
-      <p className={styles.caption}>Micro F1 against the reference topics. Small models: mean of three training runs.</p>
+      <p className={styles.title}>How well each model assigns topics</p>
+      <p className={styles.caption}>
+        F1 score on 300 report abstracts, from 0 to 1. The score is high when the assigned topics are correct and
+        few of the recorded topics are missed. Student scores are the mean of three training runs.
+      </p>
       <div className={styles.bars}>
         {data.scores.map((r) => (
           <React.Fragment key={r.model}>
@@ -36,8 +39,8 @@ export default function DistillationResults({data}) {
       </div>
       <p className={styles.source}>Scale from 0 to 0.6.</p>
 
-      <p className={styles.title} style={{marginTop: 22}}>Time to label one abstract</p>
-      <p className={styles.caption}>Seconds per abstract, one at a time, on a log scale.</p>
+      <p className={styles.title} style={{marginTop: 22}}>Time to assign the topics of one abstract</p>
+      <p className={styles.caption}>Each mark on the scale is ten times the one before.</p>
       <div className={styles.scroll}>
       <svg className={styles.svg} viewBox={`0 0 ${W} ${speedH}`} role="img"
         aria-label={data.speed.map((r) => `${r.model}, ${r.where}: ${seconds(r.seconds)}`).join('; ')}>
@@ -64,11 +67,11 @@ export default function DistillationResults({data}) {
       </svg>
       </div>
       <div className={styles.legend}>
-        <span><span className={clsx(styles.dot, styles.small)} /> small model</span>
+        <span><span className={clsx(styles.dot, styles.small)} /> student (small model)</span>
         <span><span className={clsx(styles.dot, styles.large)} /> large model asked directly</span>
       </div>
       <p className={styles.source}>
-        Each abstract was sent alone; the small model reads its sentences together. The times of the hosted services
+        Each abstract was sent alone; the student reads its sentences together. The times of the hosted services
         include the network and the service's queue. The CPU time was measured with four threads of a server processor
         on 100 of the abstracts, and the time of Qwen3.8-27B on 50.
       </p>

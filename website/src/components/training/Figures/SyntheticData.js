@@ -9,7 +9,7 @@ const SETS = [
   ['allow', 'Topic names allowed'],
   ['avoid', 'Topic names avoided'],
 ];
-const STEPS = ['Plan the request', 'Prompt the writer', 'Read the sentences', 'Compare the two sets'];
+const STEPS = ['Choose the topics', 'Ask the large model', 'Read the sentences', 'Compare the two sets'];
 
 const escape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -42,6 +42,7 @@ export default function SyntheticData({data}) {
   const [names, setNames] = useState('allow');
   const [step, setStep] = useState(0);
   const [topic, setTopic] = useState(null);
+  const [full, setFull] = useState(false);
   const set = data.sets[names];
   const shown = set.sentences.filter((s) => !topic || s.labels.includes(topic));
   const named = set.sentences.filter((s) => s.named).length;
@@ -51,7 +52,8 @@ export default function SyntheticData({data}) {
     <figure className={styles.figure}>
       <p className={styles.title}>From a list of topics to labelled training sentences</p>
       <p className={styles.caption}>
-        Request {data.request} of the worked example, written by {data.writer} twice with one rule changed.
+        One request of the worked example, written twice by the large model {data.writer} with one rule changed.
+        Switch between the two versions and go through the four steps.
       </p>
       <div className={styles.segmented} role="group" aria-label="Writing rule">
         {SETS.map(([key, label]) => (
@@ -74,8 +76,8 @@ export default function SyntheticData({data}) {
       {step === 0 && (
         <div>
           <p>
-            The worked example has {data.labels} topics. Each of its {data.requests.toLocaleString('en')} requests
-            names eight of them, and the writer is asked for 20 sentences about those eight. This request names:
+            The worked example has {data.labels} topics. Each request picks eight of them and asks for 20 sentences
+            about those eight. There are {data.requests.toLocaleString('en')} requests in all. This one picks:
           </p>
           <ul className={styles.chips}>
             {data.topics.map((t) => (
@@ -88,19 +90,26 @@ export default function SyntheticData({data}) {
       {step === 1 && (
         <div>
           <p>
-            The prompt lists the eight topics and the rules. The two sets differ in one rule, highlighted below.
+            The request, called a prompt, lists the eight topics and asks the model to list the topics of each
+            sentence. It also sets rules for the writing. The two versions differ in this rule:
           </p>
-          <div className={styles.prompt}>
-            <Highlighted text={data.prompt[names]} terms={rule ? [rule] : []} />
-          </div>
+          <p className={styles.rule}>{rule ? rule.slice(2) : ''}</p>
+          <button type="button" className={styles.linkButton} onClick={() => setFull(!full)}>
+            {full ? 'Hide the full prompt' : 'Show the full prompt'}
+          </button>
+          {full && (
+            <div className={styles.prompt} style={{marginTop: 8}}>
+              <Highlighted text={data.prompt[names]} terms={rule ? [rule] : []} />
+            </div>
+          )}
         </div>
       )}
 
       {step === 2 && (
         <div>
           <p>
-            {named} of the {set.sentences.length} sentences contain the name of one of their own topics (highlighted).
-            Select a topic to show only its sentences.
+            The model wrote {set.sentences.length} sentences, each with its topics below it. In {named} of them,
+            the name of a topic appears in the sentence (highlighted). Select a topic to show only its sentences.
           </p>
           <ul className={styles.chips} style={{marginBottom: 12}}>
             {data.topics.map((t) => (
@@ -135,13 +144,13 @@ export default function SyntheticData({data}) {
               rows={SETS.map(([key, label]) => ({key, label, value: data.sets[key].named / data.sets[key].total}))} />
           </div>
           <div>
-            <p><strong>Small model trained on each set</strong>, micro F1 on 300 report abstracts</p>
+            <p><strong>Score of a small model trained on each set</strong>, on 300 real report abstracts (F1, from 0 to 1)</p>
             <Bars current={names} max={0.6} format={(v) => v.toFixed(3)}
               rows={SETS.map(([key, label]) => ({key, label, value: mean(data.sets[key].report_f1)}))} />
           </div>
           <p style={{gridColumn: '1 / -1', fontSize: '0.88rem'}}>
-            The model trained on the sentences with names allowed scored higher on the real abstracts. The bar
-            shows the mean of three training runs for that set and one run for the set with names avoided.
+            The model trained on the sentences with names allowed scored higher on the real abstracts. The score for names allowed is the mean of three training runs; the
+            score for names avoided comes from one run.
           </p>
         </div>
       )}
