@@ -1,0 +1,963 @@
+{
+ "smallAI": {
+  "source": "World Bank. 2026. World Development Report 2026: The Promise of Artificial Intelligence. Box O.1 and spotlight 1.",
+  "bands": [
+   {
+    "key": "device",
+    "from": 0,
+    "to": 10000000000.0,
+    "label": "Phone or laptop",
+    "params": "Up to 10 billion",
+    "memory": "2–20 GB",
+    "connectivity": "None"
+   },
+   {
+    "key": "server",
+    "from": 10000000000.0,
+    "to": 100000000000.0,
+    "label": "Single server",
+    "params": "10–100 billion",
+    "memory": "20–200 GB",
+    "connectivity": "Local network, no internet"
+   },
+   {
+    "key": "datacenter",
+    "from": 100000000000.0,
+    "to": 10000000000000.0,
+    "label": "Data center",
+    "params": "More than 100 billion",
+    "memory": "More than 200 GB",
+    "connectivity": "Constant internet"
+   }
+  ],
+  "models": [
+   {
+    "name": "Small model of this session",
+    "detail": "DeBERTa-v3-small with a classification layer for 86 topics",
+    "params": 141961046,
+    "memory": "0.57 GB of weights",
+    "kind": "small",
+    "role": "Assigns topics to documents. Trained in this session on sentences written by Qwen3.8-27B."
+   },
+   {
+    "name": "Qwen3.8-27B",
+    "detail": "open-weight language model, FP8 weights",
+    "params": 27000000000.0,
+    "memory": "31 GB of weights",
+    "kind": "large",
+    "role": "Writes the training sentences. Served on one H100 GPU of the team's own server."
+   },
+   {
+    "name": "Gemma 4 31B",
+    "detail": "open-weight language model, FP8 weights",
+    "params": 31000000000.0,
+    "memory": "33 GB of weights",
+    "kind": "large",
+    "role": "Labels sentences in the targeted rounds. Served on a second H100 GPU of the same server."
+   }
+  ],
+  "shrink": {
+   "from": 540000000000.0,
+   "to": 3800000000.0,
+   "years": "2022 to 2024",
+   "text": "The smallest model about as capable as the first ChatGPT"
+  },
+  "hosted": "Gemini 3.8 Flash and Claude Sonnet 5.5 run as hosted services; their sizes are not published.",
+  "applications": [
+   {
+    "name": "Nuru",
+    "sector": "Agriculture",
+    "task": "Diagnoses crop disease from a leaf photo",
+    "runs": "Small model on phone, offline",
+    "where": "device",
+    "kind": "predictive"
+   },
+   {
+    "name": "Cough Against TB",
+    "sector": "Health",
+    "task": "Screens for tuberculosis from a cough",
+    "runs": "Small model on phone, offline",
+    "where": "device",
+    "kind": "predictive"
+   },
+   {
+    "name": "PROMPTS",
+    "sector": "Health",
+    "task": "Answers new and expectant mothers' questions in Swahili",
+    "runs": "Small model on its own server, over text",
+    "where": "server",
+    "kind": "generative"
+   },
+   {
+    "name": "Rori",
+    "sector": "Education",
+    "task": "Tutors mathematics by text",
+    "runs": "Large model in cloud, over text",
+    "where": "cloud",
+    "kind": "generative"
+   },
+   {
+    "name": "Ask Viamo Anything",
+    "sector": "Advisory",
+    "task": "Answers spoken questions on a call",
+    "runs": "Large model in cloud, over voice call",
+    "where": "cloud",
+    "kind": "generative"
+   },
+   {
+    "name": "Topic classifier of this session",
+    "sector": "Documents and data",
+    "task": "Assigns topics to report abstracts",
+    "runs": "Small model on the organization's own computer, offline",
+    "where": "device",
+    "kind": "predictive",
+    "session": true
+   }
+  ]
+ },
+ "synthetic": {
+  "request": "req-00027",
+  "writer": "Qwen3.8-27B",
+  "topics": [
+   "Biodiversity",
+   "Community-Driven Development",
+   "Disability Inclusion",
+   "Financial Sector",
+   "Labor Markets",
+   "Migration",
+   "Trade Facilitation and Logistics",
+   "Urban Development"
+  ],
+  "prompt": {
+   "avoid": "Write 20 different sentences of the kind found in reports, working papers, policy notes, and news about economic and social development.\n\nEach sentence must be about one or more of these topics, and its \"labels\" must list every topic from this list that the sentence is about:\n- Biodiversity\n- Community-Driven Development\n- Disability Inclusion\n- Financial Sector\n- Labor Markets\n- Migration\n- Trade Facilitation and Logistics\n- Urban Development\n\nRules:\n- Do not use the topic names or their key words in the sentences. Describe the subject in other words, as a report would.\n- Vary the length from 10 to 45 words, and vary the style: findings, policy statements, project descriptions, statistics, questions a study asks.\n- Mention places, institutions, and numbers only as an author would; invent nothing that reads as a quotation of a real document.\n- About a third of the sentences should be about two or three of the topics at once.",
+   "allow": "Write 20 different sentences of the kind found in reports, working papers, policy notes, and news about economic and social development.\n\nEach sentence must be about one or more of these topics, and its \"labels\" must list every topic from this list that the sentence is about:\n- Biodiversity\n- Community-Driven Development\n- Disability Inclusion\n- Financial Sector\n- Labor Markets\n- Migration\n- Trade Facilitation and Logistics\n- Urban Development\n\nRules:\n- Use the words a report on the subject would use, including the topic names or their key words where an author would use them.\n- Vary the length from 10 to 45 words, and vary the style: findings, policy statements, project descriptions, statistics, questions a study asks.\n- Mention places, institutions, and numbers only as an author would; invent nothing that reads as a quotation of a real document.\n- About a third of the sentences should be about two or three of the topics at once."
+  },
+  "sets": {
+   "allow": {
+    "sentences": [
+     {
+      "text": "The study finds that enhanced trade facilitation measures in East Asia significantly reduced logistics costs for small and medium enterprises.",
+      "labels": [
+       "Trade Facilitation and Logistics"
+      ],
+      "named": false
+     },
+     {
+      "text": "Urban development strategies in Nairobi must integrate biodiversity corridors to mitigate the adverse effects of rapid population growth.",
+      "labels": [
+       "Biodiversity",
+       "Urban Development"
+      ],
+      "named": true
+     },
+     {
+      "text": "Financial sector reforms aimed at expanding access to microfinance have shown promising results in alleviating rural poverty.",
+      "labels": [
+       "Financial Sector"
+      ],
+      "named": true
+     },
+     {
+      "text": "How does community-driven development impact local governance structures in post-conflict regions of the Middle East?",
+      "labels": [
+       "Community-Driven Development"
+      ],
+      "named": true
+     },
+     {
+      "text": "Inclusive labor market policies are essential for ensuring that persons with disabilities have equal opportunities for employment and advancement.",
+      "labels": [
+       "Disability Inclusion",
+       "Labor Markets"
+      ],
+      "named": false
+     },
+     {
+      "text": "The new migration compact emphasizes the need for secure pathways for legal migration while enhancing border security.",
+      "labels": [
+       "Migration"
+      ],
+      "named": true
+     },
+     {
+      "text": "Investments in urban development have led to improved infrastructure, which in turn attracts private sector investment in the financial sector.",
+      "labels": [
+       "Financial Sector",
+       "Urban Development"
+      ],
+      "named": true
+     },
+     {
+      "text": "Biodiversity loss in tropical regions poses a significant threat to local ecosystems and the livelihoods of dependent communities.",
+      "labels": [
+       "Biodiversity"
+      ],
+      "named": true
+     },
+     {
+      "text": "This project aims to enhance trade facilitation by modernizing customs procedures and improving port efficiency in West Africa.",
+      "labels": [
+       "Trade Facilitation and Logistics"
+      ],
+      "named": false
+     },
+     {
+      "text": "Effective community-driven development requires active participation of local stakeholders, including marginalized groups, to ensure sustainable outcomes.",
+      "labels": [
+       "Community-Driven Development"
+      ],
+      "named": true
+     },
+     {
+      "text": "Recent data indicates that labor market flexibility has positively correlated with higher employment rates among young women in urban areas.",
+      "labels": [
+       "Labor Markets",
+       "Urban Development"
+      ],
+      "named": false
+     },
+     {
+      "text": "Disability inclusion in urban planning is crucial for creating accessible public spaces that accommodate diverse needs.",
+      "labels": [
+       "Disability Inclusion",
+       "Urban Development"
+      ],
+      "named": true
+     },
+     {
+      "text": "The report highlights the critical role of the financial sector in mobilizing resources for sustainable urban development projects.",
+      "labels": [
+       "Financial Sector",
+       "Urban Development"
+      ],
+      "named": true
+     },
+     {
+      "text": "Migration patterns in South America are increasingly influenced by environmental factors, including climate change and biodiversity loss.",
+      "labels": [
+       "Biodiversity",
+       "Migration"
+      ],
+      "named": true
+     },
+     {
+      "text": "Can improved logistics infrastructure serve as a catalyst for regional economic integration and trade expansion?",
+      "labels": [
+       "Trade Facilitation and Logistics"
+      ],
+      "named": false
+     },
+     {
+      "text": "Community-driven initiatives in Southeast Asia have demonstrated success in preserving local biodiversity while promoting economic growth.",
+      "labels": [
+       "Biodiversity",
+       "Community-Driven Development"
+      ],
+      "named": true
+     },
+     {
+      "text": "Policies addressing disability inclusion must be integrated into broader labor market strategies to maximize economic potential.",
+      "labels": [
+       "Disability Inclusion",
+       "Labor Markets"
+      ],
+      "named": true
+     },
+     {
+      "text": "The expansion of mobile banking has significantly improved financial inclusion among rural populations, thereby enhancing their access to essential services.",
+      "labels": [
+       "Financial Sector"
+      ],
+      "named": false
+     },
+     {
+      "text": "Urban development in coastal cities requires careful consideration of biodiversity conservation to prevent ecological degradation.",
+      "labels": [
+       "Biodiversity",
+       "Urban Development"
+      ],
+      "named": true
+     },
+     {
+      "text": "Trade facilitation measures that reduce non-tariff barriers can boost competitiveness and integrate developing economies into global supply chains.",
+      "labels": [
+       "Trade Facilitation and Logistics"
+      ],
+      "named": false
+     }
+    ],
+    "total": 20296,
+    "named": 14886,
+    "report_f1": [
+     0.472,
+     0.475,
+     0.48
+    ]
+   },
+   "avoid": {
+    "sentences": [
+     {
+      "text": "The new tariff regime aims to reduce clearance times at major ports, thereby stimulating cross-border exchange of goods.",
+      "labels": [
+       "Trade Facilitation and Logistics"
+      ],
+      "named": false
+     },
+     {
+      "text": "Urban planners in Lagos are expanding rapid transit corridors to alleviate congestion and improve accessibility for residents.",
+      "labels": [
+       "Urban Development"
+      ],
+      "named": false
+     },
+     {
+      "text": "Data suggests that young workers face significant barriers to entry in the formal employment sector, particularly in tech hubs.",
+      "labels": [
+       "Labor Markets"
+      ],
+      "named": false
+     },
+     {
+      "text": "Riverside conservation zones are being integrated into city zoning laws to protect native species habitats while allowing limited recreation.",
+      "labels": [
+       "Biodiversity",
+       "Urban Development"
+      ],
+      "named": false
+     },
+     {
+      "text": "Microfinance institutions are piloting digital lending platforms to reach underserved rural populations without collateral requirements.",
+      "labels": [
+       "Financial Sector"
+      ],
+      "named": false
+     },
+     {
+      "text": "How do remittance flows from diaspora communities impact local housing prices in second-tier cities across Southeast Asia?",
+      "labels": [
+       "Migration",
+       "Urban Development"
+      ],
+      "named": false
+     },
+     {
+      "text": "Project teams must ensure that all community gathering spaces are fully accessible to individuals with mobility impairments.",
+      "labels": [
+       "Community-Driven Development",
+       "Disability Inclusion"
+      ],
+      "named": false
+     },
+     {
+      "text": "The central bank’s latest quarterly report indicates a slight uptick in household savings rates following the interest rate adjustment.",
+      "labels": [
+       "Financial Sector"
+      ],
+      "named": false
+     },
+     {
+      "text": "Freight corridors along the northern border are experiencing delays due to outdated customs documentation processes.",
+      "labels": [
+       "Trade Facilitation and Logistics"
+      ],
+      "named": false
+     },
+     {
+      "text": "Employment rates for persons with sensory impairments remain below the national average, highlighting a persistent gap in workplace accommodations.",
+      "labels": [
+       "Disability Inclusion",
+       "Labor Markets"
+      ],
+      "named": false
+     },
+     {
+      "text": "Villages in the highlands are establishing cooperative funds to manage shared agricultural resources and support local infrastructure upgrades.",
+      "labels": [
+       "Community-Driven Development"
+      ],
+      "named": false
+     },
+     {
+      "text": "Protecting wetland ecosystems in the delta region is critical for maintaining water filtration services and preventing coastal erosion.",
+      "labels": [
+       "Biodiversity"
+      ],
+      "named": false
+     },
+     {
+      "text": "International migrants in the capital often lack access to standardized vocational training, limiting their upward mobility in skilled trades.",
+      "labels": [
+       "Labor Markets",
+       "Migration"
+      ],
+      "named": false
+     },
+     {
+      "text": "The proposed metro extension will serve densely populated residential areas, aiming to reduce reliance on private vehicle usage.",
+      "labels": [
+       "Urban Development"
+      ],
+      "named": false
+     },
+     {
+      "text": "Regulatory frameworks for fintech startups are being revised to balance innovation with consumer protection standards in the digital economy.",
+      "labels": [
+       "Financial Sector"
+      ],
+      "named": false
+     },
+     {
+      "text": "Local councils are allocating specific grants for the restoration of historic market squares to boost tourist footfall and local commerce.",
+      "labels": [
+       "Community-Driven Development",
+       "Urban Development"
+      ],
+      "named": false
+     },
+     {
+      "text": "Surveys indicate that over 40% of recent refugees prefer self-employment but lack initial capital to start small businesses.",
+      "labels": [
+       "Financial Sector",
+       "Migration"
+      ],
+      "named": false
+     },
+     {
+      "text": "Port authorities are investing in automated guided vehicles to streamline container handling and minimize human error during loading operations.",
+      "labels": [
+       "Trade Facilitation and Logistics"
+      ],
+      "named": false
+     },
+     {
+      "text": "Inclusive design guidelines are now mandatory for all publicly funded housing projects to ensure equitable living conditions for all demographics.",
+      "labels": [
+       "Disability Inclusion",
+       "Urban Development"
+      ],
+      "named": false
+     },
+     {
+      "text": "Monitoring data shows a decline in rare pollinator populations within the national park reserves, prompting urgent conservation interventions.",
+      "labels": [
+       "Biodiversity"
+      ],
+      "named": false
+     }
+    ],
+    "total": 20220,
+    "named": 1796,
+    "report_f1": [
+     0.417
+    ]
+   }
+  },
+  "requests": 1000,
+  "labels": 86
+ },
+ "distillation": {
+  "student": "DeBERTa-v3-small classifier, seed 42, after five targeted rounds",
+  "threshold": 0.03,
+  "top": 5,
+  "measured": [
+   "Agriculture and Food",
+   "Biodiversity",
+   "Climate Change",
+   "Competition Policy",
+   "Debt",
+   "Digital Development",
+   "Disaster Risk Management",
+   "Early Childhood Development",
+   "Education",
+   "Energy",
+   "Environment",
+   "Extractive Industries",
+   "Financial Inclusion",
+   "Financial Sector",
+   "Forests and Landscapes",
+   "Fragility, Conflict, and Violence",
+   "Gender",
+   "Governance",
+   "Health",
+   "Higher Education",
+   "Indigenous Peoples",
+   "Inequality and Shared Prosperity",
+   "Investment Climate",
+   "Labor Markets",
+   "Livestock and Sustainability",
+   "Macroeconomics",
+   "Measuring Poverty",
+   "Migration",
+   "Nutrition",
+   "Oceans, Fisheries, and Coastal Economies",
+   "Pensions",
+   "Pollution",
+   "Poverty",
+   "Sanitation",
+   "Skills Development",
+   "Social Protection",
+   "Taxes and Government Revenue",
+   "Teachers",
+   "Trade",
+   "Trade Facilitation and Logistics",
+   "Transport",
+   "Urban Development",
+   "Water Resources Management",
+   "Water Supply"
+  ],
+  "documents": [
+   {
+    "id": "27691978",
+    "title": "Trains, trade and transaction costs : how does domestic trade by rail affect market prices of Malawi agricultural commodities ?",
+    "url": "https://documents.worldbank.org/curated/en/393461498762732861",
+    "year": 2017,
+    "text": "This paper measures the impact of low-cost transport by rail in Malawi on the dispersion of agricultural commodities prices across markets by exploiting the quasi-experimental design of the nearly total collapse of domestic transport by rail in January 2003 due to the destruction of a railway bridge at Rivirivi, Balaka. Estimations are based on monthly market prices of four agricultural commodities (maize, groundnuts, rice, and beans) in 27 local markets for the period 1998–2006. Market pairs connected by rail when the railway line was operational are intervention observations. Railway transport services explain a 14 percent to 17 percent reduction in price dispersion across markets. Geographical reach of trade varies by crop, most likely related to storability and geographical spread of production. Perishability appears to increase impact reflecting limited scope for arbitrage. Overall, impacts are remarkably similar in size across commodities.",
+    "reference": [
+     "Agriculture and Food",
+     "Macroeconomics",
+     "Trade",
+     "Transport"
+    ],
+    "student": [
+     {
+      "label": "Transport",
+      "score": 0.412
+     },
+     {
+      "label": "Trade",
+      "score": 0.216
+     },
+     {
+      "label": "Agriculture and Food",
+      "score": 0.183
+     },
+     {
+      "label": "Macroeconomics",
+      "score": 0.036
+     },
+     {
+      "label": "Jobs and Development",
+      "score": 0.017
+     },
+     {
+      "label": "Trade Facilitation and Logistics",
+      "score": 0.013
+     },
+     {
+      "label": "Food Security Update",
+      "score": 0.013
+     },
+     {
+      "label": "Investment Climate",
+      "score": 0.012
+     }
+    ],
+    "teachers": {
+     "Gemini 3.8 Flash": [
+      "Agriculture and Food",
+      "Infrastructure",
+      "Trade Facilitation and Logistics",
+      "Transport"
+     ],
+     "Claude Sonnet 5.5": [
+      "Agribusiness and Value Chains",
+      "Agriculture and Food",
+      "Infrastructure",
+      "Trade Facilitation and Logistics",
+      "Transport"
+     ],
+     "Qwen3.8-27B": [
+      "Agriculture and Food",
+      "Trade Facilitation and Logistics",
+      "Transport"
+     ]
+    }
+   },
+   {
+    "id": "30939680",
+    "title": "Electrification and Women's Empowerment : Evidence from Rural India",
+    "url": "https://documents.worldbank.org/curated/en/112131553786901131",
+    "year": 2019,
+    "text": "Electrification has been shown to accelerate opportunities for women by moving them into more productive activities, but whether improvements in economic outcomes also change gender norms and practices within the household remains unclear. This paper investigates the causal link between electricity access and women's empowerment, using a large gender-disaggregated data set on India. Empowerment is measured by women's decision-making ability, mobility, financial autonomy, reproductive freedom, and social participation. Using propensity score matching, the study finds that electrification enhances all measures of women's empowerment and is associated with an 11-percentage point increase in the overall empowerment index. Employment and education are identified as the two most important causal channels through which electrification enables empowerment.",
+    "reference": [
+     "Education",
+     "Energy",
+     "Gender"
+    ],
+    "student": [
+     {
+      "label": "Energy",
+      "score": 0.432
+     },
+     {
+      "label": "Gender",
+      "score": 0.379
+     },
+     {
+      "label": "Education",
+      "score": 0.088
+     },
+     {
+      "label": "Social Inclusion",
+      "score": 0.079
+     },
+     {
+      "label": "Social Sustainability and Inclusion",
+      "score": 0.052
+     },
+     {
+      "label": "Sexual Orientation and Gender Identity",
+      "score": 0.051
+     },
+     {
+      "label": "Jobs and Development",
+      "score": 0.048
+     },
+     {
+      "label": "Global Financing Facility for Women, Children and Adolescents",
+      "score": 0.029
+     }
+    ],
+    "teachers": {
+     "Gemini 3.8 Flash": [
+      "Energy",
+      "Gender",
+      "Infrastructure"
+     ],
+     "Claude Sonnet 5.5": [
+      "Energy",
+      "Gender",
+      "Infrastructure",
+      "Jobs and Development",
+      "Social Inclusion"
+     ],
+     "Qwen3.8-27B": [
+      "Digital Development",
+      "Energy",
+      "Gender",
+      "Labor Markets",
+      "Social Inclusion"
+     ]
+    }
+   },
+   {
+    "id": "32096795",
+    "title": "The Important Role of Equivalence Scales : Household Size, Composition, and Poverty Dynamics in the Russian Federation",
+    "url": "https://documents.worldbank.org/curated/en/713071591281684390",
+    "year": 2020,
+    "text": "Hardly any literature exists on the relationship between equivalence scales and poverty dynamics for transitional countries. This paper offers a new study on the impacts of equivalence scale adjustments on poverty dynamics in the Russian Federation, using equivalence scales constructed from subjective wealth and more than 20 waves of household panel survey data from the Russia Longitudinal Monitoring Survey. The analysis suggests that the equivalence scale elasticity is sensitive to household demographic composition. The adjustments for the equivalence of scales result in lower estimates of poverty lines. The study decomposes poverty into chronic and transient components and finds that chronic poverty is positively related to the adult scale parameter. However, chronic poverty is less sensitive to the child scale factor compared with the adult scale factor. Interestingly, the direction of income mobility might change depending on the specific scale parameters that are employed. The results are robust to different measures of chronic poverty, income expectations, reference groups, functional forms, and various other specifications.",
+    "reference": [
+     "Inequality and Shared Prosperity",
+     "Measuring Poverty",
+     "Poverty"
+    ],
+    "student": [
+     {
+      "label": "Measuring Poverty",
+      "score": 0.808
+     },
+     {
+      "label": "Inequality and Shared Prosperity",
+      "score": 0.133
+     },
+     {
+      "label": "Poverty",
+      "score": 0.125
+     },
+     {
+      "label": "Education",
+      "score": 0.006
+     },
+     {
+      "label": "Safety Nets and Cash Transfers",
+      "score": 0.003
+     },
+     {
+      "label": "Agriculture and Food",
+      "score": 0.003
+     },
+     {
+      "label": "Girls' Education",
+      "score": 0.003
+     },
+     {
+      "label": "Macroeconomics",
+      "score": 0.003
+     }
+    ],
+    "teachers": {
+     "Gemini 3.8 Flash": [
+      "Inequality and Shared Prosperity",
+      "Measuring Poverty",
+      "Poverty"
+     ],
+     "Claude Sonnet 5.5": [
+      "Inequality and Shared Prosperity",
+      "Measuring Poverty",
+      "Poverty"
+     ],
+     "Qwen3.8-27B": [
+      "Inequality and Shared Prosperity",
+      "Measuring Poverty",
+      "Poverty"
+     ]
+    }
+   },
+   {
+    "id": "30904180",
+    "title": "The Three-Gap Model of Health Worker Performance",
+    "url": "https://documents.worldbank.org/curated/en/891931552578615885",
+    "year": 2019,
+    "text": "The Three-Gap Model examines the determinants of low-quality health care by examining the patterns and determinants of three gaps. Using four measures of performance -- target performance, actual performance, capacity to perform, and knowledge to perform -- this paper defines three gaps for each health worker: the gap between target performance and what they have the knowledge to do (the know gap), the gap between their knowledge and their capacity to perform (the know-can gap), and the gap between their capacity and what they actually do (the can-do gap). The paper demonstrates how the patterns of these gaps across health workers in a sample can be used to diagnose failures in the system as well as evaluate the outcomes of policy experiments. Using data on pediatric care from hospitals in Liberia, the paper illustrates how the model can be used to investigate the potential for improvements in the quality of care from several possible policy interventions. The analysis of the relationships between these gaps across health workers in a health system help to paint a better picture of the determinants of performance and can assist policy makers in choosing relevant policies to improve health worker performance.",
+    "reference": [
+     "Health"
+    ],
+    "student": [
+     {
+      "label": "Health",
+      "score": 0.441
+     },
+     {
+      "label": "Global Financing Facility for Women, Children and Adolescents",
+      "score": 0.006
+     },
+     {
+      "label": "One Health",
+      "score": 0.005
+     },
+     {
+      "label": "Infectious diseases and Vaccines",
+      "score": 0.004
+     },
+     {
+      "label": "Universal Health Coverage",
+      "score": 0.004
+     },
+     {
+      "label": "COVID-19 Hub",
+      "score": 0.003
+     },
+     {
+      "label": "Fragility, Conflict, and Violence",
+      "score": 0.002
+     },
+     {
+      "label": "Measuring Poverty",
+      "score": 0.002
+     }
+    ],
+    "teachers": {
+     "Gemini 3.8 Flash": [
+      "Health",
+      "Universal Health Coverage"
+     ],
+     "Claude Sonnet 5.5": [
+      "Governance",
+      "Health",
+      "Universal Health Coverage"
+     ],
+     "Qwen3.8-27B": [
+      "Education",
+      "Governance",
+      "Health",
+      "Inequality and Shared Prosperity",
+      "Universal Health Coverage"
+     ]
+    }
+   },
+   {
+    "id": "26584623",
+    "title": "Subsidy reforms in the Middle East and North Africa Region : a review",
+    "url": "https://documents.worldbank.org/curated/en/212631469021941386",
+    "year": 2016,
+    "text": "The paper takes stock of eight country studies and a cross-country analysis to review the experience with subsidy reforms in the Middle East and North Africa region between 2010 and 2014. This unprecedented period of subsidy reforms occurred during a period of extraordinary political changes, which makes this particular experience unique. The paper reviews the facts and the different paths to reforms taken by different countries faced with different challenges, and discusses the pros and cons of alternative policy options. It concludes with an assessment of the experiences and a discussion on future prospects.",
+    "reference": [
+     "Energy",
+     "Governance",
+     "Macroeconomics",
+     "Poverty",
+     "Social Protection"
+    ],
+    "student": [
+     {
+      "label": "Taxes and Government Revenue",
+      "score": 0.127
+     },
+     {
+      "label": "Governance",
+      "score": 0.04
+     },
+     {
+      "label": "Energy",
+      "score": 0.012
+     },
+     {
+      "label": "Financial Sector",
+      "score": 0.008
+     },
+     {
+      "label": "Macroeconomics",
+      "score": 0.007
+     },
+     {
+      "label": "Inequality and Shared Prosperity",
+      "score": 0.007
+     },
+     {
+      "label": "Investment Climate",
+      "score": 0.005
+     },
+     {
+      "label": "Extractive Industries",
+      "score": 0.004
+     }
+    ],
+    "teachers": {
+     "Gemini 3.8 Flash": [
+      "Energy",
+      "Governance",
+      "Macroeconomics",
+      "Social Protection",
+      "Taxes and Government Revenue"
+     ],
+     "Claude Sonnet 5.5": [
+      "Energy",
+      "Fragility, Conflict, and Violence",
+      "Governance",
+      "Macroeconomics",
+      "Social Protection"
+     ],
+     "Qwen3.8-27B": [
+      "Governance",
+      "Macroeconomics",
+      "Taxes and Government Revenue"
+     ]
+    }
+   },
+   {
+    "id": "28112446",
+    "title": "Regressive or progressive ? the effect of tobacco taxes in Ukraine",
+    "url": "https://documents.worldbank.org/curated/en/934621509107306525",
+    "year": 2017,
+    "text": "Tobacco taxes are usually considered regressive, as the poorest individuals allocate larger shares of their budget toward the purchase of tobacco-related products. However, because these taxes also discourage tobacco use, some of the most adverse effects and their economic costs are reduced, including lower life expectancy at birth, higher medical expenses, increased years of disability among smokers, and the effects of secondhand smoke. This paper projects the effects of an increase in the tobacco tax on household welfare in Ukraine. It considers three price-elasticity scenarios among income deciles of the population. The results show that although tobacco taxes are often criticized for being regressive in the short run, in a more comprehensive scenario that includes medical expenses and working years, the benefits of tobacco taxes far exceed the increase in tax liability, benefitting in large measure lower income households. The results also indicate that lower health expenditure seems to be the main driver, because of the reduction in tobacco-related diseases that require expensive treatments. Tobacco taxes are also associated with positive distributional effects related to the higher long-term price elasticities of tobacco consumption.",
+    "reference": [
+     "Macroeconomics"
+    ],
+    "student": [
+     {
+      "label": "Health",
+      "score": 0.25
+     },
+     {
+      "label": "Taxes and Government Revenue",
+      "score": 0.206
+     },
+     {
+      "label": "Safety Nets and Cash Transfers",
+      "score": 0.082
+     },
+     {
+      "label": "Poverty",
+      "score": 0.082
+     },
+     {
+      "label": "Inequality and Shared Prosperity",
+      "score": 0.059
+     },
+     {
+      "label": "Measuring Poverty",
+      "score": 0.059
+     },
+     {
+      "label": "Infectious diseases and Vaccines",
+      "score": 0.049
+     },
+     {
+      "label": "Macroeconomics",
+      "score": 0.045
+     }
+    ],
+    "teachers": {
+     "Gemini 3.8 Flash": [
+      "Health",
+      "Inequality and Shared Prosperity",
+      "Poverty",
+      "Taxes and Government Revenue"
+     ],
+     "Claude Sonnet 5.5": [
+      "Health",
+      "Inequality and Shared Prosperity",
+      "Poverty",
+      "Taxes and Government Revenue"
+     ],
+     "Qwen3.8-27B": [
+      "Health",
+      "Inequality and Shared Prosperity",
+      "Macroeconomics",
+      "Poverty",
+      "Taxes and Government Revenue"
+     ]
+    }
+   }
+  ],
+  "scores": [
+   {
+    "model": "Small model, first set of sentences",
+    "kind": "small",
+    "f1": 0.468
+   },
+   {
+    "model": "Small model, after targeted rounds",
+    "kind": "small",
+    "f1": 0.521
+   },
+   {
+    "model": "Gemini 3.8 Flash",
+    "kind": "large",
+    "f1": 0.53
+   },
+   {
+    "model": "Qwen3.8-27B",
+    "kind": "large",
+    "f1": 0.524
+   },
+   {
+    "model": "Claude Sonnet 5.5",
+    "kind": "large",
+    "f1": 0.523
+   }
+  ],
+  "speed": [
+   {
+    "model": "Small model",
+    "where": "one H100 GPU",
+    "kind": "small",
+    "seconds": 0.0072
+   },
+   {
+    "model": "Small model",
+    "where": "four CPU threads",
+    "kind": "small",
+    "seconds": 0.19
+   },
+   {
+    "model": "Qwen3.8-27B",
+    "where": "one H100 GPU, own server",
+    "kind": "large",
+    "seconds": 0.5
+   },
+   {
+    "model": "Claude Sonnet 5.5",
+    "where": "hosted service",
+    "kind": "large",
+    "seconds": 1.25
+   },
+   {
+    "model": "Gemini 3.8 Flash",
+    "where": "hosted service",
+    "kind": "large",
+    "seconds": 3.87
+   }
+  ]
+ }
+}
