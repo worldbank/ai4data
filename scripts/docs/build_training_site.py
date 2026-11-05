@@ -197,13 +197,36 @@ def write(path: Path, text: str) -> None:
 
 
 FIGURE = re.compile(r"^<!-- figure: ([a-z0-9-]+) -->$", re.MULTILINE)
+TERM_LINK = re.compile(r"\[([^\]]+)\]\(#terms\)")
+TERM_ENTRY = re.compile(r"^- \*\*(.+?)\*\*: (.+)$", re.MULTILINE)
+
+
+def glossary_terms(src: Path, body: str) -> str:
+    """Links to the page's "Terms" section, `[text](#terms)`, become <Term> pop-ups with the
+    definition from that section, whose entries read `- **Name**: definition`. On GitHub the
+    link leads to the section."""
+    section = re.search(r"^## Terms\n(.*?)(?=^## |\Z)", body, re.MULTILINE | re.DOTALL)
+    terms = {m.group(1).lower(): (m.group(1), m.group(2)) for m in TERM_ENTRY.finditer(section.group(1))} if section else {}
+
+    def term(match: re.Match) -> str:
+        text = match.group(1)
+        key = text.lower()
+        found = terms.get(key) or terms.get(key.removesuffix("s"))
+        if not found:
+            warn(src, f"no entry in the Terms section for the term link '{text}'")
+            return text
+        name, definition = found
+        return f"<Term name={{{json.dumps(name)}}} definition={{{json.dumps(definition)}}}>{text}</Term>"
+
+    return TERM_LINK.sub(term, body)
 
 
 def markdown_page(site: Site, src: Path, out: Path, *, position: int, label: str | None = None,
                   omit: list[str] | None = None, slug: str | None = None, note: str | None = None) -> None:
     """A Markdown page. A line `<!-- figure: name -->` in the source places the interactive figure
     `name` of website/src/components/training/Figures, with the data of the session's
-    assets/overview.json; GitHub shows nothing for that line. A page with figures is MDX."""
+    assets/overview.json; GitHub shows nothing for that line. A page with figures is MDX, and its
+    links to the "Terms" section become pop-ups (see glossary_terms)."""
     title, body = split_title(src.read_text(encoding="utf-8"))
     if omit:
         body = omit_sections(body, omit)
@@ -220,8 +243,9 @@ def markdown_page(site: Site, src: Path, out: Path, *, position: int, label: str
             fmt = "mdx"
             write(out.parent / "figures.json", data.read_text(encoding="utf-8"))
             body = ("import TrainingFigure from '@site/src/components/training/Figures';\n"
+                    "import Term from '@site/src/components/training/Figures/Term';\n"
                     "import figures from './figures.json';\n\n"
-                    + FIGURE.sub(lambda m: f'<TrainingFigure name="{m.group(1)}" data={{figures}} />', body))
+                    + glossary_terms(src, FIGURE.sub(lambda m: f'<TrainingFigure name="{m.group(1)}" data={{figures}} />', body)))
     write(out, front_matter(fmt, title=title, sidebar_label=label, sidebar_position=position, slug=slug,
                             custom_edit_url=f"{EDIT}/{rel}") + body)
 

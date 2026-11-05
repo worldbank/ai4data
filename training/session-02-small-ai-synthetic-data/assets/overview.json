@@ -9,15 +9,15 @@
      "params": "142 million parameters",
      "gb": 0.57,
      "memory": "0.57 GB of memory",
-     "role": "The student of the worked example."
+     "role": "The student in the worked example is this size."
     },
     {
-     "name": "Qwen3.8-27B",
+     "name": "Large model",
      "kind": "large",
      "params": "27 billion parameters",
      "gb": 31,
      "memory": "about 31 GB of memory",
-     "role": "A teacher of the worked example."
+     "role": "Qwen3.8-27B, one of the teachers in the worked example, is this size."
     },
     {
      "name": "Very large model",

@@ -23,28 +23,30 @@ export default function DistillationResults({data}) {
     <figure className={styles.figure}>
       <p className={styles.title}>The student compared with large models</p>
       <p className={styles.caption}>
-        The student and three large models assigned topics to the same 300 report abstracts.
+        The student and three large models assigned topics to the same 300 report abstracts. The large models were
+        asked directly for the topics of each abstract.
       </p>
       <div className={styles.tiles}>
         <div className={styles.tile}>
-          <p className={styles.tileLabel}>Score (F1, from 0 to 1)</p>
+          <p className={styles.tileLabel}>Accuracy</p>
+          <p className={styles.tileLead}>The student scores about the same as the large models.</p>
           <p className={styles.tileRow}><span><span className={clsx(styles.dot, styles.small)} /> Student</span><strong>0.52</strong></p>
           <p className={styles.tileRow}><span><span className={clsx(styles.dot, styles.large)} /> Large models</span><strong>0.52–0.53</strong></p>
-          <p className={styles.tileNote}>
-            The score is high when the assigned topics are correct and few recorded topics are missed.
-          </p>
+          <p className={styles.tileNote}>Score from 0 to 1. A higher score means more correct topics and fewer missed ones.</p>
         </div>
         <div className={styles.tile}>
-          <p className={styles.tileLabel}>Time for one abstract</p>
+          <p className={styles.tileLabel}>Speed</p>
+          <p className={styles.tileLead}>The student is about 3 to 20 times faster.</p>
           <p className={styles.tileRow}><span><span className={clsx(styles.dot, styles.small)} /> Student</span><strong>0.19 s</strong></p>
           <p className={styles.tileRow}><span><span className={clsx(styles.dot, styles.large)} /> Large models</span><strong>0.5–3.9 s</strong></p>
-          <p className={styles.tileNote}>The student on four threads of a processor (CPU); on a GPU it takes 7 milliseconds.</p>
+          <p className={styles.tileNote}>Seconds per abstract.</p>
         </div>
         <div className={styles.tile}>
-          <p className={styles.tileLabel}>What it runs on</p>
+          <p className={styles.tileLabel}>Computer</p>
+          <p className={styles.tileLead}>The student runs on an ordinary processor, without an internet connection.</p>
           <p className={styles.tileRow}><span><span className={clsx(styles.dot, styles.small)} /> Student</span><strong>Processor (CPU)</strong></p>
           <p className={styles.tileRow}><span><span className={clsx(styles.dot, styles.large)} /> Large models</span><strong>GPU or hosted service</strong></p>
-          <p className={styles.tileNote}>The student needs 0.57 GB of memory, no GPU, and no internet connection.</p>
+          <p className={styles.tileNote}>The student needs 0.57 GB of memory. A GPU is a graphics processor, used to run large models.</p>
         </div>
       </div>
       <details className={styles.deeper}>
@@ -52,7 +54,9 @@ export default function DistillationResults({data}) {
       <p className={styles.title} style={{marginTop: 12}}>How well each model assigns topics</p>
       <p className={styles.caption}>
         F1 score on 300 report abstracts, from 0 to 1. The score is high when the assigned topics are correct and
-        few of the recorded topics are missed. Student scores are the mean of three training runs.
+        few of the recorded topics are missed. Student scores are the mean of three training runs. The first student
+        learned from the first 20,296 sentences. In further rounds, a program read the student's mistakes on a
+        separate set of abstracts and asked the teachers for more sentences on the topics involved.
       </p>
       <div className={styles.bars}>
         {data.scores.map((r) => (

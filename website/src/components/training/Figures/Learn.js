@@ -62,7 +62,7 @@ function Curve({points, n}) {
   const path = points.map((v, i) => `${i ? 'L' : 'M'}${x(i + 1)},${y(v)}`).join(' ');
   return (
     <svg className={styles.svg} viewBox={`0 0 ${W} ${H}`} role="img"
-      aria-label={`Share of the 60 abstracts with the right topic, by practice sentences per topic, from 1 to ${MAX}.`}>
+      aria-label={`Share of the 60 abstracts with the right topic, by examples per topic, from 1 to ${MAX}.`}>
       {[0, 0.25, 0.5, 0.75, 1].map((v) => (
         <g key={v}>
           <line className={styles.axis} x1={L} x2={W - 8} y1={y(v)} y2={y(v)} strokeDasharray={v === 0.25 ? '4 3' : undefined} />
@@ -75,14 +75,16 @@ function Curve({points, n}) {
       {[1, 10, 20, 30, 40].map((k) => (
         <text key={k} x={x(k)} y={H - B + 12} textAnchor="middle" className={styles.tick} fontSize={10}>{k}</text>
       ))}
-      <text x={(L + W) / 2} y={H - 1} textAnchor="middle" className={styles.tick}>practice sentences per topic</text>
+      <text x={(L + W) / 2} y={H - 1} textAnchor="middle" className={styles.tick}>examples per topic</text>
     </svg>
   );
 }
 
+const PRESETS = [1, 10, 40];
+
 export default function Learn({data}) {
   const stop = useMemo(() => new Set(data.stop), [data]);
-  const [n, setN] = useState(0);
+  const [n, setN] = useState(1);
   const [own, setOwn] = useState('The new road cuts the travel time from farms to the market.');
   const tests = useMemo(() => data.tests.map((d) => ({...d, words: tokenize(d.text, stop)})), [data, stop]);
 
@@ -107,56 +109,45 @@ export default function Learn({data}) {
 
   return (
     <figure className={styles.figure}>
-      <p className={styles.title}>Training a model in this browser</p>
+      <p className={styles.title}>A model learns from examples</p>
       <p className={styles.caption}>
-        A simple model learns four topics from practice sentences written by a large language model. It counts the
-        words in the sentences of each topic and guesses the topic whose words best match a new text. Add practice
-        sentences and watch the test on 60 real report abstracts.
+        A simple model learns four topics from example sentences. It counts the words in the examples of each topic
+        and gives a new text the topic whose words match best. Choose how many examples it reads.
       </p>
 
-      <div className={styles.learnControls}>
-        <button type="button" className={styles.primaryButton} disabled={n >= MAX} onClick={() => setN(Math.min(MAX, n + 1))}>
-          Add one sentence per topic
-        </button>
-        <label className={styles.slider}>
-          <span><strong>{n}</strong> per topic</span>
-          <input type="range" min={0} max={MAX} value={n} onChange={(e) => setN(Number(e.target.value))}
-            aria-label="Practice sentences per topic" />
-        </label>
+      <div className={styles.segmented} role="group" aria-label="Examples per topic">
+        {PRESETS.map((k) => (
+          <button key={k} type="button" aria-pressed={n === k} onClick={() => setN(k)}>
+            {k} {k === 1 ? 'example' : 'examples'} per topic
+          </button>
+        ))}
       </div>
-
-      {n === 0 ? (
-        <p className={styles.detail}>The model has seen no examples yet and cannot tell the topics apart.</p>
-      ) : (
-        <div className={styles.detail}>
-          <strong>Latest practice sentences</strong>
-          <ul className={styles.latest}>
-            {latest.map(([t, s]) => (
-              <li key={t}><span className={styles.chip}>{t}</span> {s}</li>
-            ))}
-          </ul>
-        </div>
-      )}
 
       <div className={styles.twoCol} style={{marginTop: 16}}>
         <div>
           <p><strong>Words the model links to each topic</strong></p>
           <div className={styles.wordTable}>
-            {data.topics.map((t) => (
-              <React.Fragment key={t}>
-                <span className={styles.wordTopic}>{t}</span>
-                <ul className={styles.chips}>
-                  {n === 0 ? <li className={clsx(styles.chip, styles.chipOff)}>none yet</li> :
-                    learnedWords(model, data.topics, t).map((w) => <li key={w} className={styles.chip}>{w}</li>)}
-                </ul>
-              </React.Fragment>
-            ))}
+            {data.topics.map((t) => {
+              const words = n ? learnedWords(model, data.topics, t) : [];
+              return (
+                <React.Fragment key={t}>
+                  <span className={styles.wordTopic}>{t}</span>
+                  <ul className={styles.chips}>
+                    {words.length === 0 ? <li className={clsx(styles.chip, styles.chipOff)}>none yet</li> :
+                      words.map((w) => <li key={w} className={styles.chip}>{w}</li>)}
+                  </ul>
+                </React.Fragment>
+              );
+            })}
           </div>
         </div>
         <div>
-          <p><strong>Test on 60 real abstracts</strong>: {n ? `${right} right` : 'not trained yet'}</p>
+          <p style={{marginBottom: 2}}><strong>Test on 60 real reports</strong></p>
+          <p className={styles.bigNumber} aria-live="polite">
+            {right} <span>of 60 given the right topic</span>
+          </p>
           <div className={styles.dotRows} role="img"
-            aria-label={`${right} of 60 abstracts given the right topic.`}>
+            aria-label={`${right} of 60 reports given the right topic.`}>
             {data.topics.map((t) => (
               <React.Fragment key={t}>
                 <span className={styles.dotLabel}>{t}</span>
@@ -169,17 +160,21 @@ export default function Learn({data}) {
               </React.Fragment>
             ))}
           </div>
-          <Curve points={curve} n={n} />
+          <p className={styles.source} style={{marginTop: 8}}>
+            Each square is one report, filled when the model gives it the right topic. A random guess among the
+            four topics gets about 15 right.
+          </p>
         </div>
       </div>
 
       <div className={styles.detail} style={{marginTop: 16}}>
-        <label htmlFor="learn-own"><strong>Write a sentence for the model</strong></label>
+        <label htmlFor="learn-own"><strong>Try a sentence</strong></label>
         <p className={styles.source} style={{margin: '2px 0 0'}}>
-          The sentence below is about Transport. Compare the model's answer at 5 and at 40 sentences per topic.
+          The sentence below is about Transport. Compare the model's answer with 10 and with 40 examples per topic,
+          or write another sentence.
         </p>
         <input id="learn-own" className={styles.textInput} value={own} onChange={(e) => setOwn(e.target.value)} />
-        {ownScores ? (
+        {ownScores && (
           <div className={styles.bars} style={{marginTop: 10}}>
             {ownScores.map(({topic, p}) => (
               <React.Fragment key={topic}>
@@ -191,16 +186,35 @@ export default function Learn({data}) {
               </React.Fragment>
             ))}
           </div>
-        ) : (
-          <p className={styles.source}>Add practice sentences first.</p>
         )}
       </div>
-      <p className={styles.source}>
-        Each square is one abstract, filled when the model gives it the right topic. Each row holds the 15 abstracts of
-        one topic; hover over a square for its title.
-        The dashed line at 25% is the score of a random guess among four topics. The model in this figure is far
-        simpler than the student model of the session.
-      </p>
+
+      <details className={styles.deeper}>
+        <summary>Go deeper: any number of examples, the learning curve, and the examples themselves</summary>
+        <label className={styles.slider} style={{marginTop: 12}}>
+          <span><strong>{n}</strong> {n === 1 ? 'example' : 'examples'} per topic</span>
+          <input type="range" min={1} max={MAX} value={n} onChange={(e) => setN(Number(e.target.value))}
+            aria-label="Examples per topic" />
+        </label>
+        <div className={styles.twoCol} style={{marginTop: 12}}>
+          <div>
+            <p><strong>Share of the 60 reports with the right topic</strong></p>
+            <Curve points={curve} n={n} />
+            <p className={styles.source}>
+              The dashed line at 25% is a random guess. After about 20 examples per topic this model stops improving.
+              The model built in the session learns more from each example and reads about 20,000 of them.
+            </p>
+          </div>
+          <div>
+            <p><strong>The last example of each topic</strong></p>
+            <ul className={styles.latest}>
+              {latest.map(([t, s]) => (
+                <li key={t}><span className={styles.chip}>{t}</span> {s}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </details>
     </figure>
   );
 }

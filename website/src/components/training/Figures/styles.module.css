@@ -271,41 +271,158 @@ button.chip[aria-pressed='true'] {
   margin-bottom: 0;
 }
 
-/* Synthetic data */
+/* Overview: the method in three steps */
 .steps {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 6px;
-  margin: 0 0 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 16px 0 0;
   padding: 0;
   list-style: none;
-  counter-reset: step;
 }
 
-.steps > li {
-  margin: 0;
-}
-
-.steps button {
+.step {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  width: 100%;
-  height: 100%;
-  text-align: left;
+  margin: 0;
+  padding: 12px 14px 14px;
   border: 1px solid var(--line);
+  border-top: 4px solid var(--small);
   border-radius: 10px;
-  padding: 8px 10px;
-  background: var(--ifm-background-surface-color);
-  color: var(--ink);
-  font: inherit;
-  font-size: 0.85rem;
-  cursor: pointer;
 }
 
-.steps button[aria-current='step'] {
-  border-color: var(--large);
-  box-shadow: inset 0 -3px 0 var(--large);
+.step_large {
+  border-top-color: var(--large);
+}
+
+.stepIcon {
+  width: 100%;
+  max-width: 150px;
+  height: auto;
+  margin: 2px 0 8px;
+}
+
+.figure .stepTitle {
+  margin: 2px 0 6px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.figure .stepText {
+  flex: 1;
+  margin: 0 0 10px;
+  font-size: 0.9rem;
+}
+
+.stepLink {
+  font-size: 0.85rem;
+}
+
+.iconLarge {
+  fill: var(--large-soft);
+  stroke: var(--large);
+  stroke-width: 2.5;
+}
+
+.iconSmall {
+  fill: var(--small-soft);
+  stroke: var(--small);
+  stroke-width: 2.5;
+}
+
+.iconStrokeLarge {
+  stroke: var(--large);
+  stroke-width: 3;
+  stroke-linecap: round;
+  fill: none;
+}
+
+.iconStrokeSmall {
+  stroke: var(--small);
+  stroke-width: 2;
+  fill: none;
+}
+
+.iconDotSmall {
+  fill: var(--small);
+}
+
+.iconPaper {
+  fill: var(--ifm-background-surface-color);
+  stroke: var(--faint);
+  stroke-width: 1.5;
+}
+
+.iconLine {
+  stroke: var(--line);
+  stroke-width: 3;
+  stroke-linecap: round;
+  fill: none;
+}
+
+.iconTag {
+  fill: var(--panel);
+  stroke: var(--faint);
+  stroke-width: 1;
+}
+
+.iconArrow {
+  stroke: var(--faint);
+  stroke-width: 2;
+  fill: none;
+}
+
+.figure .bigNumber {
+  margin: 0 0 8px;
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.bigNumber span {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+/* Glossary terms in the text */
+.term {
+  position: relative;
+  display: inline;
+}
+
+.termButton {
+  padding: 0;
+  border: 0;
+  border-bottom: 1px dotted currentColor;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: help;
+}
+
+.termPop {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 20;
+  width: max-content;
+  max-width: min(300px, 80vw);
+  padding: 10px 12px;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 8px;
+  background: var(--ifm-background-surface-color);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 15%);
+  color: var(--ifm-font-color-base);
+  font-size: 0.85rem;
+  font-weight: 400;
+  line-height: 1.45;
+  white-space: normal;
+}
+
+.termPop strong {
+  display: block;
+  margin-bottom: 2px;
 }
 
 .stepNumber {
@@ -396,28 +513,10 @@ button.chip[aria-pressed='true'] {
 }
 
 /* Distillation */
-.flow text {
-  font-size: 14px;
-}
 
-.flow .tick {
-  font-size: 12px;
-}
 
-.flowBox {
-  fill: var(--ifm-background-surface-color);
-  stroke: var(--line);
-  stroke-width: 1.5;
-  transition: opacity 0.3s ease;
-}
 
-.flowDim {
-  opacity: 0.3;
-}
 
-.packet {
-  animation: travel 2.4s linear infinite;
-}
 
 @keyframes travel {
   from {
@@ -802,6 +901,12 @@ button.chip[aria-pressed='true'] {
   line-height: 1.3;
 }
 
+.figure .tileLead {
+  margin: 0 0 10px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
 .figure .tileNote {
   margin: 8px 0 0;
   color: var(--muted);
@@ -829,7 +934,11 @@ button.chip[aria-pressed='true'] {
   }
 
   .steps {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
+  }
+
+  .stepIcon {
+    max-width: 120px;
   }
 
   .twoCol {
@@ -838,7 +947,6 @@ button.chip[aria-pressed='true'] {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .packet,
   .latest > li,
   .sentences > li {
     animation: none;

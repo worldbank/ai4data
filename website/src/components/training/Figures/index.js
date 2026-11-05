@@ -1,4 +1,5 @@
 import React from 'react';
+import Overview from './Overview';
 import WhereItRuns from './WhereItRuns';
 import Learn from './Learn';
 import TaskFit from './TaskFit';
@@ -11,6 +12,7 @@ import DistillationResults from './DistillationResults';
 // line with <TrainingFigure name="name" data={figures} />, where `figures` is the
 // session's assets/overview.json.
 const FIGURES = {
+  overview: () => <Overview />,
   'where-it-runs': (data) => <WhereItRuns data={data.smallAI} />,
   'small-ai-tasks': (data) => <TaskFit data={data.smallAI} />,
   'learn-from-examples': (data) => <Learn data={data.learn} />,
