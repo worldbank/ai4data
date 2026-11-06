@@ -1,5 +1,8 @@
 import React from 'react';
 import Overview from './Overview';
+import UseCases from './UseCases';
+import WhySynthetic from './WhySynthetic';
+import Workflow from './Workflow';
 import WhereItRuns from './WhereItRuns';
 import Learn from './Learn';
 import TaskFit from './TaskFit';
@@ -13,6 +16,9 @@ import DistillationResults from './DistillationResults';
 // session's assets/overview.json.
 const FIGURES = {
   overview: () => <Overview />,
+  'use-cases': () => <UseCases />,
+  'why-synthetic': () => <WhySynthetic />,
+  workflow: (data) => <Workflow data={data.workflow} />,
   'where-it-runs': (data) => <WhereItRuns data={data.smallAI} />,
   'small-ai-tasks': (data) => <TaskFit data={data.smallAI} />,
   'learn-from-examples': (data) => <Learn data={data.learn} />,

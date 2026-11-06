@@ -1531,5 +1531,79 @@
     "seconds": 3.87
    }
   ]
+ },
+ "workflow": {
+  "rounds": [
+   {
+    "replicate": 1,
+    "arms": [
+     {
+      "arm": "first",
+      "f1": 0.468,
+      "examples": 20296
+     },
+     {
+      "arm": "control",
+      "f1": 0.485,
+      "examples": 35296
+     },
+     {
+      "arm": "targeted",
+      "f1": 0.521,
+      "examples": 32240
+     }
+    ],
+    "difference": 0.037,
+    "interval": [
+     0.02,
+     0.053
+    ]
+   },
+   {
+    "replicate": 2,
+    "arms": [
+     {
+      "arm": "first",
+      "f1": 0.476,
+      "examples": 20296
+     },
+     {
+      "arm": "control",
+      "f1": 0.478,
+      "examples": 35296
+     },
+     {
+      "arm": "targeted",
+      "f1": 0.519,
+      "examples": 35256
+     }
+    ],
+    "difference": 0.041,
+    "interval": [
+     0.023,
+     0.059
+    ]
+   }
+  ],
+  "large": [
+   {
+    "model": "Gemini 3.8 Flash",
+    "f1": 0.53
+   },
+   {
+    "model": "Qwen3.8-27B",
+    "f1": 0.524
+   },
+   {
+    "model": "Claude Sonnet 5.5",
+    "f1": 0.523
+   }
+  ],
+  "duplicates": {
+   "task": "job titles",
+   "writer": "Qwen3.8-27B",
+   "written": 18000,
+   "repeats": 6612
+  }
  }
 }
