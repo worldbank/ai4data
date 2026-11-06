@@ -3,7 +3,7 @@ id: characterization
 title: "1. Artifact Characterization and Sampling"
 sidebar_label: "1. Artifacts and sampling"
 sidebar_position: 2
-description: The artifact class and descriptive scope are explicit.
+description: Define the unit described, document its diversity, and freeze identifiable development and held-out evidence.
 ---
 
 import Recipe from '@site/src/components/Cookbook/Recipe';
@@ -13,138 +13,260 @@ import Checklist from '@site/src/components/Cookbook/Checklist';
 
 **Question:** What must the schema describe, and which artifacts provide credible evidence of its requirements?
 
-:::note[Structural draft]
-This chapter establishes learning milestones and candidate recipes. Detailed
-procedures, worked examples, executable exercises, and implementation checks
-remain for later authoring. Intended results below describe planned recipes.
-:::
-
 ## Rationale
 
-An artifact is an object selected for description, such as a table, chart, or map. Defining the artifact class establishes what one metadata record describes. Several artifacts in the same document can have different subjects, periods, and populations.
+An artifact is the object for which a metadata record is being designed. A
+Data Snapshot can be a table, chart, map, or composite analytical figure that
+people need to find and interpret independently of its parent document. Its
+metadata describes what it represents. The individual numerical observations
+inside it are analytical content. A schema that describes a whole report can
+miss the different indicators, populations, and periods of its individual figures.
 
-A representative artifact collection should expose the diversity relevant to the intended use. Recording the selection preserves its rationale and a separate collection for later validation. Sampling requirements depend on diversity and scope.
+The artifact class must be characterized before discovery begins. Otherwise,
+a model can propose reasonable properties for an unintended object: a PDF,
+a table cell, or an entire monitoring project. Sampling then supplies evidence
+about the variation that the schema must accommodate. An identifiable frozen
+selection makes later transformations traceable; a separate held-out selection
+provides evidence for the validation developed in [chapter 6](./validation.mdx).
 
 ## Target state
 
-- The artifact class and descriptive scope are explicit.
-- Development and held-out artifacts have stable identities and a documented selection rationale.
-- The sample register states diversity, exclusions, and limits on generalization.
+- A characterization statement identifies one artifact, its boundaries, intended uses, and excluded contents.
+- A fixed register identifies development and held-out artifacts, their sources, and the diversity considered.
+- Identity checks distinguish snapshot overlap from parent-document overlap and state the limits of the selection.
 
 ## Learning objectives
 
-- Distinguish an artifact from its parent document and analytical contents.
-- Identify relevant diversity dimensions and explain snapshot-disjoint and document-disjoint selection.
+- The practitioner can distinguish artifact metadata, analytical contents, and parent-document metadata.
+- The practitioner can choose sampling dimensions and preserve an attributable selection.
+- The practitioner can explain the unit at which development and validation evidence are separate.
 
 ## Prerequisite concepts
 
-An intended descriptive use, candidate artifacts, and their source references are available. Metadata engineering concepts are introduced here.
+The organization has an intended use and access to candidate artifacts and
+their source references. A domain reviewer understands the reporting context.
+The exercises use Python 3.10 or newer and require no external packages.
 
 ## Maturity levels
 
 | Level | Steps |
 |---|---|
-| **Foundational** | Define the artifact class and inspect a small selection with a domain expert. |
-| **AI-ready** | Record identities, selection criteria, provenance, and collection membership in a structured manifest. |
-| **AI-native** | Use model assistance to characterize diversity while humans approve scope and sample boundaries. |
+| **Foundational** | A human-readable characterization and reviewed selection establish the descriptive practice. |
+| **AI-ready** | Structured identities, provenance, and documented checks make the selection usable by software. |
+| **AI-native** | Model-assisted characterization has recorded evidence and verification, while humans decide scope and sample boundaries. |
 
 :::info[Running example]
-The study used 210 development snapshots from three institutional corpora and 202 held-out snapshots. The Jordan chart, Afghanistan table, and Russian chart introduce selected examples. These three objects illustrate the evidence structure and do not replace the full study sample.
+**Recorded study result.** The Data Snapshot study selected 210 development
+snapshots and 202 held-out snapshots from three institutional corpora.
+**Teaching excerpt.** The prepared register contains eight of those artifacts:
+six development objects and two held-out objects. The Jordan food-expenditure
+chart, Afghanistan income table, and Russian fiscal chart carry forward into
+[discovery](./discovery.mdx) and [profiling](./concept-synthesis.mdx).
 :::
 
 ## Recipes
 
-These are candidate recipes. Time estimates remain pending until their
-procedures and verification have been authored.
+<Recipe title="1.1 Define the artifact class and descriptive scope" level="Foundational" skills="Domain reviewer; technical practitioner" time="30–60 minutes for a first statement">
 
-<Recipe title="1.1 Define the artifact class and descriptive scope" level="Foundational" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+**Result:** A characterization statement establishes the object described, the intended descriptive uses, and the boundary with analytical contents and document metadata.
 
-**Result:** A characterization statement will identify the unit described, intended uses, and exclusions.
+The statement defines the task given to the model. It should allow a reviewer
+to decide whether an observation concerns the selected artifact. It establishes
+purpose and scope without prescribing the metadata field inventory that
+discovery will investigate.
 
-**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
-provides the following selection: independent-naming. The
-[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
-specifies the parts appropriate to this stage.
+1. Identify one complete unit of description. State how a reviewer recognizes its boundary and what remains outside it. A multi-panel figure can be one snapshot even when its panels differ.
+2. Name the intended uses, such as cataloging an analytical object, filtering by its subject, or finding evidence about an indicator. Explain which information would help those uses.
+3. Compare three candidate properties: a description of the artifact, a numerical value within it, and administrative information about its parent document. State where each belongs.
+4. Record allowed supporting context, exclusions, a reviewer, and a version. Inspect a contrasting artifact before accepting the statement. A useful statement remains applicable across the class.
 
-**Draft scope.** Procedures, worked examples, and verification remain to be
-written. The outline preserves the intended result and evidence selection.
+The downloadable [characterization statement](pathname:///cookbook-files/ai-assisted-metadata-schema-development/artifact_characterization.md)
+is a filled teaching worksheet with questions that can be reused for another
+artifact class. Its entries restate the paper's scope; they are not a recovered
+historical worksheet.
 
-**What this does not do.** This outline does not provide a complete procedure
-or claim a new execution of the research.
+**Worked example.** The Jordan snapshot is a bar chart titled “Figure 2:
+Share of food expenditure in total expenditure p.c. (%).” The title describes
+its subject. A sequence of bar values would be analytical content. The parent
+document title, “Jordan - Emergency Food Security Project,” supplies context
+but is not the chart title. The discovery observation for geographic scope
+explicitly says that Jordan was inferred from document context and was not
+visible in the snapshot. That distinction must survive later aggregation.
+
+| Boundary question | Filled teaching decision |
+|---|---|
+| What receives one record? | The selected analytical snapshot receives the record. |
+| What should be discoverable? | The record should identify and describe the snapshot's subject, context, and relevant provenance. |
+| What is excluded from this task? | Reconstructing individual bar values or a complete data series is excluded. |
+| How is document context handled? | Context is separately attributable, and document administration remains associated with the parent record. |
+
+**Verification.** A second reviewer should be able to classify the chart title,
+bar values, and parent-document title using the statement. A disagreement about
+the object boundary is resolved before discovery requests are prepared.
+
+**What this does not do.** The statement does not establish the final field
+list or prove that a candidate value is correct. The filled decisions are a
+teaching restatement of this application; another artifact class needs its own
+scope and rationale.
 
 </Recipe>
 
-<Recipe title="1.2 Inspect a representative collection and freeze its sample" level="AI-ready" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+<Recipe title="1.2 Inspect a representative collection and freeze its sample" level="AI-ready" skills="Domain reviewer; Python practitioner" time="1–2 hours for a small accessible collection">
 
-**Result:** A sample manifest will record selected identities, diversity dimensions, and selection reasons.
+**Result:** A frozen sample register identifies the development artifacts, their provenance, the diversity represented, and the rationale for their inclusion.
 
-**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
-provides the following selection: independent-naming; study_summary. The
-[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
-specifies the parts appropriate to this stage.
+Sampling should expose different descriptive requirements. Source institutions,
+reporting purposes, artifact forms, and analytical contexts can all matter.
+An identical count from each group does not establish statistical
+representativeness. It is a deliberate coverage choice whose adequacy depends
+on the intended application.
 
-**Draft scope.** Procedures, worked examples, and verification remain to be
-written. The outline preserves the intended result and evidence selection.
+1. Inventory the available artifacts and identify likely sources of variation. Consider document families, figure and table forms, reporting styles, languages, and specialized analytical contexts.
+2. Inspect examples from contrasting groups. Record why each group might introduce a descriptive requirement that another group would miss.
+3. Select and freeze the development identities. Preserve the realized selection even when sampling uses randomness; a seed alone cannot recover a changed source collection.
+4. Record exclusions and limited groups. Reserve validation identities separately, then retain a versioned register and the source revision used to resolve them.
 
-**What this does not do.** This outline does not provide a complete procedure
-or claim a new execution of the research.
+**Worked example.** The recorded study used the following development allocation.
+Each corpus contributed 35 figures and 35 tables. These counts describe one
+execution designed to expose semantic diversity across reporting contexts.
+
+| Corpus | Figures | Tables | Total |
+|---|---:|---:|---:|
+| UNHCR / ReliefWeb | 35 | 35 | 70 |
+| Policy Research Working Papers | 35 | 35 | 70 |
+| Refugee Project Appraisal Documents | 35 | 35 | 70 |
+| Total | 105 | 105 | 210 |
+
+The [source-image register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) is a verified excerpt
+of the research selections, enriched with public source links and reuse notes.
+Its eight rows are sufficient for the local identity exercise. The complete
+sampling statistics remain in the [research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json),
+under study_summary. The dataset revision is
+626f3c54ba6d8f6e0ba0795f9e544e24b2650faf.
+
+| Register column | Meaning in the exercise |
+|---|---|
+| snapshot_id | This exact dataset filename identifies the selected artifact. |
+| split | The recorded role is development or heldout. |
+| corpus and artifact_type | These identify source grouping and figure/table membership. |
+| parent_document_id | This identifies the parent within its corpus. |
+| hf_image_url and hf_metadata_url | These pin the image and document context to a public dataset revision. |
+| original_record_url and original_pdf_url | These retain the institutional provenance supplied by the dataset metadata. |
+
+**Verification.** Confirm that a selected identity resolves to the recorded
+source, that the split has been preserved, and that the rationale explains both
+included diversity and exclusions. The accompanying image register records
+accessibility and redistribution limits; image downloading is unnecessary here.
+
+**What this does not do.** The eight-row teaching excerpt cannot establish the
+coverage of a new application. Neither eight nor 210 is a universal minimum.
+Additional sampling needs a reason tied to uncovered diversity. An arbitrary
+target count does not supply that rationale.
 
 </Recipe>
 
-<Recipe title="1.3 Check the development and held-out boundary" level="AI-ready" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+<Recipe title="1.3 Check the development and held-out boundary" level="AI-ready" skills="Python practitioner; evaluation reviewer" time="15–30 minutes with prepared registers">
 
-**Result:** An identity check will report overlap and the limits of the validation split.
+**Result:** An identity report states whether snapshots overlap and whether their parent documents are shared across the two collections.
 
-**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
-provides the following selection: verification_derived_facts. The
-[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
-specifies the parts appropriate to this stage.
+Snapshot-level separation means that the same image identity is not used in
+both collections. Parent-document separation is stronger in a different way:
+it asks whether validation introduces documents absent from development.
+Figures from one report can share terminology and presentation. The two
+checks therefore support different interpretations of generalization.
 
-**Draft scope.** Procedures, worked examples, and verification remain to be
-written. The outline preserves the intended result and evidence selection.
+1. Use one register row per snapshot with an explicit split and nonempty source identity. Check duplicate identities before counting support.
+2. Compare snapshot identities across splits. Treat an overlapping identity as a selection error requiring review.
+3. Compare parent identities using the pair of corpus and parent_document_id. A bare document identifier may be reused in different source collections.
+4. Report both results with their units and the scope of the register. Keep the teaching excerpt's results separate from the full study.
 
-**What this does not do.** This outline does not provide a complete procedure
-or claim a new execution of the research.
+**Worked example.** Place the downloadable
+[manifest checker](pathname:///cookbook-files/ai-assisted-metadata-schema-development/check_manifest.py) beside source_images.csv and run
+the following command. The checker reads the eight rows, checks required
+identity fields, and writes nothing.
+
+```bash
+python check_manifest.py source_images.csv
+```
+
+```text
+development: 6 snapshots, 6 parent documents
+heldout: 2 snapshots, 2 parent documents
+snapshot overlap: 0
+shared parent documents: 0
+```
+
+**Recorded collection boundary.** The full manifests contain 210 development
+snapshots from 132 parents and 202 held-out snapshots from 125 parents. They
+have zero overlapping snapshots and 65 shared parents. Those full-manifest
+comparisons were verified during evidence preparation and are labelled
+separately in evidence.json. The two selected held-out objects do not happen
+to share parents with the six selected development objects. That local result
+cannot replace the full-manifest comparison.
+
+The held-out collection contained 35 figures and 35 tables per corpus except
+for Refugee Project Appraisal Documents, where 27 eligible figures remained.
+The study tests additional snapshots from the selected reporting domains; it
+does not establish performance on a wholly document-disjoint collection.
+
+**Verification.** Expect the exact four output lines above for the supplied
+excerpt and exit status 0. A duplicate identity, unknown split, or missing
+identity value must produce a nonzero exit. Interpret shared parents explicitly;
+do not silently relabel a snapshot-disjoint design as document-disjoint.
+
+**What this does not do.** The script checks the supplied register only. It
+does not evaluate semantic diversity, reconstruct the full study split, or
+reserve new evaluation data. A future document-disjoint design is a proposed
+extension with different selection requirements.
 
 </Recipe>
 
 ## Expected artifact
 
-A characterization statement and frozen sample manifest will supply the inputs to independent discovery.
+The characterization statement and frozen register define the object, scope,
+provenance, and selection boundary for [independent discovery](./discovery.mdx).
+They do not prescribe its candidate field names.
 
 ## Implementation options
 
-A spreadsheet, CSV manifest, or JSON register can preserve the selection. Model summaries can support review of diversity; the final scope and sample rationale remain human decisions.
+A spreadsheet is adequate for an initial reviewed selection. CSV and JSON
+make identities easier to check programmatically. Model assistance can suggest
+diversity dimensions, but such suggestions need source inspection and human
+approval. Changing the artifact class or intended use can require revisiting
+the characterization before increasing the sample.
 
 ## World Bank examples
 
-The Data Snapshot case study supplies the recorded research example for this
-chapter. The [overview](./index.mdx) identifies its evidence and claim boundaries.
+The Data Snapshot study spans humanitarian reporting, policy research, and
+project operations. Its source groups illustrate diversity in reporting purpose.
+[Extracting Data from Documents](/cookbook/data-from-documents/) covers the
+separate task of locating and recovering artifacts from documents.
 
 ## Resources
 
-- The [evidence package notes](pathname:///cookbook-files/ai-assisted-metadata-schema-development/README.md) explain provenance, evidence labels, and limits.
-- The [source-image register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) links the artifacts to institutional documents and records reuse status.
-- Dy & Solatorio (2026). *Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs*. Working paper. The study supplies the methodology and recorded results used here.
+- The [offline exercise guide](pathname:///cookbook-files/ai-assisted-metadata-schema-development/RUN_EXERCISES.md) gives downloads, commands, exit statuses, and output-safety rules.
+- The [characterization worksheet](pathname:///cookbook-files/ai-assisted-metadata-schema-development/artifact_characterization.md) supplies a filled teaching statement.
+- The [source-image register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) provides attributable identities without requiring image copies.
+- The [public Data Snapshot dataset](https://huggingface.co/datasets/ai4data/data-snapshot) provides the linked images and source metadata.
+- Dy & Solatorio (2026). *Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs*. Working paper. Sections 3–5 supply the methodological scope and recorded collection design.
 
 ## Common mistakes
 
-- A document description can hide differences among its artifacts.
-- A convenient sample can omit an important reporting style.
-- Snapshot-disjoint samples can still share parent documents.
+- A report-level description can obscure different artifacts within the document.
+- Numerical observations can be mistaken for the reusable descriptive properties this task investigates.
+- Balanced group counts can be mistaken for statistical representativeness.
+- Zero overlap in an excerpt can be mistaken for the boundary of the full collection.
 
 ## Verification
 
-These criteria define the intended review. Commands and worked checks remain
-to be added with the recipes.
-
-- The artifact class and descriptive scope are explicit.
-- Development and held-out artifacts have stable identities and a documented selection rationale.
-- The sample register states diversity, exclusions, and limits on generalization.
+- Reviewers can explain the unit described and classify the three boundary examples consistently.
+- Every selected identity retains its corpus, parent, split, and attributable source reference.
+- The manifest command produces the quoted excerpt counts, while the full-study boundary remains separately identified.
 
 ## Checklist
 
 <Checklist id="ai-assisted-metadata-schema-development-characterization" items={[
-  "The artifact class and descriptive scope are explicit.",
-  "Development and held-out artifacts have stable identities and a documented selection rationale.",
-  "The sample register states diversity, exclusions, and limits on generalization.",]} />
+  'The artifact class, intended uses, and excluded contents have been reviewed.',
+  'The realized development and held-out identities are frozen and attributable.',
+  'Snapshot and parent-document overlap have been reported with their scope.',
+]} />

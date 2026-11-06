@@ -48,11 +48,31 @@ The World Bank use column records the research comparison only.
 
 Dy & Solatorio (2026). *Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs*. Working paper.
 
-Appendix F documents the standards review and its sources. Chapter 7 remains
-a recipe outline. The review was interactive and human-adjudicated; the guide
-does not supply a fixed historical prompt or automated standards pipeline.
-Detailed term-level checks will accompany chapter authoring and publication
-review.
+Appendix F documents the standards review and its sources. Chapter 7 now provides
+worked crosswalk, adjudication, and inventory-reconciliation exercises. The
+historical review was interactive and human-adjudicated; the guide does not
+supply a fixed historical prompt or automated standards pipeline.
+
+## Worked-term verification
+
+The following authoritative definitions were rechecked on **2026-11-07** for
+chapter 7. These checks are separate from the historical study's source dates.
+The table records the terms used in the worked comparisons; it does not imply
+that every term in the broader research crosswalk was reverified during chapter
+authoring.
+
+| Worked terms | Authoritative documentation and source status |
+|---|---|
+| DCMI title, subject, and source | [Title](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/terms/title/), [Subject](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/terms/subject/), and [Source](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/terms/source/). The DCMI Metadata Terms recommendation is dated 2020-01-20. |
+| PROV-O derivation and attribution | [wasDerivedFrom](https://www.w3.org/TR/prov-o/#wasDerivedFrom) and [wasAttributedTo](https://www.w3.org/TR/prov-o/#wasAttributedTo), in the W3C Recommendation dated 2013-04-30. |
+| Schema.org measured variables and projects | [variableMeasured](https://schema.org/variableMeasured) and [Project](https://schema.org/Project). These canonical term pages are mutable and identify themselves as the development version. |
+
+The manuscript records Schema.org access on 2026-09-23 without a pinned release.
+The new check date must not be substituted for that historical access date.
+Current definitions support the chapter's teaching comparison; the retained
+research decision matrix supplies the historical relationship judgments.
+Crosswalk labels such as Exact and Standard narrower are descriptive research
+categories. They do not assert formal vocabulary mappings or certify compliance.
 
 ## Corrections
 

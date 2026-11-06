@@ -3,7 +3,7 @@ id: discovery
 title: "2. Metadata Discovery"
 sidebar_label: "2. Discovery"
 sidebar_position: 3
-description: Each observation retains its artifact identity, proposed field, observed value, source level, description, and rationale.
+description: Generate and inspect independent, evidence-bearing proposals for reusable descriptive properties without fixing the operational field inventory.
 ---
 
 import Recipe from '@site/src/components/Cookbook/Recipe';
@@ -13,138 +13,286 @@ import Checklist from '@site/src/components/Cookbook/Checklist';
 
 **Question:** How can descriptive requirements emerge independently from artifacts?
 
-:::note[Structural draft]
-This chapter establishes learning milestones and candidate recipes. Detailed
-procedures, worked examples, executable exercises, and implementation checks
-remain for later authoring. Intended results below describe planned recipes.
-:::
-
 ## Rationale
 
-A metadata observation proposes a reusable descriptive property and records the evidence that motivated it. Its field name and observed value serve different purposes. Discovery explores potential requirements before a shared vocabulary is fixed.
+A metadata observation is a proposal for a reusable descriptive property,
+supported by a value and context from one artifact. It is an intermediate
+research record. Discovery asks which properties could help describe the
+artifact class; it does not populate a completed operational schema. The
+characterization from [chapter 1](./characterization.mdx) supplies the scope
+within which those proposals are useful.
 
-Independent assessment lets each artifact contribute without inheriting the names chosen for earlier artifacts. Repetition, ambiguity, and candidates later excluded from the schema remain evidence for subsequent review.
+Independent requests let every artifact contribute observations without adopting
+an inventory assembled from earlier responses. Different names, repeated
+meanings, and potentially excluded contents are expected. Preserving their
+values, descriptions, and brief rationales gives later semantic comparison more
+evidence than a list of names. The model's output remains a hypothesis even
+when it has valid JSON and a plausible explanation.
 
 ## Target state
 
-- Each observation retains its artifact identity, proposed field, observed value, source level, description, and rationale.
-- Discovery requests remain independent of an evolving shared inventory.
-- Uncertainty and failed or incomplete responses remain visible.
+- Each observation retains its artifact identity, proposed field, value, description, source level, and rationale.
+- Each request uses one artifact and identified context without an evolving shared vocabulary.
+- Response inspection distinguishes structural validity, execution success, and semantic correctness.
 
 ## Learning objectives
 
-- Separate field names from artifact-specific values.
-- Interpret source levels and explain how collection processing preserves independent requests and execution evidence.
+- The practitioner can explain a metadata observation and distinguish a reusable field from its value.
+- The practitioner can specify an independent multimodal request and a response contract.
+- The practitioner can inspect collection records and design explicit failure and resumption behavior.
 
 ## Prerequisite concepts
 
-Chapter 1 establishes artifact identities and scope. The practitioner understands structured API responses and the difference between artifact evidence and document context.
+The artifact scope and fixed identities from chapter 1 are available.
+The practitioner understands API requests and JSON objects. Offline inspection
+uses Python 3.10 or newer with no additional packages or credentials.
 
 ## Maturity levels
 
 | Level | Steps |
 |---|---|
-| **Foundational** | Inspect retained observations and source artifacts with a reviewer. |
-| **AI-ready** | Define observation records with identities, evidence sources, and execution status. |
-| **AI-native** | Process independent model requests with recorded settings, response checks, and later human acceptance decisions. |
+| **Foundational** | A person can inspect proposed properties and their artifact evidence. |
+| **AI-ready** | Structured observations have stable identities, source context, and documented checks. |
+| **AI-native** | Independent model requests preserve provenance and execution evidence, with verification before later human decisions. |
 
 :::info[Running example]
-The Jordan, Afghanistan, and Russia examples contain figure_title, table_title, and chart_title observations. The Russian figure has both a caption and an internal chart title with different wording. Pakistan and Lebanon observations preserve specialized and potentially excluded candidates. These outputs remain model hypotheses.
+**Recorded study result.** Independent discovery over 210 snapshots produced
+3,041 observations. **Teaching excerpt.** Three selected responses retain four
+title-related observations. The Jordan chart, Afghanistan table, and Russian
+chart are the same objects introduced in chapter 1. The downloaded excerpts
+have not been generated by a new model execution.
 :::
 
 ## Recipes
 
-These are candidate recipes. Time estimates remain pending until their
-procedures and verification have been authored.
+<Recipe title="2.1 Trace an artifact into metadata observations" level="Foundational" skills="Domain reviewer; technical practitioner" time="30–45 minutes for three artifacts">
 
-<Recipe title="2.1 Trace an artifact into metadata observations" level="Foundational" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+**Result:** An inspected observation excerpt distinguishes the candidate property, its observed value, its source, and its proposed descriptive value.
 
-**Result:** An annotated excerpt will distinguish a candidate field, its observed value, and its source evidence.
+A field name identifies a reusable property, such as geographic scope. A value
+instantiates that property for one artifact, such as Afghanistan. The candidate
+requirement is the suggestion that a useful schema might need to describe this
+property. Neither the name nor the accompanying value constitutes acceptance
+of a final operational field.
 
-**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
-provides the following selection: independent-naming. The
-[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
-specifies the parts appropriate to this stage.
+1. Identify the artifact in source_images.csv and read its title and provenance. The text examples below remain usable without opening the image.
+2. Locate the independent-naming example in evidence.json. Read metadata_field together with observed_value and description. A name alone can hide different intended meanings.
+3. Inspect source_level and reasoning. Decide whether the evidence is in the snapshot, supplied document context, or both. Preserve the recorded uncertainty and inference wording.
+4. Identify any part of the proposed property that concerns extracted analytical contents. Keep the recorded proposal available for later review; do not rewrite it silently into an accepted concept.
 
-**Draft scope.** Procedures, worked examples, and verification remain to be
-written. The outline preserves the intended result and evidence selection.
+**Worked example.** The following values are faithful title-related teaching
+excerpts from the recorded responses. The exact identities and full selected
+observations are retained in the [research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json).
 
-**What this does not do.** This outline does not provide a complete procedure
-or claim a new execution of the research.
+| Artifact | Proposed field | Recorded observed value |
+|---|---|---|
+| Jordan food-expenditure chart | figure_title | Figure 2: Share of food expenditure in total expenditure p.c. (%) |
+| Afghanistan income table | table_title | Monthly labor income in Afghanistan and remittances from abroad |
+| Russian fiscal chart | chart_title | Strength of Total Revenue and Total Expenditure Anti-Cyclicality |
+| The same Russian chart | figure_title | Russia: Strength of Anti-Cyclicality of Fiscal Revenues and Expenditures |
+
+The Russian observation distinguishes an internal chart heading from the
+broader caption. Similar descriptive purposes therefore do not make the two
+strings interchangeable. The model proposed discovery_value medium for the
+internal heading and high for the caption. That assessment records the model's judgment of likely descriptive utility.
+The study did not measure a retrieval score for it.
+
+| Observation attribute | Interpretation |
+|---|---|
+| metadata_field | This is the proposed reusable property name. |
+| observed_value | This is the source-grounded value or explicitly recorded uncertainty. |
+| description | This explains the intended property meaning in this observation. |
+| source_level | This identifies snapshot, document, or combined support. |
+| discovery_value | This records the model's high, medium, or low utility assessment. |
+| reasoning | This is the model's brief stated justification for descriptive usefulness. |
+| snapshot_id, source, and model | These are execution provenance carried beside the observation. |
+
+The Jordan title describes the represented indicator. A list of its bar values
+would reproduce analytical contents. Its geographic_scope observation instead
+states “Jordan, inferred from parent document title and project name; not
+visible in snapshot.” That exact wording remains in the profiling input in
+[chapter 3](./concept-synthesis.mdx). A structured record must not turn the
+inferred value into an unqualified visual observation.
+
+**Verification.** Match each selected row to its identity and source register.
+For the Russian chart, explain why two headings were observed without assuming
+two final schema fields. For Jordan, identify the evidence source separately
+from the usefulness of the candidate property.
+
+**What this does not do.** This inspection does not certify the model's reading,
+accept field names, or extract numerical series. The four selected observations
+are not the complete output for the three artifacts.
 
 </Recipe>
 
-<Recipe title="2.2 Prepare an independent discovery request" level="AI-native" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+<Recipe title="2.2 Prepare an independent discovery request" level="AI-native" skills="LLM practitioner; domain reviewer" time="45–60 minutes for a request specification">
 
-**Result:** A bounded request specification will describe image input, document context, response structure, and uncertainty treatment.
+**Result:** A request specification states the image input, document context, independent discovery objective, response structure, and output checks.
 
-**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
-provides the following selection: independent-naming; provenance-split inputs only. The
-[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
-specifies the parts appropriate to this stage.
+A multimodal request supplies the image as evidence alongside text. A response
+contract fixes how observations are represented, including their attributes
+and allowed source-level values. It leaves the proposed metadata_field values
+open. This separates a schema for recording observations from an operational
+metadata schema whose descriptive field inventory has already been decided.
 
-**Draft scope.** Procedures, worked examples, and verification remain to be
-written. The outline preserves the intended result and evidence selection.
+1. Supply the exact artifact identity and image. Add available associated document metadata as separately identified context. State when context is unavailable.
+2. Explain the artifact class and descriptive purpose from chapter 1. Ask for reusable properties, supported values, descriptions, and brief utility rationales. Keep numerical content extraction outside the objective.
+3. Require evidence-source and uncertainty labels. The historical prompt permitted supported inference with an explicit label; it did not make inferred values equivalent to directly visible evidence.
+4. Use the same discovery instructions independently for each artifact. Do not insert earlier observations or an inventory updated after every request.
+5. Validate the response structure and enums, then inspect evidence fidelity separately. A valid response can still confuse a caption with a heading or misinterpret contextual geography.
 
-**What this does not do.** This outline does not provide a complete procedure
-or claim a new execution of the research.
+The [discovery request](pathname:///cookbook-files/ai-assisted-metadata-schema-development/discovery_request.md) is an independently written,
+unexecuted teaching adaptation. The complete text is available below. Its user
+section identifies logical input contents; it is not a ready-to-send
+provider-specific API payload.
+
+<details>
+<summary>Discovery request specification</summary>
+
+```markdown file=../../website/static/cookbook-files/ai-assisted-metadata-schema-development/discovery_request.md
+```
+
+</details>
+
+**Worked example.** A Jordan request is prepared with the chart image and its
+snapshot identity. The source register identifies “Jordan - Emergency Food
+Security Project” as the parent title and links its pinned metadata record.
+Those references tell a practitioner where context comes from. They do not
+reconstruct the complete historical document-context JSON or rendered messages.
+The selected response demonstrates the following checks.
+
+| Check | Expected interpretation for the example |
+|---|---|
+| Identity | The result belongs to 027_Jordan-Emergency-Food-Security-Project_figure_001.png. |
+| Contract | The selected item contains all six observation attributes as strings. |
+| Evidence source | The title is snapshot-supported; the separate geographic observation retains its document-context inference. |
+| Semantics | The field describes a title; its value is not used as a new field name. |
+| Acceptance | The proposal remains available for later synthesis and human refinement. |
+
+**Recorded configuration.** The study used GPT-5.5 with medium reasoning and
+a 5,000-token output ceiling for discovery. Available associated document
+metadata accompanied the image. The prompt requested the 10–15 most useful
+fields, but the study observed a range of 10–16. That preference was not a
+strict response-array constraint. These settings document the historical execution. A fresh replication needs
+its own model choice and configuration review.
+
+**Verification.** Inspect the three recorded response excerpts with the command
+in recipe 2.3. Its checks demonstrate required strings, source-level and utility
+enums, identities, and completion status. It does not constrain proposed field
+names to an evolving inventory or prove semantic correctness.
+
+**What this does not do.** No live request is made here. An artifact-only request
+is a possible implementation option with less context; it changes the input
+protocol and must be labelled as a variation. Repeating a request with another
+model or prompt is a replication attempt whose outputs may differ.
 
 </Recipe>
 
-<Recipe title="2.3 Process a collection and inspect execution records" level="AI-native" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+<Recipe title="2.3 Process a collection and inspect execution records" level="AI-native" skills="Python and API practitioner; metadata reviewer" time="30 minutes for offline inspection; live processing varies">
 
-**Result:** A collection-processing plan will retain request identities, settings, outcomes, and failures.
+**Result:** A checked response excerpt demonstrates collection-level provenance and structural validation, with an explicit design for preserving failures and repeated attempts.
 
-**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
-provides the following selection: study_summary. The
-[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
-specifies the parts appropriate to this stage.
+A sequential runner submits each development artifact independently and records
+the outcome before moving to the next. It can process hundreds of samples
+without turning discovery into incremental vocabulary design. Sequential
+per-artifact processing does not imply use of a provider's Batch API.
 
-**Draft scope.** Procedures, worked examples, and verification remain to be
-written. The outline preserves the intended result and evidence selection.
+1. Read frozen development identities from the manifest. Resolve each image and its associated document context from the recorded source revision. Exclude held-out identities from discovery.
+2. Keep the discovery prompt fixed across the collection and submit one artifact at a time. Record the model, prompt version or checksum, settings, artifact identity, and context provenance with each attempt.
+3. Preserve the original response and parsed observations in a new run directory. Validate the result before marking the attempt successful. Log status, incomplete output, and exceptions even when no fields can be parsed.
+4. Specify resumption before running. For a proposed replication, skip identities with a validated successful result under the same configuration. Keep failed attempts inspectable and make retries explicit. Use a new run for a changed configuration.
+5. Inspect identity coverage, failures, parse results, and settings before flattening observations for profiling. Missing records and invalid responses must remain distinguishable from artifacts with no useful observations.
 
-**What this does not do.** This outline does not provide a complete procedure
-or claim a new execution of the research.
+Steps 2–4 describe an auditable replication design. The historical runner wrote
+a row for each attempt, including failures, and resumed by skipping previously
+logged identities. Its skip rule included failed rows. It did not automatically
+implement the success-only retry policy proposed above. The available excerpts
+also omit raw responses and full input messages; exact byte-for-byte request
+reconstruction is not claimed.
+
+**Worked example.** The [response inspector](pathname:///cookbook-files/ai-assisted-metadata-schema-development/inspect_discovery.py) loops
+over the three selected records in
+[discovery_excerpt.jsonl](pathname:///cookbook-files/ai-assisted-metadata-schema-development/discovery_excerpt.jsonl). It verifies that their
+identities belong to development in source_images.csv, checks the recorded
+corpus and model, and validates successful selected fields. It writes nothing
+and has no network or model client.
+
+```bash
+python inspect_discovery.py discovery_excerpt.jsonl source_images.csv
+```
+
+```text
+3 selected response records: 3 valid, 0 failed
+4 retained fields; 43 fields in the original valid responses
+These excerpts omit original fields and raw responses.
+```
+
+The original Jordan, Afghanistan, and Russia responses contained 14, 14, and
+15 fields respectively. Four selected title fields are shipped here. Both
+the selected-field count and original counts are recorded so that an excerpt
+cannot be mistaken for complete research output.
+
+**Verification.** The supplied excerpt exits with status 0. A logged execution
+failure produces status 1. Unknown or duplicate identities, inconsistent
+provenance, and malformed selected observations produce status 2. The exercise
+does not create a retry or send a request; its source shows the checks a
+collection runner must apply before considering a record usable.
+
+**What this does not do.** The inspector cannot measure full-study completeness,
+replay omitted responses, or establish observational accuracy. Live collection
+processing remains optional and requires provider-specific integration, an
+explicit budget, and independent verification of new outputs.
 
 </Recipe>
 
 ## Expected artifact
 
-Evidence-bearing metadata observations will provide the input to deterministic profiling.
+A traceable collection of independent metadata observations is the input to
+[field profiling](./concept-synthesis.mdx). Its execution provenance remains
+separate from the descriptive properties the future schema may contain.
 
 ## Implementation options
 
-Retained responses support an offline path. A later live replication can use independent multimodal requests and structured outputs. Fresh outputs must remain separate from the recorded study evidence.
+The offline route supports all inspection in this chapter without credentials.
+An optional live replication can use a provider that accepts image and text
+inputs and structured outputs. Model availability, cost, nondeterminism,
+truncation, and source-context quality must be assessed before that run.
+A provider Batch API would be a separate execution choice; independence still
+requires one artifact's output to remain absent from another's input.
 
 ## World Bank examples
 
-The Data Snapshot case study supplies the recorded research example for this
-chapter. The [overview](./index.mdx) identifies its evidence and claim boundaries.
+The Data Snapshot case provides the recorded discovery evidence. The related
+[metadata curation cookbook](/cookbook/metadata-curation-with-llms/) addresses
+records within an existing schema. Its drafting task begins after the kind of
+schema-development decisions taught here.
 
 ## Resources
 
-- The [evidence package notes](pathname:///cookbook-files/ai-assisted-metadata-schema-development/README.md) explain provenance, evidence labels, and limits.
-- The [source-image register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) links the artifacts to institutional documents and records reuse status.
-- Dy & Solatorio (2026). *Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs*. Working paper. The study supplies the methodology and recorded results used here.
+- The [offline exercise guide](pathname:///cookbook-files/ai-assisted-metadata-schema-development/RUN_EXERCISES.md) identifies the exact inputs, commands, and limits.
+- The [teaching discovery request](pathname:///cookbook-files/ai-assisted-metadata-schema-development/discovery_request.md) separates the logical request specification from the historical configuration.
+- The [response excerpt](pathname:///cookbook-files/ai-assisted-metadata-schema-development/discovery_excerpt.jsonl) and [source register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) support identity and response checks.
+- Dy & Solatorio (2026). *Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs*. Working paper. Sections 4.1 and 6.1 and Appendix B explain the discovery objective and execution.
 
 ## Common mistakes
 
-- Observed categories can be mistaken for reusable field names.
-- Early vocabulary reuse can suppress descriptive differences.
-- A model observation can be mistaken for a human-verified annotation.
+- A response contract can be confused with a fixed descriptive field inventory.
+- Observed values or extracted numerical contents can be accepted as reusable field names.
+- Inputting earlier discoveries into later requests can change independent discovery into an evolving vocabulary workflow.
+- A successful response status can be mistaken for a correct interpretation.
+- Blindly skipping logged identities can leave failed attempts permanently unprocessed.
 
 ## Verification
 
-These criteria define the intended review. Commands and worked checks remain
-to be added with the recipes.
-
-- Each observation retains its artifact identity, proposed field, observed value, source level, description, and rationale.
-- Discovery requests remain independent of an evolving shared inventory.
-- Uncertainty and failed or incomplete responses remain visible.
+- Selected identities resolve to the development register, and retained values and uncertainty match the prepared evidence.
+- Response checks preserve the difference between selected and original field counts.
+- A replication plan specifies independent inputs, context provenance, output location, configuration identity, and failure handling.
 
 ## Checklist
 
 <Checklist id="ai-assisted-metadata-schema-development-discovery" items={[
-  "Each observation retains its artifact identity, proposed field, observed value, source level, description, and rationale.",
-  "Discovery requests remain independent of an evolving shared inventory.",
-  "Uncertainty and failed or incomplete responses remain visible.",]} />
+  'Candidate properties, observed values, and analytical contents are distinguishable.',
+  'Image and document context are explicitly identified for each independent request.',
+  'Structural validation and execution success are separate from semantic correctness.',
+  'Failure, resumption, and retry policies are explicit before live processing.',
+]} />

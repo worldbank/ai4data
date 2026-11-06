@@ -7,9 +7,10 @@ description: Evidence, scope, and review requirements for contributions to this 
 
 # Contributing
 
-This guide is a structural draft. Its candidate recipes establish intended
-results and supporting evidence. Procedures, worked examples, executable
-exercises, and realistic time estimates remain for later authoring.
+This guide is a working draft. All seven chapters provide substantive recipes,
+worked examples, and offline exercises or review worksheets. The complete draft
+awaits coordinated editorial and technical review while remaining hidden from
+public navigation.
 
 Contributions can be proposed through
 [GitHub issues](https://github.com/worldbank/ai4data/issues) and pull requests

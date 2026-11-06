@@ -7,6 +7,8 @@ description: Terms used in this guide.
 
 # Glossary
 
+**Agent.** An AI system that calls tools to complete a task; here an assistant that calls the organization's data API or MCP server to answer a question about statistics.
+
 **AI-ready.** Data and metadata that software, including AI systems, can find, retrieve, interpret, and cite without manual steps. See the [AI-ready data framework](/docs/ai-ready-framework).
 
 **Annotation.** Optional properties on a tool that describe its behaviour (for example that it is read-only); hints that clients treat as untrusted unless the server is trusted.
@@ -21,9 +23,13 @@ description: Terms used in this guide.
 
 **Canonical metadata concept.** A shared descriptive meaning proposed across field profiles, with a name, definition, examples, and rationale for consolidation.
 
+**Checksum.** A fingerprint of a file's content (here SHA-256) that changes if one byte of the file changes; used to prove that a file is as released.
+
 **Concept coverage.** The descriptive evidence obtained by assigning development field profiles to reviewed concepts or a residual category; it supports human review.
 
 **Concept inventory.** An intermediate collection of descriptive concepts, definitions, examples, and refinement decisions that precedes operational field design.
+
+**Confidence.** A number between 0 and 1 that a model returns with its output to say how sure it is; the basis of a threshold rule.
 
 **Coverage.** The share of a reference list of known uses that the collected documents contain.
 
@@ -35,15 +41,23 @@ description: Terms used in this guide.
 
 **Decision.** A curator's recorded verdict on a suggestion: accept, edit (with the final text), or reject (with a reason).
 
+**Document record.** The catalog record of a document in the World Bank document schema, with the series and surveys it draws on.
+
+**Estimated.** The status of an extracted value for which the document offers no check: no printed label, total, or derivation.
+
 **Evidence pack.** The list, by assessment question, of the artefact that answers it, its location, and its date, compiled for an AI-readiness assessment.
 
 **Gap.** The distance between a dimension's current level and its target, measured in levels and in the number of questions below the target's value.
 
 **Gate.** The rule that decides whether a change ships, applied to a paired comparison of the evaluation suite before and after the change.
 
+**Grounding.** Restricting a language model to what was retrieved or given for the task: an answer that uses only the retrieved records, a draft that uses only what the record and its named sources support.
+
 **Held-out validation.** Assessment of an operational schema against artifacts excluded from its initial development, with candidate findings and explicit claim limits.
 
 **Human adjudication.** A documented human decision about the evidence, scope, materiality, and appropriate treatment of a proposed concept or schema change.
+
+**Incident.** An AI component's output reaching a reviewer, a product, or a user with an error that the controls should have caught, or that a control caught at the last step; handled by a fixed procedure and recorded.
 
 **Inventory.** The list of documents with their type, year, page count, text-layer status, and counts of tables and figures.
 
@@ -71,11 +85,25 @@ description: Terms used in this guide.
 
 **Operational metadata schema.** A specification of usable metadata fields, definitions, evidence rules, examples, and annotation guidance for an intended application.
 
+**Precision.** The share of extracted mentions that are correct.
+
+**Precision and recall.** Precision is the share of what a system found that is right; recall is the share of what is there that the system found. F1 is the average that combines the two.
+
+**Prompt.** The instructions and context given to a language model for one task; kept as a versioned file when it is part of a workflow.
+
 **Provenance.** The record of where a value came from: the series, the release, the source, the document and page, the method, and the version, carried with the value.
 
 **RAG.** Retrieval-augmented generation. A pattern where the system retrieves records first and the model writes the answer from them.
 
+**Recall.** The share of labelled mentions that the extractor found.
+
+**Representativeness.** The degree to which a dataset's composition matches the population it will be used on, measured group by group and stated in the card.
+
 **Resource.** Context a server offers to the model or the user, such as code lists or a release calendar, identified by a URI.
+
+**Roles.** What a model may do in production: flag, propose, code, explain, draft. It does not decide.
+
+**schema.org.** A vocabulary that search engines agree on for describing things on web pages; a Dataset record in it, embedded in a page, is how dataset search engines learn what the page is about.
 
 **Split.** The division of a dataset into a training part (the model learns from it), a validation part (the model builder chooses settings on it), and a test part (touched once, to report a score).
 
@@ -87,9 +115,15 @@ description: Terms used in this guide.
 
 **Threshold.** The value of a score (a confidence, a similarity, a garble rate) at which the rule changes what happens to an item; set from measurements.
 
+**Token.** The unit in which language models read and write text, roughly three quarters of a word; prices, context limits, and throughput are counted in tokens.
+
 **Trace.** The logged record of one question: tools called, series used, answer, whether the agent declined, latency.
 
 **Use.** A document whose analysis, decision, or statement depends on the data, as opposed to a mention that cites them as context.
+
+**Utility.** How closely the synthetic file reproduces the real one at the marginal, association, and analysis levels.
+
+**Variant.** A way of naming a dataset other than its canonical name: an acronym, an informal name, a translation, a misspelling.
 
 **Verified.** The status of an extracted value that matched a printed label, a total, a derivation, or a catalog value.
 

@@ -1,0 +1,38 @@
+[
+  {
+    "snapshot_id": "027_Jordan-Emergency-Food-Security-Project_figure_001.png",
+    "snapshot_type": "figure",
+    "source": "refugee",
+    "model": "gpt-5.5",
+    "metadata_field": "geographic_scope",
+    "observed_value": "Jordan, inferred from parent document title and project name; not visible in snapshot",
+    "description": "The country, region, or geographic area to which the figure data applies.",
+    "source_level": "document",
+    "discovery_value": "high",
+    "reasoning": "Geographic context is essential for discovery because it is not shown in the figure itself."
+  },
+  {
+    "snapshot_id": "108733-revised-public-wb-unhcr-policy-brief-final_table_000.png",
+    "snapshot_type": "table",
+    "source": "unhcr",
+    "model": "gpt-5.5",
+    "metadata_field": "geographic_scope",
+    "observed_value": "Afghanistan",
+    "description": "The country, region, or other geographic area covered by the table.",
+    "source_level": "snapshot",
+    "discovery_value": "high",
+    "reasoning": "Geographic scope is essential for filtering and retrieving country-specific data."
+  },
+  {
+    "snapshot_id": "document_11958451_figure_009.png",
+    "snapshot_type": "figure",
+    "source": "prwp",
+    "model": "gpt-5.5",
+    "metadata_field": "geographic_scope",
+    "observed_value": "Russia",
+    "description": "The country, region, or geographic entity covered by the snapshot.",
+    "source_level": "both",
+    "discovery_value": "high",
+    "reasoning": "Geographic scope is essential for filtering and retrieving country-specific fiscal evidence."
+  }
+]

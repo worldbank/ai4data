@@ -3,7 +3,7 @@ id: concept-refinement
 title: "4. Expert Concept Refinement and Assessment"
 sidebar_label: "4. Concept refinement"
 sidebar_position: 5
-description: Concept dispositions have reviewable semantic and scope reasons.
+description: Review candidate meanings, classify profiles against a fixed inventory, and interpret concept support and residual evidence.
 ---
 
 import Recipe from '@site/src/components/Cookbook/Recipe';
@@ -13,138 +13,291 @@ import Checklist from '@site/src/components/Cookbook/Checklist';
 
 **Question:** Which concepts should remain, and how does the development evidence support them?
 
-:::note[Structural draft]
-This chapter establishes learning milestones and candidate recipes. Detailed
-procedures, worked examples, executable exercises, and implementation checks
-remain for later authoring. Intended results below describe planned recipes.
-:::
-
 ## Rationale
 
-A concept inventory records shared descriptive meanings before operational fields are designed. Human refinement determines equivalence, scope, clarity, and conceptual boundaries. Frequency and similarity supply evidence for these decisions.
+The 70 candidate concepts from [chapter 3](./concept-synthesis.mdx) are
+proposals about shared meanings. Expert refinement determines whether their
+distinctions serve the artifact class and intended uses. A plausible model
+definition can overlap another concept, describe analytical contents, or
+preserve a distinction that reviewers cannot apply consistently. Those are
+semantic and scope questions that counts alone cannot settle.
 
-Concept coverage assessment assigns development field profiles to reviewed concepts or a residual category. The assignments expose specialized concepts, unusual boundaries, and excluded contents. This assessment characterizes development evidence before held-out schema validation.
+Concept coverage assessment then asks how the independently discovered field
+profiles relate to the reviewed inventory. It classifies each profile against
+a fixed vocabulary and examines the supporting observations. This is evidence
+about the development collection. It precedes operational field design and
+held-out schema validation; it does not establish that a final schema is complete.
 
 ## Target state
 
-- Concept dispositions have reviewable semantic and scope reasons.
-- Original assignments use the reviewed 41-concept inventory plus the residual category.
-- Low-support concepts and residual profiles are inspected in context.
+- A reviewed concept inventory retains reasons for merges, renames, exclusions, and unresolved decisions.
+- Versioned assignments connect profiles to retained concepts or an explicit residual category.
+- Coverage summaries preserve their units, denominators, and evidence for specialized or ambiguous cases.
 
 ## Learning objectives
 
-- Explain a human merge, rename, or exclusion.
-- Interpret constrained assignments and rare concepts without an automatic frequency threshold.
+- The practitioner can document a defensible concept disposition using meaning, scope, and intended use.
+- The practitioner can explain constrained classification and inspect its results without granting the model decision authority.
+- The practitioner can interpret rare concepts and residual assignments without an automatic exclusion threshold.
 
 ## Prerequisite concepts
 
-Chapter 3 provides profiles and candidate concepts. The practitioner can distinguish descriptive metadata from analytical contents and explain a support denominator.
+Chapter 3 supplies candidate concepts, exact-name profiles, and their underlying
+observations. The reviewer understands the artifact class and its intended
+descriptive uses. All worked exercises in this chapter are offline document
+reviews using the prepared evidence; no API credentials are required.
 
 ## Maturity levels
 
 | Level | Steps |
 |---|---|
-| **Foundational** | Review candidate concepts and record semantic and scope decisions. |
-| **AI-ready** | Maintain structured decisions and support summaries by corpus and artifact type. |
-| **AI-native** | Use constrained model assignments with residual labels and human inspection of ambiguous or unexpected mappings. |
+| **Foundational** | A reviewer records concept meanings, scope boundaries, and reasons for decisions. |
+| **AI-ready** | Identified inventories, assignment versions, and support summaries permit repeatable inspection. |
+| **AI-native** | Constrained model classification supplies traceable evidence, while humans adjudicate uncertain mappings and concept changes. |
 
 :::info[Running example]
-The study retained 41 concepts. Indicator-related merges, the visualization-type rename, and selected exclusions illustrate human decisions. Financing instruments and data-collection methods illustrate low support. The original panel_titles assignment is residual here; its later operational treatment belongs to chapter 5.
+**Recorded study result.** Expert refinement produced 41 retained concepts from
+70 candidates. The surviving inventory file also contains eight merge rows;
+its 49 rows are not a complete ledger of all 70 dispositions. The subsequent
+original mapping contains 833 profile assignments. **Teaching exercises.**
+Selected decisions, title assignments, rare concepts, and residual cases make
+those transformations inspectable without rerunning the study.
 :::
 
 ## Recipes
 
-These are candidate recipes. Time estimates remain pending until their
-procedures and verification have been authored.
+<Recipe title="4.1 Record concept merges, renames, and exclusions" level="Foundational" skills="Domain expert; metadata reviewer" time="45–60 minutes for the selected decisions">
 
-<Recipe title="4.1 Record concept merges, renames, and exclusions" level="Foundational" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+**Result:** A concept-review worksheet records the proposed action, supporting evidence, semantic and scope rationale, and human disposition.
 
-**Result:** A reviewed inventory will preserve reasons for the demonstrated dispositions.
+A merge asserts that one retained meaning adequately represents several
+candidate meanings. A rename improves the label while preserving the intended
+concept. An exclusion removes a candidate from this inventory's descriptive
+scope. Review therefore needs definitions and evidence, alongside an explicit
+account of which distinctions remain useful for discovery and interpretation.
 
-**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
-provides the following selection: human-concept-decisions. The
-[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
-specifies the parts appropriate to this stage.
+1. Read each candidate definition and its representative fields. Compare related concepts using descriptions and observed values. State the meaning that would be preserved or lost by a merge.
+2. Assess redundancy, descriptive relevance, and distinguishability in artifact evidence. Identify an intended downstream use for a distinction that warrants retention. Preserve a borderline case for review when its scope remains uncertain.
+3. Save a new working copy of the existing [concept-review template](pathname:///cookbook-files/ai-assisted-metadata-schema-development/concept_review_template.csv). Leave the supplied blank template unchanged. Use evidence_reference to identify the example and stage, and keep proposed_action separate from the final decision.
+4. Record the target for a merge or rename and check that it exists in the reviewed inventory. Add the actual reviewer and decision reason for a new review. Mark any reconstructed explanation as a teaching interpretation.
 
-**Draft scope.** Procedures, worked examples, and verification remain to be
-written. The outline preserves the intended result and evidence selection.
+**Worked example.** The human-concept-decisions example in
+[evidence.json](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json) preserves the following representative
+decisions from the paper's Table 11.
 
-**What this does not do.** This outline does not provide a complete procedure
-or claim a new execution of the research.
+| Candidates | Recorded disposition | Recorded case-specific rationale |
+|---|---|---|
+| measure_name, axis_variable, outcome_variable | Merge into indicator_name. | The concepts represent equivalent analytical variables expressed through different visualization or disciplinary terminology. |
+| presentation_type | Rename to visualization_type. | The name improves conceptual clarity and applicability across visualization types. |
+| data_values, legend_semantics | Exclude from the reviewed inventory. | In this review, they described extracted contents outside the intended reusable metadata concepts. |
+
+The indicator merge retains the distinction between what is measured and the
+numeric observations themselves. A cost, rate, or estimated outcome can share
+the retained measured-concept meaning without making its individual values
+metadata. Excluding legend_semantics also does not discard every legend label:
+a legend can supply a value for a retained category or indicator concept.
+
+For a filled teaching row, use concept_name measure_name, proposed_action
+merge, and target_concept indicator_name. Reference human-concept-decisions
+and Table 11, state the common measured-variable meaning in semantic_rationale,
+and record the reported merge in decision. A note such as “teaching transcription
+of a recorded disposition; historical reviewer identity not supplied” prevents
+the worksheet from masquerading as an original adjudication record.
+
+**Verification.** A second reviewer can trace each demonstrated action to the
+prepared evidence and explain its meaning or scope rationale. Merge targets
+are retained concepts. The worksheet separates a current reviewer's proposed
+action from the reported historical outcome. Do not infer the unrecorded
+dispositions needed to reconcile every candidate from the row count alone.
+
+**What this does not do.** The exercise does not reconstruct all 70 decisions,
+their dates, or undocumented deliberations. The retained 41 rows and eight merge
+rows establish an inventory and selected transformations. A complete audit history is unavailable. They do not yet determine operational fields.
 
 </Recipe>
 
-<Recipe title="4.2 Assign profiles to a reviewed inventory" level="AI-native" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+<Recipe title="4.2 Assign profiles to the reviewed concept inventory" level="AI-native" skills="LLM practitioner; metadata reviewer" time="30–45 minutes for the retained assignment review">
 
-**Result:** A constrained assignment table will connect profiles to an existing concept or residual category.
+**Result:** A versioned assignment table connects each field profile to one reviewed concept or the residual label, with model confidence and review status kept distinct.
 
-**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
-provides the following selection: canonical-title original assignments; operational-panel-title original assignment only. The
-[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
-specifies the parts appropriate to this stage.
+Classification follows refinement because it needs stable target meanings.
+Open-ended synthesis could propose new concepts; this assessment selects from
+the reviewed vocabulary. Definitions and representative fields constrain the
+semantic comparison. The historical residual label not_in_ontology permits a
+profile to remain outside the inventory without forcing a misleading match.
+It does not make the inventory a formal ontology.
 
-**Draft scope.** Procedures, worked examples, and verification remain to be
-written. The outline preserves the intended result and evidence selection.
+1. Freeze the reviewed concept names, definitions, and examples. In the study, only the 41 keep rows became concept targets. Examples from merge rows were appended to their retained targets; merged names did not become extra targets.
+2. Supply one profile's metadata_field, top_description_values, and top_observed_values with that reference inventory. Compare meaning across all three attributes. Classification does not change the vocabulary while processing profiles.
+3. Require one canonical_name from the retained names plus not_in_ontology, and one confidence value from high, medium, or low. Preserve execution status and the original output beside the profile identity.
+4. Check allowed names and coverage of the intended input profiles. Inspect residuals, ambiguous fits, and surprising high-confidence results. Log any human correction separately and retain the original assignment for comparison.
 
-**What this does not do.** This outline does not provide a complete procedure
-or claim a new execution of the research.
+The downloadable [assessment request](pathname:///cookbook-files/ai-assisted-metadata-schema-development/concept_assessment_request.md)
+is an independently written, unexecuted teaching adaptation of the historical
+classification task. It describes logical inputs and checks, without supplying
+a live API runner.
+
+<details>
+<summary>Concept assessment request specification</summary>
+
+```markdown file=../../website/static/cookbook-files/ai-assisted-metadata-schema-development/concept_assessment_request.md
+```
+
+</details>
+
+**Worked example.** Inspect original_profile_assignments in canonical-title
+and rare-and-residual, and original_profile_assignment in operational-panel-title.
+The following are recorded original assignments; confidence high is the model's
+judgment of fit to the fixed inventory.
+
+| Exact-name profile | Original concept assignment | Confidence |
+|---|---|---|
+| figure_title | title | high |
+| table_title | title | high |
+| chart_title | title | high |
+| sample_size | not_in_ontology | high |
+| panel_titles | not_in_ontology | high |
+
+The title rows continue chapter 3's lexical comparison. The chart_title
+profile includes internal headings, so even a valid high-confidence title
+assignment deserves inspection of its scope. Conversely, the residual label
+for sample_size records an intentional boundary; it is not a request to add a
+field automatically.
+
+**Recorded configuration and chronology.** The classifier used GPT-5.4 mini
+with medium reasoning, a Pydantic enumeration of the 41 names plus the residual,
+and default API output-token and temperature settings. A later mapping changed
+five assignments, including panel_titles to panel_title. The other changed
+profiles were unit_of_analysis, event_context, operational_context, and
+contextual_event. Those later edits are excluded from this chapter's original
+coverage statistics. They do not establish that panel_title was among the 41.
+
+**Execution-record limit.** The original mapping has 833 labelled rows. The
+retained execution log contains 832 completed results and one preprocessing
+failure for missing_value_marker. The mapping assigns that profile to
+interpretive_note, but the inspected log supplies no successful parsed result
+for it. Its resolution is undocumented. The mapping is therefore an analysis
+artifact whose every row cannot be claimed as a retained successful model call.
+
+**Verification.** Reconcile the five selected rows above against the original
+assignment entries in the prepared evidence. An allowed label confirms
+vocabulary compliance only. Inspect the profile's meaning, confidence, execution
+status, and any review record independently. Keep mapping versions separate;
+the later panel_title assignment belongs to [chapter 5](./schema-design.mdx).
+
+**What this does not do.** No new classification is executed. Optional live
+replication requires a fixed vocabulary, provider integration, a budget, and a
+separate output location. Model confidence is not calibrated semantic accuracy,
+and assignments do not grant authority to modify the inventory or schema.
 
 </Recipe>
 
-<Recipe title="4.3 Examine rare concepts and residual assignments" level="AI-ready" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+<Recipe title="4.3 Examine rare concepts and residual assignments" level="AI-ready" skills="Python or spreadsheet practitioner; domain reviewer" time="30–45 minutes for the support review">
 
-**Result:** A coverage summary will identify specialized support, ambiguous assignments, and excluded contents.
+**Result:** A coverage interpretation identifies specialized concepts and residual evidence, with explicit counting units and reasons for any further review.
 
-**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
-provides the following selection: rare-and-residual. The
-[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
-specifies the parts appropriate to this stage.
+Frequency depends on the reporting contexts sampled. A specialized financing
+concept can be important to project tables even when uncommon across the whole
+collection. A residual assignment can represent analytical content, an intended
+exclusion, an ambiguous fit, or a distinction that needs reconsideration.
+Neither low support nor residual membership determines a schema change.
 
-**Draft scope.** Procedures, worked examples, and verification remain to be
-written. The outline preserves the intended result and evidence selection.
+1. Keep the original mapping fixed. Join observations to assignments by exact metadata_field, retaining snapshot identities and source corpora. A concept can receive several differently named profiles.
+2. Count observations, assigned exact-name profiles, and distinct supporting snapshots separately. For overall snapshot support, divide the distinct count by all 210 development snapshots. Do not add profile-level snapshot counts when their artifacts may overlap.
+3. Inspect low-support concepts using their values and source contexts. Ask whether rarity reflects a specialized application, redundant meaning, or an unhelpful boundary. Inspect residual examples using the same questions.
+4. Write an interpretation that separates the evidence from a proposed decision. Preserve uncertainty and the reviewed inventory unless a human approves a revision with a rationale.
 
-**What this does not do.** This outline does not provide a complete procedure
-or claim a new execution of the research.
+**Worked example.** The prepared rare-and-residual example reports seven
+supporting snapshots for financing_instrument and nine for
+data_collection_method. The following expanded counts were checked by joining
+the full observations to the original assessment mapping.
+
+| Assigned concept | Observations | Exact-name profiles | Distinct snapshots | Support out of 210 |
+|---|---:|---:|---:|---:|
+| financing_instrument | 7 | 7 | 7 | 3.3% |
+| data_collection_method | 11 | 6 | 9 | 4.3% |
+
+These are recorded-data summaries for the full development collection. They
+cannot be recomputed from the few observations shipped in the evidence package.
+For data_collection_method, counting 11 observations as 11 snapshots would
+overstate support. For financing_instrument, equal counts are a property of
+these records. Other concepts need their counts checked separately.
+
+The Pakistan project table's recorded value “IDA Credit; IDA Grant; Guarantee
+Amount” explains why financing modality is meaningful. All seven supporting
+snapshots occur in the Refugee Project Appraisal Document corpus. That
+concentration supports a specialized interpretation; it does not establish
+universal usefulness or a minimum inclusion threshold.
+
+The Lebanon health-access figure separately proposed sample_size with value
+“n=44.” Its exact-name profile has 15 observations from 15 snapshots, and the
+original classification is residual. The figure's recorded title also includes
+“(n=44).” Preserving an explicit title or explanatory statement in a later
+operational record is a different question from accepting a dedicated sample-size
+concept. [Chapter 5](./schema-design.mdx) demonstrates that distinction without
+rewriting the coverage assignment.
+
+**Verification.** Calculate 7 / 210 and 9 / 210 and round to one decimal
+percentage point. Explain why six method profiles can contribute 11 observations
+but only nine distinct snapshots. A defensible interpretation identifies the
+source context and scope rationale before recommending retention or revision.
+
+**What this does not do.** The summaries characterize the selected development
+evidence. They do not measure retrieval performance, establish a missing-field
+rate, prove generalizability, or replace held-out validation. The study found no
+compelling basis for further conceptual revision before operational design.
 
 </Recipe>
 
 ## Expected artifact
 
-A refined inventory, human decision record, and concept coverage evidence will support operational schema design.
+A reviewed inventory of 41 concepts, representative human decisions, and
+versioned coverage evidence supply the basis for operational design. The
+inventory describes meaningful distinctions; [chapter 5](./schema-design.mdx)
+defines the fields practitioners will use to describe artifacts consistently.
 
 ## Implementation options
 
-A review table and descriptive summaries are sufficient for the core workflow. Similarity or clustering can provide optional decision support for larger inventories. Such extensions are not implemented in this scaffold.
+A spreadsheet and the existing concept-review template are sufficient for the
+selected exercises. Larger collections can use joins and distinct counts with
+explicit inventory and mapping versions. Model classification can reduce manual
+comparison effort while leaving review authority with humans. Similarity tools
+or clustering would be proposed extensions; they are unnecessary for this review.
 
 ## World Bank examples
 
-The Data Snapshot case study supplies the recorded research example for this
-chapter. The [overview](./index.mdx) identifies its evidence and claim boundaries.
+The Data Snapshot study supplies the recorded refinement and coverage examples.
+Its three corpora make specialized support interpretable in relation to reporting
+purpose. The [overview](./index.mdx) identifies the broader evidence boundaries.
 
 ## Resources
 
-- The [evidence package notes](pathname:///cookbook-files/ai-assisted-metadata-schema-development/README.md) explain provenance, evidence labels, and limits.
-- The [source-image register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) links the artifacts to institutional documents and records reuse status.
-- Dy & Solatorio (2026). *Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs*. Working paper. The study supplies the methodology and recorded results used here.
+- The [prepared evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json) contains human-concept-decisions, canonical-title, rare-and-residual, and the original panel assignment.
+- The existing [concept-review template](pathname:///cookbook-files/ai-assisted-metadata-schema-development/concept_review_template.csv) provides separate proposal, rationale, reviewer, and disposition columns.
+- The [assessment request](pathname:///cookbook-files/ai-assisted-metadata-schema-development/concept_assessment_request.md) explains the fixed-vocabulary task and historical configuration.
+- The [source-image register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) identifies the Pakistan, Lebanon, and soybean development artifacts without requiring image copies.
+- Dy & Solatorio (2026). *Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs*. Working paper. Sections 6.3–6.4, Tables 11–13, and Appendix D supply the recorded decisions and assessment method.
 
 ## Common mistakes
 
-- A classification can be mistaken for a final human decision.
-- Low frequency can be treated as sufficient reason for exclusion.
-- Later mapping edits can be attributed retroactively to the original assessment.
+- A 49-row inventory can be mistaken for a complete ledger of 70 candidate dispositions.
+- A valid concept label or high confidence can be mistaken for a final human judgment.
+- Later mapping revisions can silently change the interpretation of the original assessment.
+- Observation totals or summed profile counts can be mistaken for distinct concept-supporting snapshots.
+- Low frequency or residual membership can be used as an automatic field-design rule.
 
 ## Verification
 
-These criteria define the intended review. Commands and worked checks remain
-to be added with the recipes.
-
-- Concept dispositions have reviewable semantic and scope reasons.
-- Original assignments use the reviewed 41-concept inventory plus the residual category.
-- Low-support concepts and residual profiles are inspected in context.
+- Every demonstrated merge, rename, and exclusion has an attributable rationale and the correct stage.
+- Selected original assignments use the reviewed inventory plus the residual, without the later panel_title target.
+- Support interpretations preserve the 210-snapshot denominator and the difference between profiles, observations, and artifacts.
+- The original mapping and its execution-record limitation remain distinguishable from subsequent revisions.
 
 ## Checklist
 
 <Checklist id="ai-assisted-metadata-schema-development-concept-refinement" items={[
-  "Concept dispositions have reviewable semantic and scope reasons.",
-  "Original assignments use the reviewed 41-concept inventory plus the residual category.",
-  "Low-support concepts and residual profiles are inspected in context.",]} />
+  'Concept dispositions have reviewable semantic and scope reasons.',
+  'Original assignments use the reviewed 41-concept inventory plus the residual category.',
+  'Low-support concepts and residual profiles are inspected in context.',
+  'Mapping versions, counting units, and execution-record limits are explicit.',
+]} />
