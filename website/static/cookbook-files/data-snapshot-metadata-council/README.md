@@ -7,6 +7,16 @@ The images are real Data Snapshots. The two Discovery references are published h
 - Review the illustrative extraction and judge files together. Each line is one record keyed by sample ID. The metadata payload uses Schema v1.4. The surrounding fields are experiment bookkeeping.
 - Use the manifest to find all eight artifact types. The local set also includes sample registration and role instructions as supporting materials.
 
+## Registering a local batch
+
+The offline `register_samples.py` script uses Python 3.10 or later and the standard library. Place one image in each `batch/discovery/<sample-id>/` or `batch/challenge/<sample-id>/` directory. Discovery directories also contain the full annotation as `metadata.json`. The `batch_sources.csv` file supplies one attribution row per sample. Its prepared rows describe the four images used by the guide. Adapt those rows to a different batch.
+
+Run the script from an experiment directory that contains the batch, script, and CSV. Chapter 2 gives the command and dataset revision arguments. The output register uses paths relative to its own directory. The published teaching register above uses paths relative to the site's static root.
+
+An identical rerun succeeds with the existing register. A changed batch requires a new register path. The script checks filenames, JSON object structure, source associations, and hashes. A person still verifies the image boundaries and whether the annotation describes the image.
+
+The proposed runner's initialization tool would create the round manifest from the register and starting settings before extraction. The runner would update it as stages complete. The orchestrator model writes the next policy, state, and findings. The supplied `001_manifest.json` is an authored illustration of those relationships.
+
 ## Attribution and reuse
 
 D1 and C1 come from the policy brief *From Stateless to Citizens: The Journey of the Shona Community in Kenya*, credited to IFRC, IOM, and REACH in the [ReliefWeb source metadata](https://reliefweb.int/report/kenya/policy-brief-stateless-citizens-journey-shona-community-kenya). D1 is the original data snapshot from the corpus. C1 reuses the narrower table snapshot from the Data Snapshot end-to-end cookbook. The corpus table with the same basename has different boundaries. D2 comes from World Bank Policy Research Working Paper 5070 by Mafalda Duarte, Outi Korkeala, and David Newhouse. C2 comes from Working Paper 4771 by Thorsten Beck, Leora Klapper, and Juan Carlos Mendoza. The sample register records the source links, PDF pages, asset checksums, and dataset revisions.

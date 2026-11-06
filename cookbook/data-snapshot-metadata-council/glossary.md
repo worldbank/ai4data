@@ -61,8 +61,6 @@ description: Terms used in this guide.
 
 **RAG.** Retrieval-augmented generation. A pattern where the system retrieves records first and the model writes the answer from them.
 
-**Representativeness.** The degree to which a dataset's composition matches the population it will be used on, measured group by group and stated in the card.
-
 **Resource.** Context a server offers to the model or the user, such as code lists or a release calendar, identified by a URI.
 
 **Roles.** What a model may do in production: flag, propose, code, explain, draft. It does not decide.

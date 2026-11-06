@@ -17,7 +17,7 @@ import Checklist from '@site/src/components/Cookbook/Checklist';
 
 Chapter 1 follows D1’s title error through a round prepared for the walkthrough. This chapter shows how to set up a round so the judge can tell which image the extractor saw and which instructions it followed. Two snapshots of the same table can show different captions or notes, so any human-reviewed annotation needs to describe the exact image the extractor received.
 
-The sample register identifies each image, its source PDF, and any matching annotation. The starting policy, schema, and model settings specify how the extractor will run. The starting state records what the team carries into the round, such as prior decisions and open questions. The manifest lists these inputs and the files the round is expected to produce.
+The registration script builds a sample register from the selected files and their source information. The starting policy, schema, and model settings specify how the extractor will run. The starting state records what the team carries into the round, such as prior decisions and open questions. Before extraction, a deterministic initialization tool in the proposed runner would use those inputs to generate the round manifest.
 
 The prepared batch and manifest are the starting point for [configuring the round in Chapter 3](./start-round.mdx). The proposed Pi workflow would load those inputs, run the extractor, and pass the resulting metadata to the judge. Because the findings refer back to the same snapshots and starting policy, the council can later use them to propose changes to the instructions the extractor received.
 
@@ -42,7 +42,7 @@ D1 is the Shona labor-force figure. D2 is the rural Indonesia regression table. 
 
 <Recipe title="2.1 Register the Discovery and Challenge samples" level="Foundational" skills="Data curator or experiment lead" time="45 minutes">
 
-**Result:** A sample register documents the exact images, annotation availability, and source attribution.
+**Result:** A completed `samples.json` register identifies each selected data snapshot, its Discovery or Challenge role, source attribution, annotation availability, and file checksums.
 
 Consider D2, the rural Indonesia regression table in the gallery below. This excerpt from the [sample register](pathname:///cookbook-files/data-snapshot-metadata-council/samples.json) shows where the table appears in the PDF and which human-reviewed metadata record accompanies it.
 
@@ -57,13 +57,46 @@ Consider D2, the rural Indonesia regression table in the gallery below. This exc
 
 Use the human-reviewed metadata release to identify candidate Discovery samples. Layout annotations identify a region on a PDF page. Semantic references such as D2’s describe the contents of the data snapshot using Schema v1.4.
 
-1. Open the source PDF and the selected image. Record the PDF page, source document ID, snapshot path, and SHA-256 checksum, which identifies the exact image bytes. Give the model a sample ID such as D1 that reveals no source information.
-2. For Discovery, verify the annotation against visible cues such as the title, headings, and notes. Record the reference revision. For Challenge, document the gold listing checked and leave the reference empty.
-3. Record the selection method and reserve separate documents for future evaluation. Group related data snapshots and duplicate or near-duplicate documents when planning that separation.
+Use one directory per sample. Its name becomes the sample ID, and the parent directory identifies its batch role. The four prepared examples would have this layout.
 
-**Worked example.** D1 retains its caption and source line. C1 comes from the same PDF. It uses the narrower table snapshot from the end-to-end cookbook, which omits the caption and source line. D2's title, dependent variable, lag headings, and footer match the published semantic reference. C2 matches Figure 3 of WPS4771 on PDF page 15, printed page 12. The semantic gold release contains no matching C2 record. [Sample register](pathname:///cookbook-files/data-snapshot-metadata-council/samples.json) · [Attribution and reuse notes](pathname:///cookbook-files/data-snapshot-metadata-council/README.md)
+```text
+experiment/
+  register_samples.py
+  batch_sources.csv
+  batch/
+    discovery/
+      D1/  # snapshot.png and metadata.json
+      D2/  # snapshot.png and metadata.json
+    challenge/
+      C1/  # snapshot.png
+      C2/  # snapshot.png
+```
 
-**What this does not do.** A four-image batch supports a walkthrough. Its mix of document sources and snapshot types cannot establish representativeness.
+The [registration script](pathname:///cookbook-files/data-snapshot-metadata-council/register_samples.py) finds one image in each sample directory and pairs Discovery images with `metadata.json`. It calculates SHA-256 checksums to identify the exact file bytes and writes `samples.json`. The [source CSV](pathname:///cookbook-files/data-snapshot-metadata-council/batch_sources.csv) provides the attribution that filenames cannot establish.
+
+| CSV column | Contents |
+|---|---|
+| `sample_id` | The sample directory name, such as D2. |
+| `collection`, `source_document` | The collection and source document identifiers. |
+| `source_pdf`, `pdf_page` | The PDF link or path and the page number, counting the first PDF page as 1. |
+| `provenance` | How the image was selected and matched to its source and annotation, including any difference in image boundaries. |
+
+1. Select the images and inspect their source PDFs. For Discovery, compare the annotation with visible titles, headings, and notes. For Challenge, check the annotation listing before deciding that a matching reference is unavailable. Reserve separate source documents for future evaluation, keeping related or near-duplicate documents together.
+2. Create the directory layout above. Save one PNG, JPEG, or WebP image per sample directory. Save each Discovery annotation as `metadata.json`. The prepared inputs are [D1’s image](pathname:///img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.png) and [annotation](pathname:///img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.json), [D2’s image](pathname:///cookbook-files/data-snapshot-metadata-council/document_11174028_table_007.png) and [annotation](pathname:///cookbook-files/data-snapshot-metadata-council/document_11174028_table_007.json), and the C1 and C2 images in the gallery below.
+3. Save the script and source CSV in `experiment/`. For another batch, export the same CSV columns from the source catalogue or fill them in using a spreadsheet. Each sample needs one row. Use sample IDs that reveal no source information.
+4. With Python 3.10 or later, run the following command from `experiment/`. The revision values identify the releases used for the prepared examples. Supply the appropriate revisions for another dataset, or omit those flags for local sources without release revisions.
+
+```bash
+python3 register_samples.py batch --sources batch_sources.csv --output samples.json \
+  --snapshot-revision 626f3c54ba6d8f6e0ba0795f9e544e24b2650faf \
+  --gold-revision 859b32f1067737c713d5a3044c6defaea857bf7b
+```
+
+The generated paths are relative to the directory containing `samples.json`. An identical rerun reuses the same register. A changed batch requires a new output path, so a rerun preserves the existing record.
+
+**Worked example.** For the four prepared images, the command reports `samples.json: 4 samples registered`. The register identifies D1 and D2 as Discovery, with annotation paths and checksums, and C1 and C2 as Challenge, with null references. The source CSV supplies D2’s PDF page 25. Inspecting D2 confirms that its title, dependent variable, lag headings, and footer match the annotation. [Attribution and reuse notes](pathname:///cookbook-files/data-snapshot-metadata-council/README.md)
+
+**What this does not do.** The script checks file associations and that annotations are JSON objects. Schema validation and visual verification establish whether an annotation is suitable for the selected image.
 
 </Recipe>
 
@@ -106,11 +139,15 @@ Keep these files separate. The policy gives the extractor its instructions. The 
 
 </Recipe>
 
-<Recipe title="2.3 Link the round files in a manifest" level="AI-ready" skills="ML engineer" time="40 minutes">
+<Recipe title="2.3 Check the runner’s round manifest" level="AI-ready" skills="ML engineer" time="30 minutes">
 
-**Result:** A round manifest connects the eight artifact types to the batch and its versioned inputs.
+**Result:** A preflight check confirms that the manifest identifies the intended batch, starting versions, settings, and output locations.
 
 Open the [round manifest](pathname:///cookbook-files/data-snapshot-metadata-council/001_manifest.json). Under `artifacts.policy`, `used` points to `001_policy.md` and `next` points to `002_policy.md`. These two entries distinguish the policy that produced the extraction records from the candidate for the next round. Resolve manifest paths from the folder containing `001_manifest.json`.
+
+The proposed runner would generate this manifest before extraction, using the sample register and the policy, state, schema, and model settings chosen in Recipe 2.2. A deterministic tool would calculate input hashes and record output locations. As stages finish, the runner would update status, timestamps, and references to the files saved. The orchestrator model produces the policy, state, and findings. The runner maintains the manifest that points to them.
+
+The supplied manifest is an authored example with `execution_status` set to `not_run`. It includes references to the illustrative outputs so the complete round can be followed.
 
 | Artifact type | Contents and lifecycle |
 |---|---|
@@ -123,11 +160,11 @@ Open the [round manifest](pathname:///cookbook-files/data-snapshot-metadata-coun
 | Human review | Human decisions on escalated findings and any recorded spot checks. |
 | Judge reviews | One structured review per sample, with its reference-comparison status and findings. |
 
-1. Record the round ID and sample IDs that will appear in the extraction and review records. Keep the metadata payload separate from experiment bookkeeping.
-2. Check that each input path resolves to the expected file and version. Specify where the round will write its outputs.
-3. Keep the sample register with the manifest so the proposed workflow can locate the images and the annotations available for the judge.
+1. Compare the manifest’s sample IDs with the generated register. Check that the Discovery and Challenge lists name the intended samples.
+2. Check that the input paths and versions identify the selected policy, state, schema, and model settings. A future run needs assigned model settings before startup.
+3. Check where extraction records and judge reviews will be saved. The runner should preserve the starting policy and its outputs when the orchestrator later produces a revised policy.
 
-**Worked example.** The D2 extraction record names its sample and P001. The judge can use the sample ID to locate the image and reference in the register, and the policy ID to locate the instructions in effect for that record. [Illustrative extraction records](pathname:///cookbook-files/data-snapshot-metadata-council/001_extractions.jsonl)
+**Worked example.** The supplied manifest names D1 and D2 as Discovery and C1 and C2 as Challenge, uses P001 and S001 as inputs, and lists the extraction and judge-review files. Its model fields are null because it describes the teaching example. The preflight check identifies those fields as settings to fill for a future run. [Chapter 3](./start-round.mdx) follows the proposed startup sequence.
 
 **What this does not do.** The manifest records association and provenance. Image support and policy compliance require review.
 
@@ -135,8 +172,8 @@ Open the [round manifest](pathname:///cookbook-files/data-snapshot-metadata-coun
 
 ## Implementation options
 
-- A small team can start with a spreadsheet for the register and exported JSON for the manifest. Agree on stable IDs before moving to scripts.
-- Use deterministic selection and checksum checks for repeated batches. Keep role access separate from the public layout of the example files.
+- Use the supplied script for a local batch and a CSV export from the source catalogue for attribution.
+- For repeated batches, call the registration and manifest-initialization tools from the runner. The registration script is supplied here. The runner and its initialization tool are proposed components.
 
 ## Resources
 
