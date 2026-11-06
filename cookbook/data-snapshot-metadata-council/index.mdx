@@ -18,6 +18,8 @@ Metadata extracted from a data snapshot can conform to the schema even when the 
 
 This guide proposes an experiment that uses a council of models to refine an initial extraction policy. The council uses findings from each review round to propose and critique changes. The experiment aims to develop a metadata extraction pipeline by pairing a fixed reference extractor with the final policy. The guide starts with a prepared example so the team can see how an error becomes a candidate rule before setting up a round.
 
+The registration script in Chapter 2 runs offline on local files. Chapters 3–6 use the prepared round records to explain the proposed Pi workflow, human decisions, council deliberation, and next-round choices. The Pi runner and its manifest-generation tool still need implementation.
+
 ## Prerequisites
 
 The walkthrough uses the examples supplied with the guide. For a round using the team's own data, the following are needed.
@@ -72,7 +74,7 @@ The example illustrates one round, from the starting policy and state (P001 and 
 
 ## Files
 
-While the guide is unlisted, use the local development preview for downloads or open the files from the repository root. The round files and role instructions are in `website/static/cookbook-files/data-snapshot-metadata-council/`. In the sample register, image and annotation paths are relative to `website/static/`.
+The downloadable round files, registration script, and role instructions are in `website/static/cookbook-files/data-snapshot-metadata-council/`. In the supplied teaching register, image and annotation paths are relative to `website/static/`. A register generated for a local experiment uses paths relative to its own directory, as described in Recipe 2.1.
 
 | File | Used in |
 |---|---|
@@ -82,7 +84,7 @@ While the guide is unlisted, use the local development preview for downloads or 
 | [Role instructions](pathname:///cookbook-files/data-snapshot-metadata-council/role-instructions.md) | Templates for extraction, diagnosis, review, deliberation, and synthesis |
 | [D1 image](pathname:///img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.png) and [D1 gold](pathname:///img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.json) | Shona labor-force chart and its published annotation |
 | [D2 image](pathname:///cookbook-files/data-snapshot-metadata-council/document_11174028_table_007.png) and [D2 gold](pathname:///cookbook-files/data-snapshot-metadata-council/document_11174028_table_007.json) | Rural Indonesia regression table and its published annotation |
-| [C1 image](pathname:///cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.png) | Shona demographics table snapshot |
+| [C1 image](pathname:///cookbook-files/data-snapshot-metadata-council/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.png) | Shona demographics table snapshot |
 | [C2 image](pathname:///cookbook-files/data-snapshot-metadata-council/document_10000660_figure_002.png) | WPS4771 guarantee-systems chart |
 | [Initial policy P001](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md) and [candidate P002](pathname:///cookbook-files/data-snapshot-metadata-council/002_policy.md) | Starting instructions and proposed revision |
 | [Initial state S001](pathname:///cookbook-files/data-snapshot-metadata-council/001_experiment_state.md) and [state S002](pathname:///cookbook-files/data-snapshot-metadata-council/002_experiment_state.md) | Initial conditions and handoff to the next round |

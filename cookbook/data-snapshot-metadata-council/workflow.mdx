@@ -83,8 +83,18 @@ In the hypothetical round 001, the extractor uses P001 and the judge records D1�
 3. Open the [judge reviews (`001_judge_reviews.jsonl`)](pathname:///cookbook-files/data-snapshot-metadata-council/001_judge_reviews.jsonl) and look for F01 in D1’s record. It explains why the image does not support the extracted title. The judge compares the output with the image, policy, and schema. For a Discovery sample such as D1, the judge also receives the full human-reviewed annotation, or gold reference. The human reviewer resolves escalated issues, spot-checks other records, and approves any changes to gold or schema.
 4. Open the [council deliberation record](pathname:///cookbook-files/data-snapshot-metadata-council/001_deliberation.md) and look for F01 in Member A’s proposal. Follow that proposal through the other members’ critiques and A’s revision. Council members use the snapshots, outputs, judge findings, and relevant human decisions. The full gold references stay with the judge and human reviewer.
 5. Compare the original R02 with the orchestrator’s revision in the [candidate policy (P002)](pathname:///cookbook-files/data-snapshot-metadata-council/002_policy.md). The candidate policy and the [updated state (S002)](pathname:///cookbook-files/data-snapshot-metadata-council/002_experiment_state.md) are the starting point for the next round.
+6. Record that sequence in a table or diagram. Name the role, the record it reads, and the record it produces.
 
-**Worked example.** The manifest links D1’s original output to P001. The workflow map ends with P002 and S002, the candidate policy and updated state for the next round. Keeping those records separate lets a reviewer check which instructions produced the output.
+**Worked example.** The D1 workflow map follows the existing round records.
+
+| Role | Reads | Produces |
+|---|---|---|
+| Reference extractor | D1 image and P001 | D1 extraction tagged with P001 by the runner. |
+| Diagnostic judge | D1 image, extraction, policy, schema, and full reference | F01, which identifies the title error. |
+| Council | Image evidence, extraction, findings, policy, state, and relevant human decisions | A revised proposal for R02. |
+| Orchestrator | Proposals, critiques, and revisions | P002, S002, and the round findings. |
+
+The output stays linked to P001, while P002 carries the revised instruction into the next round.
 
 [Chapter 2](./preparation.mdx) shows how to register the data snapshots, record the starting policy and model settings, and link the round’s files in a manifest.
 

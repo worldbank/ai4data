@@ -48,7 +48,7 @@ Start with F01 in the [judge reviews](pathname:///cookbook-files/data-snapshot-m
 Give each council member the image, output, and judge’s summary. Keep full Discovery references in the judge and human review contexts.
 
 1. Gather the images, [starting policy (P001)](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md), [starting state (S001)](pathname:///cookbook-files/data-snapshot-metadata-council/001_experiment_state.md), and [extraction outputs](pathname:///cookbook-files/data-snapshot-metadata-council/001_extractions.jsonl). Add the findings and human decisions cleared for the council in Chapter 4.
-2. Give each member its own session with access limited to those materials. Collect all first proposals before sharing proposals among members.
+2. Use the three distinct multimodal models selected in Recipe 2.2. Give each member its own session with access limited to those materials. Restrict filesystem, shell, and network tools as well as the prompt so they cannot retrieve full annotations. Collect all first proposals before sharing proposals among members.
 3. Request the finding, visible evidence, and failure mode. Ask the member to specify whether to add, amend, retain, or retire a rule and to name the affected ID or mark it as a new rule. Include the expected benefit and a counterexample or risk. Record proposed gold or schema challenges for human review.
 
 **Worked example.** Member A proposes amending R02 so the extractor uses the caption when the layout distinguishes it from the axis label. A also proposes a short generic title when the data snapshot has no title. That second clause aims to keep the field useful, but it needs a counterexample check. [Illustrative deliberation record](pathname:///cookbook-files/data-snapshot-metadata-council/001_deliberation.md)
@@ -61,9 +61,9 @@ Give each council member the image, output, and judge’s summary. Keep full Dis
 
 **Result:** Each proposal has cross-critiques and a revised recommendation that addresses them.
 
-Consider Member A’s proposal to “Use a short generic title when a data snapshot has no title to keep the field populated.” Try applying it to C1.
+Consider Member A’s proposal in the [deliberation record](pathname:///cookbook-files/data-snapshot-metadata-council/001_deliberation.md) to “Use a short generic title when a data snapshot has no title to keep the field populated.” Try applying it to C1.
 
-![C1 shows a Shona demographics table with 2019 and 2024 columns and no visible title.](../../website/static/cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.png)
+![C1 shows a Shona demographics table with 2019 and 2024 columns and no visible title.](../../website/static/cookbook-files/data-snapshot-metadata-council/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.png)
 
 Ask each member to test proposed wording against the evidence this way. A critique should show where the rule helps or where it would lead to an unsupported value.
 
@@ -79,13 +79,13 @@ Ask each member to test proposed wording against the evidence this way. A critiq
 
 <Recipe title="5.3 Check the next policy and experiment state" level="AI-ready" skills="Experiment lead and metadata reviewer" time="45 minutes">
 
-**Result:** The round produces a candidate policy, cumulative state, and findings with an audit trail.
+**Result:** The candidate policy, updated state, and round findings have been checked against the proposals and human decisions.
 
 Start with Member A’s revised proposal in the [deliberation record](pathname:///cookbook-files/data-snapshot-metadata-council/001_deliberation.md). A keeps the distinction between a caption and an axis label and drops the generic title fallback after reviewing C1. This is the recommendation the orchestrator needs to assess.
 
 The policy records the new instruction. The round findings explain why it changed, and the updated state carries decisions and open questions into the next batch.
 
-1. Check the orchestrator’s decision on each proposal against the cited evidence, known counterexamples, and human decisions. The [round findings](pathname:///cookbook-files/data-snapshot-metadata-council/001_round_findings.md) should say what was accepted, rejected, or deferred and why.
+1. Follow the synthesis by the separate orchestrator model in the [deliberation record](pathname:///cookbook-files/data-snapshot-metadata-council/001_deliberation.md). Check its decisions against the cited evidence, known counterexamples, and human decisions. The [round findings](pathname:///cookbook-files/data-snapshot-metadata-council/001_round_findings.md) should say what was accepted, rejected, or deferred and why.
 2. Compare the [candidate policy (P002)](pathname:///cookbook-files/data-snapshot-metadata-council/002_policy.md) with [P001](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md). An amendment keeps the rule ID, an addition gets a new one, and a retired ID stays reserved.
 3. Check the [updated state (S002)](pathname:///cookbook-files/data-snapshot-metadata-council/002_experiment_state.md) for decisions and open questions the next batch needs. Confirm that the [manifest](pathname:///cookbook-files/data-snapshot-metadata-council/001_manifest.json) identifies P002 and S002 as outputs and still identifies P001 as the policy used for extraction.
 

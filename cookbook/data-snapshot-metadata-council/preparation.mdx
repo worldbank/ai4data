@@ -19,7 +19,7 @@ Chapter 1 follows D1’s title error through a round prepared for the walkthroug
 
 The registration script builds a sample register from the selected files and their source information. The starting policy, schema, and model settings specify how the extractor will run. The starting state records what the team carries into the round, such as prior decisions and open questions. Before extraction, a deterministic initialization tool in the proposed runner would use those inputs to generate the round manifest.
 
-The prepared batch and manifest are the starting point for [configuring the round in Chapter 3](./start-round.mdx). The proposed Pi workflow would load those inputs, run the extractor, and pass the resulting metadata to the judge. Because the findings refer back to the same snapshots and starting policy, the council can later use them to propose changes to the instructions the extractor received.
+The prepared batch and settings are the inputs for [configuring the round in Chapter 3](./start-round.mdx). Recipe 2.3 uses the supplied manifest to show what to check when the proposed runner generates one. The runner would then pass the images and policy to the extractor and its results to the judge. Those shared inputs let the council trace each finding to the evidence and instructions behind it.
 
 ## Target state
 
@@ -44,7 +44,7 @@ D1 is the Shona labor-force figure. D2 is the rural Indonesia regression table. 
 
 **Result:** A completed `samples.json` register identifies each selected data snapshot, its Discovery or Challenge role, source attribution, annotation availability, and file checksums.
 
-Consider D2, the rural Indonesia regression table in the gallery below. This excerpt from the [sample register](pathname:///cookbook-files/data-snapshot-metadata-council/samples.json) shows where the table appears in the PDF and which human-reviewed metadata record accompanies it.
+Consider D2, the rural Indonesia regression table in the gallery below. This excerpt from the [teaching register](pathname:///cookbook-files/data-snapshot-metadata-council/samples.json) shows its PDF page and human-reviewed reference. The reference path is relative to the site's static root.
 
 ```json
 {
@@ -57,7 +57,7 @@ Consider D2, the rural Indonesia regression table in the gallery below. This exc
 
 Use the human-reviewed metadata release to identify candidate Discovery samples. Layout annotations identify a region on a PDF page. Semantic references such as D2’s describe the contents of the data snapshot using Schema v1.4.
 
-Use one directory per sample. Its name becomes the sample ID, and the parent directory identifies its batch role. The four prepared examples would have this layout.
+For a local experiment, use a new directory with one subdirectory per sample. Its name becomes the sample ID, and the parent directory identifies its batch role. Both Discovery and Challenge need at least one sample. The four prepared examples use this layout.
 
 ```text
 experiment/
@@ -82,8 +82,8 @@ The [registration script](pathname:///cookbook-files/data-snapshot-metadata-coun
 | `provenance` | How the image was selected and matched to its source and annotation, including any difference in image boundaries. |
 
 1. Select the images and inspect their source PDFs. For Discovery, compare the annotation with visible titles, headings, and notes. For Challenge, check the annotation listing before deciding that a matching reference is unavailable. Reserve separate source documents for future evaluation, keeping related or near-duplicate documents together.
-2. Create the directory layout above. Save one PNG, JPEG, or WebP image per sample directory. Save each Discovery annotation as `metadata.json`. The prepared inputs are [D1’s image](pathname:///img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.png) and [annotation](pathname:///img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.json), [D2’s image](pathname:///cookbook-files/data-snapshot-metadata-council/document_11174028_table_007.png) and [annotation](pathname:///cookbook-files/data-snapshot-metadata-council/document_11174028_table_007.json), and the C1 and C2 images in the gallery below.
-3. Save the script and source CSV in `experiment/`. For another batch, export the same CSV columns from the source catalogue or fill them in using a spreadsheet. Each sample needs one row. Use sample IDs that reveal no source information.
+2. Create the directory layout above. Save one PNG, JPEG, or WebP image per sample directory, using `snapshot.png` for the prepared PNG files. Save each Discovery annotation as `metadata.json`. Download [D1’s image](pathname:///img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.png) and [annotation](pathname:///img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.json), [D2’s image](pathname:///cookbook-files/data-snapshot-metadata-council/document_11174028_table_007.png) and [annotation](pathname:///cookbook-files/data-snapshot-metadata-council/document_11174028_table_007.json), and the images for [C1](pathname:///cookbook-files/data-snapshot-metadata-council/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.png) and [C2](pathname:///cookbook-files/data-snapshot-metadata-council/document_10000660_figure_002.png).
+3. Save the script and source CSV in `experiment/`. For another batch, export the same CSV columns from the source catalogue or fill them in using a spreadsheet. Each sample needs one row. Use unique sample IDs across both groups. Start each ID with a letter and use only letters, digits, hyphens, or underscores. Keep source information in the CSV.
 4. With Python 3.10 or later, run the following command from `experiment/`. The revision values identify the releases used for the prepared examples. Supply the appropriate revisions for another dataset, or omit those flags for local sources without release revisions.
 
 ```bash
@@ -92,7 +92,7 @@ python3 register_samples.py batch --sources batch_sources.csv --output samples.j
   --gold-revision 859b32f1067737c713d5a3044c6defaea857bf7b
 ```
 
-The generated paths are relative to the directory containing `samples.json`. An identical rerun reuses the same register. A changed batch requires a new output path, so a rerun preserves the existing record.
+The generated paths are relative to the directory containing `samples.json`. For example, D2’s local reference path is `batch/discovery/D2/metadata.json`. An identical rerun reuses the same register. A changed batch requires a new output path in an existing directory, so a rerun preserves the existing record.
 
 **Worked example.** For the four prepared images, the command reports `samples.json: 4 samples registered`. The register identifies D1 and D2 as Discovery, with annotation paths and checksums, and C1 and C2 as Challenge, with null references. The source CSV supplies D2’s PDF page 25. Inspecting D2 confirms that its title, dependent variable, lag headings, and footer match the annotation. [Attribution and reuse notes](pathname:///cookbook-files/data-snapshot-metadata-council/README.md)
 
@@ -111,9 +111,9 @@ The generated paths are relative to the directory containing `samples.json`. An 
 
 ![Table 3, Rural farm households, with Log PCE as the dependent variable and one-lag and two-lag column groups.](../../website/static/cookbook-files/data-snapshot-metadata-council/document_11174028_table_007.png)
 
-**C1.** The snapshot shows year columns and row labels, including the median-age unit. The caption lies outside the crop.
+**C1.** The snapshot shows year columns and row labels, including the median-age unit. The image boundaries exclude the caption.
 
-![Shona demographics table with 2019 and 2024 columns and no visible title.](../../website/static/cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.png)
+![Shona demographics table with 2019 and 2024 columns and no visible title.](../../website/static/cookbook-files/data-snapshot-metadata-council/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.png)
 
 **C2.** The chart has a printed caption, two categories, and a legend. The vertical axis carries tick values without a unit label.
 
@@ -123,13 +123,13 @@ The generated paths are relative to the directory containing `samples.json`. An 
 
 <Recipe title="2.2 Freeze the starting policy and state" level="AI-ready" skills="ML engineer and metadata reviewer" time="45 minutes">
 
-**Result:** The experiment has a versioned starting policy, state, and settings to hold fixed.
+**Result:** The starting policy, state, schema, and model settings are recorded for the round.
 
 Open the [starting policy (P001)](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md) and the [starting state (S001)](pathname:///cookbook-files/data-snapshot-metadata-council/001_experiment_state.md). Rule R01 in P001 tells the extractor to use the image as its evidence and leave unsupported fields unset or null where the schema permits. S001 records the objective and who can access the human-reviewed annotations.
 
 Keep these files separate. The policy gives the extractor its instructions. The state carries decisions and unresolved questions between rounds.
 
-1. Choose the schema and fixed reference extractor. Record provider and model identifier, model revision when available, request settings, and output format. Record the diagnostic judge and rubric as well.
+1. Choose the schema and fixed reference extractor. Record provider and model identifier, model revision when available, request settings, and output format. Do the same for the diagnostic judge, three distinct multimodal council models, and the separate synthesis model used by the orchestrator. Fix the judge’s [review questions](pathname:///cookbook-files/data-snapshot-metadata-council/role-instructions.md#diagnostic-judge) before starting the round.
 2. Draft the initial policy for the selected model and schema. Use the [illustrative starting policy (P001)](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md) as an example. Give each rule a stable ID. Specify what the model may use as evidence and how it should handle unsupported fields.
 3. Initialize the state with the objective, current versions, access policy, and any prior decisions. Start with an empty history when this is the first round.
 
@@ -141,7 +141,7 @@ Keep these files separate. The policy gives the extractor its instructions. The 
 
 <Recipe title="2.3 Check the runner’s round manifest" level="AI-ready" skills="ML engineer" time="30 minutes">
 
-**Result:** A preflight check confirms that the manifest identifies the intended batch, starting versions, settings, and output locations.
+**Result:** A checked manifest identifies the intended batch, starting versions, settings, and output locations, with any missing configuration noted before startup.
 
 Open the [round manifest](pathname:///cookbook-files/data-snapshot-metadata-council/001_manifest.json). Under `artifacts.policy`, `used` points to `001_policy.md` and `next` points to `002_policy.md`. These two entries distinguish the policy that produced the extraction records from the candidate for the next round. Resolve manifest paths from the folder containing `001_manifest.json`.
 
@@ -189,7 +189,7 @@ The supplied manifest is an authored example with `execution_status` set to `not
 
 ## Verification
 
-- Resolve all four image paths and compare their hashes with the sample register.
+- Resolve the image paths from the correct register base directory and compare their hashes with the register. For the prepared batch, expect four images and two annotation references.
 - Validate each Discovery reference against the schema and verify the matching image by inspection.
 - Verify that the manifest points to the starting policy and state and lists where the round will save the extraction records and judge reviews.
 

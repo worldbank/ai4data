@@ -41,15 +41,15 @@ The one illustrative transition from P001 to P002 supports a rule tally. It give
 
 ## Recipes
 
-<Recipe title="6.1 Maintain rule and failure histories" level="AI-ready" skills="Experiment lead and ML engineer" time="30 minutes">
+<Recipe title="6.1 Reconcile the rule tally and open issues" level="AI-ready" skills="Experiment lead and ML engineer" time="30 minutes">
 
-**Result:** The round findings reconcile the policy diff and document the issues to monitor.
+**Result:** The rule tally agrees with the policy changes, and the open issues identify what to check in another batch.
 
 Look for R02 in the [starting policy (P001)](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md) and the [candidate policy (P002)](pathname:///cookbook-files/data-snapshot-metadata-council/002_policy.md). The wording changes under the same ID, so R02 counts as an amendment. R05 appears only in P002, so it counts as an addition. A retirement removes an active rule from the next policy and reserves its ID.
 
 For round `r`, the accepted rule-change count is `C_r = A_r + M_r + R_r`, where `A_r` counts additions, `M_r` counts amendments, and `R_r` counts retirements. Track the active total separately.
 
-1. Compare the starting and candidate policies by rule ID. Classify each rule once as added, amended, retired, or unchanged.
+1. Compare the starting and candidate policies by rule ID. Classify each rule once as added, amended, retired, or unchanged, then check the [tally in the round findings](pathname:///cookbook-files/data-snapshot-metadata-council/001_round_findings.md).
 2. Reconcile the active total with the prior active count plus additions minus retirements. Store reasons and finding IDs alongside accepted changes.
 3. Record failure modes and unresolved issues, including rejected proposals. Keep batch membership and review coverage available to interpret any future change in frequency.
 

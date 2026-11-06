@@ -32,7 +32,7 @@
     {
       "sample_id": "C1",
       "split": "challenge",
-      "image": "cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.png",
+      "image": "cookbook-files/data-snapshot-metadata-council/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.png",
       "image_sha256": "f56ba49c32ddeeef94205fcff553a5bbb3d32d268ae0f21dcf2be69fcd0a18e6",
       "collection": "unhcr",
       "source_document": "policy_brief_on_shona_community_from_stateless_to_citizens",

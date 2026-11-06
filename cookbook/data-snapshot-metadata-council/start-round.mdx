@@ -15,7 +15,7 @@ import Checklist from '@site/src/components/Cookbook/Checklist';
 
 ## Rationale
 
-[Chapter 2](./preparation.mdx) ends with a batch, a starting policy, and a manifest. This chapter shows how those inputs reach the extractor and judge in the proposed Pi workflow. Pi would start the model sessions, while scripts or tools would do checks with fixed rules, such as matching sample IDs and validating each metadata record against the schema.
+[Chapter 2](./preparation.mdx) prepares the batch and starting settings and explains how to check the manifest. This chapter shows how the proposed runner would turn that preparation into extraction records and judge findings. The runner is the experiment controller. It would use Pi to manage model sessions and deterministic tools, whose checks follow fixed rules, to verify sample IDs, validate metadata, and save records.
 
 A record can pass schema validation even when it assigns the wrong role to visible text. The judge uses a fixed set of review questions to check the record against the data snapshot and the policy. Saving the extractions and findings gives the human reviewer a record of what was assessed. A finding that needs a human decision pauses the workflow before the council begins.
 
@@ -44,15 +44,17 @@ The round 001 files illustrate what a startup would read and save. The walkthrou
 
 Open the [round 001 manifest](pathname:///cookbook-files/data-snapshot-metadata-council/001_manifest.json). It lists D1 and D2 as Discovery samples and C1 and C2 as Challenge samples. Its `artifacts.policy.used` entry points to [P001](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md). Follow D2 through the two sessions.
 
+The startup plan specifies what the proposed runner would send to each role and what it would save. Use the supplied records to check those handoffs.
+
 | Session | D2 inputs | Expected record |
 |---|---|---|
 | Reference extractor | D2 image, P001, and Schema v1.4 | A metadata record that the runner tags with D2 and P001 in the [extraction records](pathname:///cookbook-files/data-snapshot-metadata-council/001_extractions.jsonl). |
 | Diagnostic judge | The same image, policy, and schema, plus the D2 extraction, the full human-reviewed annotation, and the review questions | A D2 review in the [judge reviews](pathname:///cookbook-files/data-snapshot-metadata-council/001_judge_reviews.jsonl). |
 
-1. Before model calls, the proposed runner’s initialization tool would generate the manifest from the sample register and the recorded starting settings. Check the sample IDs, image hashes, policy and schema versions, and configured model settings as described in Recipe 2.3. The illustrative manifest leaves the model settings unassigned. For a future run, supply the selected model settings and provider access before launching the sessions.
+1. Include manifest generation and the checks from Recipe 2.3 as the first startup step. Require the selected model settings and provider credentials before model calls. The illustrative manifest’s unassigned models identify configuration needed for a future run.
 2. Plan a separate Pi session for the extractor and the judge. Pass the registered image and current policy to the extractor. Use a script or constrained tool to validate the metadata against the schema and save it with the round, sample, and policy IDs.
 3. Pass the validated extraction and its evidence to the judge with the [supplied review questions and role instructions](pathname:///cookbook-files/data-snapshot-metadata-council/role-instructions.md#diagnostic-judge). Include the full annotation for Discovery samples. For Challenge samples, mark reference comparison as unavailable.
-4. Save one review per sample. Check that every expected sample has one extraction and one review under the intended policy before handing the batch to human review.
+4. Save one review per sample. Check that every expected sample has exactly one validated extraction and review selected for the round before handing the batch to human review. Keep any retry attempts separate so they do not appear as extra samples.
 
 **Worked example.** The startup plan for D2 sends the registered table image to the extractor under P001. Once the metadata record passes validation, the judge receives it with the same image and the full D2 annotation. The two supplied records carry the same sample and policy IDs, so the review can be traced to the extraction it assesses.
 
@@ -89,7 +91,7 @@ The supplied review questions cover what the image supports, which relevant fiel
 ## Implementation options
 
 - A controller can start separate Pi processes for the two roles or use Pi’s remote procedure call (RPC) interface when it needs to control an ongoing process. Use ordinary scripts or constrained tools for validation and file writes.
-- Save validated records as each stage finishes. If C2’s review is missing after an interruption, retain the other valid reviews and request C2’s review using the same policy and review questions.
+- Save validated records as each stage finishes. If C2’s review is missing after an interruption, retain reviews whose inputs and settings still match and request C2’s review with the same image, extraction, policy, schema, model settings, and review questions.
 
 ## Resources
 
