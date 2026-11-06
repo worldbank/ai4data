@@ -1,0 +1,150 @@
+---
+id: concept-synthesis
+title: "3. Field Profiles and Metadata Concept Synthesis"
+sidebar_label: "3. Profiles and synthesis"
+sidebar_position: 4
+description: Profile counts reconcile with the contributing observations.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 3. Field Profiles and Metadata Concept Synthesis
+
+**Question:** How do local observations become manageable evidence for shared concepts?
+
+:::note[Structural draft]
+This chapter establishes learning milestones and candidate recipes. Detailed
+procedures, worked examples, executable exercises, and implementation checks
+remain for later authoring. Intended results below describe planned recipes.
+:::
+
+## Rationale
+
+Exact-name aggregation collects repeated observations into a metadata field profile. The profile summarizes accumulated values, descriptions, rationales, and occurrence patterns. This deterministic transformation preserves lexical differences for later reasoning.
+
+Canonical metadata concept synthesis then compares meanings across profiles. It proposes shared concepts while retaining uncertain distinctions for human review. Candidate concepts provide a review space before operational fields are designed.
+
+## Target state
+
+- Profile counts reconcile with the contributing observations.
+- Occurrence counts and distinct-snapshot support have explicit denominators.
+- Candidate concepts retain definitions, representative fields, and synthesis rationales.
+
+## Learning objectives
+
+- Distinguish exact-name grouping from semantic consolidation.
+- Interpret profile evidence and explain why uncertain concepts can remain separate.
+
+## Prerequisite concepts
+
+Chapter 2 establishes observation records. The practitioner understands counts, distinct identifiers, and the difference between a field name and its potential meaning.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Compare repeated names with their values and descriptions. |
+| **AI-ready** | Aggregate profiles deterministically and reconcile counts and provenance. |
+| **AI-native** | Use bounded model synthesis to propose concepts with evidence and uncertain distinctions retained for review. |
+
+:::info[Running example]
+Three real geographic_scope observations support the prepared subset exercise. Its three-observation result is separate from the recorded 192-observation profile. The full study aggregated 3,041 observations into 833 profiles and synthesized 70 candidates. Title profiles supply the semantic-consolidation example.
+:::
+
+## Recipes
+
+These are candidate recipes. Time estimates remain pending until their
+procedures and verification have been authored.
+
+<Recipe title="3.1 Aggregate observations into field profiles" level="AI-ready" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+
+**Result:** A deterministic profile table will summarize exact-name groups and preserve links to observations.
+
+**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
+provides the following selection: exact-name-profile. The
+[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
+specifies the parts appropriate to this stage.
+
+**Draft scope.** Procedures, worked examples, and verification remain to be
+written. The outline preserves the intended result and evidence selection.
+
+**What this does not do.** This outline does not provide a complete procedure
+or claim a new execution of the research.
+
+</Recipe>
+
+<Recipe title="3.2 Inspect lexical variation and supporting evidence" level="Foundational" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+
+**Result:** A comparison will identify plausible synonyms and distinctions that need semantic review.
+
+**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
+provides the following selection: independent-naming; canonical-title inputs. The
+[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
+specifies the parts appropriate to this stage.
+
+**Draft scope.** Procedures, worked examples, and verification remain to be
+written. The outline preserves the intended result and evidence selection.
+
+**What this does not do.** This outline does not provide a complete procedure
+or claim a new execution of the research.
+
+</Recipe>
+
+<Recipe title="3.3 Synthesize a conservative candidate concept inventory" level="AI-native" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+
+**Result:** A candidate inventory will record proposed concepts, definitions, examples, and rationales.
+
+**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
+provides the following selection: canonical-title candidate concept only. The
+[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
+specifies the parts appropriate to this stage.
+
+**Draft scope.** Procedures, worked examples, and verification remain to be
+written. The outline preserves the intended result and evidence selection.
+
+**What this does not do.** This outline does not provide a complete procedure
+or claim a new execution of the research.
+
+</Recipe>
+
+## Expected artifact
+
+Field profiles and a candidate metadata concept inventory will provide the evidence for expert refinement.
+
+## Implementation options
+
+Ordinary table aggregation can produce profiles. Human comparison or bounded model assistance can synthesize concepts. Similarity analysis is an optional review aid whose value depends on inventory size.
+
+## World Bank examples
+
+The Data Snapshot case study supplies the recorded research example for this
+chapter. The [overview](./index.mdx) identifies its evidence and claim boundaries.
+
+## Resources
+
+- The [evidence package notes](pathname:///cookbook-files/ai-assisted-metadata-schema-development/README.md) explain provenance, evidence labels, and limits.
+- The [source-image register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) links the artifacts to institutional documents and records reuse status.
+- Dy & Solatorio (2026). *Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs*. Working paper. The study supplies the methodology and recorded results used here.
+
+## Common mistakes
+
+- Semantic normalization during exact-name grouping can erase distinctions.
+- Occurrence counts can be confused with distinct-snapshot support.
+- Aggressive synthesis can remove a meaningful distinction before expert review.
+
+## Verification
+
+These criteria define the intended review. Commands and worked checks remain
+to be added with the recipes.
+
+- Profile counts reconcile with the contributing observations.
+- Occurrence counts and distinct-snapshot support have explicit denominators.
+- Candidate concepts retain definitions, representative fields, and synthesis rationales.
+
+## Checklist
+
+<Checklist id="ai-assisted-metadata-schema-development-concept-synthesis" items={[
+  "Profile counts reconcile with the contributing observations.",
+  "Occurrence counts and distinct-snapshot support have explicit denominators.",
+  "Candidate concepts retain definitions, representative fields, and synthesis rationales.",]} />

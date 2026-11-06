@@ -1,0 +1,150 @@
+---
+id: concept-refinement
+title: "4. Expert Concept Refinement and Assessment"
+sidebar_label: "4. Concept refinement"
+sidebar_position: 5
+description: Concept dispositions have reviewable semantic and scope reasons.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 4. Expert Concept Refinement and Assessment
+
+**Question:** Which concepts should remain, and how does the development evidence support them?
+
+:::note[Structural draft]
+This chapter establishes learning milestones and candidate recipes. Detailed
+procedures, worked examples, executable exercises, and implementation checks
+remain for later authoring. Intended results below describe planned recipes.
+:::
+
+## Rationale
+
+A concept inventory records shared descriptive meanings before operational fields are designed. Human refinement determines equivalence, scope, clarity, and conceptual boundaries. Frequency and similarity supply evidence for these decisions.
+
+Concept coverage assessment assigns development field profiles to reviewed concepts or a residual category. The assignments expose specialized concepts, unusual boundaries, and excluded contents. This assessment characterizes development evidence before held-out schema validation.
+
+## Target state
+
+- Concept dispositions have reviewable semantic and scope reasons.
+- Original assignments use the reviewed 41-concept inventory plus the residual category.
+- Low-support concepts and residual profiles are inspected in context.
+
+## Learning objectives
+
+- Explain a human merge, rename, or exclusion.
+- Interpret constrained assignments and rare concepts without an automatic frequency threshold.
+
+## Prerequisite concepts
+
+Chapter 3 provides profiles and candidate concepts. The practitioner can distinguish descriptive metadata from analytical contents and explain a support denominator.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Review candidate concepts and record semantic and scope decisions. |
+| **AI-ready** | Maintain structured decisions and support summaries by corpus and artifact type. |
+| **AI-native** | Use constrained model assignments with residual labels and human inspection of ambiguous or unexpected mappings. |
+
+:::info[Running example]
+The study retained 41 concepts. Indicator-related merges, the visualization-type rename, and selected exclusions illustrate human decisions. Financing instruments and data-collection methods illustrate low support. The original panel_titles assignment is residual here; its later operational treatment belongs to chapter 5.
+:::
+
+## Recipes
+
+These are candidate recipes. Time estimates remain pending until their
+procedures and verification have been authored.
+
+<Recipe title="4.1 Record concept merges, renames, and exclusions" level="Foundational" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+
+**Result:** A reviewed inventory will preserve reasons for the demonstrated dispositions.
+
+**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
+provides the following selection: human-concept-decisions. The
+[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
+specifies the parts appropriate to this stage.
+
+**Draft scope.** Procedures, worked examples, and verification remain to be
+written. The outline preserves the intended result and evidence selection.
+
+**What this does not do.** This outline does not provide a complete procedure
+or claim a new execution of the research.
+
+</Recipe>
+
+<Recipe title="4.2 Assign profiles to a reviewed inventory" level="AI-native" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+
+**Result:** A constrained assignment table will connect profiles to an existing concept or residual category.
+
+**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
+provides the following selection: canonical-title original assignments; operational-panel-title original assignment only. The
+[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
+specifies the parts appropriate to this stage.
+
+**Draft scope.** Procedures, worked examples, and verification remain to be
+written. The outline preserves the intended result and evidence selection.
+
+**What this does not do.** This outline does not provide a complete procedure
+or claim a new execution of the research.
+
+</Recipe>
+
+<Recipe title="4.3 Examine rare concepts and residual assignments" level="AI-ready" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+
+**Result:** A coverage summary will identify specialized support, ambiguous assignments, and excluded contents.
+
+**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
+provides the following selection: rare-and-residual. The
+[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
+specifies the parts appropriate to this stage.
+
+**Draft scope.** Procedures, worked examples, and verification remain to be
+written. The outline preserves the intended result and evidence selection.
+
+**What this does not do.** This outline does not provide a complete procedure
+or claim a new execution of the research.
+
+</Recipe>
+
+## Expected artifact
+
+A refined inventory, human decision record, and concept coverage evidence will support operational schema design.
+
+## Implementation options
+
+A review table and descriptive summaries are sufficient for the core workflow. Similarity or clustering can provide optional decision support for larger inventories. Such extensions are not implemented in this scaffold.
+
+## World Bank examples
+
+The Data Snapshot case study supplies the recorded research example for this
+chapter. The [overview](./index.mdx) identifies its evidence and claim boundaries.
+
+## Resources
+
+- The [evidence package notes](pathname:///cookbook-files/ai-assisted-metadata-schema-development/README.md) explain provenance, evidence labels, and limits.
+- The [source-image register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) links the artifacts to institutional documents and records reuse status.
+- Dy & Solatorio (2026). *Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs*. Working paper. The study supplies the methodology and recorded results used here.
+
+## Common mistakes
+
+- A classification can be mistaken for a final human decision.
+- Low frequency can be treated as sufficient reason for exclusion.
+- Later mapping edits can be attributed retroactively to the original assessment.
+
+## Verification
+
+These criteria define the intended review. Commands and worked checks remain
+to be added with the recipes.
+
+- Concept dispositions have reviewable semantic and scope reasons.
+- Original assignments use the reviewed 41-concept inventory plus the residual category.
+- Low-support concepts and residual profiles are inspected in context.
+
+## Checklist
+
+<Checklist id="ai-assisted-metadata-schema-development-concept-refinement" items={[
+  "Concept dispositions have reviewable semantic and scope reasons.",
+  "Original assignments use the reviewed 41-concept inventory plus the residual category.",
+  "Low-support concepts and residual profiles are inspected in context.",]} />

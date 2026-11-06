@@ -1,0 +1,150 @@
+---
+id: characterization
+title: "1. Artifact Characterization and Sampling"
+sidebar_label: "1. Artifacts and sampling"
+sidebar_position: 2
+description: The artifact class and descriptive scope are explicit.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 1. Artifact Characterization and Sampling
+
+**Question:** What must the schema describe, and which artifacts provide credible evidence of its requirements?
+
+:::note[Structural draft]
+This chapter establishes learning milestones and candidate recipes. Detailed
+procedures, worked examples, executable exercises, and implementation checks
+remain for later authoring. Intended results below describe planned recipes.
+:::
+
+## Rationale
+
+An artifact is an object selected for description, such as a table, chart, or map. Defining the artifact class establishes what one metadata record describes. Several artifacts in the same document can have different subjects, periods, and populations.
+
+A representative artifact collection should expose the diversity relevant to the intended use. Recording the selection preserves its rationale and a separate collection for later validation. Sampling requirements depend on diversity and scope.
+
+## Target state
+
+- The artifact class and descriptive scope are explicit.
+- Development and held-out artifacts have stable identities and a documented selection rationale.
+- The sample register states diversity, exclusions, and limits on generalization.
+
+## Learning objectives
+
+- Distinguish an artifact from its parent document and analytical contents.
+- Identify relevant diversity dimensions and explain snapshot-disjoint and document-disjoint selection.
+
+## Prerequisite concepts
+
+An intended descriptive use, candidate artifacts, and their source references are available. Metadata engineering concepts are introduced here.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Define the artifact class and inspect a small selection with a domain expert. |
+| **AI-ready** | Record identities, selection criteria, provenance, and collection membership in a structured manifest. |
+| **AI-native** | Use model assistance to characterize diversity while humans approve scope and sample boundaries. |
+
+:::info[Running example]
+The study used 210 development snapshots from three institutional corpora and 202 held-out snapshots. The Jordan chart, Afghanistan table, and Russian chart introduce selected examples. These three objects illustrate the evidence structure and do not replace the full study sample.
+:::
+
+## Recipes
+
+These are candidate recipes. Time estimates remain pending until their
+procedures and verification have been authored.
+
+<Recipe title="1.1 Define the artifact class and descriptive scope" level="Foundational" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+
+**Result:** A characterization statement will identify the unit described, intended uses, and exclusions.
+
+**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
+provides the following selection: independent-naming. The
+[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
+specifies the parts appropriate to this stage.
+
+**Draft scope.** Procedures, worked examples, and verification remain to be
+written. The outline preserves the intended result and evidence selection.
+
+**What this does not do.** This outline does not provide a complete procedure
+or claim a new execution of the research.
+
+</Recipe>
+
+<Recipe title="1.2 Inspect a representative collection and freeze its sample" level="AI-ready" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+
+**Result:** A sample manifest will record selected identities, diversity dimensions, and selection reasons.
+
+**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
+provides the following selection: independent-naming; study_summary. The
+[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
+specifies the parts appropriate to this stage.
+
+**Draft scope.** Procedures, worked examples, and verification remain to be
+written. The outline preserves the intended result and evidence selection.
+
+**What this does not do.** This outline does not provide a complete procedure
+or claim a new execution of the research.
+
+</Recipe>
+
+<Recipe title="1.3 Check the development and held-out boundary" level="AI-ready" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+
+**Result:** An identity check will report overlap and the limits of the validation split.
+
+**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
+provides the following selection: verification_derived_facts. The
+[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
+specifies the parts appropriate to this stage.
+
+**Draft scope.** Procedures, worked examples, and verification remain to be
+written. The outline preserves the intended result and evidence selection.
+
+**What this does not do.** This outline does not provide a complete procedure
+or claim a new execution of the research.
+
+</Recipe>
+
+## Expected artifact
+
+A characterization statement and frozen sample manifest will supply the inputs to independent discovery.
+
+## Implementation options
+
+A spreadsheet, CSV manifest, or JSON register can preserve the selection. Model summaries can support review of diversity; the final scope and sample rationale remain human decisions.
+
+## World Bank examples
+
+The Data Snapshot case study supplies the recorded research example for this
+chapter. The [overview](./index.mdx) identifies its evidence and claim boundaries.
+
+## Resources
+
+- The [evidence package notes](pathname:///cookbook-files/ai-assisted-metadata-schema-development/README.md) explain provenance, evidence labels, and limits.
+- The [source-image register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) links the artifacts to institutional documents and records reuse status.
+- Dy & Solatorio (2026). *Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs*. Working paper. The study supplies the methodology and recorded results used here.
+
+## Common mistakes
+
+- A document description can hide differences among its artifacts.
+- A convenient sample can omit an important reporting style.
+- Snapshot-disjoint samples can still share parent documents.
+
+## Verification
+
+These criteria define the intended review. Commands and worked checks remain
+to be added with the recipes.
+
+- The artifact class and descriptive scope are explicit.
+- Development and held-out artifacts have stable identities and a documented selection rationale.
+- The sample register states diversity, exclusions, and limits on generalization.
+
+## Checklist
+
+<Checklist id="ai-assisted-metadata-schema-development-characterization" items={[
+  "The artifact class and descriptive scope are explicit.",
+  "Development and held-out artifacts have stable identities and a documented selection rationale.",
+  "The sample register states diversity, exclusions, and limits on generalization.",]} />

@@ -1,0 +1,150 @@
+---
+id: schema-design
+title: "5. Operational Metadata Schema Design"
+sidebar_label: "5. Schema design"
+sidebar_position: 6
+description: Operational field decisions have explicit reasons.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 5. Operational Metadata Schema Design
+
+**Question:** How do meaningful concepts become fields that people can use consistently?
+
+:::note[Structural draft]
+This chapter establishes learning milestones and candidate recipes. Detailed
+procedures, worked examples, executable exercises, and implementation checks
+remain for later authoring. Intended results below describe planned recipes.
+:::
+
+## Rationale
+
+An operational metadata schema specifies fields that people can populate consistently. Its design balances conceptual distinctions with annotation effort, intended use, and maintainability. A retained concept does not automatically require a separate field.
+
+Operational design can combine concepts, remove a costly distinction, or restore a practically useful field. Definitions, evidence rules, examples, and scope notes make these choices usable and reviewable.
+
+## Target state
+
+- Operational field decisions have explicit reasons.
+- The specification supplies definitions, examples, and evidence boundaries.
+- The initial schema remains distinguishable from later documentation and standards revisions.
+
+## Learning objectives
+
+- Distinguish a concept inventory from an operational schema.
+- Explain operational tradeoffs and assess whether the representation preserves the intended information.
+
+## Prerequisite concepts
+
+Chapter 4 provides refined concepts and coverage evidence. Intended annotation and retrieval uses are explicit, and a human reviewer can judge the value of independent fields.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Write field definitions and operational decision reasons. |
+| **AI-ready** | Maintain a versioned specification with evidence rules, examples, and reviewable decisions. |
+| **AI-native** | Use model assistance to challenge ambiguity while humans approve fields, definitions, and representation. |
+
+:::info[Running example]
+Operational design translated 41 concepts into an initial 36-field schema. The soybean figure illustrates why panel_title was restored as an independent field. The Afghanistan source phrase introduces the provenance meaning whose later standards-informed separation belongs to chapter 7.
+:::
+
+## Recipes
+
+These are candidate recipes. Time estimates remain pending until their
+procedures and verification have been authored.
+
+<Recipe title="5.1 Translate concepts into operational field decisions" level="Foundational" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+
+**Result:** A field-decision record will explain demonstrated merges, removals, renames, and restorations.
+
+**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
+provides the following selection: operational-panel-title. The
+[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
+specifies the parts appropriate to this stage.
+
+**Draft scope.** Procedures, worked examples, and verification remain to be
+written. The outline preserves the intended result and evidence selection.
+
+**What this does not do.** This outline does not provide a complete procedure
+or claim a new execution of the research.
+
+</Recipe>
+
+<Recipe title="5.2 Write field definitions and annotation guidance" level="Foundational" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+
+**Result:** A readable specification will state meanings, applicable evidence, examples, and scope.
+
+**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
+provides the following selection: operational-panel-title; provenance-split inputs only. The
+[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
+specifies the parts appropriate to this stage.
+
+**Draft scope.** Procedures, worked examples, and verification remain to be
+written. The outline preserves the intended result and evidence selection.
+
+**What this does not do.** This outline does not provide a complete procedure
+or claim a new execution of the research.
+
+</Recipe>
+
+<Recipe title="5.3 Review the specification against sample records" level="AI-ready" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+
+**Result:** A reviewed illustration will reveal ambiguity and limits of the selected representation.
+
+**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
+provides the following selection: flat-representation-limits source images only. The
+[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
+specifies the parts appropriate to this stage.
+
+**Draft scope.** Procedures, worked examples, and verification remain to be
+written. The outline preserves the intended result and evidence selection.
+
+**What this does not do.** This outline does not provide a complete procedure
+or claim a new execution of the research.
+
+</Recipe>
+
+## Expected artifact
+
+An initial operational schema and field-decision record will be frozen for held-out validation.
+
+## Implementation options
+
+A flat specification supports human inspection. A minimal machine-readable illustration may clarify types or cardinalities during later authoring. Richer structures require a justified representation need.
+
+## World Bank examples
+
+The Data Snapshot case study supplies the recorded research example for this
+chapter. The [overview](./index.mdx) identifies its evidence and claim boundaries.
+
+## Resources
+
+- The [evidence package notes](pathname:///cookbook-files/ai-assisted-metadata-schema-development/README.md) explain provenance, evidence labels, and limits.
+- The [source-image register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) links the artifacts to institutional documents and records reuse status.
+- Dy & Solatorio (2026). *Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs*. Working paper. The study supplies the methodology and recorded results used here.
+
+## Common mistakes
+
+- Concepts can be copied into fields without operational review.
+- A definition can leave document-context and missing-value boundaries unclear.
+- Extra flat fields can be proposed for information that requires relationships.
+
+## Verification
+
+These criteria define the intended review. Commands and worked checks remain
+to be added with the recipes.
+
+- Operational field decisions have explicit reasons.
+- The specification supplies definitions, examples, and evidence boundaries.
+- The initial schema remains distinguishable from later documentation and standards revisions.
+
+## Checklist
+
+<Checklist id="ai-assisted-metadata-schema-development-schema-design" items={[
+  "Operational field decisions have explicit reasons.",
+  "The specification supplies definitions, examples, and evidence boundaries.",
+  "The initial schema remains distinguishable from later documentation and standards revisions.",]} />

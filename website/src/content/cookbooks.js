@@ -158,6 +158,17 @@ export const allCookbooks = [
     chapters: 6,
     to: '/cookbook/ai-assistants-at-work/',
   },
+  {
+    id: 'ai-assisted-metadata-schema-development',
+    version: '0.1',
+    date: 'November 2026',
+    audience: 'Technical practitioners familiar with Python, APIs, and LLMs who want to learn metadata schema development',
+    title: 'Practical Guide to AI-Assisted Metadata Schema Development',
+    description:
+      'A guided methodology for discovering metadata requirements from artifacts, refining concepts through human review, designing operational fields, and evaluating and refining the schema.',
+    chapters: 7,
+    to: '/cookbook/ai-assisted-metadata-schema-development/',
+  },
 ];
 
 export const cookbooks = allCookbooks.filter((c) => !isHiddenCookbook(c.id));

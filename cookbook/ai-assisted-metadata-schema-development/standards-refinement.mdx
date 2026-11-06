@@ -1,0 +1,150 @@
+---
+id: standards-refinement
+title: "7. Standards-Informed Schema Refinement"
+sidebar_label: "7. Standards refinement"
+sidebar_position: 8
+description: Mappings identify authoritative terms and their relationship to local meanings.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 7. Standards-Informed Schema Refinement
+
+**Question:** How can standards improve an artifact-derived schema while preserving its established requirements?
+
+:::note[Structural draft]
+This chapter establishes learning milestones and candidate recipes. Detailed
+procedures, worked examples, executable exercises, and implementation checks
+remain for later authoring. Intended results below describe planned recipes.
+:::
+
+## Rationale
+
+A standards crosswalk compares local fields with established terms and patterns. Exact, close, broader, narrower, structural, and unmatched relationships have different implications. A mapping alone does not establish application fit.
+
+Standards review follows artifact-driven development and validation. Humans accept changes that improve semantic accuracy, reject mappings that distort observed concepts, and defer structures beyond the chosen representation.
+
+## Target state
+
+- Mappings identify authoritative terms and their relationship to local meanings.
+- Accepted, rejected, and deferred proposals have explicit reasons.
+- The final specification preserves descriptive requirements and states its evaluation boundary.
+
+## Learning objectives
+
+- Interpret a standards relationship without automatic substitution.
+- Explain derivation versus attribution and separate the final flat schema from post-study implementation.
+
+## Prerequisite concepts
+
+Chapter 6 provides validation findings and adjudicated scope. The practitioner can compare definitions and distinguish conceptual coverage from representation.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Compare selected definitions with authoritative standards under human review. |
+| **AI-ready** | Record crosswalk relationships, sources, decisions, and the versioned specification. |
+| **AI-native** | Use interactive AI assistance for source research and mappings, with human verification and acceptance. |
+
+:::info[Running example]
+Standards review separated data_source into data_sources and attributions, producing the final 37-field flat schema. The Afghanistan table distinguishes ALCS 2013–14 from Authors’ calculation. The prepared two-field record is transcribed from the paper and is not a new extraction result.
+:::
+
+## Recipes
+
+These are candidate recipes. Time estimates remain pending until their
+procedures and verification have been authored.
+
+<Recipe title="7.1 Build an evidence-backed standards crosswalk" level="AI-ready" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+
+**Result:** A crosswalk will identify local meanings, external terms, relationship categories, and authoritative sources.
+
+**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
+provides the following selection: provenance-split. The
+[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
+specifies the parts appropriate to this stage.
+
+**Draft scope.** Procedures, worked examples, and verification remain to be
+written. The outline preserves the intended result and evidence selection.
+
+**What this does not do.** This outline does not provide a complete procedure
+or claim a new execution of the research.
+
+</Recipe>
+
+<Recipe title="7.2 Adjudicate candidate standards refinements" level="Foundational" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+
+**Result:** A decision matrix will explain accepted refinements and rejected or deferred alternatives.
+
+**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
+provides the following selection: provenance-split recorded standards decision. The
+[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
+specifies the parts appropriate to this stage.
+
+**Draft scope.** Procedures, worked examples, and verification remain to be
+written. The outline preserves the intended result and evidence selection.
+
+**What this does not do.** This outline does not provide a complete procedure
+or claim a new execution of the research.
+
+</Recipe>
+
+<Recipe title="7.3 Publish the refined specification and decision record" level="AI-ready" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+
+**Result:** A versioned specification will retain its crosswalk, decisions, and evaluation limits.
+
+**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
+provides the following selection: provenance-split final definitions; study_summary. The
+[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
+specifies the parts appropriate to this stage.
+
+**Draft scope.** Procedures, worked examples, and verification remain to be
+written. The outline preserves the intended result and evidence selection.
+
+**What this does not do.** This outline does not provide a complete procedure
+or claim a new execution of the research.
+
+</Recipe>
+
+## Expected artifact
+
+A standards-informed operational schema, crosswalk, and human decision record will complete the documented methodology.
+
+## Implementation options
+
+A readable crosswalk and flat specification preserve the core reasoning. Post-study Pydantic and JSON Schema implementations can enforce richer constraints, but their structural and presentation changes require separate evaluation.
+
+## World Bank examples
+
+The Data Snapshot case study supplies the recorded research example for this
+chapter. The [overview](./index.mdx) identifies its evidence and claim boundaries.
+
+## Resources
+
+- The [evidence package notes](pathname:///cookbook-files/ai-assisted-metadata-schema-development/README.md) explain provenance, evidence labels, and limits.
+- The [source-image register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) links the artifacts to institutional documents and records reuse status.
+- Dy & Solatorio (2026). *Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs*. Working paper. The study supplies the methodology and recorded results used here.
+
+## Common mistakes
+
+- A close relationship can be treated as exact equivalence.
+- A vocabulary can narrow a local concept beyond its artifact evidence.
+- The final specification can be described as independently validated after standards refinement.
+
+## Verification
+
+These criteria define the intended review. Commands and worked checks remain
+to be added with the recipes.
+
+- Mappings identify authoritative terms and their relationship to local meanings.
+- Accepted, rejected, and deferred proposals have explicit reasons.
+- The final specification preserves descriptive requirements and states its evaluation boundary.
+
+## Checklist
+
+<Checklist id="ai-assisted-metadata-schema-development-standards-refinement" items={[
+  "Mappings identify authoritative terms and their relationship to local meanings.",
+  "Accepted, rejected, and deferred proposals have explicit reasons.",
+  "The final specification preserves descriptive requirements and states its evaluation boundary.",]} />

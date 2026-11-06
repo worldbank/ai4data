@@ -1,0 +1,167 @@
+---
+id: validation
+title: "6. Schema Validation"
+sidebar_label: "6. Validation"
+sidebar_position: 7
+description: The schema and validation collection have frozen identities.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 6. Schema Validation
+
+**Question:** What does new artifact evidence reveal about missing concepts, unclear guidance, and representation limits?
+
+:::note[Structural draft]
+This chapter establishes learning milestones and candidate recipes. Detailed
+procedures, worked examples, executable exercises, and implementation checks
+remain for later authoring. Intended results below describe planned recipes.
+:::
+
+## Rationale
+
+Held-out validation assesses an operational schema against artifacts excluded from initial development. Open residual discovery explores omissions. A confirmatory instrument asks whether an omission materially impairs interpretation or discovery.
+
+Human adjudication determines the response to each finding. A candidate can expose a missing field, unclear guidance, a representation limitation, or an out-of-scope detail. A stable field inventory can coexist with useful revisions.
+
+## Target state
+
+- The schema and validation collection have frozen identities.
+- Candidate evidence is separated from human decisions and revisions.
+- Conclusions state the tested scope and instrument limitations.
+
+## Learning objectives
+
+- Distinguish development concept coverage from held-out schema validation.
+- Compare complementary instruments and classify field, documentation, representation, scope, and uncertainty issues.
+
+## Prerequisite concepts
+
+Chapter 5 provides the frozen initial schema. Chapter 1 supplies the held-out boundary. The practitioner understands that a proposed gap does not establish a required field.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Review selected artifacts, findings, and human dispositions. |
+| **AI-ready** | Freeze instrument inputs and maintain structured evidence, decisions, and revisions. |
+| **AI-native** | Use bounded model-assisted open and confirmatory assessment with calibration, integrity checks, and human adjudication. |
+
+:::info[Running example]
+Both exercises used the same 202 held-out snapshots. Validation 1 produced 578 proposals. Validation 2 produced six possible gaps across five snapshots. Human review accepted no new field. The time_period clarification, South Sudan panel associations, and Diffa header hierarchy illustrate different outcomes.
+:::
+
+## Recipes
+
+These are candidate recipes. Time estimates remain pending until their
+procedures and verification have been authored.
+
+<Recipe title="6.1 Freeze the schema and validation collection" level="AI-ready" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+
+**Result:** A manifest will identify the schema, artifacts, instrument, and calibration boundary.
+
+**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
+provides the following selection: study_summary; verification_derived_facts. The
+[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
+specifies the parts appropriate to this stage.
+
+**Draft scope.** Procedures, worked examples, and verification remain to be
+written. The outline preserves the intended result and evidence selection.
+
+**What this does not do.** This outline does not provide a complete procedure
+or claim a new execution of the research.
+
+</Recipe>
+
+<Recipe title="6.2 Inspect open residual-discovery findings" level="AI-native" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+
+**Result:** An evidence-bearing candidate set will distinguish covered observations from possible omissions.
+
+**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
+provides the following selection: complementary-validation. The
+[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
+specifies the parts appropriate to this stage.
+
+**Draft scope.** Procedures, worked examples, and verification remain to be
+written. The outline preserves the intended result and evidence selection.
+
+**What this does not do.** This outline does not provide a complete procedure
+or claim a new execution of the research.
+
+</Recipe>
+
+<Recipe title="6.3 Assess consequential omissions with a confirmatory instrument" level="AI-native" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+
+**Result:** An assessment will record possible material gaps, evidence, and uncertainty.
+
+**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
+provides the following selection: flat-representation-limits original assessments. The
+[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
+specifies the parts appropriate to this stage.
+
+**Draft scope.** Procedures, worked examples, and verification remain to be
+written. The outline preserves the intended result and evidence selection.
+
+**What this does not do.** This outline does not provide a complete procedure
+or claim a new execution of the research.
+
+</Recipe>
+
+<Recipe title="6.4 Adjudicate findings and record justified revisions" level="Foundational" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+
+**Result:** A decision record will distinguish revisions, covered concepts, exclusions, and deferred representation issues.
+
+**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
+provides the following selection: documentation-revision; flat-representation-limits human dispositions. The
+[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
+specifies the parts appropriate to this stage.
+
+**Draft scope.** Procedures, worked examples, and verification remain to be
+written. The outline preserves the intended result and evidence selection.
+
+**What this does not do.** This outline does not provide a complete procedure
+or claim a new execution of the research.
+
+</Recipe>
+
+## Expected artifact
+
+Validation evidence, human dispositions, a documentation-revised schema, and a representation backlog will support standards-informed refinement.
+
+## Implementation options
+
+Open and confirmatory instruments answer complementary questions. Human source inspection remains necessary. An independent audit of no-gap cases could strengthen a future evaluation; the study did not include that audit.
+
+## World Bank examples
+
+The Data Snapshot case study supplies the recorded research example for this
+chapter. The [overview](./index.mdx) identifies its evidence and claim boundaries.
+
+## Resources
+
+- The [evidence package notes](pathname:///cookbook-files/ai-assisted-metadata-schema-development/README.md) explain provenance, evidence labels, and limits.
+- The [source-image register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) links the artifacts to institutional documents and records reuse status.
+- Dy & Solatorio (2026). *Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs*. Working paper. The study supplies the methodology and recorded results used here.
+
+## Common mistakes
+
+- Two instruments on the same collection can be described as independent replications.
+- An unchanged field inventory can be mistaken for an absence of useful findings.
+- No-gap assessments can be used to claim an unmeasured false-negative rate.
+
+## Verification
+
+These criteria define the intended review. Commands and worked checks remain
+to be added with the recipes.
+
+- The schema and validation collection have frozen identities.
+- Candidate evidence is separated from human decisions and revisions.
+- Conclusions state the tested scope and instrument limitations.
+
+## Checklist
+
+<Checklist id="ai-assisted-metadata-schema-development-validation" items={[
+  "The schema and validation collection have frozen identities.",
+  "Candidate evidence is separated from human decisions and revisions.",
+  "Conclusions state the tested scope and instrument limitations.",]} />

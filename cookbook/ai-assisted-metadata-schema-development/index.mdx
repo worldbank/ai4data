@@ -1,0 +1,181 @@
+---
+id: index
+title: Practical Guide to AI-Assisted Metadata Schema Development
+sidebar_label: Overview
+sidebar_position: 0
+description: A guided methodology for discovering metadata requirements from artifacts, refining concepts through human review, designing operational fields, and evaluating and refining the schema.
+---
+
+# Practical Guide to AI-Assisted Metadata Schema Development
+
+**A cookbook for technical practitioners familiar with Python, APIs, and LLMs who want to learn metadata schema development.** Version 0.1 (working draft), November 2026.
+
+:::note[Working draft]
+This guide is a structural draft from the AI for Data – Data for AI program.
+Its overview, learning milestones, candidate recipes, and prepared evidence
+are available for review. Full procedures and executable exercises remain to
+be authored. It does not represent official World Bank Group guidance or policy.
+Corrections are welcome through [GitHub issues](https://github.com/worldbank/ai4data/issues);
+the [contributing page](./contributing.md) describes the review expectations.
+:::
+
+An emerging artifact class can require metadata before its descriptive
+requirements are fully understood. A table, chart, or map may need to be found
+and interpreted independently of its parent document. Developing its schema
+therefore begins with evidence about what the artifacts represent and the uses
+their descriptions must support.
+
+This cookbook develops four connected practices. Independent discovery proposes
+potential metadata requirements from each artifact. Exact-name field profiles
+preserve accumulated evidence, and concept synthesis and expert refinement
+establish shared meanings. Operational schema design translates concepts into
+usable fields and guidance. Held-out validation and standards-informed
+refinement test that specification and clarify its terminology and boundaries.
+Humans retain authority over scope, field design, and accepted changes.
+
+The running example is the Data Snapshot study by Dy & Solatorio (2026).
+Its evidence connects observations, profiles, concepts, schema decisions,
+validation findings, and standards mappings. The methodology is intended for
+adaptation to other artifact classes; the reported empirical evaluation concerns
+the studied Data Snapshot collections. The [standards page](./standards.md)
+identifies the references compared in the study.
+
+## Purpose and learning outcomes
+
+- The practitioner can distinguish a metadata observation, metadata field profile, canonical metadata concept, concept inventory, and operational metadata schema.
+- The practitioner can trace an example from artifact evidence to a human-approved field decision.
+- The practitioner can distinguish concept coverage from held-out validation and adjudicate documentation and representation issues.
+- The practitioner can use a standards crosswalk while preserving artifact-derived requirements.
+
+## Prerequisites
+
+The foundational path assumes familiarity with Python, APIs, and LLMs, access
+to representative artifacts, and a reviewer who understands their domain.
+Metadata engineering concepts are introduced when needed. The prepared evidence
+can be inspected without an API key or a new experiment.
+
+The AI-ready path adds structured records, stable identities, and deterministic
+checks. The AI-native path adds bounded model assistance with recorded inputs,
+settings, evidence, and human decisions. Later live recipes will state their
+dependencies and execution limits when implemented.
+
+## First steps
+
+1. Read [chapter 1](./characterization.mdx) to identify the artifact class and descriptive boundary. Allow about 20 minutes for the draft and evidence inspection.
+2. Inspect naming in [chapter 2](./discovery.mdx) and profiling in [chapter 3](./concept-synthesis.mdx). Allow about 30 minutes; executable exercises are pending.
+3. Follow original concept assessment into operational design in [chapters 4](./concept-refinement.mdx) and [5](./schema-design.mdx). Allow about 30 minutes for the selected decisions.
+4. Compare validation in [chapter 6](./validation.mdx) and provenance refinement in [chapter 7](./standards-refinement.mdx). Allow about 30 minutes for inspection.
+
+These are indicative reading estimates. Applying the methodology to a new
+collection requires sampling, domain review, and additional work.
+The [self-assessment](./start-here.mdx) provides one checkpoint per chapter.
+
+## Chapters and questions
+
+| Chapter | Question | Practical topics |
+|---|---|---|
+| [1. Artifact Characterization and Sampling](./characterization.mdx) | What must the schema describe, and which artifacts provide credible evidence of its requirements? | A characterization statement and frozen sample manifest will supply the inputs to independent discovery. |
+| [2. Metadata Discovery](./discovery.mdx) | How can descriptive requirements emerge independently from artifacts? | Evidence-bearing metadata observations will provide the input to deterministic profiling. |
+| [3. Field Profiles and Metadata Concept Synthesis](./concept-synthesis.mdx) | How do local observations become manageable evidence for shared concepts? | Field profiles and a candidate metadata concept inventory will provide the evidence for expert refinement. |
+| [4. Expert Concept Refinement and Assessment](./concept-refinement.mdx) | Which concepts should remain, and how does the development evidence support them? | A refined inventory, human decision record, and concept coverage evidence will support operational schema design. |
+| [5. Operational Metadata Schema Design](./schema-design.mdx) | How do meaningful concepts become fields that people can use consistently? | An initial operational schema and field-decision record will be frozen for held-out validation. |
+| [6. Schema Validation](./validation.mdx) | What does new artifact evidence reveal about missing concepts, unclear guidance, and representation limits? | Validation evidence, human dispositions, a documentation-revised schema, and a representation backlog will support standards-informed refinement. |
+| [7. Standards-Informed Schema Refinement](./standards-refinement.mdx) | How can standards improve an artifact-derived schema while preserving its established requirements? | A standards-informed operational schema, crosswalk, and human decision record will complete the documented methodology. |
+
+## Maturity levels
+
+An organization can reach different levels in different chapters. Human review
+remains necessary at every level. Greater automation does not grant authority
+to accept schema changes.
+
+| Level | Meaning |
+|---|---|
+| **Foundational** | The practice exists in a form a person can use and a crawler can read. Practitioners inspect evidence and record human decisions. |
+| **AI-ready** | The practice is structured, identified, and accessible through documented interfaces. Observations, mappings, and decisions support repeatable checks. |
+| **AI-native** | AI-oriented methods have provenance and verification built in. Bounded model assistance supports discovery, comparison, and assessment under human adjudication. |
+
+## Running example
+
+The research treated Data Snapshots as independent analytical information
+objects. It processed 210 development snapshots from three institutional corpora,
+producing 3,041 metadata observations and 833 field profiles. Synthesis proposed
+70 concepts; expert refinement retained 41. Operational design produced an
+initial 36-field schema. Two complementary exercises used the same 202 held-out
+snapshots. Documentation refinement retained 36 fields; standards-informed
+refinement produced a final 37-field flat specification.
+
+Ten prepared examples form a continuous learning journey. The Jordan chart,
+Afghanistan table, and Russian chart introduce discovery and aggregation.
+Title profiles, concept decisions, and rare or residual assignments connect
+synthesis to refinement. The soybean figure illustrates the later restoration
+of panel_title. The South Sudan composite and Diffa table expose representation
+limits during validation. The Afghanistan table returns for the distinction
+between data sources and attribution.
+
+The [public dataset](https://huggingface.co/datasets/ai4data/data-snapshot)
+contains source images and document metadata. The prepared register pins the
+selected records to dataset revision
+626f3c54ba6d8f6e0ba0795f9e544e24b2650faf. Images remain externally linked
+because individual redistribution rights have not been established.
+
+## Scope of the examples
+
+Recorded study results, selected excerpts, preparation-time deterministic
+exercises, and proposed extensions retain distinct labels. A simplified example
+does not claim an independent execution of the study. The study sample size
+is not a universal minimum.
+
+Chapter 4 uses the original mapping against 41 concepts. Chapter 5 introduces
+the subsequent restoration of panel_title during operational design. Later
+mapping edits are kept separate from the original assessment. Both validations
+used the same snapshot-disjoint collection, which shares some parent documents
+with development. Neither accepted a new field after human review.
+The final 37-field specification followed validation and did not receive a
+further independent held-out assessment in the reported study.
+
+The evidence supports bounded conclusions for the tested collections. It does
+not establish universal generalizability, superiority over alternatives, or a
+false-negative rate. Production metadata extraction, document layout detection,
+formal ontology construction, and knowledge graph infrastructure are outside
+this guide. Post-study machine-readable implementation remains separate from
+the research endpoint.
+
+## Files
+
+The prepared files support inspection now. Executable exercises will be added
+during recipe authoring. Downloads are available in the local development
+preview; hidden production previews omit these files.
+
+| File | Used in |
+|---|---|
+| [Evidence package notes](pathname:///cookbook-files/ai-assisted-metadata-schema-development/README.md) | All chapters use source, chronology, evidence-label, and reuse notes. |
+| [Research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json) | Chapters 1–7 use observations, profiles, concepts, decisions, and study summaries. |
+| [Source-image register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) | All chapters use identities, image and document links, attribution, and visual limits. |
+| [Chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv) | All chapters use the precise evidence selections assigned to each stage. |
+| [Concept review template](pathname:///cookbook-files/ai-assisted-metadata-schema-development/concept_review_template.csv) | Chapter 4 will use a new blank worksheet for human concept decisions. |
+| [Gap review template](pathname:///cookbook-files/ai-assisted-metadata-schema-development/gap_review_template.csv) | Chapter 6 will use a new blank worksheet for schema adjudication. |
+
+## Related resources
+
+| Resource | Purpose |
+|---|---|
+| [Metadata Curation with Language Models](/cookbook/metadata-curation-with-llms/) | Curation of records within an existing schema complements this guide to developing the schema. |
+| [Extracting Data from Documents](/cookbook/data-from-documents/) | Artifact location and numerical extraction provide related guidance outside this scope. |
+| [Publishing ML-Ready Datasets](/cookbook/ml-ready-datasets/) | Dataset documentation and split management support reusable research collections. |
+| [Evaluation Suites for Statistical AI](/cookbook/evaluation-suites/) | Evaluation design supplies related methods for future controlled assessments. |
+
+## Citation
+
+World Bank. 2026. *Practical Guide to AI-Assisted Metadata Schema Development.*
+Version 0.1 (working draft). AI for Data – Data for AI.
+
+### Research reference
+
+Dy & Solatorio (2026). *Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs*. Working paper.
+
+The manuscript names AJ Carl P. Dy and Aivin V. Solatorio as its authors.
+Its arXiv publication is pending; this citation has no assigned public identifier.
+
+## Version history
+
+- **0.1 (November 2026).** The structural draft establishes seven chapters, candidate recipes, self-assessment checkpoints, and the prepared evidence. Complete recipes remain under development.

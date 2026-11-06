@@ -1,0 +1,150 @@
+---
+id: discovery
+title: "2. Metadata Discovery"
+sidebar_label: "2. Discovery"
+sidebar_position: 3
+description: Each observation retains its artifact identity, proposed field, observed value, source level, description, and rationale.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 2. Metadata Discovery
+
+**Question:** How can descriptive requirements emerge independently from artifacts?
+
+:::note[Structural draft]
+This chapter establishes learning milestones and candidate recipes. Detailed
+procedures, worked examples, executable exercises, and implementation checks
+remain for later authoring. Intended results below describe planned recipes.
+:::
+
+## Rationale
+
+A metadata observation proposes a reusable descriptive property and records the evidence that motivated it. Its field name and observed value serve different purposes. Discovery explores potential requirements before a shared vocabulary is fixed.
+
+Independent assessment lets each artifact contribute without inheriting the names chosen for earlier artifacts. Repetition, ambiguity, and candidates later excluded from the schema remain evidence for subsequent review.
+
+## Target state
+
+- Each observation retains its artifact identity, proposed field, observed value, source level, description, and rationale.
+- Discovery requests remain independent of an evolving shared inventory.
+- Uncertainty and failed or incomplete responses remain visible.
+
+## Learning objectives
+
+- Separate field names from artifact-specific values.
+- Interpret source levels and explain how collection processing preserves independent requests and execution evidence.
+
+## Prerequisite concepts
+
+Chapter 1 establishes artifact identities and scope. The practitioner understands structured API responses and the difference between artifact evidence and document context.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Inspect retained observations and source artifacts with a reviewer. |
+| **AI-ready** | Define observation records with identities, evidence sources, and execution status. |
+| **AI-native** | Process independent model requests with recorded settings, response checks, and later human acceptance decisions. |
+
+:::info[Running example]
+The Jordan, Afghanistan, and Russia examples contain figure_title, table_title, and chart_title observations. The Russian figure has both a caption and an internal chart title with different wording. Pakistan and Lebanon observations preserve specialized and potentially excluded candidates. These outputs remain model hypotheses.
+:::
+
+## Recipes
+
+These are candidate recipes. Time estimates remain pending until their
+procedures and verification have been authored.
+
+<Recipe title="2.1 Trace an artifact into metadata observations" level="Foundational" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+
+**Result:** An annotated excerpt will distinguish a candidate field, its observed value, and its source evidence.
+
+**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
+provides the following selection: independent-naming. The
+[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
+specifies the parts appropriate to this stage.
+
+**Draft scope.** Procedures, worked examples, and verification remain to be
+written. The outline preserves the intended result and evidence selection.
+
+**What this does not do.** This outline does not provide a complete procedure
+or claim a new execution of the research.
+
+</Recipe>
+
+<Recipe title="2.2 Prepare an independent discovery request" level="AI-native" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+
+**Result:** A bounded request specification will describe image input, document context, response structure, and uncertainty treatment.
+
+**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
+provides the following selection: independent-naming; provenance-split inputs only. The
+[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
+specifies the parts appropriate to this stage.
+
+**Draft scope.** Procedures, worked examples, and verification remain to be
+written. The outline preserves the intended result and evidence selection.
+
+**What this does not do.** This outline does not provide a complete procedure
+or claim a new execution of the research.
+
+</Recipe>
+
+<Recipe title="2.3 Process a collection and inspect execution records" level="AI-native" skills="Technical practitioner; metadata reviewer" time="Estimate pending">
+
+**Result:** A collection-processing plan will retain request identities, settings, outcomes, and failures.
+
+**Supporting evidence:** The [prepared research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
+provides the following selection: study_summary. The
+[chapter-to-example map](pathname:///cookbook-files/ai-assisted-metadata-schema-development/chapter_examples.csv)
+specifies the parts appropriate to this stage.
+
+**Draft scope.** Procedures, worked examples, and verification remain to be
+written. The outline preserves the intended result and evidence selection.
+
+**What this does not do.** This outline does not provide a complete procedure
+or claim a new execution of the research.
+
+</Recipe>
+
+## Expected artifact
+
+Evidence-bearing metadata observations will provide the input to deterministic profiling.
+
+## Implementation options
+
+Retained responses support an offline path. A later live replication can use independent multimodal requests and structured outputs. Fresh outputs must remain separate from the recorded study evidence.
+
+## World Bank examples
+
+The Data Snapshot case study supplies the recorded research example for this
+chapter. The [overview](./index.mdx) identifies its evidence and claim boundaries.
+
+## Resources
+
+- The [evidence package notes](pathname:///cookbook-files/ai-assisted-metadata-schema-development/README.md) explain provenance, evidence labels, and limits.
+- The [source-image register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) links the artifacts to institutional documents and records reuse status.
+- Dy & Solatorio (2026). *Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs*. Working paper. The study supplies the methodology and recorded results used here.
+
+## Common mistakes
+
+- Observed categories can be mistaken for reusable field names.
+- Early vocabulary reuse can suppress descriptive differences.
+- A model observation can be mistaken for a human-verified annotation.
+
+## Verification
+
+These criteria define the intended review. Commands and worked checks remain
+to be added with the recipes.
+
+- Each observation retains its artifact identity, proposed field, observed value, source level, description, and rationale.
+- Discovery requests remain independent of an evolving shared inventory.
+- Uncertainty and failed or incomplete responses remain visible.
+
+## Checklist
+
+<Checklist id="ai-assisted-metadata-schema-development-discovery" items={[
+  "Each observation retains its artifact identity, proposed field, observed value, source level, description, and rationale.",
+  "Discovery requests remain independent of an evolving shared inventory.",
+  "Uncertainty and failed or incomplete responses remain visible.",]} />
