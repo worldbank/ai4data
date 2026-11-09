@@ -32,7 +32,7 @@ catches misreadings and unsupported suggestions.
 
 - A discovery request states the scope, inputs, allowed context, and information to retain for each suggestion.
 - Recorded observations link each suggested property and value to an identified development item and its evidence.
-- A processing record identifies successful responses, failures, and retries before observations are passed to profiling.
+- A processing record identifies successful responses, failures, and retries before observations are compared across the sample.
 
 ## Prerequisites
 
@@ -57,17 +57,97 @@ responses come from the study; the offline exercise checks those excerpts.
 
 ## Recipes
 
-<Recipe title="2.1 Review suggested metadata against the source" level="Foundational" skills="Domain reviewer; technical practitioner" time="30–45 minutes for three artifacts">
+Start with one discovery request, then read and check its result. To follow the
+worked example without a model call, read the request in Recipe 2.1 and continue
+with the recorded responses in Recipe 2.2.
+
+<Recipe title="2.1 Run independent metadata discovery" level="AI-native" skills="LLM practitioner; domain reviewer" time="45–60 minutes for setup; execution time varies">
+
+**Result:** A recorded model response proposes descriptive properties and values for one development item.
+
+Choose an input the model can inspect without losing relevant evidence:
+text, images, structured records, audio, or a combination. Record permitted
+context separately. The study used images and parent-document metadata;
+other input types need their own integration and checks.
+
+Fix the response format while leaving the proposed field names open. Record
+the property, value or uncertainty, description, evidence source, and reason
+it could be useful. The teaching request uses six string attributes; those
+attributes organize observations and do not prescribe the final schema fields.
+
+**Input example.** A Jordan request pairs the
+[chart image](https://huggingface.co/datasets/ai4data/data-snapshot/blob/626f3c54ba6d8f6e0ba0795f9e544e24b2650faf/snapshots/refugee/027_Jordan-Emergency-Food-Security-Project_figure_001.png)
+with identified parent-document context. The source register provides the title
+“Jordan - Emergency Food Security Project” and its metadata link. This teaching request
+is not a reconstruction of the complete historical messages.
+
+The [discovery request](pathname:///cookbook-files/ai-assisted-metadata-schema-development/discovery_request.md) is a teaching adaptation that can be used as a starting point for a new run.
+It has not been executed to produce the recorded examples. The complete text is
+available below. Its user section identifies logical input contents; it is not a ready-to-send
+provider-specific API payload.
+
+<details>
+<summary>Discovery request specification</summary>
+
+```markdown file=../../website/static/cookbook-files/ai-assisted-metadata-schema-development/discovery_request.md
+```
+
+</details>
+
+1. Set up a hosted or local model interface using the [overview prerequisites](./index.mdx#prerequisites). Select one development item and supply available contextual metadata separately. State what context is unavailable.
+2. Explain the artifact class, descriptive purpose, and content boundary from Chapter 1. Ask for reusable descriptive properties and evidence-supported values. Do not turn discovery into extracting the artifact's complete contents.
+3. Specify how to label the evidence source and uncertainty. State whether inference is allowed and how it must be identified.
+4. Use the same discovery instructions independently for each artifact. Do not insert earlier observations or an inventory updated after every request.
+5. Adapt the request to the chosen interface. Supply the actual image or other selected representation, its identifier, and the separately labelled context. Send the request with the chosen model settings. A filename or link alone does not supply image content unless the interface explicitly retrieves it.
+6. Save the original response and parsed observations in a new output location, together with the item identifier, model, instructions, settings, and completion status. Retain any error or incomplete response for inspection. Recipe 2.2 explains how to read the observations; Recipe 2.3 checks stored responses and covers collection processing.
+
+**Worked example.** For the Jordan chart, the request setup contains:
+
+| Request element | Prepared example |
+|---|---|
+| Artifact | The chart image identified as 027_Jordan-Emergency-Food-Security-Project_figure_001.png. |
+| Context | The separately labelled parent-document title, Jordan - Emergency Food Security Project, from the source register. |
+| Task | Propose reusable descriptive properties and evidence-supported values for this item independently. |
+| Response format | A JSON object with a fields array; each observation has the six string attributes specified in the request. |
+
+Recipe 2.2 shows recorded study responses of this kind and explains how to read
+them. A new run of the teaching request may suggest different names or values.
+
+<details>
+<summary>Study configuration</summary>
+
+**Recorded configuration.** The study used GPT-5.5 with medium reasoning and
+a 5,000-token output ceiling for discovery. Available associated document
+metadata accompanied the image. The prompt requested the 10–15 most useful
+fields, but the study observed a range of 10–16. That preference was not a
+strict response-array constraint. These settings document the historical execution. A fresh replication needs
+its own model choice and configuration review.
+
+</details>
+
+**Verification.** Confirm that the model received the intended artifact and
+context, and that the saved response belongs to that item. Check for completion
+or an explicit failure before reviewing the observations. A completed request
+does not establish that its suggestions are correct.
+
+**What this does not do.** The guide supplies a request specification rather
+than a provider-specific runner. Execution requires the configured hosted or
+local interface. An artifact-only request uses less context and changes the
+input protocol; record that variation. New outputs need their own review.
+
+</Recipe>
+
+<Recipe title="2.2 Read discovery results against the source" level="Foundational" skills="Domain reviewer; technical practitioner" time="30–45 minutes for three artifacts">
 
 **Result:** Review notes connect suggested properties and values to their source evidence.
 
-Read each suggested name together with its value and explanation. For example,
-geographic scope is a property; Afghanistan is a value for one item. A plausible
+After discovery, read each suggested name together with its value and
+explanation. For example, geographic scope is a property; Afghanistan is a value for one item. A plausible
 suggestion still needs review before it becomes a schema field.
 
-**Input example.** The following values are faithful title-related teaching
-excerpts from the recorded responses. The exact identities and full selected
-observations are retained in the [research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json).
+**Input example.** Use the response saved in Recipe 2.1, or follow the recorded
+study excerpts below to see what discovery results can look like. The exact
+identities and full selected observations are retained in the [research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json).
 In its examples array, find the entry with id independent-naming and read
 outputs.recorded_observations. Later recipes name the corresponding entries
 in the same way.
@@ -91,9 +171,9 @@ in the same way.
 
 Jordan's geographic observation states “Jordan, inferred from parent document
 title and project name; not visible in snapshot.” Keep that evidence distinction
-when the record moves into profiling.
+when comparing observations across items.
 
-1. Select a development item and its discovery observations. For the prepared example, use the table above and independent-naming in evidence.json.
+1. Open the artifact alongside its discovery response. For the prepared example, use the linked images, the table above, and independent-naming in evidence.json.
 2. Read the proposed name, value, and description together. Check whether they describe the item within the scope set in Chapter 1.
 3. Check where the evidence comes from: the item itself, supplied context, or both. Keep uncertainty and labelled inference visible.
 4. Record questionable readings or out-of-scope suggestions for later review. Preserve the original observation alongside any correction.
@@ -103,6 +183,9 @@ and a broader caption. The model
 rated their usefulness medium and high respectively; these are judgments,
 not measured retrieval scores. Similar purposes do not make the two strings
 interchangeable.
+
+Next, check the stored response records in Recipe 2.3 before comparing
+observations across the sample.
 
 **Verification.** Match each selected row to its identity and source register.
 For the Russian chart, explain why two headings were observed without assuming
@@ -115,86 +198,16 @@ are not the complete output for the three artifacts.
 
 </Recipe>
 
-<Recipe title="2.2 Prepare an independent discovery request" level="AI-native" skills="LLM practitioner; domain reviewer" time="45–60 minutes for a request specification">
-
-**Result:** A discovery request defines the input, scope, allowed context, and response format.
-
-Choose an input the model can inspect without losing relevant evidence:
-text, images, structured records, audio, or a combination. Record permitted
-context separately. The study used images and parent-document metadata;
-other input types need their own integration and checks.
-
-Fix the response format while leaving the proposed field names open. Record
-the property, value or uncertainty, description, evidence source, and reason
-it could be useful. The teaching request uses six string attributes; those
-attributes organize observations and do not prescribe the final schema fields.
-
-**Input example.** A Jordan request pairs the chart image with identified
-parent-document context. The source register provides the title “Jordan -
-Emergency Food Security Project” and its metadata link. This teaching request
-is not a reconstruction of the complete historical messages.
-
-The [discovery request](pathname:///cookbook-files/ai-assisted-metadata-schema-development/discovery_request.md) is an independently written,
-unexecuted teaching adaptation. The complete text is available below. Its user
-section identifies logical input contents; it is not a ready-to-send
-provider-specific API payload.
-
-<details>
-<summary>Discovery request specification</summary>
-
-```markdown file=../../website/static/cookbook-files/ai-assisted-metadata-schema-development/discovery_request.md
-```
-
-</details>
-
-1. Identify the artifact and choose a representation that preserves its relevant evidence. Supply available source or contextual metadata separately, and state what is unavailable. In the worked request, the representation is a snapshot image and the context is parent-document metadata.
-2. Explain the artifact class, descriptive purpose, and content boundary from chapter 1. Ask for reusable descriptive properties and evidence-supported values. Do not turn discovery into extracting the artifact's complete contents.
-3. Specify evidence-origin and uncertainty labels, including how permitted inference must be identified. The historical prompt allowed supported inference with an explicit label; a new application must state whether its evidence policy permits inference.
-4. Use the same discovery instructions independently for each artifact. Do not insert earlier observations or an inventory updated after every request.
-5. Validate the chosen response structure, then inspect evidence fidelity separately. A valid response can still misread the artifact or confuse context with direct evidence, as the caption and geography examples illustrate.
-
-**Worked example.** The prepared request and selected response support these checks:
-
-| Check | Expected interpretation for the example |
-|---|---|
-| Identity | The result belongs to 027_Jordan-Emergency-Food-Security-Project_figure_001.png. |
-| Contract | The selected item contains all six observation attributes as strings. |
-| Evidence source | The title is snapshot-supported; the separate geographic observation retains its document-context inference. |
-| Semantics | The field describes a title; its value is not used as a new field name. |
-| Acceptance | The proposal remains available for later synthesis and human refinement. |
-
-<details>
-<summary>Study configuration</summary>
-
-**Recorded configuration.** The study used GPT-5.5 with medium reasoning and
-a 5,000-token output ceiling for discovery. Available associated document
-metadata accompanied the image. The prompt requested the 10–15 most useful
-fields, but the study observed a range of 10–16. That preference was not a
-strict response-array constraint. These settings document the historical execution. A fresh replication needs
-its own model choice and configuration review.
-
-</details>
-
-**Verification.** Inspect the three recorded response excerpts with the command
-in recipe 2.3. Its checks cover required text fields, allowed evidence-source and usefulness
-labels, item identifiers, and completion status. It does not constrain proposed field
-names to an evolving inventory or prove semantic correctness.
-
-**What this does not do.** No live request is made here. An artifact-only request
-is a possible implementation option with less context; it changes the input
-protocol and must be labelled as a variation. Repeating a request with another
-model or prompt is a replication attempt whose outputs may differ.
-
-</Recipe>
-
 <Recipe title="2.3 Check responses and plan collection processing" level="AI-native" skills="Python and API practitioner; metadata reviewer" time="30 minutes for offline inspection; live processing varies">
 
-**Result:** Checked responses are ready for profiling, and a processing plan explains how a new run will preserve failures and retries.
+**Result:** Response records have been checked for item identity, required fields, and completion status. A processing plan explains how a new run will preserve failures and retries.
 
-Before profiling, check that each response belongs to the intended item and
-contains usable observations. For a new run, plan how to save attempts, identify
-failures, and retry them without losing the earlier records. One request per
-item can be processed sequentially; a provider Batch API is optional.
+The source review in Recipe 2.2 checks what the suggestions mean. This step
+checks that the saved records are in order: each identifies the intended item,
+contains the required fields, and records whether processing completed. For a
+new run, plan how to save attempts, identify failures, and retry them without
+losing the earlier records. One request per item can be processed sequentially;
+a provider Batch API is optional.
 
 **Prepared input.** The [response inspector](pathname:///cookbook-files/ai-assisted-metadata-schema-development/inspect_discovery.py) loops
 over the three selected records in
@@ -216,14 +229,14 @@ what the checker reads:
 | original_field_count | This records how many fields the complete response contained. |
 
 **Procedure.** Inspect the prepared records against these requirements.
-For a new collection run, implement them with the chosen provider before
-submitting requests; this guide supplies no live runner.
+For a new collection run, implement these requirements with the chosen model
+interface before repeating Recipe 2.1 across the development sample.
 
 1. Read frozen development identities from the register. Resolve each artifact's chosen input representation and allowed context from its source version. Keep reserved validation evidence outside discovery.
 2. Keep the discovery prompt fixed across the collection and submit one artifact at a time. Record the model, prompt version or checksum, settings, artifact identity, and context provenance with each attempt.
 3. Preserve the original response and parsed observations in a new run directory. Validate the result before marking the attempt successful. Log status, incomplete output, and exceptions even when no fields can be parsed.
 4. Specify resumption before running. For a proposed replication, skip identities with a validated successful result under the same configuration. Keep failed attempts inspectable and make retries explicit. Use a new run for a changed configuration.
-5. Inspect identity coverage, failures, parse results, and settings before flattening observations for profiling. Missing records and invalid responses must remain distinguishable from artifacts with no useful observations.
+5. Check which items have responses, whether processing succeeded, and whether the required fields are present before combining observations from different items. Missing records and invalid responses must remain distinguishable from artifacts with no useful observations.
 
 **Worked example.** Run the inspector from the download directory:
 
