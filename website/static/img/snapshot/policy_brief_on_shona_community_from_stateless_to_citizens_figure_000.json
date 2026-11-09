@@ -84,8 +84,7 @@
       "start": "2020-05",
       "end": "2021-06",
       "relation": "interval",
-      "precision": "month",
-      "source_text": "May-Jun '20; Jul-Sep '20; Oct-Nov '20; Jan-Mar '21; Apr-Jun '21"
+      "precision": "month"
     }
   },
   "geographic_coverage": {

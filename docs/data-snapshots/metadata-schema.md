@@ -84,6 +84,8 @@ The snapshot, sourced from a [policy brief on the Shona community in Kenya](http
 
 The metadata record below comes from the human-reviewed [Data Snapshot Metadata Gold](https://huggingface.co/datasets/ai4data/data_snapshot_metadata_gold) dataset and validates against the production Schema v1.4. It describes the chart's variables, population groups, temporal coverage, and sources without transcribing the numerical observations.
 
+For this example, the concatenated temporal `source_text` is omitted because the chart shows separate period labels. Those labels remain under `dimensions`, and `temporal_coverage` retains the normalized bounds.
+
 [Open the complete metadata JSON](/img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.json).
 
 ```json file=../../website/static/img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.json
