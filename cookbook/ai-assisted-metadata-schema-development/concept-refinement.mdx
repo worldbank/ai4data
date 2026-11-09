@@ -76,14 +76,23 @@ concept. An exclusion removes a candidate from this inventory's descriptive
 scope. Review therefore needs definitions and evidence, alongside an explicit
 account of which distinctions remain useful for discovery and interpretation.
 
+**Input example.** The human-concept-decisions example in
+[evidence.json](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json) retains these definitions for three concepts considered for merging.
+Compare what each meaning would preserve before reading the recorded dispositions.
+
+| Concept under review | Recorded definition |
+|---|---|
+| measure_name | Name of the quantitative measure or value column reported in the snapshot. |
+| axis_variable | Variable, indicator, dimension, or measure represented along a chart axis. |
+| outcome_variable | Dependent variable, outcome, result, or main effect being estimated, measured, or explained. |
+
 1. Read each candidate definition and its representative fields. Compare related concepts using descriptions and observed values. State the meaning that would be preserved or lost by a merge.
 2. Assess redundancy, descriptive relevance, and distinguishability in artifact evidence. Identify an intended downstream use for a distinction that warrants retention. Preserve a borderline case for review when its scope remains uncertain.
 3. Save a new working copy of the existing [concept-review template](pathname:///cookbook-files/ai-assisted-metadata-schema-development/concept_review_template.csv). Leave the supplied blank template unchanged. Use evidence_reference to identify the example and stage, and keep proposed_action separate from the final decision.
 4. Record the target for a merge or rename and check that it exists in the reviewed inventory. Add the actual reviewer and decision reason for a new review. Mark any reconstructed explanation as a teaching interpretation.
 
-**Worked example.** The human-concept-decisions example in
-[evidence.json](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json) preserves the following representative
-decisions from the paper's Table 11.
+**Worked example.** The following representative decisions are transcribed
+from the paper's Table 11.
 
 | Candidates | Recorded disposition | Recorded case-specific rationale |
 |---|---|---|
@@ -116,9 +125,9 @@ rows establish an inventory and selected transformations. A complete audit histo
 
 </Recipe>
 
-<Recipe title="4.2 Assign profiles to the reviewed concept inventory" level="AI-native" skills="LLM practitioner; metadata reviewer" time="30–45 minutes for the retained assignment review">
+<Recipe title="4.2 Review assignments against a fixed concept inventory" level="AI-native" skills="LLM practitioner; metadata reviewer" time="30–45 minutes for the retained assignment review">
 
-**Result:** A versioned assignment table connects each field profile to one reviewed concept or the residual label, with model confidence and review status kept distinct.
+**Result:** An assignment-review record checks selected original labels against the reviewed vocabulary, with categorical model confidence, execution status, and human review kept distinct.
 
 Classification follows refinement because it needs stable target meanings.
 Open-ended synthesis could propose new concepts; this assessment selects from
@@ -126,11 +135,6 @@ the reviewed vocabulary. Definitions and representative fields constrain the
 semantic comparison. The historical residual label not_in_ontology permits a
 profile to remain outside the inventory without forcing a misleading match.
 It does not make the inventory a formal ontology.
-
-1. Freeze the reviewed concept names, definitions, and examples. In the study, only the 41 keep rows became concept targets. Examples from merge rows were appended to their retained targets; merged names did not become extra targets.
-2. Supply one profile's metadata_field, top_description_values, and top_observed_values with that reference inventory. Compare meaning across all three attributes. Classification does not change the vocabulary while processing profiles.
-3. Require one canonical_name from the retained names plus not_in_ontology, and one confidence value from high, medium, or low. Preserve execution status and the original output beside the profile identity.
-4. Check allowed names and coverage of the intended input profiles. Inspect residuals, ambiguous fits, and surprising high-confidence results. Log any human correction separately and retain the original assignment for comparison.
 
 The downloadable [assessment request](pathname:///cookbook-files/ai-assisted-metadata-schema-development/concept_assessment_request.md)
 is an independently written, unexecuted teaching adaptation of the historical
@@ -157,6 +161,15 @@ judgment of fit to the fixed inventory.
 | chart_title | title | high |
 | sample_size | not_in_ontology | high |
 | panel_titles | not_in_ontology | high |
+
+Use the request specification and the five recorded rows to review the following
+classification procedure. The supplied exercise inspects existing assignments;
+a new assessment would require the complete fixed reference inventory.
+
+1. Freeze the reviewed concept names, definitions, and examples. In the study, only the 41 keep rows became concept targets. Examples from merge rows were appended to their retained targets; merged names did not become extra targets.
+2. Supply one profile's metadata_field, top_description_values, and top_observed_values with that reference inventory. Compare meaning across all three attributes. Classification does not change the vocabulary while processing profiles.
+3. Require one canonical_name from the retained names plus not_in_ontology, and one confidence value from high, medium, or low. Preserve execution status and the original output beside the profile identity.
+4. Check allowed names and coverage of the intended input profiles. Inspect residuals, ambiguous fits, and surprising high-confidence results. Log any human correction separately and retain the original assignment for comparison.
 
 The title rows continue chapter 3's lexical comparison. The chart_title
 profile includes internal headings, so even a valid high-confidence title
@@ -202,11 +215,6 @@ collection. A residual assignment can represent analytical content, an intended
 exclusion, an ambiguous fit, or a distinction that needs reconsideration.
 Neither low support nor residual membership determines a schema change.
 
-1. Keep the original mapping fixed. Join observations to assignments by exact metadata_field, retaining snapshot identities and source corpora. A concept can receive several differently named profiles.
-2. Count observations, assigned exact-name profiles, and distinct supporting snapshots separately. For overall snapshot support, divide the distinct count by all 210 development snapshots. Do not add profile-level snapshot counts when their artifacts may overlap.
-3. Inspect low-support concepts using their values and source contexts. Ask whether rarity reflects a specialized application, redundant meaning, or an unhelpful boundary. Inspect residual examples using the same questions.
-4. Write an interpretation that separates the evidence from a proposed decision. Preserve uncertainty and the reviewed inventory unless a human approves a revision with a rationale.
-
 **Worked example.** The prepared rare-and-residual example reports seven
 supporting snapshots for financing_instrument and nine for
 data_collection_method. The following expanded counts were checked by joining
@@ -216,6 +224,11 @@ the full observations to the original assessment mapping.
 |---|---:|---:|---:|---:|
 | financing_instrument | 7 | 7 | 7 | 3.3% |
 | data_collection_method | 11 | 6 | 9 | 4.3% |
+
+1. Use the supplied summary rows and rare-and-residual observations for this review. For another collection, keep the original mapping fixed and join observations to assignments by exact metadata_field, retaining snapshot identities and source corpora. A concept can receive several differently named profiles.
+2. Read observations, assigned exact-name profiles, and distinct supporting snapshots as separate counts. When computing support for a full collection, divide the distinct supporting count by its development total, which was 210 in the study. Do not add profile-level snapshot counts when their artifacts may overlap.
+3. Inspect low-support concepts using their values and source contexts. Ask whether rarity reflects a specialized application, redundant meaning, or an unhelpful boundary. Inspect residual examples using the same questions.
+4. Write an interpretation that separates the evidence from a proposed decision. Preserve uncertainty and the reviewed inventory unless a human approves a revision with a rationale.
 
 These are recorded-data summaries for the full development collection. They
 cannot be recomputed from the few observations shipped in the evidence package.

@@ -75,11 +75,6 @@ requirement is the suggestion that a useful schema might need to describe this
 property. Neither the name nor the accompanying value constitutes acceptance
 of a final operational field.
 
-1. Identify the artifact in source_images.csv and read its title and provenance. The text examples below remain usable without opening the image.
-2. Locate the independent-naming example in evidence.json. Read metadata_field together with observed_value and description. A name alone can hide different intended meanings.
-3. Inspect source_level and reasoning. Decide whether the evidence is in the snapshot, supplied document context, or both. Preserve the recorded uncertainty and inference wording.
-4. Identify any part of the proposed property that concerns extracted analytical contents. Keep the recorded proposal available for later review; do not rewrite it silently into an accepted concept.
-
 **Worked example.** The following values are faithful title-related teaching
 excerpts from the recorded responses. The exact identities and full selected
 observations are retained in the [research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json).
@@ -91,12 +86,6 @@ observations are retained in the [research evidence](pathname:///cookbook-files/
 | Russian fiscal chart | chart_title | Strength of Total Revenue and Total Expenditure Anti-Cyclicality |
 | The same Russian chart | figure_title | Russia: Strength of Anti-Cyclicality of Fiscal Revenues and Expenditures |
 
-The Russian observation distinguishes an internal chart heading from the
-broader caption. Similar descriptive purposes therefore do not make the two
-strings interchangeable. The model proposed discovery_value medium for the
-internal heading and high for the caption. That assessment records the model's judgment of likely descriptive utility.
-The study did not measure a retrieval score for it.
-
 | Observation attribute | Interpretation |
 |---|---|
 | metadata_field | This is the proposed reusable property name. |
@@ -106,6 +95,17 @@ The study did not measure a retrieval score for it.
 | discovery_value | This records the model's high, medium, or low utility assessment. |
 | reasoning | This is the model's brief stated justification for descriptive usefulness. |
 | snapshot_id, source, and model | These are execution provenance carried beside the observation. |
+
+1. Identify the artifact in source_images.csv and read its title and provenance. The text examples below remain usable without opening the image.
+2. Locate the independent-naming example in evidence.json. Read metadata_field together with observed_value and description. A name alone can hide different intended meanings.
+3. Inspect source_level and reasoning. Decide whether the evidence is in the snapshot, supplied document context, or both. Preserve the recorded uncertainty and inference wording.
+4. Identify any part of the proposed property that concerns extracted analytical contents. Keep the recorded proposal available for later review; do not rewrite it silently into an accepted concept.
+
+The Russian observation distinguishes an internal chart heading from the
+broader caption. Similar descriptive purposes therefore do not make the two
+strings interchangeable. The model proposed discovery_value medium for the
+internal heading and high for the caption. That assessment records the model's judgment of likely descriptive utility.
+The study did not measure a retrieval score for it.
 
 The Jordan title describes the represented indicator. A list of its bar values
 would reproduce analytical contents. Its geographic_scope observation instead
@@ -135,12 +135,6 @@ and allowed source-level values. It leaves the proposed metadata_field values
 open. This separates a schema for recording observations from an operational
 metadata schema whose descriptive field inventory has already been decided.
 
-1. Supply the exact artifact identity and image. Add available associated document metadata as separately identified context. State when context is unavailable.
-2. Explain the artifact class and descriptive purpose from chapter 1. Ask for reusable properties, supported values, descriptions, and brief utility rationales. Keep numerical content extraction outside the objective.
-3. Require evidence-source and uncertainty labels. The historical prompt permitted supported inference with an explicit label; it did not make inferred values equivalent to directly visible evidence.
-4. Use the same discovery instructions independently for each artifact. Do not insert earlier observations or an inventory updated after every request.
-5. Validate the response structure and enums, then inspect evidence fidelity separately. A valid response can still confuse a caption with a heading or misinterpret contextual geography.
-
 The [discovery request](pathname:///cookbook-files/ai-assisted-metadata-schema-development/discovery_request.md) is an independently written,
 unexecuted teaching adaptation. The complete text is available below. Its user
 section identifies logical input contents; it is not a ready-to-send
@@ -153,6 +147,12 @@ provider-specific API payload.
 ```
 
 </details>
+
+1. Supply the exact artifact identity and image. Add available associated document metadata as separately identified context. State when context is unavailable.
+2. Explain the artifact class and descriptive purpose from chapter 1. Ask for reusable properties, supported values, descriptions, and brief utility rationales. Keep numerical content extraction outside the objective.
+3. Require evidence-source and uncertainty labels. The historical prompt permitted supported inference with an explicit label; it did not make inferred values equivalent to directly visible evidence.
+4. Use the same discovery instructions independently for each artifact. Do not insert earlier observations or an inventory updated after every request.
+5. Validate the response structure and enums, then inspect evidence fidelity separately. A valid response can still confuse a caption with a heading or misinterpret contextual geography.
 
 **Worked example.** A Jordan request is prepared with the chart image and its
 snapshot identity. The source register identifies “Jordan - Emergency Food
@@ -188,34 +188,22 @@ model or prompt is a replication attempt whose outputs may differ.
 
 </Recipe>
 
-<Recipe title="2.3 Process a collection and inspect execution records" level="AI-native" skills="Python and API practitioner; metadata reviewer" time="30 minutes for offline inspection; live processing varies">
+<Recipe title="2.3 Inspect collection records and plan processing" level="AI-native" skills="Python and API practitioner; metadata reviewer" time="30 minutes for offline inspection; live processing varies">
 
 **Result:** A checked response excerpt demonstrates collection-level provenance and structural validation, with an explicit design for preserving failures and repeated attempts.
 
-A sequential runner submits each development artifact independently and records
-the outcome before moving to the next. It can process hundreds of samples
-without turning discovery into incremental vocabulary design. Sequential
+The offline task checks whether recorded responses are ready for profiling.
+A collection-processing plan then specifies how independent requests, execution
+records, and retries would preserve that evidence in a new run. Sequential
 per-artifact processing does not imply use of a provider's Batch API.
-
-1. Read frozen development identities from the manifest. Resolve each image and its associated document context from the recorded source revision. Exclude held-out identities from discovery.
-2. Keep the discovery prompt fixed across the collection and submit one artifact at a time. Record the model, prompt version or checksum, settings, artifact identity, and context provenance with each attempt.
-3. Preserve the original response and parsed observations in a new run directory. Validate the result before marking the attempt successful. Log status, incomplete output, and exceptions even when no fields can be parsed.
-4. Specify resumption before running. For a proposed replication, skip identities with a validated successful result under the same configuration. Keep failed attempts inspectable and make retries explicit. Use a new run for a changed configuration.
-5. Inspect identity coverage, failures, parse results, and settings before flattening observations for profiling. Missing records and invalid responses must remain distinguishable from artifacts with no useful observations.
-
-Steps 2–4 describe an auditable replication design. The historical runner wrote
-a row for each attempt, including failures, and resumed by skipping previously
-logged identities. Its skip rule included failed rows. It did not automatically
-implement the success-only retry policy proposed above. The available excerpts
-also omit raw responses and full input messages; exact byte-for-byte request
-reconstruction is not claimed.
 
 **Worked example.** The [response inspector](pathname:///cookbook-files/ai-assisted-metadata-schema-development/inspect_discovery.py) loops
 over the three selected records in
 [discovery_excerpt.jsonl](pathname:///cookbook-files/ai-assisted-metadata-schema-development/discovery_excerpt.jsonl). It verifies that their
 identities belong to development in source_images.csv, checks the recorded
 corpus and model, and validates successful selected fields. It writes nothing
-and has no network or model client.
+and has no network or model client. Download these two files and
+source_images.csv into one working directory, then run the command there.
 
 ```bash
 python inspect_discovery.py discovery_excerpt.jsonl source_images.csv
@@ -232,11 +220,29 @@ The original Jordan, Afghanistan, and Russia responses contained 14, 14, and
 the selected-field count and original counts are recorded so that an excerpt
 cannot be mistaken for complete research output.
 
+**Processing plan.** The following steps specify a new collection run; executing
+that run is optional and requires the additional integration described below.
+
+1. Read frozen development identities from the manifest. Resolve each image and its associated document context from the recorded source revision. Exclude held-out identities from discovery.
+2. Keep the discovery prompt fixed across the collection and submit one artifact at a time. Record the model, prompt version or checksum, settings, artifact identity, and context provenance with each attempt.
+3. Preserve the original response and parsed observations in a new run directory. Validate the result before marking the attempt successful. Log status, incomplete output, and exceptions even when no fields can be parsed.
+4. Specify resumption before running. For a proposed replication, skip identities with a validated successful result under the same configuration. Keep failed attempts inspectable and make retries explicit. Use a new run for a changed configuration.
+5. Inspect identity coverage, failures, parse results, and settings before flattening observations for profiling. Missing records and invalid responses must remain distinguishable from artifacts with no useful observations.
+
+Steps 2–4 describe an auditable replication design. The historical runner wrote
+a row for each attempt, including failures, and resumed by skipping previously
+logged identities. Its skip rule included failed rows. It did not automatically
+implement the success-only retry policy proposed above. The available excerpts
+also omit raw responses and full input messages; exact byte-for-byte request
+reconstruction is not claimed.
+
 **Verification.** The supplied excerpt exits with status 0. A logged execution
 failure produces status 1. Unknown or duplicate identities, inconsistent
 provenance, and malformed selected observations produce status 2. The exercise
 does not create a retry or send a request; its source shows the checks a
-collection runner must apply before considering a record usable.
+collection runner must apply before considering a record usable. The processing
+plan also identifies its success rule, retry policy, and separate run directory
+before any optional execution.
 
 **What this does not do.** The inspector cannot measure full-study completeness,
 replay omitted responses, or establish observational accuracy. Live collection

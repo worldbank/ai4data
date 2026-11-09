@@ -7,7 +7,16 @@ dataset download, provider credentials, API request, or model execution is neede
 
 ## Inputs and commands
 
-Run the following commands from the directory containing the downloads:
+The three exercises use six files in total. Download the files in each row
+into the same working directory before running that exercise.
+
+| Exercise | Files to download together | Output |
+|---|---|---|
+| Manifest boundary | check_manifest.py; source_images.csv | The script prints counts and writes nothing. |
+| Response inspection | inspect_discovery.py; discovery_excerpt.jsonl; source_images.csv | The script prints structural checks and writes nothing. |
+| Exact-name profiling | profile_observations.py; geographic_observations.json | The script creates outputs/geographic_profiles.json. |
+
+Run the following commands from that working directory:
 
     python check_manifest.py source_images.csv
     python inspect_discovery.py discovery_excerpt.jsonl source_images.csv

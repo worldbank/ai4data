@@ -29,7 +29,7 @@ The World Bank use column records the research comparison only.
 | Standard | Use | World Bank use | In this guide |
 |---|---|---|---|
 | [SDMX 3.1](https://sdmx.org/standards-2/) | Dimensions, frequency, and units provide statistical reference concepts. | The study compared relevant terms. | Chapter 7 preserves local scope when code lists do not fit exactly. |
-| [DDI Lifecycle 3.3](https://docs.ddialliance.org/DDI-Lifecycle/3.3/) | Variables, universe, categories, geography, and collection supply descriptive references. | The study compared relevant terms. | Chapters 5 and 7 separate conceptual meaning from operational representation. |
+| [DDI Lifecycle 3.3](https://docs.ddialliance.org/DDI-Lifecycle/3.3/model/) | Variables, universe, categories, geography, and collection supply descriptive references. | The study compared relevant terms. | Chapters 5 and 7 separate conceptual meaning from operational representation. |
 | [IATI 2.03](https://reference.iatistandard.org/en/iati-standard/203/) | Project, finance, organization, and location terms provide domain-specific references. | The study compared relevant terms. | Chapter 7 examines mappings that cover only part of a broader local meaning. |
 | [RDF Data Cube](https://www.w3.org/TR/vocab-data-cube/) and [OWL-Time](https://www.w3.org/TR/owl-time/) | Statistical dimensions and time relations provide additional representation patterns. | The study compared relevant patterns. | Chapter 7 identifies richer structures whose implementation was deferred. |
 

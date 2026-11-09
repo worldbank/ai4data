@@ -1,10 +1,14 @@
 # Research evidence for AI-Assisted Metadata Schema Development
 
-This package contains selected evidence and teaching inputs for the planned
-*Practical Guide to AI-Assisted Metadata Schema Development*. It supports
-inspection of the methodology without requiring a new model run. It contains
-research excerpts, source references, a chapter-to-example map, and blank
-review templates. It does not contain cookbook chapters or an execution pipeline.
+This downloadable package supports all seven chapters of the working-draft
+*Practical Guide to AI-Assisted Metadata Schema Development*. It combines
+selected research evidence with newly prepared offline exercises, request
+examples, and human-review worksheets. Readers can inspect the methodology
+without executing the research pipeline or making a model request.
+
+Recorded observations, decisions, and specification excerpts retain their
+provenance. The scripts, request adaptations, and blank worksheets are teaching
+materials; they are not historical research runners or original review logs.
 
 ## Research attribution and public sources
 
@@ -33,14 +37,41 @@ ontology construction or RDF implementation.
 
 ## Files
 
-| File | Purpose |
-|---|---|
-| [evidence.json](./evidence.json) | The publication-safe source register, study counts, preparation-time analyses, and ten selected examples. |
-| [source_images.csv](./source_images.csv) | The eight source images and parent documents, their public links, attribution, accessibility checks, visual limitations, and redistribution status. |
-| [chapter_examples.csv](./chapter_examples.csv) | The agreed seven chapters and the evidence examples reused in each. |
-| [concept_review_template.csv](./concept_review_template.csv) | A blank worksheet for human concept-refinement decisions. |
-| [gap_review_template.csv](./gap_review_template.csv) | A blank worksheet for schema-gap adjudication. |
-| This README | Evidence labels, stage boundaries, file interpretation, and limits. |
+| File | Purpose | Chapters |
+|---|---|---|
+| [README.md](./README.md) | Package navigation, evidence labels, provenance, and use limits. | All |
+| [evidence.json](./evidence.json) | Source register, study counts, preparation-time analyses, and ten selected examples. | 1–7 |
+| [source_images.csv](./source_images.csv) | Eight external image and parent-document references, attribution, accessibility checks, and reuse limits. | 1–7 |
+| [chapter_examples.csv](./chapter_examples.csv) | Chapter-to-example map and the evidence selections reused at each stage. | 1–7 |
+| [RUN_EXERCISES.md](./RUN_EXERCISES.md) | Required downloads, commands, expected outputs, and safe output handling for the offline exercises. | 1–3; reused in 6 |
+| [artifact_characterization.md](./artifact_characterization.md) | Filled teaching statement of artifact scope and descriptive boundaries. | 1 |
+| [check_manifest.py](./check_manifest.py) | Read-only identity and split-boundary check for the selected register. | 1, 6 |
+| [discovery_excerpt.jsonl](./discovery_excerpt.jsonl) | Selected recorded title observations in a newly prepared response wrapper. | 2 |
+| [inspect_discovery.py](./inspect_discovery.py) | Read-only structural inspection of the selected responses and source identities. | 2 |
+| [discovery_request.md](./discovery_request.md) | Unexecuted teaching adaptation of an independent discovery request. | 2 |
+| [geographic_observations.json](./geographic_observations.json) | Three unchanged observations used by the exact-name profiling exercise. | 3 |
+| [profile_observations.py](./profile_observations.py) | Standard-library aggregation into a new JSON profile; existing outputs are never replaced. | 3 |
+| [concept_synthesis_request.md](./concept_synthesis_request.md) | Unexecuted request example for proposing shared concepts from field profiles. | 3 |
+| [concept_review_template.csv](./concept_review_template.csv) | Blank worksheet for proposed concept actions and human dispositions. | 4 |
+| [concept_assessment_request.md](./concept_assessment_request.md) | Unexecuted request example for assignments to a fixed reviewed inventory. | 4 |
+| [initial_field_specifications.md](./initial_field_specifications.md) | Five initial v1.1 field definitions, guidance, and specification examples. | 5 |
+| [field_specification_template.csv](./field_specification_template.csv) | Blank worksheet for field definitions, evidence rules, and review issues. | 5 |
+| [validation_request_specs.md](./validation_request_specs.md) | Unexecuted teaching specifications for the two complementary validation instruments. | 6 |
+| [gap_review_template.csv](./gap_review_template.csv) | Blank worksheet for candidate evidence, materiality, and human adjudication. | 6 |
+| [standards_review_template.csv](./standards_review_template.csv) | Blank worksheet connecting standards comparisons to proposed changes and human decisions. | 7 |
+| [final_field_inventory.csv](./final_field_inventory.csv) | Baseline-to-final field names and final cardinalities for inventory reconciliation; not a complete specification. | 7 |
+
+## How to use the package
+
+1. Read the evidence labels below and use chapter_examples.csv to locate each chapter's selected examples in evidence.json. Keep recorded study results separate from teaching applications and preparation-time analyses.
+2. For the offline Python exercises, follow RUN_EXERCISES.md. Place the six named script and input files together in a new working directory and use Python 3.10 or newer. The scripts use only the standard library; no images, dataset download, credentials, or model calls are required.
+3. For manual review, inspect the chapter's selected evidence and save working copies of the relevant blank worksheets. Record artifact or example identities, schema versions, evidence, and actual reviewer decisions. Keep the supplied evidence and blank templates unchanged.
+4. Read the request examples as unexecuted teaching adaptations. They describe inputs and output checks, not ready-to-run provider integrations. A fresh model-supported application needs its own complete inputs, execution settings, budget, and separate output locations.
+
+The final inventory supports reconciliation and selected-change review. Applying
+the complete methodology to another collection requires that collection's full
+operational specification and decision record. The package's selected field
+excerpts do not replace complete historical schema inputs.
 
 ## Evidence labels and interpretation
 
@@ -69,8 +100,8 @@ Their representation is preserved; these strings must not be executed as code.
 Human decisions labelled `transcription` are structured restatements of a
 recorded decision. Those labelled `paraphrase` summarize its meaning. Neither
 label claims that the structure is the original historical review worksheet.
-Blank review templates are newly prepared teaching aids. No proposed model
-workflow or synthetic historical output is included.
+Blank review templates and request adaptations are newly prepared teaching aids.
+The request examples are unexecuted; no synthetic historical output is included.
 
 ## Continuous teaching examples
 
@@ -202,19 +233,34 @@ documentation, representation, already covered, out of scope, and uncertain.
 The reviewer decides the disposition. Neither frequency nor a model label
 constitutes acceptance.
 
-Both template CSVs contain headers only. Adding rows creates new review work;
-it does not extend the historical study's adjudication evidence.
+The field-specification worksheet separates definitions, purpose and scope,
+inclusion and exclusion guidance, example values, evidence references,
+missing-value handling, related fields, and review dispositions. Preserve source
+definitions and label newly proposed guidance separately.
 
-## Preparation checks and subsequent use
+The standards-review worksheet separates the local meaning and authoritative
+term comparison from a candidate refinement and human disposition. Record source
+versions or dates, scope differences, reasons, the reviewer, and the output
+reference so an accepted change can be traced.
 
-Preparation checked sample membership, research-row fidelity, inventory counts,
-original/later mapping differences, public image identities and hashes, and
-source metadata. No paid API or research experiment was run. The evidence
-package has no execution dependencies.
+All four review-template CSVs contain headers only. Adding rows creates new
+review work; it does not extend the historical study's adjudication evidence.
 
-Subsequent authoring can scaffold the hidden cookbook using the agreed chapter
-structure and existing site components. Its first recipes can inspect these
-files offline. Any later live replication must keep new outputs separate and
-label them as replication results. Executable exercises and their focused tests
-belong to subsequent authoring work. The package can be reviewed before any
-chapter, navigation, visibility, or route changes are made.
+## Preparation checks and current use
+
+Evidence preparation checked sample membership, research-row fidelity, inventory
+counts, original/later mapping differences, public image identities and hashes,
+and source metadata. No paid API or research experiment was run during that
+preparation. The retained evidence can be inspected without executing code.
+The dated image-access and visual checks above remain preparation-time records.
+
+The cookbook now supplies three executable teaching exercises, request
+adaptations, and manual review materials. The standalone scripts are covered by
+focused tests in the AI4Data repository. Their commands, expected outputs,
+exit statuses, and output-preservation rules are documented in
+[RUN_EXERCISES.md](./RUN_EXERCISES.md).
+
+Use new working files for exercise outputs and worksheet entries. Any later
+live replication must keep new outputs separate and identify them as replication
+results. The supplied exercises inspect selected evidence; they do not reproduce
+the complete study or independently validate the final schema.

@@ -74,9 +74,9 @@ illustrations make that sequence inspectable without reproducing the full runs.
 
 ## Recipes
 
-<Recipe title="6.1 Freeze the schema and validation collection" level="AI-ready" skills="Evaluation practitioner; metadata reviewer" time="30–45 minutes with prepared specifications and manifests">
+<Recipe title="6.1 Review the schema and validation freeze" level="AI-ready" skills="Evaluation practitioner; metadata reviewer" time="30–45 minutes with prepared specifications and manifests">
 
-**Result:** A frozen validation specification identifies the schema text, held-out identities, assessment objective, execution settings, and independence limitations.
+**Result:** A freeze-review record identifies the assessed schema versions, collection boundary, execution settings, and independence limitations. A new assessment also retains its complete schema text and manifest.
 
 A schema freeze prevents the target from changing during an assessment. It
 must identify definitions and guidance as well as field names: two documents
@@ -84,10 +84,9 @@ with the same inventory can produce different judgments. A collection freeze
 likewise records realized identities as well as the sampling procedure. Together,
 they let a reviewer determine which specification met which evidence.
 
-1. Record the exact schema version and retain its complete text. For a new application, a checksum can identify the frozen file. Preserve the assessed presentation separately when revision history or prior outcomes are removed from a model-facing copy.
-2. Freeze the held-out manifest, source references, and allowed document context. Compare its identities with development and report both snapshot and parent-document overlap. Keep calibration membership explicit.
-3. State the objective and output contract of each instrument. Record model, prompt, response structure, and settings. Preserve full-run outputs separately from calibration and ablation controls.
-4. Before interpreting results, check expected identities, duplicate and missing records, completion status, configuration consistency, and output-contract validity. Reconcile results against the frozen manifest. Directory traversal and response order alone do not prove membership.
+Before a full run, reviewers check assessment instructions and controls on
+identified examples. These calibration examples remain distinguishable from
+initial development and from artifacts untouched by calibration.
 
 **Worked example: a filled freeze specification.** The following is a teaching
 summary of the recorded inputs and execution. It is not an original protocol file.
@@ -101,6 +100,11 @@ summary of the recorded inputs and execution. It is not an original protocol fil
 | Historical configuration | Both used GPT-5.5, medium reasoning, Flex service, prompt caching, an 8,000-token ceiling, and Pydantic Structured Outputs, one snapshot per request. |
 | Completion boundary | Each full run retained 202 unique completed results whose filenames exactly match the held-out manifest. |
 | Calibration boundary | Twelve of the 202 were reused for calibration. None belonged to initial schema development. Calibration/control outputs are excluded from full-run candidate totals. |
+
+1. Compare the assessed versions in the supplied summary. For a new assessment, record the exact version and retain the complete schema text; a checksum can identify the frozen file. Preserve the assessed presentation separately when revision history or prior outcomes are removed from a model-facing copy.
+2. Freeze the held-out manifest, source references, and allowed document context. Compare its identities with development and report both snapshot and parent-document overlap. Keep calibration membership explicit.
+3. State the objective and output contract of each instrument. Record model, prompt, response structure, and settings. Preserve full-run outputs separately from calibration and ablation controls.
+4. Before interpreting results, check expected identities, duplicate and missing records, completion status, configuration consistency, and output-contract validity. Reconcile results against the frozen manifest. Directory traversal and response order alone do not prove membership.
 
 The held-out allocation was 35 figures and 35 tables from each corpus except
 Refugee Project Appraisal Documents, where only 27 eligible figures remained.
@@ -154,7 +158,15 @@ must explain fit before proposing a field. It remains broader than acceptance:
 the prompt can surface plausible distinctions whose use-case value humans
 subsequently reject.
 
-1. Supply one held-out image, identity, corpus, artifact type, associated document metadata, and complete frozen schema. Ask for explicit reusable concepts relevant to coverage, with concise evidence and fit rationales. Exclude routine extraction inventories and unsupported inference.
+**Input example: a field with an unclear date boundary.** The
+documentation-revision example records artifact-date families such as
+snapshot_date, snapshot_creation_date, and snapshot_production_date, alongside
+parent-document publication-date proposals. The original time_period definition
+was:
+
+> The period or date range represented by the data.
+
+1. For a new assessment, supply one held-out image, identity, corpus, artifact type, associated document metadata, and complete frozen schema. Ask for explicit reusable concepts relevant to coverage, with concise evidence and fit rationales. Exclude routine extraction inventories and unsupported inference.
 2. Inspect the observations array. Each item has observation_id, metadata_concept, evidence, evidence_source, closest_schema_fields, fit_status, and fit_rationale. Check exact field names and preserve whether the evidence is snapshot, document, or both.
 3. Inspect candidate_new_fields. Trace each proposed name and definition through supporting_observation_ids to weak-fit or no-fit evidence in the same assessment. Read why_existing_fields_are_insufficient and operational_value as claims requiring review.
 4. Retain covered evidence and genuine boundary questions. Group obvious aliases only as a labelled review aid. Frequency can direct inspection but cannot establish an accepted requirement.
@@ -185,15 +197,7 @@ covering 518 candidate rows. The remaining 60 proposals and all 23 uncertain
 or out-of-scope observations were also examined. These review families were
 neither model output nor an accepted schema layer.
 
-**Worked example: an existing field with an unclear boundary.** The
-documentation-revision example records artifact-date families such as
-snapshot_date, snapshot_creation_date, and snapshot_production_date, alongside
-parent-document publication-date proposals. The original time_period definition
-was:
-
-> The period or date range represented by the data.
-
-The adjudication report distinguishes a represented data period from an
+**Worked example: a documentation decision.** The adjudication report distinguishes a represented data period from an
 artifact's creation or production date and a parent document's publication
 date. The latter dates should not be placed in time_period solely because they
 are available. A complete relevant footer statement can remain in
@@ -228,7 +232,7 @@ without an automatic retry policy. No live validation is executed here.
 
 <Recipe title="6.3 Assess consequential omissions with a confirmatory instrument" level="AI-native" skills="Evaluation practitioner; domain reviewer" time="45–60 minutes for the paired example and instrument controls">
 
-**Result:** A structured review set identifies possible consequential omissions, their evidence, closest fields, concrete material consequences, and uncertainty.
+**Result:** A review of retained consequential-gap assessments identifies the evidence, closest fields, claimed material consequences, and uncertainty behind each selected proposal.
 
 A confirmatory instrument tests a narrower question. It asks whether the best
 representation permitted by existing fields loses reusable snapshot information
@@ -236,11 +240,6 @@ in a way that materially impairs interpretation or discovery. It does not
 inventory covered concepts. Its lower candidate volume cannot by itself
 establish greater accuracy, because the question and schema documentation
 differ from open residual discovery.
-
-1. Supply the complete documentation-revised schema through its frozen model-facing presentation, one image, and parent context. Keep prior validation outcomes out of the model-facing text while preserving substantive definitions, examples, and guidance.
-2. Apply the historical critical-gap conditions: explicit evidence, reusable snapshot metadata, inadequate existing-field coverage, and a concrete material consequence for interpretability, discoverability, or both. A possible gap retains uncertainty about evidence, coverage, or materiality while still requiring plausible metadata and impact.
-3. Inspect only the returned candidate gaps. Information that is convenient, specialized, or an extra search facet alone does not meet the threshold. The prompt forbids inventing a user workflow to make a consequence appear material.
-4. Check assessment/array consistency, then inspect the underlying evidence. Preserve model assessments separately from human decisions; the model was expressly not asked to classify conceptual, documentation, or representation issues.
 
 The historical output has coverage_assessment and critical_or_possible_gaps.
 A no_critical_gap_found result requires an empty array. A possible_gap result
@@ -250,12 +249,19 @@ status, missing concept, proposed name, evidence, snapshot relevance, closest
 fields, possible loss, material consequence, and uncertainty. The no-gap output
 has no snapshot-level explanatory rationale.
 
-**Worked example: the same South Sudan composite.** The held-out artifact
+**Input example: the same South Sudan composite.** The held-out artifact
 protection_trends_paper_no_7_jan-mar_2016_final_figure_004.png contains a map,
 two donut charts, and a trend chart with different subjects and periods.
 The [externally linked image](https://huggingface.co/datasets/ai4data/data-snapshot/blob/626f3c54ba6d8f6e0ba0795f9e544e24b2650faf/snapshots/unhcr/protection_trends_paper_no_7_jan-mar_2016_final_figure_004.png) and
 [source register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) retain its provenance. The
 following retained text is sufficient for this exercise.
+
+1. For a new assessment, supply the complete documentation-revised schema through its frozen model-facing presentation, one image, and parent context. Keep prior validation outcomes out of the model-facing text while preserving substantive definitions, examples, and guidance.
+2. Apply the historical critical-gap conditions: explicit evidence, reusable snapshot metadata, inadequate existing-field coverage, and a concrete material consequence for interpretability, discoverability, or both. A possible gap retains uncertainty about evidence, coverage, or materiality while still requiring plausible metadata and impact.
+3. Inspect only the returned candidate gaps. Information that is convenient, specialized, or an extra search facet alone does not meet the threshold. The prompt forbids inventing a user workflow to make a consequence appear material.
+4. Check assessment/array consistency, then inspect the underlying evidence. Preserve model assessments separately from human decisions; the model was expressly not asked to classify conceptual, documentation, or representation issues.
+
+**Worked example.** The two instruments produced the following retained findings.
 
 | Instrument and frozen target | Recorded result for this artifact | Interpretation for review |
 |---|---|---|
@@ -324,6 +330,15 @@ be real while its proposed flat field is an unsuitable response. The decision
 record preserves that distinction so that later work does not rediscover the
 same issue or mistake a deferred design for an implemented solution.
 
+**Input example: table hierarchy.** The Diffa table is
+rapport_du_monitoring_de_protection_de_la_region_de_diffa_du_mois_de_octobre_2022_ciaud_niger_table_002.png.
+Its retained assessment identifies spanning headers that group incident
+subtypes beneath broader categories. The [externally linked table](https://huggingface.co/datasets/ai4data/data-snapshot/blob/626f3c54ba6d8f6e0ba0795f9e544e24b2650faf/snapshots/unhcr/rapport_du_monitoring_de_protection_de_la_region_de_diffa_du_mois_de_octobre_2022_ciaud_niger_table_002.png) remains available through the pinned dataset record. Existing row, column, and category fields
+can retain labels while losing the parent-child relationship. This exercise
+uses that recorded structural account and does not translate the French labels
+or reconstruct the visibly clipped upper headers. The [source register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv)
+keeps the image externally linked and records that limitation.
+
 1. Save a new working copy of the existing [gap-review template](pathname:///cookbook-files/ai-assisted-metadata-schema-development/gap_review_template.csv). Record snapshot_id, schema_version, candidate_id, evidence_reference, and closest_fields. Use the snapshot identity with a gap or observation identifier, because local identifiers can recur across artifacts.
 2. Inspect source evidence and compare its faithful meaning with the best use of existing fields. Ask whether the information describes the snapshot, its parent, analytical contents, or a structural relationship. Do not infer clipped text or unlabeled visual semantics.
 3. Classify the issue using the teaching framework below, then document material_impact, decision, decision_reason, revision_or_deferral, and the actual reviewer for a new review. Preserve the source report's terminology when transcribing a historical disposition.
@@ -363,15 +378,6 @@ those values does not say which period and variable apply to a particular
 panel. Record that association requirement and the reported representation-gap
 disposition. The historical report described deferral to future v1.2 design;
 it did not establish an implemented normalized schema.
-
-**Worked example: table hierarchy.** The Diffa table is
-rapport_du_monitoring_de_protection_de_la_region_de_diffa_du_mois_de_octobre_2022_ciaud_niger_table_002.png.
-Its retained assessment identifies spanning headers that group incident
-subtypes beneath broader categories. The [externally linked table](https://huggingface.co/datasets/ai4data/data-snapshot/blob/626f3c54ba6d8f6e0ba0795f9e544e24b2650faf/snapshots/unhcr/rapport_du_monitoring_de_protection_de_la_region_de_diffa_du_mois_de_octobre_2022_ciaud_niger_table_002.png) remains available through the pinned dataset record. Existing row, column, and category fields
-can retain labels while losing the parent-child relationship. This exercise
-uses that recorded structural account and does not translate the French labels
-or reconstruct the visibly clipped upper headers. The [source register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv)
-keeps the image externally linked and records that limitation.
 
 Human review of Validation 2 rejected or excluded four proposals and deferred
 two representation issues. The other proposed names were

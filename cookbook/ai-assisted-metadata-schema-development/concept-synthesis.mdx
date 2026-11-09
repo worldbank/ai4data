@@ -76,9 +76,17 @@ observation. Repeated observations from one artifact increase the first count
 without increasing the second. Support is the distinct supporting count divided
 by an explicitly identified artifact denominator.
 
-1. Place [geographic_observations.json](pathname:///cookbook-files/ai-assisted-metadata-schema-development/geographic_observations.json) and [profile_observations.py](pathname:///cookbook-files/ai-assisted-metadata-schema-development/profile_observations.py) in a new working directory. The JSON array contains three unchanged observations from the prepared exact-name-profile example.
+**Input example.** Place [geographic_observations.json](pathname:///cookbook-files/ai-assisted-metadata-schema-development/geographic_observations.json) and [profile_observations.py](pathname:///cookbook-files/ai-assisted-metadata-schema-development/profile_observations.py) in a new working directory. The JSON array contains the three unchanged observations summarized below. Full identities, descriptions, and reasoning remain in that input file.
+
+| Artifact | metadata_field | Recorded observed_value | source_level |
+|---|---|---|---|
+| Jordan chart | geographic_scope | Jordan, inferred from parent document title and project name; not visible in snapshot | document |
+| Afghanistan table | geographic_scope | Afghanistan | snapshot |
+| Russian chart | geographic_scope | Russia | both |
+
+1. Open the JSON array and identify snapshot_id and metadata_field in each record.
 2. Inspect metadata_field, snapshot_id, observed_value, description, source_level, and reasoning. The three names are identical, but their values and evidence sources differ. Keep the Jordan inference wording intact.
-3. Run the command below. It groups the exact string in metadata_field without lowercasing, trimming, synonym replacement, or semantic merging. It creates a new output and refuses to replace an existing file.
+3. Run the command below from that working directory. It groups the exact string in metadata_field without lowercasing, trimming, synonym replacement, or semantic merging. It creates a new output and refuses to replace an existing file.
 4. Inspect the profile counts and evidence. Confirm that all three input records remain present and that the denominator counts distinct snapshots across the whole input file.
 
 **Worked example.** The command produces the following summary and writes a
@@ -107,9 +115,7 @@ Wrote outputs/geographic_profiles.json
 The script retains all evidence because the exercise is small. The research
 profiles instead summarized frequent values, descriptions, rationales, source
 levels, corpus coverage, and figure/table occurrence counts. The underlying
-observations remained necessary for complete traceability. Retaining every row
-is a teaching representation. The historical CSV profile used summarized
-evidence.
+observations remained necessary for complete traceability.
 
 The downloadable script contains the complete deterministic transformation
 and safe output handling. It has no external dependencies or model client.
@@ -156,11 +162,6 @@ one embedded chart can use similar words while serving different roles.
 Profile values, descriptions, rationales, and artifact contexts help explain
 that distinction.
 
-1. Open canonical-title in [evidence.json](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json) and compare only its recorded_profiles input for this recipe. The subsequent original_profile_assignments belong to concept coverage in chapter 4.
-2. Compare the exact names and their statistics. Check the object types and source levels as well as the frequencies; a name does not validate the artifact class by itself.
-3. Read representative descriptions and values. Locate both heading observations for the Russian chart in independent-naming. Ask whether each describes the whole object, a panel, or another internal view.
-4. Write a provisional relationship note with the proposed common meaning, evidence for it, and a remaining ambiguity. Retain uncertain distinctions for the synthesis request and human review.
-
 **Worked example.** Exact-name aggregation preserved three separate profiles.
 All counts below are recorded full-study values. The small observation
 exercise does not compute these counts.
@@ -170,6 +171,11 @@ exercise does not compute these counts.
 | figure_title | 84 | 84 | Descriptions include a figure's displayed title or caption. The profile records 81 figure and three table occurrences. |
 | table_title | 90 | 90 | Values include project-financing headings and cost-effectiveness summaries; descriptions concern a table title or caption. |
 | chart_title | 7 | 7 | Descriptions include embedded-chart or panel titles; values include compound headings and the Russian internal heading. |
+
+1. Open canonical-title in [evidence.json](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json) and compare only its recorded_profiles input for this recipe. The subsequent original_profile_assignments belong to concept coverage in chapter 4.
+2. Compare the exact names and their statistics. Check the object types and source levels as well as the frequencies; a name does not validate the artifact class by itself.
+3. Read representative descriptions and values. Locate both heading observations for the Russian chart in independent-naming. Ask whether each describes the whole object, a panel, or another internal view.
+4. Write a provisional relationship note with the proposed common meaning, evidence for it, and a remaining ambiguity. Retain uncertain distinctions for the synthesis request and human review.
 
 **Teaching interpretation.** The worksheet below is newly written reasoning
 based on those records. It is not a recovered historical adjudication log.
@@ -198,20 +204,15 @@ Those conceptual and operational decisions require later human review.
 
 </Recipe>
 
-<Recipe title="3.3 Synthesize a conservative candidate concept inventory" level="AI-native" skills="LLM practitioner; metadata reviewer" time="45–60 minutes to prepare and inspect the retained example">
+<Recipe title="3.3 Prepare synthesis and review a candidate concept" level="AI-native" skills="LLM practitioner; metadata reviewer" time="45–60 minutes to prepare and inspect the retained example">
 
-**Result:** A candidate concept inventory contains proposed names, definitions, rationales, and representative fields, with uncertain distinctions available for expert refinement.
+**Result:** A synthesis request specification identifies the profile evidence and expected concept attributes. Review notes explain the recorded title candidate and the distinctions that remain for expert refinement.
 
 The synthesis input is the accumulated profile evidence. Its output describes
 shared meanings across that evidence. It is not an exhaustive profile
 classification and does not impose a final operational field list. A useful
 request makes those limits explicit so that a compact output does not conceal
 unresolved conceptual boundaries.
-
-1. Supply profiles with their names, descriptions, values, rationales, and occurrence statistics, along with the artifact class and descriptive purpose. Verify that the complete intended input is within the chosen model interface's capacity.
-2. Ask for reusable concepts across the reporting domains, consolidation of clear synonyms, and retention of plausible distinctions when uncertain. Low frequency alone is not an exclusion rule.
-3. Specify canonical_name, definition, rationale, and sample_fields for each proposed concept. Treat representative field names as examples; they do not prove that every profile was assigned correctly.
-4. Inspect the returned table for definitions, unsupported merges, lost distinctions, and ambiguous scope. Preserve the candidate output and input reference before handing it to [expert refinement](./concept-refinement.mdx).
 
 The [synthesis request](pathname:///cookbook-files/ai-assisted-metadata-schema-development/concept_synthesis_request.md) is an independently
 written teaching adaptation. It illustrates the instruction and output
@@ -224,6 +225,11 @@ structure without running a model or claiming to reproduce the full prompt.
 ```
 
 </details>
+
+1. Specify the input profiles using their names, descriptions, values, rationales, and occurrence statistics, along with the artifact class and descriptive purpose. Verify that the complete intended input is within the chosen model interface's capacity.
+2. Ask for reusable concepts across the reporting domains, consolidation of clear synonyms, and retention of plausible distinctions when uncertain. Low frequency alone is not an exclusion rule.
+3. Specify canonical_name, definition, rationale, and sample_fields for each proposed concept. Treat representative field names as examples; they do not prove that every profile was assigned correctly.
+4. Review the recorded candidate below for definitions, unsupported merges, lost distinctions, and ambiguous scope. Preserve the candidate output and input reference before handing it to [expert refinement](./concept-refinement.mdx).
 
 **Worked example.** The recorded synthesis supplied all 833 profiles in one
 CSV-supported GPT-5.5 request, with high reasoning and a 12,000-token output
@@ -249,11 +255,12 @@ conceptual proposal. The three displayed profiles were only part of the
 833-profile input. A new request over those three alone would be a small
 demonstration and could not reproduce the complete 70-concept study output.
 
-**Verification.** Check that each retained candidate has all four attributes,
-that demonstrated examples connect to input profiles, and that uncertain
-distinctions remain inspectable. The count of 70 reconciles with the recorded
-candidate inventory. It is not an optimization target for another artifact
-class or evidence of automatically accepted coverage.
+**Verification.** The prepared request specifies all four output attributes
+and identifies the intended profile input. The recorded title candidate contains
+those attributes and connects to the displayed profiles. Review notes retain
+the unresolved distinction between a whole-object title and an internal heading.
+The full study produced 70 candidates; that count is not a target for another
+collection or an output of this offline exercise.
 
 **What this does not do.** This recipe does not implement a live synthesis call,
 formal ontology relations, profile-to-concept coverage assessment, expert

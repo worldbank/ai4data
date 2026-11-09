@@ -75,23 +75,25 @@ to decide whether an observation concerns the selected artifact. It establishes
 purpose and scope without prescribing the metadata field inventory that
 discovery will investigate.
 
-1. Identify one complete unit of description. State how a reviewer recognizes its boundary and what remains outside it. A multi-panel figure can be one snapshot even when its panels differ.
-2. Name the intended uses, such as cataloging an analytical object, filtering by its subject, or finding evidence about an indicator. Explain which information would help those uses.
-3. Compare three candidate properties: a description of the artifact, a numerical value within it, and administrative information about its parent document. State where each belongs.
-4. Record allowed supporting context, exclusions, a reviewer, and a version. Inspect a contrasting artifact before accepting the statement. A useful statement remains applicable across the class.
-
 The downloadable [characterization statement](pathname:///cookbook-files/ai-assisted-metadata-schema-development/artifact_characterization.md)
 is a filled teaching worksheet with questions that can be reused for another
 artifact class. Its entries restate the paper's scope; they are not a recovered
 historical worksheet.
 
-**Worked example.** The Jordan snapshot is a bar chart titled “Figure 2:
+**Input example.** The Jordan snapshot is a bar chart titled “Figure 2:
 Share of food expenditure in total expenditure p.c. (%).” The title describes
 its subject. A sequence of bar values would be analytical content. The parent
 document title, “Jordan - Emergency Food Security Project,” supplies context
 but is not the chart title. The discovery observation for geographic scope
 explicitly says that Jordan was inferred from document context and was not
 visible in the snapshot. That distinction must survive later aggregation.
+
+1. Identify one complete unit of description. State how a reviewer recognizes its boundary and what remains outside it. A multi-panel figure can be one snapshot even when its panels differ.
+2. Name the intended uses, such as cataloging an analytical object, filtering by its subject, or finding evidence about an indicator. Explain which information would help those uses.
+3. Compare three candidate properties: a description of the artifact, a numerical value within it, and administrative information about its parent document. State where each belongs.
+4. Record allowed supporting context, exclusions, a reviewer, and a version. Inspect a contrasting artifact before accepting the statement. A useful statement remains applicable across the class.
+
+**Worked example.** Applying those boundaries gives the following teaching decisions.
 
 | Boundary question | Filled teaching decision |
 |---|---|
@@ -121,11 +123,6 @@ An identical count from each group does not establish statistical
 representativeness. It is a deliberate coverage choice whose adequacy depends
 on the intended application.
 
-1. Inventory the available artifacts and identify likely sources of variation. Consider document families, figure and table forms, reporting styles, languages, and specialized analytical contexts.
-2. Inspect examples from contrasting groups. Record why each group might introduce a descriptive requirement that another group would miss.
-3. Select and freeze the development identities. Preserve the realized selection even when sampling uses randomness; a seed alone cannot recover a changed source collection.
-4. Record exclusions and limited groups. Reserve validation identities separately, then retain a versioned register and the source revision used to resolve them.
-
 **Worked example.** The recorded study used the following development allocation.
 Each corpus contributed 35 figures and 35 tables. These counts describe one
 execution designed to expose semantic diversity across reporting contexts.
@@ -153,6 +150,11 @@ under study_summary. The dataset revision is
 | hf_image_url and hf_metadata_url | These pin the image and document context to a public dataset revision. |
 | original_record_url and original_pdf_url | These retain the institutional provenance supplied by the dataset metadata. |
 
+1. Inventory the available artifacts and identify likely sources of variation. Consider document families, figure and table forms, reporting styles, languages, and specialized analytical contexts.
+2. Inspect examples from contrasting groups. Record why each group might introduce a descriptive requirement that another group would miss.
+3. Select and freeze the development identities. Preserve the realized selection even when sampling uses randomness; a seed alone cannot recover a changed source collection.
+4. Record exclusions and limited groups. Reserve validation identities separately, then retain a versioned register and the source revision used to resolve them.
+
 **Verification.** Confirm that a selected identity resolves to the recorded
 source, that the split has been preserved, and that the rationale explains both
 included diversity and exclusions. The accompanying image register records
@@ -175,15 +177,17 @@ it asks whether validation introduces documents absent from development.
 Figures from one report can share terminology and presentation. The two
 checks therefore support different interpretations of generalization.
 
+**Inputs.** Place the downloadable
+[manifest checker](pathname:///cookbook-files/ai-assisted-metadata-schema-development/check_manifest.py) beside source_images.csv in a new working directory. Run
+the command below from that directory. The checker reads the eight rows, checks required
+identity fields, and writes nothing.
+
 1. Use one register row per snapshot with an explicit split and nonempty source identity. Check duplicate identities before counting support.
 2. Compare snapshot identities across splits. Treat an overlapping identity as a selection error requiring review.
 3. Compare parent identities using the pair of corpus and parent_document_id. A bare document identifier may be reused in different source collections.
 4. Report both results with their units and the scope of the register. Keep the teaching excerpt's results separate from the full study.
 
-**Worked example.** Place the downloadable
-[manifest checker](pathname:///cookbook-files/ai-assisted-metadata-schema-development/check_manifest.py) beside source_images.csv and run
-the following command. The checker reads the eight rows, checks required
-identity fields, and writes nothing.
+**Worked example.** The supplied register produces the following identity report.
 
 ```bash
 python check_manifest.py source_images.csv

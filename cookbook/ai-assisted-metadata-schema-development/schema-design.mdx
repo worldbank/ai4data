@@ -77,6 +77,11 @@ and enough downstream value to justify its maintenance. Combining fields can
 reduce duplicate annotation; restoring a distinction can make a composite
 artifact easier to describe. Both choices require an operational rationale.
 
+**Input example.** The soybean figure, document_12916918_figure_012.png, has a recorded panel_titles
+observation: “Monthly Price; Monthly Returns (% change) and KL (2000) test
+detected breaks.” The original coverage mapping assigned that profile to
+not_in_ontology. The reviewed inventory had no independent panel_title target.
+
 1. Start with the reviewed meanings and original support evidence. For each proposed independent field, identify its annotation purpose, useful retrieval behavior, and overlap with other fields.
 2. Compare keeping the distinction separately with expressing its useful information in an existing field. Consider consistency, interpretability, redundancy, maintenance effort, and representation constraints. Record the benefit and any loss.
 3. Preserve a concept-to-field note for each demonstrated change. Distinguish a rename from a change in meaning. State when a field restores a distinction that the concept inventory did not retain separately.
@@ -102,13 +107,9 @@ operational field **variable_name**. Its definition covers variables, indicators
 metrics, and measured concepts. Use that version's field name when writing an
 operational record; a conceptual label is not automatically a schema key.
 
-The soybean figure, document_12916918_figure_012.png, has a recorded panel_titles
-observation: “Monthly Price; Monthly Returns (% change) and KL (2000) test
-detected breaks.” The original coverage mapping assigned that profile to
-not_in_ontology. The reviewed inventory had no independent panel_title target.
 The paper describes the earlier conceptual consolidation under title and the
-subsequent operational restoration. These are distinct records of different
-stages. The original classifier did not use a panel_title target.
+subsequent operational restoration. Keep that design decision separate from
+the original residual assignment.
 
 The later mapping assigns panel_titles to panel_title. It is subsequent
 context for the operational distinction. The soybean example demonstrates the
@@ -139,11 +140,6 @@ one artifact. A complete metadata record brings the applicable fields together
 for that identified artifact. Reviewing a few fields is useful without claiming
 to have produced or verified a complete record.
 
-1. Identify the schema version and transcribe the selected definitions faithfully. Keep proposed clarifications in a separate worksheet column so that a later rule cannot silently replace the initial definition.
-2. State each field's purpose, applicability, acceptable evidence, and boundary with related fields. Use both a fitting example and a case that should remain unpopulated. Do not turn a model's uncertainty phrase into a factual value.
-3. Apply the initial general rules: all fields are optional, values need explicit support, source-document context is used where permitted, and missing metadata is represented as null. Record missing and non-applicable reasons separately during review if the schema itself does not distinguish them.
-4. Ask another reviewer to interpret the same examples from the specification. Record disagreements and proposed guidance for testing. A new clarification remains a proposal until it is approved and versioned.
-
 The [initial field excerpts](pathname:///cookbook-files/ai-assisted-metadata-schema-development/initial_field_specifications.md) reproduce
 five definitions and their illustrative examples from v1.1. They are a selected
 transcription of the initial schema. The [field-specification template](pathname:///cookbook-files/ai-assisted-metadata-schema-development/field_specification_template.csv)
@@ -165,6 +161,11 @@ evidence files.
 ```
 
 </details>
+
+1. Identify the schema version and transcribe the selected definitions faithfully. Keep proposed clarifications in a separate worksheet column so that a later rule cannot silently replace the initial definition.
+2. State each field's purpose, applicability, acceptable evidence, and boundary with related fields. Use both a fitting example and a case that should remain unpopulated. Do not turn a model's uncertainty phrase into a factual value.
+3. Apply the initial general rules: all fields are optional, values need explicit support, source-document context is used where permitted, and missing metadata is represented as null. Record missing and non-applicable reasons separately during review if the schema itself does not distinguish them.
+4. Ask another reviewer to interpret the same examples from the specification. Record disagreements and proposed guidance for testing. A new clarification remains a proposal until it is approved and versioned.
 
 **Worked example: separate a title from panel headings.** The soybean discovery
 record identifies the overall figure title as “Soybeans” and separately records
@@ -225,6 +226,11 @@ reviewers can use the fields consistently and whether the chosen representation
 can express the required information. It is a design review using development
 evidence. It does not claim an independent test of the schema's adequacy.
 
+**Inputs.** Use the Afghanistan income table and soybean figure introduced
+in recipes 5.1–5.2, together with the selected v1.1 field definitions. The
+Afghanistan example tests supported titles and unavailable units; the soybean
+example tests overall and panel headings.
+
 1. Select contrasting development artifacts and retain their identities from source_images.csv. Use the Afghanistan table and soybean figure here. Leave held-out identities unused during this review.
 2. Independently apply the selected v1.1 fields using the excerpted definitions and attributable evidence. For each populated value, identify its source. Leave unsupported fields null and record a separate review reason.
 3. Compare results. Distinguish unavailable information from a field that does not apply. A null may encode both cases in the initial record, so retain their reasons in the review worksheet. Record overlaps, disagreements, and representation questions without silently changing the specification.
@@ -244,8 +250,9 @@ rows are not complete records or a reported historical validation exercise.
 
 For the soybean figure, ask whether listing headings is sufficient for the
 intended use, or whether a downstream application needs an explicit association
-between each panel and its properties. The initial specification is flat. A
-list of multiple values alone does not define those associations. Record the
+between each panel and its properties. The initial specification is flat:
+its fields describe the snapshot without nested records for individual panels
+or variables. A list of multiple values alone does not define those associations. Record the
 question and its material consequence for testing; this teaching review does
 not report a later held-out finding or add a nested structure.
 
