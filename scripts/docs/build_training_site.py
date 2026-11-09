@@ -110,13 +110,14 @@ def yaml_str(text: str) -> str:
     return json.dumps(text, ensure_ascii=False)
 
 
-def front_matter(**fields) -> str:
+def front_matter(fmt: str = "md", **fields) -> str:
     lines = ["---"]
     for key, value in fields.items():
         if value is None:
             continue
         lines.append(f"{key}: {value if isinstance(value, (int, float, bool)) else yaml_str(str(value))}")
-    lines.append("format: md")
+    # Docusaurus reads the format of a page from `mdx.format`; a .md page is otherwise CommonMark.
+    lines.append("mdx:\n  format: mdx" if fmt == "mdx" else "format: md")
     lines.append("---\n")
     return "\n".join(lines) + "\n"
 
@@ -195,8 +196,37 @@ def write(path: Path, text: str) -> None:
     path.write_text(text, encoding="utf-8")
 
 
+FIGURE = re.compile(r"^<!-- figure: ([a-z0-9-]+) -->$", re.MULTILINE)
+TERM_LINK = re.compile(r"\[([^\]]+)\]\(#terms\)")
+TERM_ENTRY = re.compile(r"^- \*\*(.+?)\*\*: (.+)$", re.MULTILINE)
+
+
+def glossary_terms(src: Path, body: str) -> str:
+    """Links to the page's "Terms" section, `[text](#terms)`, become <Term> pop-ups with the
+    definition from that section, whose entries read `- **Name**: definition`. On GitHub the
+    link leads to the section."""
+    section = re.search(r"^## Terms\n(.*?)(?=^## |\Z)", body, re.MULTILINE | re.DOTALL)
+    terms = {m.group(1).lower(): (m.group(1), m.group(2)) for m in TERM_ENTRY.finditer(section.group(1))} if section else {}
+
+    def term(match: re.Match) -> str:
+        text = match.group(1)
+        key = text.lower()
+        found = terms.get(key) or terms.get(key.removesuffix("s"))
+        if not found:
+            warn(src, f"no entry in the Terms section for the term link '{text}'")
+            return text
+        name, definition = found
+        return f"<Term name={{{json.dumps(name)}}} definition={{{json.dumps(definition)}}}>{text}</Term>"
+
+    return TERM_LINK.sub(term, body)
+
+
 def markdown_page(site: Site, src: Path, out: Path, *, position: int, label: str | None = None,
                   omit: list[str] | None = None, slug: str | None = None, note: str | None = None) -> None:
+    """A Markdown page. A line `<!-- figure: name -->` in the source places the interactive figure
+    `name` of website/src/components/training/Figures, with the data of the session's
+    assets/overview.json; GitHub shows nothing for that line. A page with figures is MDX, and its
+    links to the "Terms" section become pop-ups (see glossary_terms)."""
     title, body = split_title(src.read_text(encoding="utf-8"))
     if omit:
         body = omit_sections(body, omit)
@@ -204,7 +234,19 @@ def markdown_page(site: Site, src: Path, out: Path, *, position: int, label: str
         body = body.rstrip() + "\n\n## Source files\n\n" + note + "\n"
     body = site.rewrite_links(body, src, out, colab_to_page=False)
     rel = src.relative_to(REPO).as_posix()
-    write(out, front_matter(title=title, sidebar_label=label, sidebar_position=position, slug=slug,
+    fmt = "md"
+    if FIGURE.search(body):
+        data = src.parent / "assets" / "overview.json"
+        if not data.exists():
+            warn(src, "the page places figures, but the session has no assets/overview.json")
+        else:
+            fmt = "mdx"
+            write(out.parent / "figures.json", data.read_text(encoding="utf-8"))
+            body = ("import TrainingFigure from '@site/src/components/training/Figures';\n"
+                    "import Term from '@site/src/components/training/Figures/Term';\n"
+                    "import figures from './figures.json';\n\n"
+                    + glossary_terms(src, FIGURE.sub(lambda m: f'<TrainingFigure name="{m.group(1)}" data={{figures}} />', body)))
+    write(out, front_matter(fmt, title=title, sidebar_label=label, sidebar_position=position, slug=slug,
                             custom_edit_url=f"{EDIT}/{rel}") + body)
 
 
