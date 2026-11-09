@@ -8,7 +8,7 @@ description: A guided methodology for discovering metadata requirements from art
 
 # Practical Guide to AI-Assisted Metadata Schema Development
 
-**A cookbook for technical practitioners familiar with Python, APIs, and LLMs who want to learn metadata schema development.** Version 0.1 (working draft), November 2026.
+**A cookbook to help technical practitioners start building a metadata schema for their own materials and use case.** Version 0.1 (working draft), November 2026.
 
 :::note[Working draft]
 This guide is a working draft from the AI for Data – Data for AI program.
@@ -20,30 +20,19 @@ Corrections are welcome through [GitHub issues](https://github.com/worldbank/ai4
 the [contributing page](./contributing.md) describes the review expectations.
 :::
 
-An organization may need to describe a class of information artifacts before
-it knows which metadata fields will be useful. The artifacts might be text
-records, images, structured objects, audio recordings, or combinations of these.
-Their descriptive requirements depend on what counts as one artifact, how
-people intend to use it, and which evidence is available. Copying a familiar
-field list can miss important distinctions or introduce fields that do not fit.
+When organizing reports, datasets, images, or recordings, an organization needs
+to decide what information to record about each item. That information can help
+people find relevant items, understand their contents, or judge whether they
+suit a particular task. A metadata schema defines the fields used to describe
+these items. This cookbook helps practitioners develop those fields by examining
+examples of their materials and considering how people will use them.
 
-This cookbook teaches an artifact-driven method for developing that operational
-specification. Independent AI-assisted discovery explores possible descriptive
-requirements before a shared field inventory is fixed. Exact-name profiles
-aggregate observations without merging their meanings. Semantic synthesis
-proposes shared concepts, and human refinement decides which distinctions
-matter. Operational design turns those meanings into usable fields and guidance;
-held-out validation and standards review then test and refine the specification.
-The intermediate observations, profiles, concept inventories, and decision
-records let practitioners inspect how each choice follows from evidence.
+AI can help speed up schema development by suggesting metadata from examples,
+grouping related descriptions, and drafting field definitions. These suggestions
+give practitioners a starting point to review and refine.
 
-AI assistance can make varied artifact evidence easier to compare, but model
-proposals alone cannot determine the intended scope, useful distinctions, or
-acceptable representation. Humans make those conceptual and operational choices.
-For another artifact class, practitioners choose the input representation,
-diversity dimensions, evidence rules, validation boundary, and relevant standards.
-
-The running example is the Data Snapshot study by Dy & Solatorio (2026).
+This cookbook adapts the approach presented in the Data Snapshot research paper
+by Dy & Solatorio (2026), using that study as a worked example.
 Its evidence connects observations, profiles, concepts, schema decisions,
 validation findings, and standards mappings. The methodology is intended for
 adaptation to other artifact classes; the reported empirical evaluation concerns
@@ -52,17 +41,17 @@ identifies the references compared in the study.
 
 ## Purpose and learning outcomes
 
-- The practitioner can distinguish a metadata observation, metadata field profile, canonical metadata concept, concept inventory, and operational metadata schema.
-- The practitioner can define an artifact class and adapt inputs, sampling, and field decisions to its descriptive uses.
-- The practitioner can distinguish concept coverage from held-out validation and adjudicate documentation and representation issues.
-- The practitioner can use a standards crosswalk while preserving artifact-derived requirements.
+- The practitioner can define what the schema needs to describe and select examples that reflect its intended uses.
+- The practitioner can use AI to suggest and organize metadata fields, then review and refine those suggestions.
+- The practitioner can write field definitions and usage guidance, then test and improve the schema using new examples.
+- The practitioner can use relevant standards to refine the schema while preserving the requirements of their materials and use case.
 
 ## Prerequisites
 
 The prepared exercises assume familiarity with Python, APIs, and LLMs, and the
 ability to inspect CSV and JSON files. The scripts need Python 3.10 or newer
-and use only its standard library. Metadata engineering concepts are introduced
-when needed; the prepared evidence requires no API key or new experiment.
+and use only its standard library. An API key from an LLM provider is needed
+to make LLM calls.
 
 Applying the method to another collection also requires representative artifacts,
 a stated descriptive purpose, and a reviewer who understands the domain.
@@ -111,51 +100,18 @@ to accept schema changes.
 
 ## Running example
 
-The research treated Data Snapshots as independent analytical information
-objects. It processed 210 development snapshots from three institutional corpora,
-producing 3,041 metadata observations and 833 field profiles. Synthesis proposed
-70 concepts; expert refinement retained 41. Operational design produced an
-initial 36-field schema. Two complementary exercises used the same 202 held-out
-snapshots. Documentation refinement retained 36 fields; standards-informed
-refinement produced a final 37-field flat specification.
-
-Ten prepared examples demonstrate the method without prescribing its field
-names, sample sizes, or representation for another collection. They form a
-continuous learning journey. The Jordan chart,
-Afghanistan table, and Russian chart introduce discovery and aggregation.
-Title profiles, concept decisions, and rare or residual assignments connect
-synthesis to refinement. The soybean figure illustrates the later restoration
-of panel_title. The South Sudan composite and Diffa table expose representation
-limits during validation. The Afghanistan table returns for the distinction
-between data sources and attribution.
-
-The [public dataset](https://huggingface.co/datasets/ai4data/data-snapshot)
-contains source images and document metadata. The prepared register pins the
-selected records to dataset revision
-626f3c54ba6d8f6e0ba0795f9e544e24b2650faf. Images remain externally linked
-because individual redistribution rights have not been established.
+The running example comes from a real use case examined by Dy & Solatorio
+(2026): developing a metadata schema for Data Snapshots, such as tables, charts,
+and maps from reports. The chapters follow selected examples and decisions from
+that study. Source images and document metadata are available in the
+[public dataset](https://huggingface.co/datasets/ai4data/data-snapshot).
 
 ## Scope of the examples
-
-In evidence.json, the examples array contains entries identified by id. Find
-the entry whose id matches the example name used in a chapter, such as
-canonical-title. Its inputs hold the evidence examined at that stage; outputs
-hold the selected result or teaching transformation, with its evidence label.
-The study_summary object records study totals, while verification_derived_facts
-separates comparisons computed during preparation.
 
 Recorded study results, selected excerpts, preparation-time deterministic
 exercises, and proposed extensions retain distinct labels. A simplified example
 does not claim an independent execution of the study. The study sample size
 is not a universal minimum.
-
-Chapter 4 uses the original mapping against 41 concepts. Chapter 5 introduces
-the subsequent restoration of panel_title during operational design. Later
-mapping edits are kept separate from the original assessment. Both validations
-used the same snapshot-disjoint collection, which shares some parent documents
-with development. Neither accepted a new field after human review.
-The final 37-field specification followed validation and did not receive a
-further independent held-out assessment in the reported study.
 
 The evidence supports bounded conclusions for the tested collections. It does
 not establish universal generalizability, superiority over alternatives, or a
