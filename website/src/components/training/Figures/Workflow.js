@@ -160,7 +160,7 @@ function CheckDemo() {
         {CHECKED.map((c, i) => (
           <div role="row" key={i} className={clsx(styles.checkRow, run && c.drop && styles.checkDropped)}>
             <span role="cell"><span className={clsx(run && c.drop && styles.struck)}>{c.text}</span>
-              {run && c.drop && <em className={styles.dropReason}>{c.drop}</em>}</span>
+              {run && c.drop && <em className={styles.dropReason}><span className={styles.dropMark} aria-hidden="true">✕ </span>{c.drop}</em>}</span>
             <span role="cell">{c.writer || '(none)'}</span>
             <span role="cell">{c.checker}</span>
           </div>

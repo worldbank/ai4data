@@ -4,6 +4,10 @@
 .figure {
   --small: #2a78d6;
   --small-soft: #e3eefa;
+  /* Blue for small text (6.4:1 on white) and the background of filled controls
+     (white text at 13.6:1 light, 6.2:1 dark). */
+  --small-text: #1f5fae;
+  --control: var(--ifm-color-primary-darkest);
   --large: #eb6834;
   --large-soft: #fbe6dc;
   --ok: #1a7f37;
@@ -26,6 +30,7 @@
 :global([data-theme='dark']) .figure {
   --small: #3987e5;
   --small-soft: #1e3a5f;
+  --small-text: #6aa8f0;
   --large: #d95926;
   --large-soft: #4a2a1c;
   --ok: #4ac26b;
@@ -131,7 +136,7 @@ button.chip[aria-pressed='true'] {
 }
 
 .chipOff {
-  color: var(--faint);
+  color: var(--muted);
 }
 
 .dot {
@@ -420,6 +425,17 @@ button.chip[aria-pressed='true'] {
   white-space: normal;
 }
 
+/* A transparent bridge over the gap keeps the pointer inside the term while it
+   moves onto the definition. */
+.termPop::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -8px;
+  height: 8px;
+}
+
 .termPop strong {
   display: block;
   margin-bottom: 2px;
@@ -483,10 +499,15 @@ button.chip[aria-pressed='true'] {
 
 .bars {
   display: grid;
-  grid-template-columns: minmax(120px, max-content) 1fr 56px;
+  grid-template-columns: fit-content(45%) minmax(80px, 1fr) 56px;
   gap: 8px 10px;
   align-items: center;
   font-size: 0.85rem;
+}
+
+.bars > * {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .barTrack {
@@ -605,7 +626,7 @@ button.chip[aria-pressed='true'] {
   border: 0;
   border-radius: 8px;
   padding: 7px 14px;
-  background: var(--small);
+  background: var(--control);
   color: #fff;
   font: inherit;
   font-size: 0.88rem;
@@ -1072,7 +1093,7 @@ button.chip[aria-pressed='true'] {
 .practiceAnswer dd {
   margin: 0;
   font-weight: 600;
-  color: var(--small);
+  color: var(--small-text);
 }
 
 /* Why there are no training examples */
@@ -1167,8 +1188,8 @@ button.chip[aria-pressed='true'] {
 }
 
 .railOn .railNum {
-  border-color: var(--small);
-  background: var(--small);
+  border-color: var(--control);
+  background: var(--control);
   color: #fff;
 }
 
@@ -1358,9 +1379,14 @@ button.chip[aria-pressed='true'] {
   color: var(--muted);
 }
 
+.dropMark {
+  color: var(--large);
+  font-weight: 700;
+}
+
 .dropReason {
   display: block;
-  color: var(--large);
+  color: var(--ink);
   font-style: normal;
   font-weight: 600;
   text-decoration: none;
@@ -1417,7 +1443,7 @@ button.chip[aria-pressed='true'] {
 
 .loopStep b {
   display: block;
-  color: var(--small);
+  color: var(--small-text);
 }
 
 .roundBars {
