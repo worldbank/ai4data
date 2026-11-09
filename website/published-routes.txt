@@ -272,5 +272,6 @@
 /training/session-01/resources/testing-on-fixed-questions
 /training/session-01/slides
 /training/session-01/worked-example-data
+/training/session-02
 /unlisted
 /videos
