@@ -3,6 +3,7 @@
 The images are real Data Snapshots. The two Discovery references are published human-reviewed semantic annotations. The numbered Markdown, JSON and JSONL files describe one illustrative round that has never been executed. The role instructions describe the proposed workflow.
 
 - Use the sample register to resolve the exact image bytes and the Discovery reference. Its paths are relative to the site's static root.
+- D1's annotation is copied here unchanged from the pinned gold release. The shared schema documentation uses an adapted version that omits the concatenated temporal source text. The register points to the original reference used by this walkthrough.
 - P001 and S001 are inputs to round 001. Its extraction records cite P001. P002 and S002 are outputs of round 001 and would become inputs to the next round.
 - Review the illustrative extraction and judge files together. Each line is one record keyed by sample ID. The metadata payload uses Schema v1.4. The surrounding fields are experiment bookkeeping.
 - Use the manifest to find all eight artifact types. The local set also includes sample registration and role instructions as supporting materials.

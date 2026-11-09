@@ -13,7 +13,7 @@
       "source_pdf": "https://reliefweb.int/attachments/831aca28-6777-4cb9-9b84-8976c63061fb/Policy%20Brief%20on%20Shona%20community_From%20Stateless%20to%20Citizens.pdf",
       "pdf_page": 4,
       "provenance": "Corpus data snapshot at snapshots/unhcr/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.png. Reused from the schema reference.",
-      "gold_reference": "img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.json",
+      "gold_reference": "cookbook-files/data-snapshot-metadata-council/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.json",
       "gold_sha256": "51dfda0524c013cfb50a372a669cad8fb416ebdcdb3605d5169e3acf9d9d66d6"
     },
     {
