@@ -115,8 +115,10 @@ def build(theme: dict) -> str:
     H = panel_h + 2
 
     out = [
-        f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" '
-        f'font-family="{FONT}" role="img" aria-labelledby="t">',
+        (
+            f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" '
+            f'font-family="{FONT}" role="img" aria-labelledby="t">'
+        ),
         '<title id="t">The two pillars of the AI for Data – Data for AI program and the workstreams under each</title>',
     ]
     for i, p in enumerate(PILLARS):

@@ -166,7 +166,7 @@ class Site:
                     return self.relative(out, self.colab[base]) + (f"#{frag}" if frag else "")
             if url.startswith("#scrollTo="):
                 return "#" + url[len("#scrollTo="):]
-            if re.match(r"^[a-z][a-z0-9+.-]*:", url) or url.startswith("#") or url.startswith("/"):
+            if re.match(r"^[a-z][a-z0-9+.-]*:", url) or url.startswith(("#", "/")):
                 return url
             path, _, frag = url.partition("#")
             resolved = (src.parent / path).resolve()
@@ -451,7 +451,7 @@ def check_session(folder: Path) -> None:
         found, _ = split_title(source_text(cells[0])) if cells else ("Untitled", "")
         if not re.match(rf"{path.name[:2]} · \S", found):
             warn(path, f"the first cell should hold the title '# {path.name[:2]} · <title>', found '{found}'")
-        ids = cell_ids(nb)
+        cell_ids(nb)
         for cell in cells:
             if cell["cell_type"] != "markdown":
                 continue
@@ -501,7 +501,9 @@ def check_session(folder: Path) -> None:
             for unlisted in sorted(files - set(listed)):
                 warn(roles_file, f"does not list {unlisted}.md, so the page does not show it")
         for doc in sorted(docs_dir.glob("*.md")):
-            head = re.match(r"---\n(.*?)\n---\n", doc.read_text(encoding="utf-8"), re.S)
+            head = re.match(
+                r"---\n(.*?)\n---\n", doc.read_text(encoding="utf-8"), re.DOTALL
+            )
             keys = {line.partition(":")[0].strip() for line in head.group(1).splitlines()} if head else set()
             for key in ("id", "title", "date"):
                 if key not in keys:
