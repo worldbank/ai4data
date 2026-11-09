@@ -2,7 +2,7 @@
 
 This downloadable package supports all seven chapters of the working-draft
 *Practical Guide to AI-Assisted Metadata Schema Development*. It combines
-selected research evidence with newly prepared offline exercises, request
+selected research evidence with newly prepared worked examples, request
 examples, and human-review worksheets. Readers can inspect the methodology
 without executing the research pipeline or making a model request.
 
@@ -43,13 +43,12 @@ ontology construction or RDF implementation.
 | [evidence.json](./evidence.json) | Source register, study counts, preparation-time analyses, and ten selected examples. | 1–7 |
 | [source_images.csv](./source_images.csv) | Eight external image and parent-document references, attribution, accessibility checks, and reuse limits. | 1–7 |
 | [chapter_examples.csv](./chapter_examples.csv) | Chapter-to-example map and the evidence selections reused at each stage. | 1–7 |
-| [RUN_EXERCISES.md](./RUN_EXERCISES.md) | Required downloads, commands, expected outputs, and safe output handling for the offline exercises. | 1–3; reused in 6 |
 | [artifact_characterization.md](./artifact_characterization.md) | Filled teaching statement of artifact scope and descriptive boundaries. | 1 |
 | [check_manifest.py](./check_manifest.py) | Read-only identity and split-boundary check for the selected register. | 1, 6 |
 | [discovery_excerpt.jsonl](./discovery_excerpt.jsonl) | Selected recorded title observations in a newly prepared response wrapper. | 2 |
 | [inspect_discovery.py](./inspect_discovery.py) | Read-only structural inspection of the selected responses and source identities. | 2 |
 | [discovery_request.md](./discovery_request.md) | Unexecuted teaching adaptation of an independent discovery request. | 2 |
-| [geographic_observations.json](./geographic_observations.json) | Three unchanged observations used by the exact-name profiling exercise. | 3 |
+| [geographic_observations.json](./geographic_observations.json) | Three unchanged observations used by the exact-name profiling example. | 3 |
 | [profile_observations.py](./profile_observations.py) | Standard-library aggregation into a new JSON profile; existing outputs are never replaced. | 3 |
 | [concept_synthesis_request.md](./concept_synthesis_request.md) | Unexecuted request example for proposing shared concepts from field profiles. | 3 |
 | [concept_review_template.csv](./concept_review_template.csv) | Blank worksheet for proposed concept actions and human dispositions. | 4 |
@@ -64,7 +63,7 @@ ontology construction or RDF implementation.
 ## How to use the package
 
 1. Read the evidence labels below and use chapter_examples.csv to locate each chapter's selected examples in evidence.json. Keep recorded study results separate from teaching applications and preparation-time analyses.
-2. For the offline Python exercises, follow RUN_EXERCISES.md. Place the six named script and input files together in a new working directory and use Python 3.10 or newer. The scripts use only the standard library; no images, dataset download, credentials, or model calls are required.
+2. Follow Recipe 2.3 for response inspection and Recipe 3.1 for field profiling. Each recipe supplies its downloads, setup, command, expected output, verification, and rerun guidance. Recipe 1.3 includes the optional sample-overlap check.
 3. For manual review, inspect the chapter's selected evidence and save working copies of the relevant blank worksheets. Record artifact or example identities, schema versions, evidence, and actual reviewer decisions. Keep the supplied evidence and blank templates unchanged.
 4. Read the request examples as unexecuted teaching adaptations. They describe inputs and output checks, not ready-to-run provider integrations. A fresh model-supported application needs its own complete inputs, execution settings, budget, and separate output locations.
 
@@ -254,13 +253,12 @@ and source metadata. No paid API or research experiment was run during that
 preparation. The retained evidence can be inspected without executing code.
 The dated image-access and visual checks above remain preparation-time records.
 
-The cookbook supplies two core executable exercises in Chapters 2–3, a
+The cookbook supplies two executable worked examples in Chapters 2–3, a
 supplemental sample checker, request adaptations, and manual review materials. The standalone scripts are covered by
-focused tests in the AI4Data repository. Their commands, expected outputs,
-exit statuses, and output-preservation rules are documented in
-[RUN_EXERCISES.md](./RUN_EXERCISES.md).
+focused tests in the AI4Data repository. The relevant recipes contain their
+commands, expected outputs, exit statuses, and output-preservation rules.
 
-Use new working files for exercise outputs and worksheet entries. Any later
+Use new working files for generated outputs and worksheet entries. Any later
 live replication must keep new outputs separate and identify them as replication
-results. The supplied exercises inspect selected evidence; they do not reproduce
-the complete study or independently validate the final schema.
+results. The supplied worked examples inspect selected evidence; they do not
+reproduce the complete study or independently validate the final schema.

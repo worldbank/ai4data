@@ -38,8 +38,8 @@ distinctions lets reviewers check those proposals before accepting them in
 
 - Metadata observations and item identifiers from [Chapter 2](./discovery.mdx).
 - Access to the observations' values, explanations, and evidence sources.
-- Python 3.10 or newer for the supplied profiling exercise; no external packages are needed.
-- New model-assisted synthesis needs the [hosted or local setup](./index.mdx#prerequisites) described in the overview. The prepared exercise uses recorded outputs.
+- Python 3.10 or newer for the profiling example; no external packages are needed.
+- New model-assisted synthesis needs the [hosted or local setup](./index.mdx#prerequisites) described in the overview. The worked example uses recorded outputs.
 
 ## Maturity levels
 
@@ -50,14 +50,14 @@ distinctions lets reviewers check those proposals before accepting them in
 | **AI-native** | AI proposes shared concepts from profiles; reviewers check the evidence and uncertain distinctions. |
 
 :::info[Running example]
-**Prepared exercise.** Three recorded geographic_scope observations become one
+**Worked example.** Three recorded geographic_scope observations become one
 profile. Title suggestions from Chapter 2 then illustrate how several names
 can lead to a shared concept proposal.
 :::
 
 ## Recipes
 
-<Recipe title="3.1 Group repeated names into field profiles" level="AI-ready" skills="Python practitioner; metadata reviewer" time="20–30 minutes for the supplied exercise">
+<Recipe title="3.1 Group repeated names into field profiles" level="AI-ready" skills="Python practitioner; metadata reviewer" time="20–30 minutes for the worked example">
 
 **Result:** A JSON profile groups identical names, counts their supporting items, and retains the original observations.
 
@@ -68,8 +68,11 @@ without increasing the second. Support is the distinct supporting count divided
 by an explicitly identified artifact denominator.
 
 **Prepared input.** Place [geographic_observations.json](pathname:///cookbook-files/ai-assisted-metadata-schema-development/geographic_observations.json) and [profile_observations.py](pathname:///cookbook-files/ai-assisted-metadata-schema-development/profile_observations.py)
-in a new working directory. The input retains the three recorded observations
-summarized below, including their full identifiers, descriptions, and reasoning.
+in a new working directory. The script uses only the Python standard library
+and needs no images, model credentials, or model calls. If the Python 3.10 or
+newer interpreter is named python3, substitute that name in the command below.
+The input retains the three recorded observations summarized below, including
+their full identifiers, descriptions, and reasoning.
 
 | Artifact | metadata_field | Recorded observed_value | source_level |
 |---|---|---|---|
@@ -83,8 +86,8 @@ summarized below, including their full identifiers, descriptions, and reasoning.
 4. Inspect the profile counts and evidence. Confirm that all three input records remain present and that the denominator counts distinct snapshots across the whole input file.
 
 **Worked example.** The command produces the following summary and writes a
-profile in a separate output directory. This is a new deterministic exercise
-over recorded observations; it does not rerun metadata discovery.
+profile in a separate output directory. This is a deterministic transformation
+of recorded observations; it does not rerun metadata discovery.
 
 ```bash
 python profile_observations.py geographic_observations.json --output outputs/geographic_profiles.json
@@ -128,8 +131,9 @@ from this display only. The output file retains all three observations.
 
 For another collection, keep property names unchanged during grouping and
 count distinct items separately from observations. State which items form the
-denominator, including how items with no observations are handled. The teaching
-script uses snapshot_id and the study's source labels; adapt those names and
+denominator. The supplied script counts only distinct items present in the
+input observations. Including items with no observations would require a
+separate sample list and a different denominator. The teaching script uses snapshot_id and the study's source labels; adapt those names and
 checks to the new inputs. Larger summaries should retain links to the full
 observations even when they display only selected evidence.
 
@@ -147,21 +151,23 @@ and safe output handling. It has no external dependencies or model client.
 **Verification.** The output must contain one profile with count 3,
 n_snapshots 3, total_snapshots 3, and support 1.0. Its evidence must equal the
 three input records. The count sum must equal the number of input observations.
-For another run, choose a new output filename. The script must refuse an existing output or input path.
+For another run, choose a new output filename. The script refuses an existing
+output or input path and exits with status 2 for invalid input or an unavailable output destination. It validates input
+before creating the output directory.
 
 <details>
 <summary>Study counts and their denominators</summary>
 
 | Statistic | Unit and denominator | Recorded or exercise scope |
 |---|---|---|
-| 3 geographic_scope observations | This counts exact-name occurrences in the three-record input. | This is the reproducible teaching exercise. |
+| 3 geographic_scope observations | This counts exact-name occurrences in the three-record input. | This is the worked example. |
 | 192 geographic_scope observations | This counts exact-name occurrences across the 210-snapshot development collection. The profile also records 192 distinct supporting snapshots. | This is the recorded full-study profile. |
 | 194 snapshots supporting geographic_scope | This counts distinct snapshots after profiles were assigned to a canonical concept; its denominator is 210. | This is later concept coverage, addressed in chapter 4. |
 
 The full-study exact-name support is 192 / 210, approximately 91.4%. Later
 canonical-concept support is 194 / 210, approximately 92.4%. Semantic
 consolidation changes the unit being summarized. Neither percentage can be
-inferred from the three-record exercise.
+inferred from the three-record example.
 
 </details>
 
@@ -223,7 +229,7 @@ Those conceptual and operational decisions require later human review.
 
 <Recipe title="3.3 Propose shared concepts from profiles" level="AI-native" skills="LLM practitioner; metadata reviewer" time="45–60 minutes to prepare and inspect the retained example">
 
-**Result:** A synthesis request and candidate concept list are ready for human review. The prepared exercise reviews a recorded candidate without making a model call.
+**Result:** A synthesis request and candidate concept list are ready for human review. The worked example reviews a recorded candidate without making a model call.
 
 Ask for defined meanings supported by the profiles, combining clear synonyms
 and retaining uncertain distinctions for review. Let the evidence determine
@@ -271,7 +277,7 @@ a missing caption or establish the final annotation rule.
 Synthesis used all 833 profiles in one CSV-supported GPT-5.5 request, with high
 reasoning and a 12,000-token ceiling. The prompt suggested 50–70 concepts and
 returned 70. Those counts are not targets for another collection. A request
-using only the three displayed profiles would be a different, smaller exercise.
+using only the three displayed profiles would be a different, smaller example.
 :::
 
 **Verification.** The prepared request specifies all four output attributes
@@ -279,7 +285,7 @@ and identifies the intended profile input. The recorded title candidate contains
 those attributes and connects to the displayed profiles. Review notes retain
 the unresolved distinction between a whole-object title and an internal heading.
 
-**What this does not do.** The prepared exercise makes no live synthesis call.
+**What this does not do.** The worked example makes no live synthesis call.
 Candidate concepts still need human review before field design; they are not
 an accepted schema or a formal ontology.
 
@@ -297,7 +303,6 @@ resulting concept proposals; it changes the study's single-request approach.
 
 ## Resources
 
-- The [offline exercise guide](pathname:///cookbook-files/ai-assisted-metadata-schema-development/RUN_EXERCISES.md) documents the inputs, commands, safety behavior, and denominators.
 - The [observation input](pathname:///cookbook-files/ai-assisted-metadata-schema-development/geographic_observations.json) supplies the three real records used by the [profiling script](pathname:///cookbook-files/ai-assisted-metadata-schema-development/profile_observations.py).
 - The [research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json) preserves full-study profile excerpts and the recorded candidate title concept.
 - The [teaching synthesis request](pathname:///cookbook-files/ai-assisted-metadata-schema-development/concept_synthesis_request.md) explains the semantic task and historical boundary.

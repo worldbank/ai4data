@@ -193,8 +193,8 @@ snapshots within those reporting sources; it is not a document-disjoint test.
 
 **Verification.** No item appears in both samples, and any shared sources are
 recorded. The optional checker should print the four lines above and exit with
-status 0. Those counts describe only the excerpt; full-study findings are
-reported separately above.
+status 0. Invalid input or a path error produces status 2. Those counts describe
+only the excerpt; full-study findings are reported separately above.
 
 **What this does not do.** Checking overlap does not establish that either
 sample covers every metadata need. Once holdout findings are used to revise

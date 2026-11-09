@@ -38,7 +38,7 @@ catches misreadings and unsupported suggestions.
 
 - The scope statement and development sample from [Chapter 1](./characterization.mdx).
 - Familiarity with API requests and JSON records for preparing a new run.
-- Python 3.10 or newer for the supplied offline inspection; no external packages are needed.
+- Python 3.10 or newer for the response-inspection example; no external packages are needed.
 - New LLM runs need the [hosted or local setup](./index.mdx#prerequisites) described in the overview. The prepared inspection needs no LLM credentials.
 
 ## Maturity levels
@@ -52,7 +52,8 @@ catches misreadings and unsupported suggestions.
 :::info[Running example]
 **Recorded excerpts.** The Jordan chart, Afghanistan table, and Russian chart
 show how different items produce different title suggestions. The prepared
-responses come from the study; the offline exercise checks those excerpts.
+responses come from the study; the response-inspection example checks those
+excerpts.
 :::
 
 ## Recipes
@@ -198,7 +199,7 @@ are not the complete output for the three artifacts.
 
 </Recipe>
 
-<Recipe title="2.3 Check responses and plan collection processing" level="AI-native" skills="Python and API practitioner; metadata reviewer" time="30 minutes for offline inspection; live processing varies">
+<Recipe title="2.3 Check responses and plan collection processing" level="AI-native" skills="Python and API practitioner; metadata reviewer" time="30 minutes for the worked example; live processing varies">
 
 **Result:** Response records have been checked for item identity, required fields, and completion status. A processing plan explains how a new run will preserve failures and retries.
 
@@ -238,7 +239,10 @@ interface before repeating Recipe 2.1 across the development sample.
 4. Specify resumption before running. For a proposed replication, skip identities with a validated successful result under the same configuration. Keep failed attempts inspectable and make retries explicit. Use a new run for a changed configuration.
 5. Check which items have responses, whether processing succeeded, and whether the required fields are present before combining observations from different items. Missing records and invalid responses must remain distinguishable from artifacts with no useful observations.
 
-**Worked example.** Run the inspector from the download directory:
+**Worked example.** Run the inspector from the directory containing all three
+downloads. Use Python 3.10 or newer; if the interpreter is named python3,
+substitute that name in the command. No packages, images, or LLM credentials
+are needed for this check.
 
 ```bash
 python inspect_discovery.py discovery_excerpt.jsonl source_images.csv
@@ -265,9 +269,11 @@ reconstruction is not claimed.
 
 </details>
 
-**Verification.** The supplied excerpt exits with status 0. A logged execution
+**Verification.** The supplied excerpt exits with status 0. The inspector
+writes nothing, so it can be rerun with the same inputs. A logged execution
 failure produces status 1. Unknown or duplicate identities, inconsistent
-provenance, and malformed selected observations produce status 2. The exercise
+provenance, malformed selected observations, and input-path errors produce
+status 2. The script
 does not create a retry or send a request; its source shows the checks a
 collection runner must apply before considering a record usable. The processing
 plan also identifies its success rule, retry policy, and separate run directory
@@ -295,7 +301,6 @@ is sufficient; when supplied, identify it separately from direct evidence.
 
 ## Resources
 
-- The [offline exercise guide](pathname:///cookbook-files/ai-assisted-metadata-schema-development/RUN_EXERCISES.md) identifies the exact inputs, commands, and limits.
 - The [teaching discovery request](pathname:///cookbook-files/ai-assisted-metadata-schema-development/discovery_request.md) separates the logical request specification from the historical configuration.
 - The [response excerpt](pathname:///cookbook-files/ai-assisted-metadata-schema-development/discovery_excerpt.jsonl) and [source register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) support identity and response checks.
 - Dy & Solatorio (2026). *Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs*. Working paper. Sections 4.1 and 6.1 and Appendix B explain the discovery objective and execution.
