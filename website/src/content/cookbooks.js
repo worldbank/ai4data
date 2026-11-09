@@ -162,10 +162,10 @@ export const allCookbooks = [
     id: 'ai-assisted-metadata-schema-development',
     version: '0.1',
     date: 'November 2026',
-    audience: 'Technical practitioners familiar with Python, APIs, and LLMs who want to learn metadata schema development',
+    audience: 'Technical practitioners starting a metadata schema for their own materials and use case',
     title: 'Practical Guide to AI-Assisted Metadata Schema Development',
     description:
-      'A guided methodology for discovering metadata requirements from artifacts, refining concepts through human review, designing operational fields, and evaluating and refining the schema.',
+      'Develop a metadata schema from real examples through AI-assisted discovery, human review, validation, and standards comparison.',
     chapters: 7,
     to: '/cookbook/ai-assisted-metadata-schema-development/',
   },
@@ -198,7 +198,7 @@ const allGroups = [
   },
   {
     title: 'Metadata and interfaces',
-    ids: ['metadata-curation-with-llms', 'serving-statistics-to-agents'],
+    ids: ['metadata-curation-with-llms', 'ai-assisted-metadata-schema-development', 'serving-statistics-to-agents'],
   },
   {
     title: 'Models inside the office',

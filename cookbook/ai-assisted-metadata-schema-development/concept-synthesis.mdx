@@ -61,8 +61,8 @@ can lead to a shared concept proposal.
 
 **Result:** A JSON profile groups identical names, counts their supporting items, and retains the original observations.
 
-Occurrence count measures how often a name was proposed. Distinct-snapshot
-support measures how many different artifacts contributed at least one such
+Occurrence count measures how often a name was proposed. The distinct-item
+count measures how many different artifacts contributed at least one such
 observation. Repeated observations from one artifact increase the first count
 without increasing the second. Support is the distinct supporting count divided
 by an explicitly identified artifact denominator.
@@ -126,15 +126,6 @@ from this display only. The output file retains all three observations.
 ]
 ```
 
-| Output attribute | Expected value and interpretation |
-|---|---|
-| metadata_field | geographic_scope is the unchanged grouping key. |
-| count | 3 observations use this exact name. |
-| n_snapshots | 3 distinct artifact identities support the name. |
-| total_snapshots | 3 distinct artifacts occur anywhere in this input file. |
-| support | 1.0 is the fraction 3 / 3 for this selected input. |
-| evidence | All three original records retain their values, descriptions, source levels, and rationales. |
-
 For another collection, keep property names unchanged during grouping and
 count distinct items separately from observations. State which items form the
 denominator, including how items with no observations are handled. The teaching
@@ -190,7 +181,7 @@ Compare meanings using the values and explanations in each profile. Similar
 names can serve different roles: an overall caption and an internal heading,
 for example, may need to remain distinguishable.
 
-**Worked example.** Exact-name aggregation preserved three separate profiles.
+**Input example.** Exact-name aggregation preserved three separate profiles.
 All counts below are recorded full-study values. The small observation
 exercise does not compute these counts.
 
@@ -205,7 +196,7 @@ exercise does not compute these counts.
 3. Compare descriptions and values in their artifact contexts. Ask whether similar names describe the same object, component, or role. The two Russian headings in independent-naming illustrate this test for whole-object and internal titles.
 4. Write a provisional relationship note with the proposed common meaning, evidence for it, and a remaining ambiguity. Retain uncertain distinctions for the synthesis request and human review.
 
-**Teaching interpretation.** The worksheet below is newly written reasoning
+**Worked example.** The worksheet below is newly written teaching reasoning
 based on those records. It is not a recovered historical adjudication log.
 
 | Comparison question | Provisional note |
@@ -240,6 +231,11 @@ the size of the candidate list. Representative field names illustrate a concept;
 they do not show that every profile has been assigned or that the final schema
 has been designed.
 
+**Input example.** Use the figure_title, table_title, and chart_title profiles
+compared in Recipe 3.2. Their names, example values, descriptions, and counts
+supply evidence for a possible shared title meaning. The complete study used
+all profiles; the selected excerpts support preparing and reviewing the request.
+
 The [synthesis request](pathname:///cookbook-files/ai-assisted-metadata-schema-development/concept_synthesis_request.md) is an independently
 written teaching adaptation. It illustrates the instruction and output
 structure without running a model or claiming to reproduce the full prompt.
@@ -254,7 +250,7 @@ structure without running a model or claiming to reproduce the full prompt.
 
 1. Specify the input profiles using their names, descriptions, values, rationales, and occurrence statistics, along with the artifact class and descriptive purpose. Verify that the complete intended input is within the chosen model interface's capacity.
 2. Ask for reusable concepts across the contexts represented in the artifact collection, consolidation of clear synonyms, and retention of plausible distinctions when uncertain. Low frequency alone is not an exclusion rule.
-3. Specify canonical_name, definition, rationale, and sample_fields for each proposed concept. Treat representative field names as examples; they do not prove that every profile was assigned correctly.
+3. Specify a shared label (canonical_name), definition, rationale, and sample_fields for each proposed concept. Treat representative field names as examples; they do not prove that every profile was assigned correctly.
 4. Review the recorded candidate below for definitions, unsupported merges, lost distinctions, and ambiguous scope. Preserve the candidate output and input reference before handing it to [expert refinement](./concept-refinement.mdx).
 
 **Worked example.** The following title candidate is a recorded output,
@@ -267,8 +263,8 @@ available under recorded_candidate_concept in canonical-title.
 | rationale | Titles are usually the strongest single searchable description of a snapshot’s content and should be normalized across figures, tables, maps, and charts. |
 | sample_fields | table_title, figure_title, snapshot_title, chart_title, map_title, table_caption |
 
-The rationale records the model's judgment; retrieval performance was not measured. Its
-allowance for an inferred title needs review; it does not authorize inventing
+The rationale records the model's judgment; retrieval performance was not
+measured. The definition's allowance for an inferred title needs review; it does not authorize inventing
 a missing caption or establish the final annotation rule.
 
 :::note[Study input and output]
@@ -282,8 +278,6 @@ using only the three displayed profiles would be a different, smaller exercise.
 and identifies the intended profile input. The recorded title candidate contains
 those attributes and connects to the displayed profiles. Review notes retain
 the unresolved distinction between a whole-object title and an internal heading.
-The full study produced 70 candidates; that count is not a target for another
-collection or an output of this offline exercise.
 
 **What this does not do.** The prepared exercise makes no live synthesis call.
 Candidate concepts still need human review before field design; they are not

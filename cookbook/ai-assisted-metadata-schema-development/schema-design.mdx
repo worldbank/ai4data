@@ -64,7 +64,7 @@ should have a clear purpose and evidence that people can recognize. Combining
 overlapping fields can reduce effort; retaining a distinction can make complex
 items easier to describe.
 
-**Input example.** The [soybean multi-panel figure](https://huggingface.co/datasets/ai4data/data-snapshot/blob/626f3c54ba6d8f6e0ba0795f9e544e24b2650faf/snapshots/prwp/document_12916918_figure_012.png), document_12916918_figure_012.png, has a recorded panel_titles
+**Input example.** The [soybean multi-panel figure](https://huggingface.co/datasets/ai4data/data-snapshot/blob/626f3c54ba6d8f6e0ba0795f9e544e24b2650faf/snapshots/prwp/document_12916918_figure_012.png) has a recorded panel_titles
 observation: “Monthly Price; Monthly Returns (% change) and KL (2000) test
 detected breaks.” The original coverage mapping assigned that profile to
 not_in_ontology. The reviewed inventory had no independent panel_title target.
@@ -138,6 +138,12 @@ evidence files.
 
 </details>
 
+**Input observations.** The soybean figure has the overall title “Soybeans”
+and the panel headings in Recipe 5.1. The Lebanon figure's title includes
+“(n=44),” while the Afghanistan table's response says its unit is “Not
+identifiable from this snapshot.” Use these contrasting observations to test
+the definitions, without treating uncertainty as a value.
+
 1. Write a definition for each chosen field using the reviewed meaning and operational decision. For the supplied v1.1 exercise, transcribe the selected definitions faithfully and mark proposed clarifications separately so later guidance cannot silently replace the initial wording.
 2. State each field's purpose, applicability, acceptable evidence, and boundary with related fields. Use both a fitting example and a case that should remain unpopulated. Do not turn a model's uncertainty phrase into a factual value.
 3. Specify value types, whether each field is required, how many values it can hold, and how to record missing information. In the v1.1 example, fields are optional, values need explicit support, permitted document context is identified, and missing metadata is null. Keep separate review notes when null cannot distinguish absence from inapplicability.
@@ -201,6 +207,13 @@ in recipes 5.1–5.2, together with the selected v1.1 field definitions. The
 Afghanistan example tests supported titles and unavailable units; the soybean
 example tests overall and panel headings.
 
+The relevant recorded inputs are:
+
+| Development item | Evidence to apply |
+|---|---|
+| Afghanistan table | The recorded title is “Monthly labor income in Afghanistan and remittances from abroad”; the unit is “Not identifiable from this snapshot.” |
+| Soybean figure | The overall title is “Soybeans”; the separate panel_titles observation supplies the panel headings in Recipe 5.1. |
+
 1. Select contrasting development artifacts that test field boundaries, missing information, and any repeated or related components. Retain their identities and keep reserved validation evidence separate. Use the Afghanistan table and soybean figure from source_images.csv for this exercise.
 2. Independently apply the chosen field definitions and evidence rules. For each populated value, identify its source; handle absence according to the specification. The supplied exercise applies selected v1.1 fields and leaves unsupported values null.
 3. Compare results. Distinguish unavailable information from a field that does not apply. A null may encode both cases in the initial record, so retain their reasons in the review worksheet. Record overlaps, disagreements, and representation questions without silently changing the specification.
@@ -222,8 +235,8 @@ For the soybean figure, ask whether listing headings is sufficient for the
 intended use, or whether a downstream application needs an explicit association
 between each panel and its properties. The initial specification is flat:
 its fields describe the snapshot without nested records for individual panels
-or variables. A list of multiple values alone does not define those associations. Record the
-question and its material consequence for testing; this teaching review does
+or variables. A list of multiple values alone does not define those associations.
+Record the question and its material consequence for testing; this teaching review does
 not report a later held-out finding or add a nested structure.
 
 <details>

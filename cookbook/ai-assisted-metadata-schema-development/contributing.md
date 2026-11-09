@@ -21,7 +21,7 @@ The [cookbook authoring guide](/cookbook/authoring/) governs structure and style
 
 - The recipe produces a defined result with an explicit check.
 - It names its maturity level, practitioner skills, and indicative time.
-- Explanation introduces the metadata concepts before the procedure.
+- Explanation introduces unfamiliar concepts and shows the input before the procedure.
 - A worked example uses the prepared evidence and identifies its source and limits.
 - Model proposals and human decisions remain distinguishable.
 - Code, when added, is imported from its downloadable source and verified on small inputs.
@@ -50,7 +50,7 @@ The following authoring template describes the structure required for future rec
 
 **Result:** State the checkable artifact produced by the recipe.
 
-Explain the artifact, relevant concepts, and purpose before the steps.
+Explain the result and purpose, then show the input artifact, record, or decision before the steps.
 
 1. Describe the action and its reason.
 2. Introduce any code or template and explain its fields.

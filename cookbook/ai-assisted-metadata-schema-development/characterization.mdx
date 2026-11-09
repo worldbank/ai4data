@@ -16,12 +16,12 @@ import Checklist from '@site/src/components/Cookbook/Checklist';
 ## Rationale
 
 An artifact is the item that receives one metadata description, such as a report,
-dataset, image, or recording. Schema development can go in the wrong direction
+dataset, image, or recording. The artifact class is the type of item the schema
+will describe. Schema development can go in the wrong direction
 if reviewers and AI models are describing different things. A record for an
 entire report serves a different purpose from a record for one chart within it.
 Agreeing on what receives one metadata record and how that record will be used
-keeps discovery
-focused on useful information. Text and numbers can both be metadata; what
+keeps discovery focused on useful information. Text and numbers can both be metadata; what
 matters is their role in describing the selected item.
 
 The examples selected for discovery also shape the schema. If they are too
@@ -70,13 +70,17 @@ Use the filled [characterization worksheet](pathname:///cookbook-files/ai-assist
 as a starting point for the statement. It is a teaching example prepared for
 this guide.
 
+**Input example.** The [Jordan chart](https://huggingface.co/datasets/ai4data/data-snapshot/blob/626f3c54ba6d8f6e0ba0795f9e544e24b2650faf/snapshots/refugee/027_Jordan-Emergency-Food-Security-Project_figure_001.png) shows food-expenditure shares.
+Its title describes the chart; the bar values are its analytical contents, and
+the parent-report title supplies context. Decide which of these belongs in the
+metadata task before proposing fields.
+
 1. Define the type of item that receives one record: a whole object or a component within it.
 2. State what people should be able to find, understand, or do using the metadata.
 3. Decide what information belongs in the description, what remains content, and what supporting context may be used.
 4. Record the reviewer and version. Check the statement against a contrasting item before accepting it.
 
-**Worked example.** For the [Jordan chart](https://huggingface.co/datasets/ai4data/data-snapshot/blob/626f3c54ba6d8f6e0ba0795f9e544e24b2650faf/snapshots/refugee/027_Jordan-Emergency-Food-Security-Project_figure_001.png),
-the teaching statement makes these choices:
+**Worked example.** The teaching statement makes these choices for the chart:
 
 | Question | Decision |
 |---|---|
@@ -100,6 +104,11 @@ not prescribe the final field list.
 A schema built from a few similar items may miss fields needed elsewhere in
 the collection. Select examples for the differences they expose; a spreadsheet
 is sufficient to record the selection.
+
+**Input example.** The study drew on tables and figures from humanitarian
+reports, policy research papers, and project documents. These materials differ
+in purpose and presentation, so selecting only one kind could hide metadata
+needs present in another.
 
 1. Identify differences that could affect the metadata, such as purpose, language, format, structure, or source.
 2. Inspect examples across those differences and select a development sample. Record why each group matters to the intended use.
@@ -127,12 +136,16 @@ The development sample is used to build the schema. The holdout sample is kept
 out of that work and used later to check whether the schema describes additional
 items adequately.
 
+**Input.** Use the development list from Recipe 1.2 and the remaining candidate
+items. For charts from reports, compare both the chart identifiers and their
+parent reports: different charts can still share a source.
+
 1. Select holdout items that reflect the intended use, including relevant variation beyond the development examples.
 2. Label each selected item as development or holdout. Keep holdout items out of discovery and field design until validation.
 3. Compare the lists and resolve any overlap so each item belongs to only one sample. Check related versions and shared sources too: two charts from one report, for example, may have similar content and presentation.
 4. Record what is separate and what remains shared. Testing new items from familiar sources supports a different conclusion from testing items from new sources.
 
-:::note[In the study]
+:::note[Worked example from the study]
 The Data Snapshot study used separate development and holdout snapshots, with
 no snapshot in both samples. The samples did share 65 parent reports, so the
 test did not establish performance on a wholly separate set of reports.

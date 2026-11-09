@@ -65,9 +65,12 @@ Read each suggested name together with its value and explanation. For example,
 geographic scope is a property; Afghanistan is a value for one item. A plausible
 suggestion still needs review before it becomes a schema field.
 
-**Worked example.** The following values are faithful title-related teaching
+**Input example.** The following values are faithful title-related teaching
 excerpts from the recorded responses. The exact identities and full selected
 observations are retained in the [research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json).
+In its examples array, find the entry with id independent-naming and read
+outputs.recorded_observations. Later recipes name the corresponding entries
+in the same way.
 
 | Artifact | Proposed field | Recorded observed value |
 |---|---|---|
@@ -84,21 +87,22 @@ observations are retained in the [research evidence](pathname:///cookbook-files/
 | source_level | This identifies snapshot, document, or combined support. |
 | discovery_value | This records the model's high, medium, or low utility assessment. |
 | reasoning | This is the model's brief stated justification for descriptive usefulness. |
-| snapshot_id, source, and model | These are execution provenance carried beside the observation. |
+| snapshot_id, source, and model | These identify the item, its collection, and the model used. |
+
+Jordan's geographic observation states “Jordan, inferred from parent document
+title and project name; not visible in snapshot.” Keep that evidence distinction
+when the record moves into profiling.
 
 1. Select a development item and its discovery observations. For the prepared example, use the table above and independent-naming in evidence.json.
 2. Read the proposed name, value, and description together. Check whether they describe the item within the scope set in Chapter 1.
 3. Check where the evidence comes from: the item itself, supplied context, or both. Keep uncertainty and labelled inference visible.
 4. Record questionable readings or out-of-scope suggestions for later review. Preserve the original observation alongside any correction.
 
-The Russian chart has an internal heading and a broader caption. The model
+**Worked example.** Reviewing the Russian records preserves an internal heading
+and a broader caption. The model
 rated their usefulness medium and high respectively; these are judgments,
 not measured retrieval scores. Similar purposes do not make the two strings
 interchangeable.
-
-Jordan's geographic observation states “Jordan, inferred from parent document
-title and project name; not visible in snapshot.” Keep that evidence distinction
-when the record moves into profiling.
 
 **Verification.** Match each selected row to its identity and source register.
 For the Russian chart, explain why two headings were observed without assuming
@@ -125,6 +129,11 @@ the property, value or uncertainty, description, evidence source, and reason
 it could be useful. The teaching request uses six string attributes; those
 attributes organize observations and do not prescribe the final schema fields.
 
+**Input example.** A Jordan request pairs the chart image with identified
+parent-document context. The source register provides the title “Jordan -
+Emergency Food Security Project” and its metadata link. This teaching request
+is not a reconstruction of the complete historical messages.
+
 The [discovery request](pathname:///cookbook-files/ai-assisted-metadata-schema-development/discovery_request.md) is an independently written,
 unexecuted teaching adaptation. The complete text is available below. Its user
 section identifies logical input contents; it is not a ready-to-send
@@ -144,10 +153,7 @@ provider-specific API payload.
 4. Use the same discovery instructions independently for each artifact. Do not insert earlier observations or an inventory updated after every request.
 5. Validate the chosen response structure, then inspect evidence fidelity separately. A valid response can still misread the artifact or confuse context with direct evidence, as the caption and geography examples illustrate.
 
-**Worked example.** A Jordan request pairs the chart image with identified
-parent-document context. The source register provides the title “Jordan -
-Emergency Food Security Project” and its metadata link. This teaching request
-is not a reconstruction of the complete historical messages.
+**Worked example.** The prepared request and selected response support these checks:
 
 | Check | Expected interpretation for the example |
 |---|---|
@@ -170,8 +176,8 @@ its own model choice and configuration review.
 </details>
 
 **Verification.** Inspect the three recorded response excerpts with the command
-in recipe 2.3. Its checks demonstrate required strings, source-level and utility
-enums, identities, and completion status. It does not constrain proposed field
+in recipe 2.3. Its checks cover required text fields, allowed evidence-source and usefulness
+labels, item identifiers, and completion status. It does not constrain proposed field
 names to an evolving inventory or prove semantic correctness.
 
 **What this does not do.** No live request is made here. An artifact-only request
@@ -190,13 +196,36 @@ contains usable observations. For a new run, plan how to save attempts, identify
 failures, and retry them without losing the earlier records. One request per
 item can be processed sequentially; a provider Batch API is optional.
 
-**Worked example.** The [response inspector](pathname:///cookbook-files/ai-assisted-metadata-schema-development/inspect_discovery.py) loops
+**Prepared input.** The [response inspector](pathname:///cookbook-files/ai-assisted-metadata-schema-development/inspect_discovery.py) loops
 over the three selected records in
 [discovery_excerpt.jsonl](pathname:///cookbook-files/ai-assisted-metadata-schema-development/discovery_excerpt.jsonl). It verifies that their
 identities belong to development in source_images.csv, checks the recorded
-corpus and model, and validates successful selected fields. It writes nothing
+corpus, requires a non-empty model identifier, and validates the selected fields
+of successful records. It writes nothing
 and has no network or model client. Download these two files and
-source_images.csv into one working directory, then run the command there.
+[source_images.csv](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) into one working directory.
+
+The response excerpt has one record per selected item. These fields explain
+what the checker reads:
+
+| Record field | Meaning |
+|---|---|
+| snapshot_id, source, model | These identify the item, collection, and recorded model. |
+| status, error, incomplete_details | These record whether processing completed successfully. |
+| parsed_output.fields | This contains the selected metadata observations. |
+| original_field_count | This records how many fields the complete response contained. |
+
+**Procedure.** Inspect the prepared records against these requirements.
+For a new collection run, implement them with the chosen provider before
+submitting requests; this guide supplies no live runner.
+
+1. Read frozen development identities from the register. Resolve each artifact's chosen input representation and allowed context from its source version. Keep reserved validation evidence outside discovery.
+2. Keep the discovery prompt fixed across the collection and submit one artifact at a time. Record the model, prompt version or checksum, settings, artifact identity, and context provenance with each attempt.
+3. Preserve the original response and parsed observations in a new run directory. Validate the result before marking the attempt successful. Log status, incomplete output, and exceptions even when no fields can be parsed.
+4. Specify resumption before running. For a proposed replication, skip identities with a validated successful result under the same configuration. Keep failed attempts inspectable and make retries explicit. Use a new run for a changed configuration.
+5. Inspect identity coverage, failures, parse results, and settings before flattening observations for profiling. Missing records and invalid responses must remain distinguishable from artifacts with no useful observations.
+
+**Worked example.** Run the inspector from the download directory:
 
 ```bash
 python inspect_discovery.py discovery_excerpt.jsonl source_images.csv
@@ -210,15 +239,6 @@ These excerpts omit original fields and raw responses.
 
 The excerpts retain four title fields from 43 original fields. The printed
 counts distinguish the selected teaching records from the complete responses.
-
-**Processing plan.** The following steps specify a new collection run; executing
-that run is optional and requires the additional integration described below.
-
-1. Read frozen development identities from the register. Resolve each artifact's chosen input representation and allowed context from its source version. Keep reserved validation evidence outside discovery.
-2. Keep the discovery prompt fixed across the collection and submit one artifact at a time. Record the model, prompt version or checksum, settings, artifact identity, and context provenance with each attempt.
-3. Preserve the original response and parsed observations in a new run directory. Validate the result before marking the attempt successful. Log status, incomplete output, and exceptions even when no fields can be parsed.
-4. Specify resumption before running. For a proposed replication, skip identities with a validated successful result under the same configuration. Keep failed attempts inspectable and make retries explicit. Use a new run for a changed configuration.
-5. Inspect identity coverage, failures, parse results, and settings before flattening observations for profiling. Missing records and invalid responses must remain distinguishable from artifacts with no useful observations.
 
 <details>
 <summary>How the study handled repeated attempts</summary>

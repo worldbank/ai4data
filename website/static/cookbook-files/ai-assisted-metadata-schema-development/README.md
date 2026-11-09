@@ -254,8 +254,8 @@ and source metadata. No paid API or research experiment was run during that
 preparation. The retained evidence can be inspected without executing code.
 The dated image-access and visual checks above remain preparation-time records.
 
-The cookbook now supplies three executable teaching exercises, request
-adaptations, and manual review materials. The standalone scripts are covered by
+The cookbook supplies two core executable exercises in Chapters 2–3, a
+supplemental sample checker, request adaptations, and manual review materials. The standalone scripts are covered by
 focused tests in the AI4Data repository. Their commands, expected outputs,
 exit statuses, and output-preservation rules are documented in
 [RUN_EXERCISES.md](./RUN_EXERCISES.md).

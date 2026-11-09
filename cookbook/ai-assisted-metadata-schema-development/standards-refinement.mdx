@@ -64,6 +64,22 @@ Compare definitions and the kind of item each term describes before proposing
 a replacement. A snapshot title and its parent-report title can both resemble
 a standard title property while naming different things.
 
+**Input example.** Start with the v1.1.1 definitions of title and
+source_document_title, then inspect the subject, measured-variable, provenance,
+and project fields. The first title names the snapshot; the second names its
+parent document. For project_name, the local definition covers a “project,
+program, operation, or initiative.” These meanings set the scope against which
+external terms are compared.
+
+1. Freeze the complete starting specification and identify standards relevant to the artifact class, intended uses, and unresolved semantic or structural questions. The [standards page](./standards.md) lists references used in the worked examples; another class may need different sources, and no single vocabulary must cover every field.
+2. Locate authoritative term definitions and usage notes. Record the term identifier, documentation URL, version or publication date where available, and access date for mutable pages. Inspect the kind of resource and value expected by the term.
+3. Compare those meanings with the local definition and artifact evidence. State whether the external term is broader, narrower, close, or otherwise related. Explain the direction and the scope difference; a shared name alone is insufficient.
+4. Save a working copy of the new [standards-review worksheet](pathname:///cookbook-files/ai-assisted-metadata-schema-development/standards_review_template.csv). Record relationship and candidate_refinement separately from decision and decision_reason. Preserve uncertainty for review, and retain a reference to any eventual specification change.
+
+The worksheet is a teaching aid. Record the local meaning, scope difference,
+authoritative URL, source version or date, and check date, then connect the
+comparison to a reviewer and decision.
+
 **Worked example.** The following selected comparisons retain the recorded
 relationship judgments. Their explanatory notes are teaching summaries checked
 against the linked authoritative sources.
@@ -79,15 +95,6 @@ against the linked authoritative sources.
 The Project judgment is an application-specific comparison; it does not assert
 a formal subclass relationship. Likewise, “no direct match” concerns the sources
 reviewed in this study. It does not prove that no useful term exists elsewhere.
-
-1. Freeze the complete starting specification and identify standards relevant to the artifact class, intended uses, and unresolved semantic or structural questions. The [standards page](./standards.md) lists references used in the worked examples; another class may need different sources, and no single vocabulary must cover every field.
-2. Locate authoritative term definitions and usage notes. Record the term identifier, documentation URL, version or publication date where available, and access date for mutable pages. Inspect the kind of resource and value expected by the term.
-3. Compare those meanings with the local definition and artifact evidence. State whether the external term is broader, narrower, close, or otherwise related. Explain the direction and the scope difference; a shared name alone is insufficient.
-4. Save a working copy of the new [standards-review worksheet](pathname:///cookbook-files/ai-assisted-metadata-schema-development/standards_review_template.csv). Record relationship and candidate_refinement separately from decision and decision_reason. Preserve uncertainty for review, and retain a reference to any eventual specification change.
-
-The worksheet is a teaching aid. Record the local meaning, scope difference,
-authoritative URL, source version or date, and check date, then connect the
-comparison to a reviewer and decision.
 
 <details>
 <summary>Study crosswalk summary</summary>
@@ -150,8 +157,8 @@ responsibility to an agent. [DCMI source](https://www.dublincore.org/specificati
 also concerns a resource used in deriving another resource. Those distinctions
 support separate local fields without requiring a provenance graph.
 
-**Trace the distinction to an artifact.** The [Afghanistan income table](https://huggingface.co/datasets/ai4data/data-snapshot/blob/626f3c54ba6d8f6e0ba0795f9e544e24b2650faf/snapshots/unhcr/108733-revised-public-wb-unhcr-policy-brief-final_table_000.png),
-108733-revised-public-wb-unhcr-policy-brief-final_table_000.png, carries the
+**Input artifact.** The [Afghanistan income table](https://huggingface.co/datasets/ai4data/data-snapshot/blob/626f3c54ba6d8f6e0ba0795f9e544e24b2650faf/snapshots/unhcr/108733-revised-public-wb-unhcr-policy-brief-final_table_000.png)
+carries the
 source phrase “Authors’ calculation based on ALCS 2013–14.” The
 [source register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) retains its external image link and
 visible credit, and provenance-split in [evidence.json](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
@@ -228,16 +235,25 @@ A usable release needs the complete specification and the decisions explaining
 its changes. Names alone cannot show whether meanings were preserved or deferred
 structures were implemented.
 
+**Prepared input.** The [final field inventory](pathname:///cookbook-files/ai-assisted-metadata-schema-development/final_field_inventory.csv)
+and selected definitions from recipes 7.1–7.2 support reconciling the study's
+names and cardinalities and writing publication-readiness notes. Cardinality
+specifies how many values a field may hold. These files do not supply the
+complete schema, so the exercise cannot reconstruct a full publication-ready
+specification.
+
+Two rows illustrate how the inventory records a split. Other CSV columns
+identify the module and schema versions.
+
+| baseline_field | final_field | cardinality |
+|---|---|---|
+| data_source | data_sources | 0..* |
+| data_source | attributions | 0..* |
+
 1. Retain the complete starting specification and approved review decisions. Apply accepted changes to a new named version.
 2. Review every changed field's definition, examples, value format, evidence rules, applicability, and treatment of missing information. Preserve the requirements supported by the materials.
 3. Reconcile the full before-and-after inventory. Link each change to its reason, authoritative references, and reviewer; keep the crosswalk and decision record distinct.
 4. Review the specification and supporting record together. Document deferred requirements and further validation needs before publication.
-
-**Prepared exercise.** Use the [final field inventory](pathname:///cookbook-files/ai-assisted-metadata-schema-development/final_field_inventory.csv)
-and selected definitions from recipes 7.1–7.2 to reconcile the study's names and
-cardinalities, then write publication-readiness notes. Cardinality specifies
-how many values a field may hold. These files do not supply the complete schema,
-so the exercise cannot reconstruct a full publication-ready specification.
 
 **Worked example: reconcile the field inventory.** The supplied CSV has 37
 final-field rows and 36 distinct baseline_field values. The baseline data_source
@@ -272,13 +288,6 @@ single optional text value and 0..* an optional ordered list of text values.
 Missing metadata remains null. Preserve source order and remove only exact
 duplicates within a field; a list of values does not establish associations
 between values in different fields.
-
-**Publication review.** The field inventory, exact definitions, examples,
-authoritative references, human dispositions, and deferred requirements should
-be mutually consistent. The chapter's worked comparisons cover a small selection
-of standards terms; they do not replace the complete research specification or
-certify every possible external mapping. Rechecking mutable term pages is part
-of maintaining the crosswalk.
 
 **Verification.** For the supplied exercise, check 37 unique final_field
 values, all 36 distinct baseline fields, and the transcribed final cardinalities.

@@ -123,9 +123,9 @@ reviewed concepts do not yet determine the operational fields.
 
 </Recipe>
 
-<Recipe title="4.2 Map profiles to the reviewed concepts" level="AI-native" skills="LLM practitioner; metadata reviewer" time="30–45 minutes for the retained assignment review">
+<Recipe title="4.2 Review profile assignments against the concepts" level="AI-native" skills="LLM practitioner; metadata reviewer" time="30–45 minutes for the retained assignment review">
 
-**Result:** A saved mapping links each profile to a reviewed concept or an unmatched category, with uncertain results flagged for review.
+**Result:** Review notes check profile assignments against the concept definitions and flag uncertain fits. A new mapping uses the complete fixed concept list.
 
 Map profiles to a fixed concept list to see how well the reviewed meanings
 cover the development evidence. Allow an unmatched category so a poor fit is
@@ -145,10 +145,22 @@ a live API runner.
 
 </details>
 
-**Worked example.** Inspect original_profile_assignments in canonical-title
-and rare-and-residual, and original_profile_assignment in operational-panel-title.
-The following are recorded original assignments; confidence high is the model's
-judgment of fit to the fixed inventory.
+**Input example.** Compare the title profiles from Recipe 3.2 with the reviewed
+title concept: “The displayed or inferred title, heading, or caption that
+identifies the snapshot.” The study retained that definition. Its original
+sample_size and panel_titles profiles provide contrasting unmatched cases.
+The prepared exercise reviews existing assignments; creating a new mapping
+requires the complete reviewed concept list.
+
+1. Identify the concept-list version used for the assignments. In the prepared review, use the title definition above and the original 41-concept stage. A new mapping requires the complete fixed list and can use the assessment request.
+2. Compare each profile's name, descriptions, and observed values with its assigned meaning. Merged names should point to their retained concepts.
+3. Check that labels come from the fixed list or the unmatched category. Keep model confidence separate from a review decision; the study used not_in_ontology and confidence high, medium, or low.
+4. Check that the profiles under review have results. Investigate uncertain or surprising fits and save any human correction alongside the original assignment.
+
+**Worked example.** The original assignments are retained under
+original_profile_assignments in canonical-title and rare-and-residual, and
+original_profile_assignment in operational-panel-title. Confidence high records
+the model's judgment of fit.
 
 | Exact-name profile | Original concept assignment | Confidence |
 |---|---|---|
@@ -157,15 +169,6 @@ judgment of fit to the fixed inventory.
 | chart_title | title | high |
 | sample_size | not_in_ontology | high |
 | panel_titles | not_in_ontology | high |
-
-Use the request specification and the five recorded rows to review the following
-classification procedure. The supplied exercise inspects existing assignments;
-a new assessment would require the complete fixed reference inventory.
-
-1. Save the reviewed names, definitions, and examples as a fixed reference. Merged names should point to their retained targets; only retained concepts are assignment targets.
-2. Compare each profile's name, descriptions, and observed values with that reference. For model assistance, supply the same reference with each profile.
-3. Allow only reviewed names or an unmatched label. Record uncertainty consistently; the study used not_in_ontology and confidence high, medium, or low.
-4. Check that every intended profile has a result. Review unmatched or surprising assignments and save human corrections alongside the original output.
 
 The title rows continue chapter 3's lexical comparison. The chart_title
 profile includes internal headings, so even a valid high-confidence title
@@ -215,7 +218,7 @@ concept may matter to project tables; an unmatched observation may reflect an
 intentional exclusion or a missed distinction. Neither result determines a
 schema change on its own.
 
-**Worked example.** The prepared rare-and-residual example reports seven
+**Input example.** The prepared rare-and-residual example reports seven
 supporting snapshots for financing_instrument and nine for
 data_collection_method. The following expanded counts were checked by joining
 the full observations to the original assessment mapping.
@@ -234,7 +237,7 @@ These full-study summaries cannot be recomputed from the selected excerpts.
 For data_collection_method, treating 11 observations as 11 items would overstate
 support: only nine distinct snapshots contributed them.
 
-The [Pakistan financing table](https://huggingface.co/datasets/ai4data/data-snapshot/blob/626f3c54ba6d8f6e0ba0795f9e544e24b2650faf/snapshots/refugee/051_Pakistan-Balochistan-Human-Capital-Investment-Project_table_000.png)'s recorded value “IDA Credit; IDA Grant; Guarantee
+**Worked example.** The [Pakistan financing table](https://huggingface.co/datasets/ai4data/data-snapshot/blob/626f3c54ba6d8f6e0ba0795f9e544e24b2650faf/snapshots/refugee/051_Pakistan-Balochistan-Human-Capital-Investment-Project_table_000.png)'s recorded value “IDA Credit; IDA Grant; Guarantee
 Amount” explains why financing modality is meaningful. All seven supporting
 snapshots occur in the Refugee Project Appraisal Document corpus. That
 concentration supports a specialized interpretation; it does not establish

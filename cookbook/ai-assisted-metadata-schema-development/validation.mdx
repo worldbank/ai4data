@@ -72,6 +72,21 @@ Field names alone are insufficient: changed definitions or guidance can change
 the result. Record any examples used to prepare the instructions or controls
 so they remain distinguishable from untouched test evidence.
 
+**Input example.** The study first assessed v1.1, then assessed documentation-
+revised v1.1.1 on the same holdout collection. Both had 36 fields, but their
+guidance differed. Review the complete specification and item list when planning
+a new assessment; the prepared field excerpts support comparison only.
+
+Calibration means trying the assessment instructions on identified examples
+before the full run. A control tests an expected behavior, such as noticing a
+known field deliberately removed from the schema. Keep those results separate
+from the main assessment.
+
+1. Save the complete schema under a named version. If removing history or prior outcomes from a model-facing copy, retain that copy alongside the original and preserve its substantive guidance.
+2. Save the holdout item list, source versions, and allowed context. Record shared sources and identify any items used to prepare the assessment.
+3. Define each assessment question and response format. Record the model, instructions, and settings, and keep preparation and control results separate from the full assessment.
+4. Match completed results to the saved item list. Check for missing or duplicate items, failed responses, changed settings, and invalid outputs before interpreting findings.
+
 **Worked example: a filled freeze specification.** The following is a teaching
 summary of the recorded inputs and execution. It is not an original protocol file.
 
@@ -84,11 +99,6 @@ summary of the recorded inputs and execution. It is not an original protocol fil
 | Historical configuration | Both used GPT-5.5, medium reasoning, Flex service, prompt caching, an 8,000-token ceiling, and Pydantic Structured Outputs, one snapshot per request. |
 | Completion boundary | Each full run retained 202 unique completed results whose filenames exactly match the held-out manifest. |
 | Calibration boundary | Twelve of the 202 were reused for calibration. None belonged to initial schema development. Calibration/control outputs are excluded from full-run candidate totals. |
-
-1. Save the complete schema under a named version. If removing history or prior outcomes from a model-facing copy, retain that copy alongside the original and preserve its substantive guidance.
-2. Save the holdout item list, source versions, and allowed context. Record shared sources and identify any items used to prepare the assessment.
-3. Define each assessment question and response format. Record the model, instructions, and settings, and keep preparation and control results separate from the full assessment.
-4. Match completed results to the saved item list. Check for missing or duplicate items, failed responses, changed settings, and invalid outputs before interpreting findings.
 
 **Verification.** Check every result against the saved item list and complete
 schema text. Identify missing, duplicate, or failed responses before interpreting
@@ -207,8 +217,8 @@ without an automatic retry policy. No live validation is executed here.
 
 A stricter check asks whether information lost under the best use of existing
 fields would hinder the intended task. Define that threshold using real needs;
-additional convenience alone may beyondify another field. This is the study's
-confirmatory assessment. Its lower proposal count does not establish greater
+additional convenience alone may be insufficient to justify another field.
+The study called this its confirmatory assessment. Its lower proposal count does not establish greater
 accuracy, because it used a different question and revised guidance.
 
 Test the check itself before relying on it. Deliberately removing a known field
@@ -228,8 +238,7 @@ has no snapshot-level explanatory rationale.
 
 </details>
 
-**Input example: the same South Sudan composite.** The held-out artifact
-protection_trends_paper_no_7_jan-mar_2016_final_figure_004.png contains a map,
+**Input example: the South Sudan composite.** This holdout figure contains a map,
 two donut charts, and a trend chart with different subjects and periods.
 The [externally linked image](https://huggingface.co/datasets/ai4data/data-snapshot/blob/626f3c54ba6d8f6e0ba0795f9e544e24b2650faf/snapshots/unhcr/protection_trends_paper_no_7_jan-mar_2016_final_figure_004.png) and
 [source register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) retain its provenance. The
@@ -250,7 +259,7 @@ following retained text is sufficient for this exercise.
 The first check found titles and visual types expressible; the second
 questioned the associations among them. Both assessed the same item with
 parent-document context, but their prompts and schema guidance differed.
-Neither model finding accepted a field.
+Both findings remained proposals for human review.
 
 <details>
 <summary>Study results, controls, and limits</summary>
@@ -307,22 +316,19 @@ schema retained those fields.
 
 Review each finding against the source, agreed scope, and best use of existing
 fields. A genuine problem may need clearer guidance or a relationship between
-values. Adding another flat field may leave that problem unresolved. Record the reason for the chosen action
-so deferred work cannot be mistaken for an implemented fix.
+values. Adding another flat field may leave that problem unresolved. Record
+the reason for the chosen action so deferred work cannot be mistaken for an
+implemented fix.
 
-**Input example: table hierarchy.** The Diffa table is
-rapport_du_monitoring_de_protection_de_la_region_de_diffa_du_mois_de_octobre_2022_ciaud_niger_table_002.png.
-Its retained assessment identifies spanning headers that group incident
+**Input example: table hierarchy.** The retained assessment of the Diffa table
+identifies spanning headers that group incident
 subtypes beneath broader categories. The [externally linked table](https://huggingface.co/datasets/ai4data/data-snapshot/blob/626f3c54ba6d8f6e0ba0795f9e544e24b2650faf/snapshots/unhcr/rapport_du_monitoring_de_protection_de_la_region_de_diffa_du_mois_de_octobre_2022_ciaud_niger_table_002.png) remains available through the pinned dataset record. Existing row, column, and category fields
 can retain labels while losing the parent-child relationship. This exercise
 uses that recorded structural account and does not translate the French labels
 or reconstruct the visibly clipped upper headers. The [source register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv)
 keeps the image externally linked and records that limitation.
 
-1. Save a working copy of the [gap-review template](pathname:///cookbook-files/ai-assisted-metadata-schema-development/gap_review_template.csv). Identify the artifact, schema version, candidate, evidence, and closest fields. The template calls its artifact column snapshot_id for this case; another review should identify its own artifact unit. Pair local candidate identifiers with artifact identities to avoid ambiguity.
-2. Inspect source evidence and compare its meaning with the best use of existing fields. Ask whether the requirement describes the artifact, contextual information, contents outside the agreed scope, or a relationship the representation loses. Judge coverage using the application's scope and its own field definitions.
-3. Classify the issue using the teaching framework below, then document material_impact, decision, decision_reason, revision_or_deferral, and the actual reviewer for a new review. Preserve the source report's terminology when transcribing a historical disposition.
-4. Check that a proposed revision addresses the demonstrated issue. Version accepted field, guidance, or representation changes and compare the specification before and after review. Keep deferred requirements explicit. An unresolved case remains unresolved until additional evidence supports a decision.
+Use this issue framework to choose a response:
 
 | Teaching issue category | Review question and possible response |
 |---|---|
@@ -332,8 +338,15 @@ keeps the image externally linked and records that limitation.
 | Unsupported, excluded, or insufficiently material | Does evidence, scope, or material consequence fail the review? Reject or exclude with an attributable reason. |
 | Unresolved | What additional evidence or expert judgment is needed? Defer the decision explicitly. |
 
+1. Save a working copy of the [gap-review template](pathname:///cookbook-files/ai-assisted-metadata-schema-development/gap_review_template.csv). Identify the artifact, schema version, candidate, evidence, and closest fields. The template calls its artifact column snapshot_id for this case; another review should identify its own artifact unit. Pair local candidate identifiers with artifact identities to avoid ambiguity.
+2. Inspect source evidence and compare its meaning with the best use of existing fields. Ask whether the requirement describes the artifact, contextual information, contents outside the agreed scope, or a relationship the representation loses. Judge coverage using the application's scope and its own field definitions.
+3. Classify the issue using the teaching framework above, then document material_impact, decision, decision_reason, revision_or_deferral, and the actual reviewer for a new review. Preserve the source report's terminology when transcribing a historical disposition.
+4. Check that a proposed revision addresses the demonstrated issue. Version accepted field, guidance, or representation changes and compare the specification before and after review. Keep deferred requirements explicit. An unresolved case remains unresolved until additional evidence supports a decision.
+
 These issue categories are a teaching framework. Validation 2 used different
-output labels. The table below transcribes recorded human outcomes for teaching.
+output labels.
+
+**Worked example.** The table below transcribes recorded human outcomes for teaching.
 The South Sudan rows come from separate assessments of the same item; each
 has its own model finding and human decision. Their model evidence is retained
 in complementary-validation and flat-representation-limits.
