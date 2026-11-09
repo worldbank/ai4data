@@ -37,7 +37,7 @@ META_KEYS = ["id", "type", "country", "date", "source", "note"]
 
 def read_document(path: Path) -> dict:
     text = path.read_text(encoding="utf-8")
-    m = re.match(r"---\n(.*?)\n---\n", text, re.S)
+    m = re.match(r"---\n(.*?)\n---\n", text, re.DOTALL)
     meta = {}
     for line in m.group(1).splitlines():
         key, _, value = line.partition(":")
@@ -53,7 +53,7 @@ def split_sections(doc: dict) -> list[dict]:
     chunks, current, section = [], [], None
     has_text = False  # a heading with no text before the next heading is carried into the next chunk
     for line in doc["content"].splitlines():
-        if line.startswith("## ") or line.startswith("# "):
+        if line.startswith(("## ", "# ")):
             if has_text:
                 chunks.append((section, "\n".join(current).strip()))
                 current = []

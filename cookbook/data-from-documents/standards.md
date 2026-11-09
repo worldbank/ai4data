@@ -27,7 +27,7 @@ the guide uses that one.
 | Standard or resource | Use | In this guide |
 |---|---|---|
 | [Data Snapshots](https://arxiv.org/abs/2606.06242) (Dy and Solatorio) | Benchmark of open-source layout detection models on institutional documents | Chapter [3](./locate.mdx) |
-| [data-snapshot dataset](https://huggingface.co/datasets/ai4data/data-snapshot) | 476 annotated regions (Figure, Table) with normalized XYXY bounding boxes, from UNHCR reports, World Bank policy research working papers, and refugee documents; MIT licence | Chapter 3: annotation format and test set |
+| [data-snapshot dataset](https://huggingface.co/datasets/ai4data/data-snapshot) | 3,908 annotated regions (Figure, Table) across 476 PDFs with normalized XYXY bounding boxes, from UNHCR reports, World Bank policy research working papers, and refugee documents; MIT licence | Chapter 3: annotation format and test set |
 | [COCO format](https://cocodataset.org/#format-data) | Interchange format for object detection annotations and tools | Chapter 3 |
 | [PyMuPDF](https://pymupdf.readthedocs.io/) | PDF text, page rendering, and table extraction; used by the program's document parser | Chapters 1 and 4 |
 | [PDF/A (ISO 19005)](https://www.pdfa.org/resource/iso-19005-pdfa/) | Archival PDF with a text layer, the output of the OCR stage | | Chapter 2 |

@@ -282,7 +282,7 @@ export const TOOLS = [
       'Layout detection models locate figures and tables in PDF documents so that the data they hold can be extracted and documented; the paper benchmarks open-source models on the task.',
     stack: 'Paper and benchmark dataset',
     licence: 'See the paper',
-    docs: 'https://arxiv.org/abs/2606.06242',
+    docs: '/docs/data-snapshots/',
     install: null,
     repo: null,
     releases: null,
