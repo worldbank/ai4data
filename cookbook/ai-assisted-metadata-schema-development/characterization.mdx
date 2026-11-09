@@ -111,16 +111,23 @@ reports, policy research papers, and project documents. These materials differ
 in purpose and presentation, so selecting only one kind could hide metadata
 needs present in another.
 
-The [teaching register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv)
-records the selected items. This five-column excerpt shows three unchanged rows;
-the full download contains eight items and additional source information.
+1. Identify differences that could affect the metadata, such as purpose, language, format, structure, or source.
+2. Inspect examples across those differences and select a development sample. Record why each group matters to the intended use.
+3. Save the selected items' identifiers or filenames, source references, and collection version so the same sample can be revisited.
+4. Note exclusions and poorly represented groups. Keep the selection fixed during development; document any later changes. Reserve other examples for validation in Recipe 1.3.
 
-```csv
-snapshot_id,split,corpus,artifact_type,parent_document_id
-027_Jordan-Emergency-Food-Security-Project_figure_001.png,development,refugee,figure,027_Jordan-Emergency-Food-Security-Project
-108733-revised-public-wb-unhcr-policy-brief-final_table_000.png,development,unhcr,table,108733-revised-public-wb-unhcr-policy-brief-final
-protection_trends_paper_no_7_jan-mar_2016_final_figure_004.png,heldout,unhcr,figure,protection_trends_paper_no_7_jan-mar_2016_final
-```
+**Worked example: sample output.** The output of this recipe is a register
+showing which artifacts were selected and how they are grouped. The table below
+reproduces three rows and five columns from the
+[teaching register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv);
+the full download contains eight artifacts. The holdout row illustrates the
+assignment made in Recipe 1.3.
+
+| `snapshot_id` | `split` | `corpus` | `artifact_type` | `parent_document_id` |
+|---|---|---|---|---|
+| 027_Jordan-Emergency-Food-Security-Project_figure_001.png | development | refugee | figure | 027_Jordan-Emergency-Food-Security-Project |
+| 108733-revised-public-wb-unhcr-policy-brief-final_table_000.png | development | unhcr | table | 108733-revised-public-wb-unhcr-policy-brief-final |
+| protection_trends_paper_no_7_jan-mar_2016_final_figure_004.png | heldout | unhcr | figure | protection_trends_paper_no_7_jan-mar_2016_final |
 
 The identifier and sample assignment are generally useful. In this example,
 artifact_type and corpus record variation, while corpus plus parent_document_id
@@ -128,15 +135,9 @@ identify a source group. Another collection can use different diversity
 attributes and grouping keys; it does not need parent documents. The script
 uses the literal split values development and heldout.
 
-1. Identify differences that could affect the metadata, such as purpose, language, format, structure, or source.
-2. Inspect examples across those differences and select a development sample. Record why each group matters to the intended use.
-3. Save the selected items' identifiers or filenames, source references, and collection version so the same sample can be revisited.
-4. Note exclusions and poorly represented groups. Keep the selection fixed during development; document any later changes. Reserve other examples for validation in Recipe 1.3.
-
-**Worked example.** The Data Snapshot study selected tables and figures from
-three institutional collections to capture differences in reporting context.
-Each collection contributed 35 tables and 35 figures. Those choices illustrate
-one sampling approach; another use case may need different groups and counts.
+The Data Snapshot study selected 35 tables and 35 figures from each of three
+institutional collections. Those choices illustrate one sampling approach;
+another use case may need different groups and counts.
 
 **Verification.** A reviewer can locate each selected item and explain which
 relevant differences the sample covers and which remain unexamined.
