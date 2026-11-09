@@ -21,8 +21,6 @@ description: Terms used in this guide.
 
 **Candidate.** A model shortlisted for a task, with its licence classified and its card checked, to be run on the suite.
 
-**Canonical metadata concept.** A shared descriptive meaning proposed across field profiles, with a name, definition, examples, and rationale for consolidation.
-
 **Checksum.** A fingerprint of a file's content (here SHA-256) that changes if one byte of the file changes; used to prove that a file is as released.
 
 **Concept coverage.** The descriptive evidence obtained by assigning development field profiles to reviewed concepts or a residual category; it supports human review.
@@ -46,6 +44,8 @@ description: Terms used in this guide.
 **Estimated.** The status of an extracted value for which the document offers no check: no printed label, total, or derivation.
 
 **Evidence pack.** The list, by assessment question, of the artefact that answers it, its location, and its date, compiled for an AI-readiness assessment.
+
+**Flagged.** The status of an extracted value that failed a check and awaits correction with the page open.
 
 **Gap.** The distance between a dimension's current level and its target, measured in levels and in the number of questions below the target's value.
 
@@ -77,8 +77,6 @@ description: Terms used in this guide.
 
 **Maturity level.** One of three states used in this guide: foundational, AI-ready, AI-native.
 
-**Metadata field profile.** An exact-name aggregation of metadata observations that preserves representative evidence and occurrence statistics for semantic comparison.
-
 **Metadata observation.** An artifact-level proposal for a reusable descriptive property, retaining its observed value, evidence source, description, and rationale.
 
 **ML-ready dataset.** A fixed, versioned set of examples with a documented structure, a stated purpose, a split for training and testing, a statement of whom the examples represent, and a licence that covers model training.
@@ -107,11 +105,13 @@ description: Terms used in this guide.
 
 **Split.** The division of a dataset into a training part (the model learns from it), a validation part (the model builder chooses settings on it), and a test part (touched once, to report a score).
 
-**Standards crosswalk.** A comparison of local schema fields with external terms or patterns, recording semantic relationships and sources for human refinement decisions.
-
 **Structured output.** A model's answer returned as data in a declared shape (a JSON object with named fields that conforms to a schema) so that a script can validate, read, and aggregate it.
 
+**Study record.** The study-level documentation of a survey: title, abstract, dates, coverage, universe, design, access conditions.
+
 **Suite.** A question set, the scripts that score it, the required scores, and the record of runs.
+
+**Table record.** The catalog record of a statistical table in the World Bank table schema, with columns, rows, sources, definitions, citation, and relations.
 
 **Threshold.** The value of a score (a confidence, a similarity, a garble rate) at which the rule changes what happens to an item; set from measurements.
 
@@ -124,7 +124,5 @@ description: Terms used in this guide.
 **Utility.** How closely the synthetic file reproduces the real one at the marginal, association, and analysis levels.
 
 **Variant.** A way of naming a dataset other than its canonical name: an acronym, an informal name, a translation, a misspelling.
-
-**Verified.** The status of an extracted value that matched a printed label, a total, a derivation, or a catalog value.
 
 **Vocabulary.** A concept scheme with preferred labels, alternates, and URIs, to which free-text keywords and topics are mapped.
