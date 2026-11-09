@@ -1,0 +1,1609 @@
+{
+ "smallAI": {
+  "source": "World Bank, World Development Report 2026, spotlight 1, table S1.1.",
+  "machines": {
+   "models": [
+    {
+     "name": "Small model",
+     "kind": "small",
+     "params": "142 million parameters",
+     "gb": 0.57,
+     "memory": "0.57 GB of memory",
+     "role": "The student in the worked example is this size."
+    },
+    {
+     "name": "Large model",
+     "kind": "large",
+     "params": "27 billion parameters",
+     "gb": 31,
+     "memory": "about 31 GB of memory in the 8-bit version used in the example (about 56 GB at full 16-bit precision)",
+     "role": "Qwen3.8-27B, one of the teachers in the worked example, is this size."
+    },
+    {
+     "name": "Very large model",
+     "kind": "large",
+     "params": "more than 100 billion parameters",
+     "gb": 1000,
+     "memory": "more than 200 GB of memory",
+     "role": "Models of this size run in data centers."
+    }
+   ],
+   "computers": [
+    {
+     "key": "device",
+     "label": "Phone or laptop",
+     "memory": "About 2 to 20 GB",
+     "gb": 20,
+     "internet": "Not needed",
+     "text": "Stays on the device"
+    },
+    {
+     "key": "server",
+     "label": "A single server",
+     "memory": "About 20 to 200 GB",
+     "gb": 200,
+     "internet": "Local network only",
+     "text": "Stays in the organization"
+    },
+    {
+     "key": "datacenter",
+     "label": "Data center",
+     "memory": "More than 200 GB",
+     "gb": null,
+     "internet": "Constant connection",
+     "text": "Travels to the data center, usually run by a service company"
+    }
+   ]
+  },
+  "tasks": [
+   {
+    "task": "Recognize a crop disease from a photo of a leaf, in a field without internet",
+    "fit": "small",
+    "why": "The answer is one of a known set of diseases, and the model has to run on a phone without a connection."
+   },
+   {
+    "task": "Read the number on a water meter from a photo taken by a meter reader",
+    "fit": "small",
+    "why": "The answer has a fixed format, and a utility has thousands of meters to read every month. The model can run on the reader's phone."
+   },
+   {
+    "task": "Recognize the language of each message received by a hotline",
+    "fit": "small",
+    "why": "The answer comes from a short list of languages, and every message needs it. The messages can stay on the hotline's own computer."
+   },
+   {
+    "task": "Write a personal reply to each complaint",
+    "fit": "large",
+    "why": "The answer is new text that has to fit each complaint. A small model can do a narrower part of the work, such as choosing a standard reply for a person to adapt."
+   },
+   {
+    "task": "Draft the summary of a 150-page project document",
+    "fit": "large",
+    "why": "The answer is new text, and the document is long and varied. A model trained on a wide range of text writes better summaries."
+   },
+   {
+    "task": "Answer any question a citizen asks about public services",
+    "fit": "large",
+    "why": "The questions cannot be listed in advance. A small model can do a narrower part of the work, such as sending each question to the office that answers it."
+   }
+  ]
+ },
+ "learn": {
+  "topics": [
+   "Education",
+   "Health",
+   "Transport",
+   "Energy"
+  ],
+  "stop": [
+   "a",
+   "all",
+   "also",
+   "among",
+   "an",
+   "and",
+   "are",
+   "as",
+   "at",
+   "be",
+   "been",
+   "between",
+   "both",
+   "but",
+   "by",
+   "can",
+   "each",
+   "for",
+   "from",
+   "had",
+   "has",
+   "have",
+   "in",
+   "into",
+   "is",
+   "it",
+   "its",
+   "may",
+   "more",
+   "most",
+   "new",
+   "not",
+   "of",
+   "on",
+   "one",
+   "or",
+   "other",
+   "over",
+   "per",
+   "such",
+   "than",
+   "that",
+   "the",
+   "their",
+   "these",
+   "this",
+   "those",
+   "three",
+   "to",
+   "two",
+   "under",
+   "was",
+   "were",
+   "which",
+   "will",
+   "with",
+   "would"
+  ],
+  "sentences": {
+   "Education": [
+    "The study examines the correlation between teacher quality in basic education and long-term labor market outcomes.",
+    "Can the expansion of primary school enrollment be sustained without significant increases in public expenditure on teacher training and infrastructure?",
+    "The pilot program in rural Kenya demonstrated that digital education platforms can significantly improve literacy rates among primary school students.",
+    "Targeted education grants have been shown to reduce early school dropout rates among girls in low-income households by 12%.",
+    "The curriculum reform aims to integrate environmental stewardship into the primary education syllabus by 2025.",
+    "Recent data suggests that schools in conflict-affected zones that prioritize psychosocial support alongside academic content see higher student retention rates.",
+    "School nutrition programs improve student attendance and concentration in the classroom.",
+    "Policy recommendations emphasize the need for targeted education initiatives to address gender disparities in secondary school completion rates in mining districts.",
+    "Digital literacy training is being integrated into secondary curricula to ensure students are prepared for the evolving digital economy.",
+    "The school curriculum update aims to foster critical thinking skills essential for the modern workforce.",
+    "The study questions whether current education policies adequately prepare students for the demands of a knowledge-based economy.",
+    "Student loan default rates are a key indicator of higher education affordability.",
+    "Recent data indicates that improved access to quality secondary education correlates with a fifteen percent increase in post-graduation employment stability.",
+    "After-school programs support academic achievement and social development for young students.",
+    "How does the adoption of digital learning tools affect student retention rates in low-income secondary schools?",
+    "Ensuring that education funding is protected from fiscal consolidation measures is a key policy recommendation.",
+    "The gap in basic education access between urban and rural areas remains a significant barrier to achieving national development goals.",
+    "Student financial aid supports access to higher education.",
+    "The report examines the correlation between improved education access and increased household income levels in rural communities.",
+    "Literacy rates in remote areas lag significantly behind urban centers, indicating persistent disparities.",
+    "This study asks whether the recent education reforms have successfully narrowed the gender gap in tertiary enrollment rates.",
+    "Primary school enrollment rates have risen steadily, yet gender disparities in secondary education completion persist, affecting future labor market participation.",
+    "Data from the recent census indicates a sharp decline in enrollment at the primary education level in drought-affected regions.",
+    "A new study asks whether the integration of digital learning tools in rural schools has measurably improved literacy rates in Northern India.",
+    "Recent data suggests that vocational training programs are failing to bridge the gap between secondary education and labor market demands.",
+    "Recent data suggests that primary education completion rates have plateaued in several Sub-Saharan African nations despite significant donor funding injections.",
+    "Education policies that prioritize digital literacy are crucial for preparing students for the future of work in an automated economy.",
+    "The new curriculum standards emphasize critical thinking skills, aiming to improve overall educational attainment and workforce readiness across secondary schools.",
+    "Data from the last fiscal quarter indicates a 4 percent increase in enrollment for secondary education in urban centers.",
+    "Data suggests that universal primary education access has led to a measurable increase in women’s participation in the formal labor market.",
+    "The report notes that expanding access to secondary education has yielded measurable improvements in both gender equity and national productivity metrics.",
+    "Student engagement strategies improve academic performance and satisfaction.",
+    "Student loan forgiveness programs aim to reduce the burden of higher education costs.",
+    "Teacher training programs are essential for improving the quality of instruction in under-resourced schools.",
+    "Expanding access to higher secondary education remains a primary objective for reducing long-term skill gaps in the workforce.",
+    "Curriculum standardization ensures consistency in educational quality across regions.",
+    "Special education teachers require specialized training to support diverse learners.",
+    "Special education services ensure that students with disabilities receive appropriate support.",
+    "The World Bank report notes that improved access to quality education correlates strongly with long-term economic stability.",
+    "Teacher collaboration enhances professional development and instructional quality."
+   ],
+   "Health": [
+    "The success of digital health platforms depends on robust data privacy frameworks and widespread digital literacy among healthcare providers.",
+    "A comprehensive study examines the correlation between improved healthcare infrastructure and reduced mortality rates in underserved communities.",
+    "The policy note argues that robust Health systems are essential for sustaining labor productivity and long-term growth.",
+    "Data from the last quarter indicates a slight improvement in access to basic health services for marginalized groups in stable urban areas.",
+    "The expansion of universal health coverage remains a central objective for many governments seeking to reduce out-of-pocket expenditures for the poorest quintiles.",
+    "The report highlights a significant gap in health infrastructure in remote northern provinces.",
+    "Health",
+    "Recent revisions to national health expenditure accounts highlight a persistent gap in financing primary care services in rural areas.",
+    "Health officials report a 20 percent decrease in malaria cases following the distribution of insecticide-treated bed nets in the region.",
+    "The health ministry reports a 15 percent increase in vaccination coverage following the implementation of mobile clinic initiatives.",
+    "Health insurance coverage has expanded significantly since 2010, though rural-urban disparities in specialist access remain a persistent challenge.",
+    "Collaborative health initiatives in remote zones have successfully reduced infant mortality by twenty percent over the last fiscal year.",
+    "Public health officials report a significant increase in outpatient visits linked to respiratory illnesses during the latest seasonal flu outbreak.",
+    "The new health initiative aims to reduce infant mortality rates by 20% within the next five years through improved vaccination coverage.",
+    "Data analytics reveal a strong correlation between access to clean water and reduced rates of infectious disease.",
+    "Recent reforms in healthcare policy have led to a measurable decrease in infant mortality rates across the region.",
+    "Improving access to clean water is a critical health priority for underserved communities in Southeast Asia.",
+    "A decline in public Health spending has raised concerns about the sustainability of social safety nets.",
+    "Universal access to Quality Health care remains an unmet goal for millions in low-income countries.",
+    "Integrating health clinics into community development projects has improved vaccination rates and nutritional monitoring among vulnerable populations.",
+    "The WHO recommends strengthening primary health care systems to prevent future pandemics.",
+    "The new health initiative targets maternal mortality through community-based midwife training programs.",
+    "A rise in non-communicable diseases places immense strain on public health budgets across the Pacific Islands.",
+    "Community health workers are essential for delivering last-mile medical services in remote areas.",
+    "The report concludes that equitable access to healthcare services remains a significant barrier to reducing poverty in rural areas.",
+    "The initiative aims to improve health outcomes by integrating primary care centers with mobile health units in remote communities.",
+    "The study examines the correlation between national health expenditure and life expectancy gains across high-income nations.",
+    "The ministry reports a significant reduction in maternal mortality rates due to targeted health interventions in rural clinics.",
+    "Can improved health outcomes be attributed directly to increased spending on primary care infrastructure in rural areas?",
+    "Improving maternal health outcomes requires coordinated efforts between health ministries and community-based organizations.",
+    "Recent studies indicate that targeted nutrition interventions in early childhood significantly reduce the incidence of chronic diseases, thereby lowering long-term public health expenditures.",
+    "Recent data indicates a significant rise in maternal health indicators following the rollout of mobile clinics in remote areas.",
+    "Health expenditures rose by 12% last year, largely driven by aging demographics and chronic disease management.",
+    "Health expenditure in urban centers is rising due to lifestyle diseases, necessitating a shift towards preventive care and public health education.",
+    "Chronic diseases are increasing healthcare expenditures, straining public budgets and diverting resources from preventive infrastructure.",
+    "The new health insurance scheme aims to reduce out-of-pocket expenditures for vulnerable populations across the state.",
+    "The new health protocol emphasizes preventive care for mothers, aiming to reduce maternal mortality rates in underserved rural areas.",
+    "Aid flows to health sectors in conflict-affected zones have dropped by 20 percent, jeopardizing disease containment efforts and increasing the risk of regional destabilization.",
+    "The national health insurance scheme aims to eliminate out-of-pocket spending barriers for 50 million previously uninsured citizens.",
+    "A lack of affordable healthcare services exacerbates inequality in health outcomes among marginalized groups."
+   ],
+   "Transport": [
+    "The new transport corridor aims to reduce logistics costs and improve market access for smallholder farmers in the rural interior.",
+    "Investment in high-speed rail links has reduced average commuting times by fifteen minutes, boosting productivity in the metropolitan area.",
+    "The national transport strategy prioritizes the electrification of urban bus fleets to reduce carbon emissions and improve air quality.",
+    "The transport sector must decarbonize rapidly to meet the 2030 emission reduction targets.",
+    "The proposed transport corridor upgrade seeks to reduce carbon footprints while enhancing supply chain efficiency for agricultural exports in Southeast Asia.",
+    "Sustainable transport solutions, such as electric bus fleets, are being piloted in several cities to reduce air pollution and enhance public health.",
+    "Transport infrastructure upgrades are critical for enhancing regional connectivity and trade efficiency.",
+    "Data suggests that a 10 percent increase in transport investment correlates with a 5 percent rise in regional productivity.",
+    "Investors in the transport sector are increasingly requested to demonstrate how their projects contribute to broader social development goals.",
+    "The regional transport corridor project connects five landlocked countries, reducing logistics costs by an estimated 20% within three years.",
+    "Improvements in rural transport infrastructure have been shown to reduce post-harvest losses by up to twenty percent, thereby increasing household incomes and contributing to broader food security outcomes in the region.",
+    "The report highlights that urban transport networks are increasingly adopting green technologies to reduce carbon emissions and improve air quality.",
+    "Last-mile Transport infrastructure remains the primary bottleneck for rural market access.",
+    "The policy note recommends integrating climate-resilient transport corridors to mitigate flood risks along major commercial routes.",
+    "The lack of affordable **transport** options exacerbates inequality, particularly for low-income households.",
+    "Reliable Transport access is a prerequisite for accessing health and education services.",
+    "Transport infrastructure upgrades in the Mekong region are projected to reduce logistics costs by 15 percent, enhancing regional trade integration.",
+    "The study examines how improved transport access influences enrollment rates in secondary education.",
+    "Public transport systems are being upgraded to reduce congestion and lower carbon emissions in the city center.",
+    "The government has allocated $500 million to modernize rural transport networks to improve market access for agricultural producers.",
+    "Access to reliable transport infrastructure remains a significant barrier to rural development, particularly in Sub-Saharan Africa where road quality directly correlates with local market participation rates and agricultural productivity.",
+    "Investments in public transport infrastructure are crucial for reducing urban congestion and ensuring equitable access to economic opportunities for marginalized communities.",
+    "Recent infrastructure upgrades to the main highway have significantly reduced freight costs, boosting regional export competitiveness.",
+    "The study examines how improvements in transport connectivity have influenced urban sprawl patterns and assessed the environmental externalities associated with increased private vehicle usage in rapidly growing metropolitan areas.",
+    "The transport sector is under scrutiny for its carbon footprint, with policymakers exploring electric vehicle subsidies as a viable mitigation strategy.",
+    "The new rural road network significantly reduces transport costs for smallholder farmers, thereby enhancing market access.",
+    "The proposed transport corridor will reduce logistics costs by 15 percent, thereby stimulating regional economic activity and improving supply chain efficiency.",
+    "Improving Transport networks can significantly reduce the carbon footprint of regional logistics.",
+    "Transport bottlenecks significantly hinder the efficiency of supply chains for essential goods.",
+    "The study examines how **transport** infrastructure gaps limit economic participation in marginalized communities.",
+    "Policy notes indicate that sustainable transport infrastructure projects in urban centers can reduce carbon emissions while improving access for underserved communities.",
+    "The World Bank has allocated new grants to support transport connectivity in isolated rural areas, aiming to boost local economic development and trade.",
+    "The World Bank's latest report highlights the urgent need to align transport investment with climate mitigation targets to avoid stranded assets.",
+    "Improved transport infrastructure in rural Vietnam has reduced market access time by 30%, boosting local agribusiness revenues.",
+    "The survey assessed the impact of new transport links on local economic activity.",
+    "Investing in public Transport reduces urban congestion and improves air quality.",
+    "The expansion of high-speed transport links has been identified as a key driver for regional economic integration and job creation.",
+    "Investments in Transport infrastructure are critical for reducing logistical bottlenecks in urban markets across Southeast Asia.",
+    "Public-private partnerships in transport infrastructure require clear risk-sharing mechanisms to ensure bankable projects and sustained operational efficiency.",
+    "Investment in digital transport solutions could significantly reduce congestion and improve urban mobility metrics."
+   ],
+   "Energy": [
+    "A surge in renewable energy adoption in Southeast Asia has significantly lowered carbon footprints while enhancing grid reliability for industrial sectors.",
+    "Government subsidies for solar power have accelerated the transition away from fossil fuels.",
+    "Investment in clean energy infrastructure is projected to create 50,000 new jobs annually in the Gulf Cooperation Council countries over the next five years.",
+    "The energy transition plan includes substantial subsidies for solar microgrids to enhance resilience in remote areas prone to frequent power outages.",
+    "Recent data indicates that energy poverty remains a critical barrier to sustainable social development, particularly in remote regions lacking grid connectivity.",
+    "Investment in renewable energy infrastructure requires aligning grid capacity with volatile generation outputs.",
+    "Renewable energy adoption is outpacing fossil fuel investment in the European Union, driven by net-zero targets.",
+    "Investment in renewable energy infrastructure is projected to reduce carbon emissions by 15 percent over the next decade while creating green jobs.",
+    "Scaling up renewable energy access in off-grid communities requires coordinated policy support to ensure long-term sustainability and equitable distribution of benefits.",
+    "Investing in renewable energy storage technologies is crucial for maintaining grid stability during peak demand periods in emerging economies.",
+    "Projected energy demand in the next decade requires a strategic shift towards efficient and clean power sources.",
+    "Data indicates that energy efficiency retrofits in public buildings significantly reduce carbon footprints and operational costs.",
+    "Investments in renewable energy sources are projected to reduce carbon emissions by 15 percent over the next decade, according to recent energy modeling.",
+    "Investors are increasingly penalizing fossil fuel assets due to rising transition risks and stringent ESG compliance requirements.",
+    "The report highlights that improved access to affordable electricity significantly boosts productivity in small-scale agricultural processing units.",
+    "A pilot program tests the integration of renewable energy sources into the national grid to improve reliability and reduce emissions.",
+    "Coordinating energy policy with environmental regulations is crucial for achieving sustainable growth targets without compromising industrial output.",
+    "Energy access remains a significant barrier to economic growth in isolated rural communities across the Pacific Islands.",
+    "Recent data indicates a 15% increase in renewable energy adoption across Sub-Saharan Africa, driven by improved regulatory frameworks and foreign investment.",
+    "Policy makers must balance immediate energy security needs with long-term decarbonization goals to maintain public trust.",
+    "The recent surge in renewable energy investment signals a shift toward low-carbon growth, though grid integration remains a critical bottleneck for rural electrification.",
+    "Recent policy notes emphasize the urgent need to integrate renewable energy sources into national power grids to meet climate targets.",
+    "Energy diversification strategies are being prioritized to reduce reliance on imported fuels and stabilize domestic prices.",
+    "The report highlights a 15% increase in energy efficiency across major industrial sectors since the last fiscal review.",
+    "Climate change exacerbates energy insecurity in island nations, where reliance on imported fuels leaves populations vulnerable to price shocks and supply chain disruptions.",
+    "The energy transition in Southeast Asia requires significant investment in renewable infrastructure to meet 2030 targets.",
+    "Solar energy expansion in the region has increased grid stability and reduced reliance on imported fossil fuels.",
+    "Investment in renewable energy projects has accelerated, with over 500 gigawatts of new capacity installed globally last year, signaling a structural shift away from fossil fuels.",
+    "The report assesses the impact of carbon pricing on industrial energy consumption patterns.",
+    "Access to reliable electricity remains a primary determinant for economic growth in developing regions, particularly for small and medium enterprises.",
+    "Renewable energy adoption in Southeast Asia is accelerating, driven by government subsidies and declining solar panel costs, thereby reducing carbon emissions.",
+    "Energy security is compromised when heavy reliance on imported fossil fuels exposes national budgets to volatile global commodity prices.",
+    "Solar energy deployment in Sub-Saharan Africa offers a viable pathway to mitigate climate change while improving rural electrification rates.",
+    "The proposed energy efficiency standard for commercial buildings aims to reduce overall consumption by 25 percent over the next decade.",
+    "Cross-sectoral data sharing is essential for tracking the intersection of energy use and water scarcity.",
+    "Renewable energy adoption is accelerating in coastal regions, driven by subsidies and a shift in consumer preference for sustainable power sources.",
+    "The report questions whether current energy subsidies adequately support the transition to green technologies without burdening lower-income households.",
+    "Renewable energy adoption in the Pacific Islands is driven by the need for energy security, as these nations seek to reduce dependence on volatile imported fossil fuels.",
+    "The government’s new energy policy mandates a 20% reduction in carbon emissions through the expansion of grid-connected solar and wind installations.",
+    "Recent data indicates a 15% increase in renewable energy adoption, significantly contributing to reduced carbon emissions across the region."
+   ]
+  },
+  "tests": [
+   {
+    "id": "32371699",
+    "title": "Violence and Newborn Health : Estimates for Colombia",
+    "text": "This paper examines the relationship between maternal exposure to violence during pregnancy and newborn birthweight. The paper exploits variation in the timing of exposure and in the geographic location of expectant mothers across Colombian municipalities. Exposure to violence in early pregnancy had a large negative impact on birthweight, primarily for boys, and the effect was mitigated by their mothers' education. Girls were affected mainly by shocks in later stages of gestation. Furthermore, their mothers were more likely to engage in potentially harmful behaviors during the pregnancy. This evidence exposes the importance of parental responses in shaping the effect of exposure to violence on newborn health.",
+    "topic": "Education"
+   },
+   {
+    "id": "30403618",
+    "title": "Growth, Inequality, and Poverty : A Robust Relationship?",
+    "text": "An extensive literature on poverty traps suggests that high levels of poverty deter growth. However, a seemingly basic implication of the underlying theoretical models, namely that countries suffering from higher levels of poverty should grow less rapidly, has remained untested. A parallel literature has suggested a variety of mechanisms through which inequality may affect growth in opposing directions. Because inequality and poverty are different aspects of the income distribution, inequality can also affect growth through poverty, an indirect channel that has not been explicitly analyzed. This paper contributes to fill both gaps. Using a large cross-country panel data set, it estimates a reduced-form growth equation adding both inequality and poverty to an otherwise standard set of growth determinants. Given inequality, the correlation of growth with poverty is consistently negative. In contrast, given poverty, the correlation of growth with inequality can be positive or negative, depending on the empirical specification and econometric approach used. Yet, the indirect effect of inequality on growth through its correlation with poverty is robustly negative. Closer inspection shows that these results are driven by the sample observations featuring high (but not extremely high) poverty rates. These empirical findings are consistent with the predictions from an analytical framework with learning-by-doing and knowledge spillovers, in which consumers cannot save and invest if their initial endowment is below a minimum consumption level.",
+    "topic": "Education"
+   },
+   {
+    "id": "26363171",
+    "title": "Can business owners form accurate counterfactuals ? eliciting treatment and control beliefs about their outcomes in the alternative treatment status",
+    "text": "A survey of participants in a large-scale business plan competition experiment, in which winners received an average of US$50,000 each, is used to elicit beliefs about what the outcomes would have been in the alternative treatment status. Participants are asked the percent chance they would be operating a firm, and the number of employees and monthly sales they would have, had their treatment status been reversed. The study finds the control group to have reasonably accurate expectations of the large treatment effect they would experience on the likelihood of operating a firm, although this may reflect the treatment effect being close to an upper bound. The control group dramatically overestimates how much winning would help them grow the size of their firm. The treatment group overestimates how much winning helps their chance of running a business, and also overestimates how much winning helps them grow their firms. In addition, these counterfactual expectations appear unable to generate accurate relative rankings of which groups of participants benefit most from treatment.",
+    "topic": "Education"
+   },
+   {
+    "id": "29863005",
+    "title": "Household expenditure and poverty measures in 60 minutes : a new approach with results from Mogadishu",
+    "text": "In fragile states and areas beset by insecurity and conflict, the time available for a face-to-face interview is typically limited. That prevents administering the lengthy household consumption expenditure surveys used for measuring poverty. This paper presents a new approach to obtain unbiased estimates of poverty when the time to conduct interviews is a binding constraint. The finite list of consumption recall items is partitioned selectively into a core module and algorithmically into nonoverlapping optional modules. Each household is systematically assigned the core module and randomly assigned one of the optional modules. Multiple imputation techniques are then used to estimate total household consumption. Based on ex post simulations, the approach is demonstrated to yield reliable estimates of per capita consumption and poverty using data from a regular household budget survey collected in Hargeisa, Somaliland. The approach is then applied to a survey conducted in Mogadishu where interview time could not exceed 60 minutes.",
+    "topic": "Education"
+   },
+   {
+    "id": "32262283",
+    "title": "The Lives and Livelihoods of Syrian Refugees in the Middle East : Evidence from the 2015-16 Surveys of Syrian Refugees and Host Communities in Jordan, Lebanon, and Kurdistan, Iraq",
+    "text": "The Syrian crisis has led to rapid and large-scale population displacement. This paper has two main aims. (i) It documents the size and timing of the Syrian refugee influx into Jordan, Lebanon, and Kurdistan, characterizing the forced nature of displacement and exploring factors that influenced the decision to flee and subsequently move within the host country. (ii) The paper describes the daily living conditions of refugees after displacement, documenting vulnerability along several dimensions, such as housing access and quality, labor market attachment, and financial security. The data sources include the United Nations High Commissioner for Refugees' registration database and multi-country, multi-topic surveys conducted in 2015-16.",
+    "topic": "Education"
+   },
+   {
+    "id": "32075800",
+    "title": "Measuring Monetary Poverty in the Middle East and North Africa (MENA) Region : Data Gaps and Different Options to Address Them",
+    "text": "This paper identifies gaps in availability, access, and quality of household budget surveys in the Middle East and North Africa region used to measure monetary poverty and evaluates ways to fill these information gaps. Despite improving public access to household budget surveys, the availability and timeliness of welfare data in the Middle East and North Africa region is poor compared to the rest of the world. Closing the data gap requires collection of more HBS data in more countries and improving access to data where it exists. However, when collection of consumption data is not possible, a variety of other second-best strategies can be employed. Using imputation methods can help to measure monetary poverty. Constructing non-monetary poverty and asset indexes from less robust surveys, using non-traditional surveys such as phone surveys, and \"big data\" -- administrative records, social networks and communications data, and geospatial data -- can help substitute for, or complement data from existing traditional survey data.",
+    "topic": "Education"
+   },
+   {
+    "id": "32559962",
+    "title": "Children on the Move : Progressive Redistribution of Humanitarian Cash Transfers among Refugees",
+    "text": "This paper evaluates the impact of the Emergency Social Safety Net (ESSN) in Turkey, the largest cash transfer program for international refugees in the world. The paper provides prima facie evidence that the program quickly caused substantial changes in household size and composition, with a net movement of primarily school-age children from larger ineligible households to smaller eligible ones. A sharp decline in inequality is observed in the entire study population: the Gini index declined by four percentage points (or 15 percent) within six months of program rollout, and the poverty headcount at the $3.20/day international poverty line declined by more than 50 percent after one year. ESSN caused a moderate increase in the diversity and frequency of food consumption among eligible households, and although there was no statistically significant effect on overall school enrollment, there were meaningful gains among the most vulnerable beneficiary households. To strike the right balance between transfer size and coverage, key parameters in the design of any cash transfer program, policy makers should consider the possibility that refugee populations may respond to their eligibility status by altering their household structure and living arrangements.",
+    "topic": "Education"
+   },
+   {
+    "id": "30158839",
+    "title": "The long-run and gender-equalizing impacts of school access : evidence from the first Indochina war",
+    "text": "Very few studies currently exist on the long-term impacts of schooling policies in developing countries. This paper examines the impacts -- half a century later -- of a mass education program conducted by the Democratic Republic of Vietnam in the occupied areas during the First Indochina War. Difference-in-difference estimation results suggest that school-age children who were exposed to the program obtained significantly higher levels of education than their peers who were residing in French-occupied areas. The impacts are statistically significant for school-age girls and not for school-age boys. The analysis finds beneficial spillover and inter-generational impacts of education: affected girls enjoyed higher household living standards, had more educated spouses, and raised more educated children. The paper discusses various robustness checks and extensions that support these findings.",
+    "topic": "Education"
+   },
+   {
+    "id": "31702992",
+    "title": "Migration and Remittances in the Former Soviet Union Countries of Central Asia and the South Caucasus : What Are the Long-Term Macroeconomic Consequences?",
+    "text": "Armenia, Georgia, the Kyrgyz Republic, and Tajikistan have all experienced substantial out-migration of workers and an associated inflow of workers' remittances over the past two decades. These four countries have much higher human capital, as measured by the Human Capital Index, than is typical for countries with similar levels of per capita income, and this may enable migrant workers to exploit opportunities to work in economies where labor productivity is higher. The inflow of workers' remittances has had effects analogous to those of Dutch disease in the Kyrgyz Republic and Tajikistan, which have experienced a large rise in expenditure to output and the share of services in gross domestic product, appreciation of the Balassa-Samuelson adjusted real exchange rates, and poor trade performance. In Armenia and Georgia, where remittances are a smaller share of gross domestic product, the effects were much more muted and their trade performance was much better.",
+    "topic": "Education"
+   },
+   {
+    "id": "27965860",
+    "title": "The impact of digital technologies on routine tasks : do labor policies matter?",
+    "text": "There is a strong concern that technology is increasingly replacing routine tasks, displacing lower-skilled workers. Labor market institutions exist to protect workers from shocks but, by increasing labor costs, labor policy may also constrain firms from adjusting the workforce and, hence, from fully benefiting from technology adoption. This paper assesses the link between access to digital technologies and the demand for skills in the largest Latin American country, Brazil. Between 1996 and 2006, the country experienced a period of strong growth in Internet service provision, as well as in the enforcement of labor market regulations at the subnational level. The paper's empirical strategy exploits administrative data to assess the extent to which the adoption of digital technology affects employment and the skill content of jobs at the local level. In addition, the paper investigates whether the stringency of labor regulations influences this adjustment, by comparing the effect across industries subject to different degrees of enforcement of labor regulations. Using the fact that industries vary in the degree of reliance on digital technologies, the estimates suggest that digital technology adoption leads to a reduction in employment in local labor markets. The decrease in employment is larger for routine tasks, thereby shifting the composition of the workforce toward nonroutine, cognitive skills. However, and in contrast with labor policy intentions, the evidence points to the idea that labor market regulations differentially benefit the skilled workforce, particularly those workers employed in nonroutine, cognitive tasks.",
+    "topic": "Education"
+   },
+   {
+    "id": "32284471",
+    "title": "Structural Change and Productivity Growth in Guinea",
+    "text": "This paper documents that structural change positively contributed to labor productivity growth in Guinea during 2006-15. However, the contribution of structural change to productivity growth was modest (about one percentage point per year on average), because labor moved from agriculture, the least productive sector, into other relatively low-productivity activities, such as wholesale and retail trade and community services. Although such services are more productive than agriculture, they are low-productivity activities because of the high level of informality. The paper also finds that the contribution of structural change to productivity growth has declined over time, mainly due to the increased labor market rigidity, lower competitive real exchange rate, declining human capital, and weaker government effectiveness. The paper provides a discussion of the policy implications of the findings.",
+    "topic": "Education"
+   },
+   {
+    "id": "27377699",
+    "title": "Is Poverty in Africa mostly chronic or transient ? evidence from synthetic panel data",
+    "text": "Absent actual panel household survey data, this paper constructs, for the first time, synthetic panel data for more than 20 countries accounting for two-thirds of the population in Sub-Saharan Africa. In this process, the analysis employs repeated cross sections that span, on average, a six-year period for each country. The analysis suggests that all these countries as a whole have had pro-poor growth. One-third of the poor population escaped poverty during the studied period, which is larger than the proportion of the population that fell into poverty in the same period. The region also saw a 9 percent reduction in poverty and a 28 percent increase in the size of the middle class. However, chronic poverty remains high, and a considerable proportion of the population is vulnerable to falling into poverty. There is some limited evidence that most resource-rich and middle-income countries have more upward mobility than downward mobility. Post-secondary education is especially strongly associated with higher upward mobility and less downward mobility, which holds to some extent for female-headed and urban households.",
+    "topic": "Education"
+   },
+   {
+    "id": "29993033",
+    "title": "Automation and labor market outcomes : the pivotal role of high-quality education",
+    "text": "Automation will be a boon or a catastrophe depending on whom you listen to. This paper proposes an overlapping-generations model with endogenous school choice in which the quality of a country's education system determines how well skill supply can respond to increased demand from automation and subsequently whether automation will be beneficial or detrimental. In this sense, education quality in the model offers a bridge between the optimistic and pessimistic perspectives on automation. In testing the model's assumptions, the paper finds evidence that educational attainment, cognitive skills, and select noncognitive skills are associated with avoiding automation-prone occupations. Consistent with the model's predictions, census data indicate that countries have historically relied most on these types of occupations at middle-income status. The model and empirical findings suggest that it is middle-income countries that are most vulnerable to automation if their education systems are unable to affect cognitive and noncognitive skills sufficiently. As a result, automation may herald a much different growth model for developing countries: one in which developing these skills is central.",
+    "topic": "Education"
+   },
+   {
+    "id": "26286952",
+    "title": "The role of training programs for youth employment in Nepal : impact evaluation report on the employment fund",
+    "text": "The youth unemployment rate is exceptionally high in developing countries. Because the quality of education is arguably one of the most important determinants of youth's labor force participation, governments worldwide have responded by creating job training and placement services programs. Despite the rapid expansion of skill-enhancement employment programs across the world and the long history of training program evaluations, debates about the causal impact of training-based labor market policies on employment outcomes still persist. Using a quasi-experimental approach, this report presents the short-run effects of skills training and employment placement services in Nepal. Launched in 2009, the intervention provided skills training and employment placement services for more than 40,000 Nepalese youth over a three-year period, including a specialized adolescent girls' initiative that reached 4,410 women ages 16 to 24. The report finds that after three years of the program, the Employment Fund intervention positively improved employment outcomes. Participation in the Employment Fund training program generated an increase in non-farm employment of 15 to 16 percentage points for an overall gain of about 50 percent. The program also generated an average monthly earnings gain of about 72 percent. The report finds significantly larger employment impacts for women than for men, but younger women ages 16 to 24 experienced the same improvements as older females. These employment estimates are comparable, although somewhat higher, than other recent experimental interventions in developing countries.",
+    "topic": "Education"
+   },
+   {
+    "id": "32462756",
+    "title": "Secondary Schools and Teenage Childbearing : Evidence from the School Expansion in Brazilian Municipalities",
+    "text": "This article investigates the effect increasing secondary education opportunities has on teenage fertility in Brazil. Using a novel dataset to exploit variation from a 57 increase in secondary schools across 4,884 Brazilian municipalities between 1997 and 2009, the analysis shows an important role of secondary school availability on underage fertility. An increase of one school per 100 females reduces a cohort's teenage birthrate by between 0.250 and 0.563 births per 100, or a reduction of one birth for roughly every 50 to 100 students who enroll in secondary education. The results highlight the important role of access to education leading to spillovers beyond improving educational attainment.",
+    "topic": "Education"
+   },
+   {
+    "id": "27169412",
+    "title": "The impact of mass bed net distribution programs on politics : evidence from Tanzania",
+    "text": "Functioning democracy requires that citizens reward politicians who deliver benefits, yet there is surprisingly little causal evidence of changes in citizen views or behavior in response to specific government programs. This question is examined in Tanzania, which has recently implemented large health programs targeting diseases such as HIV/AIDS and malaria. Tanzania's 2010-2011 national anti-malaria campaign took place concurrently with a national household survey, which enables a regression discontinuity design based on interview date to estimate the effect of this program on the popularity of local politicians. Bed net distribution results in large, statistically significant improvements in the approval levels of political leaders, especially in malaria endemic areas. Effects are largest shortly after program implementation, but smaller effects persist for up to six months. These findings suggest that citizens update their evaluation of politicians in response to programs, especially when these services address important problems, and that the effects decay over time, but not completely.",
+    "topic": "Health"
+   },
+   {
+    "id": "32455178",
+    "title": "Modeling and Predicting the Spread of Covid-19: Comparative Results for the United States, the Philippines, and South Africa",
+    "text": "A model of Covid-19 transmission among locations within a country has been developed that is (1) implementable anywhere spatially-disaggregated Covid-19 infection data are available; (2) scalable for locations of different sizes, from individual regions to countries of continental scale; (3) reliant solely on data that are free and open to public access; (4) grounded in a rigorous, proven methodology; and (5) capable of forecasting future hotspots with enough accuracy to provide useful alerts. Applications to the United States, the Philippines, and South Africa's Western Cape province demonstrate the model's usefulness. The model variables include indicators of interactions among infected residents, locally and at a greater distance, with infection dynamics captured by a Gompertz growth model. The model results for all three countries suggest that local infection growth is affected by the scale of infections in relatively distant places. Forecasts of hotspots 14 and 28 days in advance, using only information available on the first day of the forecast, indicate an imperfect but nonetheless informative identification of actual hotspots.",
+    "topic": "Health"
+   },
+   {
+    "id": "26931908",
+    "title": "Socioeconomic resilience : multi-hazard estimates in 117 countries",
+    "text": "This paper presents a model to assess the socioeconomic resilience to natural disasters of an economy, defined as its capacity to mitigate the impact of disaster-related asset losses on welfare. The paper proposes a tool to help decision makers identify the most promising policy options to reduce welfare losses from natural disasters. Applied to riverine and storm surge floods, earthquakes, windstorms, and tsunamis in 117 countries, the model provides estimates of country-level socioeconomic resilience. Because hazards disproportionally affect poor people, each $1 of global natural disaster-related asset loss is equivalent to a $1.6 reduction in the affected country’s national income, on average. The model also assesses policy levers to reduce welfare losses in each country. It shows that considering asset losses is insufficient to assess disaster risk management policies. The same reduction in asset losses results in different welfare gains depending on who (especially poor or nonpoor households) benefits. And some policies, such as adaptive social protection, do not reduce asset losses, but still reduce welfare losses. Post-disaster transfers bring an estimated benefit of at least $1.30 per dollar disbursed in the 117 countries studied, and their efficiency is not very sensitive to targeting errors.",
+    "topic": "Health"
+   },
+   {
+    "id": "32425245",
+    "title": "Stochastic Modeling of Food Insecurity",
+    "text": "Recent advances in food insecurity classification have made analytical approaches to predict and inform response to food crises possible. This paper develops a predictive, statistical framework to identify drivers of food insecurity risk with simulation capabilities for scenario analyses, risk assessment and forecasting purposes. It utilizes a panel vector-autoregression to model food insecurity distributions of 15 Sub-Saharan African countries between October 2009 and February 2019. Statistical variable selection methods are employed to identify the most important agronomic, weather, conflict and economic variables. The paper finds that food insecurity dynamics are asymmetric and past-dependent, with low insecurity states more likely to transition to high insecurity states than vice versa. Conflict variables are more relevant for dynamics in highly critical stages, while agronomic and weather variables are more important for less critical states. Food prices are predictive for all cases. A Bayesian extension is introduced to incorporate expert opinions through the use of priors, which lead to significant improvements in model performance.",
+    "topic": "Health"
+   },
+   {
+    "id": "31399716",
+    "title": "The Social Value of Health Insurance Results from Ghana",
+    "text": "This paper uses the roll-out of the national health insurance in Ghana to assess the cushioning effect of coverage on the financial consequences of health shocks and resulting changes in coping behaviors. The analysis finds a strong reduction in medical expenditures, preventing households from cutting non-food consumption and causing a decrease in the volume of received remittances as well as the labor supply of healthy adult household members. Moreover, the paper presents evidence that the insurance scheme reduced the likelihood that households experiencing a health shock pulled their children out of school to put them to work. Avoidance of such costly coping mechanisms is potentially an important part of the social value of formal health insurance.",
+    "topic": "Health"
+   },
+   {
+    "id": "26213104",
+    "title": "Higher losses and slower development in the absence of disaster risk management investments",
+    "text": "Global economic losses from natural disasters continue to increase. Yet, investments in disaster risk management are not universal, as they are traditionally seen as in competition with other development and economic priorities. The multitude of benefits from disaster risk management investments are not traditionally accounted for in cost-benefit analyses. This paper contributes to this discussion by highlighting the multiple benefits from disaster risk management investments, focusing on the avoided losses when a disaster occurs, but also on the impacts on economic development even before a disaster strikes. The paper's main message is that disaster risk management investments can provide two dividends: reduced losses when a disaster strikes, and a shift of investment strategies and perhaps even an increase in investment value that would benefit the economy even before a disaster strikes. Providing evidence to policy makers and investors about the existence of both types of dividends can provide a narrative reconciling short-term and long-term objectives, thereby improving the acceptability and feasibility of disaster risk management investments.",
+    "topic": "Health"
+   },
+   {
+    "id": "26218888",
+    "title": "Economic structural change as an option for mitigating the impacts of climate change",
+    "text": "Improving the resilience of the economy in the face of uncertain climate change damages involves irreversible investments to scale up new technologies that are less vulnerable to the effects of climate change. The benefit of having such options includes the avoided welfare cost of diverting consumption to scaling up the new technology after production possibilities have been diminished by climate change impacts. This needs to be balanced against the upfront cost of scaling up a technology that is potentially less productive than incumbent technologies. The paper uses a real options approach to investigate this trade-off, based on numerical simulation of a multi-period model of economic growth and climate change impacts that includes a one-time cost associated with scaling up the alternative technology. The value of the option provided by investment in the more resilient technology depends on the ex-ante volatility of climate change damages, as well as how rapidly climate change degrades the productivity of the economy's established technology. In addition, the size of scale-up cost that leaves the economy indifferent between investing and not investing in the new technology can be used to define the value of early investment in the less climate change–vulnerable technology as a sort of call option.",
+    "topic": "Health"
+   },
+   {
+    "id": "27893581",
+    "title": "Looking into the performance-based financing black box: evidence from an impact evaluation in the health sector in Cameroon",
+    "text": "Performance-based financing is a complex health system intervention aimed at improving coverage and quality of care. This paper presents the results of an impact evaluation in Cameroon that seeks to isolate the role of specific components of the performance-based financing approach on outcomes of interest, such as explicit financial incentives linked to results, additional resources available at the point of service delivery (not linked to performance), and enhanced supervision, coaching, and monitoring. Four evaluation groups were established to measure the effects of each component that was studied. In general, the results indicate that performance-based financing in Cameroon is an efficient mechanism to channel payments and funding to the provider level, leading to significant increases in utilization in the performance-based financing arm for several services (child and maternal vaccinations and use of modern family planning), but not for others, such as antenatal care visits and facility-based deliveries. However, for many of those outcomes, the differences between the performance-based financing group and the additional financing group are not significant. In terms of quality, performance-based financing was found to have a significant impact on the availability of essential inputs and equipment, qualified health workers, reduction in formal and informal user fees, and increased satisfaction among patients and providers. However, there was a clear effect of additional financing, irrespective of whether it was linked to incentives, in combination with reinforced supervision through performance-based financing. This result suggests that enhanced supervision and monitoring on their own are not sufficient to improve maternal and child health outcomes.",
+    "topic": "Health"
+   },
+   {
+    "id": "25994085",
+    "title": "Small area estimation of child malnutrition in Ethiopian woredas",
+    "text": "Reducing child undernutrition is a key social policy objective of the Ethiopian government. Despite substantial reduction over the past decade and a half, child undernutrition is still high. With 48 percent of children stunted, underweight, or wasted, undernutrition remains an important child health challenge. The existing literature highlights that the targeting of efforts to reduce undernutrition in Ethiopia is inefficient, in part because of the lack of data and updated information. This paper remedies some of this shortfall by estimating levels of stunting and underweight in each woreda for 2014. The estimates are small area estimations based on the 2014 Demographic and Health Survey and the latest population census. It is shown that small area estimations are powerful predictors of undernutrition, even controlling for household characteristics, such as wealth and education, and hence a valuable targeting metric. The results show large variations in share of children undernourished in each region, more than between regions. The results also show that the locations with larger challenges depend on the chosen undernutrition statistic, as the share, number, and concentration of undernourished children point to vastly different locations. There is limited correlation between the shares of children underweight and stunted across woredas, indicating that different locations face different challenges.",
+    "topic": "Health"
+   },
+   {
+    "id": "31206635",
+    "title": "Multi-Hazard Groundwater Risks to the Drinking Water Supply in Bangladesh : Challenges to Achieving the Sustainable Development Goals",
+    "text": "Groundwater currently provides 98 percent of all the drinking water supply in Bangladesh. Groundwater is found throughout Bangladesh but its quality (that is, arsenic and salinity contamination) and quantity (that is, water storage depletion) vary across hydrological environments, posing unique challenges to certain geographical areas and population groups. Yet, no national-scale, multi-hazard groundwater risk maps currently exist enabling water resource managers and policy makers to identify areas that are vulnerable to public health. This paper develops, for the first time, groundwater risk maps at the national scale for Bangladesh that combine information on arsenic, salinity, and water storage, using geospatial techniques, linking hydrological indicators for water quality and quantity to construct risk maps. A range of socioeconomic variables, including access to drinking and irrigation water supplies and social vulnerability (that is, poverty), are overlaid on these risk maps to estimate exposures. The multi-hazard groundwater risk maps show that a considerable proportion of land area (5 to 24 percent under extremely high to high risks) in Bangladesh is currently under combined risk of arsenic and salinity contamination, and groundwater storage depletion. As few as 6.5 million (2.2 million poor) to 24.4 million (8.6 million poor) people are exposed to a combined risk of high arsenic, salinity, and groundwater storage depletion. The multi-hazard groundwater risk maps reveal areas and exposure of population groups to water risks posed by arsenic and salinity contamination and depletion of water storage.",
+    "topic": "Health"
+   },
+   {
+    "id": "32029704",
+    "title": "Study of the Distributional Performance of Piped Water Consumption Subsidies in 10 Developing Countries",
+    "text": "This paper provides new evidence on how effectively piped water consumption subsidies are targeting poor households in 10 low- and middle-income countries around the world. The results suggest that, in these countries, existing tariff structures fall short of recovering the costs of service provision, and the resulting subsidies largely fail to achieve their goal of improving the accessibility and affordability of piped water for poor households. Instead, the majority of subsidies in all 10 countries are captured by the richest households. This is in part because the most vulnerable population segments typically face challenges in accessing and connecting to piped water services. The paper also reveals shortcomings in the design of the subsidies, which are conditional on poor households being connected to a piped network.",
+    "topic": "Health"
+   },
+   {
+    "id": "30904180",
+    "title": "The Three-Gap Model of Health Worker Performance",
+    "text": "The Three-Gap Model examines the determinants of low-quality health care by examining the patterns and determinants of three gaps. Using four measures of performance -- target performance, actual performance, capacity to perform, and knowledge to perform -- this paper defines three gaps for each health worker: the gap between target performance and what they have the knowledge to do (the know gap), the gap between their knowledge and their capacity to perform (the know-can gap), and the gap between their capacity and what they actually do (the can-do gap). The paper demonstrates how the patterns of these gaps across health workers in a sample can be used to diagnose failures in the system as well as evaluate the outcomes of policy experiments. Using data on pediatric care from hospitals in Liberia, the paper illustrates how the model can be used to investigate the potential for improvements in the quality of care from several possible policy interventions. The analysis of the relationships between these gaps across health workers in a health system help to paint a better picture of the determinants of performance and can assist policy makers in choosing relevant policies to improve health worker performance.",
+    "topic": "Health"
+   },
+   {
+    "id": "30639311",
+    "title": "Catastrophic Medical Expenditures : Reflections on Three Issues",
+    "text": "There is a large empirical literature analyzing 'catastrophic' medical expenses. The 'basic' approach defines expenses as catastrophic if they exceed a prespecified percentage of total consumption or income; the approach, in effect, tells us whether expenses cause a large percentage reduction in living standards. An alternative 'ability-to-pay approach' defines expenses as catastrophic if they exceed a prespecified percentage of consumption or income less actual expenses on nonmedical necessities or an allowance for them. This paper argues that this approach does not, contrary to what is sometimes claimed, tell us whether expenses are large enough to undermine a household's ability to purchase nonmedical necessities. The paper also compares the income- and consumption-based variants of the 'basic' approach, showing that if the individual is a borrower after a health shock, the income-based ratio will exceed the consumption-based ratio, while the opposite is true when the individual continues to be a saver after a health shock. The paper also explores the relationship between the income- and consumption-based ratios and the more theoretically correct ratio proposed by Flores et al. It shows that if the individual is a borrower after a health shock, both the consumption- and income-based ratios will exceed the Flores et al. ratio, with the income-based ratio overestimating it by more, while in the case when the individual continues to be a saver after a health shock, the income-based ratio will overestimate Flores et al.'s ratio by less and may not overestimate it at all. Last, the paper proposes a lifetime money metric utility approach that defines medical expenses as catastrophic in terms of their lifetime (rather than single-period) consequences. It shows that under certain assumptions, the money-metric utility approach and the Flores et al. approaches are identical, and both are operationalizable without data on how households finance their medical expenses.",
+    "topic": "Health"
+   },
+   {
+    "id": "26050362",
+    "title": "Impact of climate change and aquatic salinization on fish habitats and poor communities in southwest coastal Bangladesh and Bangladesh Sundarbans",
+    "text": "Fisheries constitute an important source of livelihoods for tens of thousands of poor people in the southwest coastal region of Bangladesh living near the UNESCO Heritage Sundarbans mangrove forest, and they supply a significant portion of protein for millions. Among the various threats fisheries in the southwest coastal region and Sundarbans mangrove forest will face because of climate change, adverse impacts from increased aquatic salinity caused by sea level rise have been identified as one of the greatest challenges. This paper focuses on 83 fish species consumed by poor households in the region. Using the salinity tolerance range for each species, 27 alternative scenarios of climate change in 2050 were investigated to assess the possible impacts of climate change and sea level rise on aquatic salinity, fish species habitats, and the poor communities that consume the affected fish species. The results provide striking evidence that projected aquatic salinization may have an especially negative impact on poor households in the region. The estimates indicate that areas with poor populations that lose species are about six times more prevalent than areas gaining species.",
+    "topic": "Health"
+   },
+   {
+    "id": "27987776",
+    "title": "Flies without borders : lessons from Chennai on improving India's municipal public health services",
+    "text": "India's fast-growing cities face three key challenges in improving public health outcomes. The first is the persistence of weak links in the chain -- notably, slums badly underserved with basic civic services -- that can pose public health threats to all. Richer residents corner public resources, such as water and sanitation services, but their children's health indicators suggest they are deeply affected by contagion from the broader urban environment. The second challenge relates to devolution of services to elected bodies. Devolution works poorly for intangible and highly technical services, such as public health, where success is measured by the lack of (adverse) events. The third challenge is high fragmentation of services that directly affect health outcomes. In India, some cities have addressed these challenges more effectively than others have. This paper explores the management of municipal public health services in two major Indian metropolises with sharply contrasting health and sanitation indicators. The paper explains how Chennai mitigates these challenges through active service outreach to vulnerable populations, and a considered approach to devolution that distributes responsibilities appropriately between line agencies, technical personnel, and elected representatives. Services in Delhi are quite constrained. These policy lessons are pertinent to other Indian cities and beyond.",
+    "topic": "Health"
+   },
+   {
+    "id": "29910337",
+    "title": "Agriculture, aid and economic growth in Africa",
+    "text": "How can foreign aid to agriculture support economic growth in Africa? This paper constructs a geographically-indexed applied general equilibrium model that considers pathways through which aid might affect growth and structural transformation of labor markets in the context of soil nutrient variation, minimum subsistence consumption requirements, domestic transport costs, labor mobility and constraints to self-financing of agricultural inputs. Using plausible parameters, the model is presented for Uganda as an illustrative case. Three stylized scenarios demonstrate the potential economy-wide impacts of both soil nutrient loss and replenishment, and how foreign aid can be targeted to support agricultural inputs that boost rural productivity and shift labor to boost real wages. One simulation shows how a temporary program of targeted official development assistance (ODA) for agriculture could generate, contrary to traditional Dutch disease concerns, an expansion in the primary tradable sector and positive permanent productivity and welfare effects, leading to a steady decline in the need for complementary ODA for budget support.",
+    "topic": "Transport"
+   },
+   {
+    "id": "25818518",
+    "title": "The great recession and job loss spillovers : impact of tradable employment shocks on supporting services",
+    "text": "This paper explores the spillover effects of job losses via input-output linkages during the Great Recession. Exploiting exogenous variation in tradable employment shocks across U.S. counties, the paper finds that job losses in a county's tradable sectors cause further job losses in the county's supporting services. For a given county, a 10 percent exogenous decline in tradable employment reduces supporting industries' employment by 3.8 percent. In addition, a county’s regional supporting services are relatively less affected by its tradable job losses than its local supporting services are, which reinforces the argument that the spillovers are due to input-output linkages.",
+    "topic": "Transport"
+   },
+   {
+    "id": "27993836",
+    "title": "Output- and performance-based road contracts and agricultural production : evidence from Zambia",
+    "text": "Rural access is among the most important infrastructure elements to stimulate economic growth in rural and remote areas. The sustainability of feeder road maintenance is a challenge in many developing countries. Many feeder roads are unpaved and need to be maintained frequently, but they are often neglected under budget pressure. Output- and performance-based road contracts are an instrument to ensure the sustainability of road maintenance. Contractors are required not only to improve roads, but also to maintain them. Using micro data from household surveys in Zambia, the paper examines the impacts of output- and performance-based road contracts on agricultural production. It shows that the contracts have a significant impact on crop production, especially maize and groundnuts, two major crops grown in the study area. The paper also finds that the measured impacts are associated with actual road maintenance works, regardless of contractual methods. Any road work can improve people's connectivity, even if it is not an output- and performance-based road contracts. The impact of the contracts is catalytic: more road works were implemented on contract roads than non-contract roads, holding everything else constant. This is an important contribution to the sustainability of road maintenance. Finally, road improvement works are found to facilitate farmers' market participation, but the impact seems weak. There may be other constraints. Transport service costs are found to have a negative impact on farmers' market sales. Thus, although roads are improved, transport services may be not available or too expensive, which still hamper farmers' market participation.",
+    "topic": "Transport"
+   },
+   {
+    "id": "27227239",
+    "title": "Special study on benchmarking the quality of project economic analysis for the South Asia Region",
+    "text": "This paper benchmarks the quality of project economic analysis in South Asia against other World Bank regions, using data on project exits between 1975 and 2015. The results show that the South Asia region performs on par with the other regions, in that the share of project documents that report estimated economic rates of return have declined from 70 to 36 percent for South Asia and the other regions. This finding suggests there is less attention to project economic analysis (especially for sectors where this has been a traditional practice, such as energy, transport, water, and agriculture). The finding also indicates that the incidence of reporting rates of return in project documents and the dispersion or difference between rates of return estimated at project appraisal and completion are significantly correlated with project performance (after correcting for country- and project-level variables). For the project-level variables, the task team effect is a key variable that explains project outcomes. The paper discusses the implications of the analyses for strengthening project performance and risk mitigation.",
+    "topic": "Transport"
+   },
+   {
+    "id": "26561778",
+    "title": "Structural transformation in Africa : a historical view",
+    "text": "This paper presents evidence suggesting that the relationship between income and economic structure is shifting over time, with countries across the income distribution uniformly increasing the share of labor in service sectors and an increasingly less stark relationship between manufacturing intensity and gross value added per capita. The paper then assesses historical patterns of productivity convergence at a more detailed sector disaggregation than has been previously available. The analysis finds suggestive evidence that, at least in recent decades, convergent pressures in services industries are stronger than in manufacturing. Focusing on African economies, the paper presents a country-by-country historical analysis of structural change over the past four decades. Given the varied patterns and trends in structural change across African countries, it is difficult to characterize structural change from a single, continent-wide perspective. Some countries saw an early transition of labor out of agriculture, with manufacturing absorbing this labor in the decades prior to the 1990s, while another group of countries saw a later transition out of agriculture, where the services sector played a large role in labor reallocations in the 1990s and 2000s. Finally, the paper provides a country-by-country structural transformation scorecard to assess patterns of structural change in jobs and growth.",
+    "topic": "Transport"
+   },
+   {
+    "id": "28110042",
+    "title": "Roads and the geography of economic activities in Mexico",
+    "text": "This paper estimates the impacts of road improvements on local employment and specialization in Mexico for 1986-2014, through changes in access to domestic markets and travel costs to ports and the U.S. border. Instrumenting for road placement endogeneity and addressing the recursion problem in regressions that involve access to markets, the analysis finds significant and positive causal effects of improved domestic accessibility on employment and specialization. It also finds that employment is stimulated by lower transport costs to the U.S. border, but harmed by lower transport costs to ports. Heterogeneous effects are found across sectors and regions.",
+    "topic": "Transport"
+   },
+   {
+    "id": "27691978",
+    "title": "Trains, trade and transaction costs : how does domestic trade by rail affect market prices of Malawi agricultural commodities ?",
+    "text": "This paper measures the impact of low-cost transport by rail in Malawi on the dispersion of agricultural commodities prices across markets by exploiting the quasi-experimental design of the nearly total collapse of domestic transport by rail in January 2003 due to the destruction of a railway bridge at Rivirivi, Balaka. Estimations are based on monthly market prices of four agricultural commodities (maize, groundnuts, rice, and beans) in 27 local markets for the period 1998–2006. Market pairs connected by rail when the railway line was operational are intervention observations. Railway transport services explain a 14 percent to 17 percent reduction in price dispersion across markets. Geographical reach of trade varies by crop, most likely related to storability and geographical spread of production. Perishability appears to increase impact reflecting limited scope for arbitrage. Overall, impacts are remarkably similar in size across commodities.",
+    "topic": "Transport"
+   },
+   {
+    "id": "29280050",
+    "title": "Mobile infrastructure and rural business enterprises : evidence from sim registration mandate in Niger",
+    "text": "Business enterprises and non-agricultural startups in rural economies play crucial roles in ending the vicious cycle of poverty. The propagation of business enterprises are, however, subject to a high degree of institutional frictions and vacuums e.g., information; but mobile infrastructure which has the externality of flowing information can help overcome most of these vacuums through reduced fixed costs, lower cost of information or search, and outreach to a broader customer base. This paper studies the effects of mobile infrastructure (\"mobile use activity\") on propagation of rural business enterprises in Niger. Instrumental variable estimates exploit the exogenous introduction of the 2013 national mandatory SIM registration reform which provides a quasi-experimental set-up for mobile use and activity. The mandate deactivated about one-third of all existing prepaid SIMs and led to a remarkable decline in mobile use activity. The results suggest that there is economically substantial effect of mobile infrastructure on propagation of business enterprises. Moving a household with mobile use activity to a no mobile use activity environment due to SIM deactivation results in roughly 33.1 percent points decline in the likelihood of engaging in non-agricultural business enterprises. Most of this effect come from three major sources: households' ownership of a business service or center; ownership of small income generating activities; and involvement in the transformation of agricultural products. There is suggestive evidence that the reform's impact is disproportionately larger for women. With the expansion of mandatory SIM registration reforms in developing countries, the findings have extended implications in these contexts.",
+    "topic": "Transport"
+   },
+   {
+    "id": "29731086",
+    "title": "Resource misallocation and productivity gaps in Malaysia",
+    "text": "The reallocation of resources from low- to high-productivity firms can generate large aggregate productivity gains. The paper uses data from the Malaysian manufacturing census to measure the country's hypothetical productivity gains when moving toward the level of within-sector allocative efficiency in the United States to be between 13 and 36 percent. Across three census periods in 2000, 2005, and 2010 (the most recent available), the productivity gaps appear to have somewhat widened. This suggests that the \"catching-up\" process remains a challenge and a potential opportunity, particularly if total factor productivity is expected to be the dominant source of future economic growth. The simulations, based on different magnitudes of the realization of hypothetical productivity gains, show that Malaysia's gross domestic product growth can potentially increase by 0.4 to 1.3 percentage points per year over five years. The analysis accounts only for resource misallocation within sectors. There may be other, possibly large, resource misallocation across sectors. If so, closing those gaps could boost total factor productivity and gross domestic product growth even further.",
+    "topic": "Transport"
+   },
+   {
+    "id": "30258384",
+    "title": "Trade in developing East Asia : how it has changed and why it matters",
+    "text": "East Asia, for long the epitome of successful engagement in trade, faces serious challenges: technological change that may threaten the very model of labor intensive industrialization and a backlash against globalization that may reduce access to important markets. A detailed analysis of the evolution of East Asia's trade and trade policy in goods and services leads to the conclusion that how East Asia copes with these global challenges will depend on how it addresses three more proximate national and regional challenges. The first is the emergence of one East Asian country, China, as a global trade giant—accounting for nearly one-seventh of global exports and one-tenth of global imports -- which is fundamentally altering the trading patterns and opportunities of its neighbors. The second is the asymmetric implementation of national reform -- remarkable openness to goods trade and investment coexists with relative restrictiveness of services policies -- which is affecting the evolution of comparative advantage and productivity in each country. The third is the divergence between the relatively shallow and fragmented agreements that regulate the region’s trade and investment and the growing importance of regional and global value chains as crucial drivers of productivity growth.",
+    "topic": "Transport"
+   },
+   {
+    "id": "32465827",
+    "title": "Market Access and Development of the ICT Sector in the West Bank",
+    "text": "Despite the popular view that, with the advent of digital technologies, the world has become flat, geography still plays a key role in the economy. COVID-19 has brought even more awareness of this. This paper studies the impact of security measures that have reduced the mobility of people and goods on the industrial composition of the West Bank economy, and, in particular, on the development of the information and communications technology sector. The paper identifies different channels through which changes in market access due to the introduction of mobility restrictions can differentially affect industries. A newly designed survey instrument is used to identify and disentangle these mechanisms separately. This novel data set contains information on more than 500 establishments that are representative of different sectors of the economy, including information and communications technology, manufacturing, and retail trade. The analysis finds that the mobility restrictions involved a reallocation of resources toward the information and communications technology sector, as the industry was relatively less affected by the restrictions. Yet, the key role of the input-output linkages, strong dependence on local clients and suppliers, and deep interconnectedness of the information and communications technology sector with other domestic industries severely limit the extent to which the sector can benefit from the reduction in opportunity cost. An industrial strategy focusing on the harmonious development of the entire economy is advised, rather than targeting a specific industry in isolation from the rest.",
+    "topic": "Transport"
+   },
+   {
+    "id": "31298712",
+    "title": "Jobs in Global Value Chains : New Evidence for Four African Countries in International Perspective",
+    "text": "What is the potential for job growth in Africa under participation in global value chains (GVCs)? In this study the concept of GVC jobs is introduced which tracks the number of jobs associated with GVC production of goods. A novel decomposition approach is used to account for GVC jobs by three proximate sources: global demand for final goods, a country's GVC competitiveness (measured as the country's share in serving global demand) and technology (workers needed per unit of output). Based on newly assembled data, it is shown how GVC jobs and incomes have changed over the period 2000-14 in Ethiopia, Kenya, Senegal and South Africa, compared to developments in some other low- and middle-income countries in the world. The four African countries stand out in terms of a low share of GVC jobs in the (formal) manufacturing sector, and a relatively high share in agriculture due to strong backward linkages, especially in the case of food production. All countries benefitted highly from growing global demand for final goods. At the same time it appears that technical change in GVCs is biased against the use of labour, greatly diminishing the potential for job growth through GVC participation.",
+    "topic": "Transport"
+   },
+   {
+    "id": "30557010",
+    "title": "Identifying Urban Areas by Combining Data from the Ground and from Outer Space : An Application to India",
+    "text": "This paper develops a tractable method to identify urban areas and applies it to India, where urbanization is messy. Google Earth images are assessed subjectively to determine whether a stratified large sample of Indian cities, towns and villages, as officially defined, are urban or rural in practice. Based on these assessments, a regression analysis combines two sources of information—data from georeferenced population censuses and data from satellite imagery—to identify the correlates of units in the sample being urban. The resulting model is used to predict whether the other units in the country are urban or rural in practice. Contrary to frequent claims, India is not substantially more urban than implied by census data. And the speed of urbanization is only marginally higher than official statistics suggest. But a considerable number of locations are misclassified in the midrange between villages and state capitals. The results confirm the value of combining subjective assessments with data from these different sources.",
+    "topic": "Transport"
+   },
+   {
+    "id": "30892631",
+    "title": "Input Substitutability and Cross-Country Variation in Sectoral Linkages",
+    "text": "Using panel data on input-output intensities and expenditure prices from 28 countries, this paper finds the elasticity of substitution across sectoral inputs to be less than one in each of the three broad sectors of the economy. Intermediates are most complementary in the production of services while it is easiest to substitute across intermediates in the production of agricultural goods. Differences in relative prices alone account for a non-trivial fraction of the cross-country variation in sectoral linkages. Abstracting from the price channel that allows for substitution across inputs in response to changes in relative prices delivers biased aggregate implications of changes in productivity and distortions.",
+    "topic": "Transport"
+   },
+   {
+    "id": "30600904",
+    "title": "Servicification of Manufacturing and Boosting Productivity through Services Sector Reform in Turkey",
+    "text": "There is a global trend toward more production, use, and sale of services by manufacturing firms. This phenomenon is known as the servicification of manufacturing. Services inputs as well as services activities within manufacturing firms account for over half of the value of manufacturing exports. This paper uses a unique firm-level data set to analyze the link between servicification and productivity in Turkey. Although servicification has the potential to boost firm performance, the opposite appears to be the case in Turkey: manufacturing firms with service affiliates tend to be less productive. The type of services produced matters. For instance, firms that have post-manufacturing (transport and distribution) service affiliates are particularly less productive. Regulatory restrictions in services are explored as an explanatory factor. Productivity gaps appear in the same areas where services are more restricted, such as in post-manufacturing services.",
+    "topic": "Transport"
+   },
+   {
+    "id": "31344296",
+    "title": "Generating Gridded Agricultural Gross Domestic Product for Brazil : A Comparison of Methodologies",
+    "text": "This paper examines two new methods to generate gridded agricultural Gross Domestic Product (GDP) and compares the results with a traditional method. In the case of Brazil, these two new methods of spatial disaggregation and cross-entropy outperform the prediction of agricultural GDP from the traditional method that distributes agricultural GDP using rural population. The paper finds that the best prediction method is spatial disaggregation using a regression approach for all the key crops and contributors to agricultural GDP. However, the issue of degrees of freedom is an important limiting factor, as the approach requires sufficient subnational data. The cross-entropy method with readily available spatially distributed crop, livestock, forest, and fish allocation far outperforms the traditional method, at least in the case of Brazil, and can operate with national- and/or subnational-level data.",
+    "topic": "Energy"
+   },
+   {
+    "id": "27521463",
+    "title": "Energy prices and international trade : incorporating input-output linkages",
+    "text": "This paper examines the effect of energy costs on industry export competitiveness. Most studies in the literature use direct energy consumption (energy consumption at the final stage of production) and domestic energy prices to compute energy costs faced by domestic industries. Using multi-country input-output information, this study measures the effect of aggregate energy costs on export performance, where aggregate energy costs include not only direct energy costs, but also indirect energy costs passed on through the upstream supply chain. This study develops a theoretical trade model that incorporates tradable intermediate goods to inform its empirical strategy. It then estimates a reduced-form model using a panel data for 10 manufacturing sectors in 43 countries from 1991 to 2012. The analysis finds that ignoring input-output relationships can lead to significant over- or underestimates of the effect of energy price shocks on exports, depending on intermediate factor intensities and trade relationships. Using estimated trade elasticities, the study simulates the economic consequences of energy cross-subsidies and carbon taxes. The results show that energy cross-subsidies that raise energy tariffs on industry to support lower rates for households and farmers in India could reduce the country's net manufacturing exports by $6.1 billion a year. Similarly, a carbon tax that unilaterally increases energy prices by 10 percent in the European Union could reduce European Union-wide net manufacturing exports by 1.9 percent annually.",
+    "topic": "Energy"
+   },
+   {
+    "id": "30251411",
+    "title": "Taking stock of wholesale power markets in developing countries : a literature review",
+    "text": "Although many developing countries have yet to meet the considerable prerequisites for establishing wholesale power markets, a significant minority of larger middle-income countries have introduced diverse markets in the past 25 years. Cost-based pools proved particularly popular in Latin America and look to be a more straightforward starting point than the bid-based pools adopted in some other jurisdictions. Successful design of power markets involves paying careful attention to four guiding principles. First, trading arrangements must ensure efficient and reliable operation of the market, efficiently employing available resources not only to balance aggregate supply and demand, but also to allow congestion management and supply ancillary services. Second, market design should ensure strong participation of the demand side of the market, by allowing large customers to participate directly in the market, and medium ones to see spot market prices through time-of-use tariffs. Third, open access to the power grid should be guaranteed through industry restructuring, removal of barriers to entry of different players, and establishment of a neutral system operator. Fourth, a workable framework for supply adequacy is required to ensure capacity meets demand without imposing supply constraints. This may entail complementing efficient energy price signals with other mechanisms (such as auctions and capacity obligations) to provide adequate incentives for investment in new generation capacity. Experience demonstrates that the early stages of establishing power markets can be challenging and necessitate the creation of regulatory mechanisms for market monitoring that can identify and address emerging design flaws, particularly for abuses of market power. Countries not yet ready to introduce wholesale power markets may still benefit from several emerging regional power markets. Looking ahead, the design of power markets is becoming increasingly complex due to the challenges posed by disruptive technologies such as variable renewable energy, large-scale storage, and increasingly sophisticated demand-side participation.",
+    "topic": "Energy"
+   },
+   {
+    "id": "26584623",
+    "title": "Subsidy reforms in the Middle East and North Africa Region : a review",
+    "text": "The paper takes stock of eight country studies and a cross-country analysis to review the experience with subsidy reforms in the Middle East and North Africa region between 2010 and 2014. This unprecedented period of subsidy reforms occurred during a period of extraordinary political changes, which makes this particular experience unique. The paper reviews the facts and the different paths to reforms taken by different countries faced with different challenges, and discusses the pros and cons of alternative policy options. It concludes with an assessment of the experiences and a discussion on future prospects.",
+    "topic": "Energy"
+   },
+   {
+    "id": "31925171",
+    "title": "Are Inflows of FDI Good for Russian Exporters ?",
+    "text": "This study examines whether foreign direct investment inflows facilitate upgrading of export quality in host countries. The analysis focuses on the Russian Federation and uses customs data merged with firm-level information from Orbis. The results show a positive relationship between the quality of products exported by domestic firms and the presence of foreign affiliates in the upstream (input-supplying) industries. This relationship is present irrespective of export destination or foreign direct investment origin. The results are robust to using different proxies to measure product quality.",
+    "topic": "Energy"
+   },
+   {
+    "id": "32137197",
+    "title": "Exports and Productivity : The Role of Imported Inputs and Investment in R&D",
+    "text": "The empirical evidence on within firm productivity improvements from exports has largely been understated because the measures of revenue productivity used do not account for pricing heterogeneity across firms. Using a panel of Indian firms, the analysis in this paper controls for firm variation in prices and uses proxy methods to retrieve measures of productivity that reflect physical productivity. Within-firm productivity changes from export entry are computed using a difference-in-differences matching estimator. The findings show that, over a six-year period, the difference in productivity growth between export entrants and their non-exporter counterparts is about 11 percentage points. Thus, productivity improvements from selling in international markets have largely been understated in the export-productivity empirical literature. This difference in productivity growth is decomposed into two channels. About 15 percent of the difference in productivity growth is explained by higher imports of intermediate inputs, and about 85 percent is explained by investment in research and development. The evidence suggests that investment in research and development is an important source of within-firm productivity gains even in developing countries.",
+    "topic": "Energy"
+   },
+   {
+    "id": "32403393",
+    "title": "The Energy-Management Nexus in Firms : Which Practices Matter, How Much and for Whom ?",
+    "text": "Management practices matter for firm performance. As energy is one input in firm production, management practices may interact with energy use. Using a comprehensive firm-level database covering 31 countries, this study documents the link between structured management practices, energy use, and firm performance. The paper reports several findings. First, although management is negatively correlated with energy expenditure, it bears a positive (or null) relationship with physical energy use, suggesting that management effort is directed toward saving costs but not reducing environmental impact. These results are primarily driven by the manufacturing sector. Second, among the structured management practices examined, those relating to target-setting are associated with reduced energy expenditure intensity. Third, generic management practices are correlated with greater discipline around energy management. Finally, while generic practices are correlated with stronger firm performance in manufacturing and services, energy-centric practices show a positive association only in services. Vast heterogeneity in adoption and outcomes suggests that targeted approaches to encourage energy management practices in firms may be more effective than uniform ones.",
+    "topic": "Energy"
+   },
+   {
+    "id": "27018030",
+    "title": "Residential electricity subsidies in Pakistan : targeting, welfare impacts, and options for reform",
+    "text": "This paper examines the economic and social implications of the current system of residential electricity subsidies in Pakistan, and assesses the potential to improve the system's outcomes through alternative targeting and program design. The analysis is multi-disciplinary in nature, drawing on national household survey data, electric company data on household electricity consumption, a welfare database, and a specially commissioned qualitative assessment of household and service provider attitudes and experiences. Affordability is only one of many concerns among electricity users, with reliability of supply and customer service being arguably more important. The analysis finds that targeting could be improved considerably by allocating subsidies according to proxy-means test scores using an existing national proxy-means test database. Providing a flat credit rather than a price subsidy could also alleviate certain governance concerns. The paper concludes with some guidance on how to carry out these reforms based on international experience.",
+    "topic": "Energy"
+   },
+   {
+    "id": "31178056",
+    "title": "Willingness to Pay for Electricity Access in Extreme Poverty : Evidence from Sub-Saharan Africa",
+    "text": "Improving electricity access in low-income countries is a challenging problem because of the high costs of grid extension and low demand for grid electricity in rural areas. This study elucidates these constraints by analyzing poor households' willingness-to-pay for different types of electricity access, including lower cost off-grid technologies. The theoretical model illustrates how consumer preferences, operational and capital costs of electricity service delivery, and availability of power supply affect households' decisions to acquire electricity technology. These effects are then assessed empirically by estimating beneficiaries' willingness-to-pay for electricity in three low-income countries that have pockets of households living in extreme poverty -- Burkina Faso, Senegal, and Rwanda. Consistent with the theoretical model, the results indicate very low household willingness-to-pay for electricity access, and that willingness-to-pay diminishes as households' income declines. Therefore, the study recommends concentrating in the nearer term on ultra-low-cost decentralized off-grid solar technologies in programs to provide household electricity to the poor in rural areas.",
+    "topic": "Energy"
+   },
+   {
+    "id": "30352657",
+    "title": "Effects of corporate governance on the performance of state-owned enterprises",
+    "text": "State-owned enterprises play an important role in economic growth and the delivery of critical public services such as health, education, water, and energy. The underperformance of state-owned enterprises can lead to significant challenges in overall national growth and competitiveness and pose a fiscal risk to the government. Consequently, improving the performance of state-owned enterprises remains an important issue for policy makers and development practitioners. More recently, efforts to strengthen corporate governance have been gaining international momentum as a means to improve the performance of state-owned enterprises. This study aims to examine the relationship between corporate governance and the performance of state-owned enterprises. Using data from 320 state-owned enterprises in the Republic of Korea, the study examines the effects of corporate governance on various measures of state-owned enterprise performance, including performance evaluation results, customer satisfaction, and financial performance. The empirical results indicate that board size, corporatization, and transparency and disclosure are positively related to the performance of state-owned enterprises, suggesting that they have an impact on the efficiency of state-owned enterprises. Independence of the board of directors and separation between the positions of board chair and chief executive officer have an insignificant or negative impact on specific measures of performance. These results suggest that a larger board, corporatization of state-owned enterprises, and more transparent disclosure practices can be beneficial for the performance of state-owned enterprises.",
+    "topic": "Energy"
+   },
+   {
+    "id": "30659555",
+    "title": "On the Asymmetry of Global Spillovers : Emerging Markets Versus Advanced Economies",
+    "text": "This paper examines growth spillovers between emerging markets (EMs) and advanced economies (AEs). The empirical results based on a two-block set-up and covering the period 1991 to 2015 are twofold. First, the paper shows that the size of the spillovers running from EMs to AEs is about a fifth of these running from AEs to EMs. Second, results point to spillovers from EMs to AEs having increased over the second half of the sample period. The paper presents suggestive evidence that the (evolving) structure of interdependencies play an important role in explaining the existence of \"asymmetrical spillovers\" between these similar sized blocks.",
+    "topic": "Energy"
+   },
+   {
+    "id": "30702230",
+    "title": "Explaining the WAEMU Growth Spurt -- The Role of Financial Deepening and Macro Policy",
+    "text": "Most countries of the West African Economic and Monetary Union (WAEMU) experienced a growth acceleration in 2011-17. This paper identifies the determinants of this growth by combining country-specific information with the results of a cross-country regression model. Growth was characterized by capital accumulation and driven by structural factors, including financial deepening and infrastructure development. What sets WAEMU countries apart from other African countries is the very sharp increase in private sector credit supporting private investment. This was facilitated by a prudent and accommodative regional monetary policy and improved financial regulation. Pro-cyclical fiscal policies supported public infrastructure investment but led to a buildup of public debt. Going forward, growth may lose some steam, given the renewed policy emphasis on fiscal consolidation and monetary tightening.",
+    "topic": "Energy"
+   },
+   {
+    "id": "30792794",
+    "title": "Learning from Developing Country Power Market Experiences : The Case of the Philippines",
+    "text": "Deep reforms of the Philippine power sector began in 2001, aiming at competitive wholesale and retail markets. This case study analyzes the Philippine experience with wholesale electricity markets at the generation level, including design, implementation, and outcomes. The spot market began operation in 2006, amidst adequate generation capacity albeit highly concentrated among few players. The reforms have successfully introduced market-driven forces to system operation and spot price signals for investments. Investment in new generation has recently been commissioned; generation concentration has plunged since the market’s inception (mainly due to privatization of generation assets); and generation supply has been generally secure (barring natural disasters). However, serious conflicts due to market power abuse occurred in the past; the market remains concentrated in four major players; and new competitors have slowly entered through the opaque and largely regulated market of bilateral contracts. Moreover, following aggressive capacity additions, baseload coal generation soared over the past decade, reaching 50 percent of total output in 2017, thus raising concerns about environmental sustainability, the optimal capacity mix (due to lack of investments in flexible mid-merit and peaking power plants), and long-term supply security of the Philippine power sector (since coal is imported). The case of the Philippines' power market highlights the importance of adequate ownership structure supportive of competition, the need of effective monitoring and oversight, especially during initial phases of the market, and the benefits and challenges that open and competitive wholesale markets can provide over time, especially in interaction with vertical integration (whether through cross-ownership or through bilateral contracts).",
+    "topic": "Energy"
+   },
+   {
+    "id": "30482900",
+    "title": "Assessing the Effect of Public Capital on Growth : An Extension of the World Bank Long-Term Growth Model",
+    "text": "To analyze the effect of an increase in the quantity or quality of public investment on growth, this paper extends the World Bank’s Long-Term Growth Model (LTGM), by separating the total capital stock into public and private portions, with the former adjusted for its quality. The paper presents the Long-Term Growth Model Public Capital Extension (LTGM-PC) and accompanying freely downloadable Excel-based tool. It also constructs a new Infrastructure Efficiency Index (IEI), by combining quality indicators for power, roads, and water as a cardinal measure of the quality of public capital in each country. In the model, public investment generates a larger boost to growth if existing stocks of public capital are low, or if public capital is particularly important in the production function. Through the lens of the model and utilizing newly-collated cross-country data, the paper presents three stylized facts and some related policy implications. First, the measured public capital stock is roughly constant as a share of gross domestic product (GDP) across income groups, which implies that the returns to new public investment, and its effect on growth, are roughly constant across development levels. Second, developing countries are relatively short of private capital, which means that private investment provides the largest boost to growth in low-income countries. Third, low-income countries have the lowest quality of public capital and the lowest efficient public capital stock as a share of gross domestic product. Although this does not affect the returns to public investment, it means that improving the efficiency of public investment has a sizable effect on growth in low-income countries. Quantitatively, a permanent 1ppt GDP increase in public investment boosts growth by around 0.1-0.2ppts over the following few years (depending on the parameters), with the effect declining over time.",
+    "topic": "Energy"
+   },
+   {
+    "id": "31567397",
+    "title": "Credit Cycles in Countries in the MENA Region -- Do They Exist ? Do They Matter?",
+    "text": "This paper estimates private sector credit cycles for most of the oil-importing and oil-exporting countries in the Middle East and North Africa. Credit cycles are the medium-term component in spectral analysis of real private sector credit growth. In addition, the paper estimates the credit cycles for several Western countries and Japan. The analysis finds substantial differences and rare similarities between credit cycles in the Middle East and North Africa and developed countries. Over 1964-2017, credit cycles in the Middle East and North Africa do not appear to be associated with real gross domestic product growth. They only explain a fraction of the growth in private sector credit, and they do not seem to be synchronized across oil exporters and oil importers.",
+    "topic": "Energy"
+   }
+  ]
+ },
+ "synthetic": {
+  "request": "req-00027",
+  "writer": "Qwen3.8-27B",
+  "topics": [
+   "Biodiversity",
+   "Community-Driven Development",
+   "Disability Inclusion",
+   "Financial Sector",
+   "Labor Markets",
+   "Migration",
+   "Trade Facilitation and Logistics",
+   "Urban Development"
+  ],
+  "prompt": {
+   "avoid": "Write 20 different sentences of the kind found in reports, working papers, policy notes, and news about economic and social development.\n\nEach sentence must be about one or more of these topics, and its \"labels\" must list every topic from this list that the sentence is about:\n- Biodiversity\n- Community-Driven Development\n- Disability Inclusion\n- Financial Sector\n- Labor Markets\n- Migration\n- Trade Facilitation and Logistics\n- Urban Development\n\nRules:\n- Do not use the topic names or their key words in the sentences. Describe the subject in other words, as a report would.\n- Vary the length from 10 to 45 words, and vary the style: findings, policy statements, project descriptions, statistics, questions a study asks.\n- Mention places, institutions, and numbers only as an author would; invent nothing that reads as a quotation of a real document.\n- About a third of the sentences should be about two or three of the topics at once.",
+   "allow": "Write 20 different sentences of the kind found in reports, working papers, policy notes, and news about economic and social development.\n\nEach sentence must be about one or more of these topics, and its \"labels\" must list every topic from this list that the sentence is about:\n- Biodiversity\n- Community-Driven Development\n- Disability Inclusion\n- Financial Sector\n- Labor Markets\n- Migration\n- Trade Facilitation and Logistics\n- Urban Development\n\nRules:\n- Use the words a report on the subject would use, including the topic names or their key words where an author would use them.\n- Vary the length from 10 to 45 words, and vary the style: findings, policy statements, project descriptions, statistics, questions a study asks.\n- Mention places, institutions, and numbers only as an author would; invent nothing that reads as a quotation of a real document.\n- About a third of the sentences should be about two or three of the topics at once."
+  },
+  "sets": {
+   "allow": {
+    "sentences": [
+     {
+      "text": "The study finds that enhanced trade facilitation measures in East Asia significantly reduced logistics costs for small and medium enterprises.",
+      "labels": [
+       "Trade Facilitation and Logistics"
+      ],
+      "named": false
+     },
+     {
+      "text": "Urban development strategies in Nairobi must integrate biodiversity corridors to mitigate the adverse effects of rapid population growth.",
+      "labels": [
+       "Biodiversity",
+       "Urban Development"
+      ],
+      "named": true
+     },
+     {
+      "text": "Financial sector reforms aimed at expanding access to microfinance have shown promising results in alleviating rural poverty.",
+      "labels": [
+       "Financial Sector"
+      ],
+      "named": true
+     },
+     {
+      "text": "How does community-driven development impact local governance structures in post-conflict regions of the Middle East?",
+      "labels": [
+       "Community-Driven Development"
+      ],
+      "named": true
+     },
+     {
+      "text": "Inclusive labor market policies are essential for ensuring that persons with disabilities have equal opportunities for employment and advancement.",
+      "labels": [
+       "Disability Inclusion",
+       "Labor Markets"
+      ],
+      "named": false
+     },
+     {
+      "text": "The new migration compact emphasizes the need for secure pathways for legal migration while enhancing border security.",
+      "labels": [
+       "Migration"
+      ],
+      "named": true
+     },
+     {
+      "text": "Investments in urban development have led to improved infrastructure, which in turn attracts private sector investment in the financial sector.",
+      "labels": [
+       "Financial Sector",
+       "Urban Development"
+      ],
+      "named": true
+     },
+     {
+      "text": "Biodiversity loss in tropical regions poses a significant threat to local ecosystems and the livelihoods of dependent communities.",
+      "labels": [
+       "Biodiversity"
+      ],
+      "named": true
+     },
+     {
+      "text": "This project aims to enhance trade facilitation by modernizing customs procedures and improving port efficiency in West Africa.",
+      "labels": [
+       "Trade Facilitation and Logistics"
+      ],
+      "named": false
+     },
+     {
+      "text": "Effective community-driven development requires active participation of local stakeholders, including marginalized groups, to ensure sustainable outcomes.",
+      "labels": [
+       "Community-Driven Development"
+      ],
+      "named": true
+     },
+     {
+      "text": "Recent data indicates that labor market flexibility has positively correlated with higher employment rates among young women in urban areas.",
+      "labels": [
+       "Labor Markets",
+       "Urban Development"
+      ],
+      "named": false
+     },
+     {
+      "text": "Disability inclusion in urban planning is crucial for creating accessible public spaces that accommodate diverse needs.",
+      "labels": [
+       "Disability Inclusion",
+       "Urban Development"
+      ],
+      "named": true
+     },
+     {
+      "text": "The report highlights the critical role of the financial sector in mobilizing resources for sustainable urban development projects.",
+      "labels": [
+       "Financial Sector",
+       "Urban Development"
+      ],
+      "named": true
+     },
+     {
+      "text": "Migration patterns in South America are increasingly influenced by environmental factors, including climate change and biodiversity loss.",
+      "labels": [
+       "Biodiversity",
+       "Migration"
+      ],
+      "named": true
+     },
+     {
+      "text": "Can improved logistics infrastructure serve as a catalyst for regional economic integration and trade expansion?",
+      "labels": [
+       "Trade Facilitation and Logistics"
+      ],
+      "named": false
+     },
+     {
+      "text": "Community-driven initiatives in Southeast Asia have demonstrated success in preserving local biodiversity while promoting economic growth.",
+      "labels": [
+       "Biodiversity",
+       "Community-Driven Development"
+      ],
+      "named": true
+     },
+     {
+      "text": "Policies addressing disability inclusion must be integrated into broader labor market strategies to maximize economic potential.",
+      "labels": [
+       "Disability Inclusion",
+       "Labor Markets"
+      ],
+      "named": true
+     },
+     {
+      "text": "The expansion of mobile banking has significantly improved financial inclusion among rural populations, thereby enhancing their access to essential services.",
+      "labels": [
+       "Financial Sector"
+      ],
+      "named": false
+     },
+     {
+      "text": "Urban development in coastal cities requires careful consideration of biodiversity conservation to prevent ecological degradation.",
+      "labels": [
+       "Biodiversity",
+       "Urban Development"
+      ],
+      "named": true
+     },
+     {
+      "text": "Trade facilitation measures that reduce non-tariff barriers can boost competitiveness and integrate developing economies into global supply chains.",
+      "labels": [
+       "Trade Facilitation and Logistics"
+      ],
+      "named": false
+     }
+    ],
+    "total": 20296,
+    "named": 14886,
+    "report_f1": [
+     0.472,
+     0.475,
+     0.48
+    ]
+   },
+   "avoid": {
+    "sentences": [
+     {
+      "text": "The new tariff regime aims to reduce clearance times at major ports, thereby stimulating cross-border exchange of goods.",
+      "labels": [
+       "Trade Facilitation and Logistics"
+      ],
+      "named": false
+     },
+     {
+      "text": "Urban planners in Lagos are expanding rapid transit corridors to alleviate congestion and improve accessibility for residents.",
+      "labels": [
+       "Urban Development"
+      ],
+      "named": false
+     },
+     {
+      "text": "Data suggests that young workers face significant barriers to entry in the formal employment sector, particularly in tech hubs.",
+      "labels": [
+       "Labor Markets"
+      ],
+      "named": false
+     },
+     {
+      "text": "Riverside conservation zones are being integrated into city zoning laws to protect native species habitats while allowing limited recreation.",
+      "labels": [
+       "Biodiversity",
+       "Urban Development"
+      ],
+      "named": false
+     },
+     {
+      "text": "Microfinance institutions are piloting digital lending platforms to reach underserved rural populations without collateral requirements.",
+      "labels": [
+       "Financial Sector"
+      ],
+      "named": false
+     },
+     {
+      "text": "How do remittance flows from diaspora communities impact local housing prices in second-tier cities across Southeast Asia?",
+      "labels": [
+       "Migration",
+       "Urban Development"
+      ],
+      "named": false
+     },
+     {
+      "text": "Project teams must ensure that all community gathering spaces are fully accessible to individuals with mobility impairments.",
+      "labels": [
+       "Community-Driven Development",
+       "Disability Inclusion"
+      ],
+      "named": false
+     },
+     {
+      "text": "The central bank’s latest quarterly report indicates a slight uptick in household savings rates following the interest rate adjustment.",
+      "labels": [
+       "Financial Sector"
+      ],
+      "named": false
+     },
+     {
+      "text": "Freight corridors along the northern border are experiencing delays due to outdated customs documentation processes.",
+      "labels": [
+       "Trade Facilitation and Logistics"
+      ],
+      "named": false
+     },
+     {
+      "text": "Employment rates for persons with sensory impairments remain below the national average, highlighting a persistent gap in workplace accommodations.",
+      "labels": [
+       "Disability Inclusion",
+       "Labor Markets"
+      ],
+      "named": false
+     },
+     {
+      "text": "Villages in the highlands are establishing cooperative funds to manage shared agricultural resources and support local infrastructure upgrades.",
+      "labels": [
+       "Community-Driven Development"
+      ],
+      "named": false
+     },
+     {
+      "text": "Protecting wetland ecosystems in the delta region is critical for maintaining water filtration services and preventing coastal erosion.",
+      "labels": [
+       "Biodiversity"
+      ],
+      "named": false
+     },
+     {
+      "text": "International migrants in the capital often lack access to standardized vocational training, limiting their upward mobility in skilled trades.",
+      "labels": [
+       "Labor Markets",
+       "Migration"
+      ],
+      "named": false
+     },
+     {
+      "text": "The proposed metro extension will serve densely populated residential areas, aiming to reduce reliance on private vehicle usage.",
+      "labels": [
+       "Urban Development"
+      ],
+      "named": false
+     },
+     {
+      "text": "Regulatory frameworks for fintech startups are being revised to balance innovation with consumer protection standards in the digital economy.",
+      "labels": [
+       "Financial Sector"
+      ],
+      "named": false
+     },
+     {
+      "text": "Local councils are allocating specific grants for the restoration of historic market squares to boost tourist footfall and local commerce.",
+      "labels": [
+       "Community-Driven Development",
+       "Urban Development"
+      ],
+      "named": false
+     },
+     {
+      "text": "Surveys indicate that over 40% of recent refugees prefer self-employment but lack initial capital to start small businesses.",
+      "labels": [
+       "Financial Sector",
+       "Migration"
+      ],
+      "named": false
+     },
+     {
+      "text": "Port authorities are investing in automated guided vehicles to streamline container handling and minimize human error during loading operations.",
+      "labels": [
+       "Trade Facilitation and Logistics"
+      ],
+      "named": false
+     },
+     {
+      "text": "Inclusive design guidelines are now mandatory for all publicly funded housing projects to ensure equitable living conditions for all demographics.",
+      "labels": [
+       "Disability Inclusion",
+       "Urban Development"
+      ],
+      "named": false
+     },
+     {
+      "text": "Monitoring data shows a decline in rare pollinator populations within the national park reserves, prompting urgent conservation interventions.",
+      "labels": [
+       "Biodiversity"
+      ],
+      "named": false
+     }
+    ],
+    "total": 20220,
+    "named": 1796,
+    "report_f1": [
+     0.417
+    ]
+   }
+  },
+  "requests": 1000,
+  "labels": 86
+ },
+ "distillation": {
+  "student": "DeBERTa-v3-small classifier, seed 42, after five targeted rounds",
+  "threshold": 0.03,
+  "top": 5,
+  "measured": [
+   "Agriculture and Food",
+   "Biodiversity",
+   "Climate Change",
+   "Competition Policy",
+   "Debt",
+   "Digital Development",
+   "Disaster Risk Management",
+   "Early Childhood Development",
+   "Education",
+   "Energy",
+   "Environment",
+   "Extractive Industries",
+   "Financial Inclusion",
+   "Financial Sector",
+   "Forests and Landscapes",
+   "Fragility, Conflict, and Violence",
+   "Gender",
+   "Governance",
+   "Health",
+   "Higher Education",
+   "Indigenous Peoples",
+   "Inequality and Shared Prosperity",
+   "Investment Climate",
+   "Labor Markets",
+   "Livestock and Sustainability",
+   "Macroeconomics",
+   "Measuring Poverty",
+   "Migration",
+   "Nutrition",
+   "Oceans, Fisheries, and Coastal Economies",
+   "Pensions",
+   "Pollution",
+   "Poverty",
+   "Sanitation",
+   "Skills Development",
+   "Social Protection",
+   "Taxes and Government Revenue",
+   "Teachers",
+   "Trade",
+   "Trade Facilitation and Logistics",
+   "Transport",
+   "Urban Development",
+   "Water Resources Management",
+   "Water Supply"
+  ],
+  "documents": [
+   {
+    "id": "27691978",
+    "title": "Trains, trade and transaction costs : how does domestic trade by rail affect market prices of Malawi agricultural commodities ?",
+    "url": "https://documents.worldbank.org/curated/en/393461498762732861",
+    "year": 2017,
+    "text": "This paper measures the impact of low-cost transport by rail in Malawi on the dispersion of agricultural commodities prices across markets by exploiting the quasi-experimental design of the nearly total collapse of domestic transport by rail in January 2003 due to the destruction of a railway bridge at Rivirivi, Balaka. Estimations are based on monthly market prices of four agricultural commodities (maize, groundnuts, rice, and beans) in 27 local markets for the period 1998–2006. Market pairs connected by rail when the railway line was operational are intervention observations. Railway transport services explain a 14 percent to 17 percent reduction in price dispersion across markets. Geographical reach of trade varies by crop, most likely related to storability and geographical spread of production. Perishability appears to increase impact reflecting limited scope for arbitrage. Overall, impacts are remarkably similar in size across commodities.",
+    "reference": [
+     "Agriculture and Food",
+     "Macroeconomics",
+     "Trade",
+     "Transport"
+    ],
+    "student": [
+     {
+      "label": "Transport",
+      "score": 0.412
+     },
+     {
+      "label": "Trade",
+      "score": 0.216
+     },
+     {
+      "label": "Agriculture and Food",
+      "score": 0.183
+     },
+     {
+      "label": "Macroeconomics",
+      "score": 0.036
+     },
+     {
+      "label": "Jobs and Development",
+      "score": 0.017
+     },
+     {
+      "label": "Trade Facilitation and Logistics",
+      "score": 0.013
+     },
+     {
+      "label": "Food Security Update",
+      "score": 0.013
+     },
+     {
+      "label": "Investment Climate",
+      "score": 0.012
+     }
+    ],
+    "teachers": {
+     "Gemini 3.8 Flash": [
+      "Agriculture and Food",
+      "Infrastructure",
+      "Trade Facilitation and Logistics",
+      "Transport"
+     ],
+     "Claude Sonnet 5.5": [
+      "Agribusiness and Value Chains",
+      "Agriculture and Food",
+      "Infrastructure",
+      "Trade Facilitation and Logistics",
+      "Transport"
+     ],
+     "Qwen3.8-27B": [
+      "Agriculture and Food",
+      "Trade Facilitation and Logistics",
+      "Transport"
+     ]
+    }
+   },
+   {
+    "id": "30939680",
+    "title": "Electrification and Women's Empowerment : Evidence from Rural India",
+    "url": "https://documents.worldbank.org/curated/en/112131553786901131",
+    "year": 2019,
+    "text": "Electrification has been shown to accelerate opportunities for women by moving them into more productive activities, but whether improvements in economic outcomes also change gender norms and practices within the household remains unclear. This paper investigates the causal link between electricity access and women's empowerment, using a large gender-disaggregated data set on India. Empowerment is measured by women's decision-making ability, mobility, financial autonomy, reproductive freedom, and social participation. Using propensity score matching, the study finds that electrification enhances all measures of women's empowerment and is associated with an 11-percentage point increase in the overall empowerment index. Employment and education are identified as the two most important causal channels through which electrification enables empowerment.",
+    "reference": [
+     "Education",
+     "Energy",
+     "Gender"
+    ],
+    "student": [
+     {
+      "label": "Energy",
+      "score": 0.432
+     },
+     {
+      "label": "Gender",
+      "score": 0.379
+     },
+     {
+      "label": "Education",
+      "score": 0.088
+     },
+     {
+      "label": "Social Inclusion",
+      "score": 0.079
+     },
+     {
+      "label": "Social Sustainability and Inclusion",
+      "score": 0.052
+     },
+     {
+      "label": "Sexual Orientation and Gender Identity",
+      "score": 0.051
+     },
+     {
+      "label": "Jobs and Development",
+      "score": 0.048
+     },
+     {
+      "label": "Global Financing Facility for Women, Children and Adolescents",
+      "score": 0.029
+     }
+    ],
+    "teachers": {
+     "Gemini 3.8 Flash": [
+      "Energy",
+      "Gender",
+      "Infrastructure"
+     ],
+     "Claude Sonnet 5.5": [
+      "Energy",
+      "Gender",
+      "Infrastructure",
+      "Jobs and Development",
+      "Social Inclusion"
+     ],
+     "Qwen3.8-27B": [
+      "Digital Development",
+      "Energy",
+      "Gender",
+      "Labor Markets",
+      "Social Inclusion"
+     ]
+    }
+   },
+   {
+    "id": "32096795",
+    "title": "The Important Role of Equivalence Scales : Household Size, Composition, and Poverty Dynamics in the Russian Federation",
+    "url": "https://documents.worldbank.org/curated/en/713071591281684390",
+    "year": 2020,
+    "text": "Hardly any literature exists on the relationship between equivalence scales and poverty dynamics for transitional countries. This paper offers a new study on the impacts of equivalence scale adjustments on poverty dynamics in the Russian Federation, using equivalence scales constructed from subjective wealth and more than 20 waves of household panel survey data from the Russia Longitudinal Monitoring Survey. The analysis suggests that the equivalence scale elasticity is sensitive to household demographic composition. The adjustments for the equivalence of scales result in lower estimates of poverty lines. The study decomposes poverty into chronic and transient components and finds that chronic poverty is positively related to the adult scale parameter. However, chronic poverty is less sensitive to the child scale factor compared with the adult scale factor. Interestingly, the direction of income mobility might change depending on the specific scale parameters that are employed. The results are robust to different measures of chronic poverty, income expectations, reference groups, functional forms, and various other specifications.",
+    "reference": [
+     "Inequality and Shared Prosperity",
+     "Measuring Poverty",
+     "Poverty"
+    ],
+    "student": [
+     {
+      "label": "Measuring Poverty",
+      "score": 0.808
+     },
+     {
+      "label": "Inequality and Shared Prosperity",
+      "score": 0.133
+     },
+     {
+      "label": "Poverty",
+      "score": 0.125
+     },
+     {
+      "label": "Education",
+      "score": 0.006
+     },
+     {
+      "label": "Safety Nets and Cash Transfers",
+      "score": 0.003
+     },
+     {
+      "label": "Agriculture and Food",
+      "score": 0.003
+     },
+     {
+      "label": "Girls' Education",
+      "score": 0.003
+     },
+     {
+      "label": "Macroeconomics",
+      "score": 0.003
+     }
+    ],
+    "teachers": {
+     "Gemini 3.8 Flash": [
+      "Inequality and Shared Prosperity",
+      "Measuring Poverty",
+      "Poverty"
+     ],
+     "Claude Sonnet 5.5": [
+      "Inequality and Shared Prosperity",
+      "Measuring Poverty",
+      "Poverty"
+     ],
+     "Qwen3.8-27B": [
+      "Inequality and Shared Prosperity",
+      "Measuring Poverty",
+      "Poverty"
+     ]
+    }
+   },
+   {
+    "id": "30904180",
+    "title": "The Three-Gap Model of Health Worker Performance",
+    "url": "https://documents.worldbank.org/curated/en/891931552578615885",
+    "year": 2019,
+    "text": "The Three-Gap Model examines the determinants of low-quality health care by examining the patterns and determinants of three gaps. Using four measures of performance -- target performance, actual performance, capacity to perform, and knowledge to perform -- this paper defines three gaps for each health worker: the gap between target performance and what they have the knowledge to do (the know gap), the gap between their knowledge and their capacity to perform (the know-can gap), and the gap between their capacity and what they actually do (the can-do gap). The paper demonstrates how the patterns of these gaps across health workers in a sample can be used to diagnose failures in the system as well as evaluate the outcomes of policy experiments. Using data on pediatric care from hospitals in Liberia, the paper illustrates how the model can be used to investigate the potential for improvements in the quality of care from several possible policy interventions. The analysis of the relationships between these gaps across health workers in a health system help to paint a better picture of the determinants of performance and can assist policy makers in choosing relevant policies to improve health worker performance.",
+    "reference": [
+     "Health"
+    ],
+    "student": [
+     {
+      "label": "Health",
+      "score": 0.441
+     },
+     {
+      "label": "Global Financing Facility for Women, Children and Adolescents",
+      "score": 0.006
+     },
+     {
+      "label": "One Health",
+      "score": 0.005
+     },
+     {
+      "label": "Infectious diseases and Vaccines",
+      "score": 0.004
+     },
+     {
+      "label": "Universal Health Coverage",
+      "score": 0.004
+     },
+     {
+      "label": "COVID-19 Hub",
+      "score": 0.003
+     },
+     {
+      "label": "Fragility, Conflict, and Violence",
+      "score": 0.002
+     },
+     {
+      "label": "Measuring Poverty",
+      "score": 0.002
+     }
+    ],
+    "teachers": {
+     "Gemini 3.8 Flash": [
+      "Health",
+      "Universal Health Coverage"
+     ],
+     "Claude Sonnet 5.5": [
+      "Governance",
+      "Health",
+      "Universal Health Coverage"
+     ],
+     "Qwen3.8-27B": [
+      "Education",
+      "Governance",
+      "Health",
+      "Inequality and Shared Prosperity",
+      "Universal Health Coverage"
+     ]
+    }
+   },
+   {
+    "id": "26584623",
+    "title": "Subsidy reforms in the Middle East and North Africa Region : a review",
+    "url": "https://documents.worldbank.org/curated/en/212631469021941386",
+    "year": 2016,
+    "text": "The paper takes stock of eight country studies and a cross-country analysis to review the experience with subsidy reforms in the Middle East and North Africa region between 2010 and 2014. This unprecedented period of subsidy reforms occurred during a period of extraordinary political changes, which makes this particular experience unique. The paper reviews the facts and the different paths to reforms taken by different countries faced with different challenges, and discusses the pros and cons of alternative policy options. It concludes with an assessment of the experiences and a discussion on future prospects.",
+    "reference": [
+     "Energy",
+     "Governance",
+     "Macroeconomics",
+     "Poverty",
+     "Social Protection"
+    ],
+    "student": [
+     {
+      "label": "Taxes and Government Revenue",
+      "score": 0.127
+     },
+     {
+      "label": "Governance",
+      "score": 0.04
+     },
+     {
+      "label": "Energy",
+      "score": 0.012
+     },
+     {
+      "label": "Financial Sector",
+      "score": 0.008
+     },
+     {
+      "label": "Macroeconomics",
+      "score": 0.007
+     },
+     {
+      "label": "Inequality and Shared Prosperity",
+      "score": 0.007
+     },
+     {
+      "label": "Investment Climate",
+      "score": 0.005
+     },
+     {
+      "label": "Extractive Industries",
+      "score": 0.004
+     }
+    ],
+    "teachers": {
+     "Gemini 3.8 Flash": [
+      "Energy",
+      "Governance",
+      "Macroeconomics",
+      "Social Protection",
+      "Taxes and Government Revenue"
+     ],
+     "Claude Sonnet 5.5": [
+      "Energy",
+      "Fragility, Conflict, and Violence",
+      "Governance",
+      "Macroeconomics",
+      "Social Protection"
+     ],
+     "Qwen3.8-27B": [
+      "Governance",
+      "Macroeconomics",
+      "Taxes and Government Revenue"
+     ]
+    }
+   },
+   {
+    "id": "28112446",
+    "title": "Regressive or progressive ? the effect of tobacco taxes in Ukraine",
+    "url": "https://documents.worldbank.org/curated/en/934621509107306525",
+    "year": 2017,
+    "text": "Tobacco taxes are usually considered regressive, as the poorest individuals allocate larger shares of their budget toward the purchase of tobacco-related products. However, because these taxes also discourage tobacco use, some of the most adverse effects and their economic costs are reduced, including lower life expectancy at birth, higher medical expenses, increased years of disability among smokers, and the effects of secondhand smoke. This paper projects the effects of an increase in the tobacco tax on household welfare in Ukraine. It considers three price-elasticity scenarios among income deciles of the population. The results show that although tobacco taxes are often criticized for being regressive in the short run, in a more comprehensive scenario that includes medical expenses and working years, the benefits of tobacco taxes far exceed the increase in tax liability, benefitting in large measure lower income households. The results also indicate that lower health expenditure seems to be the main driver, because of the reduction in tobacco-related diseases that require expensive treatments. Tobacco taxes are also associated with positive distributional effects related to the higher long-term price elasticities of tobacco consumption.",
+    "reference": [
+     "Macroeconomics"
+    ],
+    "student": [
+     {
+      "label": "Health",
+      "score": 0.25
+     },
+     {
+      "label": "Taxes and Government Revenue",
+      "score": 0.206
+     },
+     {
+      "label": "Safety Nets and Cash Transfers",
+      "score": 0.082
+     },
+     {
+      "label": "Poverty",
+      "score": 0.082
+     },
+     {
+      "label": "Inequality and Shared Prosperity",
+      "score": 0.059
+     },
+     {
+      "label": "Measuring Poverty",
+      "score": 0.059
+     },
+     {
+      "label": "Infectious diseases and Vaccines",
+      "score": 0.049
+     },
+     {
+      "label": "Macroeconomics",
+      "score": 0.045
+     }
+    ],
+    "teachers": {
+     "Gemini 3.8 Flash": [
+      "Health",
+      "Inequality and Shared Prosperity",
+      "Poverty",
+      "Taxes and Government Revenue"
+     ],
+     "Claude Sonnet 5.5": [
+      "Health",
+      "Inequality and Shared Prosperity",
+      "Poverty",
+      "Taxes and Government Revenue"
+     ],
+     "Qwen3.8-27B": [
+      "Health",
+      "Inequality and Shared Prosperity",
+      "Macroeconomics",
+      "Poverty",
+      "Taxes and Government Revenue"
+     ]
+    }
+   }
+  ],
+  "scores": [
+   {
+    "model": "Student, first set of sentences",
+    "kind": "small",
+    "f1": 0.468
+   },
+   {
+    "model": "Student, after further rounds",
+    "kind": "small",
+    "f1": 0.521
+   },
+   {
+    "model": "Gemini 3.8 Flash",
+    "kind": "large",
+    "f1": 0.53
+   },
+   {
+    "model": "Qwen3.8-27B",
+    "kind": "large",
+    "f1": 0.524
+   },
+   {
+    "model": "Claude Sonnet 5.5",
+    "kind": "large",
+    "f1": 0.523
+   }
+  ],
+  "speed": [
+   {
+    "model": "Student",
+    "where": "one GPU",
+    "kind": "small",
+    "seconds": 0.0072
+   },
+   {
+    "model": "Student",
+    "where": "CPU, 4 threads",
+    "kind": "small",
+    "seconds": 0.19
+   },
+   {
+    "model": "Qwen3.8-27B",
+    "where": "one GPU, own server",
+    "kind": "large",
+    "seconds": 0.5
+   },
+   {
+    "model": "Claude Sonnet 5.5",
+    "where": "hosted service",
+    "kind": "large",
+    "seconds": 1.25
+   },
+   {
+    "model": "Gemini 3.8 Flash",
+    "where": "hosted service",
+    "kind": "large",
+    "seconds": 3.87
+   }
+  ]
+ },
+ "workflow": {
+  "rounds": [
+   {
+    "replicate": 1,
+    "arms": [
+     {
+      "arm": "first",
+      "f1": 0.468,
+      "examples": 20296
+     },
+     {
+      "arm": "control",
+      "f1": 0.485,
+      "examples": 35296
+     },
+     {
+      "arm": "targeted",
+      "f1": 0.521,
+      "examples": 32240
+     }
+    ],
+    "difference": 0.037,
+    "interval": [
+     0.02,
+     0.053
+    ]
+   },
+   {
+    "replicate": 2,
+    "arms": [
+     {
+      "arm": "first",
+      "f1": 0.476,
+      "examples": 20296
+     },
+     {
+      "arm": "control",
+      "f1": 0.478,
+      "examples": 35296
+     },
+     {
+      "arm": "targeted",
+      "f1": 0.519,
+      "examples": 35256
+     }
+    ],
+    "difference": 0.041,
+    "interval": [
+     0.023,
+     0.059
+    ]
+   }
+  ],
+  "large": [
+   {
+    "model": "Gemini 3.8 Flash",
+    "f1": 0.53
+   },
+   {
+    "model": "Qwen3.8-27B",
+    "f1": 0.524
+   },
+   {
+    "model": "Claude Sonnet 5.5",
+    "f1": 0.523
+   }
+  ],
+  "duplicates": {
+   "task": "job titles",
+   "writer": "Qwen3.8-27B",
+   "written": 18000,
+   "repeats": 6612
+  }
+ }
+}
