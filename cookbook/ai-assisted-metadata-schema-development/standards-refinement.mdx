@@ -312,10 +312,18 @@ did not receive an additional independent held-out validation after refinement.
 
 ## Implementation options
 
+AI tools can help speed up standards-informed schema refinement by summarizing
+relevant standards documentation, suggesting candidate term mappings, and
+drafting crosswalk rows and revised field definitions. Supply the current
+schema, validation findings, and authoritative references, and ask for source
+links and explanations of scope differences alongside each proposal. Reviewers
+verify those sources and decide which changes preserve the intended meanings.
+The study used an interactive human–AI review for this work, as described in
+Appendix F of the paper.
+
 Manual reading and the existing worksheet are sufficient for selected
-standards comparisons. AI assistance can suggest candidate terms and scope
-differences, with reviewers checking the authoritative sources. Choose standards
-for the artifact class and use case, as in Recipe 7.1. A documented crosswalk
+comparisons. Choose standards for the artifact class and use case, as in
+Recipe 7.1. A documented crosswalk
 can support review without an executable mapping; implementing conversions or
 formal conformance requires a defined target, representation rules, and separate
 checks. Deferred structures remain distinct from implemented field changes.
