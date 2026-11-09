@@ -398,7 +398,7 @@ const STEPS = [
     short: 'Test on real cases',
     office: 'Before the new staff member works alone, a supervisor checks their decisions on real past files.',
     what: 'A few hundred real cases, with answers given by people, are set aside for testing only.',
-    why: 'Only real cases show how the model will do in use. A test on practice cases mostly measures how well the model copies the writer.',
+    why: 'Only real cases show how the model will do in use. Practice cases share the writing habits of the large model, so a high score on them can fail to hold on real cases.',
     used: ['yes', '300 real report abstracts with recorded topics.'],
     Demo: TestDemo,
   },

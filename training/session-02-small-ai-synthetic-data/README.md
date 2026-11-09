@@ -30,7 +30,7 @@ A model learns a task from [labelled examples](#terms), which are examples toget
 
 <!-- figure: why-synthetic -->
 
-The process resembles the training of a new staff member. A new staff member usually learns from past files with the right decision recorded. When such files do not exist, an experienced colleague can write practice cases: realistic, varied, each with its answer, and with extra cases of the rare kind. With synthetic data, a large model writes the practice cases and a small model learns from them. The final test always uses real cases.
+The figure ends with a comparison from office work: a new staff member who learns from practice cases written by an experienced colleague, and who is then tested on real files.
 
 ## How synthetic data are made
 
@@ -43,7 +43,7 @@ The figure describes the process in nine steps. For each step it gives the offic
 3. **Vary the cases.** Each request sets a different combination of attributes, such as the answer, the length, the style, the language, and the difficulty. A small model learns only from the kinds of cases in its training set. In the experiments behind this session, Qwen3.8-27B was asked many times for job titles of the same occupation groups, and 6,612 of the 18,000 titles written (37%) repeated an earlier title.
 4. **Write and check.** The large model writes the cases with their answers. A second model labels each case on its own, and scripts remove repeats, answers outside the list, and cases where the two models disagree.
 5. **Train the small model** on the checked cases.
-6. **Test on real cases.** A few hundred real cases with answers given by people are set aside for testing only. A test on practice cases mostly measures how well the model copies the writer.
+6. **Test on real cases.** A few hundred real cases with answers given by people are set aside for testing only. Practice cases share the writing habits of the large model, so a high score on them can fail to hold on real cases.
 7. **Practise the weak spots.** The model is tested on a second set of real cases, and a program finds the kinds of cases with the most mistakes. The large model writes more cases of those kinds, and the model is trained again. In the worked example, these targeted rounds scored 0.037 and 0.041 higher than rounds of the same size spread evenly over all topics, in two repeats of the experiment. On job titles the difference was 0.012, and its 95% interval included zero. Choosing what to practise from the model's mistakes is related to [curriculum learning](#terms), which orders the training cases from easy to hard; the ordering itself was not tested.
 8. **Ask people which is better.** Experienced staff choose the better of two practice cases or two answers. This [preference feedback](#terms) improves the request to the large model and filters the cases. Where the small model writes text, such as an answer to a farmer, it can also train the model towards the preferred answers. The experiments did not use this step.
 9. **Watch and refresh.** People review a sample of the model's answers at regular intervals, and new practice cases are written when the answers, the language, or the situation change. The World Development Report 2026 describes a screening tool for diabetic eye disease that rejected more than one-fifth of the images nurses took, because the lighting in the clinic differed from that in its training images.
