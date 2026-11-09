@@ -2,8 +2,6 @@
 
 This session is in preparation. This page introduces its ideas for readers without a background in AI: small AI, synthetic data, and model distillation. It opens with tasks from development work that suit a small model, explains why the examples for training such a model are often written by a large model, and describes the process in nine steps. A worked example then follows the process on one task, with measured results. Linked terms are defined in the Terms section at the end of the page.
 
-On the docs site, the figures on this page are interactive, and a linked term shows its definition when selected. On GitHub the figures are not shown, and the text describes their content.
-
 ## Tasks for a small model
 
 A small model can take on a narrow task that repeats many times, on an organization's own computer. The figure shows six such tasks from development work: matching job seekers to vacancies at a public employment office, sorting complaints sent by text message to a project's grievance mechanism, picking out requests for help from messages after a flood, answering farmers' questions from an extension guide, flagging errors in benefit applications, and coding the occupations written in a household survey. For each task, the figure shows why no training data exist and one practice case with its answer. The tasks and practice cases were written for this page as illustrations.
