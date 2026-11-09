@@ -90,7 +90,7 @@ The results come from one task. The right answers are the topics recorded for ea
 
 ## Does a task suit a small model?
 
-A small model is a good candidate when the answer comes from a fixed list, such as topics or codes, and the same task is repeated many times. It also suits work where the data should stay inside the organization or where the internet connection is poor. A large model is the better choice when the answer is new text, such as a summary or a reply, or when the questions cannot be listed in advance. The figure sorts six tasks from development work between the two kinds of model.
+A small model is a good candidate when the answer comes from a fixed list, such as topics or codes, and the same task is repeated many times. It also suits work where the data should stay inside the organization or where the internet connection is poor. A large model is the better choice when the answer is new text, such as a summary or a reply, or when the questions cannot be listed in advance. The figure lists six more tasks from development work, different from those at the top of the page. For each task, the reader chooses a small or a large model and sees the suggested answer with its reason.
 
 <!-- figure: small-ai-tasks -->
 

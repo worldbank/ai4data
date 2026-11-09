@@ -57,24 +57,24 @@
   },
   "tasks": [
    {
-    "task": "Assign topics from a fixed list to thousands of project documents",
-    "fit": "small",
-    "why": "The answer comes from a fixed list, and the same task repeats for every document. This is the worked example of the session."
-   },
-   {
     "task": "Recognize a crop disease from a photo of a leaf, in a field without internet",
     "fit": "small",
     "why": "The answer is one of a known set of diseases, and the model has to run on a phone without a connection."
    },
    {
-    "task": "Mark the urgent messages among those sent to a helpline",
+    "task": "Read the number on a water meter from a photo taken by a meter reader",
     "fit": "small",
-    "why": "There are two answers and many messages. The messages hold personal data, which can stay on the organization's own computer."
+    "why": "The answer has a fixed format, and a utility has thousands of meters to read every month. The model can run on the reader's phone."
    },
    {
-    "task": "Code the job titles written in a survey to an occupation classification",
+    "task": "Recognize the language of each message received by a hotline",
     "fit": "small",
-    "why": "The answer is a code from a fixed classification, and a survey has thousands of answers. Codes assigned by people on a sample are needed to check the model."
+    "why": "The answer comes from a short list of languages, and every message needs it. The messages can stay on the hotline's own computer."
+   },
+   {
+    "task": "Write a personal reply to each complaint",
+    "fit": "large",
+    "why": "The answer is new text that has to fit each complaint. A small model can do a narrower part of the work, such as choosing a standard reply for a person to adapt."
    },
    {
     "task": "Draft the summary of a 150-page project document",
