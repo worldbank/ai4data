@@ -21,6 +21,11 @@ preserves accumulated evidence about that name. Exact-name aggregation is a
 deterministic operation. It does not decide that differently named fields mean
 the same thing or that a frequently proposed field deserves acceptance.
 
+The same grouping rule can be applied to observations from another artifact
+class: retain its original property names, artifact identities, values, and
+rationales. A field profile summarizes evidence for a name; that name need not
+be geographic_scope, title, or any other property found in the study.
+
 Canonical metadata concept synthesis performs a different transformation.
 It compares the meanings supported by profiles and proposes shared descriptive
 concepts. A concept has a definition and rationale that apply across local
@@ -38,7 +43,7 @@ schema design comes after human refinement.
 
 - The practitioner can execute exact-name aggregation and explain its denominator.
 - The practitioner can distinguish lexical variation from evidence of semantic equivalence.
-- The practitioner can explain the 833-profile to 70-candidate synthesis boundary without treating it as schema acceptance.
+- The practitioner can propose shared concepts from profile evidence while preserving uncertainty for expert review.
 
 ## Prerequisite concepts
 
@@ -103,6 +108,36 @@ geographic_scope: count=3, n_snapshots=3, support=1.000
 Wrote outputs/geographic_profiles.json
 ```
 
+**JSON output excerpt.** The following is taken from the generated profile.
+The first evidence record is shown unchanged; the other two records are omitted
+from this display only. The output file retains all three observations.
+
+```json
+[
+  {
+    "metadata_field": "geographic_scope",
+    "count": 3,
+    "n_snapshots": 3,
+    "total_snapshots": 3,
+    "support": 1.0,
+    "evidence": [
+      {
+        "snapshot_id": "027_Jordan-Emergency-Food-Security-Project_figure_001.png",
+        "snapshot_type": "figure",
+        "source": "refugee",
+        "model": "gpt-5.5",
+        "metadata_field": "geographic_scope",
+        "observed_value": "Jordan, inferred from parent document title and project name; not visible in snapshot",
+        "description": "The country, region, or geographic area to which the figure data applies.",
+        "source_level": "document",
+        "discovery_value": "high",
+        "reasoning": "Geographic context is essential for discovery because it is not shown in the figure itself."
+      }
+    ]
+  }
+]
+```
+
 | Output attribute | Expected value and interpretation |
 |---|---|
 | metadata_field | geographic_scope is the unchanged grouping key. |
@@ -116,6 +151,14 @@ The script retains all evidence because the exercise is small. The research
 profiles instead summarized frequent values, descriptions, rationales, source
 levels, corpus coverage, and figure/table occurrence counts. The underlying
 observations remained necessary for complete traceability.
+
+For another collection, group the property-name attribute exactly and count
+distinct artifact identities separately from occurrences. Choose the denominator
+from the intended collection, including an explicit policy for artifacts with
+no observations. The exercise calls its identity attribute snapshot_id and
+validates the study's source-level labels; an application's records may need
+different names or value representations. Preserve the grouping and provenance
+rules when adapting those records. Property names follow the new artifact class.
 
 The downloadable script contains the complete deterministic transformation
 and safe output handling. It has no external dependencies or model client.
@@ -172,9 +215,9 @@ exercise does not compute these counts.
 | table_title | 90 | 90 | Values include project-financing headings and cost-effectiveness summaries; descriptions concern a table title or caption. |
 | chart_title | 7 | 7 | Descriptions include embedded-chart or panel titles; values include compound headings and the Russian internal heading. |
 
-1. Open canonical-title in [evidence.json](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json) and compare only its recorded_profiles input for this recipe. The subsequent original_profile_assignments belong to concept coverage in chapter 4.
+1. Select profiles whose names or evidence suggest a possible shared meaning. For the supplied exercise, open canonical-title in [evidence.json](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json) and use its recorded_profiles input. Its later assignments belong to chapter 4.
 2. Compare the exact names and their statistics. Check the object types and source levels as well as the frequencies; a name does not validate the artifact class by itself.
-3. Read representative descriptions and values. Locate both heading observations for the Russian chart in independent-naming. Ask whether each describes the whole object, a panel, or another internal view.
+3. Compare descriptions and values in their artifact contexts. Ask whether similar names describe the same object, component, or role. The two Russian headings in independent-naming illustrate this test for whole-object and internal titles.
 4. Write a provisional relationship note with the proposed common meaning, evidence for it, and a remaining ambiguity. Retain uncertain distinctions for the synthesis request and human review.
 
 **Teaching interpretation.** The worksheet below is newly written reasoning
@@ -209,7 +252,9 @@ Those conceptual and operational decisions require later human review.
 **Result:** A synthesis request specification identifies the profile evidence and expected concept attributes. Review notes explain the recorded title candidate and the distinctions that remain for expert refinement.
 
 The synthesis input is the accumulated profile evidence. Its output describes
-shared meanings across that evidence. It is not an exhaustive profile
+shared meanings across the chosen artifact class, according to its intended
+uses and diversity. Let the supported meanings determine the candidate inventory's
+size; neither 833 input profiles nor 70 output concepts is a target. It is not an exhaustive profile
 classification and does not impose a final operational field list. A useful
 request makes those limits explicit so that a compact output does not conceal
 unresolved conceptual boundaries.
@@ -227,7 +272,7 @@ structure without running a model or claiming to reproduce the full prompt.
 </details>
 
 1. Specify the input profiles using their names, descriptions, values, rationales, and occurrence statistics, along with the artifact class and descriptive purpose. Verify that the complete intended input is within the chosen model interface's capacity.
-2. Ask for reusable concepts across the reporting domains, consolidation of clear synonyms, and retention of plausible distinctions when uncertain. Low frequency alone is not an exclusion rule.
+2. Ask for reusable concepts across the contexts represented in the artifact collection, consolidation of clear synonyms, and retention of plausible distinctions when uncertain. Low frequency alone is not an exclusion rule.
 3. Specify canonical_name, definition, rationale, and sample_fields for each proposed concept. Treat representative field names as examples; they do not prove that every profile was assigned correctly.
 4. Review the recorded candidate below for definitions, unsupported merges, lost distinctions, and ambiguous scope. Preserve the candidate output and input reference before handing it to [expert refinement](./concept-refinement.mdx).
 
@@ -271,9 +316,10 @@ concepts. Human refinement and the later 41-concept assessment remain separate.
 
 ## Expected artifact
 
-The deterministic exercise produces an inspectable exact-name profile. The
-study's broader synthesis produces a candidate concept inventory whose
-definitions and supporting evidence can be examined in chapter 4. Original
+The general workflow produces exact-name profiles and a provisional concept
+inventory for human review. Their names and counts depend on the artifact class
+and evidence. The exercise supplies one small profile; the study's broader
+synthesis supplies the recorded candidate inventory examined in chapter 4. Original
 observations and profiles remain available when a proposed consolidation
 needs to be reconsidered.
 

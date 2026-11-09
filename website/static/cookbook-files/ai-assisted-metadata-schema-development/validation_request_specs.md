@@ -6,6 +6,11 @@ or live runners. Each request needs one image, its identity, corpus and artifact
 type, available parent-document context, and the complete frozen schema.
 Selected field excerpts cannot substitute for that complete input.
 
+These are case-study instruments, not a required pair for every artifact class.
+A new assessment chooses its separation unit, artifact representation, contextual
+inputs, and gap criteria according to the schema's intended use. The historical
+contracts below remain unchanged for inspecting the supplied evidence.
+
 Research attribution: Dy & Solatorio (2026). Artifact-Driven Metadata Schema
 Development: A Human-in-the-Loop Methodology with Multimodal LLMs. Working paper.
 Appendix E supplies the methodological and output-contract reference.

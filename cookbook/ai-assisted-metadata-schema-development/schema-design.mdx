@@ -20,13 +20,18 @@ schema specifies the fields used to describe artifacts, including their names,
 definitions, evidence rules, examples, and treatment of unavailable information.
 Its design must support consistent annotation, interpretation, and discovery
 with an annotation and maintenance effort that the intended application can sustain.
+Choose fields and representation for the intended uses and artifact class.
 
 The transition requires human decisions beyond semantic consolidation. Two
 concepts may be distinct yet offer little benefit as separate fields. A
 previously consolidated distinction may become useful when annotating complex
 artifacts. The schema's representation also determines which relationships a
 record can express. Reviewing these choices precedes freezing the initial
-specification for [held-out validation](./validation.mdx).
+specification for [held-out validation](./validation.mdx). A flat record may
+be adequate when fields describe the whole artifact; related components or
+repeatable objects may require explicit structure. The study's flat 36-field
+schema and nine modules illustrate one design. Another class may need a
+different inventory and structure.
 
 ## Target state
 
@@ -42,8 +47,8 @@ specification for [held-out validation](./validation.mdx).
 
 ## Prerequisite concepts
 
-[Chapter 4](./concept-refinement.mdx) supplies the 41 reviewed concepts and their
-original coverage evidence. The intended annotation and retrieval uses are
+[Chapter 4](./concept-refinement.mdx) supplies a reviewed concept inventory and
+its development-evidence coverage. The intended annotation and retrieval uses are
 explicit. A domain reviewer can inspect source evidence and compare plausible
 interpretations. The exercises use document review and a blank CSV worksheet;
 they require no code execution, model call, or dataset download.
@@ -77,7 +82,7 @@ and enough downstream value to justify its maintenance. Combining fields can
 reduce duplicate annotation; restoring a distinction can make a composite
 artifact easier to describe. Both choices require an operational rationale.
 
-**Input example.** The soybean figure, document_12916918_figure_012.png, has a recorded panel_titles
+**Input example.** The [soybean multi-panel figure](https://huggingface.co/datasets/ai4data/data-snapshot/blob/626f3c54ba6d8f6e0ba0795f9e544e24b2650faf/snapshots/prwp/document_12916918_figure_012.png), document_12916918_figure_012.png, has a recorded panel_titles
 observation: “Monthly Price; Monthly Returns (% change) and KL (2000) test
 detected breaks.” The original coverage mapping assigned that profile to
 not_in_ontology. The reviewed inventory had no independent panel_title target.
@@ -137,8 +142,11 @@ A concept definition states a shared meaning. An operational field definition
 states what belongs in a specific schema field. Annotation guidance explains
 how to apply that definition to evidence. An observed value instantiates it for
 one artifact. A complete metadata record brings the applicable fields together
-for that identified artifact. Reviewing a few fields is useful without claiming
-to have produced or verified a complete record.
+for that identified artifact. Choose each field's value type, whether it is
+required, how many values it can hold, and how absence is represented. These
+choices affect consistent population and any relationships the record must
+preserve. Reviewing a few example fields can expose ambiguity before a full
+specification is frozen.
 
 The [initial field excerpts](pathname:///cookbook-files/ai-assisted-metadata-schema-development/initial_field_specifications.md) reproduce
 five definitions and their illustrative examples from v1.1. They are a selected
@@ -162,9 +170,9 @@ evidence files.
 
 </details>
 
-1. Identify the schema version and transcribe the selected definitions faithfully. Keep proposed clarifications in a separate worksheet column so that a later rule cannot silently replace the initial definition.
+1. Write a definition for each chosen field using the reviewed meaning and operational decision. For the supplied v1.1 exercise, transcribe the selected definitions faithfully and mark proposed clarifications separately so later guidance cannot silently replace the initial wording.
 2. State each field's purpose, applicability, acceptable evidence, and boundary with related fields. Use both a fitting example and a case that should remain unpopulated. Do not turn a model's uncertainty phrase into a factual value.
-3. Apply the initial general rules: all fields are optional, values need explicit support, source-document context is used where permitted, and missing metadata is represented as null. Record missing and non-applicable reasons separately during review if the schema itself does not distinguish them.
+3. Specify requiredness, acceptable evidence, cardinality, and missing-value behavior for the intended application. For the v1.1 teaching examples, follow its recorded rules: every field is optional, values require explicit support, document context is used where permitted, and missing metadata is null. Record review reasons separately where that schema cannot distinguish absence from inapplicability.
 4. Ask another reviewer to interpret the same examples from the specification. Record disagreements and proposed guidance for testing. A new clarification remains a proposal until it is approved and versioned.
 
 **Worked example: separate a title from panel headings.** The soybean discovery
@@ -231,8 +239,8 @@ in recipes 5.1–5.2, together with the selected v1.1 field definitions. The
 Afghanistan example tests supported titles and unavailable units; the soybean
 example tests overall and panel headings.
 
-1. Select contrasting development artifacts and retain their identities from source_images.csv. Use the Afghanistan table and soybean figure here. Leave held-out identities unused during this review.
-2. Independently apply the selected v1.1 fields using the excerpted definitions and attributable evidence. For each populated value, identify its source. Leave unsupported fields null and record a separate review reason.
+1. Select contrasting development artifacts that test field boundaries, missing information, and any repeated or related components. Retain their identities and keep reserved validation evidence separate. Use the Afghanistan table and soybean figure from source_images.csv for this exercise.
+2. Independently apply the chosen field definitions and evidence rules. For each populated value, identify its source; handle absence according to the specification. The supplied exercise applies selected v1.1 fields and leaves unsupported values null.
 3. Compare results. Distinguish unavailable information from a field that does not apply. A null may encode both cases in the initial record, so retain their reasons in the review worksheet. Record overlaps, disagreements, and representation questions without silently changing the specification.
 4. Resolve or explicitly defer material issues, identify the reviewer and evidence, and freeze a named specification version with its field inventory. Send the initial schema and unresolved test questions to [chapter 6](./validation.mdx).
 
@@ -290,9 +298,11 @@ the initial design boundary.
 
 ## Expected artifact
 
-The initial operational schema has 36 fields, grouped into nine readable
-modules, with definitions and evidence rules. Representative design decisions
-and an explicit review record make the freeze interpretable. The next stage
+The operational output is a versioned specification with field definitions,
+evidence rules, value shapes, and decisions suited to the artifact class.
+Development review makes its unresolved questions explicit before validation.
+In the study, the initial output was a flat schema with 36 fields in nine
+readable modules; those counts and that representation are case-study choices. The next stage
 evaluates that specification on held-out artifacts; it does not silently replace
 the initial design with a later version.
 
@@ -330,7 +340,7 @@ the specification that such curation would need.
 
 ## Verification
 
-- Representative decisions explain the operational benefit and preserve the 41-concept to 36-field boundary.
+- Field decisions explain their purpose and representation for the intended application, while the worked study preserves its 41-concept to 36-field boundary.
 - Selected definitions match v1.1, and added teaching guidance remains distinguishable from source wording.
 - Partial annotations retain evidence and missing-value reasons without claiming complete historical records.
 - The initial freeze, nine modules, and 36 fields remain separate from held-out findings and later schema versions.

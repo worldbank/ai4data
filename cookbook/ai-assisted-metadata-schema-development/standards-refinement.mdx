@@ -19,15 +19,20 @@ Artifact-driven development establishes the information that a schema must
 describe. Standards review adds evidence about established meanings, terminology,
 and representation practices. It can expose an overloaded field or a useful
 distinction even when held-out validation has not warranted an additional
-descriptive requirement. The starting point here is the documentation-revised
-36-field schema from [chapter 6](./validation.mdx).
+descriptive requirement. Start with the operational specification and human
+decisions retained after [chapter 6](./validation.mdx). In the case study, that
+was documentation-revised v1.1.1 with 36 fields.
 
 A standards crosswalk is a documented comparison between local fields and
 external terms or patterns. Its relationships help reviewers reason about
 possible changes. They do not replace artifact evidence or decide whether the
 application should adopt a name, vocabulary, or structure. Humans preserve the
 observed requirements while accepting useful refinements, rejecting unsuitable
-restrictions, and deferring structures beyond the chosen flat representation.
+restrictions, and distinguishing implemented changes from deferred structures.
+Choose standards by the resources, uses, and representation problems they
+address. DCMI, Schema.org, PROV-O, and the other reviewed sources demonstrate
+that selection for Data Snapshots; none is a universal requirement for every
+artifact class.
 
 ## Target state
 
@@ -97,7 +102,7 @@ The Project judgment is an application-specific comparison; it does not assert
 a formal subclass relationship. Likewise, “no direct match” concerns the sources
 reviewed in this study. It does not prove that no useful term exists elsewhere.
 
-1. Freeze the complete starting specification and identify relevant standards by purpose. The study reviewed resource, statistical, provenance, publishing, project, and value references listed on the [standards page](./standards.md). Select the references that illuminate the application; no single vocabulary must cover every field.
+1. Freeze the complete starting specification and identify standards relevant to the artifact class, intended uses, and unresolved semantic or structural questions. The study's selections are listed on the [standards page](./standards.md); another class may need different references, and no single vocabulary must cover every field.
 2. Locate authoritative term definitions and usage notes. Record the term identifier, documentation URL, version or publication date where available, and access date for mutable pages. Inspect the kind of resource and value expected by the term.
 3. Compare those meanings with the local definition and artifact evidence. State whether the external term is broader, narrower, close, or otherwise related. Explain the direction and the scope difference; a shared name alone is insufficient.
 4. Save a working copy of the new [standards-review worksheet](pathname:///cookbook-files/ai-assisted-metadata-schema-development/standards_review_template.csv). Record relationship and candidate_refinement separately from decision and decision_reason. Preserve uncertainty for review, and retain a reference to any eventual specification change.
@@ -165,7 +170,7 @@ responsibility to an agent. [DCMI source](https://www.dublincore.org/specificati
 also concerns a resource used in deriving another resource. Those distinctions
 support separate local fields without requiring a provenance graph.
 
-**Trace the distinction to an artifact.** The Afghanistan table,
+**Trace the distinction to an artifact.** The [Afghanistan income table](https://huggingface.co/datasets/ai4data/data-snapshot/blob/626f3c54ba6d8f6e0ba0795f9e544e24b2650faf/snapshots/unhcr/108733-revised-public-wb-unhcr-policy-brief-final_table_000.png),
 108733-revised-public-wb-unhcr-policy-brief-final_table_000.png, carries the
 source phrase “Authors’ calculation based on ALCS 2013–14.” The
 [source register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) retains its external image link and
@@ -173,7 +178,7 @@ visible credit, and provenance-split in [evidence.json](pathname:///cookbook-fil
 preserves the discovery observations and later decision.
 
 1. Compare the recommendation with the complete baseline definition and validation findings. State whether it changes a field's name, meaning, value guidance, or structure. Explain which observed requirement is preserved.
-2. Evaluate the proposed benefit and cost. Reject restrictions that distort supported values, require unsupported normalization, or narrow the artifact class. Separate an interoperability opportunity from a demonstrated interoperability result.
+2. Evaluate benefit and cost against the artifact-derived requirements. Adopt constraints when they fit the intended meanings and supported values; reject restrictions or normalization that would distort them. Assess structural changes against the representation the application needs, and keep interoperability opportunities separate from measured results.
 3. Record the human disposition and rationale. The research used Accept, Partially accept, Reject, and Defer, sometimes combining an accepted flat change with deferred objects. Preserve those labels when reporting its decisions.
 4. Connect accepted wording to the output version. Keep rejected and deferred recommendations inspectable. For a new review, record the actual reviewer and any unresolved evidence requirement; do not invent a historical participant or decision date.
 
@@ -333,12 +338,13 @@ did not receive an additional independent held-out validation after refinement.
 
 ## Expected artifact
 
-The methodology ends with a standards-informed operational specification, its
-crosswalk and human decision record, and explicit limitations. The sequence
-remains 70 candidate concepts, 41 reviewed concepts, 36 initial fields, 36
-documentation-revised fields, and 37 final fields. These counts describe
-different artifacts. Practitioners can repeat the reasoning for another artifact
-class, but this study's empirical evidence concerns the selected Data Snapshots.
+The method ends with an operational specification suited to the artifact class,
+a source-backed crosswalk, human refinement decisions, and explicit limitations.
+Field counts, representation, and relevant standards follow that application's
+evidence and uses. The study's sequence remains 70 candidate concepts, 41
+reviewed concepts, 36 initial fields, 36 documentation-revised fields, and 37
+final fields. Its empirical evidence concerns the selected Data Snapshots;
+applying the reasoning elsewhere requires evidence for the new class.
 
 ## Implementation options
 

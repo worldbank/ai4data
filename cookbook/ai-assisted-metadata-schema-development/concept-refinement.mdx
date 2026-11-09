@@ -15,12 +15,17 @@ import Checklist from '@site/src/components/Cookbook/Checklist';
 
 ## Rationale
 
-The 70 candidate concepts from [chapter 3](./concept-synthesis.mdx) are
-proposals about shared meanings. Expert refinement determines whether their
-distinctions serve the artifact class and intended uses. A plausible model
+Candidate concepts from [chapter 3](./concept-synthesis.mdx) are proposals
+about shared meanings in the artifact class. Expert refinement determines
+whether their distinctions serve that class and its intended uses. A plausible model
 definition can overlap another concept, describe analytical contents, or
 preserve a distinction that reviewers cannot apply consistently. Those are
-semantic and scope questions that counts alone cannot settle.
+semantic and scope questions that counts alone cannot settle. Review semantic
+equivalence, boundaries, descriptive relevance, redundancy, and the distribution
+of supporting evidence against the intended uses. An exclusion justified for
+one class need not be appropriate for another. The Data Snapshot study's 70
+candidates and 41 retained concepts demonstrate these decisions. The new
+collection's evidence should determine its inventory and size.
 
 Concept coverage assessment then asks how the independently discovered field
 profiles relate to the reviewed inventory. It classifies each profile against
@@ -106,12 +111,23 @@ the retained measured-concept meaning without making its individual values
 metadata. Excluding legend_semantics also does not discard every legend label:
 a legend can supply a value for a retained category or indicator concept.
 
-For a filled teaching row, use concept_name measure_name, proposed_action
-merge, and target_concept indicator_name. Reference human-concept-decisions
-and Table 11, state the common measured-variable meaning in semantic_rationale,
-and record the reported merge in decision. A note such as “teaching transcription
-of a recorded disposition; historical reviewer identity not supplied” prevents
-the worksheet from masquerading as an original adjudication record.
+**Completed teaching record.** The following uses every column of the
+concept-review worksheet for measure_name → indicator_name. It is a teaching
+transcription of a recorded decision, newly formatted for the cookbook.
+The explanatory cells are identified as teaching restatements; no reviewer
+identity or decision date is supplied.
+
+| Worksheet column | Teaching transcription |
+|---|---|
+| concept_name | measure_name |
+| evidence_reference | human-concept-decisions; paper Table 11 |
+| proposed_action | merge |
+| target_concept | indicator_name |
+| semantic_rationale | Teaching restatement: the recorded definitions describe analytical variables or quantities under different labels. |
+| scope_rationale | Teaching restatement: retain the measured-concept description within this study's metadata scope. |
+| reviewer | Not supplied in the retained decision. |
+| decision | Recorded merge into indicator_name. |
+| decision_reason | Table 11 reports equivalent analytical variables expressed through different visualization or disciplinary terminology. |
 
 **Verification.** A second reviewer can trace each demonstrated action to the
 prepared evidence and explain its meaning or scope rationale. Merge targets
@@ -168,7 +184,7 @@ a new assessment would require the complete fixed reference inventory.
 
 1. Freeze the reviewed concept names, definitions, and examples. In the study, only the 41 keep rows became concept targets. Examples from merge rows were appended to their retained targets; merged names did not become extra targets.
 2. Supply one profile's metadata_field, top_description_values, and top_observed_values with that reference inventory. Compare meaning across all three attributes. Classification does not change the vocabulary while processing profiles.
-3. Require one canonical_name from the retained names plus not_in_ontology, and one confidence value from high, medium, or low. Preserve execution status and the original output beside the profile identity.
+3. Constrain assignments to the reviewed names plus an explicit residual label. Choose and document how confidence is recorded. The historical contract used not_in_ontology and high, medium, or low; preserve those exact values when inspecting its outputs.
 4. Check allowed names and coverage of the intended input profiles. Inspect residuals, ambiguous fits, and surprising high-confidence results. Log any human correction separately and retain the original assignment for comparison.
 
 The title rows continue chapter 3's lexical comparison. The chart_title
@@ -236,13 +252,13 @@ For data_collection_method, counting 11 observations as 11 snapshots would
 overstate support. For financing_instrument, equal counts are a property of
 these records. Other concepts need their counts checked separately.
 
-The Pakistan project table's recorded value “IDA Credit; IDA Grant; Guarantee
+The [Pakistan financing table](https://huggingface.co/datasets/ai4data/data-snapshot/blob/626f3c54ba6d8f6e0ba0795f9e544e24b2650faf/snapshots/refugee/051_Pakistan-Balochistan-Human-Capital-Investment-Project_table_000.png)'s recorded value “IDA Credit; IDA Grant; Guarantee
 Amount” explains why financing modality is meaningful. All seven supporting
 snapshots occur in the Refugee Project Appraisal Document corpus. That
 concentration supports a specialized interpretation; it does not establish
 universal usefulness or a minimum inclusion threshold.
 
-The Lebanon health-access figure separately proposed sample_size with value
+The [Lebanon health-access figure](https://huggingface.co/datasets/ai4data/data-snapshot/blob/626f3c54ba6d8f6e0ba0795f9e544e24b2650faf/snapshots/unhcr/lebanonhaus2016final_figure_011.png) separately proposed sample_size with value
 “n=44.” Its exact-name profile has 15 observations from 15 snapshots, and the
 original classification is residual. The figure's recorded title also includes
 “(n=44).” Preserving an explicit title or explanatory statement in a later
@@ -264,8 +280,9 @@ compelling basis for further conceptual revision before operational design.
 
 ## Expected artifact
 
-A reviewed inventory of 41 concepts, representative human decisions, and
-versioned coverage evidence supply the basis for operational design. The
+A reviewed inventory, human decisions, and versioned coverage evidence supply
+the basis for operational design. Its size and exclusions follow the artifact
+class and descriptive purpose; the study retained 41 concepts. The
 inventory describes meaningful distinctions; [chapter 5](./schema-design.mdx)
 defines the fields practitioners will use to describe artifacts consistently.
 

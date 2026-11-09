@@ -20,19 +20,28 @@ Corrections are welcome through [GitHub issues](https://github.com/worldbank/ai4
 the [contributing page](./contributing.md) describes the review expectations.
 :::
 
-An emerging artifact class can require metadata before its descriptive
-requirements are fully understood. A table, chart, or map may need to be found
-and interpreted independently of its parent document. Developing its schema
-therefore begins with evidence about what the artifacts represent and the uses
-their descriptions must support.
+An organization may need to describe a class of information artifacts before
+it knows which metadata fields will be useful. The artifacts might be text
+records, images, structured objects, audio recordings, or combinations of these.
+Their descriptive requirements depend on what counts as one artifact, how
+people intend to use it, and which evidence is available. Copying a familiar
+field list can miss important distinctions or introduce fields that do not fit.
 
-This cookbook develops four connected practices. Independent discovery proposes
-potential metadata requirements from each artifact. Exact-name field profiles
-preserve accumulated evidence, and concept synthesis and expert refinement
-establish shared meanings. Operational schema design translates concepts into
-usable fields and guidance. Held-out validation and standards-informed
-refinement test that specification and clarify its terminology and boundaries.
-Humans retain authority over scope, field design, and accepted changes.
+This cookbook teaches an artifact-driven method for developing that operational
+specification. Independent AI-assisted discovery explores possible descriptive
+requirements before a shared field inventory is fixed. Exact-name profiles
+aggregate observations without merging their meanings. Semantic synthesis
+proposes shared concepts, and human refinement decides which distinctions
+matter. Operational design turns those meanings into usable fields and guidance;
+held-out validation and standards review then test and refine the specification.
+The intermediate observations, profiles, concept inventories, and decision
+records let practitioners inspect how each choice follows from evidence.
+
+AI assistance can make varied artifact evidence easier to compare, but model
+proposals alone cannot determine the intended scope, useful distinctions, or
+acceptable representation. Humans make those conceptual and operational choices.
+For another artifact class, practitioners choose the input representation,
+diversity dimensions, evidence rules, validation boundary, and relevant standards.
 
 The running example is the Data Snapshot study by Dy & Solatorio (2026).
 Its evidence connects observations, profiles, concepts, schema decisions,
@@ -44,7 +53,7 @@ identifies the references compared in the study.
 ## Purpose and learning outcomes
 
 - The practitioner can distinguish a metadata observation, metadata field profile, canonical metadata concept, concept inventory, and operational metadata schema.
-- The practitioner can trace an example from artifact evidence to a human-approved field decision.
+- The practitioner can define an artifact class and adapt inputs, sampling, and field decisions to its descriptive uses.
 - The practitioner can distinguish concept coverage from held-out validation and adjudicate documentation and representation issues.
 - The practitioner can use a standards crosswalk while preserving artifact-derived requirements.
 
@@ -110,7 +119,9 @@ initial 36-field schema. Two complementary exercises used the same 202 held-out
 snapshots. Documentation refinement retained 36 fields; standards-informed
 refinement produced a final 37-field flat specification.
 
-Ten prepared examples form a continuous learning journey. The Jordan chart,
+Ten prepared examples demonstrate the method without prescribing its field
+names, sample sizes, or representation for another collection. They form a
+continuous learning journey. The Jordan chart,
 Afghanistan table, and Russian chart introduce discovery and aggregation.
 Title profiles, concept decisions, and rare or residual assignments connect
 synthesis to refinement. The soybean figure illustrates the later restoration
@@ -125,6 +136,13 @@ selected records to dataset revision
 because individual redistribution rights have not been established.
 
 ## Scope of the examples
+
+In evidence.json, the examples array contains entries identified by id. Find
+the entry whose id matches the example name used in a chapter, such as
+canonical-title. Its inputs hold the evidence examined at that stage; outputs
+hold the selected result or teaching transformation, with its evidence label.
+The study_summary object records study totals, while verification_derived_facts
+separates comparisons computed during preparation.
 
 Recorded study results, selected excerpts, preparation-time deterministic
 exercises, and proposed extensions retain distinct labels. A simplified example
@@ -151,8 +169,8 @@ the research endpoint.
 The prepared evidence and new teaching assets support inspection and three
 offline Python exercises, plus manual review, field-specification, and validation-adjudication exercises.
 Python 3.10 or newer is sufficient for the scripts; no additional packages
-or model credentials are required. Downloads are available in the local development
-preview; hidden production previews omit these files.
+or model credentials are required. The downloads below supply the case-study
+inputs; applying the method elsewhere requires the reader's own artifact evidence.
 
 | File | Used in |
 |---|---|
@@ -201,4 +219,4 @@ Its arXiv publication is pending; this citation has no assigned public identifie
 
 ## Version history
 
-- **0.1 (November 2026).** All seven chapters now provide 22 substantive recipes, three offline Python exercises, and human-review, adjudication, and standards-comparison materials. The complete working draft remains hidden while awaiting coordinated editorial and technical review.
+- **0.1 (November 2026).** All seven chapters now provide 22 substantive recipes, three offline Python exercises, and human-review, adjudication, and standards-comparison materials. The complete working draft awaits coordinated editorial and technical review.

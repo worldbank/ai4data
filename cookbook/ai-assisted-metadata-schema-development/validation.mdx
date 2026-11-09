@@ -24,13 +24,21 @@ the operational fields existed. Here, the evidence is the held-out artifact,
 its relevant context, and the frozen field definitions from
 [chapter 5](./schema-design.mdx).
 
-Two instruments can expose different weaknesses. Open residual discovery
-identifies descriptive concepts and compares them with existing fields.
-A confirmatory assessment narrows attention to omissions with concrete
-consequences for interpretation or discovery. Both produce candidate evidence.
-Human adjudication determines whether a finding warrants a field, clearer
-documentation, a change in representation, exclusion, or further investigation.
-An unchanged inventory can therefore accompany a useful validation outcome.
+Choose the separation unit to match the intended claim. New artifacts from
+familiar sources test a different boundary from artifacts drawn from new source
+groups. Account for shared origins, versions, or containing objects and identify
+any evidence reused while preparing the instrument. The snapshot and parent-
+document checks below demonstrate this reasoning for the study's collection.
+
+Choose assessment questions that could expose meaningful weaknesses in the
+schema. One instrument or several may be appropriate; the exact historical pair
+is not required. The study combined open residual discovery, which compares
+possible descriptive requirements with existing fields, and a confirmatory
+assessment focused on consequential omissions. Both produced candidate evidence.
+Human review can justify new fields, clearer guidance, representation changes,
+exclusion, or further investigation. The study's unchanged field inventory is
+one outcome of that review. Another collection could justify new fields, and
+stability alone does not establish completeness.
 
 ## Target state
 
@@ -47,8 +55,8 @@ An unchanged inventory can therefore accompany a useful validation outcome.
 
 ## Prerequisite concepts
 
-Chapter 1 supplies the development and held-out boundary. Chapter 5 supplies the
-initial 36-field schema and the distinction between a value, a field, and a
+Chapter 1 supplies the evidence-separation boundary. Chapter 5 supplies the
+operational specification and the distinction between a value, a field, and a
 representation. The practitioner can inspect JSON records and source references.
 The exercises use retained excerpts and manual review. The reused manifest
 checker needs Python 3.10 or newer; no model call or dataset download is required.
@@ -102,7 +110,7 @@ summary of the recorded inputs and execution. It is not an original protocol fil
 | Calibration boundary | Twelve of the 202 were reused for calibration. None belonged to initial schema development. Calibration/control outputs are excluded from full-run candidate totals. |
 
 1. Compare the assessed versions in the supplied summary. For a new assessment, record the exact version and retain the complete schema text; a checksum can identify the frozen file. Preserve the assessed presentation separately when revision history or prior outcomes are removed from a model-facing copy.
-2. Freeze the held-out manifest, source references, and allowed document context. Compare its identities with development and report both snapshot and parent-document overlap. Keep calibration membership explicit.
+2. Freeze the validation register, source versions, and allowed contextual inputs. Compare artifact identities and any source groups or containing objects relevant to the generalization claim. The study checked snapshots and parent documents. Keep calibration membership explicit.
 3. State the objective and output contract of each instrument. Record model, prompt, response structure, and settings. Preserve full-run outputs separately from calibration and ablation controls.
 4. Before interpreting results, check expected identities, duplicate and missing records, completion status, configuration consistency, and output-contract validity. Reconcile results against the frozen manifest. Directory traversal and response order alone do not prove membership.
 
@@ -166,8 +174,8 @@ was:
 
 > The period or date range represented by the data.
 
-1. For a new assessment, supply one held-out image, identity, corpus, artifact type, associated document metadata, and complete frozen schema. Ask for explicit reusable concepts relevant to coverage, with concise evidence and fit rationales. Exclude routine extraction inventories and unsupported inference.
-2. Inspect the observations array. Each item has observation_id, metadata_concept, evidence, evidence_source, closest_schema_fields, fit_status, and fit_rationale. Check exact field names and preserve whether the evidence is snapshot, document, or both.
+1. For a new assessment, supply a reserved artifact in a representation appropriate to its modality, its identity, allowed context, and the complete frozen schema. State the class and descriptive scope. The historical request supplied one snapshot image and associated document metadata.
+2. Inspect each observation's concept, evidence origin, closest existing fields, fit judgment, and rationale. In the supplied records, these appear in the observations array as observation_id, metadata_concept, evidence, evidence_source, closest_schema_fields, fit_status, and fit_rationale. Preserve its snapshot, document, or both labels when reviewing historical evidence.
 3. Inspect candidate_new_fields. Trace each proposed name and definition through supporting_observation_ids to weak-fit or no-fit evidence in the same assessment. Read why_existing_fields_are_insufficient and operational_value as claims requiring review.
 4. Retain covered evidence and genuine boundary questions. Group obvious aliases only as a labelled review aid. Frequency can direct inspection but cannot establish an accepted requirement.
 
@@ -256,10 +264,10 @@ The [externally linked image](https://huggingface.co/datasets/ai4data/data-snaps
 [source register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) retain its provenance. The
 following retained text is sufficient for this exercise.
 
-1. For a new assessment, supply the complete documentation-revised schema through its frozen model-facing presentation, one image, and parent context. Keep prior validation outcomes out of the model-facing text while preserving substantive definitions, examples, and guidance.
-2. Apply the historical critical-gap conditions: explicit evidence, reusable snapshot metadata, inadequate existing-field coverage, and a concrete material consequence for interpretability, discoverability, or both. A possible gap retains uncertainty about evidence, coverage, or materiality while still requiring plausible metadata and impact.
-3. Inspect only the returned candidate gaps. Information that is convenient, specialized, or an extra search facet alone does not meet the threshold. The prompt forbids inventing a user workflow to make a consequence appear material.
-4. Check assessment/array consistency, then inspect the underlying evidence. Preserve model assessments separately from human decisions; the model was expressly not asked to classify conceptual, documentation, or representation issues.
+1. Freeze the schema version to be assessed and supply it with the reserved artifact representation and allowed context. If history is removed to reduce anchoring, preserve substantive meanings and guidance. The study's second instrument used a model-facing v1.1.1 copy after documentation revision; a new application need not reproduce that exact sequence.
+2. Set the conditions for a consequential gap using the artifact scope and intended uses. The study required explicit evidence, reusable snapshot metadata, inadequate coverage, and material impact on interpretability or discoverability. Its possible-gap label retained uncertainty while still requiring plausible metadata and impact.
+3. Compare candidate consequences with the application's stated uses and evidence rules. In this confirmatory instrument, convenience or an extra search facet alone did not meet the threshold, and the prompt forbade inventing a user workflow to inflate materiality. Preserve that distinction when interpreting its results.
+4. Check assessment/array consistency, then inspect the underlying evidence. Preserve model assessments separately from human decisions; the historical model was expressly not asked to classify conceptual, documentation, or representation issues.
 
 **Worked example.** The two instruments produced the following retained findings.
 
@@ -339,10 +347,10 @@ uses that recorded structural account and does not translate the French labels
 or reconstruct the visibly clipped upper headers. The [source register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv)
 keeps the image externally linked and records that limitation.
 
-1. Save a new working copy of the existing [gap-review template](pathname:///cookbook-files/ai-assisted-metadata-schema-development/gap_review_template.csv). Record snapshot_id, schema_version, candidate_id, evidence_reference, and closest_fields. Use the snapshot identity with a gap or observation identifier, because local identifiers can recur across artifacts.
-2. Inspect source evidence and compare its faithful meaning with the best use of existing fields. Ask whether the information describes the snapshot, its parent, analytical contents, or a structural relationship. Do not infer clipped text or unlabeled visual semantics.
+1. Save a working copy of the [gap-review template](pathname:///cookbook-files/ai-assisted-metadata-schema-development/gap_review_template.csv). Identify the artifact, schema version, candidate, evidence, and closest fields. The template calls its artifact column snapshot_id for this case; another review should identify its own artifact unit. Pair local candidate identifiers with artifact identities to avoid ambiguity.
+2. Inspect source evidence and compare its meaning with the best use of existing fields. Ask whether the requirement describes the artifact, contextual information, contents outside the agreed scope, or a relationship the representation loses. Judge coverage using the application's scope and its own field definitions.
 3. Classify the issue using the teaching framework below, then document material_impact, decision, decision_reason, revision_or_deferral, and the actual reviewer for a new review. Preserve the source report's terminology when transcribing a historical disposition.
-4. Check that a proposed revision addresses the demonstrated issue. Version any accepted documentation change, compare the field inventory, and keep deferred structural work in a backlog. An unresolved case remains unresolved until additional evidence supports a decision.
+4. Check that a proposed revision addresses the demonstrated issue. Version accepted field, guidance, or representation changes and compare the specification before and after review. Keep deferred requirements explicit. An unresolved case remains unresolved until additional evidence supports a decision.
 
 | Teaching issue category | Review question and possible response |
 |---|---|
@@ -357,12 +365,18 @@ the model to produce them, and the reports used their own disposition wording.
 The following rows are newly written teaching transcriptions of recorded human
 outcomes. They are not an original item-by-item adjudication ledger.
 
-| Evidence reference | Model proposal or issue | Recorded human disposition and resulting action |
-|---|---|---|
-| documentation-revision; Validation 1 artifact-date families | Creation, production, and publication dates exposed the time_period boundary. | No dedicated artifact-date field; clarify the represented data-period meaning, retain complete relevant statements in interpretive_note, and leave document administration on the linked record. v1.1.1 records the clarification with 36 fields. |
-| complementary-validation; South Sudan obs_16 | source_document_url | Exclude from the snapshot schema. The linked document record supplies retrieval metadata; no new snapshot field was accepted. |
-| flat-representation-limits; South Sudan gap_001 | panel_metadata_mapping | Representation gap deferred beyond the flat specification. Preserve the requirement for panel-specific associations without adding another isolated top-level field. |
-| flat-representation-limits; Diffa table gap_001 | column_group_hierarchy | Representation gap deferred beyond the flat specification. Preserve the need for nested header relationships; no new flat field was accepted. |
+The two South Sudan rows trace separate assessments of the same artifact,
+each with its own candidate finding and human interpretation. The model evidence
+comes from complementary-validation and flat-representation-limits. The human
+columns are teaching transcriptions of the retained adjudication, separate from
+the model judgments.
+
+| Instrument and target | Candidate finding | Human interpretation | Actual outcome |
+|---|---|---|---|
+| Validation 1, v1.1; documentation-revision | Artifact-date families exposed the time_period boundary. | Data periods differ from artifact creation and parent publication dates. | Clarify guidance in v1.1.1; retain 36 fields and keep document administration on the linked record. |
+| Validation 1, v1.1; South Sudan obs_16 | no_fit parent retrieval information supported source_document_url. | Retrieval metadata belongs to the linked parent-document record in this application. | Exclude the proposed snapshot-level field; no new snapshot field accepted. |
+| Validation 2, model-facing v1.1.1; South Sudan gap_001 | possible panel_metadata_mapping gap with an interpretability consequence. | Relevant concepts exist, but flat values cannot preserve which variable, period, and visual type belong to each panel. | Defer the representation requirement to future v1.2 design; add no top-level flat field. |
+| Validation 2, model-facing v1.1.1; Diffa gap_001 | possible column_group_hierarchy gap. | Category and dimension fields lose parent-child header relationships. | Defer the structural requirement; add no new flat field. |
 
 **Worked example: document a clarification.** In a worksheet row for the date
 family, leave snapshot_id empty and explain that the evidence is report-level.
@@ -404,9 +418,11 @@ and did not receive a further independent held-out assessment in this study.
 
 ## Expected artifact
 
-Validation produces retained assessments, a human decision record,
-documentation-revised v1.1.1 with 36 fields, and explicit representation
-requirements for future work. These outputs carry forward into standards
+Validation produces evidence-backed assessments, human dispositions, and a
+versioned specification or explicit requirements for further work. Accepted
+changes depend on the findings and application. In the study, the implemented
+revision was documentation-only v1.1.1 with 36 fields; representation requirements
+remained deferred. These outputs carry forward into standards
 comparison without converting proposals or an unchanged inventory into claims
 of complete coverage.
 

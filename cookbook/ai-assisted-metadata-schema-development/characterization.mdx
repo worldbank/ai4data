@@ -15,36 +15,45 @@ import Checklist from '@site/src/components/Cookbook/Checklist';
 
 ## Rationale
 
-An artifact is the object for which a metadata record is being designed. A
-Data Snapshot can be a table, chart, map, or composite analytical figure that
-people need to find and interpret independently of its parent document. Its
-metadata describes what it represents. The individual numerical observations
-inside it are analytical content. A schema that describes a whole report can
-miss the different indicators, populations, and periods of its individual figures.
+An artifact is the unit that receives one metadata description. Defining its
+class establishes which objects share a descriptive purpose and what each
+record should help people identify, interpret, or discover. The unit might be
+a whole object or a meaningful component. Its contents and surrounding context
+can supply evidence without all becoming metadata fields. Judge whether a
+property belongs in the description by its role and intended use. Both text and numeric values can be metadata when the descriptive scope
+warrants them.
 
-The artifact class must be characterized before discovery begins. Otherwise,
-a model can propose reasonable properties for an unintended object: a PDF,
-a table cell, or an entire monitoring project. Sampling then supplies evidence
-about the variation that the schema must accommodate. An identifiable frozen
-selection makes later transformations traceable; a separate held-out selection
-provides evidence for the validation developed in [chapter 6](./validation.mdx).
+Characterize this boundary before discovery so that the model investigates the
+intended object. Then select development artifacts that expose relevant
+variation, such as purpose, language, structure, modality, or source conditions.
+Preserve the actual selection and reserve validation evidence at a unit that
+matches the intended claim about new artifacts or sources. Some classes have
+containing objects or shared origins; others have no parent document. Those
+relationships matter when interpreting the validation developed in
+[chapter 6](./validation.mdx).
+
+In the running study, one Data Snapshot was an analytical table or figure
+extracted from a document. The snapshot received its own description; individual
+numerical observations were analytical contents, while the parent document
+provided separately identified context. This is the study's scope decision,
+which the following recipes use as a concrete example.
 
 ## Target state
 
 - A characterization statement identifies one artifact, its boundaries, intended uses, and excluded contents.
 - A fixed register identifies development and held-out artifacts, their sources, and the diversity considered.
-- Identity checks distinguish snapshot overlap from parent-document overlap and state the limits of the selection.
+- Identity and dependency checks state which artifacts or source groups are shared between development and validation.
 
 ## Learning objectives
 
-- The practitioner can distinguish artifact metadata, analytical contents, and parent-document metadata.
+- The practitioner can distinguish an artifact's descriptive properties from its contents and surrounding source context.
 - The practitioner can choose sampling dimensions and preserve an attributable selection.
 - The practitioner can explain the unit at which development and validation evidence are separate.
 
 ## Prerequisite concepts
 
 The organization has an intended use and access to candidate artifacts and
-their source references. A domain reviewer understands the reporting context.
+their source references. A domain reviewer understands the artifact class and intended uses.
 The exercises use Python 3.10 or newer and require no external packages.
 
 ## Maturity levels
@@ -68,7 +77,7 @@ chart, Afghanistan income table, and Russian fiscal chart carry forward into
 
 <Recipe title="1.1 Define the artifact class and descriptive scope" level="Foundational" skills="Domain reviewer; technical practitioner" time="30–60 minutes for a first statement">
 
-**Result:** A characterization statement establishes the object described, the intended descriptive uses, and the boundary with analytical contents and document metadata.
+**Result:** A characterization statement establishes the unit described, its intended uses, and the boundary between descriptive properties, contents, and source context.
 
 The statement defines the task given to the model. It should allow a reviewer
 to decide whether an observation concerns the selected artifact. It establishes
@@ -80,7 +89,7 @@ is a filled teaching worksheet with questions that can be reused for another
 artifact class. Its entries restate the paper's scope; they are not a recovered
 historical worksheet.
 
-**Input example.** The Jordan snapshot is a bar chart titled “Figure 2:
+**Input example.** The [Jordan snapshot](https://huggingface.co/datasets/ai4data/data-snapshot/blob/626f3c54ba6d8f6e0ba0795f9e544e24b2650faf/snapshots/refugee/027_Jordan-Emergency-Food-Security-Project_figure_001.png) is a bar chart titled “Figure 2:
 Share of food expenditure in total expenditure p.c. (%).” The title describes
 its subject. A sequence of bar values would be analytical content. The parent
 document title, “Jordan - Emergency Food Security Project,” supplies context
@@ -88,9 +97,9 @@ but is not the chart title. The discovery observation for geographic scope
 explicitly says that Jordan was inferred from document context and was not
 visible in the snapshot. That distinction must survive later aggregation.
 
-1. Identify one complete unit of description. State how a reviewer recognizes its boundary and what remains outside it. A multi-panel figure can be one snapshot even when its panels differ.
+1. Identify one unit of description and the artifact class to which it belongs. State how a reviewer recognizes its boundary and whether components need separate descriptions. In the study, a multi-panel figure could remain one snapshot.
 2. Name the intended uses, such as cataloging an analytical object, filtering by its subject, or finding evidence about an indicator. Explain which information would help those uses.
-3. Compare three candidate properties: a description of the artifact, a numerical value within it, and administrative information about its parent document. State where each belongs.
+3. Compare a descriptive property, content within the object, and information about its source or containing object where one exists. Decide which serves the intended metadata use and which remains content or contextual evidence. Use the Jordan title, bar values, and parent title for the supplied exercise.
 4. Record allowed supporting context, exclusions, a reviewer, and a version. Inspect a contrasting artifact before accepting the statement. A useful statement remains applicable across the class.
 
 **Worked example.** Applying those boundaries gives the following teaching decisions.
@@ -150,10 +159,10 @@ under study_summary. The dataset revision is
 | hf_image_url and hf_metadata_url | These pin the image and document context to a public dataset revision. |
 | original_record_url and original_pdf_url | These retain the institutional provenance supplied by the dataset metadata. |
 
-1. Inventory the available artifacts and identify likely sources of variation. Consider document families, figure and table forms, reporting styles, languages, and specialized analytical contexts.
+1. Inventory the available artifacts and identify variations that could change their descriptive requirements. Choose dimensions relevant to the class, such as purpose, structure, language, modality, origin, or specialist use. Figure/table form and institutional corpus were appropriate to the study. Another class needs its own selection dimensions.
 2. Inspect examples from contrasting groups. Record why each group might introduce a descriptive requirement that another group would miss.
 3. Select and freeze the development identities. Preserve the realized selection even when sampling uses randomness; a seed alone cannot recover a changed source collection.
-4. Record exclusions and limited groups. Reserve validation identities separately, then retain a versioned register and the source revision used to resolve them.
+4. Record exclusions and poorly represented groups. Reserve validation evidence separately, accounting for shared sources or containing objects where relevant. Preserve the realized identities and collection version; justify further sampling through variation that remains unexamined.
 
 **Verification.** Confirm that a selected identity resolves to the recorded
 source, that the split has been preserved, and that the rationale explains both
@@ -169,23 +178,30 @@ target count does not supply that rationale.
 
 <Recipe title="1.3 Check the development and held-out boundary" level="AI-ready" skills="Python practitioner; evaluation reviewer" time="15–30 minutes with prepared registers">
 
-**Result:** An identity report states whether snapshots overlap and whether their parent documents are shared across the two collections.
+**Result:** An identity report states whether artifacts overlap across collections and which relevant source or containing-object dependencies remain shared.
 
-Snapshot-level separation means that the same image identity is not used in
-both collections. Parent-document separation is stronger in a different way:
-it asks whether validation introduces documents absent from development.
-Figures from one report can share terminology and presentation. The two
-checks therefore support different interpretations of generalization.
+Separating artifact identities prevents direct reuse of the same object.
+It does not remove every dependency: related versions, components of one
+containing object, or records from a shared source can still have similar
+content and presentation. Choose the separation unit according to the intended
+generalization claim, and report the shared groups that remain. For example,
+new recordings from a familiar session pose a different test from recordings
+from new sessions; this hypothetical example illustrates the selection decision.
+
+The Data Snapshot exercise checks both snapshot identities and parent documents.
+Figures from one report can share terminology and presentation even when their
+image identities differ. The supplied checker implements these specific checks;
+other source relationships need their own identified grouping and comparison.
 
 **Inputs.** Place the downloadable
 [manifest checker](pathname:///cookbook-files/ai-assisted-metadata-schema-development/check_manifest.py) beside source_images.csv in a new working directory. Run
 the command below from that directory. The checker reads the eight rows, checks required
 identity fields, and writes nothing.
 
-1. Use one register row per snapshot with an explicit split and nonempty source identity. Check duplicate identities before counting support.
-2. Compare snapshot identities across splits. Treat an overlapping identity as a selection error requiring review.
-3. Compare parent identities using the pair of corpus and parent_document_id. A bare document identifier may be reused in different source collections.
-4. Report both results with their units and the scope of the register. Keep the teaching excerpt's results separate from the full study.
+1. Use one register row per artifact, with a stable identity and explicit development or validation membership. Check duplicates and identify related versions before interpreting separation.
+2. Compare artifact identities across collections. Review direct overlap against the intended held-out design.
+3. Compare the source groups or containing objects relevant to the claim. In the supplied register, parents are identified by corpus and parent_document_id because bare document identifiers can recur across corpora.
+4. Report the separation unit, remaining shared groups, and scope of the comparison. Keep the teaching excerpt's results separate from the full study and from any new collection.
 
 **Worked example.** The supplied register produces the following identity report.
 
@@ -256,15 +272,15 @@ separate task of locating and recovering artifacts from documents.
 
 ## Common mistakes
 
-- A report-level description can obscure different artifacts within the document.
-- Numerical observations can be mistaken for the reusable descriptive properties this task investigates.
+- A containing-object description can obscure the individual artifacts that need their own records.
+- In the snapshot example, extracted data values can be mistaken for reusable descriptive properties.
 - Balanced group counts can be mistaken for statistical representativeness.
 - Zero overlap in an excerpt can be mistaken for the boundary of the full collection.
 
 ## Verification
 
 - Reviewers can explain the unit described and classify the three boundary examples consistently.
-- Every selected identity retains its corpus, parent, split, and attributable source reference.
+- Every selected artifact retains its identity, sample membership, source reference, and any grouping needed to interpret separation.
 - The manifest command produces the quoted excerpt counts, while the full-study boundary remains separately identified.
 
 ## Checklist
@@ -272,5 +288,5 @@ separate task of locating and recovering artifacts from documents.
 <Checklist id="ai-assisted-metadata-schema-development-characterization" items={[
   'The artifact class, intended uses, and excluded contents have been reviewed.',
   'The realized development and held-out identities are frozen and attributable.',
-  'Snapshot and parent-document overlap have been reported with their scope.',
+  'Artifact and relevant source-group overlap have been reported with their scope.',
 ]} />

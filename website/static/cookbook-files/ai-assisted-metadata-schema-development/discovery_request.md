@@ -6,6 +6,11 @@ The study supplied one snapshot image and available associated document
 metadata per request. The examples below describe logical request contents;
 they are not a provider-specific API payload.
 
+For another artifact class, first select a representation and model that can
+inspect its relevant evidence, and define allowable context and evidence-origin
+labels. The image inputs and snapshot/document enums below remain specific to
+this teaching adaptation; changing them requires a separately documented request.
+
 ## System instruction
 
 Act as a metadata designer. From one analytical artifact and its supplied

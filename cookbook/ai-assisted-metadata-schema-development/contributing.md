@@ -9,8 +9,8 @@ description: Evidence, scope, and review requirements for contributions to this 
 
 This guide is a working draft. All seven chapters provide substantive recipes,
 worked examples, and offline exercises or review worksheets. The complete draft
-awaits coordinated editorial and technical review while remaining hidden from
-public navigation.
+awaits coordinated editorial and technical review. The methodology addresses
+the reader's artifact class; the Data Snapshot study supplies its running example.
 
 Contributions can be proposed through
 [GitHub issues](https://github.com/worldbank/ai4data/issues) and pull requests
