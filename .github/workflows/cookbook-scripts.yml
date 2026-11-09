@@ -10,7 +10,7 @@ on:
     paths:
       - "website/static/cookbook-files/**"
       - "cookbook/**"
-      - "scripts/docs/check_cookbooks.py"
+      - "scripts/docs/**"
       - "tests/test_cookbook_*.py"
       - "tests/fixtures/wb-schemas/**"
       - ".github/workflows/cookbook-scripts.yml"
@@ -18,7 +18,7 @@ on:
     paths:
       - "website/static/cookbook-files/**"
       - "cookbook/**"
-      - "scripts/docs/check_cookbooks.py"
+      - "scripts/docs/**"
       - "tests/test_cookbook_*.py"
       - "tests/fixtures/wb-schemas/**"
       - ".github/workflows/cookbook-scripts.yml"
