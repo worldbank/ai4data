@@ -45,6 +45,7 @@ two samples share sources, versions, or components of the same object.
 
 - Access to candidate artifacts and their source references.
 - A reviewer who understands the type of material and its intended uses.
+- Python 3.10 or newer only for the optional check in Recipe 1.3; no external packages are needed.
 
 ## Maturity levels
 
@@ -110,6 +111,23 @@ reports, policy research papers, and project documents. These materials differ
 in purpose and presentation, so selecting only one kind could hide metadata
 needs present in another.
 
+The [teaching register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv)
+records the selected items. This five-column excerpt shows three unchanged rows;
+the full download contains eight items and additional source information.
+
+```csv
+snapshot_id,split,corpus,artifact_type,parent_document_id
+027_Jordan-Emergency-Food-Security-Project_figure_001.png,development,refugee,figure,027_Jordan-Emergency-Food-Security-Project
+108733-revised-public-wb-unhcr-policy-brief-final_table_000.png,development,unhcr,table,108733-revised-public-wb-unhcr-policy-brief-final
+protection_trends_paper_no_7_jan-mar_2016_final_figure_004.png,heldout,unhcr,figure,protection_trends_paper_no_7_jan-mar_2016_final
+```
+
+The identifier and sample assignment are generally useful. In this example,
+artifact_type and corpus record variation, while corpus plus parent_document_id
+identify a source group. Another collection can use different diversity
+attributes and grouping keys; it does not need parent documents. The script
+uses the literal split values development and heldout.
+
 1. Identify differences that could affect the metadata, such as purpose, language, format, structure, or source.
 2. Inspect examples across those differences and select a development sample. Record why each group matters to the intended use.
 3. Save the selected items' identifiers or filenames, source references, and collection version so the same sample can be revisited.
@@ -145,20 +163,53 @@ parent reports: different charts can still share a source.
 3. Compare the lists and resolve any overlap so each item belongs to only one sample. Check related versions and shared sources too: two charts from one report, for example, may have similar content and presentation.
 4. Record what is separate and what remains shared. Testing new items from familiar sources supports a different conclusion from testing items from new sources.
 
-:::note[Worked example from the study]
-The Data Snapshot study used separate development and holdout snapshots, with
-no snapshot in both samples. The samples did share 65 parent reports, so the
-test did not establish performance on a wholly separate set of reports.
+**Worked example: optional manifest check.** Download [check_manifest.py](pathname:///cookbook-files/ai-assisted-metadata-schema-development/check_manifest.py)
+and the full [source_images.csv](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv)
+into the same new working directory. With Python 3.10 or newer, run the command
+from that directory. If the interpreter is named python3, substitute that name.
+The checker reads the register and writes nothing.
+
+```bash
+python check_manifest.py source_images.csv
+```
+
+```text
+development: 6 snapshots, 6 parent documents
+heldout: 2 snapshots, 2 parent documents
+snapshot overlap: 0
+shared parent documents: 0
+```
+
+No artifact or parent report is shared within this eight-item teaching excerpt.
+The source-group comparison uses corpus and parent_document_id together.
+Zero artifact overlap alone would not establish separation from shared origins.
+
+:::note[Study sample]
+The full study used 210 development and 202 holdout snapshots, with zero
+snapshot overlap and 65 shared parent reports. Its evidence concerns new
+snapshots within those reporting sources; it is not a document-disjoint test.
 :::
 
 **Verification.** No item appears in both samples, and any shared sources are
-recorded.
+recorded. The optional checker should print the four lines above and exit with
+status 0. Those counts describe only the excerpt; full-study findings are
+reported separately above.
 
 **What this does not do.** Checking overlap does not establish that either
 sample covers every metadata need. Once holdout findings are used to revise
 the schema, a further independent test requires fresh examples.
 
 </Recipe>
+
+## Implementation options
+
+A spreadsheet and manual inspection are sufficient for a small collection.
+For larger collections, programmatic summaries of known attributes can help
+identify groups to inspect, but their quality depends on the available labels.
+Select examples across differences relevant to the intended use, and group
+related items when the validation claim concerns new sources or origins.
+Parent-document grouping is one case-specific choice; recordings, records,
+or other artifacts may need different group identifiers.
 
 ## Resources
 

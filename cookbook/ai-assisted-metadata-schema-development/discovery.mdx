@@ -39,7 +39,7 @@ catches misreadings and unsupported suggestions.
 - The scope statement and development sample from [Chapter 1](./characterization.mdx).
 - Familiarity with API requests and JSON records for preparing a new run.
 - Python 3.10 or newer for the supplied offline inspection; no external packages are needed.
-- A provider API key for live LLM calls. The prepared response inspection makes no calls.
+- New LLM runs need the [hosted or local setup](./index.mdx#prerequisites) described in the overview. The prepared inspection needs no LLM credentials.
 
 ## Maturity levels
 
@@ -266,6 +266,19 @@ processing remains optional and requires provider-specific integration, an
 explicit budget, and independent verification of new outputs.
 
 </Recipe>
+
+## Implementation options
+
+Choose inputs and a model interface that preserve the evidence needed for
+the artifact class. Hosted execution needs provider credentials and access;
+local execution needs an available model, compatible interface, and sufficient
+computing resources. Adapt the teaching request and response checks to that
+interface. Their formats are not guaranteed to work unchanged across providers.
+
+Sequential requests are straightforward for small collections. Batching can
+manage larger runs, provided each artifact is still examined independently
+and failures remain identifiable. Context may be omitted when the artifact
+is sufficient; when supplied, identify it separately from direct evidence.
 
 ## Resources
 

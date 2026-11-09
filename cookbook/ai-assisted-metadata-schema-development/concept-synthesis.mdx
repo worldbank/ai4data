@@ -39,7 +39,7 @@ distinctions lets reviewers check those proposals before accepting them in
 - Metadata observations and item identifiers from [Chapter 2](./discovery.mdx).
 - Access to the observations' values, explanations, and evidence sources.
 - Python 3.10 or newer for the supplied profiling exercise; no external packages are needed.
-- A provider API key if using an LLM for new synthesis. The prepared exercise uses recorded outputs.
+- New model-assisted synthesis needs the [hosted or local setup](./index.mdx#prerequisites) described in the overview. The prepared exercise uses recorded outputs.
 
 ## Maturity levels
 
@@ -284,6 +284,16 @@ Candidate concepts still need human review before field design; they are not
 an accepted schema or a formal ontology.
 
 </Recipe>
+
+## Implementation options
+
+A spreadsheet or table-processing tool can apply the same exact-name grouping
+and distinct-item counts as Recipe 3.1. Automation is useful when the collection
+is too large to check each group manually, but the counting rules and evidence
+links must remain explicit. Review meanings manually for a small profile set,
+or use model assistance to propose relationships for review. Splitting a large
+synthesis input across requests requires checking consistency across the
+resulting concept proposals; it changes the study's single-request approach.
 
 ## Resources
 

@@ -38,7 +38,7 @@ field design avoids treating frequency or model confidence as a decision rule.
 - Candidate concepts, profiles, and supporting observations from [Chapter 3](./concept-synthesis.mdx).
 - A reviewer who understands the materials and their intended uses.
 - A spreadsheet or another way to record decisions and inspect support counts.
-- A provider API key only if running new model-assisted assignments; the prepared reviews require no calls.
+- New model-assisted assignments need the [hosted or local setup](./index.mdx#prerequisites) described in the overview. The prepared reviews require no calls.
 
 ## Maturity levels
 
@@ -132,6 +132,13 @@ cover the development evidence. Allow an unmatched category so a poor fit is
 not forced into a concept. The study called that category not_in_ontology;
 this label does not make the list a formal ontology.
 
+**Input example.** Compare the title profiles from Recipe 3.2 with the reviewed
+title concept: “The displayed or inferred title, heading, or caption that
+identifies the snapshot.” The study retained that definition. Its original
+sample_size and panel_titles profiles provide contrasting unmatched cases.
+The prepared exercise reviews existing assignments; creating a new mapping
+requires the complete reviewed concept list.
+
 The downloadable [assessment request](pathname:///cookbook-files/ai-assisted-metadata-schema-development/concept_assessment_request.md)
 is an independently written, unexecuted teaching adaptation of the historical
 classification task. It describes logical inputs and checks, without supplying
@@ -144,13 +151,6 @@ a live API runner.
 ```
 
 </details>
-
-**Input example.** Compare the title profiles from Recipe 3.2 with the reviewed
-title concept: “The displayed or inferred title, heading, or caption that
-identifies the snapshot.” The study retained that definition. Its original
-sample_size and panel_titles profiles provide contrasting unmatched cases.
-The prepared exercise reviews existing assignments; creating a new mapping
-requires the complete reviewed concept list.
 
 1. Identify the concept-list version used for the assignments. In the prepared review, use the title definition above and the original 41-concept stage. A new mapping requires the complete fixed list and can use the assessment request.
 2. Compare each profile's name, descriptions, and observed values with its assigned meaning. Merged names should point to their retained concepts.
@@ -262,6 +262,16 @@ rate, prove generalizability, or replace held-out validation. The study found no
 compelling basis for further conceptual revision before operational design.
 
 </Recipe>
+
+## Implementation options
+
+Manual comparison is suitable for a small candidate list. The existing review
+worksheet makes decisions and their reasons easier to revisit without requiring
+model calls. For larger profile collections, model-assisted classification can
+supply draft assignments to the fixed concept list; it still needs review of
+uncertain and unmatched cases. Choose the review depth according to the
+importance of the distinctions. Confidence and frequency alone do not
+establish an acceptance rule.
 
 ## Resources
 

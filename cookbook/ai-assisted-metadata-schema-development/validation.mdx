@@ -44,7 +44,7 @@ field count alone does not establish that the schema is complete.
 - The holdout sample and source-sharing information from [Chapter 1](./characterization.mdx).
 - The complete schema specification from [Chapter 5](./schema-design.mdx).
 - A reviewer who can inspect the materials, field definitions, and assessment records.
-- A provider API key for new LLM assessments. The worked examples use prepared records.
+- New LLM assessments need the [hosted or local setup](./index.mdx#prerequisites) described in the overview. The worked examples use prepared records.
 
 ## Maturity levels
 
@@ -122,6 +122,14 @@ then compare it with the complete schema. A proposed gap should explain what
 existing fields cannot express. This broad check can surface boundary questions
 that reviewers later reject or resolve through clearer guidance.
 
+**Input example: a field with an unclear date boundary.** The
+documentation-revision example records artifact-date families such as
+snapshot_date, snapshot_creation_date, and snapshot_production_date, alongside
+parent-document publication-date proposals. The original time_period definition
+was:
+
+> The period or date range represented by the data.
+
 The [validation request specifications](pathname:///cookbook-files/ai-assisted-metadata-schema-development/validation_request_specs.md)
 provide teaching adaptations of this check and the stricter check in Recipe 6.3.
 They describe logical inputs and outputs; a live run needs complete schema
@@ -134,14 +142,6 @@ inputs, provider integration, a budget, and separate output records.
 ```
 
 </details>
-
-**Input example: a field with an unclear date boundary.** The
-documentation-revision example records artifact-date families such as
-snapshot_date, snapshot_creation_date, and snapshot_production_date, alongside
-parent-document publication-date proposals. The original time_period definition
-was:
-
-> The period or date range represented by the data.
 
 1. Supply a holdout item, its identifier and permitted context, the descriptive scope, and the complete saved schema.
 2. Ask what information is covered, poorly represented, missing, outside scope, or uncertain, with evidence and the closest existing fields for each judgment.
@@ -225,6 +225,12 @@ Test the check itself before relying on it. Deliberately removing a known field
 can reveal whether it notices an expected omission. Human review of some no-gap
 results can also reveal misses; the study limits are recorded below.
 
+**Input example: the South Sudan composite.** This holdout figure contains a map,
+two donut charts, and a trend chart with different subjects and periods.
+The [externally linked image](https://huggingface.co/datasets/ai4data/data-snapshot/blob/626f3c54ba6d8f6e0ba0795f9e544e24b2650faf/snapshots/unhcr/protection_trends_paper_no_7_jan-mar_2016_final_figure_004.png) and
+[source register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) retain its provenance. The
+following retained text is sufficient for this exercise.
+
 <details>
 <summary>Study response format</summary>
 
@@ -237,12 +243,6 @@ fields, possible loss, material consequence, and uncertainty. The no-gap output
 has no snapshot-level explanatory rationale.
 
 </details>
-
-**Input example: the South Sudan composite.** This holdout figure contains a map,
-two donut charts, and a trend chart with different subjects and periods.
-The [externally linked image](https://huggingface.co/datasets/ai4data/data-snapshot/blob/626f3c54ba6d8f6e0ba0795f9e544e24b2650faf/snapshots/unhcr/protection_trends_paper_no_7_jan-mar_2016_final_figure_004.png) and
-[source register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) retain its provenance. The
-following retained text is sufficient for this exercise.
 
 1. Freeze the schema version to be assessed and supply it with the reserved artifact representation and allowed context. If history is removed to reduce anchoring, preserve substantive meanings and guidance. The study's second instrument used a model-facing v1.1.1 copy after documentation revision; a new application need not reproduce that exact sequence.
 2. Set the conditions for a consequential gap using the artifact scope and intended uses. The study required explicit evidence, reusable snapshot metadata, inadequate coverage, and material impact on interpretability or discoverability. Its possible-gap label retained uncertainty while still requiring plausible metadata and impact.
@@ -385,6 +385,18 @@ standards-informed 37-field endpoint belongs to [chapter 7](./standards-refineme
 and did not receive a further independent held-out assessment in this study.
 
 </Recipe>
+
+## Implementation options
+
+Choose a holdout design that matches the intended claim. Separate artifact
+identities test new items; separating relevant source groups can test transfer
+to new origins, at the cost of reserving enough independent groups.
+
+An open-ended assessment can expose a wide range of boundary questions.
+A focused assessment asks whether a loss would affect the intended use, but its
+threshold can miss useful distinctions. Human review can apply either approach.
+For model-assisted assessment, a human audit of selected no-gap results is an
+option for investigating misses; the recorded study did not complete that audit.
 
 ## Resources
 

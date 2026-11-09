@@ -27,9 +27,9 @@ what information to record about each item. The challenge is deciding which
 fields will be useful for the materials and the task at hand.
 
 This cookbook guides practitioners from examples of their own materials to a
-schema suited to their use case. AI helps speed up the work by suggesting fields,
-organizing related ideas, and drafting definitions for practitioners to review
-and refine.
+schema suited to their use case. AI can propose candidate fields, identify
+related concepts, and help compare meanings or draft documentation. Human
+reviewers make the schema decisions.
 
 This cookbook adapts the approach presented in the Data Snapshot research paper
 by Dy & Solatorio (2026), using that study as a worked example.
@@ -45,11 +45,13 @@ by Dy & Solatorio (2026), using that study as a worked example.
 
 - Manual exercises require representative materials and a reviewer who understands their intended use.
 - The response-inspection and profiling exercises require Python 3.10 or newer and the ability to read CSV and JSON files. They use only the standard library.
-- Applying the AI-assisted steps to new materials requires familiarity with LLM inputs and responses, a provider API key for calls, and provider-specific integration. The request examples describe the task without supplying a live runner.
+- Hosted LLM execution requires suitable provider credentials and configuration, and may require paid access.
+- Local LLM execution requires an available model, a compatible interface, and sufficient computing resources; provider API credentials may not be needed.
 
-The prepared exercises make no LLM calls. Rechecking standards requires access
-to authoritative sources. A new model-assisted run also needs a budget and
-checks of its outputs against the materials.
+The prepared exercises need no LLM credentials or paid calls. The request
+examples describe logical tasks; adapt inputs and response checks to the chosen
+interface before a new run. Rechecking standards requires authoritative sources.
+New runs also need resource planning and checks against the materials.
 
 ## First steps
 
