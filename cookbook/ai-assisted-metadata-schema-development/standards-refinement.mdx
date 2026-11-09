@@ -15,76 +15,54 @@ import Checklist from '@site/src/components/Cookbook/Checklist';
 
 ## Rationale
 
-Artifact-driven development establishes the information that a schema must
-describe. Standards review adds evidence about established meanings, terminology,
-and representation practices. It can expose an overloaded field or a useful
-distinction even when held-out validation has not warranted an additional
-descriptive requirement. Start with the operational specification and human
-decisions retained after [chapter 6](./validation.mdx). In the case study, that
-was documentation-revised v1.1.1 with 36 fields.
+Established standards can help clarify field meanings, improve terminology,
+and reveal useful distinctions. Comparing the schema with them brings in
+experience beyond the development collection. It can expose a field that
+combines different roles even when holdout testing has not led to a new field.
 
-A standards crosswalk is a documented comparison between local fields and
-external terms or patterns. Its relationships help reviewers reason about
-possible changes. They do not replace artifact evidence or decide whether the
-application should adopt a name, vocabulary, or structure. Humans preserve the
-observed requirements while accepting useful refinements, rejecting unsuitable
-restrictions, and distinguishing implemented changes from deferred structures.
-Choose standards by the resources, uses, and representation problems they
-address. DCMI, Schema.org, PROV-O, and the other reviewed sources demonstrate
-that selection for Data Snapshots; none is a universal requirement for every
-artifact class.
+A similar name does not guarantee a suitable meaning. An external term may
+refer to a different kind of item, impose a narrower scope, or require
+relationships the current record cannot express. A crosswalk records these
+comparisons so reviewers can adopt useful refinements while preserving what
+their materials and use case require. The choice of standards follows those
+needs; no single vocabulary has to cover every field.
 
 ## Target state
 
-- A crosswalk identifies authoritative terms, compared meanings, source versions or dates, and bounded relationships.
-- A decision record explains accepted, partially accepted, rejected, and deferred recommendations.
-- A versioned final specification reconciles field names and cardinalities while stating what remains untested.
+- A crosswalk compares local field meanings with authoritative terms and records sources, dates, and scope differences.
+- Human decisions explain which proposed changes are accepted, rejected, or deferred.
+- A complete, versioned specification records approved changes, field formats, and remaining validation needs. The prepared exercise supports selected comparisons and inventory review; it does not reconstruct the complete study specification.
 
-## Learning objectives
+## Prerequisites
 
-- The practitioner can compare a local meaning with an external term without treating similar names as equivalent.
-- The practitioner can justify a standards decision using artifact evidence, application needs, and representation limits.
-- The practitioner can explain the provenance split and reconcile the 36-field baseline with the 37-field endpoint.
-- The practitioner can distinguish semantic alignment, formal compliance, and downstream implementation.
-
-## Prerequisite concepts
-
-Chapter 6 supplies the documentation-revised schema, human validation decisions,
-and representation backlog. The reviewer understands the unit described and its
-intended cataloging and discovery uses. Prepared records support manual exercises
-without model calls. Rechecking external terms requires access to their
-authoritative documentation.
+- The schema, validation decisions, and deferred issues from [Chapter 6](./validation.mdx).
+- A reviewer who understands the materials and intended uses.
+- Access to authoritative standards documentation for checking term meanings.
+- A working copy of the standards-review worksheet; the prepared exercises require no model calls.
 
 ## Maturity levels
 
 | Level | Steps |
 |---|---|
-| **Foundational** | Reviewers compare meanings and record reasons for accepting or declining changes. |
-| **AI-ready** | Identified crosswalk rows, authoritative sources, dispositions, and versioned inventories make the review inspectable. |
-| **AI-native** | Interactive AI assistance supports standards research and comparison with source verification and human acceptance. |
+| **Foundational** | Reviewers compare definitions and record reasons for accepting or declining changes. |
+| **AI-ready** | Crosswalk rows link sources and decisions to saved specification versions. |
+| **AI-native** | Optional AI assistance suggests comparisons; reviewers verify authoritative sources and approve changes. |
 
 :::info[Running example]
-**Recorded study result.** Standards review began with documentation-revised
-v1.1.1 and produced the final flat v1.1.2 specification with 37 fields.
-Separating data_source into data_sources and attributions explains the net
-increase, alongside other terminology and guidance refinements. **Teaching
-exercises.** A new worksheet and a compact inventory transcription support
-inspection. The Afghanistan values below are transcribed from the paper's
-worked record; they are not a new extraction result.
+**Recorded refinement.** The Afghanistan table returns to show how standards
+help separate the source data from the people credited for producing an item.
+The printed values are transcribed from the paper; no new extraction was performed.
 :::
 
 ## Recipes
 
-<Recipe title="7.1 Build an evidence-backed standards crosswalk" level="AI-ready" skills="Metadata practitioner; standards reviewer" time="60–90 minutes for the selected field comparisons">
+<Recipe title="7.1 Compare fields with relevant standards" level="AI-ready" skills="Metadata practitioner; standards reviewer" time="60–90 minutes for the selected field comparisons">
 
-**Result:** A crosswalk records each compared local meaning, authoritative term, scope relationship, possible refinement, and uncertainty for human review.
+**Result:** A crosswalk compares field meanings with authoritative terms and records possible refinements.
 
-Different standards describe different kinds of resources and relationships.
-A field naming a snapshot and a field naming its parent can both resemble a
-title property while referring to different objects. Similarly, a useful
-provenance relation may require entities and agents that a flat text field
-does not represent. Comparison therefore begins with definitions, resource
-scope, and evidence requirements, before any proposed replacement.
+Compare definitions and the kind of item each term describes before proposing
+a replacement. A snapshot title and its parent-report title can both resemble
+a standard title property while naming different things.
 
 **Worked example.** The following selected comparisons retain the recorded
 relationship judgments. Their explanatory notes are teaching summaries checked
@@ -107,11 +85,12 @@ reviewed in this study. It does not prove that no useful term exists elsewhere.
 3. Compare those meanings with the local definition and artifact evidence. State whether the external term is broader, narrower, close, or otherwise related. Explain the direction and the scope difference; a shared name alone is insufficient.
 4. Save a working copy of the new [standards-review worksheet](pathname:///cookbook-files/ai-assisted-metadata-schema-development/standards_review_template.csv). Record relationship and candidate_refinement separately from decision and decision_reason. Preserve uncertainty for review, and retain a reference to any eventual specification change.
 
-The worksheet is a new teaching aid. Its local_meaning and scope_difference
-columns record the comparison; authoritative_url, source_version_or_date, and
-checked_date make the external evidence traceable. The remaining columns connect
-that evidence to a human reviewer, disposition, and output. It is not a recovered
-historical ledger or an automated mapping contract.
+The worksheet is a teaching aid. Record the local meaning, scope difference,
+authoritative URL, source version or date, and check date, then connect the
+comparison to a reviewer and decision.
+
+<details>
+<summary>Study crosswalk summary</summary>
 
 **Recorded crosswalk categories.** The study summarized the 36 baseline fields
 as follows. These are descriptive review categories. They do not assert formal
@@ -127,8 +106,11 @@ mapping predicates or a machine-enforced relation vocabulary.
 | No direct match | 5 | The reviewed sources supply no direct counterpart for the local meaning. |
 | Total | 36 | Each baseline field appears once in this summary; a field can have several candidate external correspondences. |
 
-**Verification.** Reconcile 10 + 11 + 6 + 3 + 1 + 5 = 36. For a selected row,
-identify the local definition, authoritative term, described resource, scope
+The category counts sum to 36 baseline fields.
+
+</details>
+
+**Verification.** For a selected row, identify the local definition, authoritative term, described resource, scope
 difference, and proposed consequence. The [standards page](./standards.md)
 records the term-check date separately from historical study source dates.
 Each suggestion must remain distinguishable from an accepted change.
@@ -140,16 +122,14 @@ fixed-prompt inference, deterministic runner, or automatic acceptance process.
 
 </Recipe>
 
-<Recipe title="7.2 Adjudicate candidate standards refinements" level="Foundational" skills="Domain reviewer; metadata designer" time="60–90 minutes for the provenance split and contrasting decisions">
+<Recipe title="7.2 Review proposed standards changes" level="Foundational" skills="Domain reviewer; metadata designer" time="60–90 minutes for the provenance split and contrasting decisions">
 
-**Result:** A decision record distinguishes accepted semantic refinements from rejected restrictions and deferred structures, with evidence and reasons for each disposition.
+**Result:** A decision record explains accepted, rejected, partially accepted, and deferred changes.
 
-A useful external distinction still needs an operational decision. Reviewers
-consider semantic accuracy, artifact evidence, cataloging and discovery needs,
-annotation consistency, and maintenance cost. A proposal may improve terminology
-while adding relationships the flat specification cannot preserve. Partial
-acceptance allows that distinction to remain visible without pretending that
-the richer structure has been implemented.
+Decide whether a recommendation improves the schema for its intended use.
+Check meaning, source evidence, consistency, and maintenance effort. A useful
+change in terminology can be accepted while a larger structural change is
+deferred, provided both decisions are recorded.
 
 **Input example: the combined provenance field.** The baseline v1.1.1 field was
 data_source. Its exact definition and accompanying guidance were:
@@ -222,11 +202,9 @@ the research decision matrix. The explanations summarize its documented reasons.
 | Rename panel_title to panel_titles and introduce panel objects. | Partially accept. | Retain explicit repeated headings in the plural flat field; defer panel objects and their relationships. |
 | Rename subject_domain to subject_domains and require external coding. | Partially accept. | Represent multiple coequal domains while rejecting a mandatory vocabulary that cannot cover all artifacts. |
 
-These decisions differ because the recommendations have different consequences.
-A semantic distinction can improve a flat field boundary. A narrower external
-class can discard a required local meaning. An object model can be valuable
-while exceeding the study's directly inspectable representation. None is
-settled by matching a name or counting external references.
+Each decision follows its consequence for the application: preserve useful
+meanings, avoid unsuitable restrictions, and keep unimplemented structures
+explicitly deferred.
 
 **Verification.** Match the provenance decision and two final definitions to
 provenance-split. In the worksheet, record the candidate, disposition, reason,
@@ -244,29 +222,22 @@ and the new worksheet is a teaching aid.
 
 <Recipe title="7.3 Reconcile refinements and prepare a publication record" level="AI-ready" skills="Metadata designer; documentation reviewer" time="45–60 minutes for inventory reconciliation and a publication checklist">
 
-**Result:** The supplied exercise produces an inventory reconciliation, a review of selected standards-informed changes, and publication-readiness and decision-record notes. Applying the complete procedure to another artifact collection produces a complete, versioned operational specification with field definitions, guidance, and an auditable refinement record.
+**Result:** A complete application produces a versioned specification and supporting decisions for publication review. The prepared exercise produces inventory reconciliation and publication-readiness notes from selected study records.
 
-Publication makes the schema usable and its reasoning reviewable. A list of
-new names alone cannot show whether coverage was preserved, whether a field
-split introduced a semantic distinction, or whether deferred structures were
-implemented. The specification and decision record must therefore travel
-together, with the starting version available for comparison.
+A usable release needs the complete specification and the decisions explaining
+its changes. Names alone cannot show whether meanings were preserved or deferred
+structures were implemented.
 
-The [final field inventory](pathname:///cookbook-files/ai-assisted-metadata-schema-development/final_field_inventory.csv) transcribes baseline and final field names and final cardinalities. It supports the exercise below alongside the selected definitions and decisions in recipes 7.1–7.2; it is not a full schema or machine-readable validator.
+1. Retain the complete starting specification and approved review decisions. Apply accepted changes to a new named version.
+2. Review every changed field's definition, examples, value format, evidence rules, applicability, and treatment of missing information. Preserve the requirements supported by the materials.
+3. Reconcile the full before-and-after inventory. Link each change to its reason, authoritative references, and reviewer; keep the crosswalk and decision record distinct.
+4. Review the specification and supporting record together. Document deferred requirements and further validation needs before publication.
 
-1. Identify the baseline and final versions in the supplied inventory and locate the selected decisions that explain their differences.
-2. Reconcile the before-and-after field inventory and review the highlighted changes below. Distinguish renames, definition changes, and the provenance split. Keep the crosswalk separate from the human decision record.
-3. Prepare publication-readiness and decision-record notes. Identify the evidence and disposition supporting each selected change, deferred requirements, and further validation needs. State which complete specifications and checks a publication would still require. Publication of this cookbook remains a separate review step.
-
-**Application to another artifact collection.** Retain the complete starting
-specification and approved standards decisions. Apply accepted changes to a new
-version while preserving source-supported descriptive requirements. Review every
-renamed or revised field's definition and annotation guidance, carrying forward
-evidence boundaries, applicability, and missing-value rules. Reconcile the full
-inventory and retain an auditable decision record with authoritative references,
-reviewers, and unresolved requirements. The complete, versioned operational
-specification and its supporting record should be reviewed together before
-publication. A plural name alone does not establish relationships among values.
+**Prepared exercise.** Use the [final field inventory](pathname:///cookbook-files/ai-assisted-metadata-schema-development/final_field_inventory.csv)
+and selected definitions from recipes 7.1–7.2 to reconcile the study's names and
+cardinalities, then write publication-readiness notes. Cardinality specifies
+how many values a field may hold. These files do not supply the complete schema,
+so the exercise cannot reconstruct a full publication-ready specification.
 
 **Worked example: reconcile the field inventory.** The supplied CSV has 37
 final-field rows and 36 distinct baseline_field values. The baseline data_source
@@ -282,12 +253,6 @@ changes matter even though they do not change the count.
 | financing_source | funders | Clarify the funding-source meaning. |
 | panel_title; variable_name | panel_titles; variable_names | Express repeatable flat values through plural names. |
 | data_source | data_sources; attributions | Separate data origin from explicitly credited production. |
-
-The module counts remain easy to inspect: Identity and discovery 5, Subject and
-semantics 4, Temporal context 2, Spatial context 5, Measurement context 4,
-Structural organization 3, Provenance and attribution 5, Project and operational
-context 7, and Analytical and methodological context 2. Their total is 37.
-Modules organize the specification; they do not make the record nested.
 
 **Worked example: verify meanings alongside names.** The final definition of
 project_name remains “The project, program, operation, or initiative associated
@@ -336,45 +301,12 @@ did not receive an additional independent held-out validation after refinement.
 
 </Recipe>
 
-## Expected artifact
-
-The method ends with an operational specification suited to the artifact class,
-a source-backed crosswalk, human refinement decisions, and explicit limitations.
-Field counts, representation, and relevant standards follow that application's
-evidence and uses. The study's sequence remains 70 candidate concepts, 41
-reviewed concepts, 36 initial fields, 36 documentation-revised fields, and 37
-final fields. Its empirical evidence concerns the selected Data Snapshots;
-applying the reasoning elsewhere requires evidence for the new class.
-
-## Implementation options
-
-A readable specification and the combined review worksheet are sufficient for
-the exercises. The historical standards review was interactive, human-adjudicated
-work using the existing schema, validation evidence, and authoritative sources.
-No fixed historical prompt, batch pipeline, or structured acceptance contract is
-supplied here.
-
-A downstream implementation can express types and constraints in JSON Schema,
-Pydantic, or another machine-readable form. The manuscript's post-study diagnostic
-also changed nesting, normalization, schema context, and reporting references.
-Its comparison cannot isolate a representation-format effect or establish
-extraction-performance superiority. That later implementation does not extend
-the evidence boundary of the original held-out exercises.
-
-## World Bank examples
-
-The Data Snapshot study supplies the recorded crosswalk, decisions, final schema,
-and Afghanistan provenance example. [Publishing ML-Ready Datasets](/cookbook/ml-ready-datasets/)
-provides related guidance on publishing usable specifications and documentation
-for another kind of data artifact.
-
 ## Resources
 
 - The [research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json) preserves provenance-split, the final provenance definitions, the two-field paper transcription, and the study sequence.
 - The new [standards-review worksheet](pathname:///cookbook-files/ai-assisted-metadata-schema-development/standards_review_template.csv) separates comparison, candidate change, human disposition, and output reference.
 - The [final field inventory](pathname:///cookbook-files/ai-assisted-metadata-schema-development/final_field_inventory.csv) supports complete name and cardinality reconciliation without copying the full specification.
 - The [standards page](./standards.md) lists the references reviewed in the study and the authoritative worked-term checks for this chapter.
-- The [source-image register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) provides external image links, provenance, and reuse limitations.
 - Dy & Solatorio (2026). *Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs*. Working paper. Sections 5.6 and 6.7, Appendix F, Appendix G, and the sample in Appendix H.1 supply the standards process, endpoint, and provenance example. Appendix I bounds the post-study diagnostic.
 
 ## Common mistakes
@@ -387,16 +319,18 @@ for another kind of data artifact.
 
 ## Verification
 
-- Worked comparisons identify authoritative definitions, local scope, source dates, and the recorded relationship judgment.
-- Accepted, rejected, partially accepted, and deferred recommendations remain distinguishable from new teaching interpretations.
-- Exact provenance definitions and printed sample values preserve the 36-to-37 transformation and attribution boundary.
-- Inventory reconciliation and publication notes preserve the final flat specification's cardinalities and evaluation limits.
+- Crosswalk rows identify authoritative definitions, local scope, source dates, and the proposed relationship.
+- Accepted, rejected, partially accepted, and deferred changes have reasons and output references.
+- The final inventory reconciles with the starting version and preserves required meanings and value formats.
+- Publication notes identify the complete specification, remaining work, and further validation needs; the prepared exercise states its narrower output.
 
 ## Checklist
 
 <Checklist id="ai-assisted-metadata-schema-development-standards-refinement" items={[
   'Mappings identify authoritative terms and their relationship to local meanings.',
   'Accepted, rejected, and deferred proposals have explicit reasons.',
-  'The final inventory reconciles all 36 baseline fields with 37 final fields.',
-  'The final specification preserves descriptive requirements and states its evaluation boundary.',
+  'The final inventory reconciles with the starting version and approved changes.',
+  'The specification and publication notes state remaining work and validation needs.',
 ]} />
+
+Review the complete specification and decision record together before publication. Further validation should test any changes introduced after the earlier holdout assessment.

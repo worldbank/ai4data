@@ -15,72 +15,54 @@ import Checklist from '@site/src/components/Cookbook/Checklist';
 
 ## Rationale
 
-A concept inventory establishes meaningful distinctions. An operational metadata
-schema specifies the fields used to describe artifacts, including their names,
-definitions, evidence rules, examples, and treatment of unavailable information.
-Its design must support consistent annotation, interpretation, and discovery
-with an annotation and maintenance effort that the intended application can sustain.
-Choose fields and representation for the intended uses and artifact class.
+A list of agreed meanings is not yet a schema that people can use consistently.
+Each field needs a clear purpose, definition, value format, and guidance about
+what evidence belongs there. Without those decisions, two people may describe
+the same item differently even when they agree on the underlying concepts.
 
-The transition requires human decisions beyond semantic consolidation. Two
-concepts may be distinct yet offer little benefit as separate fields. A
-previously consolidated distinction may become useful when annotating complex
-artifacts. The schema's representation also determines which relationships a
-record can express. Reviewing these choices precedes freezing the initial
-specification for [held-out validation](./validation.mdx). A flat record may
-be adequate when fields describe the whole artifact; related components or
-repeatable objects may require explicit structure. The study's flat 36-field
-schema and nine modules illustrate one design. Another class may need a
-different inventory and structure.
+Design also involves practical choices: combine distinctions that add little
+value as separate fields, retain ones that help the task, and decide how to
+represent repeated values or related components. Trying the specification on
+contrasting development items exposes unclear guidance before testing it on
+the holdout sample. The result is a named schema version ready for validation.
 
 ## Target state
 
-- Field decisions state their operational purpose and relationship to reviewed concepts.
-- A versioned specification defines field meanings, applicability, examples, and evidence boundaries.
-- A development-example review records ambiguities and representation questions before the initial schema is frozen.
+- A decision record explains which concepts become fields and why.
+- A versioned specification defines each field's meaning, value format, examples, evidence rules, and treatment of missing information.
+- A development review resolves ambiguities or records questions to test during holdout validation.
 
-## Learning objectives
+## Prerequisites
 
-- The practitioner can justify keeping, merging, removing, renaming, or restoring a field.
-- The practitioner can distinguish a concept, field definition, annotation rule, value, and record.
-- The practitioner can review selected annotations without claiming a new historical experiment or incorporating later validation revisions.
-
-## Prerequisite concepts
-
-[Chapter 4](./concept-refinement.mdx) supplies a reviewed concept inventory and
-its development-evidence coverage. The intended annotation and retrieval uses are
-explicit. A domain reviewer can inspect source evidence and compare plausible
-interpretations. The exercises use document review and a blank CSV worksheet;
-they require no code execution, model call, or dataset download.
+- The reviewed concepts and supporting evidence from [Chapter 4](./concept-refinement.mdx).
+- An intended use for the metadata and a reviewer who can inspect the materials.
+- Contrasting development examples and a working copy of the field-specification worksheet.
 
 ## Maturity levels
 
 | Level | Steps |
 |---|---|
-| **Foundational** | Human-readable definitions and decision reasons establish an annotatable specification. |
-| **AI-ready** | Versioned field specifications, source references, and review records support repeatable checks. |
-| **AI-native** | Model-assisted ambiguity checks retain evidence and verification while humans approve field and representation decisions. |
+| **Foundational** | Written definitions and examples let people apply the fields. |
+| **AI-ready** | Saved specification versions and review records make field decisions traceable. |
+| **AI-native** | Optional AI assistance flags unclear guidance; reviewers check examples and approve changes. |
 
 :::info[Running example]
-**Recorded study result.** Human operational design produced the initial Data
-Snapshot Metadata Schema v1.1: 36 fields in nine modules. The soybean figure
-illustrates the usefulness of the restored panel_title field. **Teaching
-application.** Selected development artifacts are used below to practice field
-specification and review. These applications are newly authored illustrations,
-not a recovered historical annotation exercise.
+**Teaching applications.** The soybean figure tests overall and panel titles;
+the Afghanistan table tests supported values and missing information. The
+examples apply selected definitions from the initial study schema, v1.1.
+They are newly written teaching illustrations.
 :::
 
 ## Recipes
 
-<Recipe title="5.1 Translate concepts into operational field decisions" level="Foundational" skills="Metadata designer; domain reviewer" time="45–60 minutes for the representative decisions">
+<Recipe title="5.1 Choose fields for the intended use" level="Foundational" skills="Metadata designer; domain reviewer" time="45–60 minutes for the representative decisions">
 
-**Result:** A field-decision record explains which distinctions receive independent fields and why those choices support the intended annotation and retrieval tasks.
+**Result:** A field-decision record explains which meanings need separate fields and why.
 
-The number of fields cannot be derived by copying concept names. An independent
-field needs an interpretable purpose, evidence that annotators can recognize,
-and enough downstream value to justify its maintenance. Combining fields can
-reduce duplicate annotation; restoring a distinction can make a composite
-artifact easier to describe. Both choices require an operational rationale.
+Choose fields for the work the metadata needs to support. A separate field
+should have a clear purpose and evidence that people can recognize. Combining
+overlapping fields can reduce effort; retaining a distinction can make complex
+items easier to describe.
 
 **Input example.** The [soybean multi-panel figure](https://huggingface.co/datasets/ai4data/data-snapshot/blob/626f3c54ba6d8f6e0ba0795f9e544e24b2650faf/snapshots/prwp/document_12916918_figure_012.png), document_12916918_figure_012.png, has a recorded panel_titles
 observation: “Monthly Price; Monthly Returns (% change) and KL (2000) test
@@ -90,7 +72,7 @@ not_in_ontology. The reviewed inventory had no independent panel_title target.
 1. Start with the reviewed meanings and original support evidence. For each proposed independent field, identify its annotation purpose, useful retrieval behavior, and overlap with other fields.
 2. Compare keeping the distinction separately with expressing its useful information in an existing field. Consider consistency, interpretability, redundancy, maintenance effort, and representation constraints. Record the benefit and any loss.
 3. Preserve a concept-to-field note for each demonstrated change. Distinguish a rename from a change in meaning. State when a field restores a distinction that the concept inventory did not retain separately.
-4. Freeze the selected field names and specification version before validation. Retain unresolved operational issues as review questions, with the evidence needed to revisit them.
+4. Save the chosen fields and unresolved questions for specification and development review in recipes 5.2–5.3. Freeze the version after that review and before validation.
 
 **Worked example.** The paper's Table 14 and operational-panel-title in
 [evidence.json](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json) record the following representative design
@@ -105,21 +87,13 @@ to 36 fields.
 | indicator_definition | Remove as an independent field. | Its operational value did not warrant the additional field. |
 | financial_metric | Rename to financial_measure. | The label improves clarity and consistency in the specification. |
 
-The indicator terminology crosses a stage boundary. The reviewed concept is
-indicator_name, and the recorded design discussion uses that name for the
-series-label consolidation. The actual initial v1.1 specification calls the
-operational field **variable_name**. Its definition covers variables, indicators,
-metrics, and measured concepts. Use that version's field name when writing an
-operational record; a conceptual label is not automatically a schema key.
-
-The paper describes the earlier conceptual consolidation under title and the
-subsequent operational restoration. Keep that design decision separate from
-the original residual assignment.
-
-The later mapping assigns panel_titles to panel_title. It is subsequent
-context for the operational distinction. The soybean example demonstrates the
-need without establishing that this image was the uniquely decisive historical
-case. No exact edit date or undocumented discussion is inferred.
+:::note[Study versions]
+The reviewed concept was indicator_name; the initial v1.1 field was
+**variable_name**. Use the specification's key when writing records. Likewise,
+panel_titles was originally unmatched and only later mapped to panel_title.
+The soybean figure illustrates the restored distinction without establishing
+that it was the uniquely decisive historical case.
+:::
 
 **Verification.** A reviewer can explain the purpose of each demonstrated
 change and trace it to the evidence. Confirm that v1.1 has variable_name and
@@ -134,19 +108,13 @@ later validation and standards changes remain outside this recipe.
 
 </Recipe>
 
-<Recipe title="5.2 Write field definitions and annotation guidance" level="Foundational" skills="Metadata designer; annotation reviewer" time="45–60 minutes for five contrasting fields">
+<Recipe title="5.2 Write field definitions and guidance" level="Foundational" skills="Metadata designer; annotation reviewer" time="45–60 minutes for five contrasting fields">
 
-**Result:** A field-specification worksheet separates source definitions from teaching guidance and documents scope, evidence, examples, related fields, and missing-value behavior.
+**Result:** Field definitions and guidance explain what to record, what evidence to use, and how to handle missing information.
 
-A concept definition states a shared meaning. An operational field definition
-states what belongs in a specific schema field. Annotation guidance explains
-how to apply that definition to evidence. An observed value instantiates it for
-one artifact. A complete metadata record brings the applicable fields together
-for that identified artifact. Choose each field's value type, whether it is
-required, how many values it can hold, and how absence is represented. These
-choices affect consistent population and any relationships the record must
-preserve. Reviewing a few example fields can expose ambiguity before a full
-specification is frozen.
+Write definitions that let another person decide what belongs in each field.
+Add examples and evidence rules, then specify the value type, whether the field
+is required, how many values it can hold, and how missing information is recorded.
 
 The [initial field excerpts](pathname:///cookbook-files/ai-assisted-metadata-schema-development/initial_field_specifications.md) reproduce
 five definitions and their illustrative examples from v1.1. They are a selected
@@ -172,7 +140,7 @@ evidence files.
 
 1. Write a definition for each chosen field using the reviewed meaning and operational decision. For the supplied v1.1 exercise, transcribe the selected definitions faithfully and mark proposed clarifications separately so later guidance cannot silently replace the initial wording.
 2. State each field's purpose, applicability, acceptable evidence, and boundary with related fields. Use both a fitting example and a case that should remain unpopulated. Do not turn a model's uncertainty phrase into a factual value.
-3. Specify requiredness, acceptable evidence, cardinality, and missing-value behavior for the intended application. For the v1.1 teaching examples, follow its recorded rules: every field is optional, values require explicit support, document context is used where permitted, and missing metadata is null. Record review reasons separately where that schema cannot distinguish absence from inapplicability.
+3. Specify value types, whether each field is required, how many values it can hold, and how to record missing information. In the v1.1 example, fields are optional, values need explicit support, permitted document context is identified, and missing metadata is null. Keep separate review notes when null cannot distinguish absence from inapplicability.
 4. Ask another reviewer to interpret the same examples from the specification. Record disagreements and proposed guidance for testing. A new clarification remains a proposal until it is approved and versioned.
 
 **Worked example: separate a title from panel headings.** The soybean discovery
@@ -197,19 +165,15 @@ In a v1.1 teaching record, unit_of_measure would remain null until explicit
 support is available. The absence of a unit does not authorize inferring a
 currency from the country's identity or the table's subject.
 
-The Afghanistan table also illustrates the parent-document boundary. Its parent
-is “Fragility and Population Movement in Afghanistan,” while the snapshot has
-the income-and-remittances title shown in chapter 2. The initial schema provides
-source_document_title for the parent reference. That does not make the parent's
-administrative metadata values for the artifact's descriptive fields. The
-individual income amounts remain analytical contents outside this specification.
+The parent title, “Fragility and Population Movement in Afghanistan,” belongs
+in source_document_title, separate from the table's income-and-remittances title.
+That distinction does not bring the parent's administrative metadata or the
+individual income amounts into the artifact's descriptive fields.
 
-**Version check.** The initial time_period definition is exactly “The period
-or date range represented by the data.” It does not include the extended
-documentation introduced after validation. Likewise, the initial provenance
-field is data_source; the later standards-informed split is not part of this
-chapter's specification. Candidate discovery's allowance for labelled inference
-also does not override v1.1's operational rule against unsupported values.
+**Study version.** Use the initial v1.1 definitions above. Later validation
+clarified time_period, and standards review split data_source; those changes
+belong to subsequent versions. Discovery's labelled inference also does not
+override v1.1's rule against unsupported values.
 
 **Verification.** The five worksheet definitions match the initial excerpts.
 Any newly authored inclusion or exclusion guidance is labelled as teaching
@@ -226,13 +190,11 @@ applications do not certify the correctness of discovery outputs.
 
 <Recipe title="5.3 Review the schema against representative examples" level="AI-ready" skills="Annotation practitioner; independent domain reviewer" time="45–60 minutes for two development artifacts">
 
-**Result:** An initial review record identifies evidence-supported field applications, missing or non-applicable values, interpretive disagreements, and questions to test after freezing the schema.
+**Result:** A development review resolves unclear guidance and records open questions before the schema is frozen.
 
-Applying the specification to contrasting development artifacts can reveal
-unclear boundaries before a validation run. The exercise asks whether two
-reviewers can use the fields consistently and whether the chosen representation
-can express the required information. It is a design review using development
-evidence. It does not claim an independent test of the schema's adequacy.
+Apply the draft specification to contrasting development items. Compare how
+two reviewers interpret the guidance and check whether the record can express
+what the task requires. Resolve problems before moving to the holdout sample.
 
 **Inputs.** Use the Afghanistan income table and soybean figure introduced
 in recipes 5.1–5.2, together with the selected v1.1 field definitions. The
@@ -264,6 +226,9 @@ or variables. A list of multiple values alone does not define those associations
 question and its material consequence for testing; this teaching review does
 not report a later held-out finding or add a nested structure.
 
+<details>
+<summary>Study field inventory</summary>
+
 The initial specification organizes its fields as follows. Modules are
 sections that support readability and annotation guidance. They do not assert
 a concept hierarchy or require nested records.
@@ -281,8 +246,11 @@ a concept hierarchy or require nested records.
 | Analytical & Methodological Context | 2 |
 | Total | 36 |
 
-**Verification.** Check the table sum against the recorded 36-field inventory.
-A review row identifies the artifact, field, schema version, evidence, reviewer,
+The module counts sum to 36 fields.
+
+</details>
+
+**Verification.** A review row identifies the artifact, field, schema version, evidence, reviewer,
 issue, and disposition. The supplied illustration establishes examples and
 expected reasoning; a new application's completed review must supply its actual
 reviewer and decisions. Confirm that any unresolved ambiguity is retained as a
@@ -296,60 +264,35 @@ the initial design boundary.
 
 </Recipe>
 
-## Expected artifact
-
-The operational output is a versioned specification with field definitions,
-evidence rules, value shapes, and decisions suited to the artifact class.
-Development review makes its unresolved questions explicit before validation.
-In the study, the initial output was a flat schema with 36 fields in nine
-readable modules; those counts and that representation are case-study choices. The next stage
-evaluates that specification on held-out artifacts; it does not silently replace
-the initial design with a later version.
-
-## Implementation options
-
-A readable specification and CSV worksheet support the manual exercises.
-Machine-readable validation can check a future record's structure once types
-and cardinalities have been decided. It cannot establish that a value is
-source-supported or semantically appropriate. A richer representation needs a
-documented requirement and a separate design decision. Neither a general schema
-editor nor a live extraction service is needed for this chapter.
-
-## World Bank examples
-
-The Data Snapshot study supplies the initial schema, recorded design decisions,
-and development artifacts. [Metadata Curation with Language Models](/cookbook/metadata-curation-with-llms/)
-addresses work within an established schema. The present chapter establishes
-the specification that such curation would need.
-
 ## Resources
 
 - The [research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json) preserves the operational-panel-title decision and the distinction between original and later assignments.
 - The [initial field excerpts](pathname:///cookbook-files/ai-assisted-metadata-schema-development/initial_field_specifications.md) reproduce selected v1.1 definitions and schema examples without later revisions.
 - The [field-specification template](pathname:///cookbook-files/ai-assisted-metadata-schema-development/field_specification_template.csv) provides a new working structure for definitions, guidance, evidence, and reviewer disposition.
-- The [source-image register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) identifies the Afghanistan, Lebanon, and soybean development artifacts and records external-image reuse limits.
 - Dy & Solatorio (2026). *Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs*. Working paper. Section 6.5 and Table 14 explain the operational design decisions. The selected definitions are transcribed from the initial research specification, Data Snapshot Metadata Schema v1.1.
 
 ## Common mistakes
 
 - A concept inventory can be copied into fields without reviewing annotation purpose or practical value.
-- The conceptual name indicator_name can be mistaken for the initial schema's variable_name key.
-- The later panel mapping can be treated as evidence that the original assessment included panel_title.
+- A concept name can be copied into a record without checking the approved field name.
+- A list of component values can be mistaken for a representation of their relationships.
 - Missing excerpt evidence can be mistaken for proof that a field is inapplicable.
 - Later documentation or standards changes can silently replace the initial specification.
 
 ## Verification
 
-- Field decisions explain their purpose and representation for the intended application, while the worked study preserves its 41-concept to 36-field boundary.
-- Selected definitions match v1.1, and added teaching guidance remains distinguishable from source wording.
-- Partial annotations retain evidence and missing-value reasons without claiming complete historical records.
-- The initial freeze, nine modules, and 36 fields remain separate from held-out findings and later schema versions.
+- Each field has a purpose, definition, value format, evidence rules, and examples.
+- Reviewers can apply the guidance to contrasting items and explain missing values or disagreements.
+- Open questions are resolved or recorded before a named specification version is frozen.
+- Teaching applications keep the initial study definitions separate from later revisions.
 
 ## Checklist
 
 <Checklist id="ai-assisted-metadata-schema-development-schema-design" items={[
-  'Operational field decisions have explicit reasons.',
-  'The specification supplies definitions, examples, and evidence boundaries.',
-  'Review records distinguish supported values, missing evidence, and applicability questions.',
-  'The initial schema remains distinguishable from later documentation and standards revisions.',
+  'Field choices have a clear purpose and recorded reasons.',
+  'Definitions specify values, examples, evidence rules, and missing information.',
+  'Development review records disagreements and unresolved questions.',
+  'A named specification version is ready for holdout validation.',
 ]} />
+
+Take the frozen specification and open questions to [Chapter 6](./validation.mdx); keep the holdout sample separate until that assessment.

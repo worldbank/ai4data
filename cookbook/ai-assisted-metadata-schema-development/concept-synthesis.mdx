@@ -15,65 +15,51 @@ import Checklist from '@site/src/components/Cookbook/Checklist';
 
 ## Rationale
 
-Thousands of local observations are difficult to compare directly. A metadata
-field profile collects observations with the same proposed field name and
-preserves accumulated evidence about that name. Exact-name aggregation is a
-deterministic operation. It does not decide that differently named fields mean
-the same thing or that a frequently proposed field deserves acceptance.
+Discovery can produce many suggestions for the same property under different
+names. Comparing every observation individually quickly becomes difficult.
+A field profile groups observations with the exact same proposed name while
+retaining their values, explanations, and sources. This makes repeated
+suggestions easier to inspect without deciding what they mean yet.
 
-The same grouping rule can be applied to observations from another artifact
-class: retain its original property names, artifact identities, values, and
-rationales. A field profile summarizes evidence for a name; that name need not
-be geographic_scope, title, or any other property found in the study.
-
-Canonical metadata concept synthesis performs a different transformation.
-It compares the meanings supported by profiles and proposes shared descriptive
-concepts. A concept has a definition and rationale that apply across local
-observations. The candidate inventory makes expert review manageable while
-preserving unresolved distinctions. It is an intermediate artifact; operational
-schema design comes after human refinement.
+The next step compares meanings across profiles. Different names may describe
+the same thing, while similar names may refer to different parts of an item.
+AI can help propose shared concepts: defined meanings that bring related
+suggestions together. Keeping the supporting observations and unresolved
+distinctions lets reviewers check those proposals before accepting them in
+[Chapter 4](./concept-refinement.mdx).
 
 ## Target state
 
-- Exact-name profiles preserve occurrence counts, distinct-snapshot support, and attributable observation evidence.
-- Review notes identify plausible semantic relationships and unresolved boundaries using more than the names alone.
-- Candidate concept proposals retain their definitions, rationales, and representative fields for human review.
+- Field profiles group exact names, record how often they occur and how many items support them, and retain the evidence.
+- Comparison notes explain which profiles may share a meaning and which distinctions remain uncertain.
+- A candidate concept list gives each proposed meaning a name, definition, rationale, and example fields for review.
 
-## Learning objectives
+## Prerequisites
 
-- The practitioner can execute exact-name aggregation and explain its denominator.
-- The practitioner can distinguish lexical variation from evidence of semantic equivalence.
-- The practitioner can propose shared concepts from profile evidence while preserving uncertainty for expert review.
-
-## Prerequisite concepts
-
-[Chapter 2](./discovery.mdx) supplies independent observations and the distinction
-between a field name, value, source level, and rationale. The executable exercise
-uses Python 3.10 or newer and its standard library. No model, image download,
-or API key is required.
+- Metadata observations and item identifiers from [Chapter 2](./discovery.mdx).
+- Access to the observations' values, explanations, and evidence sources.
+- Python 3.10 or newer for the supplied profiling exercise; no external packages are needed.
+- A provider API key if using an LLM for new synthesis. The prepared exercise uses recorded outputs.
 
 ## Maturity levels
 
 | Level | Steps |
 |---|---|
-| **Foundational** | A reviewer compares repeated names with the evidence supporting their meanings. |
-| **AI-ready** | Exact-name profiles are structured, reproducible, and traceable to observations with explicit support denominators. |
-| **AI-native** | Bounded model synthesis proposes shared concepts with provenance and verification, retaining uncertain distinctions for expert review. |
+| **Foundational** | A reviewer compares names and the evidence supporting their meanings. |
+| **AI-ready** | Repeatable grouping retains the original observations and explains every count. |
+| **AI-native** | AI proposes shared concepts from profiles; reviewers check the evidence and uncertain distinctions. |
 
 :::info[Running example]
-**Recorded study result.** The study aggregated 3,041 observations into 833
-exact-name profiles and synthesized 70 candidate concepts. **Reproducible
-exercise.** Three real geographic_scope observations produce a small profile.
-The title-related profiles then connect the observations from chapter 2 to
-the recorded candidate title concept. The 41-concept refined inventory belongs
-to [chapter 4](./concept-refinement.mdx).
+**Prepared exercise.** Three recorded geographic_scope observations become one
+profile. Title suggestions from Chapter 2 then illustrate how several names
+can lead to a shared concept proposal.
 :::
 
 ## Recipes
 
-<Recipe title="3.1 Aggregate observations into field profiles" level="AI-ready" skills="Python practitioner; metadata reviewer" time="20–30 minutes for the supplied exercise">
+<Recipe title="3.1 Group repeated names into field profiles" level="AI-ready" skills="Python practitioner; metadata reviewer" time="20–30 minutes for the supplied exercise">
 
-**Result:** A new JSON profile records exact-name occurrence count, distinct supporting snapshots, the input denominator, and every contributing observation.
+**Result:** A JSON profile groups identical names, counts their supporting items, and retains the original observations.
 
 Occurrence count measures how often a name was proposed. Distinct-snapshot
 support measures how many different artifacts contributed at least one such
@@ -81,7 +67,9 @@ observation. Repeated observations from one artifact increase the first count
 without increasing the second. Support is the distinct supporting count divided
 by an explicitly identified artifact denominator.
 
-**Input example.** Place [geographic_observations.json](pathname:///cookbook-files/ai-assisted-metadata-schema-development/geographic_observations.json) and [profile_observations.py](pathname:///cookbook-files/ai-assisted-metadata-schema-development/profile_observations.py) in a new working directory. The JSON array contains the three unchanged observations summarized below. Full identities, descriptions, and reasoning remain in that input file.
+**Prepared input.** Place [geographic_observations.json](pathname:///cookbook-files/ai-assisted-metadata-schema-development/geographic_observations.json) and [profile_observations.py](pathname:///cookbook-files/ai-assisted-metadata-schema-development/profile_observations.py)
+in a new working directory. The input retains the three recorded observations
+summarized below, including their full identifiers, descriptions, and reasoning.
 
 | Artifact | metadata_field | Recorded observed_value | source_level |
 |---|---|---|---|
@@ -147,18 +135,12 @@ from this display only. The output file retains all three observations.
 | support | 1.0 is the fraction 3 / 3 for this selected input. |
 | evidence | All three original records retain their values, descriptions, source levels, and rationales. |
 
-The script retains all evidence because the exercise is small. The research
-profiles instead summarized frequent values, descriptions, rationales, source
-levels, corpus coverage, and figure/table occurrence counts. The underlying
-observations remained necessary for complete traceability.
-
-For another collection, group the property-name attribute exactly and count
-distinct artifact identities separately from occurrences. Choose the denominator
-from the intended collection, including an explicit policy for artifacts with
-no observations. The exercise calls its identity attribute snapshot_id and
-validates the study's source-level labels; an application's records may need
-different names or value representations. Preserve the grouping and provenance
-rules when adapting those records. Property names follow the new artifact class.
+For another collection, keep property names unchanged during grouping and
+count distinct items separately from observations. State which items form the
+denominator, including how items with no observations are handled. The teaching
+script uses snapshot_id and the study's source labels; adapt those names and
+checks to the new inputs. Larger summaries should retain links to the full
+observations even when they display only selected evidence.
 
 The downloadable script contains the complete deterministic transformation
 and safe output handling. It has no external dependencies or model client.
@@ -176,6 +158,9 @@ n_snapshots 3, total_snapshots 3, and support 1.0. Its evidence must equal the
 three input records. The count sum must equal the number of input observations.
 For another run, choose a new output filename. The script must refuse an existing output or input path.
 
+<details>
+<summary>Study counts and their denominators</summary>
+
 | Statistic | Unit and denominator | Recorded or exercise scope |
 |---|---|---|
 | 3 geographic_scope observations | This counts exact-name occurrences in the three-record input. | This is the reproducible teaching exercise. |
@@ -187,6 +172,8 @@ canonical-concept support is 194 / 210, approximately 92.4%. Semantic
 consolidation changes the unit being summarized. Neither percentage can be
 inferred from the three-record exercise.
 
+</details>
+
 **What this does not do.** The script does not discover synonyms, evaluate
 correctness, or establish sample coverage. Its denominator includes only
 snapshots represented in the observation input. Accounting for artifacts with
@@ -195,15 +182,13 @@ This exercise does not implement that extension.
 
 </Recipe>
 
-<Recipe title="3.2 Inspect lexical variation and supporting evidence" level="Foundational" skills="Domain reviewer; metadata practitioner" time="30–45 minutes for the title comparison">
+<Recipe title="3.2 Compare related names and meanings" level="Foundational" skills="Domain reviewer; metadata practitioner" time="30–45 minutes for the title comparison">
 
-**Result:** A documented interpretation identifies a plausible shared concept and preserves distinctions requiring later expert review.
+**Result:** Comparison notes propose shared meanings and identify distinctions needing review.
 
-Related names can suggest where to inspect, but they do not establish semantic
-equivalence. A caption identifying an entire figure and a heading identifying
-one embedded chart can use similar words while serving different roles.
-Profile values, descriptions, rationales, and artifact contexts help explain
-that distinction.
+Compare meanings using the values and explanations in each profile. Similar
+names can serve different roles: an overall caption and an internal heading,
+for example, may need to remain distinguishable.
 
 **Worked example.** Exact-name aggregation preserved three separate profiles.
 All counts below are recorded full-study values. The small observation
@@ -230,11 +215,9 @@ based on those records. It is not a recovered historical adjudication log.
 | What remains unresolved? | A whole-object caption and an internal or panel heading may need a distinction for annotation or representation. |
 | What should happen next? | Propose a common concept conservatively and retain the uncertain scope for expert review. |
 
-The Russian caption names fiscal revenues and expenditures broadly. Its
-internal chart title identifies total revenue and total expenditure
-anti-cyclicality. The difference is visible in the recorded observations
-without downloading the image. A shared title-related concept does not require
-replacing either original value or silently discarding its role.
+The Russian headings illustrate the unresolved boundary: one names the whole
+figure, the other an internal chart. A common title concept need not erase that
+role or replace either original value.
 
 **Verification.** A reviewer should be able to explain both the proposed
 similarity and the unresolved role distinction using the evidence. A note that
@@ -247,17 +230,15 @@ Those conceptual and operational decisions require later human review.
 
 </Recipe>
 
-<Recipe title="3.3 Prepare synthesis and review a candidate concept" level="AI-native" skills="LLM practitioner; metadata reviewer" time="45–60 minutes to prepare and inspect the retained example">
+<Recipe title="3.3 Propose shared concepts from profiles" level="AI-native" skills="LLM practitioner; metadata reviewer" time="45–60 minutes to prepare and inspect the retained example">
 
-**Result:** A synthesis request specification identifies the profile evidence and expected concept attributes. Review notes explain the recorded title candidate and the distinctions that remain for expert refinement.
+**Result:** A synthesis request and candidate concept list are ready for human review. The prepared exercise reviews a recorded candidate without making a model call.
 
-The synthesis input is the accumulated profile evidence. Its output describes
-shared meanings across the chosen artifact class, according to its intended
-uses and diversity. Let the supported meanings determine the candidate inventory's
-size; neither 833 input profiles nor 70 output concepts is a target. It is not an exhaustive profile
-classification and does not impose a final operational field list. A useful
-request makes those limits explicit so that a compact output does not conceal
-unresolved conceptual boundaries.
+Ask for defined meanings supported by the profiles, combining clear synonyms
+and retaining uncertain distinctions for review. Let the evidence determine
+the size of the candidate list. Representative field names illustrate a concept;
+they do not show that every profile has been assigned or that the final schema
+has been designed.
 
 The [synthesis request](pathname:///cookbook-files/ai-assisted-metadata-schema-development/concept_synthesis_request.md) is an independently
 written teaching adaptation. It illustrates the instruction and output
@@ -276,11 +257,8 @@ structure without running a model or claiming to reproduce the full prompt.
 3. Specify canonical_name, definition, rationale, and sample_fields for each proposed concept. Treat representative field names as examples; they do not prove that every profile was assigned correctly.
 4. Review the recorded candidate below for definitions, unsupported merges, lost distinctions, and ambiguous scope. Preserve the candidate output and input reference before handing it to [expert refinement](./concept-refinement.mdx).
 
-**Worked example.** The recorded synthesis supplied all 833 profiles in one
-CSV-supported GPT-5.5 request, with high reasoning and a 12,000-token output
-ceiling. The requested approximate range was 50–70 concepts; the retained
-Markdown table contains 70 candidates. The following single row is a faithful
-excerpt, available under recorded_candidate_concept in canonical-title.
+**Worked example.** The following title candidate is a recorded output,
+available under recorded_candidate_concept in canonical-title.
 
 | Candidate attribute | Recorded output |
 |---|---|
@@ -289,16 +267,16 @@ excerpt, available under recorded_candidate_concept in canonical-title.
 | rationale | Titles are usually the strongest single searchable description of a snapshot’s content and should be normalized across figures, tables, maps, and charts. |
 | sample_fields | table_title, figure_title, snapshot_title, chart_title, map_title, table_caption |
 
-The rationale is the recorded model proposal. It is not a measured comparison
-of retrieval methods. The definition's allowance for an inferred title also
-remains a candidate boundary for review; it does not authorize inventing a
-missing caption. A model-generated concept definition is not automatically
-the annotation rule used by the final schema.
+The rationale records the model's judgment; retrieval performance was not measured. Its
+allowance for an inferred title needs review; it does not authorize inventing
+a missing caption or establish the final annotation rule.
 
-The title row illustrates how several exact names can be represented by one
-conceptual proposal. The three displayed profiles were only part of the
-833-profile input. A new request over those three alone would be a small
-demonstration and could not reproduce the complete 70-concept study output.
+:::note[Study input and output]
+Synthesis used all 833 profiles in one CSV-supported GPT-5.5 request, with high
+reasoning and a 12,000-token ceiling. The prompt suggested 50–70 concepts and
+returned 70. Those counts are not targets for another collection. A request
+using only the three displayed profiles would be a different, smaller exercise.
+:::
 
 **Verification.** The prepared request specifies all four output attributes
 and identifies the intended profile input. The recorded title candidate contains
@@ -307,37 +285,11 @@ the unresolved distinction between a whole-object title and an internal heading.
 The full study produced 70 candidates; that count is not a target for another
 collection or an output of this offline exercise.
 
-**What this does not do.** This recipe does not implement a live synthesis call,
-formal ontology relations, profile-to-concept coverage assessment, expert
-acceptance, or operational field design. The chapter ends at 70 candidate
-concepts. Human refinement and the later 41-concept assessment remain separate.
+**What this does not do.** The prepared exercise makes no live synthesis call.
+Candidate concepts still need human review before field design; they are not
+an accepted schema or a formal ontology.
 
 </Recipe>
-
-## Expected artifact
-
-The general workflow produces exact-name profiles and a provisional concept
-inventory for human review. Their names and counts depend on the artifact class
-and evidence. The exercise supplies one small profile; the study's broader
-synthesis supplies the recorded candidate inventory examined in chapter 4. Original
-observations and profiles remain available when a proposed consolidation
-needs to be reconsidered.
-
-## Implementation options
-
-The standard library is sufficient for the supplied exercise. For a larger
-collection, table libraries can provide the same explicitly defined grouping
-and distinct-count operations. Representative evidence lists may need bounded
-summaries, with the full observations retained separately. Similarity analysis
-or splitting synthesis into multiple requests would be proposed extensions;
-neither is necessary for this exercise or established by its results.
-
-## World Bank examples
-
-The Data Snapshot study provides the recorded title profiles and candidate
-concept. Its distinction between semantic consolidation and operational design
-continues through [chapters 4](./concept-refinement.mdx) and
-[5](./schema-design.mdx). The present chapter does not preempt those decisions.
 
 ## Resources
 
@@ -357,15 +309,17 @@ continues through [chapters 4](./concept-refinement.mdx) and
 
 ## Verification
 
-- The profiling command produces the quoted counts and retains all input records unchanged.
-- Occurrence, distinct-snapshot, exact-name, and later concept-level statistics retain their separate units and denominators.
-- The title comparison states a similarity and an unresolved distinction, and synthesis stops at the recorded candidate output.
+- The profiling output matches the input counts and retains the original observations.
+- Counts distinguish repeated observations from distinct supporting items and state their denominator.
+- Candidate definitions explain the proposed shared meanings and preserve unresolved distinctions for review.
 
 ## Checklist
 
 <Checklist id="ai-assisted-metadata-schema-development-concept-synthesis" items={[
   'Exact names are grouped without silent normalization or semantic merging.',
-  'Occurrence and distinct-snapshot counts use an explicit input denominator.',
-  'Every exercise observation remains attributable and unchanged.',
-  'Candidate definitions and rationales remain proposals for expert review.',
+  'Counts state both occurrences and distinct supporting items, with a clear denominator.',
+  'Profiles retain the original observations and their sources.',
+  'Candidate definitions and unresolved distinctions are ready for human review.',
 ]} />
+
+Take the profiles and candidate concepts to [Chapter 4](./concept-refinement.mdx) for human review.
