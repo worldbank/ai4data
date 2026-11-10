@@ -1,0 +1,188 @@
+<section class="slide" id="s26" data-sec="5">
+  <p class="kicker">The worked example</p>
+  <h2>An organization wants each report tagged with topics from a fixed list of 86.</h2>
+  <div class="body"><div class="g2 fill">
+    <div class="card report" data-demo="report"></div>
+    <div style="display:flex;flex-direction:column;justify-content:center;gap:.9em">
+      <span class="lbl">The three options again</span>
+      <ul class="obst">
+        <li data-step="1"><span class="lbl">By hand</span>Tagging by hand is slow.</li>
+        <li data-step="2"><span class="lbl">A large AI service</span>Every report would be sent to the company that runs the service.</li>
+        <li data-step="3"><span class="lbl">A small model of its own</span>The organization has no tagged reports from which to train one.</li>
+      </ul>
+    </div>
+  </div></div>
+  <p class="src">The report and its topics come from the World Bank documents database.</p>
+  <aside class="notes">We now leave the complaints and turn to a task that was measured. Read the title of the report and its topics. Then bring back the three options from the start of the session. The third obstacle is the one that synthetic data remove.</aside>
+</section>
+
+<section class="slide" id="s27" data-sec="5">
+  <p class="kicker">The method in three steps</p>
+  <h2>The large model is needed in the first two steps only.</h2>
+  <div class="body"><div class="fill m3" data-demo="m3" style="display:flex;flex-direction:column;gap:1em"></div></div>
+  <p class="src">In step 3 the reports do not leave the organization.</p>
+  <aside class="notes">This is the whole method on one slide. Read the three cards, then switch to the office comparison to connect them with the earlier slide. The next slides take the steps one at a time, with the recorded data from the experiments.</aside>
+</section>
+
+<section class="slide" id="s28" data-sec="5">
+  <p class="kicker">Step 1 · Synthetic data</p>
+  <h2>One request names eight topics and returns 20 labelled sentences.</h2>
+  <div class="body"><div class="fill story" data-demo="write"></div></div>
+  <p class="src">The request and the sentences are recorded from the worked example. The example repeats this for 1,000 requests, each with eight of the 86 topics. Together they give about 20,000 labelled sentences.</p>
+  <aside class="notes">Select the button and let the sentences arrive. Read two of them aloud, one with a single topic and one with two. Ask the room whether the sentences read like report text. Then give the scale: a thousand requests like this one, about twenty thousand sentences.</aside>
+</section>
+
+<section class="slide" id="s29" data-sec="5">
+  <p class="kicker">Step 1 · The wording of the request <span class="deeper">Go deeper</span></p>
+  <h2>The small model did worse when the sentences had to avoid the topic names.</h2>
+  <div class="body center"><div data-demo="wording" style="display:flex;flex-direction:column;gap:1.3em"></div></div>
+  <p class="src">Scores are F1 on 300 real report abstracts. The score for names allowed is the mean of three training runs. The score for names avoided comes from one run.</p>
+  <aside class="notes">Skip this slide if time is short. One line in the request changed, and the score of the small model changed with it. The lesson for the room is that the request is a design choice, and that its effect has to be measured on real reports.</aside>
+</section>
+
+<section class="slide" id="s30" data-sec="5">
+  <p class="kicker">Step 2 · The small model learns</p>
+  <h2>A simple model gets more reports right as it reads more examples.</h2>
+  <div class="body"><div class="fill learn" data-demo="learn"></div></div>
+  <p class="src">This demonstration model runs in the page and counts words only. It stops improving after about 20 examples per topic. The model of the worked example learns all 86 topics from about 20,000 examples.</p>
+  <aside class="notes">This model is trained live in the page, on four topics. Start with one example per topic and show the words linked to each topic. Move to ten, then forty, and watch the squares fill. Then type a sentence from the room and see which topic the model gives it.</aside>
+</section>
+
+<section class="slide" id="s31" data-sec="5">
+  <p class="kicker">Distillation</p>
+  <h2>In distillation a large model passes a skill to a small one.</h2>
+  <div class="body center">
+    <div class="distill">
+      <div class="who t"><span class="lbl">Teacher</span><h3>A large model</h3><p class="txt">27 billion parameters<br>about 31 GB of memory</p></div>
+      <div class="mid">its answers<br>on many examples</div>
+      <div class="who s"><span class="lbl">Student</span><h3>A small model</h3><p class="txt">142 million parameters<br>0.57 GB of memory</p></div>
+    </div>
+    <div class="g2">
+      <div class="card" data-step="1"><span class="lbl">The original form</span><p class="txt mt">The student learns to match the teacher's probability for every possible answer. The probabilities carry more information than the teacher's top answer alone.</p></div>
+      <p class="callout" data-step="2" style="align-self:center">In this session the teacher also writes the examples.</p>
+    </div>
+  </div>
+  <p class="src">Hinton, Vinyals, and Dean (2015), "Distilling the Knowledge in a Neural Network." The teacher's memory is that of the 8-bit version used in the example.</p>
+  <aside class="notes">Name the method. The teacher is about 190 times the size of the student by number of parameters. In the original form of distillation the student copies the teacher's full set of probabilities. In our case the teacher has a second job, because it writes the training sentences as well.</aside>
+</section>
+
+<section class="slide" id="s32" data-sec="5">
+  <p class="kicker">Step 3 · The small model at work</p>
+  <h2>The student scores every topic and assigns the topics above a threshold.</h2>
+  <div class="body"><div class="fill work" data-demo="work"></div></div>
+  <p class="src">The student assigns a topic when its score is at least 0.03, up to five topics per report. The report and the scores are recorded from the worked example.</p>
+  <aside class="notes">Here is the student at work on the report we saw earlier. It gives each of the 86 topics a score, and the chart shows the top eight. Four topics pass the threshold, and all four are among the topics recorded for the report. One report proves little, so the next slide gives the result on 300 reports.</aside>
+</section>
+
+<section class="slide" id="s33" data-sec="5">
+  <p class="kicker">Results on 300 real reports</p>
+  <h2>The student scored about the same as three large models asked directly.</h2>
+  <div class="body center"><div data-demo="results"></div></div>
+  <p class="src">F1 on 300 real report abstracts, on a scale from 0 to 1. The student's scores are the mean of three training runs.</p>
+  <aside class="notes">Show the three large models first. Each one was asked directly for the topics of every report. Then reveal the student after the first set of sentences, and after the further rounds on its weak topics. The gap closes from about 0.06 to less than 0.01.</aside>
+</section>
+
+<section class="slide" id="s34" data-sec="5">
+  <p class="kicker">Speed and computer</p>
+  <h2>The student answers in 0.19 seconds on an ordinary processor.</h2>
+  <div class="body center"><div class="g2 speedcols" data-demo="speed"></div></div>
+  <p class="src">The times of the hosted services include the network and the service's queue. The CPU time was measured with four threads of a server processor on 100 of the abstracts, and the time of Qwen3.8-27B on 50.</p>
+  <aside class="notes">The axis is logarithmic, so each step to the right is ten times slower. The student on an ordinary processor is about 3 to 20 times faster than the large models, and those ran on a GPU or through an online service. This is the practical gain: the model fits on a laptop and needs no connection.</aside>
+</section>
+
+<section class="slide" id="s35" data-sec="5">
+  <p class="kicker">Limits of the result</p>
+  <h2>These results come from one task and cover about half of the topics.</h2>
+  <div class="body center">
+    <div class="limits">
+      <div class="card">
+        <span class="lbl">Topics in the test</span>
+        <p class="stat mt">44 <span style="font-size:.5em;font-weight:600">of 86</span></p>
+        <div class="g86" data-demo="g86"></div>
+        <p class="txt-s">The 300 test reports cover 44 of the 86 topics. The scores say nothing about the other 42.</p>
+      </div>
+      <div class="card" data-step="1">
+        <span class="lbl">The reference answers</span>
+        <p class="big mt">A record can omit a topic.</p>
+        <p class="txt-s mt">The right answers are the topics recorded for each report in the documents database. A record can omit a topic that the abstract covers.</p>
+      </div>
+      <div class="card" data-step="2">
+        <span class="lbl">A second task</span>
+        <p class="stat mt">0.15 <span style="font-size:.5em;font-weight:600">lower</span></p>
+        <p class="txt-s mt2">On coding job titles to an occupation classification, the student scored 0.15 below the best large model.</p>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">Give the limits the same weight as the results. Nearly half of the topics never appear in the test, so we know nothing about them. The reference answers are imperfect. On a second task the student was clearly behind. A team that wants to use the method has to test it on its own task.</aside>
+</section>
+
+<section class="slide" id="s36" data-sec="6">
+  <p class="kicker">Small or large</p>
+  <h2>A small model suits a narrow task that repeats many times.</h2>
+  <div class="body center">
+    <div class="g2">
+      <div class="card small-k">
+        <span class="lbl"><span class="dot small"></span>A small model is a good candidate when</span>
+        <ul class="ticks">
+          <li><span>the answer comes from a fixed list, such as topics or codes;</span></li>
+          <li><span>the same task is repeated many times;</span></li>
+          <li><span>the data should stay inside the organization;</span></li>
+          <li><span>the internet connection is poor.</span></li>
+        </ul>
+      </div>
+      <div class="card large-k" data-step="1">
+        <span class="lbl"><span class="dot large"></span>A large model is the better choice when</span>
+        <ul class="ticks plain">
+          <li><span>the answer is new text, such as a summary or a reply;</span></li>
+          <li><span>the questions cannot be listed in advance.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">These criteria summarize everything so far. Go back to the complaint from the start: a short list of answers, a task that repeats, private messages. Then reveal the other side. A large model remains the right tool for open questions and for writing.</aside>
+</section>
+
+<section class="slide" id="s37" data-sec="6">
+  <p class="kicker">Your turn</p>
+  <h2>Which kind of model suits each of these six tasks?</h2>
+  <div class="body"><div class="fill" data-demo="quiz" style="display:flex;flex-direction:column;gap:.7em"></div></div>
+  <aside class="notes">Let the room vote on each task by a show of hands before you select an answer. The last three tasks have a second lesson: a small model can still do a narrower part of the work. If a task from the room came up earlier, apply the same criteria to it now.</aside>
+</section>
+
+<section class="slide" id="s38" data-sec="6">
+  <p class="kicker">Before relying on a small model</p>
+  <h2>A team checks four points before it relies on a small model.</h2>
+  <div class="body center">
+    <ol class="checks">
+      <li><span class="box">1</span>The model was tested on real documents from the place of use, with known answers.</li>
+      <li data-step="1"><span class="box">2</span>The test covers the topics or codes that matter.</li>
+      <li data-step="2"><span class="box">3</span>The score was compared with a large model on the same test.</li>
+      <li data-step="3"><span class="box">4</span>A person reviews a sample of the output at regular intervals.</li>
+    </ol>
+  </div>
+  <aside class="notes">This is the slide to take back to the office. Each point answers one of the limits we saw. If a supplier offers a small model, these are the four questions to ask.</aside>
+</section>
+
+<section class="slide" id="s39" data-sec="6">
+  <p class="kicker">Summary</p>
+  <h2>A large model writes the examples, a small model learns from them, and real cases test the result.</h2>
+  <div class="body center">
+    <div class="g3 m3" data-demo="sum3"></div>
+    <p class="callout">The final test always uses real cases.</p>
+  </div>
+  <aside class="notes">Close with the three terms of the session and the rule that holds them together. Ask each person to name one task from their own work and to say which criteria that task meets.</aside>
+</section>
+
+<section class="slide cover" id="s40" data-sec="0">
+  <p class="kicker">Sources and further reading</p>
+  <h2>The overview page holds the full text, the figures, and the terms.</h2>
+  <div class="body center">
+    <ul class="srclist">
+      <li>Overview of the session: <a href="https://worldbank.github.io/ai4data/training/session-02/">worldbank.github.io/ai4data/training/session-02</a></li>
+      <li>World Bank. 2026. <i>World Development Report 2026: The Promise of Artificial Intelligence</i>. Washington, DC: World Bank. doi:10.1596/978-1-4648-2331-2. Box O.1; spotlight 1, table S1.1 and p. 103; chapter 7, p. 248.</li>
+      <li>Hinton, Geoffrey, Oriol Vinyals, and Jeff Dean. 2015. "Distilling the Knowledge in a Neural Network." arXiv:1503.02531.</li>
+      <li>Contact: <span class="sel">aifordata@worldbank.org</span></li>
+    </ul>
+  </div>
+  <aside class="notes">Point to the overview page, which has every figure from this deck in a form people can explore alone, with the list of terms. Leave this slide up during questions.</aside>
+</section>

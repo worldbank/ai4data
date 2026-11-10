@@ -1,0 +1,40 @@
+<title>Small AI Training Deck</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/*__CSS__*/
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker>
+</defs></svg>
+
+<div class="app" id="app">
+  <div class="stagewrap">
+    <main class="stage" id="stage">
+      <nav class="secnav" id="secnav" aria-label="Parts of the session"></nav>
+
+<!--__SLIDES__-->
+
+    </main>
+  </div>
+  <div class="bar">
+    <button type="button" class="nav" id="bPrev" aria-label="Previous slide">←</button>
+    <button type="button" class="nav" id="bNext" aria-label="Next slide">→</button>
+    <span class="where" id="where" aria-live="polite"></span>
+    <div class="progress" aria-hidden="true"><i id="prog"></i></div>
+    <button type="button" id="bToc">Contents<kbd>O</kbd></button>
+    <button type="button" id="bNotes" class="stageonly" aria-pressed="false">Notes<kbd>N</kbd></button>
+    <button type="button" id="bFull" class="stageonly">Full screen<kbd>F</kbd></button>
+  </div>
+</div>
+
+<div class="notespanel" id="notespanel" hidden><div class="in"><span class="lbl">Speaker notes</span><p id="notestext"></p></div></div>
+
+<div class="toc" id="toc" hidden role="dialog" aria-modal="true" aria-label="Contents"><div class="in">
+  <header><h2>Contents</h2><button type="button" class="close" id="bTocClose">Close</button></header>
+  <div id="toclist"></div>
+</div></div>
+
+<script>
+/*__JS__*/
+</script>

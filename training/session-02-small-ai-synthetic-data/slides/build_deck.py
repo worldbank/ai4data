@@ -1,0 +1,274 @@
+"""Build the session 02 deck as one HTML file.
+
+Reads the slide sources in src/, the recorded data of the overview page (../assets/overview.json),
+and the program mark. The slides of the nine steps (15 to 25) are generated from the STEPS table below.
+
+    python3 build_deck.py              write deck.html and outline.md
+    python3 build_deck.py --fit        also recompute the scale of each slide (src/fit.css); needs Playwright
+    python3 build_deck.py --fragment PATH
+                                       also write the page without the document skeleton, for a host
+                                       that adds its own
+"""
+import base64
+import html
+import io
+import json
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+SRC = HERE / 'src'
+REPO = HERE.parents[2]
+DATA = HERE.parent / 'assets/overview.json'
+LOGO = REPO / 'website/static/img/program-mark.png'
+OUT = HERE / 'deck.html'
+OUTLINE = HERE / 'outline.md'
+
+# The head of deck.html. The page's own <title>, font link, and <style> follow it inside <head>.
+HEAD = ('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, '
+        'initial-scale=1, viewport-fit=cover"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);'
+        'padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui}img{max-width:100%}'
+        '[hidden]{display:none!important}</style>')
+
+USED = {'yes': 'Used in the worked example.', 'partly': 'Partly used in the worked example.',
+        'no': 'Not used in the worked example.'}
+
+STEPS = [
+    dict(short='Describe the task',
+         h='The team writes down the possible answers and defines each one.',
+         office='The manager writes down the decisions the new staff member will make.',
+         model='The team writes the list of possible answers, with a definition of each.',
+         used=('yes', 'A list of 86 topics.'), demo='task',
+         notes='Start with the list of answers. Select two or three issues and read the definitions aloud. Ask the '
+               'room who would write this list in their organization. The same definitions go to the large model, to '
+               'the people who check the cases, and to the test.'),
+    dict(short='Show a few real cases',
+         h='A few real cases show the large model how real messages are written.',
+         office='The colleague who writes the practice cases first reads a few real files.',
+         model='A few dozen real examples go into the request to the large model. Personal details are removed first.',
+         used=('no', 'The requests named the topics only.'), demo='seeds',
+         notes='Switch between the two requests. Without samples the large model writes polite letters, and nobody '
+               'sends a letter by text message. With three real messages in the request, the written cases take on '
+               'their style. The worked example skipped this step.'),
+    dict(short='Vary the cases',
+         h='Each request to the large model asks for a different kind of case.',
+         office='The colleague writes cases of every kind: short and long, calm and angry, easy and hard.',
+         model='Each request sets a different combination of answer, length, style, language, and difficulty.',
+         used=('partly', 'Each request named a different set of eight topics and asked for varied length and style.'),
+         demo='vary',
+         notes='Turn on the attributes one at a time and watch the number of possible requests grow to 864. Draw a '
+               'few requests. Then point at the measured result below: asked for the same thing many times, a large '
+               'model repeated itself in more than a third of the cases.'),
+    dict(short='Write and check',
+         h='A second model checks every case before it is used.',
+         office='A second colleague reads each practice case and its answer before it is used.',
+         model='A second model labels each case on its own. Scripts remove repeats, answers outside the list, and '
+               'cases where the two models disagree.',
+         used=('yes', 'Scripts checked every set. In the later rounds, a second model also labelled each sentence.'),
+         demo='check',
+         notes='Run the checks and count the cases that remain. Each removed case has its reason next to it. The '
+               'third row matters most: the writer was wrong about its own case, and the second model caught it. A '
+               'wrong answer in training becomes a wrong answer in use.'),
+    dict(short='Train the small model',
+         h='The small model studies the checked cases until its answers match.',
+         office='The new staff member studies the practice cases.',
+         model='The small model is trained on the checked cases until its answers match theirs.',
+         used=('yes', 'About 20,000 sentences in the first set.'), demo='train',
+         notes='This step is short on the slide and long in practice. The checked cases go in, and a model comes '
+               'out. We will train a small model live on a later slide, so I will take questions about learning '
+               'there.'),
+    dict(short='Test on real cases',
+         h='The test uses real cases that no model has trained on.',
+         office='Before the new staff member works alone, a supervisor checks their decisions on real past files.',
+         model='A few hundred real cases, with answers given by people, are set aside for testing only.',
+         used=('yes', '300 real report abstracts with recorded topics.'), demo='test',
+         notes='Turn the switch on and ask the room what is wrong with the picture. A test on practice cases '
+               'measures how well the small model copies the writing habits of the large model. The real cases are '
+               'set aside before anything is written, and no model trains on them.'),
+    dict(short='Practise the weak spots',
+         h='Extra cases help most on the kinds of cases the model gets wrong.',
+         office='The colleague writes more practice cases of the kinds the new staff member gets wrong.',
+         model='A program finds where the model makes most mistakes and asks the large model for more cases of '
+               'those kinds. The model is trained again.',
+         used=('yes', 'Up to five rounds, compared with rounds of the same size spread evenly over all topics.'),
+         demo='rounds',
+         notes='Read the loop first. Then compare the three bars: the first set, extra cases spread evenly, and '
+               'extra cases aimed at the mistakes. The targeted rounds reach the orange band, which is the level of '
+               'the large models. The second repeat of the experiment gives the same picture.'),
+    dict(short='Ask people which is better',
+         h='Experienced staff choose the better of two cases.',
+         office='Experienced staff compare two practice cases, or two answers, and say which one is better.',
+         model='People choose between pairs. The choices improve the request to the large model and filter the cases.',
+         used=('no', 'Not part of the experiments.'), demo='pairs',
+         notes='Run this as a vote. Read each pair and ask the room for A or B before you select one. People who '
+               'know the work can tell within seconds which case is realistic, and choosing between two is quicker '
+               'than writing a case.'),
+    dict(short='Watch and refresh',
+         h='A model in use needs regular review by people.',
+         office="The supervisor keeps reviewing a sample of the staff member's decisions.",
+         model="People review a sample of the model's answers at regular intervals. When the answers, the language, "
+               'or the situation change, new cases are written and the model is trained again.',
+         used=('no', 'Outside the experiments.'), demo='watch',
+         notes='The example from the report is about images. The same thing happens with text when a new issue or a '
+               'new language appears. Ask the room who would review the sample in their organization after the '
+               'project ends.'),
+]
+
+GROUPS = [('Write the cases', range(0, 4), None), ('Train and test', range(4, 6), 1),
+          ('Improve and maintain', range(6, 9), 2)]
+
+e = html.escape
+
+
+def overview_slide():
+    groups = []
+    for name, idxs, step in GROUPS:
+        items = ''.join(
+            f'<li><button class="stepbtn" data-go="s{16 + i}"><span class="num">{i + 1}</span>{e(STEPS[i]["short"])}</button></li>'
+            for i in idxs)
+        attr = f' data-step="{step}"' if step else ''
+        groups.append(f'<div class="group"{attr}><span class="lbl">{name}</span><ol>{items}</ol></div>')
+    return f'''<section class="slide" id="s15" data-sec="4">
+  <p class="kicker">The process</p>
+  <h2>The process from a task to a small model has nine steps.</h2>
+  <div class="body center">
+    <div class="groups">{''.join(groups)}</div>
+    <p class="txt" data-step="3">We follow one example through the nine steps: complaints sent by text message to a project.</p>
+  </div>
+  <aside class="notes">Here is the whole process before we take the steps one at a time. The first four steps produce the cases, the next two build and test the model, and the last three keep improving it. Each number opens its step. We use the complaints example for all nine steps because it is easy to picture.</aside>
+</section>'''
+
+
+def step_slide(i, s):
+    kind, note = s['used']
+    return f'''<section class="slide" id="s{16 + i}" data-sec="4" data-stepno="{i + 1}">
+  <p class="kicker">Step {i + 1} of 9 · {e(s['short'])}</p>
+  <h2>{e(s['h'])}</h2>
+  <div class="body"><div class="stepgrid">
+    <div class="stepside">
+      <div class="pairb office"><span class="lbl">In an office</span><p>{e(s['office'])}</p></div>
+      <div class="pairb model"><span class="lbl">With the models</span><p>{e(s['model'])}</p></div>
+      <p class="used"><span class="usedmark {kind}" aria-hidden="true"></span><span><b>{USED[kind]}</b> {e(note)}</span></p>
+    </div>
+    <div class="card demo" data-demo="{s['demo']}"></div>
+  </div></div>
+  <aside class="notes">{e(s['notes'])}</aside>
+</section>'''
+
+
+def used_slide():
+    cards = ''.join(
+        f'<li class="u9 {s["used"][0]}"><span class="num">{i + 1}</span><div><b>{e(s["short"])}</b>'
+        f'<span class="usedrow"><span class="usedmark {s["used"][0]}" aria-hidden="true"></span>{USED[s["used"][0]][:-1]}</span>'
+        f'<span class="usednote">{e(s["used"][1])}</span></div></li>'
+        for i, s in enumerate(STEPS))
+    return f'''<section class="slide" id="s25" data-sec="5">
+  <p class="kicker">Steps used in the worked example</p>
+  <h2>The worked example used five of the nine steps in full.</h2>
+  <div class="body center">
+    <ol class="used9">{cards}</ol>
+  </div>
+  <p class="src">The worked example is the experiment behind this session: tagging reports with topics from a list of 86.</p>
+  <aside class="notes">Before the results, be clear about what the worked example covers. Five steps were used in full and one in part. Real samples, the choices of experienced staff, and review after deployment were outside the experiments. Keep that in mind when we read the scores.</aside>
+</section>'''
+
+
+def logo_uri():
+    raw = LOGO.read_bytes()
+    try:
+        from PIL import Image
+        im = Image.open(io.BytesIO(raw)).convert('RGBA').resize((144, 144), Image.LANCZOS)
+        buf = io.BytesIO()
+        im.save(buf, 'PNG', optimize=True)
+        raw = buf.getvalue()
+    except ImportError:
+        pass
+    return 'data:image/png;base64,' + base64.b64encode(raw).decode()
+
+
+def data():
+    d = json.loads(DATA.read_text())
+    sy, di, le = d['synthetic'], d['distillation'], d['learn']
+    stop = set(le['stop'])
+    tok = lambda t: [w for w in re.findall(r'[a-z]+', t.lower()) if len(w) > 2 and w not in stop]
+    rule = lambda p: next(l[2:] for l in p.split('\n') if l.startswith('- ') and 'topic names' in l)
+    mean = lambda xs: sum(xs) / len(xs)
+    return {
+        'tasks': d['smallAI']['tasks'],
+        'machines': d['smallAI']['machines'],
+        'synth': {
+            'request': sy['request'], 'writer': sy['writer'], 'topics': sy['topics'],
+            'opening': sy['prompt']['allow'].split('\n')[0],
+            'sentences': [{'text': s['text'], 'labels': s['labels']} for s in sy['sets']['allow']['sentences']],
+            'sets': {k: {'rule': rule(sy['prompt'][k]), 'share': v['named'] / v['total'], 'f1': mean(v['report_f1'])}
+                     for k, v in sy['sets'].items()},
+        },
+        'doc': {k: di['documents'][0][k] for k in ('title', 'year', 'text', 'reference', 'student')},
+        'dist': {'threshold': di['threshold'], 'top': di['top'], 'scores': di['scores'], 'speed': di['speed']},
+        'workflow': d['workflow'],
+        'learn': {'topics': le['topics'], 'stop': le['stop'], 'sentences': le['sentences'],
+                  'tests': [{'title': t['title'], 'topic': t['topic'], 'w': tok(t['text'])} for t in le['tests']]},
+    }
+
+
+def page():
+    slides = '\n\n'.join([
+        (SRC / 'slides-01-14.html').read_text().replace('__LOGO__', logo_uri()),
+        overview_slide(), *[step_slide(i, s) for i, s in enumerate(STEPS)], used_slide(),
+        (SRC / 'slides-26-40.html').read_text(),
+    ])
+    payload = json.dumps(data(), ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
+    js = (SRC / 'app.js').read_text().replace('/*__DATA__*/null', payload)
+    fit = SRC / 'fit.css'
+    css = (SRC / 'style.css').read_text().replace('/*__FIT__*/', fit.read_text() if fit.exists() else '')
+    out = (SRC / 'shell.html').read_text().replace('/*__CSS__*/', css)
+    return out.replace('<!--__SLIDES__-->', slides).replace('/*__JS__*/', js), slides
+
+
+def outline(slides):
+    """The headline and the speaker notes of every slide, as Markdown for review."""
+    parts = re.search(r"const SECS = \[(.*?)\];", (SRC / 'app.js').read_text()).group(1)
+    parts = [p.strip().strip("'") for p in parts.split(',')]
+    text = lambda s: re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', '', s))).strip()
+    first = lambda pat, s: (lambda m: text(m.group(1)) if m else '')(re.search(pat, s, re.S))
+    lines = ['# Session 02 deck outline', '',
+             'Generated by `build_deck.py` from the slide sources. This file holds the headline and the speaker '
+             'notes of every slide. To change a slide, edit the sources and regenerate.', '']
+    part = None
+    for n, sec in enumerate(re.findall(r'<section class="slide.*?</section>', slides, re.S), start=1):
+        p = parts[int(re.search(r'data-sec="(\d)"', sec).group(1))]
+        if p and p != part:
+            lines += [f'## {p}', '']
+            part = p
+        kicker = first(r'<p class="kicker">(.*?)</p>', sec.replace(' <span class="deeper">', ' · <span>'))
+        lines += [f'### {n}. {kicker}' if kicker else f'### {n}.', '', first(r'<h[12]>(.*?)</h[12]>', sec), '']
+        if 'data-demo=' in sec:
+            lines += ['The slide has an interactive demonstration.', '']
+        notes = first(r'<aside class="notes">(.*?)</aside>', sec)
+        if notes:
+            lines += [f'Notes: {notes}', '']
+    return '\n'.join(lines)
+
+
+def build():
+    out, slides = page()
+    head, body = out.split('</style>', 1)
+    OUT.write_text(HEAD + head + '</style></head><body>' + body + '</body></html>\n')
+    OUTLINE.write_text(outline(slides))
+    print(OUT.relative_to(REPO), f'{len(out) / 1024:.0f} KB', slides.count('<section'), 'slides')
+    return out
+
+
+def main():
+    out = build()
+    if '--fit' in sys.argv:
+        subprocess.run([sys.executable, str(HERE / 'fit_slides.py')], check=True)
+        out = build()
+    if '--fragment' in sys.argv:
+        Path(sys.argv[sys.argv.index('--fragment') + 1]).write_text(out)
+
+
+if __name__ == '__main__':
+    main()
