@@ -243,6 +243,25 @@ def filter_overlapping_mentions(mentions: List[Dict[str, Any]]) -> List[Dict[str
 # ------------------------------
 
 
+def _field_text(value) -> str:
+    """Text of a ``{"text": ...}`` output field, or the value itself."""
+    return value.get("text", "") if isinstance(value, dict) else (value or "")
+
+
+def _most_common(values) -> str:
+    """Most frequent non-empty value (first seen wins ties), or ""."""
+    counts = Counter(v for v in values if v)
+    return counts.most_common(1)[0][0] if counts else ""
+
+
+def _merge_source_attributes(attrs_list) -> Dict[str, Any]:
+    """Per key, the most frequent non-null value across ``attrs_list``."""
+    keys = []
+    for attrs in attrs_list:
+        keys.extend(k for k in (attrs or {}) if k not in keys)
+    return {k: _most_common(a.get(k) for a in attrs_list if a) or None for k in keys}
+
+
 def extract_mentions(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """Extract raw dataset mentions with metadata from records.
 
@@ -373,6 +392,11 @@ def extract_mentions(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
                 "reference_population": reference_population,
                 "is_used": is_used,
                 "usage_context": usage_context,
+                "usage_action": _field_text(ds_entry.get("usage_action")),
+                "usage_summary": _field_text(ds_entry.get("usage_summary")),
+                "purpose_action": _field_text(ds_entry.get("purpose_action")),
+                "theme_tags": list(ds_entry.get("theme_tags") or []),
+                "source_attributes": dict(ds_entry.get("source_attributes") or {}),
                 "start": start,
                 "end": end,
                 "source": rec.get("source"),
@@ -567,6 +591,15 @@ def merge_cluster(cluster_idxs: List[int], mentions: List[Dict[str, Any]]) -> Di
     merged["is_used"] = merge_single_field("is_used")
     merged["usage_context"] = merge_single_field("usage_context")
 
+    # Usage / attributes model output (Call 2)
+    merged["usage_action"] = _most_common(m.get("usage_action") for m in group)
+    merged["purpose_action"] = _most_common(m.get("purpose_action") for m in group)
+    merged["usage_summary"] = merge_single_field("usage_summary")
+    merged["theme_tags"] = sorted({t for m in group for t in m.get("theme_tags") or []})
+    merged["source_attributes"] = _merge_source_attributes(
+        [m.get("source_attributes") for m in group]
+    )
+
     # Build structured occurrences with context
     occurrences = []
     for m in group:
@@ -590,6 +623,10 @@ def merge_cluster(cluster_idxs: List[int], mentions: List[Dict[str, Any]]) -> Di
             "description": m.get("description", ""),
             "author": m.get("author", ""),
             "geography": m.get("geography", ""),
+            "usage_action": m.get("usage_action", ""),
+            "usage_summary": m.get("usage_summary", ""),
+            "theme_tags": m.get("theme_tags", []),
+            "source_attributes": m.get("source_attributes", {}),
             "source": m.get("source"),
             "page": m.get("page"),
             "context": context,
@@ -729,6 +766,13 @@ def merge_multiple_clusters(clusters: List[Dict[str, Any]]) -> Dict[str, Any]:
         "reference_population": canonical.get("reference_population", ""),
         "is_used": canonical.get("is_used", ""),
         "usage_context": canonical.get("usage_context", ""),
+        "usage_action": _most_common(c.get("usage_action") for c in clusters),
+        "purpose_action": _most_common(c.get("purpose_action") for c in clusters),
+        "usage_summary": canonical.get("usage_summary", ""),
+        "theme_tags": sorted({t for c in clusters for t in c.get("theme_tags") or []}),
+        "source_attributes": _merge_source_attributes(
+            [c.get("source_attributes") for c in clusters]
+        ),
     }
 
     # Merge form counts

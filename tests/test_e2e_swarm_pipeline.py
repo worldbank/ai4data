@@ -1,7 +1,7 @@
 """End-to-end tests for the 3-model swarm pipeline with real model weights.
 
-These tests load the actual GLiNER2 adapters from HuggingFace to verify the
-full production pipeline: Call 1 (entity) → Call 1b (relation) → Call 2 (classification).
+These tests load the actual models from HuggingFace to verify the
+full production pipeline: Call 1 (entity, GLiNER) → Call 1b (relation, GLiNER2 adapter) → Call 2 (usage/attributes, LFM).
 
 Marked ``slow`` — skipped by default. Run with:
     pytest tests/test_e2e_swarm_pipeline.py -v --run-slow
@@ -310,12 +310,14 @@ class TestPipelineChunking:
 
 
 class TestPipelineModelDefaults:
-    """Verify default adapter IDs point to ai4data namespace."""
+    """Verify the default model and adapter IDs."""
 
     def test_default_relation_adapter(self):
         ext = _get_extractor()
         assert ext.relation_adapter_id == "ai4data/datause-relation-v0"
 
-    def test_default_classification_adapter(self):
-        ext = _get_extractor()
-        assert ext.classification_adapter_id == "ai4data/datause-impact-v0"
+    def test_default_entity_and_metadata_models(self):
+        from ai4data.data_use.models.model_manager import ModelManager
+
+        assert ModelManager.DEFAULT_ENTITY_MODEL_ID == "rafmacalaba/gliner_agents_v3"
+        assert ModelManager.DEFAULT_METADATA_MODEL_ID == "rafmacalaba/lfm2.5-350M-focus-metadata"

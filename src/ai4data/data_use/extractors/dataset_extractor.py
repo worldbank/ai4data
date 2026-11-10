@@ -5,13 +5,13 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
+from ..models.metadata_model import ATTRIBUTES_SYSTEM, USAGE_SYSTEM, predict_metadata
 from ..models.model_manager import ModelManager
 from ..schemas.dataset_schema import (
-    _PURPOSE_ACTION_CONFIDENCE_THRESHOLD,
-    _TYPOLOGY_CONFIDENCE_THRESHOLD,
-    PURPOSE_ACTION_LABELS,
+    ENTITY_LABELS,
     DatasetSchema,
-    map_typology,
+    build_call2_fields,
+    empty_call2_fields,
 )
 from ..utils.document_parser import DocumentParser
 from ..utils.text_normalizer import TextNormalizer
@@ -102,6 +102,7 @@ _SINGLE_WORD_NOISE = frozenset(
 class DatasetExtractor:
     """Extract dataset mentions from text or documents."""
 
+
     @staticmethod
     def _normalize_input_text(text: str) -> str:
         """DEPRECATED. Use TextNormalizer.normalize_full instead."""
@@ -110,8 +111,8 @@ class DatasetExtractor:
     def __init__(
         self,
         model_id: Optional[str] = None,
-        adapter_id: Optional[str] = None,
-        classification_adapter_id: Optional[str] = "ai4data/datause-impact-v0",
+        entity_model_id: Optional[str] = None,
+        metadata_model_id: Optional[str] = None,
         relation_adapter_id: Optional[str] = "ai4data/datause-relation-v0",
         threshold: float = 0.3,
         cache_dir: Optional[str] = None,
@@ -119,15 +120,14 @@ class DatasetExtractor:
         """Initialize dataset extractor.
 
         Args:
-            model_id: HuggingFace model ID or path to local model.
+            model_id: HuggingFace GLiNER2 base model ID or path to local model,
+                     used by the page classifier and the relation adapter.
                      If None, uses default model.
-            adapter_id: HuggingFace adapter repo ID for entity extraction (Call 1).
-                       If None, falls back to ModelManager.DEFAULT_ADAPTER_ID.
-                       Pass an empty string to skip adapter loading entirely.
-            classification_adapter_id: HuggingFace adapter repo ID for classification
-                       (Call 2 -- usage, typology, purpose_action). Defaults to
-                       the fine-tuned purpose_action adapter.
-                       Pass an empty string to skip (zero-shot classification).
+            entity_model_id: HuggingFace GLiNER model ID for entity extraction
+                       (Call 1). If None, uses ModelManager.DEFAULT_ENTITY_MODEL_ID.
+            metadata_model_id: HuggingFace model ID of the LFM metadata model
+                       (Call 2 -- usage and attributes per named mention). If None,
+                       uses ModelManager.DEFAULT_METADATA_MODEL_ID.
             relation_adapter_id: HuggingFace adapter repo ID for relation extraction
                        (Call 1b -- has_organization, used_by, has_acronym,
                        has_timeframe, has_geography). Defaults to the fine-tuned
@@ -138,12 +138,14 @@ class DatasetExtractor:
         """
         self.model_manager = ModelManager(cache_dir=cache_dir)
         self.model_id = model_id
-        self.adapter_id = adapter_id
-        self.classification_adapter_id = classification_adapter_id
+        self.entity_model_id = entity_model_id
+        self.metadata_model_id = metadata_model_id
         self.relation_adapter_id = relation_adapter_id
         self.threshold = threshold
         self._model = None
         self._classifier = None
+        self._entity_model = None
+        self._metadata_model = None
         # Cached DatasetSchema instance -- built lazily on first use.
         self._schema_core = None
 
@@ -154,10 +156,22 @@ class DatasetExtractor:
             self._model = self.model_manager.load_base(self.model_id)
         return self._model
 
+    @property
+    def entity_model(self):
+        """Lazy load the GLiNER entity model."""
+        if self._entity_model is None:
+            self._entity_model = self.model_manager.load_entity_model(self.entity_model_id)
+        return self._entity_model
+
+    @property
+    def metadata_model(self):
+        """Lazy load the LFM metadata model as ``(tokenizer, model)``."""
+        if self._metadata_model is None:
+            self._metadata_model = self.model_manager.load_metadata_model(self.metadata_model_id)
+        return self._metadata_model
+
     def _model_scope(self, adapter_name: str, adapter_id: Optional[str]):
         """Context manager making ``adapter_id`` active on the shared model."""
-        if adapter_id is None:
-            adapter_id = self.model_manager.adapter_id
         return self.model_manager.adapter_scope(
             self.model, adapter_name, adapter_id, self.model_id
         )
@@ -895,56 +909,42 @@ class DatasetExtractor:
                 print(f"   GATE {label}: {len(_data_chunks)}/{len(chunks_with_offsets)} chunks WITH_DATA")
             chunks_with_offsets = _data_chunks
 
-        # ── Three-model swarm ─────────────
-        # Call 1:  entity extraction (fine‑tuned adapter, entities only).
-        #          Uses _get_entity_schema — no relations, no metadata
-        #          entities.  Fast, high-recall for named/descriptive/vague
-        #          dataset mentions.
-        # Call 1b: relation extraction (fine‑tuned adapter, entities +
-        #          relations).  Extracts has_organization, used_by,
-        #          has_acronym, has_timeframe, has_geography on the full
-        #          chunk text via _get_relation_schema.  Relation heads
+        # ── Three-model pipeline ─────────────
+        # Call 1:  entity extraction (GLiNER, ``gliner_agents_v3``) —
+        #          NAMED_DATA / DESCRIPTIVE_DATA / VAGUE_DATA spans.
+        # Call 1b: relation extraction (GLiNER2 relation adapter) —
+        #          has_organization, used_by, has_acronym, has_timeframe,
+        #          has_geography on the full chunk text.  Relation heads
         #          are matched to Call‑1 mentions by span overlap.
-        # Call 2:  classification (fine‑tuned adapter) on deduplicated
-        #          sentence contexts — usage, typology, purpose_action.
-        #          Runs only on named mentions.
+        # Call 2:  usage + attributes (LFM2.5 ``lfm2.5-350M-focus-metadata``)
+        #          on the chunk of each named mention.
         #
         # Stage gating:
-        #   - named:      relations + classification
+        #   - named:      relations + usage/attributes
         #   - descriptive: relations only
-        #   - vague:      no relations, no classification
-        entity_schema = schema._get_entity_schema(self.model)
-        relation_schema = schema._get_relation_schema(self.model)
-        classification_schema = schema._get_classification_schema(self.model)
-
+        #   - vague:      no relations, no usage/attributes
         chunk_texts = [c for c, _ in chunks_with_offsets]
         chunk_offsets = [o for _, o in chunks_with_offsets]
 
         # ── Call 1: entity extraction ──
-        # All three calls share a single base model; the fine-tuned LoRA
-        # adapter is switched on around each call via ModelManager.adapter_scope
-        # (which also serializes access via the class-wide lock).  This avoids
-        # loading three full base-model copies (~4x memory/startup savings) at
-        # the cost of sequential execution — the GIL would serialize the old
-        # threads anyway, so there is no speed regression.
-        with self._model_scope("entity", self.adapter_id):
-            pass1_batch = self.model.batch_extract(
+        pass1_batch = [
+            [
+                ent
+                for ent in chunk_entities
+                if ent.get("label") in ENTITY_LABELS
+            ]
+            for chunk_entities in self.entity_model.inference(
                 chunk_texts,
-                entity_schema,
+                list(ENTITY_LABELS),
                 threshold=schema.threshold,
-                include_confidence=True,
-                include_spans=True,
+                flat_ner=True,
             )
+        ]
         seen_spans: set = set()
         raw_mentions: list = []
-        for chunk_idx, chunk_result in enumerate(pass1_batch):
-            entities = chunk_result.get("entities", {})
-            typed = (
-                [(e, "named") for e in entities.get("named_data", [])]
-                + [(e, "descriptive") for e in entities.get("descriptive_data", [])]
-                + [(e, "vague") for e in entities.get("vague_data", [])]
-            )
-            for ent, spec in typed:
+        for chunk_idx, chunk_entities in enumerate(pass1_batch):
+            for ent in chunk_entities:
+                spec = ENTITY_LABELS[ent["label"]]
                 abs_start = ent["start"] + chunk_offsets[chunk_idx]
                 abs_end = ent["end"] + chunk_offsets[chunk_idx]
                 span_key = (abs_start, abs_end)
@@ -959,7 +959,7 @@ class DatasetExtractor:
                 raw_mentions.append(
                     {
                         "text": name_text,
-                        "confidence": float(ent.get("confidence", 1.0)),
+                        "confidence": float(ent.get("score", 1.0)),
                         "start": abs_start,
                         "end": abs_end,
                         "specificity": spec,
@@ -972,26 +972,29 @@ class DatasetExtractor:
         else:
             raw_mentions = DatasetSchema._nms_name_spans(raw_mentions)
 
-            for m in raw_mentions:
-                m["sentence"], m["sentence_offset"] = DatasetSchema._get_sentence_context(
-                    text, m["start"], m["end"]
-                )
-            # Call 2 (classification) runs only on named mentions.  Descriptive
-            # and vague mentions are non-named — they get no usage / typology /
-            # purpose_action (impact) output.
-            named_sentences = [m["sentence"] for m in raw_mentions if m["specificity"] == "named"]
-            unique_named_sentences = list(dict.fromkeys(named_sentences))
-            if unique_named_sentences:
-                with self._model_scope("impact", self.classification_adapter_id):
-                    cls_batch = self.model.batch_extract(
-                        unique_named_sentences,
-                        classification_schema,
-                        threshold=0.1,
-                        include_confidence=True,
-                    )
-                cls_cache = dict(zip(unique_named_sentences, cls_batch))
-            else:
-                cls_cache = {}
+            # Call 2 (usage + attributes) runs only on named mentions.  Descriptive
+            # and vague mentions are non-named — they get no usage / purpose_action
+            # (impact) output.
+            # The LFM model was trained on passage chunks, so it gets the whole chunk.
+            named_items = {
+                (m["_chunk_idx"], m["text"]): {
+                    "passage": chunk_texts[m["_chunk_idx"]],
+                    "mention": m["text"],
+                }
+                for m in raw_mentions
+                if m["specificity"] == "named"
+            }
+            meta_cache: Dict[Tuple[int, str], Dict[str, Any]] = {}
+            if named_items:
+                tokenizer, lfm = self.metadata_model
+                keys = list(named_items)
+                items = [named_items[k] for k in keys]
+                usage_out = predict_metadata(tokenizer, lfm, USAGE_SYSTEM, items)
+                attr_out = predict_metadata(tokenizer, lfm, ATTRIBUTES_SYSTEM, items)
+                meta_cache = {
+                    k: {"usage": u or {}, "attributes": a or {}}
+                    for k, u, a in zip(keys, usage_out, attr_out)
+                }
 
             # ── Call 1b: relation extraction ──
             # Runs on the relation adapter if configured; otherwise relations
@@ -1001,7 +1004,7 @@ class DatasetExtractor:
                 with self._model_scope("relation", self.relation_adapter_id):
                     pass1b_batch = self.model.batch_extract(
                         chunk_texts,
-                        relation_schema,
+                        schema._get_relation_schema(self.model),
                         threshold=schema.threshold,
                         include_confidence=True,
                         include_spans=True,
@@ -1015,7 +1018,6 @@ class DatasetExtractor:
 
             results = []
             for m in raw_mentions:
-                sentence = m["sentence"]
                 abs_start = m["start"]
                 abs_end = m["end"]
                 name_text = m["text"]
@@ -1088,100 +1090,21 @@ class DatasetExtractor:
                             "end": rel_end,
                         }
 
-                # Call 2 (classification / impact) runs only for named mentions.
+                # Call 2 (usage + attributes) runs only for named mentions.
                 # Descriptive and vague mentions get empty impact fields.
                 if is_named:
-                    fb = cls_cache.get(sentence, {}) or {}
-                    usage_info = fb.get("usage")
-                    typology_info = fb.get("typology")
-                    purpose_action_info = fb.get("purpose_action")
-
-                    if usage_info and isinstance(usage_info, dict):
-                        rec["_usage_match"] = {
-                            "text": usage_info.get("label", "primary"),
-                            "confidence": float(usage_info.get("confidence", 0.0)),
-                        }
-                    else:
-                        rec["_usage_match"] = None
-
-                    text_val = "other"
-                    conf_val = 0.0
-                    if typology_info and isinstance(typology_info, dict):
-                        text_val = typology_info.get("label", "other")
-                        conf_val = float(typology_info.get("confidence", 0.0))
-
-                    if text_val == "other" or conf_val < _TYPOLOGY_CONFIDENCE_THRESHOLD:
-                        mapped = map_typology(name_text)
-                        if mapped != "other":
-                            text_val, conf_val = mapped, 0.0
-
-                    rec["typology_tag"] = {
-                        "text": text_val,
-                        "confidence": conf_val,
-                        "start": abs_start,
-                        "end": abs_end,
-                    }
-
-                    if purpose_action_info and isinstance(purpose_action_info, dict):
-                        rec["_purpose_action_match"] = {
-                            "text": purpose_action_info.get("label", "contextual_reference"),
-                            "confidence": float(purpose_action_info.get("confidence", 0.0)),
-                        }
-                    else:
-                        rec["_purpose_action_match"] = None
-
-                    usage_match = rec.pop("_usage_match", None)
-                    usage_text = ""
-                    usage_conf = 0.0
-                    if usage_match and isinstance(usage_match, dict):
-                        usage_text = usage_match.get("text", "")
-                        usage_conf = float(usage_match.get("confidence", 0.0))
-
-                    rec["usage_context"] = {
-                        "text": usage_text,
-                        "confidence": usage_conf,
-                        "start": abs_start,
-                        "end": abs_end,
-                    }
-
-                    usage_lower = usage_text.strip().lower()
-                    is_used_val = "False" if usage_lower == "background" else "True"
-                    rec["is_used"] = {
-                        "text": is_used_val,
-                        "confidence": usage_conf,
-                        "start": abs_start,
-                        "end": abs_end,
-                    }
-
-                    purpose_info = rec.pop("_purpose_action_match", None)
-                    purpose_text = "contextual_reference"
-                    purpose_conf = 0.0
-                    if purpose_info and isinstance(purpose_info, dict):
-                        cand_text = purpose_info.get("text") or purpose_info.get("label") or ""
-                        cand_conf = float(purpose_info.get("confidence", 0.0))
-                        if (
-                            cand_text in PURPOSE_ACTION_LABELS
-                            and cand_conf >= _PURPOSE_ACTION_CONFIDENCE_THRESHOLD
-                        ):
-                            purpose_text = cand_text
-                            purpose_conf = cand_conf
-                    rec["purpose_action"] = {
-                        "text": purpose_text,
-                        "confidence": purpose_conf,
-                        "start": abs_start,
-                        "end": abs_end,
-                    }
+                    meta = meta_cache.get((m["_chunk_idx"], name_text), {})
+                    rec.update(
+                        build_call2_fields(
+                            meta.get("usage"),
+                            meta.get("attributes"),
+                            name_text,
+                            abs_start,
+                            abs_end,
+                        )
+                    )
                 else:
-                    empty_impact = {
-                        "text": "",
-                        "confidence": 0.0,
-                        "start": abs_start,
-                        "end": abs_end,
-                    }
-                    rec["usage_context"] = dict(empty_impact)
-                    rec["typology_tag"] = dict(empty_impact)
-                    rec["purpose_action"] = dict(empty_impact)
-                    rec["is_used"] = dict(empty_impact)
+                    rec.update(empty_call2_fields(abs_start, abs_end))
 
                 results.append(rec)
 

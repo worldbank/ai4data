@@ -146,7 +146,8 @@ def extract_from_text(
     model_id: Optional[str] = None,
     enable_chunking: bool = True,
     use_classifier: bool = True,
-    adapter_id: Optional[str] = "ai4data/datause-extraction",
+    entity_model_id: Optional[str] = None,
+    metadata_model_id: Optional[str] = None,
     normalize_text: bool = True,
 ) -> Dict[str, Any]:
     """Extract dataset mentions from text.
@@ -161,7 +162,8 @@ def extract_from_text(
         model_id: Optional model ID to use for this specific extraction
         enable_chunking: Whether to split long text into chunks (default: True)
         use_classifier: Whether to use pre-filtering classifier (default: True)
-        adapter_id: HuggingFace adapter repo ID to apply to the base model.
+        entity_model_id: HuggingFace GLiNER model ID for entity extraction.
+        metadata_model_id: HuggingFace model ID of the usage/attributes model.
             Defaults to "ai4data/datause-extraction". Pass a different
             adapter (e.g. "ai4data/datause-extraction-v2") to use an
             alternative fine-tuned checkpoint without affecting the shared
@@ -180,10 +182,13 @@ def extract_from_text(
         >>> print(result['input_text'])
         >>> print(result['datasets'])
     """
-    _default_adapter_id = "ai4data/datause-extraction"
-    if adapter_id != _default_adapter_id or model_id is not None:
+    if entity_model_id is not None or metadata_model_id is not None or model_id is not None:
         real_cls = _get_dataset_extractor()
-        extractor = real_cls(model_id=model_id, adapter_id=adapter_id)
+        extractor = real_cls(
+            model_id=model_id,
+            entity_model_id=entity_model_id,
+            metadata_model_id=metadata_model_id,
+        )
     else:
         extractor = _get_default_extractor()
     return extractor.extract_from_text(
@@ -214,7 +219,8 @@ def extract_from_document(
     normalize_text: bool = True,
     pages: Optional[List[int]] = None,
     model_id: Optional[str] = None,
-    adapter_id: Optional[str] = "ai4data/datause-extraction",
+    entity_model_id: Optional[str] = None,
+    metadata_model_id: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
     """Extract dataset mentions from a PDF document.
 
@@ -235,7 +241,8 @@ def extract_from_document(
         pages: Optional list of 0-indexed page numbers to include. If None,
                processes all pages.
         model_id: Optional model ID to use for this specific extraction
-        adapter_id: HuggingFace adapter repo ID to apply to the base model.
+        entity_model_id: HuggingFace GLiNER model ID for entity extraction.
+        metadata_model_id: HuggingFace model ID of the usage/attributes model.
             Defaults to "ai4data/datause-extraction".
 
     Returns:
@@ -256,10 +263,13 @@ def extract_from_document(
         >>> for result in results:
         ...     print(f"Page {result['page']}: {len(result['datasets'])} datasets found")
     """
-    _default_adapter_id = "ai4data/datause-extraction"
-    if adapter_id != _default_adapter_id or model_id is not None:
+    if entity_model_id is not None or metadata_model_id is not None or model_id is not None:
         real_cls = _get_dataset_extractor()
-        extractor = real_cls(model_id=model_id, adapter_id=adapter_id)
+        extractor = real_cls(
+            model_id=model_id,
+            entity_model_id=entity_model_id,
+            metadata_model_id=metadata_model_id,
+        )
     else:
         extractor = _get_default_extractor()
     return extractor.extract_from_document(

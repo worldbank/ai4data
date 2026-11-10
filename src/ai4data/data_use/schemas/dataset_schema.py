@@ -1,15 +1,21 @@
 """Dataset mention extraction schema (DatasetSchema).
 
-Single canonical schema supporting the three-model swarm pipeline:
-  Call 1:  entity extraction (fine-tuned adapter, named/descriptive/vague).
-  Call 1b: relation extraction (fine-tuned adapter, 5 types).
-  Call 2:  classification (usage, typology, purpose_action).
+Single canonical schema supporting the three-model pipeline:
+  Call 1:  entity extraction (GLiNER ``gliner_agents_v3``: NAMED_DATA /
+           DESCRIPTIVE_DATA / VAGUE_DATA).
+  Call 1b: relation extraction (GLiNER2 fine-tuned adapter, 5 types).
+  Call 2:  usage + attributes per named mention (LFM2.5
+           ``lfm2.5-350M-focus-metadata``).
+
+The GLiNER2 builders (``_get_pass1_schema``, ``_get_classification_schema``)
+and ``extract_with_classification`` are the legacy GLiNER2-only path, kept for
+direct ``custom_schema`` callers.
 
 See ``DatasetExtractor.extract_from_text`` for the production pipeline.
 """
 
 import re
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 # Confidence threshold below which Pass 2 model typology is overridden by map_typology.
 # Set to 0.0 to disable the override (rely on model only).
@@ -90,7 +96,7 @@ VALID_TYPOLOGIES = frozenset(
 # ``impact_assessment/outputs/action_taxonomy.md`` for full definitions and
 # ``impact_assessment/mining/action_verb_analysis.md`` for methodology).
 #
-# Kept to 5 labels — within the GLiNER2 classification sweet spot (<=7).
+# Kept to 5 labels. ``USAGE_ACTION_TO_PURPOSE`` maps the LFM usage_action onto them.
 PURPOSE_ACTION_LABELS = (
     "quantitative_analysis",  # estimation / measurement / statistical analysis
     "needs_evaluation",  # assessing needs / evaluating programs / profiling
@@ -99,14 +105,113 @@ PURPOSE_ACTION_LABELS = (
     "contextual_reference",  # background / supporting evidence / benchmark
 )
 
+# ── Call 1: GLiNER entity labels (``gliner_agents_v3``) -> specificity ────────
+ENTITY_LABELS = {
+    "NAMED_DATA": "named",
+    "DESCRIPTIVE_DATA": "descriptive",
+    "VAGUE_DATA": "vague",
+}
+
+# ── Call 2: LFM metadata vocabularies (``lfm2.5-350M-focus-metadata``) ───────
+USAGE_ROLES = ("primary", "supporting", "background")
+USAGE_ACTIONS = ("source", "analyze", "curate", "validate", "inform")
+THEME_TAGS = (
+    "geospatial",
+    "forced_displacement",
+    "agriculture",
+    "employment",
+    "poverty",
+    "education",
+    "health",
+    "climate",
+)
+DATA_TYPES = (
+    "survey",
+    "census",
+    "administrative",
+    "microdata",
+    "database",
+    "indicator",
+    "geospatial",
+    "report",
+    "other",
+)
+SOURCE_ATTRIBUTE_KEYS = ("geography", "year", "version", "producer", "acronym", "data_type")
+
+# LFM ``usage_action`` -> ``purpose_action`` label, so the legacy output field
+# stays populated. The two taxonomies do not line up one to one.
+USAGE_ACTION_TO_PURPOSE = {
+    "source": "quantitative_analysis",
+    "analyze": "quantitative_analysis",
+    "validate": "quantitative_analysis",
+    "curate": "monitoring",
+    "inform": "contextual_reference",
+}
+
+# Output fields added per mention by Call 2. Named mentions carry model output;
+# descriptive and vague mentions carry the empty value.
+CALL2_TEXT_FIELDS = ("usage_context", "is_used", "usage_action", "usage_summary", "purpose_action")
+CALL2_LIST_FIELDS = ("theme_tags",)
+CALL2_DICT_FIELDS = ("source_attributes",)
+
+
+def _call2_field(text: str, confidence: float, start: int, end: int) -> Dict[str, Any]:
+    return {"text": text, "confidence": confidence, "start": start, "end": end}
+
+
+def build_call2_fields(
+    usage: Optional[Dict[str, Any]],
+    attrs: Optional[Dict[str, Any]],
+    name_text: str,
+    start: int,
+    end: int,
+) -> Dict[str, Any]:
+    """Output fields of a *named* mention from the LFM ``usage`` / ``attributes`` JSON.
+
+    The LFM model emits no confidence, so the text fields carry 1.0 when it
+    answered (valid ``role``) and 0.0 when it returned no usable JSON.
+    ``typology_tag`` falls back to the name-based ``map_typology``.
+    """
+    usage, attrs = usage or {}, attrs or {}
+    role = str(usage.get("role") or "").strip().lower()
+    action = str(usage.get("usage_action") or "").strip().lower()
+    role = role if role in USAGE_ROLES else ""
+    action = action if action in USAGE_ACTIONS else ""
+    conf = 1.0 if role else 0.0
+    purpose = USAGE_ACTION_TO_PURPOSE.get(action, "contextual_reference")
+    return {
+        "usage_context": _call2_field(role, conf, start, end),
+        "is_used": _call2_field("False" if role == "background" else "True", conf, start, end),
+        "usage_action": _call2_field(action, conf, start, end),
+        "usage_summary": _call2_field(str(usage.get("summary") or "").strip(), conf, start, end),
+        "typology_tag": _call2_field(map_typology(name_text), 0.0, start, end),
+        "purpose_action": _call2_field(purpose, conf, start, end),
+        "theme_tags": [t for t in (attrs.get("tags") or []) if t in THEME_TAGS],
+        "source_attributes": {
+            k: (attrs.get("attributes") or {}).get(k) for k in SOURCE_ATTRIBUTE_KEYS
+        },
+    }
+
+
+def empty_call2_fields(start: int, end: int) -> Dict[str, Any]:
+    """Call 2 fields of descriptive and vague mentions (no model output)."""
+    out: Dict[str, Any] = {
+        k: _call2_field("", 0.0, start, end)
+        for k in ("usage_context", "is_used", "usage_action", "usage_summary", "typology_tag", "purpose_action")
+    }
+    out["theme_tags"] = []
+    out["source_attributes"] = {}
+    return out
+
 
 class DatasetSchema:
-    """Schema definitions for the three-model swarm pipeline.
+    """Schema definitions for the three-model pipeline.
 
-    Provides schema builders for:
-      - ``_get_entity_schema`` — Call 1: named_data, descriptive_data, vague_data
+    Provides schema builders for the GLiNER2 steps:
       - ``_get_relation_schema`` — Call 1b: named_data + 4 tail types + 5 relations
-      - ``_get_classification_schema`` — Call 2: usage, typology, purpose_action
+      - ``_get_entity_schema`` / ``_get_classification_schema`` — legacy GLiNER2
+        Call 1 / Call 2; the production path uses ``ENTITY_LABELS`` with GLiNER
+        and the LFM vocabularies above instead.
 
     Also provides shared helpers (NMS, span matching, validation) used by
     ``DatasetExtractor.extract_from_text``.

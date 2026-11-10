@@ -208,6 +208,49 @@ def mock_model_manager(monkeypatch, mock_gliner_model, mock_classifier_pipeline)
     monkeypatch.setattr(ModelManager, "adapter_scope", mock_adapter_scope)
     monkeypatch.setattr(ModelManager, "load_classifier", lambda self, model_id=None: mock_classifier_pipeline)
 
+    manager_entity = [None]
+
+    # Entity model (GLiNER): one NAMED_DATA span at the start of the first chunk.
+    mock_entity = MagicMock()
+
+    def _inference(texts, labels, **kwargs):
+        out = [[] for _ in texts]
+        if out:
+            out[0] = [{"text": "DHS", "label": "NAMED_DATA", "score": 0.95, "start": 0, "end": 3}]
+        return out
+
+    mock_entity.inference.side_effect = _inference
+    manager_entity[0] = mock_entity
+    monkeypatch.setattr(ModelManager, "load_entity_model", lambda self, model_id=None: mock_entity)
+
+    # Metadata model (LFM): canned usage/attributes JSON per task.
+    import ai4data.data_use.extractors.dataset_extractor as de
+
+    def _predict_metadata(tokenizer, model, system, items, **kw):
+        if system == de.USAGE_SYSTEM:
+            return [{"role": "primary", "usage_action": "analyze", "summary": "Used."} for _ in items]
+        return [
+            {
+                "tags": ["health"],
+                "attributes": {"year": "2022", "data_type": "survey"},
+            }
+            for _ in items
+        ]
+
+    monkeypatch.setattr(ModelManager, "load_metadata_model", lambda self, model_id=None: (None, None))
+    monkeypatch.setattr(de, "predict_metadata", _predict_metadata)
+
     manager = ModelManager()
     manager._lock = threading.Lock()
+    manager.mock_entity_model = manager_entity[0]
     return manager
+
+
+def gliner_entities(chunk_result):
+    """Convert a GLiNER2-style ``{"entities": {...}}`` result to GLiNER's span list."""
+    labels = {"named_data": "NAMED_DATA", "descriptive_data": "DESCRIPTIVE_DATA", "vague_data": "VAGUE_DATA"}
+    return [
+        {"text": e["text"], "label": labels[k], "score": e["confidence"], "start": e["start"], "end": e["end"]}
+        for k, ents in chunk_result.get("entities", {}).items()
+        for e in ents
+    ]

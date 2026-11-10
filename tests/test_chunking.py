@@ -377,6 +377,33 @@ def mock_model_manager(monkeypatch):
     monkeypatch.setattr(ModelManager, "load_base", mock_load_base)
     monkeypatch.setattr(ModelManager, "adapter_scope", mock_adapter_scope)
 
+    # Entity model (GLiNER): reuse the mention finder above in GLiNER's output format.
+    mock_entity = MagicMock()
+
+    def side_effect_batch_predict(texts, labels, **kwargs):
+        return [
+            [
+                {"text": e["text"], "label": "NAMED_DATA", "score": e["confidence"],
+                 "start": e["start"], "end": e["end"]}
+                for e in side_effect_extract(t)["entities"]["named_data"]
+            ]
+            for t in texts
+        ]
+
+    mock_entity.inference.side_effect = side_effect_batch_predict
+    monkeypatch.setattr(ModelManager, "load_entity_model", lambda self, model_id=None: mock_entity)
+
+    # Metadata model (LFM): fixed usage/attributes answers.
+    import ai4data.data_use.extractors.dataset_extractor as de
+
+    def mock_predict_metadata(tokenizer, model, system, items, **kwargs):
+        if system == de.USAGE_SYSTEM:
+            return [{"role": "primary", "usage_action": "analyze", "summary": "Used."}] * len(items)
+        return [{"tags": ["health"], "attributes": {}}] * len(items)
+
+    monkeypatch.setattr(ModelManager, "load_metadata_model", lambda self, model_id=None: (None, None))
+    monkeypatch.setattr(de, "predict_metadata", mock_predict_metadata)
+
     return ModelManager()
 
 
