@@ -96,12 +96,12 @@ STEPS = [
          demo='rounds',
          notes='Read the loop first. Then compare the three bars: the first set, extra cases spread evenly, and '
                'extra cases aimed at the mistakes. The targeted rounds reach the orange band, which is the level of '
-               'the large models. The second repeat of the experiment gives the same picture.'),
+               'the large models. The second repeat gives the same picture.'),
     dict(short='Ask people which is better',
          h='Experienced staff choose the better of two cases.',
          office='Experienced staff compare two practice cases, or two answers, and say which one is better.',
          model='People choose between pairs. The choices improve the request to the large model and filter the cases.',
-         used=('no', 'Not part of the experiments.'), demo='pairs',
+         used=('no', 'The cases were not compared by people.'), demo='pairs',
          notes='Run this as a vote. Read each pair and ask the room for A or B before you select one. People who '
                'know the work can tell within seconds which case is realistic, and choosing between two is quicker '
                'than writing a case.'),
@@ -110,7 +110,7 @@ STEPS = [
          office="The supervisor keeps reviewing a sample of the staff member's decisions.",
          model="People review a sample of the model's answers at regular intervals. When the answers, the language, "
                'or the situation change, new cases are written and the model is trained again.',
-         used=('no', 'Outside the experiments.'), demo='watch',
+         used=('no', 'The worked example ends at the test on real reports.'), demo='watch',
          notes='The example from the report is about images. The same thing happens with text when a new issue or a '
                'new language appears. Ask the room who would review the sample in their organization after the '
                'project ends.'),
@@ -170,8 +170,8 @@ def used_slide():
   <div class="body center">
     <ol class="used9">{cards}</ol>
   </div>
-  <p class="src">The worked example is the experiment behind this session: tagging reports with topics from a list of 86.</p>
-  <aside class="notes">Before the results, be clear about what the worked example covers. Five steps were used in full and one in part. Real samples, the choices of experienced staff, and review after deployment were outside the experiments. Keep that in mind when we read the scores.</aside>
+  <p class="src">The worked example of this session is the tagging of reports with topics from a list of 86.</p>
+  <aside class="notes">Before the results, be clear about what the worked example covers. Five steps were used in full and one in part. Real samples, the choices of experienced staff, and review after deployment were not part of it. Keep that in mind when we read the scores.</aside>
 </section>'''
 
 

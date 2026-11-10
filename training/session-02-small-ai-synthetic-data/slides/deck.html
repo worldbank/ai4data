@@ -537,7 +537,7 @@ svg text.ink { fill: var(--ink); }
 
 /* ---------- scale of each slide body, set by fit.py ---------- */
 #s02 { --z: 1.33; }
-#s03 { --z: 1.11; }
+#s03 { --z: 1.12; }
 #s04 { --z: 1.42; }
 #s05 { --z: 1.42; }
 #s06 { --z: 1.42; }
@@ -977,7 +977,7 @@ svg text.ink { fill: var(--ink); }
     </div>
     <div class="card demo" data-demo="rounds"></div>
   </div></div>
-  <aside class="notes">Read the loop first. Then compare the three bars: the first set, extra cases spread evenly, and extra cases aimed at the mistakes. The targeted rounds reach the orange band, which is the level of the large models. The second repeat of the experiment gives the same picture.</aside>
+  <aside class="notes">Read the loop first. Then compare the three bars: the first set, extra cases spread evenly, and extra cases aimed at the mistakes. The targeted rounds reach the orange band, which is the level of the large models. The second repeat gives the same picture.</aside>
 </section>
 
 <section class="slide" id="s23" data-sec="4" data-stepno="8">
@@ -987,7 +987,7 @@ svg text.ink { fill: var(--ink); }
     <div class="stepside">
       <div class="pairb office"><span class="lbl">In an office</span><p>Experienced staff compare two practice cases, or two answers, and say which one is better.</p></div>
       <div class="pairb model"><span class="lbl">With the models</span><p>People choose between pairs. The choices improve the request to the large model and filter the cases.</p></div>
-      <p class="used"><span class="usedmark no" aria-hidden="true"></span><span><b>Not used in the worked example.</b> Not part of the experiments.</span></p>
+      <p class="used"><span class="usedmark no" aria-hidden="true"></span><span><b>Not used in the worked example.</b> The cases were not compared by people.</span></p>
     </div>
     <div class="card demo" data-demo="pairs"></div>
   </div></div>
@@ -1001,7 +1001,7 @@ svg text.ink { fill: var(--ink); }
     <div class="stepside">
       <div class="pairb office"><span class="lbl">In an office</span><p>The supervisor keeps reviewing a sample of the staff member&#x27;s decisions.</p></div>
       <div class="pairb model"><span class="lbl">With the models</span><p>People review a sample of the model&#x27;s answers at regular intervals. When the answers, the language, or the situation change, new cases are written and the model is trained again.</p></div>
-      <p class="used"><span class="usedmark no" aria-hidden="true"></span><span><b>Not used in the worked example.</b> Outside the experiments.</span></p>
+      <p class="used"><span class="usedmark no" aria-hidden="true"></span><span><b>Not used in the worked example.</b> The worked example ends at the test on real reports.</span></p>
     </div>
     <div class="card demo" data-demo="watch"></div>
   </div></div>
@@ -1012,10 +1012,10 @@ svg text.ink { fill: var(--ink); }
   <p class="kicker">Steps used in the worked example</p>
   <h2>The worked example used five of the nine steps in full.</h2>
   <div class="body center">
-    <ol class="used9"><li class="u9 yes"><span class="num">1</span><div><b>Describe the task</b><span class="usedrow"><span class="usedmark yes" aria-hidden="true"></span>Used in the worked example</span><span class="usednote">A list of 86 topics.</span></div></li><li class="u9 no"><span class="num">2</span><div><b>Show a few real cases</b><span class="usedrow"><span class="usedmark no" aria-hidden="true"></span>Not used in the worked example</span><span class="usednote">The requests named the topics only.</span></div></li><li class="u9 partly"><span class="num">3</span><div><b>Vary the cases</b><span class="usedrow"><span class="usedmark partly" aria-hidden="true"></span>Partly used in the worked example</span><span class="usednote">Each request named a different set of eight topics and asked for varied length and style.</span></div></li><li class="u9 yes"><span class="num">4</span><div><b>Write and check</b><span class="usedrow"><span class="usedmark yes" aria-hidden="true"></span>Used in the worked example</span><span class="usednote">Scripts checked every set. In the later rounds, a second model also labelled each sentence.</span></div></li><li class="u9 yes"><span class="num">5</span><div><b>Train the small model</b><span class="usedrow"><span class="usedmark yes" aria-hidden="true"></span>Used in the worked example</span><span class="usednote">About 20,000 sentences in the first set.</span></div></li><li class="u9 yes"><span class="num">6</span><div><b>Test on real cases</b><span class="usedrow"><span class="usedmark yes" aria-hidden="true"></span>Used in the worked example</span><span class="usednote">300 real report abstracts with recorded topics.</span></div></li><li class="u9 yes"><span class="num">7</span><div><b>Practise the weak spots</b><span class="usedrow"><span class="usedmark yes" aria-hidden="true"></span>Used in the worked example</span><span class="usednote">Up to five rounds, compared with rounds of the same size spread evenly over all topics.</span></div></li><li class="u9 no"><span class="num">8</span><div><b>Ask people which is better</b><span class="usedrow"><span class="usedmark no" aria-hidden="true"></span>Not used in the worked example</span><span class="usednote">Not part of the experiments.</span></div></li><li class="u9 no"><span class="num">9</span><div><b>Watch and refresh</b><span class="usedrow"><span class="usedmark no" aria-hidden="true"></span>Not used in the worked example</span><span class="usednote">Outside the experiments.</span></div></li></ol>
+    <ol class="used9"><li class="u9 yes"><span class="num">1</span><div><b>Describe the task</b><span class="usedrow"><span class="usedmark yes" aria-hidden="true"></span>Used in the worked example</span><span class="usednote">A list of 86 topics.</span></div></li><li class="u9 no"><span class="num">2</span><div><b>Show a few real cases</b><span class="usedrow"><span class="usedmark no" aria-hidden="true"></span>Not used in the worked example</span><span class="usednote">The requests named the topics only.</span></div></li><li class="u9 partly"><span class="num">3</span><div><b>Vary the cases</b><span class="usedrow"><span class="usedmark partly" aria-hidden="true"></span>Partly used in the worked example</span><span class="usednote">Each request named a different set of eight topics and asked for varied length and style.</span></div></li><li class="u9 yes"><span class="num">4</span><div><b>Write and check</b><span class="usedrow"><span class="usedmark yes" aria-hidden="true"></span>Used in the worked example</span><span class="usednote">Scripts checked every set. In the later rounds, a second model also labelled each sentence.</span></div></li><li class="u9 yes"><span class="num">5</span><div><b>Train the small model</b><span class="usedrow"><span class="usedmark yes" aria-hidden="true"></span>Used in the worked example</span><span class="usednote">About 20,000 sentences in the first set.</span></div></li><li class="u9 yes"><span class="num">6</span><div><b>Test on real cases</b><span class="usedrow"><span class="usedmark yes" aria-hidden="true"></span>Used in the worked example</span><span class="usednote">300 real report abstracts with recorded topics.</span></div></li><li class="u9 yes"><span class="num">7</span><div><b>Practise the weak spots</b><span class="usedrow"><span class="usedmark yes" aria-hidden="true"></span>Used in the worked example</span><span class="usednote">Up to five rounds, compared with rounds of the same size spread evenly over all topics.</span></div></li><li class="u9 no"><span class="num">8</span><div><b>Ask people which is better</b><span class="usedrow"><span class="usedmark no" aria-hidden="true"></span>Not used in the worked example</span><span class="usednote">The cases were not compared by people.</span></div></li><li class="u9 no"><span class="num">9</span><div><b>Watch and refresh</b><span class="usedrow"><span class="usedmark no" aria-hidden="true"></span>Not used in the worked example</span><span class="usednote">The worked example ends at the test on real reports.</span></div></li></ol>
   </div>
-  <p class="src">The worked example is the experiment behind this session: tagging reports with topics from a list of 86.</p>
-  <aside class="notes">Before the results, be clear about what the worked example covers. Five steps were used in full and one in part. Real samples, the choices of experienced staff, and review after deployment were outside the experiments. Keep that in mind when we read the scores.</aside>
+  <p class="src">The worked example of this session is the tagging of reports with topics from a list of 86.</p>
+  <aside class="notes">Before the results, be clear about what the worked example covers. Five steps were used in full and one in part. Real samples, the choices of experienced staff, and review after deployment were not part of it. Keep that in mind when we read the scores.</aside>
 </section>
 
 <section class="slide" id="s26" data-sec="5">
@@ -1041,7 +1041,7 @@ svg text.ink { fill: var(--ink); }
   <h2>The large model is needed in the first two steps only.</h2>
   <div class="body"><div class="fill m3" data-demo="m3" style="display:flex;flex-direction:column;gap:1em"></div></div>
   <p class="src">In step 3 the reports do not leave the organization.</p>
-  <aside class="notes">This is the whole method on one slide. Read the three cards, then switch to the office comparison to connect them with the earlier slide. The next slides take the steps one at a time, with the recorded data from the experiments.</aside>
+  <aside class="notes">This is the whole method on one slide. Read the three cards, then switch to the office comparison to connect them with the earlier slide. The next slides take the steps one at a time, with the recorded data of the worked example.</aside>
 </section>
 
 <section class="slide" id="s28" data-sec="5">
@@ -1332,7 +1332,7 @@ DEMOS.cases = {
         <ul class="reasons">${c.reasons.map((r) => `<li><span class="chip warn">${REASONS[r][0]}</span>${REASONS[r][1]}</li>`).join('')}</ul>
         <span class="lbl mt2">Where the model runs</span>
         <p class="txt-s mt">${esc(c.runs)}</p>
-        ${c.tested ? '<p class="txt-s mt">This task was tested in the experiments behind this session. The small model scored 0.15 below the best large model on job titles from a survey.</p>' : ''}
+        ${c.tested ? '<p class="txt-s mt">A small model was also built for this task. It scored 0.15 below the best large model on job titles from a survey.</p>' : ''}
       </div>
       <div>
         <span class="lbl">One practice case · ${esc(c.inputKind)}</span>
@@ -1481,7 +1481,7 @@ DEMOS.vary = {
     <div class="row"><button type="button" class="btn" data-a="draw" data-v="1">Draw a new request</button><span class="txt"><b>${fmt(combos)}</b> different requests possible</span></div>
     <div class="evidence">
       <div class="hundred" aria-hidden="true">${grid}</div>
-      <div><span class="lbl">Measured in the experiments</span>
+      <div><span class="lbl">A measured result</span>
       <p class="txt-s mt">Asked many times for titles of the same occupation group, ${esc(dup.writer)} wrote the same common titles again: ${fmt(dup.repeats)} of ${fmt(dup.written)} job titles (${share}%) repeated an earlier one. A repeated case teaches the small model nothing new, and the checks remove it.</p></div>
     </div>`;
   },
@@ -1557,7 +1557,7 @@ DEMOS.rounds = {
     const band = `<i class="band" style="left:${lo / MAX * 100}%;width:${(hi - lo) / MAX * 100}%"></i>`;
     const loop = ['Test on separate real cases', 'Find the weakest topics', 'Write more cases on them', 'Train again'];
     return `<div class="loop">${loop.map((t, i) => `<span><b>${i + 1}</b>${t}</span>`).join('')}</div>
-    <div class="row">${seg('r', w.rounds.map((x, i) => [i, `Repeat ${x.replicate}`]), st.r, 'Repeat of the experiment')}
+    <div class="row">${seg('r', w.rounds.map((x, i) => [i, `Repeat ${x.replicate}`]), st.r, 'Repeat')}
     <span class="lbl">Score of the small model on 300 real report abstracts (F1, 0 to 1)</span></div>
     <div class="rbars">
       <div class="rbar rbar3"><span></span><div class="bandlbl"><span style="right:${100 - hi / MAX * 100}%">three large models</span></div><span></span></div>

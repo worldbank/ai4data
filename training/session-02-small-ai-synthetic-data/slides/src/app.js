@@ -101,7 +101,7 @@ DEMOS.cases = {
         <ul class="reasons">${c.reasons.map((r) => `<li><span class="chip warn">${REASONS[r][0]}</span>${REASONS[r][1]}</li>`).join('')}</ul>
         <span class="lbl mt2">Where the model runs</span>
         <p class="txt-s mt">${esc(c.runs)}</p>
-        ${c.tested ? '<p class="txt-s mt">This task was tested in the experiments behind this session. The small model scored 0.15 below the best large model on job titles from a survey.</p>' : ''}
+        ${c.tested ? '<p class="txt-s mt">A small model was also built for this task. It scored 0.15 below the best large model on job titles from a survey.</p>' : ''}
       </div>
       <div>
         <span class="lbl">One practice case · ${esc(c.inputKind)}</span>
@@ -250,7 +250,7 @@ DEMOS.vary = {
     <div class="row"><button type="button" class="btn" data-a="draw" data-v="1">Draw a new request</button><span class="txt"><b>${fmt(combos)}</b> different requests possible</span></div>
     <div class="evidence">
       <div class="hundred" aria-hidden="true">${grid}</div>
-      <div><span class="lbl">Measured in the experiments</span>
+      <div><span class="lbl">A measured result</span>
       <p class="txt-s mt">Asked many times for titles of the same occupation group, ${esc(dup.writer)} wrote the same common titles again: ${fmt(dup.repeats)} of ${fmt(dup.written)} job titles (${share}%) repeated an earlier one. A repeated case teaches the small model nothing new, and the checks remove it.</p></div>
     </div>`;
   },
@@ -326,7 +326,7 @@ DEMOS.rounds = {
     const band = `<i class="band" style="left:${lo / MAX * 100}%;width:${(hi - lo) / MAX * 100}%"></i>`;
     const loop = ['Test on separate real cases', 'Find the weakest topics', 'Write more cases on them', 'Train again'];
     return `<div class="loop">${loop.map((t, i) => `<span><b>${i + 1}</b>${t}</span>`).join('')}</div>
-    <div class="row">${seg('r', w.rounds.map((x, i) => [i, `Repeat ${x.replicate}`]), st.r, 'Repeat of the experiment')}
+    <div class="row">${seg('r', w.rounds.map((x, i) => [i, `Repeat ${x.replicate}`]), st.r, 'Repeat')}
     <span class="lbl">Score of the small model on 300 real report abstracts (F1, 0 to 1)</span></div>
     <div class="rbars">
       <div class="rbar rbar3"><span></span><div class="bandlbl"><span style="right:${100 - hi / MAX * 100}%">three large models</span></div><span></span></div>

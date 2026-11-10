@@ -160,7 +160,7 @@ Extra cases help most on the kinds of cases the model gets wrong.
 
 The slide has an interactive demonstration.
 
-Notes: Read the loop first. Then compare the three bars: the first set, extra cases spread evenly, and extra cases aimed at the mistakes. The targeted rounds reach the orange band, which is the level of the large models. The second repeat of the experiment gives the same picture.
+Notes: Read the loop first. Then compare the three bars: the first set, extra cases spread evenly, and extra cases aimed at the mistakes. The targeted rounds reach the orange band, which is the level of the large models. The second repeat gives the same picture.
 
 ### 23. Step 8 of 9 · Ask people which is better
 
@@ -184,7 +184,7 @@ Notes: The example from the report is about images. The same thing happens with 
 
 The worked example used five of the nine steps in full.
 
-Notes: Before the results, be clear about what the worked example covers. Five steps were used in full and one in part. Real samples, the choices of experienced staff, and review after deployment were outside the experiments. Keep that in mind when we read the scores.
+Notes: Before the results, be clear about what the worked example covers. Five steps were used in full and one in part. Real samples, the choices of experienced staff, and review after deployment were not part of it. Keep that in mind when we read the scores.
 
 ### 26. The worked example
 
@@ -200,7 +200,7 @@ The large model is needed in the first two steps only.
 
 The slide has an interactive demonstration.
 
-Notes: This is the whole method on one slide. Read the three cards, then switch to the office comparison to connect them with the earlier slide. The next slides take the steps one at a time, with the recorded data from the experiments.
+Notes: This is the whole method on one slide. Read the three cards, then switch to the office comparison to connect them with the earlier slide. The next slides take the steps one at a time, with the recorded data of the worked example.
 
 ### 28. Step 1 · Synthetic data
 
