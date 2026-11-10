@@ -35,21 +35,21 @@ The fonts (Inter and JetBrains Mono) load from Google Fonts. Without an internet
 | 6 to 9 | Small model | Large language models, small AI, the memory a model needs, the cost of building a small model |
 | 10 to 14 | Synthetic data | Labelled examples, why they are missing, rare cases, synthetic data, the office comparison |
 | 15 to 24 | Nine steps | The process, then one slide for each step with a demonstration on the complaints example |
-| 25 to 35 | Worked example | The steps used, the request and the sentences, a model trained in the page, distillation, results, speed, limits |
+| 25 to 35 | Report tagging | The task, the steps used, the request and the sentences, a model trained in the page, distillation, results, speed, limits |
 | 36 to 40 | Small or large | Criteria, a six-task exercise for the room, checks before relying on a small model, summary, sources |
 
 ## Sources
 
 | File | Content |
 |---|---|
-| `src/slides-01-14.html`, `src/slides-26-40.html` | Slides 1 to 14 and 26 to 40, one `<section>` for each slide, with the speaker notes in `<aside class="notes">` |
-| `STEPS` in `build_deck.py` | Slides 15 to 25: the office comparison, the model version, the use in the worked example, and the notes of each step |
+| `src/slides-01-14.html`, `src/slides-25-40.html` | Slides 1 to 14, 25, and 27 to 40, one `<section>` for each slide, with the speaker notes in `<aside class="notes">` |
+| `STEPS` in `build_deck.py` | Slides 15 to 24 and 26: for each step, the office comparison, the model version, the notes, and its use for the report-tagging model |
 | `src/app.js` | Navigation, the definitions of the terms, and the demonstrations |
 | `src/style.css` | Styles for the stage, the reading layout, and the light and dark themes |
 | `src/shell.html` | The frame of the page: the stage, the bar under it, the notes panel, and the contents |
 | `src/fit.css` | The text scale of each slide, written by `fit_slides.py` |
 
-The scores, the request, the sentences, and the reports in the worked-example part come from `../assets/overview.json`, the recorded data behind the figures of the overview page. The complaint messages on the slides of the nine steps were written for the session as illustrations, and the slides say so.
+The scores, the request, the sentences, and the reports in the report-tagging part come from `../assets/overview.json`, the recorded data behind the figures of the overview page. The complaint messages on the slides of the nine steps were written for the session as illustrations, and the slides say so.
 
 ## Regenerating
 

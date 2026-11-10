@@ -388,7 +388,7 @@ DEMOS.watch = {
   },
 };
 
-// The report of the worked example (slide 26).
+// The report on slide 25.
 DEMOS.report = {
   on() { return false; },
   render() {
@@ -690,7 +690,7 @@ function mountDemo(el) {
 }
 
 /* ------------------------------------------------------------- navigation */
-const SECS = ['', 'Tasks', 'Small model', 'Synthetic data', 'Nine steps', 'Worked example', 'Small or large'];
+const SECS = ['', 'Tasks', 'Small model', 'Synthetic data', 'Nine steps', 'Report tagging', 'Small or large'];
 const stage = $('#stage'), slides = $$('.slide', stage), toc = $('#toc'), notesPanel = $('#notespanel');
 let idx = 0, step = 0;
 

@@ -1,7 +1,8 @@
 """Build the session 02 deck as one HTML file.
 
 Reads the slide sources in src/, the recorded data of the overview page (../assets/overview.json),
-and the program mark. The slides of the nine steps (15 to 25) are generated from the STEPS table below.
+and the program mark. The slides of the nine steps (15 to 24) and the slide of the steps used for the report-tagging model (26)
+are generated from the STEPS table below.
 
     python3 build_deck.py              write deck.html and outline.md
     python3 build_deck.py --fit        also recompute the scale of each slide (src/fit.css); needs Playwright
@@ -32,8 +33,14 @@ HEAD = ('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="
         'padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui}img{max-width:100%}'
         '[hidden]{display:none!important}</style>')
 
-USED = {'yes': 'Used in the worked example.', 'partly': 'Partly used in the worked example.',
-        'no': 'Not used in the worked example.'}
+USED = {'yes': 'Used', 'partly': 'Partly used', 'no': 'Not used'}
+
+# The captions of the model sizes on slide 8. They replace the captions written for the overview page.
+MODELS = {
+    'Small model': dict(role='The report-tagging model of this session is this size.'),
+    'Large model': dict(memory='about 31 GB of memory in its 8-bit version (about 56 GB at full 16-bit precision)',
+                        role='Qwen3.8-27B is this size.'),
+}
 
 STEPS = [
     dict(short='Describe the task',
@@ -51,7 +58,7 @@ STEPS = [
          used=('no', 'The requests named the topics only.'), demo='seeds',
          notes='Switch between the two requests. Without samples the large model writes polite letters, and nobody '
                'sends a letter by text message. With three real messages in the request, the written cases take on '
-               'their style. The worked example skipped this step.'),
+               'their style.'),
     dict(short='Vary the cases',
          h='Each request to the large model asks for a different kind of case.',
          office='The colleague writes cases of every kind: short and long, calm and angry, easy and hard.',
@@ -110,7 +117,7 @@ STEPS = [
          office="The supervisor keeps reviewing a sample of the staff member's decisions.",
          model="People review a sample of the model's answers at regular intervals. When the answers, the language, "
                'or the situation change, new cases are written and the model is trained again.',
-         used=('no', 'The worked example ends at the test on real reports.'), demo='watch',
+         used=('no', 'The work ended at the test on real reports.'), demo='watch',
          notes='The example from the report is about images. The same thing happens with text when a new issue or a '
                'new language appears. Ask the room who would review the sample in their organization after the '
                'project ends.'),
@@ -142,7 +149,6 @@ def overview_slide():
 
 
 def step_slide(i, s):
-    kind, note = s['used']
     return f'''<section class="slide" id="s{16 + i}" data-sec="4" data-stepno="{i + 1}">
   <p class="kicker">Step {i + 1} of 9 · {e(s['short'])}</p>
   <h2>{e(s['h'])}</h2>
@@ -150,7 +156,6 @@ def step_slide(i, s):
     <div class="stepside">
       <div class="pairb office"><span class="lbl">In an office</span><p>{e(s['office'])}</p></div>
       <div class="pairb model"><span class="lbl">With the models</span><p>{e(s['model'])}</p></div>
-      <p class="used"><span class="usedmark {kind}" aria-hidden="true"></span><span><b>{USED[kind]}</b> {e(note)}</span></p>
     </div>
     <div class="card demo" data-demo="{s['demo']}"></div>
   </div></div>
@@ -161,17 +166,16 @@ def step_slide(i, s):
 def used_slide():
     cards = ''.join(
         f'<li class="u9 {s["used"][0]}"><span class="num">{i + 1}</span><div><b>{e(s["short"])}</b>'
-        f'<span class="usedrow"><span class="usedmark {s["used"][0]}" aria-hidden="true"></span>{USED[s["used"][0]][:-1]}</span>'
+        f'<span class="usedrow"><span class="usedmark {s["used"][0]}" aria-hidden="true"></span>{USED[s["used"][0]]}</span>'
         f'<span class="usednote">{e(s["used"][1])}</span></div></li>'
         for i, s in enumerate(STEPS))
-    return f'''<section class="slide" id="s25" data-sec="5">
-  <p class="kicker">Steps used in the worked example</p>
-  <h2>The worked example used five of the nine steps in full.</h2>
+    return f'''<section class="slide" id="s26" data-sec="5">
+  <p class="kicker">Steps used for this model</p>
+  <h2>The small model for this task was built with five of the nine steps in full.</h2>
   <div class="body center">
     <ol class="used9">{cards}</ol>
   </div>
-  <p class="src">The worked example of this session is the tagging of reports with topics from a list of 86.</p>
-  <aside class="notes">Before the results, be clear about what the worked example covers. Five steps were used in full and one in part. Real samples, the choices of experienced staff, and review after deployment were not part of it. Keep that in mind when we read the scores.</aside>
+  <aside class="notes">Before the results, be clear about how this model was built. Five steps were used in full and one in part. Real samples, the choices of experienced staff, and review after deployment were not part of it. Keep that in mind when we read the scores.</aside>
 </section>'''
 
 
@@ -197,7 +201,8 @@ def data():
     mean = lambda xs: sum(xs) / len(xs)
     return {
         'tasks': d['smallAI']['tasks'],
-        'machines': d['smallAI']['machines'],
+        'machines': {**d['smallAI']['machines'],
+                     'models': [{**m, **MODELS.get(m['name'], {})} for m in d['smallAI']['machines']['models']]},
         'synth': {
             'request': sy['request'], 'writer': sy['writer'], 'topics': sy['topics'],
             'opening': sy['prompt']['allow'].split('\n')[0],
@@ -216,8 +221,8 @@ def data():
 def page():
     slides = '\n\n'.join([
         (SRC / 'slides-01-14.html').read_text().replace('__LOGO__', logo_uri()),
-        overview_slide(), *[step_slide(i, s) for i, s in enumerate(STEPS)], used_slide(),
-        (SRC / 'slides-26-40.html').read_text(),
+        overview_slide(), *[step_slide(i, s) for i, s in enumerate(STEPS)],
+        (SRC / 'slides-25-40.html').read_text().replace('<!--__USED__-->', used_slide()),
     ])
     payload = json.dumps(data(), ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
     js = (SRC / 'app.js').read_text().replace('/*__DATA__*/null', payload)

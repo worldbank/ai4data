@@ -1,5 +1,5 @@
-<section class="slide" id="s26" data-sec="5">
-  <p class="kicker">The worked example</p>
+<section class="slide" id="s25" data-sec="5">
+  <p class="kicker">Tagging reports with topics</p>
   <h2>An organization wants each report tagged with topics from a fixed list of 86.</h2>
   <div class="body"><div class="g2 fill">
     <div class="card report" data-demo="report"></div>
@@ -16,19 +16,21 @@
   <aside class="notes">We now leave the complaints and turn to a task that was measured. Read the title of the report and its topics. Then bring back the three options from the start of the session. The third obstacle is the one that synthetic data remove.</aside>
 </section>
 
+<!--__USED__-->
+
 <section class="slide" id="s27" data-sec="5">
   <p class="kicker">The method in three steps</p>
   <h2>The large model is needed in the first two steps only.</h2>
   <div class="body"><div class="fill m3" data-demo="m3" style="display:flex;flex-direction:column;gap:1em"></div></div>
   <p class="src">In step 3 the reports do not leave the organization.</p>
-  <aside class="notes">This is the whole method on one slide. Read the three cards, then switch to the office comparison to connect them with the earlier slide. The next slides take the steps one at a time, with the recorded data of the worked example.</aside>
+  <aside class="notes">This is the whole method on one slide. Read the three cards, then switch to the office comparison to connect them with the earlier slide. The next slides take the steps one at a time, with recorded data.</aside>
 </section>
 
 <section class="slide" id="s28" data-sec="5">
   <p class="kicker">Step 1 · Synthetic data</p>
   <h2>One request names eight topics and returns 20 labelled sentences.</h2>
   <div class="body"><div class="fill story" data-demo="write"></div></div>
-  <p class="src">The request and the sentences are recorded from the worked example. The example repeats this for 1,000 requests, each with eight of the 86 topics. Together they give about 20,000 labelled sentences.</p>
+  <p class="src">The request and the sentences are recorded from the run that produced the training data. The run made 1,000 requests, each with eight of the 86 topics, and they gave about 20,000 labelled sentences.</p>
   <aside class="notes">Select the button and let the sentences arrive. Read two of them aloud, one with a single topic and one with two. Ask the room whether the sentences read like report text. Then give the scale: a thousand requests like this one, about twenty thousand sentences.</aside>
 </section>
 
@@ -44,7 +46,7 @@
   <p class="kicker">Step 2 · The small model learns</p>
   <h2>A simple model gets more reports right as it reads more examples.</h2>
   <div class="body"><div class="fill learn" data-demo="learn"></div></div>
-  <p class="src">This demonstration model runs in the page and counts words only. It stops improving after about 20 examples per topic. The model of the worked example learns all 86 topics from about 20,000 examples.</p>
+  <p class="src">This demonstration model runs in the page and counts words only. It stops improving after about 20 examples per topic. The report-tagging model learns all 86 topics from about 20,000 examples.</p>
   <aside class="notes">This model is trained live in the page, on four topics. Start with one example per topic and show the words linked to each topic. Move to ten, then forty, and watch the squares fill. Then type a sentence from the room and see which topic the model gives it.</aside>
 </section>
 
@@ -62,7 +64,7 @@
       <p class="callout" data-step="2" style="align-self:center">In this session the teacher also writes the examples.</p>
     </div>
   </div>
-  <p class="src">Hinton, Vinyals, and Dean (2015), "Distilling the Knowledge in a Neural Network." The teacher's memory is that of the 8-bit version used in the example.</p>
+  <p class="src">Hinton, Vinyals, and Dean (2015), "Distilling the Knowledge in a Neural Network." The teacher's memory is that of the 8-bit version used for this model.</p>
   <aside class="notes">Name the method. The teacher is about 190 times the size of the student by number of parameters. In the original form of distillation the student copies the teacher's full set of probabilities. In our case the teacher has a second job, because it writes the training sentences as well.</aside>
 </section>
 
@@ -70,7 +72,7 @@
   <p class="kicker">Step 3 · The small model at work</p>
   <h2>The student scores every topic and assigns the topics above a threshold.</h2>
   <div class="body"><div class="fill work" data-demo="work"></div></div>
-  <p class="src">The student assigns a topic when its score is at least 0.03, up to five topics per report. The report and the scores are recorded from the worked example.</p>
+  <p class="src">The student assigns a topic when its score is at least 0.03, up to five topics per report. The report and the scores are recorded.</p>
   <aside class="notes">Here is the student at work on the report we saw earlier. It gives each of the 86 topics a score, and the chart shows the top eight. Four topics pass the threshold, and all four are among the topics recorded for the report. One report proves little, so the next slide gives the result on 300 reports.</aside>
 </section>
 
