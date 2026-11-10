@@ -32,7 +32,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install test dependencies
-        run: pip install pytest ruff -r website/static/cookbook-files/requirements.txt
+        run: pip install pytest ruff ".[data-snapshot-core]" -r website/static/cookbook-files/requirements.txt
       - name: Lint
         run: ruff check website/static/cookbook-files scripts/docs
       - name: Check cookbook structure and writing rules
@@ -48,4 +48,4 @@ jobs:
       - name: Investment view is up to date
         run: python scripts/docs/investment_view.py && git diff --exit-code website/src/content/investment.json
       - name: Test
-        run: pytest tests/test_cookbook_scripts.py tests/test_cookbook_microdata.py tests/test_cookbook_documents.py tests/test_cookbook_datause.py tests/test_cookbook_agents.py tests/test_cookbook_curation.py tests/test_cookbook_evaluation.py tests/test_cookbook_production.py tests/test_cookbook_synthetic.py tests/test_cookbook_small_models.py tests/test_cookbook_ml_ready.py tests/test_cookbook_governance.py tests/test_cookbook_pathway.py tests/test_cookbook_assistants.py -p no:cacheprovider --noconftest -q
+        run: pytest tests/test_cookbook_data_snapshot.py tests/test_cookbook_scripts.py tests/test_cookbook_microdata.py tests/test_cookbook_documents.py tests/test_cookbook_datause.py tests/test_cookbook_agents.py tests/test_cookbook_curation.py tests/test_cookbook_evaluation.py tests/test_cookbook_production.py tests/test_cookbook_synthetic.py tests/test_cookbook_small_models.py tests/test_cookbook_ml_ready.py tests/test_cookbook_governance.py tests/test_cookbook_pathway.py tests/test_cookbook_assistants.py -p no:cacheprovider --noconftest -q

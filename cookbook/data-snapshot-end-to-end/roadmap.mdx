@@ -1,0 +1,136 @@
+---
+id: roadmap
+title: "8. Extraction improvements and future models"
+sidebar_label: "8. Extraction improvements and future models"
+sidebar_position: 9
+description: This chapter proposes benchmarking new detectors, filtering irrelevant candidates, and using layout components to improve snapshot completeness.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 8. Extraction improvements and future models
+
+**Question:** How can we improve snapshot extraction performance?
+
+## Rationale
+
+The preceding chapters demonstrate a working extraction pipeline, but its outputs still need inspection. A layout detector can miss an analytical artifact, include an irrelevant photograph, or find a chart while leaving its title and footnotes outside the data snapshot. These errors call for different improvements.
+
+Three directions are worth investigating: benchmark other off-the-shelf detectors as new models become available, add a second-stage classifier to remove irrelevant candidates, and use other detected layout components to recover missing context. Start by testing whether a stronger detector reduces the remaining problems. Additional processing stages should be retained only when their measured benefits justify the added complexity and runtime.
+
+## Target state
+
+- New detectors can be compared with the current baseline on representative institutional PDFs.
+- A proposed relevance classifier is assessed for precision gains and valid snapshots lost.
+- A proposed context-association step is assessed for improved spatial recall and unrelated content added.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | A curator identifies missed artifacts, irrelevant detections, and missing context in the outputs. |
+| **AI-ready** | Developers compare proposed changes on the same documents and measure both improvements and regressions. |
+| **AI-native** | An organization periodically evaluates new models and retains pipeline adjustments that improve extraction quality within its resource limits. This requires additional development and evaluation. |
+
+:::info[Running example]
+The sample PDF used in the tutorial illustrates two opportunities: the cover photograph motivates relevance filtering, while the chart and table captions outside the extracted images motivate context association. These observations explain the proposed changes; they do not establish measured improvements.
+:::
+
+## Recipes
+
+<Recipe title="8.1 Benchmark new off-the-shelf detectors" level="AI-ready" skills="Developer and data curator" time="Half a day to plan a comparison; integration and benchmark execution are additional">
+
+**Result:** A detector comparison shows whether a new model improves the starting point for extraction.
+
+The models in [chapter 7](./models.mdx) provide the current choices. New layout models may improve detection or identify useful components such as captions and footnotes. While newer models report strong results on standard reference datasets, their performance on data snapshot extraction still needs to be tested.
+
+Integrating a new model requires an adapter that translates its output into the pipeline's common detection format. The official [`SnapshotDetector` interface and `Detection` type](https://github.com/worldbank/ai4data/blob/main/src/ai4data/data_snapshot/detection.py) define that format: `figure` or `table` labels, normalized bounding boxes, and confidence scores. The [existing adapters](https://github.com/worldbank/ai4data/tree/main/src/ai4data/data_snapshot/adapters) show how supported models implement it.
+
+Benchmarking also requires a separate output file compatible with the [Unified Evaluation Schema v1.3](https://huggingface.co/datasets/ai4data/data-snapshot#schema). This format includes document and page identifiers, `Figure` and `Table` labels, and normalized bounding boxes that can be compared with the human annotations. (Note that this is different from the semantic metadata Schema v1.4 used in chapter 3.)
+
+The production package currently provides neither this benchmark export nor an evaluator. Those capabilities would require additional development before the comparison could be run as an automated workflow.
+
+1. Select candidates that test a useful difference, such as broader document coverage, richer layout labels, or improved extraction boundaries. Revisit the shortlist as new models are released, checking dependencies, hardware requirements, and licensing before integration.
+2. Obtain the PDFs and annotations from the [official dataset](https://huggingface.co/datasets/ai4data/data-snapshot). Compare detectors on identical document selections, using consistent rendering and evaluation settings. Keep a fixed evaluation sample separate from the documents used to adjust the pipeline, grouping related document templates together when splitting the data.
+3. Develop the adapter and the benchmark-format export. Check label mapping, coordinate normalization, and document and page identifiers against the dataset annotations. Snapshot PNGs alone do not provide the document, page, and bounding-box data needed for benchmarking.
+4. Test one PDF first, then a small representative sample. Confirm that model loading, exported detections, and comparison with annotations work before attempting a larger evaluation.
+5. Measure detection precision and recall, spatial accuracy, runtime, and resource use using an evaluator developed for this format. Compare results by document corpus and inspect difficult cases such as maps, financing matrices, and composite dashboards. Check whether a candidate finds artifacts that the existing detector misses.
+6. Choose a stronger baseline before adding further stages. Repeat these comparisons when a promising new model becomes available, and retain the current detector when a replacement does not improve the intended workflow.
+
+**Worked example.** A candidate detector can be checked for whether it rejects the sample PDF's cover photograph and includes the chart and table captions. A broader document sample is needed to determine whether either behavior represents a reliable improvement.
+
+**What this does not do.** A new release or a better generic layout score does not establish better data snapshot extraction. This recipe outlines the adapter and evaluation requirements; it supplies no new adapter, benchmark exporter, evaluator, or benchmark results.
+
+</Recipe>
+
+<Recipe title="8.2 Develop a second-stage relevance classifier" level="AI-native" skills="Developer and data curator" time="Half a day to define the experiment; classifier development and evaluation are additional">
+
+**Result:** A proposed filter distinguishes analytical data snapshots from irrelevant detector candidates.
+
+A layout detector's figure and table labels describe visual regions; they do not establish analytical relevance. A second-stage classifier would examine the candidate images before paid metadata extraction and filter out irrelevant content. An existing image classifier or vision-language classifier can provide a first baseline, but visual type alone may not distinguish an analytical table from a table of contents.
+
+1. Define relevant and irrelevant examples using actual detector outputs. Include charts, statistical tables, maps, and composites alongside photographs, logos, tables of contents, and formatting grids.
+2. Keep incomplete analytical snapshots distinct from irrelevant content. A chart fragment can contain valid analytical information even when its boundary fails a benchmark match; it should not automatically become a negative example.
+3. Compare filtered and unfiltered outputs at unchanged boundaries. Start with conservative rejection of clearly irrelevant candidates and leave uncertain cases available for inspection.
+4. Measure detection precision after filtering, valid analytical snapshots rejected, overall recall, added runtime, and metadata request volume. Adjust the classifier on development documents and assess the selected settings on separate evaluation documents.
+
+**Worked example.** The cover photograph is an irrelevant extraction, while the selected chart and demographic table are data snapshots. Their missing captions do not make them irrelevant. These examples illustrate the classification decision without forming a sufficient evaluation set.
+
+**What this does not do.** Filtering cannot recover artifacts the detector missed or restore missing context. Rejecting valid candidates reduces overall recall, so a precision gain must be assessed alongside that loss. This classifier is proposed development and is not available through the current CLI.
+
+</Recipe>
+
+<Recipe title="8.3 Use layout components to improve spatial recall" level="AI-native" skills="Developer and data curator" time="Half a day to define association rules; implementation and evaluation are additional">
+
+**Result:** A proposed context-association step includes useful titles, captions, legends, and notes in the extracted data snapshot.
+
+A detector may identify a chart and its caption as separate layout components. The production adapters currently pass figure and table regions to extraction, which saves their rectangles directly. Using additional components would require retaining their labels and page coordinates, deciding which components belong to the analytical artifact, and combining their bounds before saving the image.
+
+Spatial recall, reported as area recall in the benchmark, measures how much of the reference region is captured. Adding a missing title or source note can improve completeness, but indiscriminate expansion can include unrelated text or merge separate artifacts.
+
+1. Preserve relevant layout components, including headings, captions, footnotes, and adjacent panels, before they are discarded by figure/table filtering. Small context components may be useful even when they would be too small to serve as standalone snapshots.
+2. Use a model's native component associations when available. Otherwise, test conservative rules based on proximity, alignment, page columns, and intervening content. Reading order or proximity alone does not prove that a note belongs to a chart. Allow valid snapshots without captions.
+3. Compare unchanged detector boxes, modest fixed padding, and expansion using associated components. Check shared notes and composite figures carefully so that unrelated regions are not merged.
+4. Measure area recall, area precision, and intersection-over-union (IoU), alongside missed artifacts and incorrect attachments or merges. Inspect whether essential titles, legends, and notes are present. The benchmark's spatial metrics cover matched detections, so report detection recall alongside them.
+
+**Worked example.** On PDF page 4, the chart and table retain their main content but omit their printed captions and sources. A proposed association step would include the relevant caption and source with each artifact while avoiding neighboring text and the other artifact.
+
+**What this does not do.** A detected caption is not automatically linked to a data snapshot, and expanding a box cannot recover an artifact that was never detected. Context association requires development before it can be offered as an extraction option.
+
+</Recipe>
+
+## Implementation options
+
+Test detector replacement, relevance filtering, and context association independently before combining them. A stronger detector may reduce the need for additional stages. If filtering and context association both help, compare the combined pipeline with each individual change; their gains cannot be assumed to add together.
+
+Retain the simplest combination that improves the intended workflow. These proposals require development beyond the commands in this cookbook; the existing examples remain the baseline.
+
+## Resources
+
+- The [production README](https://github.com/worldbank/ai4data/blob/main/src/ai4data/data_snapshot/README.md) describes current interfaces and detector support.
+- The [Hugging Face dataset](https://huggingface.co/datasets/ai4data/data-snapshot) provides the source PDFs, human annotations, and the benchmark data format.
+- The [benchmark paper](https://arxiv.org/html/2606.06242v1) describes the document corpora, detection metrics, spatial accuracy, and representative failure modes.
+
+## Common mistakes
+
+- Treating stronger generic layout results as proof of better analytical snapshot extraction can overlook irrelevant detections and incomplete boundaries.
+- Reporting classifier precision alone hides valid snapshots lost during filtering.
+- Expanding every box can improve area recall while adding unrelated content or merging separate artifacts.
+- Changing the detector, filtering, and context association together makes the source of an improvement difficult to identify.
+
+## Verification
+
+- Check that detector comparisons use consistent documents and evaluation settings and include corpus-level results and representative failures.
+- Check that classifier evaluation measures both precision gains and valid analytical snapshots rejected, including incomplete true snapshots.
+- Check that context association measures completeness alongside unrelated content and incorrect grouping, with detection recall reported alongside matched spatial metrics.
+- Confirm that the chapter describes proposed pipeline improvements without presenting them as implemented options or measured gains.
+
+## Checklist
+
+<Checklist id="data-snapshot-end-to-end-roadmap" items={[
+  "New detectors are compared with the current baseline on representative documents.",
+  "Relevance filtering is assessed for precision gains and recall loss.",
+  "Context association is assessed for completeness and incorrect attachments.",
+  "Only adjustments with demonstrated benefits are proposed for adoption."
+]} />

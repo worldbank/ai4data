@@ -6,8 +6,7 @@ import pymupdf
 import pytest
 from PIL import Image
 
-from ai4data.data_snapshot import Detection, run_extraction, run_pipeline
-from ai4data.data_snapshot import pipeline
+from ai4data.data_snapshot import Detection, pipeline, run_extraction, run_pipeline
 from ai4data.data_snapshot.adapters import create_adapter
 
 
@@ -30,14 +29,17 @@ def test_run_extraction_selects_one_model_and_scopes_output(
         document.save(pdf_path)
     selected_models: list[str] = []
 
-    def fake_create_adapter(model_name: str) -> _FakeDetector:
+    def fake_create_adapter(model_name: str, *, device: str) -> _FakeDetector:
         """Record and return the selected test detector."""
+        assert device == "cuda:0"
         selected_models.append(model_name)
         return _FakeDetector()
 
     monkeypatch.setattr(pipeline, "create_adapter", fake_create_adapter)
 
-    paths = run_extraction(pdf_path, tmp_path / "output", *model_args, dpi=72)
+    paths = run_extraction(
+        pdf_path, tmp_path / "output", *model_args, dpi=72, device="cuda:0"
+    )
 
     expected_model = model_args[0].lower() if model_args else "doclayoutyolo"
     assert selected_models == [expected_model]
@@ -95,7 +97,7 @@ def test_run_pipeline_skips_all_stages_for_existing_outputs(
     monkeypatch.setattr(
         pipeline,
         "create_adapter",
-        lambda model_name: (_ for _ in ()).throw(
+        lambda model_name, **kwargs: (_ for _ in ()).throw(
             AssertionError("Skipped extraction loaded the snapshot detector.")
         ),
     )
@@ -133,7 +135,9 @@ def test_run_extraction_force_cleans_exact_outputs_before_extraction(
     snapshot_path.write_bytes(b"old")
     metadata_path.write_text("{}\n", encoding="utf-8")
     prefix_neighbor.write_bytes(b"keep")
-    monkeypatch.setattr(pipeline, "create_adapter", lambda model_name: _FakeDetector())
+    monkeypatch.setattr(
+        pipeline, "create_adapter", lambda model_name, **kwargs: _FakeDetector()
+    )
 
     paths = run_extraction(
         pdf_path,
@@ -162,7 +166,13 @@ def test_run_pipeline_extracts_metadata_for_new_snapshots(
     snapshot_path = model_dir / "snapshots" / "report_table_000.png"
     metadata_path = model_dir / "metadata" / "report_table_000.json"
     calls: list[tuple[list[Path], Path, str]] = []
-    monkeypatch.setattr(pipeline, "create_adapter", lambda model_name: _FakeDetector())
+
+    def check_device(model_name: str, *, device: str) -> _FakeDetector:
+        """Check combined execution preserves the requested device."""
+        assert device == "cuda:0"
+        return _FakeDetector()
+
+    monkeypatch.setattr(pipeline, "create_adapter", check_device)
 
     def fake_extract_metadata_files(
         snapshot_paths: list[Path],
@@ -182,7 +192,36 @@ def test_run_pipeline_extracts_metadata_for_new_snapshots(
         "tfid",
         dpi=72,
         metadata_provider="openai",
+        device="cuda:0",
     )
 
     assert calls == [([snapshot_path], model_dir / "metadata", "openai")]
     assert paths == [snapshot_path, metadata_path]
+
+
+@pytest.mark.parametrize(
+    ("model_name", "adapter_name"),
+    [
+        ("doclayoutyolo", "DocLayoutYOLOAdapter"),
+        ("yolo11", "YOLO11Adapter"),
+        ("yolo26", "YOLO26Adapter"),
+        ("tfid", "TFIDAdapter"),
+    ],
+)
+def test_create_adapter_forwards_device(
+    model_name: str, adapter_name: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Set the selected device on every adapter without loading weights."""
+    from importlib import import_module
+
+    module = import_module(f"ai4data.data_snapshot.adapters.{model_name}")
+    configs: list[object] = []
+
+    def record_config(config: object) -> _FakeDetector:
+        """Capture the configuration passed to the detector."""
+        configs.append(config)
+        return _FakeDetector()
+
+    monkeypatch.setattr(module, adapter_name, record_config)
+    create_adapter(model_name, device="cuda:0")
+    assert configs[0].device == "cuda:0"

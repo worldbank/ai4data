@@ -94,7 +94,7 @@ chapters. Edit terms here; never edit the generated pages.
 
 **Data dictionary.** The documentation of a data file's variables: names, labels, types, value codes, missing codes, universes, questions.
 
-**Data snapshot.** The image of one table or figure cropped from a page, with its coordinates, class, and source document; the unit of extraction and of citation.
+**Data snapshot.** A bounded visual region of a document page containing structured or semi-structured information for analytical interpretation or operational reuse, such as a statistical table, chart, analytical map, or monitoring dashboard. A crop should retain the context needed to interpret it.
 
 **Data tier.** The class of a text for the purpose of entering it into an assistant: public (published), internal (drafts, embargoed, for the organization only), or confidential (anything at the level of a respondent, a record, or a member of staff, and any identifier).
 
