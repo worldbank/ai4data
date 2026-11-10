@@ -159,6 +159,11 @@ def _snapshot_parser(prog: str, description: str) -> argparse.ArgumentParser:
         help="Output root (default: output).",
     )
     parser.add_argument(
+        "--device",
+        default="cpu",
+        help="Snapshot detector device, such as cpu or cuda:0 (default: cpu).",
+    )
+    parser.add_argument(
         "--dpi",
         type=_positive_int,
         default=300,
@@ -201,6 +206,7 @@ def _run_snapshot_command(
                 dpi=args.dpi,
                 force=args.force,
                 metadata_provider=args.metadata_provider,
+                device=args.device,
             )
         else:
             paths = run_extraction(
@@ -209,6 +215,7 @@ def _run_snapshot_command(
                 args.model,
                 dpi=args.dpi,
                 force=args.force,
+                device=args.device,
             )
     except (FileExistsError, FileNotFoundError, ValueError) as error:
         parser.error(str(error))

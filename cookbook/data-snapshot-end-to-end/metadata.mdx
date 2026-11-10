@@ -1,0 +1,164 @@
+---
+id: metadata
+title: "3. Semantic metadata extraction"
+sidebar_label: "3. Semantic metadata extraction"
+sidebar_position: 4
+description: This chapter generates semantic metadata for two selected data snapshots and validates the raw JSON records against the production schema.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+import Link from '@docusaurus/Link';
+
+# 3. Semantic metadata extraction
+
+**Question:** How is a data snapshot described in structured metadata?
+
+## Rationale
+
+The two data snapshots selected in [chapter 2](./snapshots.mdx) are the inputs to the metadata stage. This stage uses a vision-language model, which processes an image together with text instructions. Its response is validated against the canonical Data Snapshot Metadata Schema v1.4 before a JSON file is saved.
+
+Metadata fields describe analytical meaning: measured variables, their units, grouping dimensions, temporal coverage, visible sources, and related context. They do not hold a reconstructed numerical dataset. Missing and null fields represent unavailable information. Validation only checks for structural integrity and does not establish that the model interpreted the image correctly.
+
+## Target state
+
+- The selected figure and table have corresponding metadata records.
+- The reader can interpret each record without treating it as transcribed data.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | A curator describes visible variables, units, groups, and missing context in notes alongside a data snapshot. |
+| **AI-ready** | The selected images receive schema-constrained model descriptions, and the raw JSON records are validated and interpreted separately from numerical observations. |
+| **AI-native** | An organization integrates model-assisted metadata generation with validation and human review before reuse. Additional integration is needed to monitor semantic quality and manage corrections. |
+
+:::info[Running example]
+Only the chart `figure_001` and table `table_000` selected in chapter 2 are submitted for metadata extraction. Each has a corresponding raw JSON record for inspection.
+:::
+
+## Recipes
+
+<Recipe title="3.1 Generate metadata for selected data snapshots" level="AI-ready" skills="Developer and data curator" time="Ten minutes to select and submit the images; provider waiting time varies">
+
+**Result:** Each selected data snapshot has one validated JSON record.
+
+Using an individual image as input keeps the example run bounded. The following two commands send the reviewed figure and table separately. The explicit output directory places their matching JSON files beside the snapshot directory. The remaining six candidate images are outside this two-image request scope.
+
+Before running the commands, confirm that `OPENROUTER_API_KEY` is set in the environment or the working directory's `.env`, following [Recipe 1.2](./preparation.mdx#recipe-1-2). If using `--metadata-provider=openai` instead, set `OPENAI_API_KEY`. Only the selected provider's key is needed.
+
+:::warning[Token costs]
+These commands send the selected data snapshots to an external model provider and incur token costs. Charges can apply even when the resulting metadata is unsuitable.
+:::
+
+```bash
+python -m ai4data.data_snapshot.extract_metadata \
+  --input=output/cookbook-data-snapshot/doclayoutyolo/snapshots/policy_brief_on_shona_community_from_stateless_to_citizens_figure_001.png \
+  --output-dir=output/cookbook-data-snapshot/doclayoutyolo/metadata \
+  --metadata-provider=openrouter
+```
+
+```bash
+python -m ai4data.data_snapshot.extract_metadata \
+  --input=output/cookbook-data-snapshot/doclayoutyolo/snapshots/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.png \
+  --output-dir=output/cookbook-data-snapshot/doclayoutyolo/metadata \
+  --metadata-provider=openrouter
+```
+
+1. Submit only the two selected data snapshots using the commands above. Passing the whole `snapshots` directory instead would process every discovered image, including the cover photograph.
+2. Open the generated JSON files in `output/cookbook-data-snapshot/doclayoutyolo/metadata/`.
+
+**Worked example.** Metadata extraction was run locally for the selected figure and table. The two resulting JSON records are included in this cookbook and displayed in [Recipe 3.2](#recipe-3-2) for inspection without another paid request.
+
+**What this does not do.** Requests consume provider credits even when a result is unsuitable. No automatic retry or correction is applied. Existing JSON files are skipped without revalidation.
+
+</Recipe>
+
+<Link id="recipe-3-2" />
+
+<Recipe title="3.2 Validate and interpret a metadata record" level="AI-ready" skills="Developer and data curator" time="Twenty minutes for local validation and interpretation">
+
+**Result:** The saved metadata fields and their limitations are understood.
+
+The metadata extraction script already validates each response against the production Pydantic model before saving its JSON file. Repeating validation is optional. Schema validation checks field types and validation rules; reviewing the data snapshot is still necessary to assess whether the metadata is accurate and useful.
+
+1. Open the full [figure JSON](pathname:///cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_figure_001.json) and [table JSON](pathname:///cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.json). Compare them with the actual data snapshots and the [schema reference](/docs/data-snapshots/metadata-schema/).
+
+   The saved responses can be inspected below without another provider request. Both blocks are imported from the downloadable JSON files.
+
+   <details>
+   <summary>Recorded figure metadata</summary>
+
+   ```json file=../../website/static/cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_figure_001.json
+   ```
+
+   </details>
+
+   <details>
+   <summary>Recorded table metadata</summary>
+
+   ```json file=../../website/static/cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.json
+   ```
+
+   </details>
+
+2. Inspect `variables` for measured concepts and units, `dimensions` for population groups or year columns, and `visualization_types` for the represented form.
+3. Distinguish source wording in `source_text` from a controlled representation in `normalized_value`. A normalized interpretation must not be passed off as printed wording.
+
+**Worked example.** The figure record identifies employed and unemployed populations and the two population groups. Its `title` is `Percent of population`, which is visibly the vertical-axis label. The model may have confused this prominent label with a title, particularly because the printed caption is outside the data snapshot. The record can validate while this field remains questionable. The model's geographical coverage is null; the document's Kenya context is not provided as extra evidence.
+
+The table's `title` is `null`, while its metadata identifies variables such as `Median age` and `Mean household size`, a `Year` dimension with 2019 and 2024 categories, and `table` as the visualization type. Its title and source are outside the data snapshot, but that observation does not establish why the model returned a null title. The table illustrates missing title metadata alongside useful descriptions; the figure illustrates a questionable inference from an axis label. Inspecting each data snapshot alongside its JSON distinguishes an unpopulated field from a populated field that misinterprets visible text.
+
+<details>
+<summary>Optional: validate a saved JSON record yourself</summary>
+
+The helper below reads one local JSON file, validates it with the production Pydantic model, and displays only populated fields. It changes no files and makes no network requests.
+
+```python file=../../website/static/cookbook-files/data-snapshot-end-to-end/inspect_metadata.py
+```
+
+Download the [helper](pathname:///cookbook-files/data-snapshot-end-to-end/inspect_metadata.py) and a selected JSON record into the same working directory, then run:
+
+```bash
+python inspect_metadata.py policy_brief_on_shona_community_from_stateless_to_citizens_figure_001.json
+```
+
+A zero exit status and a display of populated fields indicate that the record satisfies the canonical model. The helper also accepts the table JSON.
+
+</details>
+
+**What this does not do.** A structurally valid empty or sparse record may still be unhelpful. The `provenance` field records image-visible sources and credited agents. Source PDF paths, bounding boxes, and extraction history require a separate record.
+
+</Recipe>
+
+The raw JSON records and the selected data snapshots are now ready for [chapter 4](./review.mdx), which examines relevance, missing context, and questionable field interpretations together. The records remain unchanged during that review.
+
+## Implementation options
+
+The top-level Python `extract_metadata(image_path, config_path=...)` returns an `ExtractionResult` with diagnostics, response status, usage when returned, and validated metadata. A custom config path is supported there even though the CLI chooses packaged presets. The schema's version is exported schema metadata and is not required in individual records.
+
+## Resources
+
+- The [production README](https://github.com/worldbank/ai4data/blob/main/src/ai4data/data_snapshot/README.md) documents installation, supported commands, and Python interfaces.
+- The [schema reference](/docs/data-snapshots/metadata-schema/) explains the metadata fields and validation boundaries.
+
+## Common mistakes
+
+- Equating schema validation with factual verification leaves interpretation errors undetected.
+- Submitting incomplete data snapshots that omit titles, footnotes, or legends can lead to incomplete or inaccurate metadata.
+- Assuming an ordinary metadata rerun validates existing JSON files leaves invalid records unchecked.
+
+## Verification
+
+- Match each selected PNG to a JSON file with exactly the same stem in the metadata directory. The recorded exercise has two selected-image responses; the remaining detector candidates intentionally have no metadata.
+- If repeating validation locally, run `inspect_metadata.py` on each downloaded JSON. A zero exit status and a display of populated fields indicate that the record satisfies the canonical model; the script should leave the input file unchanged.
+- Compare populated fields with the visible text and structure of each data snapshot to identify questionable interpretations.
+
+## Checklist
+
+<Checklist id="data-snapshot-end-to-end-metadata" items={[
+  "Each of the two selected data snapshots has a matching raw JSON record.",
+  "Both records passed the pipeline's schema validation.",
+  "The title field has been checked against the visible labels and caption context.",
+  "Schema validity and interpretation of visible content are treated as separate checks."
+]} />

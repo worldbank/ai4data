@@ -1,0 +1,116 @@
+---
+id: preparation
+title: "1. Environment and source documents"
+sidebar_label: "1. Environment and source documents"
+sidebar_position: 2
+description: This chapter prepares the source PDF, Python environment, dependencies, and credentials for the default workflow.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+import Link from '@docusaurus/Link';
+
+# 1. Environment and source documents
+
+**Question:** What must be prepared before extraction?
+
+## Rationale
+
+A data snapshot is a bounded region of a document page containing information that can be interpreted analytically or reused operationally. Statistical tables, charts, analytical maps, and monitoring dashboards are common examples. A complete snapshot needs its title, legend, units, caption, or notes to remain understandable.
+
+The production package renders PDF pages, detects candidate regions, and saves data snapshots. A separate vision-language model describes the image in structured semantic metadata. These stages produce image and metadata files. Extracting data and numerical observations from snapshots is a separate workflow.
+
+## Target state
+
+- The source PDF is available locally.
+- An isolated Python environment contains the detector and metadata dependencies needed for the exercise.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | The organization retains the source PDF with its publication link and identifies the pages containing the artifacts of interest. |
+| **AI-ready** | The source location, environment setup, required extras, and credential handling are documented so that another developer can prepare the same workflow. |
+| **AI-native** | An organizational intake process checks new documents and their processing environment before model-assisted extraction. This requires integration beyond the commands in this guide. |
+
+:::info[Running example]
+Preparation begins with the twelve-page sample PDF used in the tutorial. The publication links identify the source, and PDF page 4 provides the chart and demographic table used throughout the guide. This chapter prepares the environment without submitting either image to a metadata provider.
+:::
+
+## Recipes
+
+<Recipe title="1.1 Prepare the sample PDF used in the tutorial" level="Foundational" skills="Developer and data curator" time="Ten minutes for source inspection">
+
+**Result:** The organization has a local PDF and a source identity that can be checked.
+
+The sample PDF used in the tutorial is *From Stateless to Citizens: The Journey of Shona in Kenya*, an institutional publication with twelve PDF pages. PDF page 4 contains Figure 1 on labor-force status and Table 1 on demographic characteristics. The cookbook provides selected derived examples; it does not bundle the full PDF or grant rights to redistribute source materials.
+
+1. Open the [ReliefWeb report](https://reliefweb.int/report/kenya/policy-brief-stateless-citizens-journey-shona-community-kenya) and obtain the [PDF attachment](https://reliefweb.int/attachments/831aca28-6777-4cb9-9b84-8976c63061fb/Policy%20Brief%20on%20Shona%20community_From%20Stateless%20to%20Citizens.pdf).
+2. Save it in a local `data/` directory as `policy_brief_on_shona_community_from_stateless_to_citizens.pdf`. The commands below run from the repository root and assume this name. A local filename can differ from its publisher's download name.
+3. Confirm that the local PDF has twelve pages and contains the selected chart and table on PDF page 4.
+4. Open PDF page 4 and identify both target artifacts before interpreting detector output.
+
+**Worked example.** The recorded extraction used a pre-existing local copy of this twelve-page PDF. The source links above identify the publication, and both selected artifacts appear on PDF page 4. Readers obtain their own copy from the publisher.
+
+**What this does not do.** A source URL does not establish redistribution permission or guarantee that a publisher keeps the attachment unchanged.
+
+</Recipe>
+
+<Link id="recipe-1-2" />
+
+<Recipe title="1.2 Install the selected stages" level="AI-ready" skills="Developer and data curator" time="Thirty minutes for setup; dependency installation time varies">
+
+**Result:** The Python environment can import the workflow and expose its command help.
+
+Python 3.11 or later is required. Activate an isolated Python environment before installation. From a checkout of the repository, the following installation includes DocLayout-YOLO and the metadata SDK. A base `ai4data` installation does not supply all optional dependencies. Reinstall a normal source installation after changing Python or configuration files.
+
+```bash
+python -m pip install ".[data-snapshot,data-snapshot-metadata]"
+```
+
+1. Run `python -m ai4data.data_snapshot.extract_data_snapshot --help` and inspect `--model`, `--device`, `--dpi`, and `--output-dir`.
+2. For metadata requests, configure the selected provider's credentials:
+
+   - For the default OpenRouter provider, set `OPENROUTER_API_KEY` in the environment or the working directory's `.env`.
+   - To use OpenAI instead, select it with `--metadata-provider=openai` and set `OPENAI_API_KEY`.
+   - Only the selected provider's key is needed. Exported variables take precedence over `.env`.
+
+3. Keep credentials outside downloadable examples and version control. Metadata requests send the data snapshot to the selected external provider and consume credits; local snapshot detection makes no metadata requests.
+
+**Worked example.** The recorded run used DocLayout-YOLO 0.0.4 with cached default DocStructBench weights and CPU inference. Its rendering resolution was 300 dots per inch (DPI), which specifies the density of pixels used to represent the PDF page. The source-installation path is used because the extras are not yet part of the official release.
+
+**What this does not do.** Installation and help checks do not validate detection quality or external model availability. Missing model weights are downloaded when needed; cached weights are reused.
+
+</Recipe>
+
+## Implementation options
+
+- For snapshot-only extraction, omit `data-snapshot-metadata`.
+- For metadata extraction from existing images, install `data-snapshot-metadata` without a detector extra.
+- The `data-snapshot-core` extra is sufficient for schema validation and PDF/image utilities without a detector or provider SDK.
+
+## Resources
+
+- The [production README](https://github.com/worldbank/ai4data/blob/main/src/ai4data/data_snapshot/README.md) documents installation, supported commands, and Python interfaces.
+- The [schema reference](/docs/data-snapshots/metadata-schema/) explains the metadata fields and validation boundaries.
+- The [benchmark paper](https://arxiv.org/html/2606.06242v1) defines analytical snapshots and reports detection and spatial evaluation.
+
+## Common mistakes
+
+- Installing all detector stacks together can introduce avoidable dependency conflicts. Consult the [production README](https://github.com/worldbank/ai4data/blob/main/src/ai4data/data_snapshot/README.md) for detailed installation guidance.
+- Installing dependencies in a different Python environment from the one used for extraction can cause missing-module errors.
+- Sending every page to a paid provider bypasses the data snapshot-review step and increases request volume.
+
+## Verification
+
+- Open the local PDF and confirm that it has twelve pages, with Figure 1 and Table 1 on PDF page 4. The publication link and local filename should identify the same document.
+- Run the snapshot-only command with `--help` in the selected environment. Successful preparation makes the options available without starting extraction.
+- Check that the selected provider key is available through the environment or a local `.env` file. No credential should appear in a downloadable file or repository change.
+
+## Checklist
+
+<Checklist id="data-snapshot-end-to-end-preparation" items={[
+  "The source publication and local PDF are identified.",
+  "The intended environment and optional dependencies are ready.",
+  "The selected provider credential is kept outside published files."
+]} />

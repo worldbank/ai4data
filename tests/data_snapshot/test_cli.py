@@ -62,8 +62,10 @@ def test_main_runs_pipeline_with_defaults_and_force(
         dpi: int,
         force: bool,
         metadata_provider: str,
+        device: str,
     ) -> list[Path]:
         """Record the CLI values without running a model."""
+        assert device == "cpu"
         calls.append(
             (input_path, output_dir, model_name, dpi, force, metadata_provider)
         )
@@ -210,3 +212,19 @@ def test_main_rejects_nonpositive_dpi() -> None:
         cli.main(["--model=yolo11", "--input=data/example.pdf", "--dpi=0"])
 
     assert error.value.code == 2
+
+
+@pytest.mark.parametrize("command", [cli.main, cli.snapshot_main])
+def test_pdf_commands_forward_device(
+    command: Callable[[list[str]], int], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Forward an explicitly selected device through either PDF command."""
+
+    def record_device(*args: object, **kwargs: object) -> list[Path]:
+        """Check the device without requiring GPU hardware."""
+        assert kwargs["device"] == "cuda:0"
+        return []
+
+    monkeypatch.setattr(cli, "run_pipeline", record_device)
+    monkeypatch.setattr(cli, "run_extraction", record_device)
+    assert command(["--input=example.pdf", "--device=cuda:0"]) == 0

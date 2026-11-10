@@ -1,0 +1,142 @@
+{
+  "title": "Percent of population",
+  "document_label": null,
+  "subject_domains": [
+    "Employment",
+    "Labor market"
+  ],
+  "subject_summary": "Percentage of the population that is employed or unemployed across successive periods for Urban Nationals and Shona.",
+  "panel_titles": null,
+  "variables": [
+    {
+      "name": "Employed",
+      "unit": {
+        "source_text": "%",
+        "code": null,
+        "multiplier_exponent": null
+      },
+      "currency": null,
+      "analytical_roles": null,
+      "axis_roles": [
+        "y_axis"
+      ],
+      "multi_axis_assignments": null,
+      "statistical_forms": [
+        {
+          "source_text": "Percent of population",
+          "normalized_value": "percentage"
+        }
+      ]
+    },
+    {
+      "name": "Unemployed",
+      "unit": {
+        "source_text": "%",
+        "code": null,
+        "multiplier_exponent": null
+      },
+      "currency": null,
+      "analytical_roles": null,
+      "axis_roles": [
+        "y_axis"
+      ],
+      "multi_axis_assignments": null,
+      "statistical_forms": [
+        {
+          "source_text": "Percent of population",
+          "normalized_value": "percentage"
+        }
+      ]
+    }
+  ],
+  "dimensions": [
+    {
+      "name": "Time period",
+      "categories": [
+        {
+          "source_text": "May-Jun '20",
+          "code": null,
+          "scheme": null,
+          "uri": null
+        },
+        {
+          "source_text": "Jul-Sep '20",
+          "code": null,
+          "scheme": null,
+          "uri": null
+        },
+        {
+          "source_text": "Oct-Nov '20",
+          "code": null,
+          "scheme": null,
+          "uri": null
+        },
+        {
+          "source_text": "Jan-Mar '21",
+          "code": null,
+          "scheme": null,
+          "uri": null
+        },
+        {
+          "source_text": "Apr-Jun '21",
+          "code": null,
+          "scheme": null,
+          "uri": null
+        }
+      ],
+      "category_groups": null,
+      "presentation_roles": null
+    },
+    {
+      "name": "Population group",
+      "categories": [
+        {
+          "source_text": "Urban Nationals",
+          "code": null,
+          "scheme": null,
+          "uri": null
+        },
+        {
+          "source_text": "Shona",
+          "code": null,
+          "scheme": null,
+          "uri": null
+        }
+      ],
+      "category_groups": null,
+      "presentation_roles": null
+    }
+  ],
+  "population_group": null,
+  "visualization_types": [
+    {
+      "source_text": null,
+      "normalized_value": "line_chart"
+    }
+  ],
+  "temporal_coverage": {
+    "period": {
+      "source_text": null,
+      "start": "2020-05",
+      "end": "2021-06",
+      "relation": "interval",
+      "precision": "month"
+    },
+    "reporting_interval": null
+  },
+  "geographic_coverage": null,
+  "comparisons": null,
+  "provenance": null,
+  "languages": [
+    {
+      "source_text": null,
+      "tag": "en"
+    }
+  ],
+  "interpretive_notes": null,
+  "project": null,
+  "intervention_types": null,
+  "financing": null,
+  "analysis_methods": null,
+  "data_collection_methods": null
+}

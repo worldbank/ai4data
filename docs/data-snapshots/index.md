@@ -72,6 +72,10 @@ is a verified dataset of the numerical observations shown in the image.
 
 ## Getting Started
 
+The [Data Snapshot end-to-end cookbook](/cookbook/data-snapshot-end-to-end/)
+provides a practical walkthrough with an actual PDF file, model selection,
+actual crops and metadata, review, and recovery.
+
 ### Prerequisites and installation
 
 The workflow requires Python 3.11 or later, a checkout of the
@@ -122,7 +126,8 @@ python -m ai4data.data_snapshot.extract_metadata \
   --input=output/doclayoutyolo/snapshots
 ```
 
-Add `--help` to any command for its options.
+Both PDF commands accept `--device=cpu` (default) or an available inference
+device such as `--device=cuda:0`. Add `--help` to any command for its options.
 
 ### Example outputs
 

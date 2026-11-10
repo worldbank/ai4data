@@ -74,6 +74,11 @@ The complete controlled vocabularies for visualization types, statistical forms,
 
 ## Example and validation
 
+The [cookbook metadata chapter](/cookbook/data-snapshot-end-to-end/metadata)
+uses actual model responses from a figure and a table. Its
+[review chapter](/cookbook/data-snapshot-end-to-end/review) explains why a
+schema-valid response can still need human correction.
+
 ### Example metadata record
 
 The following example illustrates how Data Snapshot Metadata Schema v1.4 represents the analytical content of a real data snapshot.

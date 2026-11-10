@@ -157,7 +157,10 @@ python -m ai4data.data_snapshot.extract_data_snapshot --input=data/example.pdf
 
 Both PDF commands accept a PDF or a directory searched recursively for PDFs.
 Use `--model=yolo11`, `--model=yolo26`, or `--model=tfid` to select another
-installed extractor. Exactly one extractor runs per invocation.
+installed extractor. Exactly one extractor runs per invocation. Both PDF commands accept
+`--device=cpu` (default) or an available device such as `--device=cuda:0`.
+The selected runtime and hardware must support that device; no automatic
+GPU fallback is provided. The Python orchestration APIs also accept `device`.
 
 ### Metadata-only
 
@@ -217,6 +220,12 @@ snapshots = run_extraction("data/example.pdf", "output")
 # Use fresh input/output or the metadata-only command after snapshot-only runs:
 paths = run_pipeline("data/another.pdf", "output", metadata_provider="openai")
 ```
+
+## Cookbook
+
+The [end-to-end cookbook](https://worldbank.github.io/ai4data/cookbook/data-snapshot-end-to-end/)
+uses the Shona policy brief to explain model selection, actual crops, semantic
+metadata, output review, and recovery.
 
 ## Development
 
