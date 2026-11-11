@@ -101,7 +101,7 @@ DEMOS.cases = {
         <ul class="reasons">${c.reasons.map((r) => `<li><span class="chip warn">${REASONS[r][0]}</span>${REASONS[r][1]}</li>`).join('')}</ul>
         <span class="lbl mt2">Where the model runs</span>
         <p class="txt-s mt">${esc(c.runs)}</p>
-        ${c.tested ? '<p class="txt-s mt">A small model was also built for this task. It scored 0.15 below the best large model on job titles from a survey.</p>' : ''}
+        ${c.tested ? '<p class="txt-s mt">A small model was also built for this task. It scored 0.15 below the best large model on job titles from a job board.</p>' : ''}
       </div>
       <div>
         <span class="lbl">One practice case · ${esc(c.inputKind)}</span>
