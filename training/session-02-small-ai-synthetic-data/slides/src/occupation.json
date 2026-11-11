@@ -1,0 +1,320 @@
+{
+ "classification": "ISCO-08",
+ "groups": 436,
+ "testTitles": 1000,
+ "groupsInTest": 180,
+ "cases": 15865,
+ "topn": [
+  {
+   "n": 1,
+   "share": 0.351
+  },
+  {
+   "n": 3,
+   "share": 0.506
+  },
+  {
+   "n": 5,
+   "share": 0.565
+  },
+  {
+   "n": 10,
+   "share": 0.636
+  }
+ ],
+ "majorGroup": 0.584,
+ "arms": [
+  {
+   "arm": "first",
+   "score": 0.312,
+   "examples": 10869
+  },
+  {
+   "arm": "control",
+   "score": 0.339,
+   "examples": 17230
+  },
+  {
+   "arm": "targeted",
+   "score": 0.351,
+   "examples": 15865
+  }
+ ],
+ "difference": 0.012,
+ "interval": [
+  -0.006,
+  0.029
+ ],
+ "large": [
+  {
+   "model": "Gemini 3.8 Flash",
+   "score": 0.497
+  },
+  {
+   "model": "Claude Sonnet 5.5",
+   "score": 0.433
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "score": 0.406
+  }
+ ],
+ "responses": [
+  {
+   "text": "teacher at the primary school",
+   "expected": "2341",
+   "expectedName": "Primary school teachers",
+   "suggestions": [
+    {
+     "code": "2341",
+     "name": "Primary school teachers",
+     "score": 0.91
+    },
+    {
+     "code": "2342",
+     "name": "Early childhood educators",
+     "score": 0.04
+    },
+    {
+     "code": "1345",
+     "name": "Education managers",
+     "score": 0.03
+    },
+    {
+     "code": "2330",
+     "name": "Secondary education teachers",
+     "score": 0.02
+    },
+    {
+     "code": "2352",
+     "name": "Special needs teachers",
+     "score": 0.0
+    }
+   ]
+  },
+  {
+   "text": "drives a motorcycle taxi",
+   "expected": "8321",
+   "expectedName": "Motorcycle drivers",
+   "suggestions": [
+    {
+     "code": "8322",
+     "name": "Car, taxi and van drivers",
+     "score": 0.49
+    },
+    {
+     "code": "8321",
+     "name": "Motorcycle drivers",
+     "score": 0.31
+    },
+    {
+     "code": "9332",
+     "name": "Drivers of animal-drawn vehicles and machinery",
+     "score": 0.08
+    },
+    {
+     "code": "8331",
+     "name": "Bus and tram drivers",
+     "score": 0.06
+    },
+    {
+     "code": "9331",
+     "name": "Hand and pedal vehicle drivers",
+     "score": 0.03
+    }
+   ]
+  },
+  {
+   "text": "sell tea and mandazi at the stage",
+   "expected": "5212",
+   "expectedName": "Street food salespersons",
+   "suggestions": [
+    {
+     "code": "5212",
+     "name": "Street food salespersons",
+     "score": 0.4
+    },
+    {
+     "code": "9520",
+     "name": "Street vendors (excluding food)",
+     "score": 0.19
+    },
+    {
+     "code": "5246",
+     "name": "Food service counter attendants",
+     "score": 0.11
+    },
+    {
+     "code": "9411",
+     "name": "Fast food preparers",
+     "score": 0.06
+    },
+    {
+     "code": "9412",
+     "name": "Kitchen helpers",
+     "score": 0.04
+    }
+   ]
+  },
+  {
+   "text": "helps my mother sell vegetables at the market",
+   "expected": "5211",
+   "expectedName": "Stall and market salespersons",
+   "suggestions": [
+    {
+     "code": "5212",
+     "name": "Street food salespersons",
+     "score": 0.46
+    },
+    {
+     "code": "9520",
+     "name": "Street vendors (excluding food)",
+     "score": 0.15
+    },
+    {
+     "code": "5211",
+     "name": "Stall and market salespersons",
+     "score": 0.12
+    },
+    {
+     "code": "9334",
+     "name": "Shelf fillers",
+     "score": 0.07
+    },
+    {
+     "code": "5246",
+     "name": "Food service counter attendants",
+     "score": 0.04
+    }
+   ]
+  },
+  {
+   "text": "grows maize and beans to feed the family",
+   "expected": "6310",
+   "expectedName": "Subsistence crop farmers",
+   "suggestions": [
+    {
+     "code": "6310",
+     "name": "Subsistence crop farmers",
+     "score": 0.24
+    },
+    {
+     "code": "6111",
+     "name": "Field crop and vegetable growers",
+     "score": 0.21
+    },
+    {
+     "code": "6114",
+     "name": "Mixed crop growers",
+     "score": 0.2
+    },
+    {
+     "code": "9211",
+     "name": "Crop farm labourers",
+     "score": 0.14
+    },
+    {
+     "code": "6221",
+     "name": "Aquaculture workers",
+     "score": 0.06
+    }
+   ]
+  },
+  {
+   "text": "sells roasted maize by the roadside",
+   "expected": "5212",
+   "expectedName": "Street food salespersons",
+   "suggestions": [
+    {
+     "code": "9211",
+     "name": "Crop farm labourers",
+     "score": 0.83
+    },
+    {
+     "code": "6111",
+     "name": "Field crop and vegetable growers",
+     "score": 0.05
+    },
+    {
+     "code": "7514",
+     "name": "Fruit, vegetable and related preservers",
+     "score": 0.02
+    },
+    {
+     "code": "9216",
+     "name": "Fishery and aquaculture labourers",
+     "score": 0.02
+    },
+    {
+     "code": "6114",
+     "name": "Mixed crop growers",
+     "score": 0.01
+    }
+   ]
+  },
+  {
+   "text": "boda boda rider",
+   "expected": "8321",
+   "expectedName": "Motorcycle drivers",
+   "suggestions": [
+    {
+     "code": "2659",
+     "name": "Creative and performing artists not elsewhere classified",
+     "score": 0.27
+    },
+    {
+     "code": "6224",
+     "name": "Hunters and trappers",
+     "score": 0.08
+    },
+    {
+     "code": "6223",
+     "name": "Deep-sea fishery workers",
+     "score": 0.08
+    },
+    {
+     "code": "8350",
+     "name": "Ships' deck crews and related workers",
+     "score": 0.07
+    },
+    {
+     "code": "3421",
+     "name": "Athletes and sports players",
+     "score": 0.06
+    }
+   ]
+  },
+  {
+   "text": "business",
+   "expected": null,
+   "expectedName": null,
+   "suggestions": [
+    {
+     "code": "5152",
+     "name": "Domestic housekeepers",
+     "score": 0.34
+    },
+    {
+     "code": "4120",
+     "name": "Secretaries (general)",
+     "score": 0.16
+    },
+    {
+     "code": "4226",
+     "name": "Receptionists (general)",
+     "score": 0.08
+    },
+    {
+     "code": "5151",
+     "name": "Cleaning and housekeeping supervisors in offices, hotels and other establishments",
+     "score": 0.04
+    },
+    {
+     "code": "4419",
+     "name": "Clerical support workers not elsewhere classified",
+     "score": 0.03
+    }
+   ]
+  }
+ ]
+}

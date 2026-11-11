@@ -2,7 +2,7 @@
 
 - `deck.html`: the deck, 40 slides in one HTML file. It opens in a browser from a local copy of the repository and needs no server. GitHub shows the file as source text.
 - `outline.md`: the headline and the speaker notes of every slide. This is the file to review and comment on.
-- `build_deck.py`: builds both files from the sources in `src/` and from the recorded data in `../assets/overview.json`.
+- `build_deck.py`: builds both files from the sources in `src/` and from the recorded data in `../assets/overview.json` and `src/occupation.json`.
 - `src/`: the slide sources, the styles, and the script of the demonstrations.
 - `fit_slides.py` and `check_deck.py`: the scripts that size the slides and test the deck in a browser.
 
@@ -31,10 +31,10 @@ The fonts (Inter and JetBrains Mono) load from Google Fonts. Without an internet
 | Slides | Part | Content |
 |---|---|---|
 | 1 | | Title |
-| 2 to 5 | Tasks | A message to sort, six tasks from development work, three ways to get a task done, the plan of the session |
+| 2 to 5 | Tasks | A survey response to code, six tasks from development work, three ways to get a task done, the plan of the session |
 | 6 to 9 | Small model | Large language models, small AI, the memory a model needs, the cost of building a small model |
 | 10 to 14 | Synthetic data | Labelled examples, why they are missing, rare cases, synthetic data, the office comparison |
-| 15 to 24 | Nine steps | The process, then one slide for each step with a demonstration on the complaints example |
+| 15 to 24 | Nine steps | The process, then one slide for each step with a demonstration on occupation coding |
 | 25 to 35 | Report tagging | The task, the steps used, the request and the sentences, a model trained in the page, distillation, results, speed, limits |
 | 36 to 40 | Small or large | Criteria, a six-task exercise for the room, checks before relying on a small model, summary, sources |
 
@@ -48,8 +48,9 @@ The fonts (Inter and JetBrains Mono) load from Google Fonts. Without an internet
 | `src/style.css` | Styles for the stage, the reading layout, and the light and dark themes |
 | `src/shell.html` | The frame of the page: the stage, the bar under it, the notes panel, and the contents |
 | `src/fit.css` | The text scale of each slide, written by `fit_slides.py` |
+| `src/occupation.json` | The recorded results of the occupation-coding model and its suggestions for the eight survey responses of slide 2 |
 
-The scores, the request, the sentences, and the reports in the report-tagging part come from `../assets/overview.json`, the recorded data behind the figures of the overview page. The complaint messages on the slides of the nine steps were written for the session as illustrations, and the slides say so.
+The scores, the request, the sentences, and the reports in the report-tagging part come from `../assets/overview.json`, the recorded data behind the figures of the overview page. The scores of the occupation-coding model in `src/occupation.json` were measured on 1,000 job titles from a job board, as means over three training runs. The survey responses on slide 2 and on the slides of the nine steps, and the codes shown for them, were written for the session as illustrations, and the slides say so. The five suggestions for each response on slide 2 are the recorded output of the occupation-coding model. Group names follow ISCO-08 (International Labour Organization), and the group descriptions on the slides are shortened paraphrases.
 
 ## Regenerating
 

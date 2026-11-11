@@ -37,7 +37,7 @@ USED = {'yes': 'Used', 'partly': 'Partly used', 'no': 'Not used'}
 
 # The captions of the model sizes on slide 8. They replace the captions written for the overview page.
 MODELS = {
-    'Small model': dict(role='The report-tagging model of this session is this size.'),
+    'Small model': dict(role='Both small models of this session are this size.'),
     'Large model': dict(memory='about 31 GB of memory in its 8-bit version (about 56 GB at full 16-bit precision)',
                         role='Qwen3.8-27B is this size.'),
 }
@@ -48,17 +48,19 @@ STEPS = [
          office='The manager writes down the decisions the new staff member will make.',
          model='The team writes the list of possible answers, with a definition of each.',
          used=('yes', 'A list of 86 topics.'), demo='task',
-         notes='Start with the list of answers. Select two or three issues and read the definitions aloud. Ask the '
-               'room who would write this list in their organization. The same definitions go to the large model, to '
-               'the people who check the cases, and to the test.'),
+         notes='Start with the list of answers. Select two or three groups and read the descriptions aloud. The full '
+               'list has 436 groups, and the first digit of a code gives its major group. A seller of cooked food '
+               '(5212) and a street vendor of other goods (9520) sit in different major groups. Ask the room who '
+               'keeps this list in their organization. The same descriptions go to the large model, to the people '
+               'who check the cases, and to the test.'),
     dict(short='Show a few real cases',
-         h='A few real cases show the large model how real messages are written.',
+         h='A few real cases show the large model how people describe their work.',
          office='The colleague who writes the practice cases first reads a few real files.',
          model='A few dozen real examples go into the request to the large model. Personal details are removed first.',
          used=('no', 'The requests named the topics only.'), demo='seeds',
-         notes='Switch between the two requests. Without samples the large model writes polite letters, and nobody '
-               'sends a letter by text message. With three real messages in the request, the written cases take on '
-               'their style.'),
+         notes='Switch between the two requests. Without samples the large model writes official job titles. With '
+               'three real responses in the request, the written cases take on their style: lower case, a place, a '
+               'product.'),
     dict(short='Vary the cases',
          h='Each request to the large model asks for a different kind of case.',
          office='The colleague writes cases of every kind: short and long, calm and angry, easy and hard.',
@@ -93,17 +95,22 @@ STEPS = [
          used=('yes', '300 real report abstracts with recorded topics.'), demo='test',
          notes='Turn the switch on and ask the room what is wrong with the picture. A test on practice cases '
                'measures how well the small model copies the writing habits of the large model. The real cases are '
-               'set aside before anything is written, and no model trains on them.'),
+               'set aside before anything is written, and no model trains on them. The chart shows the '
+               'occupation-coding model on 1,000 real job titles: the first code is right for 35 percent, and the '
+               'right code is among five suggestions for 56.5 percent. The titles come from a job board, so a test on '
+               'coded survey responses is still needed before use on a survey.'),
     dict(short='Practise the weak spots',
-         h='Extra cases help most on the kinds of cases the model gets wrong.',
+         h='Extra cases are aimed at the kinds of cases the model gets wrong.',
          office='The colleague writes more practice cases of the kinds the new staff member gets wrong.',
          model='A program finds where the model makes most mistakes and asks the large model for more cases of '
                'those kinds. The model is trained again.',
          used=('yes', 'Up to five rounds, compared with rounds of the same size spread evenly over all topics.'),
          demo='rounds',
          notes='Read the loop first. Then compare the three bars: the first set, extra cases spread evenly, and '
-               'extra cases aimed at the mistakes. The targeted rounds reach the orange band, which is the level of '
-               'the large models. The second repeat gives the same picture.'),
+               'extra cases aimed at the mistakes. For occupation codes, both kinds of extra cases gave a higher '
+               'score than the first set, the difference between them is within the margin of error, and the small '
+               'model stays below the orange band. For report topics, the targeted rounds were better in both '
+               'repeats and reached the band, which is the level of the large models.'),
     dict(short='Ask people which is better',
          h='Experienced staff choose the better of two cases.',
          office='Experienced staff compare two practice cases, or two answers, and say which one is better.',
@@ -118,9 +125,9 @@ STEPS = [
          model="People review a sample of the model's answers at regular intervals. When the answers, the language, "
                'or the situation change, new cases are written and the model is trained again.',
          used=('no', 'The work ended at the test on real reports.'), demo='watch',
-         notes='The example from the report is about images. The same thing happens with text when a new issue or a '
-               'new language appears. Ask the room who would review the sample in their organization after the '
-               'project ends.'),
+         notes='The example from the report is about images. The same thing happens with text when new kinds of '
+               'work appear or a survey moves to another language. Ask the room who would review the sample in '
+               'their organization after the project ends.'),
 ]
 
 GROUPS = [('Write the cases', range(0, 4), None), ('Train and test', range(4, 6), 1),
@@ -142,9 +149,9 @@ def overview_slide():
   <h2>The process from a task to a small model has nine steps.</h2>
   <div class="body center">
     <div class="groups">{''.join(groups)}</div>
-    <p class="txt" data-step="3">We follow one example through the nine steps: complaints sent by text message to a project.</p>
+    <p class="txt" data-step="3">We follow one example through the nine steps: coding the occupations written in a household survey.</p>
   </div>
-  <aside class="notes">Here is the whole process before we take the steps one at a time. The first four steps produce the cases, the next two build and test the model, and the last three keep improving it. Each number opens its step. We use the complaints example for all nine steps because it is easy to picture.</aside>
+  <aside class="notes">Here is the whole process before we take the steps one at a time. The first four steps produce the cases, the next two build and test the model, and the last three keep improving it. Each number opens its step. We use occupation coding for all nine steps because the room saw it on the second slide.</aside>
 </section>'''
 
 
@@ -213,6 +220,7 @@ def data():
         'doc': {k: di['documents'][0][k] for k in ('title', 'year', 'text', 'reference', 'student')},
         'dist': {'threshold': di['threshold'], 'top': di['top'], 'scores': di['scores'], 'speed': di['speed']},
         'workflow': d['workflow'],
+        'occ': json.loads((SRC / 'occupation.json').read_text()),
         'learn': {'topics': le['topics'], 'stop': le['stop'], 'sentences': le['sentences'],
                   'tests': [{'title': t['title'], 'topic': t['topic'], 'w': tok(t['text'])} for t in le['tests']]},
     }

@@ -23,12 +23,52 @@ const TERMS = {
   smallai: ['Small AI', 'The term of the World Development Report 2026 for AI that is small in size or narrow in scope and is built to run where power, internet connectivity, and digital devices are scarce.'],
   gpu: ['GPU', 'A graphics processor, now also used to run AI models. Large models run on GPUs or similar chips, which cost more and use more power than an ordinary processor.'],
   training: ['Training', 'The step in which a model adjusts its parameters until its answers match a set of labelled examples.'],
-  labelled: ['Labelled example', 'An example together with the right answer. In this session, a sentence together with its topics.'],
+  labelled: ['Labelled example', 'An example together with the right answer. For occupation coding, a survey response together with its code.'],
   synthetic: ['Synthetic data', 'Examples written by a computer program. In this session a large language model writes them.'],
 };
 
 /* ------------------------------------------------------------------ demos */
 const DEMOS = {};
+
+// A survey response and the five codes suggested for it (slide 2).
+const ORDINAL = ['first', 'second', 'third', 'fourth', 'fifth'];
+DEMOS.suggest = {
+  state: () => ({i: 0, shown: false}),
+  on(st, a, v) {
+    if (a === 'show') { st.shown = true; return; }
+    st.i = Math.max(0, Math.min(DATA.occ.responses.length - 1, st.i + Number(v)));
+    st.shown = false;
+  },
+  render(st) {
+    const all = DATA.occ.responses, r = all[st.i];
+    const rank = r.suggestions.findIndex((x) => x.code === r.expected);
+    const verdict = !r.expected ? 'The response does not say what the person does. The model still returns five codes, and none of them can be checked.'
+      : rank < 0 ? 'The coder\'s code is missing from the five suggestions.'
+      : `The coder's code is the ${ORDINAL[rank]} suggestion.`;
+    const rows = r.suggestions.map((x) => `<div class="sgrow${x.code === r.expected ? ' hit' : ''}"><b class="code">${x.code}</b><span>${esc(x.name)}${x.code === r.expected ? ' <em>✓ coder\'s code</em>' : ''}</span>${bar(x.score, 'var(--small)')}<span class="v">${x.score.toFixed(2)}</span></div>`).join('');
+    return `<div class="card sgleft">
+      <span class="lbl">Household survey · question on the main job</span>
+      <p class="sgq">What kind of work do you do in your main job?</p>
+      <span class="lbl mt">Response</span>
+      <p class="msg real">${esc(r.text)}</p>
+      <div class="sgcoder"${st.shown ? '' : ' style="visibility:hidden"'}>
+        <span class="lbl">Code given by a coder</span>
+        <p>${r.expected ? `<b class="code">${r.expected}</b> ${esc(r.expectedName)}` : 'No code. The coder asks for more detail.'}</p>
+      </div>
+    </div>
+    <div class="card small-k sgright" aria-live="polite">
+      <span class="lbl">Five codes suggested by the small model, with its score for each</span>
+      ${st.shown ? `<div class="sg">${rows}</div><p class="def">${verdict}</p>`
+        : `<div class="sgempty">Which of the ${DATA.occ.groups} groups fits this response?</div>`}
+    </div>
+    <div class="row">
+      <button type="button" class="btn" data-a="show" data-v="1"${st.shown ? ' disabled' : ''}>Suggest five codes</button>
+      <button type="button" class="link" data-a="go" data-v="-1"${st.i === 0 ? ' disabled' : ''}>Previous response</button>
+      <button type="button" class="link" data-a="go" data-v="1"${st.i === all.length - 1 ? ' disabled' : ''}>Next response</button>
+      <span class="txt-s" style="margin-left:auto">Response ${st.i + 1} of ${all.length}</span>
+    </div>`;
+  },
+};
 
 // Tasks for a small model (slide 3).
 const REASONS = {
@@ -41,6 +81,14 @@ const REASONS = {
 };
 const ARROW = (d) => `<path d="${d}" class="iA" marker-end="url(#ah)"/>`;
 const CASES = [
+  {key: 'survey', name: 'Coding survey responses', who: 'A national statistical office',
+    task: 'Suggests codes of the international classification of occupations for each occupation written in a household survey. A coder chooses among them.',
+    reasons: ['private', 'few', 'wording'],
+    input: 'sells roasted maize by the roadside', inputKind: 'Survey response',
+    answer: [['Occupation group', 'Street food salespersons'], ['Code (ISCO-08)', '5212']],
+    runs: 'On the laptops of the office\'s survey team, without an internet connection in the field.',
+    tested: true,
+    icon: `<rect x="10" y="8" width="38" height="40" rx="3" class="iP"/><path d="M16 18 H20 M24 18 H42 M16 28 H20 M24 28 H38 M16 38 H20 M24 38 H40" class="iL"/>${ARROW('M54 28 H66')}<rect x="70" y="20" width="24" height="16" rx="3" class="iT"/>`},
   {key: 'jobs', name: 'Job matching', who: 'A public employment office',
     task: 'Reads how a job seeker describes their work and suggests the occupations and vacancies that match.',
     reasons: ['private', 'wording', 'few'],
@@ -76,18 +124,10 @@ const CASES = [
     answer: [['Flag', 'More children under 5 than household members'], ['Flag', 'Monthly income missing']],
     runs: 'On the agency\'s own server, next to the register of applicants.',
     icon: `<rect x="12" y="6" width="34" height="44" rx="3" class="iP"/><path d="M18 16 H40 M18 24 H40 M18 32 H32" class="iL"/>${ARROW('M54 28 H66')}<path d="M80 12 L92 40 H68 Z" class="iT"/><path d="M80 22 V31 M80 35 V36" class="iL"/>`},
-  {key: 'survey', name: 'Coding survey answers', who: 'A national statistical office',
-    task: 'Gives each occupation written in a household survey its code in the international classification of occupations.',
-    reasons: ['few', 'wording'],
-    input: 'Sells grilled maize by the roadside', inputKind: 'Survey answer',
-    answer: [['Occupation', 'Street food salesperson'], ['Code (ISCO-08)', '5212']],
-    runs: 'On the laptops of the office\'s survey team, without an internet connection in the field.',
-    tested: true,
-    icon: `<rect x="10" y="8" width="38" height="40" rx="3" class="iP"/><path d="M16 18 H20 M24 18 H42 M16 28 H20 M24 28 H38 M16 38 H20 M24 38 H40" class="iL"/>${ARROW('M54 28 H66')}<rect x="70" y="20" width="24" height="16" rx="3" class="iT"/>`},
 ];
 
 DEMOS.cases = {
-  state: () => ({open: 'grievance'}),
+  state: () => ({open: 'survey'}),
   on(st, a, v) { st.open = v; },
   render(st) {
     const c = CASES.find((x) => x.key === st.open);
@@ -101,7 +141,7 @@ DEMOS.cases = {
         <ul class="reasons">${c.reasons.map((r) => `<li><span class="chip warn">${REASONS[r][0]}</span>${REASONS[r][1]}</li>`).join('')}</ul>
         <span class="lbl mt2">Where the model runs</span>
         <p class="txt-s mt">${esc(c.runs)}</p>
-        ${c.tested ? '<p class="txt-s mt">A small model was also built for this task. It scored 0.15 below the best large model on job titles from a job board.</p>' : ''}
+        ${c.tested ? '<p class="txt-s mt">The session follows this task. A small model was built for it and tested on job titles from a job board.</p>' : ''}
       </div>
       <div>
         <span class="lbl">One practice case · ${esc(c.inputKind)}</span>
@@ -159,77 +199,75 @@ DEMOS.rare = {
   state: () => ({on: false}),
   on(st) { st.on = !st.on; },
   render(st) {
-    const real = new Set([37, 141, 236, 318]);
+    const o = DATA.occ, real = new Set([37, 141, 236, 318]);
     let dots = '';
     for (let i = 0; i < 400; i++) dots += `<span${real.has(i) ? ' class="real"' : ''}></span>`;
     if (st.on) for (let i = 0; i < 120; i++) dots += `<span class="written" style="animation-delay:${i * 6}ms"></span>`;
     return `<div>
       <div class="raregrid" aria-hidden="true">${dots}</div>
-      <p class="legend mt2"><span><i style="background:var(--line)"></i>routine message</span><span><i style="background:var(--bad)"></i>real emergency</span>${st.on ? '<span><i style="background:var(--large)"></i>written emergency case</span>' : ''}</p>
+      <p class="legend mt2"><span><i style="background:var(--line)"></i>real response</span><span><i style="background:var(--bad)"></i>real response from the rare group</span>${st.on ? '<span><i style="background:var(--large)"></i>written response for the group</span>' : ''}</p>
     </div>
     <div aria-live="polite">
-      <p class="stat">${st.on ? '120' : '4'}<small>${st.on ? 'written emergency cases' : 'real emergencies among 400 messages'}</small></p>
+      <p class="stat">${st.on ? '120' : '4'}<small>${st.on ? 'written responses for the group' : 'real responses from one group among 400'}</small></p>
       <p class="txt mt2">${st.on
-        ? 'The model now learns from 120 written emergencies of many kinds. The 4 real ones are kept for testing.'
-        : 'Among 400 real messages, 4 are emergencies. A model trained on them sees too few to learn what an emergency looks like.'}</p>
-      <p class="mt2"><button type="button" class="btn" data-a="t" data-v="1">${st.on ? 'Remove the written cases' : 'Add 120 written emergency cases'}</button></p>
+        ? 'The model now learns from 120 written responses of varied wording for the group. The 4 real ones are kept for testing.'
+        : 'Among 400 real responses, 4 come from one occupation group. A model trained on them sees too few to learn how people describe that work.'}</p>
+      <p class="mt2"><button type="button" class="btn" data-a="t" data-v="1">${st.on ? 'Remove the written responses' : 'Add 120 written responses for the group'}</button></p>
+      <p class="txt-s mt2">A measured case: ${o.groups - o.groupsInTest} of the ${o.groups} groups of ISCO-08 have no title among the ${fmt(o.testTitles)} real job titles used to test the occupation-coding model.</p>
     </div>`;
   },
 };
 
 // Step 1: describe the task.
-const ISSUES = [
-  ['Water supply', 'Water cut, damaged pipes, or a dry well caused by the works.'],
-  ['Land and compensation', 'Payment for land, crops, or buildings affected by the project.'],
-  ['Safety', 'Danger to people from traffic, machines, or open trenches.'],
-  ['Dust and noise', 'Dust, noise, or vibration from the works.'],
-  ['Workers\' conduct', 'Behaviour of the contractor\'s staff.'],
-  ['Other', 'Any complaint that fits none of the issues above.'],
+const UNITS = [
+  ['5212', 'Street food salespersons', 'Service and sales workers', 'Prepare food and drinks that are ready to eat and sell them in streets and public places.'],
+  ['5211', 'Stall and market salespersons', 'Service and sales workers', 'Sell goods from a stall at a market or on a street.'],
+  ['9520', 'Street vendors (excluding food)', 'Elementary occupations', 'Sell a small range of goods other than ready-to-eat food in streets and public places.'],
+  ['5221', 'Shopkeepers', 'Service and sales workers', 'Run a small shop, alone or with a few helpers.'],
+  ['6310', 'Subsistence crop farmers', 'Skilled agricultural, forestry and fishery workers', 'Grow crops mainly to feed their own household.'],
+  ['9211', 'Crop farm labourers', 'Elementary occupations', 'Do routine tasks on a farm for the farmer, such as weeding and harvesting.'],
 ];
 DEMOS.task = {
   state: () => ({i: 0}),
   on(st, a, v) { st.i = Number(v); },
   render(st) {
-    return `<span class="lbl">The list of answers for the complaints example</span>
-    <div class="chips" role="group" aria-label="Issue">${ISSUES.map(([n], i) =>
-      `<button type="button" class="chip off" style="font-size:.9em" data-a="i" data-v="${i}" aria-pressed="${i === st.i}">${esc(n)}</button>`).join('')}</div>
-    <p class="def" aria-live="polite"><b>${esc(ISSUES[st.i][0])}.</b> ${esc(ISSUES[st.i][1])}</p>
-    <p class="hint" style="margin-top:auto">Select an answer to see its definition. The large model and the people who check its cases read the same definitions.</p>`;
+    const [code, name, major, text] = UNITS[st.i];
+    return `<span class="lbl">Six of the ${DATA.occ.groups} groups in the list of answers (ISCO-08)</span>
+    <div class="chips" role="group" aria-label="Occupation group">${UNITS.map(([c, n], i) =>
+      `<button type="button" class="chip off" style="font-size:.86em" data-a="i" data-v="${i}" aria-pressed="${i === st.i}">${c} ${esc(n)}</button>`).join('')}</div>
+    <p class="def" aria-live="polite"><b>${code} ${esc(name)}.</b> ${esc(text)}<span class="major">Major group ${code[0]}: ${esc(major)}</span></p>
+    <p class="hint" style="margin-top:auto">Select a group to see its description, shortened for this slide. The large model and the people who check its cases read the same descriptions.</p>`;
   },
 };
 
 // Step 2: show a few real cases.
-const SEEDS = ['no water 3 days now. who do we call', 'ur trucks almost hit my son today near the school!!', 'Land money still not paid since march, chief said wait'];
-const UNSEEDED = ['I would like to report that the water supply in our community has been interrupted for several days.',
-  'I am writing to express my concern about the safety of children near the construction site.',
-  'I wish to inform you that I have not yet received compensation for my land.'];
-const SEEDED = ['tap dry since sunday, women walking to the river',
-  'big lorry drives too fast by the market, someone will die',
-  'they measured my farm in jan, no payment yet. who to see?'];
+const SEEDS = ['sell tea and mandazi at the stage', 'helping my uncle farm, we plant maize', 'fundi, i repair phones and radios'];
+const UNSEEDED = ['Street Food Vendor', 'Agricultural Labourer', 'Mobile Phone Repair Technician'];
+const SEEDED = ['i fry fish and sell at the landing site', 'dig and weed for a neighbour, paid by the day', 'fix bicycles and punctures under the tree by the road'];
 DEMOS.seeds = {
   state: () => ({on: 0}),
   on(st, a, v) { st.on = Number(v); },
   render(st) {
     const list = (items, cls = '') => `<div class="msgs">${items.map((t) => `<p class="msg ${cls}">${esc(t)}</p>`).join('')}</div>`;
     return `${seg('on', [[0, 'No samples'], [1, 'Three real samples']], st.on, 'Request to the large model')}
-    ${st.on ? `<span class="lbl">Real messages added to the request, names removed</span>${list(SEEDS, 'real')}` : ''}
+    ${st.on ? `<span class="lbl">Real responses added to the request</span>${list(SEEDS, 'real')}` : ''}
     <span class="lbl">Cases written by the large model</span>
     ${list(st.on ? SEEDED : UNSEEDED)}
-    <p class="hint" style="margin-top:auto">The messages on this slide were written for this session as an illustration.</p>`;
+    <p class="hint" style="margin-top:auto">The responses on this slide were written for this session as an illustration.</p>`;
   },
 };
 
 // Step 3: vary the cases.
 const ATTRS = [
-  ['Issue', ISSUES.map(([n]) => n)],
-  ['Length', ['one line', 'two lines', 'a short paragraph']],
-  ['Style', ['text-message shorthand', 'formal', 'angry', 'polite']],
+  ['Group', UNITS.map(([, n]) => n)],
+  ['Length', ['two or three words', 'one short sentence', 'two sentences']],
+  ['Style', ['a job title', 'the tasks done', 'the place of work', 'the product or service']],
   ['Language', ['English', 'Swahili', 'English and Swahili mixed']],
-  ['Urgency', ['low', 'high']],
+  ['Detail', ['vague', 'specific']],
   ['Spelling', ['correct', 'with errors']],
 ];
 DEMOS.vary = {
-  state: () => ({on: new Set(['Issue']), pick: Object.fromEntries(ATTRS.map(([a]) => [a, 0]))}),
+  state: () => ({on: new Set(['Group']), pick: Object.fromEntries(ATTRS.map(([a]) => [a, 0]))}),
   on(st, a, v) {
     if (a === 'attr') { st.on.has(v) ? st.on.delete(v) : st.on.add(v); }
     else for (const [name, vals] of ATTRS) st.pick[name] = Math.floor(Math.random() * vals.length);
@@ -239,8 +277,8 @@ DEMOS.vary = {
     const combos = ATTRS.reduce((n, [a, vals]) => n * (st.on.has(a) ? vals.length : 1), 1);
     const dup = DATA.workflow.duplicates;
     const share = Math.round(dup.repeats / dup.written * 100);
-    let request = `Write a complaint by text message${val('Issue') ? ` about ${val('Issue').toLowerCase()}` : ''}.`;
-    for (const name of ['Length', 'Style', 'Language', 'Urgency', 'Spelling']) if (val(name)) request += ` ${name}: ${val(name)}.`;
+    let request = `Write a survey response on the main job${val('Group') ? ` of a person in the group "${val('Group')}"` : ''}.`;
+    for (const name of ['Length', 'Style', 'Language', 'Detail', 'Spelling']) if (val(name)) request += ` ${name}: ${val(name)}.`;
     let grid = '';
     for (let i = 0; i < 100; i++) grid += `<span${i < share ? ' class="on"' : ''}></span>`;
     return `<span class="lbl">Attributes that change from one request to the next</span>
@@ -258,28 +296,28 @@ DEMOS.vary = {
 
 // Step 4: write and check.
 const CHECKED = [
-  ['no water at the borehole since tuesday', 'Water supply', 'Water supply'],
-  ['no water at the borehole since tuesday', 'Water supply', 'Water supply', 'Repeats an earlier case'],
-  ['trucks drive fast past the school every morning', 'Dust and noise', 'Safety', 'The two models disagree'],
-  ['my land is not paid, 3 months now', 'Land and compensation', 'Land and compensation'],
-  ['my electricity bill is too high this month', 'Electricity', 'Other', 'Answer not in the list'],
-  ['dust from the works covers our market stalls', 'Dust and noise', 'Dust and noise'],
-  ['pls help', '', 'Other', 'No answer given'],
+  ['sells boiled eggs and tea outside the bus park', '5212 Street food', '5212 Street food'],
+  ['sells boiled eggs and tea outside the bus park', '5212 Street food', '5212 Street food', 'Repeats an earlier case'],
+  ['sells second-hand clothes at the market', '5212 Street food', '5211 Market stall', 'The two models disagree'],
+  ['plants rice on the family plot, for home use', '6310 Subsistence crops', '6310 Subsistence crops'],
+  ['sells airtime and phone cards from a kiosk', '5215', '5211 Market stall', 'Code not in the list'],
+  ['weeds and harvests on a tea estate, paid by the day', '9211 Farm labour', '9211 Farm labour'],
+  ['business', '', '5221 Shopkeeper', 'No code given'],
 ];
 DEMOS.check = {
   state: () => ({run: false}),
   on(st) { st.run = !st.run; },
   render(st) {
     const kept = CHECKED.filter((r) => !r[3]).length;
-    return `<div class="checkt" role="table" aria-label="Cases and the answers of two models">
-      <div class="head" role="row"><span role="columnheader">Case</span><span role="columnheader">Writer's answer</span><span role="columnheader">Second model's answer</span></div>
+    return `<div class="checkt" role="table" aria-label="Cases and the codes of two models">
+      <div class="head" role="row"><span role="columnheader">Case</span><span role="columnheader">Writer's code</span><span role="columnheader">Second model's code</span></div>
       ${CHECKED.map(([text, writer, checker, drop]) => {
         const out = st.run && drop;
         return `<div role="row"${out ? ' class="drop"' : ''}><span role="cell" class="txtc">${out ? `<s>${esc(text)}</s><em>✕ ${esc(drop)}</em>` : esc(text)}</span><span role="cell">${esc(writer || '(none)')}</span><span role="cell">${esc(checker)}</span></div>`;
       }).join('')}
     </div>
     <div class="row" style="margin-top:auto"><button type="button" class="btn" data-a="run" data-v="1">${st.run ? 'Show the cases before the checks' : 'Run the checks'}</button>
-    <span class="txt" aria-live="polite">${st.run ? `<b>${kept} of ${CHECKED.length}</b> cases are kept.` : 'A second model labels each case without seeing the writer\'s answer.'}</span></div>`;
+    <span class="txt" aria-live="polite">${st.run ? `<b>${kept} of ${CHECKED.length}</b> cases are kept.` : 'A second model codes each case without seeing the writer\'s code.'}</span></div>`;
   },
 };
 
@@ -304,14 +342,20 @@ DEMOS.test = {
   state: () => ({wrong: false}),
   on(st, a, v) { st.wrong = !!v; },
   render(st) {
+    const o = DATA.occ;
     return `<div class="piles">
       <div class="pile${st.wrong ? ' bad' : ''}"><b>Practice cases</b><span>Thousands, written by the large model</span><span class="use">${st.wrong ? 'Used for training and testing' : 'Used for training'}</span></div>
-      <div class="pile${st.wrong ? '' : ' test'}"><b>Real cases</b><span>A few hundred, answers given by people</span><span class="use">${st.wrong ? 'Not used' : 'Used only for testing'}</span></div>
+      <div class="pile${st.wrong ? '' : ' test'}"><b>Real cases</b><span>A few hundred or more, answers given by people</span><span class="use">${st.wrong ? 'Not used' : 'Used only for testing'}</span></div>
     </div>
     <label class="toggle"><input type="checkbox" data-a="wrong" data-v="1"${st.wrong ? ' checked' : ''}>Test on practice cases</label>
     <p class="def" aria-live="polite">${st.wrong
-      ? 'The practice cases used for testing share the writing habits of the training cases. A high score then says little about real messages.'
-      : 'The real cases are set aside before any practice case is written, and no model is trained on them.'}</p>`;
+      ? 'The practice cases used for testing share the writing habits of the training cases. A high score then says little about real responses.'
+      : 'The real cases are set aside before any practice case is written, and no model is trained on them.'}</p>
+    <div class="topn">
+      <span class="lbl">The occupation-coding model on ${fmt(o.testTitles)} real job titles</span>
+      <div class="sb mt">${o.topn.map((t) => `<span>${t.n === 1 ? 'First code is right' : `Right code among ${t.n}`}</span>${bar(t.share, 'var(--small)')}<b class="v">${(t.share * 100).toFixed(1)}%</b>`).join('')}</div>
+      <p class="hint mt">The titles come from a job board. Coded survey responses were not available for the test.</p>
+    </div>`;
   },
 };
 
@@ -321,37 +365,45 @@ DEMOS.rounds = {
   state: () => ({r: 0}),
   on(st, a, v) { st.r = Number(v); },
   render(st) {
-    const w = DATA.workflow, rep = w.rounds[st.r], MAX = 0.6;
-    const lo = Math.min(...w.large.map((x) => x.f1)), hi = Math.max(...w.large.map((x) => x.f1));
+    const w = DATA.workflow, o = DATA.occ, MAX = 0.6;
+    const sets = [
+      {name: 'Occupation codes', weak: 'groups', label: `Share of ${fmt(o.testTitles)} real job titles with the right first code (0 to 1)`,
+        arms: o.arms, large: o.large.map((x) => x.score), difference: o.difference, interval: o.interval},
+      ...w.rounds.map((x) => ({name: `Report topics, repeat ${x.replicate}`, weak: 'topics', label: 'Score on 300 real report abstracts (F1, 0 to 1)',
+        arms: x.arms.map((a) => ({arm: a.arm, score: a.f1, examples: a.examples})), large: w.large.map((m) => m.f1),
+        difference: x.difference, interval: x.interval})),
+    ];
+    const s = sets[st.r];
+    const lo = Math.min(...s.large), hi = Math.max(...s.large);
     const band = `<i class="band" style="left:${lo / MAX * 100}%;width:${(hi - lo) / MAX * 100}%"></i>`;
-    const loop = ['Test on separate real cases', 'Find the weakest topics', 'Write more cases on them', 'Train again'];
+    const loop = ['Test on separate real cases', `Find the weakest ${s.weak}`, 'Write more cases on them', 'Train again'];
     return `<div class="loop">${loop.map((t, i) => `<span><b>${i + 1}</b>${t}</span>`).join('')}</div>
-    <div class="row">${seg('r', w.rounds.map((x, i) => [i, `Repeat ${x.replicate}`]), st.r, 'Repeat')}
-    <span class="lbl">Score of the small model on 300 real report abstracts (F1, 0 to 1)</span></div>
+    <div class="row">${seg('r', sets.map((x, i) => [i, x.name]), st.r, 'Task')}
+    <span class="lbl">${s.label}</span></div>
     <div class="rbars">
       <div class="rbar rbar3"><span></span><div class="bandlbl"><span style="right:${100 - hi / MAX * 100}%">three large models</span></div><span></span></div>
-      ${rep.arms.map((a) => `<div class="rbar rbar3"><span>${ARMS[a.arm]}<small>${fmt(a.examples)} cases</small></span>
-        ${bar(a.f1 / MAX, a.arm === 'targeted' ? 'var(--small)' : 'var(--faint)', band)}<b class="v">${a.f1.toFixed(3)}</b></div>`).join('')}
+      ${s.arms.map((a) => `<div class="rbar rbar3"><span>${ARMS[a.arm]}<small>${fmt(a.examples)} cases</small></span>
+        ${bar(a.score / MAX, a.arm === 'targeted' ? 'var(--small)' : 'var(--faint)', band)}<b class="v">${a.score.toFixed(3)}</b></div>`).join('')}
       <div class="rbar rbar3"><span></span><div class="axis">${[0, 0.2, 0.4, 0.6].map((t) => `<span style="left:${t / MAX * 100}%">${t.toFixed(1)}</span>`).join('')}</div><span></span></div>
     </div>
-    <p class="hint" style="margin-top:auto">Orange band: three large models asked directly (${lo.toFixed(3)} to ${hi.toFixed(3)}). Targeted minus evenly spread: +${rep.difference.toFixed(3)} (95% interval ${rep.interval[0].toFixed(3)} to ${rep.interval[1].toFixed(3)}). Each score is the mean of three training runs.</p>`;
+    <p class="hint" style="margin-top:auto">Orange band: three large models asked directly (${lo.toFixed(3)} to ${hi.toFixed(3)}). Targeted minus evenly spread: +${s.difference.toFixed(3)} (95% interval ${s.interval[0].toFixed(3)} to ${s.interval[1].toFixed(3)}). Each score of the small model is the mean of three training runs.</p>`;
   },
 };
 
 // Step 8: ask people which is better.
 const PAIRS = [
-  {kind: 'Which written complaint is more realistic?',
-    a: 'Dear Sir or Madam, I hope this message finds you well. I am writing to formally express my concern regarding the interruption of water supply in our community.',
-    b: 'no water at the borehole since tuesday. kids walking 2km. pls help',
-    note: 'Complaints by text message are short and informal. The first case reads like a letter.'},
-  {kind: 'Which case has the right answer?',
-    a: '"Thank you for the new road, it is very good." Answer: Safety, high urgency.',
-    b: '"trucks for the road work go fast past the school, a child was almost hit today." Answer: Safety, high urgency.',
-    note: 'The first message is not a complaint. A case with a wrong answer teaches the small model a wrong answer.'},
-  {kind: 'Which answer to a farmer is better?',
-    a: 'Streaks on maize leaves can have several causes, including viral infection transmitted by leafhoppers, nutrient deficiency, or genetic factors. Consider a systemic insecticide and a foliar feed.',
-    b: 'This looks like maize streak. Pull out the plants with streaks. Next season, plant a tolerant variety. The extension officer will call you.',
-    note: 'The second answer stays within the approved guide, is short enough for a text message, and passes the case to a person.'},
+  {kind: 'Which written response is more realistic?',
+    a: 'I am employed as a Street Food Vendor, responsible for the preparation and sale of meals to customers in public areas.',
+    b: 'sell chips and eggs outside the school gate',
+    note: 'A respondent answers an interviewer in a few words. The first case reads like a job advertisement.'},
+  {kind: 'Which case has the right code?',
+    a: '"sells second-hand clothes at the market." Code: 5212 Street food salespersons.',
+    b: '"sells boiled maize and groundnuts at the taxi park." Code: 5212 Street food salespersons.',
+    note: 'Second-hand clothes are not food. A case with a wrong code teaches the small model a wrong code.'},
+  {kind: 'Which case is more useful for training?',
+    a: '"business." Code: 5221 Shopkeepers.',
+    b: '"has a small shop at home, sells soap, sugar and paraffin." Code: 5221 Shopkeepers.',
+    note: 'The word "business" does not say what the person does, so nobody can check its code. The second case names the shop and the goods.'},
 ];
 DEMOS.pairs = {
   state: () => ({i: 0, picks: PAIRS.map(() => null)}),
@@ -366,12 +418,12 @@ DEMOS.pairs = {
     return `<span class="lbl">Pair ${st.i + 1} of ${PAIRS.length}: ${esc(p.kind)}</span>
     <div class="pairc">${side('a')}${side('b')}</div>
     <p class="def" aria-live="polite" style="font-size:.92em">${pick
-      ? `<b>An experienced staff member chose ${pick === 'b' ? 'the same' : 'the other one'}.</b> ${esc(p.note)}`
+      ? `<b>An experienced coder chose ${pick === 'b' ? 'the same' : 'the other one'}.</b> ${esc(p.note)}`
       : 'Select the better one of the two.'}</p>
     <div class="row" style="margin-top:auto">
       <button type="button" class="link" data-a="go" data-v="-1"${st.i === 0 ? ' disabled' : ''}>Previous pair</button>
       <button type="button" class="link" data-a="go" data-v="1"${st.i === PAIRS.length - 1 ? ' disabled' : ''}>Next pair</button>
-      <span class="txt-s" style="margin-left:auto">Same choice as the staff member: ${agreed} of ${answered}</span>
+      <span class="txt-s" style="margin-left:auto">Same choice as the coder: ${agreed} of ${answered}</span>
     </div>`;
   },
 };
@@ -383,7 +435,7 @@ DEMOS.watch = {
     const loop = ['People review a sample of real cases', 'The review shows a change', 'New cases are written and the model is trained again'];
     return `<span class="lbl">World Development Report 2026, spotlight 1</span>
     <p class="def">A screening tool for diabetic eye disease rejected more than one-fifth of the images that nurses took, because the lighting in the clinic differed from that in its training images. The report advises testing a tool where it will be used and watching it as conditions change.</p>
-    <p class="txt">For a small model trained on practice cases, a change can come from a new issue on the list, a new language, or a new kind of message after an event. Regular reviews of a sample of real cases show when new practice cases and a new round of training are needed.</p>
+    <p class="txt">For a small model trained on practice cases, a change can come from new kinds of work, a survey in another language, or a revision of the classification. Regular reviews of a sample of real cases show when new practice cases and a new round of training are needed.</p>
     <div class="loop" style="grid-template-columns:repeat(3,1fr);margin-top:auto">${loop.map((t, i) => `<span><b>${i + 1}</b>${t}</span>`).join('')}</div>`;
   },
 };

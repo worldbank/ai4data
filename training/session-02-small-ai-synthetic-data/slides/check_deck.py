@@ -165,7 +165,7 @@ def controls(browser):
 
     # Demonstrations.
     pg.locator('.slide.on .seg button').nth(1).click()
-    ok('slide 22: second repeat', 'Repeat 2' in pg.locator('.slide.on .seg button[aria-pressed="true"]').inner_text())
+    ok('slide 22: the second task', 'Report topics' in pg.locator('.slide.on .seg button[aria-pressed="true"]').inner_text())
     at('s30')
     res = []
     for n in ('1', '10', '40'):
@@ -180,6 +180,8 @@ def controls(browser):
     pg.keyboard.press('Escape'); pg.keyboard.press('ArrowRight'); ok('slide 30: after Esc the arrow key moves on', cur() == 's31', cur())
     at('s28'); pg.locator('.slide.on .btn').first.click(); pg.wait_for_timeout(2500)
     ok('slide 28: the sentences arrive', pg.locator('.slide.on .sents > *').count() >= 3)
+    at('s02'); pg.locator('.slide.on .btn').first.click(); pg.wait_for_timeout(200)
+    ok('slide 2: five codes are suggested', pg.locator('.slide.on .sgrow').count() == 5 and pg.locator('.slide.on .sgrow.hit').count() == 1)
     at('s12'); pg.locator('.slide.on .btn').first.click(); pg.wait_for_timeout(600)
     ok('slide 12: written cases are added', '120' in body())
     at('s23'); pg.locator('.slide.on .demo button').first.click(); pg.wait_for_timeout(200)

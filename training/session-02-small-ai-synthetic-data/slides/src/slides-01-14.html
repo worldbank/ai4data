@@ -4,36 +4,18 @@
   <h1>Building specialized small AI using synthetic data</h1>
   <p class="sub">An introduction to small AI, synthetic data, and model distillation</p>
   <p class="keys"><span><kbd>→</kbd>Next</span><span><kbd>←</kbd>Back</span><span><kbd>O</kbd>Contents</span><span><kbd>N</kbd>Speaker notes</span><span><kbd>F</kbd>Full screen</span></p>
-  <aside class="notes">Welcome the room and say what the session covers: three ideas, one model that was built and tested, and no code. Nobody needs a background in AI to follow it. Tell people that the slides are interactive and that you will ask them to vote a few times.</aside>
+  <aside class="notes">Welcome the room and say what the session covers: three ideas, two small models that were built and tested, and no code. Nobody needs a background in AI to follow it. Tell people that the slides are interactive and that you will ask them to vote a few times.</aside>
 </section>
 
 <section class="slide" id="s02" data-sec="1">
-  <p class="kicker">A message arrives</p>
-  <h2>Someone has to read this message and decide where it goes.</h2>
+  <p class="kicker">A survey response</p>
+  <h2>Someone has to read this response and give it one of 436 codes.</h2>
   <div class="body center">
-    <div class="hook">
-      <div class="phone">
-        <span class="lbl">Text message to a project's complaints line</span>
-        <p class="msg real">pls help, maji hayajatoka tangu jumatatu. contractor broke the pipe near the school</p>
-        <div data-step="1" class="mt2">
-          <span class="lbl">In English</span>
-          <p class="txt mt">Please help, the water has not come since Monday. The contractor broke the pipe near the school.</p>
-        </div>
-      </div>
-      <div class="arrow" data-step="2" aria-hidden="true">→</div>
-      <div class="card teal-k" data-step="2">
-        <span class="lbl">The decision</span>
-        <dl class="dl bigdl mt2">
-          <dt>Issue</dt><dd>Water supply</dd>
-          <dt>Urgency</dt><dd>High</dd>
-          <dt>Send to</dt><dd>Site engineer</dd>
-        </dl>
-      </div>
-    </div>
-    <p class="callout" data-step="3">The task is narrow, it repeats with every message, and each answer comes from a short list.</p>
+    <div class="suggest" data-demo="suggest"></div>
+    <p class="callout" data-step="1">The task is narrow, it repeats with every response, and each code comes from a fixed list.</p>
   </div>
-  <p class="src">The message was written for this session as an illustration.</p>
-  <aside class="notes">Start with the message before any definition. Ask who would read a message like this in their organization and what that person has to decide. Reveal the translation, then the three decisions. Close on the call-out: this kind of task is what the session is about.</aside>
+  <p class="src">The responses and the coders' codes were written for this session as illustrations. The suggestions are the recorded output of the small model built for this task. Group names: ISCO-08, International Labour Organization.</p>
+  <aside class="notes">Start with the response before any definition. Ask who codes responses like this in the room's organizations and how long one response takes. Ask the room to guess the group before you press the button. Then go through the responses. The coder's code is the first suggestion for the teacher and the second for the motorcycle taxi. The model misses the roasted maize and the boda boda rider. It was trained on written job titles, and these two responses describe the work in everyday or local words. The last response gives too little detail for any code. On 1,000 real job titles from a job board, the right code was among the five suggestions for 56.5 percent. Close on the call-out: this kind of task is what the session is about.</aside>
 </section>
 
 <section class="slide" id="s03" data-sec="1">
@@ -41,7 +23,7 @@
   <h2>The same kind of task appears across development work.</h2>
   <div class="body"><div class="fill cases" data-demo="cases"></div></div>
   <p class="src">The tasks illustrate where the method could apply. They do not describe systems in use. Each practice case was written for this session.</p>
-  <aside class="notes">Open two or three of the six tasks, starting with the one closest to the room. For each, read the practice case aloud and point at the answer: it always comes from a list or has a fixed form. Ask the room for a seventh task from their own work and keep it for the quiz near the end.</aside>
+  <aside class="notes">Open two or three of the six tasks. The first is the task from the previous slide, and we follow it through the nine steps. For each task, read the practice case aloud and point at the answer: it always comes from a list or has a fixed form. Ask the room for a seventh task from their own work and keep it for the quiz near the end.</aside>
 </section>
 
 <section class="slide" id="s04" data-sec="1">
@@ -51,17 +33,17 @@
     <div class="g3">
       <div class="card plain-k opt">
         <span class="n">OPTION 1</span><h3>By hand</h3>
-        <p class="txt">Staff read every message and sort it.</p>
-        <p class="limit">Sorting by hand is slow when the messages arrive in thousands.</p>
+        <p class="txt">Coders read every response and look up its code.</p>
+        <p class="limit">Coding by hand is slow when a survey or a census brings in responses in the thousands.</p>
       </div>
       <div class="card large-k opt" data-step="1">
         <span class="n">OPTION 2</span><h3>A large AI service</h3>
-        <p class="txt">A large model at a service company reads each message and answers.</p>
-        <p class="limit">Every message is sent to the company that runs the service.</p>
+        <p class="txt">A large model at a service company reads each response and returns a code.</p>
+        <p class="limit">Every response is sent to the company that runs the service.</p>
       </div>
       <div class="card small-k opt" data-step="2">
         <span class="n">OPTION 3</span><h3>A small model of its own</h3>
-        <p class="txt">A small model runs on the organization's own computer.</p>
+        <p class="txt">A small model on the office's own computer suggests five codes, and a coder chooses.</p>
         <p class="limit">The model has to be built first, and building it requires many examples with the right answers.</p>
       </div>
     </div>
@@ -78,7 +60,7 @@
       <li><span class="n">1</span><b>Why a small model?</b><p>Size, memory, and where a model can run.</p><button class="link" data-go="s06">Go to this part</button></li>
       <li><span class="n">2</span><b>Why synthetic data?</b><p>The examples that a model needs are often missing.</p><button class="link" data-go="s10">Go to this part</button></li>
       <li><span class="n">3</span><b>How is it done?</b><p>Nine steps lead from a task to a small model.</p><button class="link" data-go="s15">Go to this part</button></li>
-      <li><span class="n">4</span><b>Does it work?</b><p>One small model was built this way and tested on real reports.</p><button class="link" data-go="s25">Go to this part</button></li>
+      <li><span class="n">4</span><b>Does it work?</b><p>A report-tagging model was built this way and tested on real reports.</p><button class="link" data-go="s25">Go to this part</button></li>
       <li><span class="n">5</span><b>Which tasks fit?</b><p>Criteria, a short quiz, and a checklist.</p><button class="link" data-go="s36">Go to this part</button></li>
     </ol>
   </div>
@@ -121,11 +103,11 @@
       <div class="card teal-k" data-step="1">
         <span class="lbl">World Development Report 2026</span>
         <p class="quote mt">The report uses the term <button class="term" data-term="smallai">small AI</button> for AI that is small in size or narrow in scope and is built to run where power, internet connectivity, and digital devices are scarce.</p>
-        <p class="txt-s">The small model in this session does one task: it reads a report and assigns its topics.</p>
+        <p class="txt-s">Each small model in this session does one task. One suggests occupation codes for a survey response, and one assigns topics to a report.</p>
       </div>
     </div>
   </div>
-  <p class="src">World Bank, World Development Report 2026, Box O.1 and spotlight 1. The small model is the report-tagging model of this session. The large model is the size of Qwen3.8-27B.</p>
+  <p class="src">World Bank, World Development Report 2026, Box O.1 and spotlight 1. Both small models of this session are this size. The large model is the size of Qwen3.8-27B.</p>
   <aside class="notes">Ask the room to find the small model: it is the blue dot on the left. The middle square is a model that an organization can run on one strong server, and the dashed square is a lower bound for the models behind chat assistants. Then reveal the definition from the World Development Report and stress the second half: narrow in scope.</aside>
 </section>
 
@@ -170,13 +152,13 @@
   <div class="body center">
     <div>
       <div class="ex"><span class="lbl">Example</span><span></span><span class="lbl">Right answer</span></div>
-      <div class="ex"><p class="msg">no water 3 days now. who do we call</p><span class="arrow" aria-hidden="true">→</span><span class="ans">Water supply</span></div>
-      <div class="ex" data-step="1"><p class="msg">ur trucks almost hit my son today near the school!!</p><span class="arrow" aria-hidden="true">→</span><span class="ans">Safety</span></div>
-      <div class="ex" data-step="1"><p class="msg">Land money still not paid since march, chief said wait</p><span class="arrow" aria-hidden="true">→</span><span class="ans">Land and compensation</span></div>
+      <div class="ex"><p class="msg">sells roasted maize by the roadside</p><span class="arrow" aria-hidden="true">→</span><span class="ans">5212 Street food salespersons</span></div>
+      <div class="ex" data-step="1"><p class="msg">class 4 teacher, government primary school</p><span class="arrow" aria-hidden="true">→</span><span class="ans">2341 Primary school teachers</span></div>
+      <div class="ex" data-step="1"><p class="msg">grows maize and beans to feed the family</p><span class="arrow" aria-hidden="true">→</span><span class="ans">6310 Subsistence crop farmers</span></div>
     </div>
-    <p class="callout" data-step="2">An example with its answer is a <button class="term" data-term="labelled">labelled example</button>. The report-tagging model of this session learns from about 20,000 of them.</p>
+    <p class="callout" data-step="2">An example with its code is a <button class="term" data-term="labelled">labelled example</button>. About 15,900 were written for the occupation-coding model of this session.</p>
   </div>
-  <aside class="notes">Nobody writes rules for a model. It adjusts itself until its answers match the examples, so the examples decide the model's answers. Read the three messages and their answers, then give the number for the report-tagging model so the room feels the scale of the requirement.</aside>
+  <aside class="notes">Nobody writes rules for a model. It adjusts itself until its answers match the examples, so the examples decide the model's answers. Read the three responses and their codes, then give the number for the occupation-coding model so the room feels the scale of the requirement.</aside>
 </section>
 
 <section class="slide" id="s11" data-sec="3">
@@ -185,35 +167,35 @@
   <div class="body center">
     <div class="g4">
       <div class="card reason">
-        <svg viewBox="0 0 160 80" aria-hidden="true"><rect x="8" y="10" width="56" height="42" rx="5" class="iP"/><path d="M8 31 H24 L30 40 H42 L48 31 H64" class="iL"/><text x="36" y="72" text-anchor="middle" font-size="12.5">0 messages</text><path d="M72 31 H92" class="iA" marker-end="url(#ah)"/><rect x="102" y="6" width="50" height="50" rx="8" class="iS"/><circle cx="118" cy="24" r="4" class="iD"/><circle cx="136" cy="38" r="4" class="iD"/><path d="M118 24 L136 38" class="iSS"/><text x="127" y="72" text-anchor="middle" font-size="12.5">day 1</text></svg>
+        <svg viewBox="0 0 160 80" aria-hidden="true"><rect x="8" y="10" width="56" height="42" rx="5" class="iP"/><path d="M8 31 H24 L30 40 H42 L48 31 H64" class="iL"/><text x="36" y="72" text-anchor="middle" font-size="12.5">0 coded</text><path d="M72 31 H92" class="iA" marker-end="url(#ah)"/><rect x="102" y="6" width="50" height="50" rx="8" class="iS"/><circle cx="118" cy="24" r="4" class="iD"/><circle cx="136" cy="38" r="4" class="iD"/><path d="M118 24 L136 38" class="iSS"/><text x="127" y="72" text-anchor="middle" font-size="12.5">day 1</text></svg>
         <h3>Never collected</h3>
-        <p class="txt-s">Messages sent after a flood do not exist before the flood, and the model has to work on the first day.</p>
+        <p class="txt-s">After a classification is revised, no past response carries a code of the new version. The model is needed for the first survey that uses it.</p>
       </div>
       <div class="card reason" data-step="1">
         <svg viewBox="0 0 160 80" aria-hidden="true"><rect x="6" y="8" width="58" height="48" rx="5" class="iP"/><rect x="23" y="30" width="24" height="18" rx="3" class="iT"/><path d="M28 30 V25 A7 7 0 0 1 42 25 V30" class="iL"/><text x="35" y="72" text-anchor="middle" font-size="12.5">inside</text><path d="M72 32 H98" class="iA" marker-end="url(#ah)"/><path d="M79 25 L91 39 M91 25 L79 39" class="iLS"/><ellipse cx="128" cy="32" rx="24" ry="20" class="iLg"/><text x="128" y="72" text-anchor="middle" font-size="12.5">outside</text></svg>
         <h3>Private</h3>
-        <p class="txt-s">Applications and complaints hold personal data. Sending them to an outside service for labelling is often not allowed.</p>
+        <p class="txt-s">Survey responses are confidential. Sending them to an outside service for labelling is often not allowed.</p>
       </div>
       <div class="card reason" data-step="2">
         <svg viewBox="0 0 240 110" aria-hidden="true"><g fill="var(--line)"><circle cx="30" cy="25" r="7"/><circle cx="60" cy="25" r="7"/><circle cx="90" cy="25" r="7"/><circle cx="120" cy="25" r="7"/><circle cx="150" cy="25" r="7"/><circle cx="180" cy="25" r="7"/><circle cx="210" cy="25" r="7"/><circle cx="30" cy="55" r="7"/><circle cx="60" cy="55" r="7"/><circle cx="90" cy="55" r="7"/><circle cx="120" cy="55" r="7"/><circle cx="180" cy="55" r="7"/><circle cx="210" cy="55" r="7"/><circle cx="30" cy="85" r="7"/><circle cx="60" cy="85" r="7"/><circle cx="90" cy="85" r="7"/><circle cx="120" cy="85" r="7"/><circle cx="150" cy="85" r="7"/><circle cx="180" cy="85" r="7"/><circle cx="210" cy="85" r="7"/></g><circle cx="150" cy="55" r="8" fill="var(--bad)"/></svg>
         <h3>Rare</h3>
-        <p class="txt-s">The cases that matter most are often the rarest, such as an emergency among routine messages.</p>
+        <p class="txt-s">A classification has hundreds of groups, and a survey meets some of them only a few times.</p>
       </div>
       <div class="card reason" data-step="3">
-        <div style="height:5.6em;display:flex;align-items:center"><p class="msg real" style="font-size:.78em">pls help, maji hayajatoka tangu jumatatu. contractor broke the pipe…</p></div>
+        <div style="height:5.6em;display:flex;align-items:center"><p class="msg real" style="font-size:.78em">boda boda rider<br>mama lishe<br>fundi wa simu</p></div>
         <h3>Local language</h3>
-        <p class="txt-s">Real messages mix languages, abbreviations, and spelling errors. Few labelled examples exist in most local languages.</p>
+        <p class="txt-s">Real responses use local words, abbreviations, and spelling errors. Labelled examples in local languages are scarce.</p>
       </div>
     </div>
   </div>
-  <aside class="notes">Reveal the four reasons one at a time and ask which one applies to the room's own work. Usually more than one does. The flood example is the clearest: the data do not exist until the day the model is needed. The next slide looks closer at the third reason.</aside>
+  <aside class="notes">Reveal the four reasons one at a time and ask which one applies to the room's own work. Usually more than one does. For survey responses, confidentiality comes first: the text cannot go to an outside service. On the fourth card, boda boda is a motorcycle taxi, mama lishe is a woman who sells cooked food, and fundi wa simu is a phone repairer. The next slide looks closer at the third reason.</aside>
 </section>
 
 <section class="slide" id="s12" data-sec="3">
   <p class="kicker">Rare cases</p>
-  <h2>A model sees too few of the cases that matter most.</h2>
+  <h2>A model sees only a few real cases of a rare group.</h2>
   <div class="body"><div class="fill rare" data-demo="rare"></div></div>
-  <aside class="notes">Each dot is one real message, and the four red dots are the emergencies. Ask the room whether a new staff member could learn what an emergency looks like from four cases. Then add the written cases. Point out what happens to the four real ones: they are kept for testing.</aside>
+  <aside class="notes">Each dot is one real response, and the four red dots come from one occupation group. Ask the room whether a new coder could learn how people describe that work from four responses. Then add the written responses. Point out what happens to the four real ones: they are kept for testing. The last line gives a measured case from the occupation-coding model.</aside>
 </section>
 
 <section class="slide" id="s13" data-sec="3">
@@ -222,10 +204,10 @@
   <div class="body center">
     <div class="g2">
       <div class="card large-k">
-        <span class="lbl">Written by a large model, each with its answer</span>
-        <div class="ex mt2 exs"><p class="msg">tap dry since sunday, women walking to the river. pls send the engineer</p><span class="arrow" aria-hidden="true">→</span><span class="ans">Water supply</span></div>
-        <div class="ex exs"><p class="msg">big lorry from the site drives too fast by the market, someone will die</p><span class="arrow" aria-hidden="true">→</span><span class="ans">Safety</span></div>
-        <div class="ex exs"><p class="msg">they measured my farm in jan, no payment yet. who to see?</p><span class="arrow" aria-hidden="true">→</span><span class="ans">Land and compensation</span></div>
+        <span class="lbl">Written by a large model, each with its code</span>
+        <div class="ex mt2 exs"><p class="msg">sell chapati and tea at the bus stand every morning</p><span class="arrow" aria-hidden="true">→</span><span class="ans">5212 Street food salespersons</span></div>
+        <div class="ex exs"><p class="msg">i teach standard 3 at the mission school</p><span class="arrow" aria-hidden="true">→</span><span class="ans">2341 Primary school teachers</span></div>
+        <div class="ex exs"><p class="msg">plant cassava and maize, we eat what we grow</p><span class="arrow" aria-hidden="true">→</span><span class="ans">6310 Subsistence crop farmers</span></div>
       </div>
       <div style="display:flex;flex-direction:column;gap:1.1em;justify-content:center">
         <div class="card teal-k" data-step="1">
@@ -237,7 +219,7 @@
     </div>
   </div>
   <p class="src">World Bank, World Development Report 2026, chapter 7, p. 248. The three cases were written for this session as illustrations.</p>
-  <aside class="notes">Here is the answer to the missing examples. No person sent these three messages. A large model wrote them, together with the answers. The report's wording matters for the room: scarce or sensitive are the two conditions we saw on the previous slides.</aside>
+  <aside class="notes">Here is the answer to the missing examples. No respondent gave these three answers. A large model wrote them, together with their codes. The report's wording matters for the room: scarce or sensitive are the two conditions we saw on the previous slides.</aside>
 </section>
 
 <section class="slide" id="s14" data-sec="3">
