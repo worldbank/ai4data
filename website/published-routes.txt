@@ -64,6 +64,7 @@
 /cookbook/data-snapshot-end-to-end/contributing
 /cookbook/data-snapshot-end-to-end/glossary
 /cookbook/data-snapshot-end-to-end/metadata
+/cookbook/data-snapshot-end-to-end/metadata-reviewer
 /cookbook/data-snapshot-end-to-end/models
 /cookbook/data-snapshot-end-to-end/operation
 /cookbook/data-snapshot-end-to-end/preparation

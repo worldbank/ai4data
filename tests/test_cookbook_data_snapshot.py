@@ -1,4 +1,4 @@
-"""Check the read-only metadata example and recorded cookbook artifacts."""
+"""Check the inspection helper and recorded raw and reviewed cookbook metadata."""
 
 import importlib.util
 import json
@@ -61,8 +61,25 @@ def test_inspection_rejects_invalid_input(tmp_path: Path, content: str) -> None:
 
 def test_recorded_metadata_validates() -> None:
     """Validate both raw responses and confirm their companion crops exist."""
-    records = sorted(ASSETS.glob("*.json"))
+    records = sorted(ASSETS.glob("policy_brief_*.json"))
     assert len(records) == 2
     for path in records:
         assert path.with_suffix(".png").is_file()
         DataSnapshotMetadata.model_validate_json(path.read_text())
+
+
+def test_recorded_review_removes_only_the_axis_label_title() -> None:
+    """Keep the demonstrated correction separate from the original model response."""
+    generated = json.loads(
+        (
+            ASSETS
+            / "policy_brief_on_shona_community_from_stateless_to_citizens_figure_001.json"
+        ).read_text()
+    )
+    expected = DataSnapshotMetadata.model_validate(generated).model_dump(
+        mode="json", exclude_none=True
+    )
+    assert expected.pop("title") == "Percent of population"
+    reviewed = json.loads((ASSETS / "reviewed-figure-001.json").read_text())
+    DataSnapshotMetadata.model_validate(reviewed)
+    assert reviewed == expected
