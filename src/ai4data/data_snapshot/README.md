@@ -42,10 +42,23 @@ run and are cached under `.cache/models/`, relative to the working directory.
 | `yolo26` | `data-snapshot-yolo26` | `Armaggheddon/yolo26-document-layout`, `yolo26m_doc_layout.pt` | 1280 |
 | `tfid` | `data-snapshot-tfid` | `yifeihu/TF-ID-large` | Model-defined |
 
+For local human review of existing images and metadata, install
+`data-snapshot-metadata-reviewer`. It includes Streamlit, Pillow, and Pydantic;
+no extractor runtime, model weights, or metadata API key is required. From this
+checkout:
+
+```bash
+python -m pip install ".[data-snapshot-metadata-reviewer]"
+```
+
+See the [reviewer guide](metadata_reviewer/README.md) for the review workflow and
+file behavior. This extra is separate from `metadata-reviewer`, which provides
+the agent-based review pipeline for dataset documentation.
+
 The shared `data-snapshot-core` extra supplies rendering and schema dependencies
 without a model runtime or metadata API SDK. It is included by every snapshot
-extra. `ai4data[all]` includes DocLayout-YOLO and snapshot metadata extraction;
-it excludes TF-ID.
+extra used for extraction. `ai4data[all]` includes DocLayout-YOLO, snapshot
+metadata extraction, and human metadata review; it excludes TF-ID.
 
 ### Model configuration
 
@@ -181,6 +194,21 @@ python -m ai4data.data_snapshot.extract_metadata \
   --metadata-provider=openai
 ```
 
+### Human metadata review
+
+Open existing data snapshots beside an editable metadata form:
+
+```bash
+python -m ai4data.data_snapshot.metadata_reviewer
+```
+
+By default, the app reads `output/doclayoutyolo/snapshots/` and
+`output/doclayoutyolo/metadata/`, and saves separate human-reviewed JSON files
+under `output/doclayoutyolo/reviewed/`. It runs on localhost and makes no model
+or API requests. Install the `data-snapshot-metadata-reviewer` extra first.
+The [reviewer guide](metadata_reviewer/README.md) explains custom paths, edits,
+validation, and saving.
+
 ### Outputs and reruns
 
 PDF commands default to `output/<model>/`, with `snapshots/` and `metadata/`
@@ -229,12 +257,13 @@ metadata, output review, and recovery.
 
 ## Development
 
-Install `data-snapshot-metadata` and `pytest` to run the offline tests; model
+Install `data-snapshot-metadata`, `data-snapshot-metadata-reviewer`, and `pytest`
+to run the full offline suite, including the interactive app tests; model
 runtimes and weights are unnecessary. From the repository root, use an editable
 installation so source changes take effect without reinstalling:
 
 ```bash
-python -m pip install -e ".[data-snapshot-metadata]" pytest
+python -m pip install -e ".[data-snapshot-metadata,data-snapshot-metadata-reviewer]" pytest
 python -m pytest tests/data_snapshot -q
 ```
 
