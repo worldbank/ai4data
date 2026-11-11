@@ -38,7 +38,7 @@ def main(argv: list[str] | None = None) -> int:
         "run",
         str(Path(__file__).with_name("app.py")),
         "--server.address=127.0.0.1",
-        "--server.headless=true",
+        "--server.showEmailPrompt=false",
         "--browser.gatherUsageStats=false",
         "--",
         "--snapshots-root",

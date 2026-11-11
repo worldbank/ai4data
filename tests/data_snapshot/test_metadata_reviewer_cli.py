@@ -49,6 +49,8 @@ def test_launch_uses_installed_app_and_localhost(
     assert command[:3] == [sys.executable, "-m", "streamlit"]
     assert Path(command[4]).is_file()
     assert "--server.address=127.0.0.1" in command
+    assert not any(argument.startswith("--server.headless") for argument in command)
+    assert "--server.showEmailPrompt=false" in command
     assert command[command.index("--") + 1 :] == [
         "--snapshots-root",
         str(tmp_path / "snapshot images"),

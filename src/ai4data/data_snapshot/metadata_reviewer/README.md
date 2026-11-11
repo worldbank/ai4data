@@ -15,11 +15,16 @@ python -m pip install ".[data-snapshot-metadata-reviewer]"
 python -m ai4data.data_snapshot.metadata_reviewer
 ```
 
-The launcher serves Streamlit at `http://127.0.0.1:8501`. Open that address in
-your browser and use Ctrl+C in the terminal to stop the server. The command
-works outside the checkout after installation; paths are relative to the
-terminal's working directory. Reinstall after changing source files, or use
-an editable install (`pip install -e ".[data-snapshot-metadata-reviewer]"`).
+The launcher serves Streamlit at `http://127.0.0.1:8501` and uses Streamlit's
+default browser behavior. Desktop sessions normally open your default browser;
+Linux sessions without a display run headlessly. You can override this behavior
+through Streamlit configuration or the `STREAMLIT_SERVER_HEADLESS` environment
+variable. If a browser does not open automatically, open the address printed in
+the terminal. Use Ctrl+C to stop the server.
+
+The command works outside the checkout after installation; paths are relative
+to the terminal's working directory. Reinstall after changing source files, or
+use an editable install (`pip install -e ".[data-snapshot-metadata-reviewer]"`).
 
 The default directories are the pipeline's outputs:
 
