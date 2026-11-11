@@ -32,11 +32,13 @@ An organization has three ways to get such a task done.
 
 Notes: Take the options one at a time and let the room name the limit of each before you reveal it. Option 2 is what people know from chat assistants. Option 3 is the subject of the session, and its limit sets up the next two parts: why a small model, and why the examples have to be written.
 
-### 5. Plan of the session
+### 5. Overview of the process
 
-The session answers five questions in order.
+A small model learns from practice cases that a large model writes.
 
-Notes: Give the plan in one breath and move on. The strip at the top of each slide shows the current part, so the room always knows where we are. If time is short, parts 1, 2 and 4 carry the core of the session.
+The slide has an interactive demonstration.
+
+Notes: This is the whole approach before the details. Read the five boxes from left to right: the task, the large model that writes practice cases, the small model that learns from them, the test on real cases, and the small model at work. The large model is needed in the second box only. Then show the loop: the test shows the kinds of cases that the small model gets wrong, and the large model writes more cases of those kinds. Then show the parts of the session. The numbers give their order. We start with the small model, because it is the goal, and then turn to the practice cases, which are called synthetic data. The strip at the top of each slide shows the current part. If time is short, parts 1, 2 and 4 carry the core of the session.
 
 ## Small model
 
@@ -106,7 +108,7 @@ Notes: This comparison carries the rest of the session, so take a minute on it. 
 
 The process from a task to a small model has nine steps.
 
-Notes: Here is the whole process before we take the steps one at a time. The first four steps produce the cases, the next two build and test the model, and the last three keep improving it. Each number opens its step. We use occupation coding for all nine steps because the room saw it on the second slide.
+Notes: This is the process from the start of the session, now in nine steps. We look at all nine before we take them one at a time. The first four steps produce the cases, the next two build and test the model, and the last three keep improving it. Each number opens its step. We use occupation coding for all nine steps because the room saw it on the second slide.
 
 ### 16. Step 1 of 9 · Describe the task
 

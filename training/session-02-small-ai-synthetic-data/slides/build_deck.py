@@ -151,7 +151,7 @@ def overview_slide():
     <div class="groups">{''.join(groups)}</div>
     <p class="txt" data-step="3">We follow one example through the nine steps: coding the occupations written in a household survey.</p>
   </div>
-  <aside class="notes">Here is the whole process before we take the steps one at a time. The first four steps produce the cases, the next two build and test the model, and the last three keep improving it. Each number opens its step. We use occupation coding for all nine steps because the room saw it on the second slide.</aside>
+  <aside class="notes">This is the process from the start of the session, now in nine steps. We look at all nine before we take them one at a time. The first four steps produce the cases, the next two build and test the model, and the last three keep improving it. Each number opens its step. We use occupation coding for all nine steps because the room saw it on the second slide.</aside>
 </section>'''
 
 

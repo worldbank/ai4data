@@ -31,7 +31,7 @@ The fonts (Inter and JetBrains Mono) load from Google Fonts. Without an internet
 | Slides | Part | Content |
 |---|---|---|
 | 1 | | Title |
-| 2 to 5 | Tasks | A survey response to code, six tasks from development work, three ways to get a task done, the plan of the session |
+| 2 to 5 | Tasks | A survey response to code, six tasks from development work, three ways to get a task done, a diagram of the process with the parts of the session |
 | 6 to 9 | Small model | Large language models, small AI, the memory a model needs, the cost of building a small model |
 | 10 to 14 | Synthetic data | Labelled examples, why they are missing, rare cases, synthetic data, the office comparison |
 | 15 to 24 | Nine steps | The process, then one slide for each step with a demonstration on occupation coding |

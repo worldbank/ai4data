@@ -53,18 +53,10 @@
 </section>
 
 <section class="slide" id="s05" data-sec="1">
-  <p class="kicker">Plan of the session</p>
-  <h2>The session answers five questions in order.</h2>
-  <div class="body center">
-    <ol class="road">
-      <li><span class="n">1</span><b>Why a small model?</b><p>Size, memory, and where a model can run.</p><button class="link" data-go="s06">Go to this part</button></li>
-      <li><span class="n">2</span><b>Why synthetic data?</b><p>The examples that a model needs are often missing.</p><button class="link" data-go="s10">Go to this part</button></li>
-      <li><span class="n">3</span><b>How is it done?</b><p>Nine steps lead from a task to a small model.</p><button class="link" data-go="s15">Go to this part</button></li>
-      <li><span class="n">4</span><b>Does it work?</b><p>A report-tagging model was built this way and tested on real reports.</p><button class="link" data-go="s25">Go to this part</button></li>
-      <li><span class="n">5</span><b>Which tasks fit?</b><p>Criteria, a short quiz, and a checklist.</p><button class="link" data-go="s36">Go to this part</button></li>
-    </ol>
-  </div>
-  <aside class="notes">Give the plan in one breath and move on. The strip at the top of each slide shows the current part, so the room always knows where we are. If time is short, parts 1, 2 and 4 carry the core of the session.</aside>
+  <p class="kicker">Overview of the process</p>
+  <h2>A small model learns from practice cases that a large model writes.</h2>
+  <div class="body center"><div class="cycle" data-demo="cycle"></div></div>
+  <aside class="notes">This is the whole approach before the details. Read the five boxes from left to right: the task, the large model that writes practice cases, the small model that learns from them, the test on real cases, and the small model at work. The large model is needed in the second box only. Then show the loop: the test shows the kinds of cases that the small model gets wrong, and the large model writes more cases of those kinds. Then show the parts of the session. The numbers give their order. We start with the small model, because it is the goal, and then turn to the practice cases, which are called synthetic data. The strip at the top of each slide shows the current part. If time is short, parts 1, 2 and 4 carry the core of the session.</aside>
 </section>
 
 <section class="slide" id="s06" data-sec="2">

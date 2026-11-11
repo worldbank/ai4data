@@ -475,6 +475,38 @@ const methodCards = (view, links) => METHOD.map((s, i) =>
   `<div class="card ${s.kind}-k"><svg viewBox="0 0 120 72" aria-hidden="true">${s.icon}</svg>
     <span class="lbl">Step ${i + 1} · ${s.term}</span><h3>${s.title}</h3><p class="txt">${esc(s[view])}</p>
     ${links ? `<button type="button" class="link" data-go="${s.go}" style="margin-top:auto;text-align:left">${s.link}</button>` : ''}</div>`).join('');
+// The process and the parts of the session (slide 5).
+const CYCLE = [
+  {k: 'plain', lbl: 'The task', t: 'A response needs one code from a fixed list',
+    icon: '<rect x="6" y="19" width="52" height="32" rx="9" class="iP"/><path d="M16 31 H48 M16 39 H38" class="iL"/><path d="M63 35 H75" class="iA" marker-end="url(#ah)"/><rect x="80" y="23" width="36" height="24" rx="12" class="iT"/><text x="98" y="39.5" text-anchor="middle" font-size="11.5" font-weight="650">5212</text>'},
+  {k: 'large', lbl: 'Practice cases', t: 'A large model writes thousands of responses with their codes', icon: METHOD[0].icon},
+  {k: 'small', lbl: 'Training', t: 'A small model learns from the practice cases', icon: METHOD[1].icon},
+  {k: 'teal', lbl: 'Test', t: 'Real responses coded by people test the small model',
+    icon: '<rect x="26" y="10" width="42" height="52" rx="4" class="iP"/><path d="M33 20 H61 M33 26 H55" class="iL"/><rect x="33" y="31" width="18" height="6" rx="3" class="iT"/><path d="M33 44 H61 M33 50 H51" class="iL"/><circle cx="80" cy="46" r="13" class="iR"/><path d="M74 46.5 l4.5 4.5 l8 -9.5" class="iRS"/>'},
+  {k: 'small', lbl: 'Use', t: 'The small model suggests codes on the office\'s own computer', icon: METHOD[2].icon},
+];
+const PARTS = [
+  {cls: 'here', name: 'Tasks', sub: 'This part'},
+  {cls: 'large', n: 2, go: 's10', name: 'Synthetic data', sub: 'Where the practice cases come from'},
+  {cls: 'small', n: 1, go: 's06', name: 'Small model', sub: 'Size, memory, and cost'},
+  {cls: '', n: 4, go: 's25', name: 'Report tagging', sub: 'A second model and its test on real reports'},
+  {cls: '', n: 5, go: 's36', name: 'Small or large', sub: 'The tasks that fit a small model'},
+  {cls: 'wide', n: 3, go: 's15', name: 'Nine steps', sub: 'The whole process in nine steps'},
+];
+DEMOS.cycle = {
+  on() { return false; },
+  render() {
+    const part = (x) => (x.go
+      ? `<button type="button" class="cypart ${x.cls}" style="--o:${x.n}" data-go="${x.go}"><i>${x.n}</i><b>${x.name}</b><span>${x.sub}</span></button>`
+      : `<div class="cypart ${x.cls}"><b>${x.name}</b><span>${x.sub}</span></div>`);
+    return `<ol class="cygrid cyflow">${CYCLE.map((x) => `<li class="card ${x.k}-k"><svg viewBox="0 0 120 72" aria-hidden="true">${x.icon}</svg>
+      <span class="lbl">${x.lbl}</span><b>${esc(x.t)}</b></li>`).join('')}</ol>
+    <div class="cygrid cyloop" data-step="1"><span class="cap">More practice cases for the kinds of cases that the small model gets wrong</span><span class="arc"></span></div>
+    <div class="cyparts" data-step="2"><span class="lbl">Parts of the session, numbered in their order</span>
+      <div class="cygrid">${PARTS.map(part).join('')}</div></div>`;
+  },
+};
+
 DEMOS.m3 = {
   state: () => ({v: 'method'}),
   on(st, a, v) { st.v = v; },

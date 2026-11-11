@@ -160,7 +160,14 @@ def controls(browser):
     box = pg.locator('.pop').bounding_box()
     ok('the definition stays inside the stage', box['x'] >= 0 and box['x'] + box['width'] <= 1280 and box['y'] + box['height'] <= 720, box)
     pg.keyboard.press('Escape'); ok('Esc closes the definition', pg.locator('.pop').count() == 0)
-    at('s05'); pg.locator('.slide.on [data-go]').nth(2).click(); ok('the plan links to its part', cur() in ('s14', 's15'), cur())
+    at('s05')
+    geo = pg.evaluate("""() => {
+      const c = (n) => { const r = n.getBoundingClientRect(); return r.left + r.width / 2; };
+      const cards = [...document.querySelectorAll('.slide.on .cyflow .card')], arc = document.querySelector('.slide.on .cyloop .arc').getBoundingClientRect();
+      return [cards.length, Math.abs(arc.left + 1 - c(cards[1])), Math.abs(arc.right - 1 - c(cards[3])), arc.bottom <= cards[1].getBoundingClientRect().top];
+    }""")
+    ok('slide 5: the loop runs from the test to the practice cases', geo[0] == 5 and geo[1] < 2 and geo[2] < 2 and geo[3], geo)
+    pg.locator('.slide.on .cypart[data-go="s06"]').click(); ok('slide 5: a part of the session opens its first slide', cur() == 's06', cur())
     at('s15'); pg.locator('.slide.on .stepbtn').nth(6).click(); ok('step 7 on the process slide opens slide 22', cur() == 's22')
 
     # Demonstrations.
