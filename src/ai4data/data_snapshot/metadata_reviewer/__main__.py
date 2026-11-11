@@ -48,7 +48,13 @@ def main(argv: list[str] | None = None) -> int:
         "--reviewed-root",
         str(paths.reviewed_root.resolve()),
     ]
-    return subprocess.run(command, check=False).returncode
+    with subprocess.Popen(command) as process:
+        while True:
+            try:
+                return process.wait()
+            except KeyboardInterrupt:
+                # Ctrl+C reaches Streamlit too; let it finish its own shutdown.
+                pass
 
 
 if __name__ == "__main__":

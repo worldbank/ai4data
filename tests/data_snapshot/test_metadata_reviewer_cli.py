@@ -1,8 +1,8 @@
 """Check the installed reviewer launcher without starting a server."""
 
-import subprocess
 import sys
 from pathlib import Path
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -24,14 +24,16 @@ def test_launch_uses_installed_app_and_localhost(
 ) -> None:
     """Preserve paths with spaces and return the Streamlit process status."""
     commands = []
+    process = MagicMock()
+    process.__enter__.return_value = process
+    process.wait.return_value = 7
 
-    def run(command: list[str], *, check: bool) -> subprocess.CompletedProcess:
-        assert not check
+    def popen(command: list[str]) -> MagicMock:
         commands.append(command)
-        return subprocess.CompletedProcess(command, 7)
+        return process
 
     monkeypatch.setattr(launcher, "find_spec", lambda name: object())
-    monkeypatch.setattr(launcher.subprocess, "run", run)
+    monkeypatch.setattr(launcher.subprocess, "Popen", popen)
     assert (
         launcher.main(
             [
@@ -59,6 +61,23 @@ def test_launch_uses_installed_app_and_localhost(
         "--reviewed-root",
         str(tmp_path / "reviewed metadata"),
     ]
+
+
+@pytest.mark.parametrize("interrupts", [1, 2])
+def test_interrupt_waits_for_streamlit_shutdown(
+    monkeypatch: pytest.MonkeyPatch, interrupts: int
+) -> None:
+    """Allow repeated Ctrl+C while Streamlit finishes without killing the child."""
+    process = MagicMock()
+    process.__enter__.return_value = process
+    process.wait.side_effect = [KeyboardInterrupt() for _ in range(interrupts)] + [0]
+    monkeypatch.setattr(launcher, "find_spec", lambda name: object())
+    monkeypatch.setattr(launcher.subprocess, "Popen", lambda command: process)
+
+    assert launcher.main([]) == 0
+    assert process.wait.call_count == interrupts + 1
+    process.kill.assert_not_called()
+    process.terminate.assert_not_called()
 
 
 def test_missing_streamlit_explains_install(monkeypatch: pytest.MonkeyPatch) -> None:
