@@ -1,5 +1,7 @@
 # Data Snapshot Metadata Reviewer
 
+![Data Snapshot Metadata Reviewer showing a chart beside its editable metadata](screenshot.png)
+
 Review generated metadata beside its data snapshot, edit structured fields,
 and save a separate human-reviewed JSON record. The app uses ai4data's canonical
 Data Snapshot Metadata Schema v1.4. It runs locally, with no model weights,
