@@ -1,0 +1,6 @@
+transformers==5.11.0
+tokenizers==0.22.2
+safetensors==0.8.0
+huggingface_hub==1.19.0
+flask>=3.0
+gunicorn>=21.2
