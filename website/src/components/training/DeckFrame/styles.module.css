@@ -1,0 +1,35 @@
+/* The frame of a session's slide deck. `.scaled` holds a deck window of fixed size that
+   index.js scales to the width of the page; `.scrolling` is the frame on a narrow page. */
+.scaled,
+.scrolling {
+  position: relative;
+  width: 100%;
+  margin: 1rem 0 1.5rem;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--ifm-background-surface-color);
+}
+
+.scaled {
+  aspect-ratio: 1280 / 760;
+}
+
+.scaled iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 0;
+  transform-origin: 0 0;
+}
+
+.scrolling {
+  height: min(80vh, 640px);
+}
+
+.scrolling iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}

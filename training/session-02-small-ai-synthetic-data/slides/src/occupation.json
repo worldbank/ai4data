@@ -1,0 +1,954 @@
+{
+ "classification": "ISCO-08",
+ "groups": 436,
+ "testTitles": 1000,
+ "groupsInTest": 180,
+ "cases": 15865,
+ "topn": [
+  {
+   "n": 1,
+   "share": 0.351
+  },
+  {
+   "n": 3,
+   "share": 0.506
+  },
+  {
+   "n": 5,
+   "share": 0.565
+  },
+  {
+   "n": 10,
+   "share": 0.636
+  }
+ ],
+ "majorGroup": 0.584,
+ "arms": [
+  {
+   "arm": "first",
+   "score": 0.312,
+   "examples": 10869
+  },
+  {
+   "arm": "control",
+   "score": 0.339,
+   "examples": 17230
+  },
+  {
+   "arm": "targeted",
+   "score": 0.351,
+   "examples": 15865
+  }
+ ],
+ "difference": 0.012,
+ "interval": [
+  -0.006,
+  0.029
+ ],
+ "large": [
+  {
+   "model": "Gemini 3.8 Flash",
+   "score": 0.497
+  },
+  {
+   "model": "Claude Sonnet 5.5",
+   "score": 0.433
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "score": 0.406
+  }
+ ],
+ "responses": [
+  {
+   "text": "teacher at the primary school",
+   "expected": "2341",
+   "expectedName": "Primary school teachers",
+   "suggestions": [
+    {
+     "code": "2341",
+     "name": "Primary school teachers",
+     "score": 0.91
+    },
+    {
+     "code": "2342",
+     "name": "Early childhood educators",
+     "score": 0.04
+    },
+    {
+     "code": "1345",
+     "name": "Education managers",
+     "score": 0.03
+    },
+    {
+     "code": "2330",
+     "name": "Secondary education teachers",
+     "score": 0.02
+    },
+    {
+     "code": "2352",
+     "name": "Special needs teachers",
+     "score": 0.0
+    }
+   ]
+  },
+  {
+   "text": "drives a motorcycle taxi",
+   "expected": "8321",
+   "expectedName": "Motorcycle drivers",
+   "suggestions": [
+    {
+     "code": "8322",
+     "name": "Car, taxi and van drivers",
+     "score": 0.49
+    },
+    {
+     "code": "8321",
+     "name": "Motorcycle drivers",
+     "score": 0.31
+    },
+    {
+     "code": "9332",
+     "name": "Drivers of animal-drawn vehicles and machinery",
+     "score": 0.08
+    },
+    {
+     "code": "8331",
+     "name": "Bus and tram drivers",
+     "score": 0.06
+    },
+    {
+     "code": "9331",
+     "name": "Hand and pedal vehicle drivers",
+     "score": 0.03
+    }
+   ]
+  },
+  {
+   "text": "sell tea and mandazi at the stage",
+   "expected": "5212",
+   "expectedName": "Street food salespersons",
+   "suggestions": [
+    {
+     "code": "5212",
+     "name": "Street food salespersons",
+     "score": 0.4
+    },
+    {
+     "code": "9520",
+     "name": "Street vendors (excluding food)",
+     "score": 0.19
+    },
+    {
+     "code": "5246",
+     "name": "Food service counter attendants",
+     "score": 0.11
+    },
+    {
+     "code": "9411",
+     "name": "Fast food preparers",
+     "score": 0.06
+    },
+    {
+     "code": "9412",
+     "name": "Kitchen helpers",
+     "score": 0.04
+    }
+   ]
+  },
+  {
+   "text": "helps my mother sell vegetables at the market",
+   "expected": "5211",
+   "expectedName": "Stall and market salespersons",
+   "suggestions": [
+    {
+     "code": "5212",
+     "name": "Street food salespersons",
+     "score": 0.46
+    },
+    {
+     "code": "9520",
+     "name": "Street vendors (excluding food)",
+     "score": 0.15
+    },
+    {
+     "code": "5211",
+     "name": "Stall and market salespersons",
+     "score": 0.12
+    },
+    {
+     "code": "9334",
+     "name": "Shelf fillers",
+     "score": 0.07
+    },
+    {
+     "code": "5246",
+     "name": "Food service counter attendants",
+     "score": 0.04
+    }
+   ]
+  },
+  {
+   "text": "grows maize and beans to feed the family",
+   "expected": "6310",
+   "expectedName": "Subsistence crop farmers",
+   "suggestions": [
+    {
+     "code": "6310",
+     "name": "Subsistence crop farmers",
+     "score": 0.24
+    },
+    {
+     "code": "6111",
+     "name": "Field crop and vegetable growers",
+     "score": 0.21
+    },
+    {
+     "code": "6114",
+     "name": "Mixed crop growers",
+     "score": 0.2
+    },
+    {
+     "code": "9211",
+     "name": "Crop farm labourers",
+     "score": 0.14
+    },
+    {
+     "code": "6221",
+     "name": "Aquaculture workers",
+     "score": 0.06
+    }
+   ]
+  },
+  {
+   "text": "sells roasted maize by the roadside",
+   "expected": "5212",
+   "expectedName": "Street food salespersons",
+   "suggestions": [
+    {
+     "code": "9211",
+     "name": "Crop farm labourers",
+     "score": 0.83
+    },
+    {
+     "code": "6111",
+     "name": "Field crop and vegetable growers",
+     "score": 0.05
+    },
+    {
+     "code": "7514",
+     "name": "Fruit, vegetable and related preservers",
+     "score": 0.02
+    },
+    {
+     "code": "9216",
+     "name": "Fishery and aquaculture labourers",
+     "score": 0.02
+    },
+    {
+     "code": "6114",
+     "name": "Mixed crop growers",
+     "score": 0.01
+    }
+   ]
+  },
+  {
+   "text": "boda boda rider",
+   "expected": "8321",
+   "expectedName": "Motorcycle drivers",
+   "suggestions": [
+    {
+     "code": "2659",
+     "name": "Creative and performing artists not elsewhere classified",
+     "score": 0.27
+    },
+    {
+     "code": "6224",
+     "name": "Hunters and trappers",
+     "score": 0.08
+    },
+    {
+     "code": "6223",
+     "name": "Deep-sea fishery workers",
+     "score": 0.08
+    },
+    {
+     "code": "8350",
+     "name": "Ships' deck crews and related workers",
+     "score": 0.07
+    },
+    {
+     "code": "3421",
+     "name": "Athletes and sports players",
+     "score": 0.06
+    }
+   ]
+  },
+  {
+   "text": "business",
+   "expected": null,
+   "expectedName": null,
+   "suggestions": [
+    {
+     "code": "5152",
+     "name": "Domestic housekeepers",
+     "score": 0.34
+    },
+    {
+     "code": "4120",
+     "name": "Secretaries (general)",
+     "score": 0.16
+    },
+    {
+     "code": "4226",
+     "name": "Receptionists (general)",
+     "score": 0.08
+    },
+    {
+     "code": "5151",
+     "name": "Cleaning and housekeeping supervisors in offices, hotels and other establishments",
+     "score": 0.04
+    },
+    {
+     "code": "4419",
+     "name": "Clerical support workers not elsewhere classified",
+     "score": 0.03
+    }
+   ]
+  }
+ ],
+ "rewritten": [
+  {
+   "title": "Senior Retail Specialist",
+   "code": "5221",
+   "name": "Shopkeepers",
+   "answers": [
+    {
+     "style": "Short answer",
+     "text": "shopkeeper",
+     "kept": true
+    },
+    {
+     "style": "Job and place of work",
+     "text": "run a small grocery shop on my own",
+     "kept": true
+    },
+    {
+     "style": "Tasks in everyday words",
+     "text": "deal with customers, stock shelves, and handle the till",
+     "kept": false,
+     "second": "5223",
+     "secondName": "Shop sales assistants"
+    }
+   ]
+  },
+  {
+   "title": "Clinical Nurse (HIV Testing Counsellor)",
+   "code": "2221",
+   "name": "Nursing professionals",
+   "answers": [
+    {
+     "style": "Short answer",
+     "text": "nurse",
+     "kept": true
+    },
+    {
+     "style": "Job and place of work",
+     "text": "clinical nurse at the hospital",
+     "kept": true
+    },
+    {
+     "style": "Tasks in everyday words",
+     "text": "testing people for hiv and giving them counselling",
+     "kept": false,
+     "second": "3259",
+     "secondName": "Health associate professionals not elsewhere classified"
+    }
+   ]
+  },
+  {
+   "title": "Regional Marketing Specialist",
+   "code": "2431",
+   "name": "Advertising and marketing professionals",
+   "answers": [
+    {
+     "style": "Short answer",
+     "text": "marketing",
+     "kept": true
+    },
+    {
+     "style": "Job and place of work",
+     "text": "doing marketing for a big retail chain",
+     "kept": true
+    },
+    {
+     "style": "Tasks in everyday words",
+     "text": "planning ad campaigns and figuring out what customers want to buy",
+     "kept": true
+    }
+   ]
+  },
+  {
+   "title": "Early warning Officer",
+   "code": "3343",
+   "name": "Administrative and executive secretaries",
+   "answers": [
+    {
+     "style": "Short answer",
+     "text": "officer",
+     "kept": false,
+     "second": "",
+     "secondName": ""
+    },
+    {
+     "style": "Job and place of work",
+     "text": "early warning officer at the humanitarian response center",
+     "kept": false,
+     "second": "",
+     "secondName": ""
+    },
+    {
+     "style": "Tasks in everyday words",
+     "text": "monitoring risks and writing reports for the team every day",
+     "kept": false,
+     "second": "",
+     "secondName": ""
+    }
+   ]
+  },
+  {
+   "title": "Social Work Intern",
+   "code": "2635",
+   "name": "Social work and counselling professionals",
+   "answers": [
+    {
+     "style": "Short answer",
+     "text": "social work",
+     "kept": true
+    },
+    {
+     "style": "Job and place of work",
+     "text": "doing social work at a community centre",
+     "kept": false,
+     "second": "3412",
+     "secondName": "Social work associate professionals"
+    },
+    {
+     "style": "Tasks in everyday words",
+     "text": "helping families deal with personal problems and connecting them to resources",
+     "kept": true
+    }
+   ]
+  }
+ ],
+ "check": {
+  "written": 30299,
+  "kept": 22268,
+  "byStyle": [
+   {
+    "style": "Short answer",
+    "kept": 6304,
+    "removed": 3785
+   },
+   {
+    "style": "Job and place of work",
+    "kept": 7878,
+    "removed": 2227
+   },
+   {
+    "style": "Tasks in everyday words",
+    "kept": 8086,
+    "removed": 2019
+   }
+  ],
+  "none": 6028,
+  "other": 2003
+ },
+ "sets": {
+  "total": 44058,
+  "items": [
+   {
+    "n": 15865,
+    "name": "Job titles written from the definitions",
+    "how": "A large model wrote them from the definition of each group.",
+    "example": {
+     "text": "Hot food street seller",
+     "code": "5212",
+     "name": "Street food salespersons"
+    }
+   },
+   {
+    "n": 10134,
+    "name": "Job titles from a job board",
+    "how": "The job board gave each title its code. The titles are real, and they are worded as advertisements.",
+    "example": {
+     "text": "Senior Retail Specialist",
+     "code": "5221",
+     "name": "Shopkeepers"
+    }
+   },
+   {
+    "n": 22268,
+    "name": "Survey-style answers",
+    "how": "A large model rewrote each job title as three answers of a respondent. A second model checked each answer.",
+    "example": {
+     "text": "run a small grocery shop on my own",
+     "code": "5221",
+     "name": "Shopkeepers"
+    }
+   }
+  ]
+ },
+ "atWork": [
+  {
+   "text": "I repair engines and do maintenance on large diesel trucks and buses.",
+   "expected": "7231",
+   "expectedName": "Motor vehicle mechanics and repairers",
+   "suggestions": [
+    {
+     "code": "7231",
+     "name": "Motor vehicle mechanics and repairers",
+     "score": 0.8364
+    },
+    {
+     "code": "7233",
+     "name": "Agricultural and industrial machinery mechanics and repairers",
+     "score": 0.1384
+    },
+    {
+     "code": "7232",
+     "name": "Aircraft engine mechanics and repairers",
+     "score": 0.0137
+    },
+    {
+     "code": "7412",
+     "name": "Electrical mechanics and fitters",
+     "score": 0.0017
+    },
+    {
+     "code": "7127",
+     "name": "Air conditioning and refrigeration mechanics",
+     "score": 0.0015
+    }
+   ]
+  },
+  {
+   "text": "I run the grill and meat station in a busy hotel restaurant kitchen.",
+   "expected": "3434",
+   "expectedName": "Chefs",
+   "suggestions": [
+    {
+     "code": "3434",
+     "name": "Chefs",
+     "score": 0.8409
+    },
+    {
+     "code": "5120",
+     "name": "Cooks",
+     "score": 0.0484
+    },
+    {
+     "code": "5132",
+     "name": "Bartenders",
+     "score": 0.027
+    },
+    {
+     "code": "7512",
+     "name": "Bakers, pastry-cooks and confectionery makers",
+     "score": 0.027
+    },
+    {
+     "code": "8160",
+     "name": "Food and related products machine operators",
+     "score": 0.0162
+    }
+   ]
+  },
+  {
+   "text": "I review tax returns and make sure individuals and businesses pay the correct taxes.",
+   "expected": "3352",
+   "expectedName": "Government tax and excise officials",
+   "suggestions": [
+    {
+     "code": "2411",
+     "name": "Accountants",
+     "score": 0.7444
+    },
+    {
+     "code": "3352",
+     "name": "Government tax and excise officials",
+     "score": 0.246
+    },
+    {
+     "code": "3313",
+     "name": "Accounting associate professionals",
+     "score": 0.0013
+    },
+    {
+     "code": "3257",
+     "name": "Environmental and occupational health inspectors and associates",
+     "score": 0.0011
+    },
+    {
+     "code": "2412",
+     "name": "Financial and investment advisers",
+     "score": 0.0008
+    }
+   ]
+  },
+  {
+   "text": "I carry luggage for guests at a hotel and show them to their rooms.",
+   "expected": "9621",
+   "expectedName": "Messengers, package deliverers and luggage porters",
+   "suggestions": [
+    {
+     "code": "9621",
+     "name": "Messengers, package deliverers and luggage porters",
+     "score": 0.7938
+    },
+    {
+     "code": "4412",
+     "name": "Mail carriers and sorting clerks",
+     "score": 0.1178
+    },
+    {
+     "code": "8321",
+     "name": "Motorcycle drivers",
+     "score": 0.0267
+    },
+    {
+     "code": "5111",
+     "name": "Travel attendants and travel stewards",
+     "score": 0.0159
+    },
+    {
+     "code": "8322",
+     "name": "Car, taxi and van drivers",
+     "score": 0.0158
+    }
+   ]
+  },
+  {
+   "text": "I help lawyers prepare legal paperwork, do case research, and file court documents quickly.",
+   "expected": "3411",
+   "expectedName": "Legal and related associate professionals",
+   "suggestions": [
+    {
+     "code": "2611",
+     "name": "Lawyers",
+     "score": 0.5595
+    },
+    {
+     "code": "3411",
+     "name": "Legal and related associate professionals",
+     "score": 0.3828
+    },
+    {
+     "code": "2619",
+     "name": "Legal professionals not elsewhere classified",
+     "score": 0.0358
+    },
+    {
+     "code": "3342",
+     "name": "Legal secretaries",
+     "score": 0.0074
+    },
+    {
+     "code": "2612",
+     "name": "Judges",
+     "score": 0.0046
+    }
+   ]
+  },
+  {
+   "text": "I supervise the front of house staff, handle customer issues, and balance the cash drawers.",
+   "expected": "1412",
+   "expectedName": "Restaurant managers",
+   "suggestions": [
+    {
+     "code": "1346",
+     "name": "Financial and insurance services branch managers",
+     "score": 0.6301
+    },
+    {
+     "code": "1420",
+     "name": "Retail and wholesale trade managers",
+     "score": 0.1817
+    },
+    {
+     "code": "5222",
+     "name": "Shop supervisors",
+     "score": 0.0749
+    },
+    {
+     "code": "1439",
+     "name": "Services managers not elsewhere classified",
+     "score": 0.0363
+    },
+    {
+     "code": "1321",
+     "name": "Manufacturing managers",
+     "score": 0.0146
+    }
+   ]
+  },
+  {
+   "text": "sell tea and mandazi at the stage",
+   "expected": "5212",
+   "expectedName": "Street food salespersons",
+   "suggestions": [
+    {
+     "code": "5223",
+     "name": "Shop sales assistants",
+     "score": 0.9376
+    },
+    {
+     "code": "3322",
+     "name": "Commercial sales representatives",
+     "score": 0.0507
+    },
+    {
+     "code": "3339",
+     "name": "Business services agents not elsewhere classified",
+     "score": 0.0024
+    },
+    {
+     "code": "5243",
+     "name": "Door-to-door salespersons",
+     "score": 0.0024
+    },
+    {
+     "code": "5249",
+     "name": "Sales workers not elsewhere classified",
+     "score": 0.0015
+    }
+   ]
+  },
+  {
+   "text": "boda boda rider",
+   "expected": "8321",
+   "expectedName": "Motorcycle drivers",
+   "suggestions": [
+    {
+     "code": "3421",
+     "name": "Athletes and sports players",
+     "score": 0.1634
+    },
+    {
+     "code": "5141",
+     "name": "Hairdressers",
+     "score": 0.1353
+    },
+    {
+     "code": "2652",
+     "name": "Musicians, singers and composers",
+     "score": 0.1129
+    },
+    {
+     "code": "9121",
+     "name": "Hand launderers and pressers",
+     "score": 0.1062
+    },
+    {
+     "code": "7536",
+     "name": "Shoemakers and related workers",
+     "score": 0.1025
+    }
+   ]
+  }
+ ],
+ "informal": {
+  "n": 29,
+  "first": 0.529,
+  "final": 0.368
+ },
+ "byTraining": [
+  {
+   "arm": "defs",
+   "label": "Titles written from the definitions",
+   "examples": 15865,
+   "survey": {
+    "top1": 0.37,
+    "top5": 0.695
+   },
+   "titles": {
+    "top1": 0.351,
+    "top5": 0.565
+   }
+  },
+  {
+   "arm": "titles",
+   "label": "Job titles from the job board",
+   "examples": 10134,
+   "survey": {
+    "top1": 0.461,
+    "top5": 0.774
+   },
+   "titles": {
+    "top1": 0.576,
+    "top5": 0.812
+   }
+  },
+  {
+   "arm": "survey",
+   "label": "Survey-style answers",
+   "examples": 18346,
+   "survey": {
+    "top1": 0.668,
+    "top5": 0.913
+   },
+   "titles": {
+    "top1": 0.436,
+    "top5": 0.713
+   }
+  },
+  {
+   "arm": "titles_survey",
+   "label": "Job titles and survey-style answers",
+   "examples": 28476,
+   "survey": {
+    "top1": 0.66,
+    "top5": 0.924
+   },
+   "titles": {
+    "top1": 0.597,
+    "top5": 0.83
+   }
+  },
+  {
+   "arm": "all",
+   "label": "All three sets",
+   "examples": 44058,
+   "survey": {
+    "top1": 0.684,
+    "top5": 0.938
+   },
+   "titles": {
+    "top1": 0.595,
+    "top5": 0.835
+   }
+  }
+ ],
+ "versus": {
+  "survey1": [
+   {
+    "model": "Small model",
+    "kind": "small",
+    "score": 0.684
+   },
+   {
+    "model": "Gemini 3.8 Flash",
+    "kind": "large",
+    "score": 0.675
+   },
+   {
+    "model": "Claude Sonnet 5.5",
+    "kind": "large",
+    "score": 0.637
+   },
+   {
+    "model": "Qwen3.8-27B",
+    "kind": "large",
+    "score": 0.62
+   }
+  ],
+  "survey5": [
+   {
+    "model": "Small model",
+    "kind": "small",
+    "score": 0.938
+   },
+   {
+    "model": "Gemini 3.8 Flash",
+    "kind": "large",
+    "score": 0.938
+   },
+   {
+    "model": "Claude Sonnet 5.5",
+    "kind": "large",
+    "score": 0.928
+   },
+   {
+    "model": "Qwen3.8-27B",
+    "kind": "large",
+    "score": 0.887
+   }
+  ],
+  "titles1": [
+   {
+    "model": "Small model",
+    "kind": "small",
+    "score": 0.595
+   },
+   {
+    "model": "Gemini 3.8 Flash",
+    "kind": "large",
+    "score": 0.497
+   },
+   {
+    "model": "Claude Sonnet 5.5",
+    "kind": "large",
+    "score": 0.433
+   },
+   {
+    "model": "Qwen3.8-27B",
+    "kind": "large",
+    "score": 0.406
+   }
+  ]
+ },
+ "speed": {
+  "gb": 0.57,
+  "rows": [
+   {
+    "model": "Small model",
+    "where": "CPU, 4 threads",
+    "kind": "small",
+    "seconds": 0.048
+   },
+   {
+    "model": "Small model",
+    "where": "one GPU",
+    "kind": "small",
+    "seconds": 0.005
+   },
+   {
+    "model": "Qwen3.8-27B",
+    "where": "one GPU on a local server",
+    "kind": "large",
+    "seconds": 0.37
+   },
+   {
+    "model": "Claude Sonnet 5.5",
+    "where": "hosted service",
+    "kind": "large",
+    "seconds": 0.87
+   },
+   {
+    "model": "Gemini 3.8 Flash",
+    "where": "hosted service, with reasoning",
+    "kind": "large",
+    "seconds": 5.1
+   }
+  ]
+ },
+ "rewrite": {
+  "title": "Pediatric Nurse & NICU",
+  "code": "2221",
+  "name": "Nursing professionals",
+  "answers": [
+   {
+    "style": "Short answer",
+    "text": "nurse"
+   },
+   {
+    "style": "Job and place of work",
+    "text": "nurse at the children's hospital"
+   },
+   {
+    "style": "Tasks in everyday words",
+    "text": "checking on sick babies and giving them medicine"
+   }
+  ]
+ }
+}

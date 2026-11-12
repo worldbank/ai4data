@@ -395,7 +395,8 @@ div[class*='codeBlockContainer'] {
   color: #ffffff;
 }
 .markdown .training-actions a.button--secondary {
-  color: var(--ifm-color-secondary-contrast-foreground);
+  color: var(--ifm-color-gray-900);
+  font-weight: 600;
 }
 .nb-output {
   margin-bottom: var(--ifm-leading);

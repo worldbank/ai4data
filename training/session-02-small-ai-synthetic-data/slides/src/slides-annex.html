@@ -1,0 +1,64 @@
+<section class="slide" id="s08" data-sec="7" data-back="s07">
+  <p class="kicker">Annex · Where a model can run</p>
+  <h2>A model has to fit in the memory of the computer that runs it.</h2>
+  <div class="body"><div class="fill" data-demo="machines" style="display:flex;flex-direction:column;gap:.9em"></div></div>
+  <p class="src">One square stands for 1 GB of memory. Memory ranges are rounded orders of magnitude for typical computers, following World Bank, World Development Report 2026, spotlight 1, table S1.1.</p>
+  <aside class="notes">Select the three models in turn and let the room read the verdicts. The small model takes about half of one square on a laptop. The large model needs a server, and the very large one fits only in a data center. Point at the last two rows of each card: the size of the model decides whether the text has to travel.</aside>
+</section>
+
+<section class="slide" id="s12" data-sec="7" data-back="s11">
+  <p class="kicker">Annex · Rare cases</p>
+  <h2>A model sees only a few real cases of a rare group.</h2>
+  <div class="body"><div class="fill rare" data-demo="rare"></div></div>
+  <aside class="notes">Each dot is one real response, and the four red dots come from one occupation group. Ask the room whether a new coder could learn how people describe that work from four responses. Then add the written responses. Point out what happens to the four real ones: they are kept for testing. The last line gives a count from 1,000 real job titles of a job board.</aside>
+</section>
+
+<section class="slide" id="s27" data-sec="7" data-back="s26">
+  <p class="kicker">Annex · Step 4 · The request</p>
+  <h2>One request turns a job title into three answers of a respondent.</h2>
+  <div class="body"><div class="fill story" data-demo="write"></div></div>
+  <p class="src">The run made one request for each of 10,134 job titles and received 30,299 answers. Qwen3.8-27B wrote them.</p>
+  <aside class="notes">Select the button and let the answers arrive. Read one job title and its three answers aloud. The first answer is short, the second adds the place of work, and the third gives the tasks. The code of the job title stays with each answer. Ask the room whether the answers sound like the answers of a respondent. The request on the slide is shortened: the full request has three more rules.</aside>
+</section>
+
+<section class="slide" id="s28" data-sec="7" data-back="s26">
+  <p class="kicker">Annex · Step 4 · The check</p>
+  <h2>A second model removed about a quarter of the answers.</h2>
+  <div class="body"><div class="g2 fill checkcols" data-demo="checked"></div></div>
+  <p class="src">Gemma 4 31B read each answer without the job title and without the code. It chose among the group of the title, the groups next to it in the classification, groups drawn at random, and the reply that none of the listed groups fits.</p>
+  <aside class="notes">A wrong code in training becomes a wrong answer in use, so every answer was checked. A second large model read the answer alone and chose a group. We kept the answer when it chose the group of the job title. Go through the job titles on the right. Short answers were removed most often, because a short answer such as "officer" fits several groups. The check also removes answers that are correct and too short to identify one group among 436.</aside>
+</section>
+
+<section class="slide" id="s35" data-sec="7" data-back="s34">
+  <p class="kicker">Annex · Cost of building</p>
+  <h2>Each build took less than an hour on one server.</h2>
+  <div class="body"><div class="fill" data-demo="cost" style="display:flex;flex-direction:column;justify-content:center"></div></div>
+  <p class="src">Requests, tokens and times come from the logs of the runs. Open models wrote and checked the examples on one server with two GPUs, so no price for each token was paid. The price is an example for comparison with the current price list of a provider. The time of the people who wrote the requests and reviewed the examples was not recorded.</p>
+  <aside class="notes">People ask what this costs, so here is what we measured. For the titles written from the definitions, the large model answered 2,700 requests and the build took 48 minutes. The rewriting build made about 20,000 requests, because a second model checks every answer, and it took 50 minutes. The third card is the report-tagging model of the next two slides: 1,750 requests and 32 minutes, with six training runs inside that time. Now select a price. We ran open models on our own server, so we paid no price for each token. With a hosted service, the cost is the number of tokens times the provider's price, and prices change often. Select the three examples to show the range. We did not measure our own time for writing the requests, reading samples, and deciding what to fix.</aside>
+</section>
+
+<section class="slide" id="s36" data-sec="7" data-back="s38">
+  <p class="kicker">Annex · Report-tagging model</p>
+  <h2>A second small model tags each report with topics from a fixed list of 86.</h2>
+  <div class="body"><div class="g2 fill">
+    <div class="card report" data-demo="report"></div>
+    <div style="display:flex;flex-direction:column;justify-content:center;gap:.9em">
+      <span class="lbl">How the model was built</span>
+      <ul class="obst">
+        <li data-step="1"><span class="lbl">Training</span>A large model wrote more than 30,000 labelled sentences. No real report was used.</li>
+        <li data-step="2"><span class="lbl">Threshold</span>488 real reports set the score above which the model assigns a topic.</li>
+        <li data-step="3"><span class="lbl">Test</span>300 other real reports with recorded topics test the model.</li>
+      </ul>
+    </div>
+  </div></div>
+  <p class="src">The report and its topics come from the World Bank documents database.</p>
+  <aside class="notes">The same process built a second model for a different task. An organization wants each report tagged with topics from a fixed list of 86, and it has no tagged reports for training. Read the title of the report and its topics. Then reveal the three facts. Here the test uses real reports with topics recorded by people.</aside>
+</section>
+
+<section class="slide" id="s37" data-sec="7" data-back="s38">
+  <p class="kicker">Annex · Report-tagging scores</p>
+  <h2>On 300 real reports the small model scored about the same as three large models.</h2>
+  <div class="body center"><div data-demo="results"></div></div>
+  <p class="src">F1 on 300 real report abstracts, on a scale from 0 to 1. The small model's scores are the mean of three training runs. The test covers 44 of the 86 topics. The small model takes 0.19 seconds per report on an ordinary processor.</p>
+  <aside class="notes">Show the three large models first. Each one was asked directly for the topics of every report. Then reveal the small model after the first set of sentences, and after the further rounds on its weak topics. The gap closes from about 0.06 to less than 0.01. Give two cautions. The 300 reports cover 44 of the 86 topics, so the scores say nothing about the other 42. And the recorded topics of a report can omit a topic that the abstract covers.</aside>
+</section>

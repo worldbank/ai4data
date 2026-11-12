@@ -1,0 +1,240 @@
+{
+ "writer": "Qwen3.8-27B",
+ "checker": "Gemma 4 31B",
+ "test_writer": "Gemini 3.8 Flash",
+ "prompt": "A household survey asks two questions about work: \"What is your main job?\" and \"What are your main tasks or duties in this job?\". The interviewer writes the answer down in the respondent's own words.\n\nA respondent holds this job:\nJob title in a job advertisement: {title}\nOccupation group: {label}\n\nWrite three different answers that this respondent could give.\n- Answer 1: a short answer of one to four words, the way many respondents answer.\n- Answer 2: the job together with the place of work or what the employer does, in four to twelve words.\n- Answer 3: the main tasks in everyday words, in six to twenty words, without the job title.\n\nRules:\n- Use the plain words of a respondent, and avoid the wording of a job advertisement. Do not copy the job title as it is written.\n- Write the way an interviewer records an answer: mostly lower case, short, sometimes an incomplete sentence, in the first person or with no subject.\n- Leave out the seniority grade, the company name, and anything a respondent would not say.\n- Each answer must describe this job, and must fit this occupation group better than any related group.",
+ "test_prompt": "In a labour force survey the interviewer asks \"What kind of work do you do in your main job?\" and writes down what the respondent says.\n\nThe respondent's job, as an employer would advertise it: {title}\nOccupation group of this job: {name}\n\nWrite the answer this respondent would give, as spoken: between three and twenty words that describe the work. The answer must not repeat the advertised job title word for word.",
+ "usage": {
+  "writer": {
+   "requests": 10133,
+   "prompt_tokens": 3620714,
+   "completion_tokens": 336917
+  },
+  "labeller": {
+   "requests": 10133,
+   "prompt_tokens": 12668651,
+   "completion_tokens": 546242
+  }
+ },
+ "tests": {
+  "report_titles": "the 1,000 job titles kept for the test",
+  "survey_style": "the same 1,000 titles rewritten as survey answers by a second large model",
+  "handwritten": "29 illustrative answers composed for the slides of the session"
+ },
+ "arms": [
+  {
+   "arm": "defs",
+   "label": "Titles written from the definitions",
+   "runs": 3,
+   "examples": 15865,
+   "train_seconds": 273,
+   "epochs": 15.0,
+   "tests": {
+    "report_titles": {
+     "top1": 0.351,
+     "top3": 0.506,
+     "top5": 0.565,
+     "top1_runs": [
+      0.358,
+      0.342,
+      0.353
+     ]
+    },
+    "survey_style": {
+     "top1": 0.37,
+     "top3": 0.608,
+     "top5": 0.695,
+     "top1_runs": [
+      0.375,
+      0.334,
+      0.401
+     ]
+    },
+    "handwritten": {
+     "top1": 0.529,
+     "top3": 0.713,
+     "top5": 0.759,
+     "top1_runs": [
+      0.4828,
+      0.5862,
+      0.5172
+     ]
+    }
+   }
+  },
+  {
+   "arm": "titles",
+   "label": "Job titles from the job board",
+   "runs": 3,
+   "examples": 10134,
+   "train_seconds": 116,
+   "epochs": 10.0,
+   "tests": {
+    "report_titles": {
+     "top1": 0.576,
+     "top3": 0.75,
+     "top5": 0.812,
+     "top1_runs": [
+      0.57,
+      0.585,
+      0.572
+     ]
+    },
+    "survey_style": {
+     "top1": 0.461,
+     "top3": 0.701,
+     "top5": 0.774,
+     "top1_runs": [
+      0.432,
+      0.483,
+      0.468
+     ]
+    },
+    "handwritten": {
+     "top1": 0.138,
+     "top3": 0.184,
+     "top5": 0.207,
+     "top1_runs": [
+      0.1379,
+      0.1379,
+      0.1379
+     ]
+    }
+   }
+  },
+  {
+   "arm": "survey",
+   "label": "Survey-style answers",
+   "runs": 3,
+   "examples": 18346,
+   "train_seconds": 122,
+   "epochs": 7.3,
+   "tests": {
+    "report_titles": {
+     "top1": 0.436,
+     "top3": 0.647,
+     "top5": 0.713,
+     "top1_runs": [
+      0.449,
+      0.42,
+      0.438
+     ]
+    },
+    "survey_style": {
+     "top1": 0.668,
+     "top3": 0.875,
+     "top5": 0.913,
+     "top1_runs": [
+      0.676,
+      0.662,
+      0.666
+     ]
+    },
+    "handwritten": {
+     "top1": 0.241,
+     "top3": 0.322,
+     "top5": 0.345,
+     "top1_runs": [
+      0.2414,
+      0.2069,
+      0.2759
+     ]
+    }
+   }
+  },
+  {
+   "arm": "titles_survey",
+   "label": "Job titles and survey-style answers",
+   "runs": 3,
+   "examples": 28476,
+   "train_seconds": 178,
+   "epochs": 6.7,
+   "tests": {
+    "report_titles": {
+     "top1": 0.597,
+     "top3": 0.773,
+     "top5": 0.83,
+     "top1_runs": [
+      0.607,
+      0.577,
+      0.607
+     ]
+    },
+    "survey_style": {
+     "top1": 0.66,
+     "top3": 0.876,
+     "top5": 0.924,
+     "top1_runs": [
+      0.657,
+      0.659,
+      0.664
+     ]
+    },
+    "handwritten": {
+     "top1": 0.207,
+     "top3": 0.264,
+     "top5": 0.287,
+     "top1_runs": [
+      0.2069,
+      0.2069,
+      0.2069
+     ]
+    }
+   }
+  },
+  {
+   "arm": "all",
+   "label": "All three sets",
+   "runs": 3,
+   "examples": 44058,
+   "train_seconds": 357,
+   "epochs": 8.3,
+   "tests": {
+    "report_titles": {
+     "top1": 0.595,
+     "top3": 0.775,
+     "top5": 0.835,
+     "top1_runs": [
+      0.607,
+      0.584,
+      0.594
+     ]
+    },
+    "survey_style": {
+     "top1": 0.684,
+     "top3": 0.896,
+     "top5": 0.938,
+     "top1_runs": [
+      0.667,
+      0.677,
+      0.709
+     ]
+    },
+    "handwritten": {
+     "top1": 0.368,
+     "top3": 0.632,
+     "top5": 0.747,
+     "top1_runs": [
+      0.3793,
+      0.3448,
+      0.3793
+     ]
+    }
+   }
+  }
+ ],
+ "large_on_titles": [
+  {
+   "model": "Gemini 3.8 Flash",
+   "top1": 0.497
+  },
+  {
+   "model": "Claude Sonnet 5.5",
+   "top1": 0.433
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "top1": 0.406
+  }
+ ]
+}

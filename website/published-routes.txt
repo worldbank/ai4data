@@ -285,5 +285,10 @@
 /training/session-01/slides
 /training/session-01/worked-example-data
 /training/session-02
+/training/session-02/deck
+/training/session-02/notebooks/01-coding-survey-answers-on-occupation
+/training/session-02/notebooks/02-tagging-reports-with-topics
+/training/session-02/slides
+/training/session-02/worked-example-data
 /unlisted
 /videos

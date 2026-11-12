@@ -1,0 +1,474 @@
+{
+ "trainTexts": 35515,
+ "testAnswers": 1000,
+ "runs": 3,
+ "points": [
+  {
+   "passes": 0,
+   "texts": 0,
+   "top1": 0.0,
+   "top5": 0.006
+  },
+  {
+   "passes": 0.05,
+   "texts": 1792,
+   "top1": 0.0,
+   "top5": 0.006
+  },
+  {
+   "passes": 0.1,
+   "texts": 3552,
+   "top1": 0.0,
+   "top5": 0.025
+  },
+  {
+   "passes": 0.2,
+   "texts": 7104,
+   "top1": 0.051,
+   "top5": 0.195
+  },
+  {
+   "passes": 0.3,
+   "texts": 10656,
+   "top1": 0.074,
+   "top5": 0.236
+  },
+  {
+   "passes": 0.5,
+   "texts": 17760,
+   "top1": 0.273,
+   "top5": 0.475
+  },
+  {
+   "passes": 0.75,
+   "texts": 26624,
+   "top1": 0.443,
+   "top5": 0.687
+  },
+  {
+   "passes": 1,
+   "texts": 35515,
+   "top1": 0.509,
+   "top5": 0.782
+  },
+  {
+   "passes": 1.5,
+   "texts": 53275,
+   "top1": 0.575,
+   "top5": 0.863
+  },
+  {
+   "passes": 2,
+   "texts": 71030,
+   "top1": 0.63,
+   "top5": 0.9
+  },
+  {
+   "passes": 3,
+   "texts": 106545,
+   "top1": 0.635,
+   "top5": 0.925
+  },
+  {
+   "passes": 4,
+   "texts": 142060,
+   "top1": 0.685,
+   "top5": 0.937
+  },
+  {
+   "passes": 6,
+   "texts": 213090,
+   "top1": 0.664,
+   "top5": 0.932
+  }
+ ],
+ "saved": {
+  "top1": 0.684,
+  "top5": 0.938,
+  "passes": [
+   6,
+   6,
+   7
+  ]
+ },
+ "answers": [
+  {
+   "text": "I repair engines and do maintenance on large diesel trucks and buses.",
+   "code": "7231",
+   "name": "Motor vehicle mechanics and repairers",
+   "first": [
+    {
+     "code": "7131",
+     "name": "Painters and related workers"
+    },
+    {
+     "code": "7131",
+     "name": "Painters and related workers"
+    },
+    {
+     "code": "7131",
+     "name": "Painters and related workers"
+    },
+    {
+     "code": "3343",
+     "name": "Administrative and executive secretaries"
+    },
+    {
+     "code": "2411",
+     "name": "Accountants"
+    },
+    {
+     "code": "2142",
+     "name": "Civil engineers"
+    },
+    {
+     "code": "7231",
+     "name": "Motor vehicle mechanics and repairers"
+    },
+    {
+     "code": "7231",
+     "name": "Motor vehicle mechanics and repairers"
+    },
+    {
+     "code": "7231",
+     "name": "Motor vehicle mechanics and repairers"
+    },
+    {
+     "code": "7231",
+     "name": "Motor vehicle mechanics and repairers"
+    },
+    {
+     "code": "7231",
+     "name": "Motor vehicle mechanics and repairers"
+    },
+    {
+     "code": "7231",
+     "name": "Motor vehicle mechanics and repairers"
+    },
+    {
+     "code": "7231",
+     "name": "Motor vehicle mechanics and repairers"
+    },
+    {
+     "code": "7231",
+     "name": "Motor vehicle mechanics and repairers"
+    }
+   ]
+  },
+  {
+   "text": "I run the grill and meat station in a busy hotel restaurant kitchen.",
+   "code": "3434",
+   "name": "Chefs",
+   "first": [
+    {
+     "code": "7131",
+     "name": "Painters and related workers"
+    },
+    {
+     "code": "7131",
+     "name": "Painters and related workers"
+    },
+    {
+     "code": "7131",
+     "name": "Painters and related workers"
+    },
+    {
+     "code": "3343",
+     "name": "Administrative and executive secretaries"
+    },
+    {
+     "code": "2411",
+     "name": "Accountants"
+    },
+    {
+     "code": "2142",
+     "name": "Civil engineers"
+    },
+    {
+     "code": "3434",
+     "name": "Chefs"
+    },
+    {
+     "code": "3434",
+     "name": "Chefs"
+    },
+    {
+     "code": "3434",
+     "name": "Chefs"
+    },
+    {
+     "code": "5120",
+     "name": "Cooks"
+    },
+    {
+     "code": "3434",
+     "name": "Chefs"
+    },
+    {
+     "code": "3434",
+     "name": "Chefs"
+    },
+    {
+     "code": "3434",
+     "name": "Chefs"
+    },
+    {
+     "code": "3434",
+     "name": "Chefs"
+    }
+   ]
+  },
+  {
+   "text": "I review tax returns and make sure individuals and businesses pay the correct taxes.",
+   "code": "3352",
+   "name": "Government tax and excise officials",
+   "first": [
+    {
+     "code": "7131",
+     "name": "Painters and related workers"
+    },
+    {
+     "code": "7131",
+     "name": "Painters and related workers"
+    },
+    {
+     "code": "7131",
+     "name": "Painters and related workers"
+    },
+    {
+     "code": "3343",
+     "name": "Administrative and executive secretaries"
+    },
+    {
+     "code": "2411",
+     "name": "Accountants"
+    },
+    {
+     "code": "2411",
+     "name": "Accountants"
+    },
+    {
+     "code": "2411",
+     "name": "Accountants"
+    },
+    {
+     "code": "2411",
+     "name": "Accountants"
+    },
+    {
+     "code": "2411",
+     "name": "Accountants"
+    },
+    {
+     "code": "2411",
+     "name": "Accountants"
+    },
+    {
+     "code": "2411",
+     "name": "Accountants"
+    },
+    {
+     "code": "3352",
+     "name": "Government tax and excise officials"
+    },
+    {
+     "code": "2411",
+     "name": "Accountants"
+    },
+    {
+     "code": "2411",
+     "name": "Accountants"
+    }
+   ]
+  },
+  {
+   "text": "I carry luggage for guests at a hotel and show them to their rooms.",
+   "code": "9621",
+   "name": "Messengers, package deliverers and luggage porters",
+   "first": [
+    {
+     "code": "7131",
+     "name": "Painters and related workers"
+    },
+    {
+     "code": "7131",
+     "name": "Painters and related workers"
+    },
+    {
+     "code": "7131",
+     "name": "Painters and related workers"
+    },
+    {
+     "code": "3343",
+     "name": "Administrative and executive secretaries"
+    },
+    {
+     "code": "3343",
+     "name": "Administrative and executive secretaries"
+    },
+    {
+     "code": "4321",
+     "name": "Stock clerks"
+    },
+    {
+     "code": "8322",
+     "name": "Car, taxi and van drivers"
+    },
+    {
+     "code": "8322",
+     "name": "Car, taxi and van drivers"
+    },
+    {
+     "code": "8322",
+     "name": "Car, taxi and van drivers"
+    },
+    {
+     "code": "8322",
+     "name": "Car, taxi and van drivers"
+    },
+    {
+     "code": "8322",
+     "name": "Car, taxi and van drivers"
+    },
+    {
+     "code": "9621",
+     "name": "Messengers, package deliverers and luggage porters"
+    },
+    {
+     "code": "9621",
+     "name": "Messengers, package deliverers and luggage porters"
+    },
+    {
+     "code": "9621",
+     "name": "Messengers, package deliverers and luggage porters"
+    }
+   ]
+  },
+  {
+   "text": "I help lawyers prepare legal paperwork, do case research, and file court documents quickly.",
+   "code": "3411",
+   "name": "Legal and related associate professionals",
+   "first": [
+    {
+     "code": "7131",
+     "name": "Painters and related workers"
+    },
+    {
+     "code": "7131",
+     "name": "Painters and related workers"
+    },
+    {
+     "code": "7131",
+     "name": "Painters and related workers"
+    },
+    {
+     "code": "3343",
+     "name": "Administrative and executive secretaries"
+    },
+    {
+     "code": "3343",
+     "name": "Administrative and executive secretaries"
+    },
+    {
+     "code": "4321",
+     "name": "Stock clerks"
+    },
+    {
+     "code": "8322",
+     "name": "Car, taxi and van drivers"
+    },
+    {
+     "code": "2611",
+     "name": "Lawyers"
+    },
+    {
+     "code": "2611",
+     "name": "Lawyers"
+    },
+    {
+     "code": "2611",
+     "name": "Lawyers"
+    },
+    {
+     "code": "2611",
+     "name": "Lawyers"
+    },
+    {
+     "code": "3411",
+     "name": "Legal and related associate professionals"
+    },
+    {
+     "code": "3411",
+     "name": "Legal and related associate professionals"
+    },
+    {
+     "code": "2611",
+     "name": "Lawyers"
+    }
+   ]
+  },
+  {
+   "text": "I supervise the front of house staff, handle customer issues, and balance the cash drawers.",
+   "code": "1412",
+   "name": "Restaurant managers",
+   "first": [
+    {
+     "code": "7131",
+     "name": "Painters and related workers"
+    },
+    {
+     "code": "7131",
+     "name": "Painters and related workers"
+    },
+    {
+     "code": "7131",
+     "name": "Painters and related workers"
+    },
+    {
+     "code": "3343",
+     "name": "Administrative and executive secretaries"
+    },
+    {
+     "code": "2411",
+     "name": "Accountants"
+    },
+    {
+     "code": "1219",
+     "name": "Business services and administration managers not elsewhere classified"
+    },
+    {
+     "code": "1324",
+     "name": "Supply, distribution and related managers"
+    },
+    {
+     "code": "1346",
+     "name": "Financial and insurance services branch managers"
+    },
+    {
+     "code": "1346",
+     "name": "Financial and insurance services branch managers"
+    },
+    {
+     "code": "1346",
+     "name": "Financial and insurance services branch managers"
+    },
+    {
+     "code": "1346",
+     "name": "Financial and insurance services branch managers"
+    },
+    {
+     "code": "1411",
+     "name": "Hotel managers"
+    },
+    {
+     "code": "1346",
+     "name": "Financial and insurance services branch managers"
+    },
+    {
+     "code": "1346",
+     "name": "Financial and insurance services branch managers"
+    }
+   ]
+  }
+ ]
+}

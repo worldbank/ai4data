@@ -1,0 +1,155 @@
+<section class="slide" id="s26" data-sec="5">
+  <p class="kicker">Steps 2 to 4 · The training texts</p>
+  <h2>Three sets of texts take the place of a coded survey in training.</h2>
+  <div class="body center">
+    <div class="g3 sets" data-demo="sets"></div>
+    <p class="callout" data-step="3">After repeated texts are removed, the model trains on 44,058 different texts.</p>
+  </div>
+  <p class="src">The job titles come from the job board hahu.jobs (dataset published by Tabiya, CC BY 4.0), and the job board assigned their codes. <button type="button" class="link" data-go="s27">Annex: the request</button> <button type="button" class="link" data-go="s28">Annex: the check</button></p>
+  <aside class="notes">We had no survey responses with codes for training. So the model learns from three sets of texts. The first holds job titles that a large model wrote from the definitions of the groups. The model that coded the survey response at the start of the session was trained on this set alone. The second is real: job titles from a job board, with the code that the job board assigned. They are worded as advertisements. The third joins the two ideas: a large model rewrites each real job title as the answers of a respondent, and the code stays with each answer. A second large model checked every rewritten answer and removed about a quarter of them. The annex has the request and the check.</aside>
+</section>
+
+<section class="slide" id="s29" data-sec="5">
+  <p class="kicker">Step 5 · The training run</p>
+  <h2>In one training run the small model goes from 0 to 68 percent of first codes right.</h2>
+  <div class="body"><div class="fill learn" data-demo="learn"></div></div>
+  <p class="src">The scores are the mean of three training runs on 1,000 survey-style test answers. One pass reads 35,515 of the 44,058 training texts, and the other texts are held out.</p>
+  <aside class="notes">This is the training run of our small model, recorded at 13 points. Press play. Before training the model gives every answer the same code, and no first code is right. After half of one pass over the training texts it is right for 27 percent of the 1,000 test answers. After one pass it is right for half of them, and after two passes for 63 percent. From there the curve is nearly flat, and the score moves by a few points from one pass to the next. The table shows the same for six of the test answers in one run: a code can be right at one point and wrong at the next. After each pass the model is checked on training texts that it does not learn from. Training stops when that check stops improving, and the best pass is saved. The saved models get 68.4 percent on average. The three runs differ only in their random start.</aside>
+</section>
+
+<section class="slide" id="s31" data-sec="5">
+  <p class="kicker">Step 6 · The model on test responses</p>
+  <h2>A coder chooses among five codes that the model suggests.</h2>
+  <div class="body"><div class="suggest" data-demo="atwork"></div></div>
+  <p class="src">The first six responses come from the test, where a large model wrote them from real job titles. The last two come from 29 informal responses written as illustrations, and no occupation coder has checked their codes.</p>
+  <aside class="notes">Here is the trained model on eight responses. Go through them. In three the reference code is the first suggestion, and in two it is the second. In the last three it is missing from the five. The last two describe informal work in everyday or local words. The room saw both at the start of the session with the suggestions of that earlier model. On 29 informal responses the first code of this model was right for about a third, against about half for the model trained on the definitions alone. More training texts raised the score on the test and lowered it on these responses. Under step 7, the next round of cases goes to this weak spot: answers about informal work, and the 127 groups that have no title from the job board. That round has not been run.</aside>
+</section>
+
+<section class="slide" id="s32" data-sec="5">
+  <p class="kicker">Steps 6 and 7 · Scores by training set</p>
+  <h2>Adding the rewritten answers raised the share of right first codes from 46 to 66 in 100.</h2>
+  <div class="body center"><div class="bt" data-demo="bytraining"></div></div>
+  <p class="src">Each score is the mean of three training runs. Each test set holds 1,000 texts from job titles set aside before training.</p>
+  <aside class="notes">Each bar is one model, trained on a different set of texts and tested on the same 1,000 survey-style answers. With real job titles alone, the first code was right for 46 answers in 100. With the rewritten answers added, it was right for 66. This is step 7 at the scale of a whole set: the test showed that the model was weak on the wording of respondents, and the new texts were written in that wording. The titles written from the definitions add a little more. Then switch the test to real job titles. There the rewritten answers change the score little, from 58 to 60 in 100. The other control shows the share of answers with the right code among five.</aside>
+</section>
+
+<section class="slide" id="s33" data-sec="5">
+  <p class="kicker">Step 6 · Compared with large models</p>
+  <h2>On survey-style answers the small model scored about the same as the best of three large models.</h2>
+  <div class="body center"><div class="vs" data-demo="versus"></div></div>
+  <p class="src">The 1,000 test answers were written by Gemini 3.8 Flash from real job titles, because no survey answers coded by people were available. The small model's scores are the mean of three training runs.</p>
+  <aside class="notes">Each large model was asked directly for the code of every answer. The small model and the best large model are within the margin of error of each other, and the small model is ahead of the other two. Give the three cautions. A large model wrote the test answers, and that same model is the best of the three. The request that wrote the test answers resembles the request that wrote the training answers, which favours the small model. And on real job titles the small model trained on titles of the same job board. A test on answers coded by people is still needed.</aside>
+</section>
+
+<section class="slide" id="s34" data-sec="5">
+  <p class="kicker">Speed and computer</p>
+  <h2>The small model answers in 0.05 seconds on an ordinary processor.</h2>
+  <div class="body center"><div class="g2 speedcols" data-demo="speed"></div></div>
+  <p class="src">Each time is the median for one answer. The large models were timed over 50 requests each. The times of the hosted services include the network and the service's queue. The CPU time was measured with four threads of a server processor. <button type="button" class="link" data-go="s35">Annex: the cost of building</button></p>
+  <aside class="notes">The axis is logarithmic, so each step to the right is ten times slower. On an ordinary processor the small model answers in about 0.05 seconds. The fastest large model ran on its own GPU and took 0.37 seconds. The hosted services took longer, and the slowest also reasons before each answer. The small model fits on a laptop and needs no connection. Each build took less than an hour on one server. The annex has the requests and the minutes of each build.</aside>
+</section>
+
+<section class="slide" id="s38" data-sec="6">
+  <p class="kicker">Small or large</p>
+  <h2>A small model suits a narrow task that repeats many times.</h2>
+  <div class="body center">
+    <div class="g2">
+      <div class="card small-k">
+        <span class="lbl"><span class="dot small"></span>A small model is a good candidate when</span>
+        <ul class="ticks">
+          <li><span>the answer comes from a fixed list, such as topics or codes;</span></li>
+          <li><span>the same task is repeated many times;</span></li>
+          <li><span>the data should stay inside the organization;</span></li>
+          <li><span>the internet connection is poor.</span></li>
+        </ul>
+      </div>
+      <div class="card large-k" data-step="1">
+        <span class="lbl"><span class="dot large"></span>A large model is the better choice when</span>
+        <ul class="ticks plain">
+          <li><span>the answer is new text, such as a summary or a reply;</span></li>
+          <li><span>the questions cannot be listed in advance.</span></li>
+        </ul>
+      </div>
+    </div>
+    <p class="callout" data-step="2">On survey-style answers about occupation, our small model scored about the same as the best of three large models and answered in 0.05 seconds on an ordinary processor. On 300 real reports, a second small model that assigns topics also scored about the same as three large models.</p>
+  </div>
+  <p class="src"><button type="button" class="link" data-go="s36">Annex: the report-tagging model</button><button type="button" class="link" data-go="s37">Annex: the report-tagging scores</button></p>
+  <aside class="notes">These criteria summarize everything so far. Go back to the survey response from the start: a fixed list of codes, a task that repeats, confidential records. Then reveal the other side. A large model remains the right tool for open questions and for writing. Then reveal the two results. The second result is new to the room. The same process built a model that tags reports with topics from a fixed list of 86, and it was tested on 300 real reports. The annex has its two slides. The description of this session says that a specialized model can be more accurate, more efficient, and cheaper than a general-purpose model. Our two tests support the efficiency. On accuracy, both small models scored about the same as the large models, and neither scored clearly higher. The occupation test has a weakness, because a large model wrote its answers. A test on real cases settles the question for each task.</aside>
+</section>
+
+<section class="slide" id="s40" data-sec="6">
+  <p class="kicker">Before relying on a small model</p>
+  <h2>A team checks four points before it relies on a small model.</h2>
+  <div class="body center">
+    <ol class="checks">
+      <li><span class="box">1</span>The model was tested on real documents from the place of use, with known answers.</li>
+      <li data-step="1"><span class="box">2</span>The test covers the topics or codes that matter.</li>
+      <li data-step="2"><span class="box">3</span>The score was compared with a large model on the same test.</li>
+      <li data-step="3"><span class="box">4</span>A person reviews a sample of the output at regular intervals.</li>
+    </ol>
+  </div>
+  <aside class="notes">This is the slide to take back to the office. Each point answers a weakness of our own tests: the occupation test used answers that a model wrote, and the test of the report-tagging model covers 44 of its 86 topics. If a supplier offers a small model, these are the four questions to ask.</aside>
+</section>
+
+<section class="slide" id="s41" data-sec="6">
+  <p class="kicker">A first attempt</p>
+  <h2>A first attempt needs a subject specialist, real cases with known answers, and one GPU.</h2>
+  <div class="body center">
+    <div class="g3">
+      <div class="card teal-k">
+        <span class="lbl">People</span>
+        <p class="stat mt">2<small>roles in the team</small></p>
+        <p class="txt-s mt2">A subject specialist describes the groups and reviews samples of the written examples. A second person runs the notebooks.</p>
+      </div>
+      <div class="card plain-k" data-step="1">
+        <span class="lbl">Real cases</span>
+        <p class="stat mt">1,000<small>real job titles with codes set aside for the occupation test</small></p>
+        <p class="txt-s mt2">The report-tagging model was tested on 300 real reports. Survey answers coded by people would make a stronger test for the occupation model.</p>
+      </div>
+      <div class="card small-k" data-step="2">
+        <span class="lbl">Computer</span>
+        <p class="stat mt">1 GPU<small>for one to four minutes for each training run</small></p>
+        <p class="txt-s mt2">The large model that writes the examples can be a hosted service or an open model on the organization's server.</p>
+      </div>
+    </div>
+    <p class="callout" data-step="3">The two notebooks of the session run both builds from the examples to the test.</p>
+  </div>
+  <p class="src">The training times were measured on one server GPU. The notebooks are listed on the last slide.</p>
+  <aside class="notes">Here is what you need for a first attempt on your own task. Start with the people. The specialist matters most, because the specialist knows where two groups are easy to confuse and can tell a realistic example from a poor one. Then the real cases. The occupation model was tested on 1,000 real job titles and on answers written from them, and the report-tagging model on 300 real reports. Collect the real cases first and keep them away from training. Then the computer. Each training run took between one and four minutes on one server GPU, and a smaller GPU takes longer. The notebooks let you repeat both builds with the recorded examples, without a large model and without a key.</aside>
+</section>
+
+<section class="slide" id="s39" data-sec="6">
+  <p class="kicker">Your turn</p>
+  <h2>Which kind of model suits each of these six tasks?</h2>
+  <div class="body"><div class="fill" data-demo="quiz" style="display:flex;flex-direction:column;gap:.7em"></div></div>
+  <aside class="notes">The exercise uses the criteria from the start of this part. Let the room vote on each task by a show of hands before you select an answer. The last three tasks have a second lesson: a small model can still do a narrower part of the work. If a task from the room came up earlier, apply the same criteria to it now. If time is short, take three of the six tasks.</aside>
+</section>
+
+<section class="slide" id="s42" data-sec="6">
+  <p class="kicker">Summary</p>
+  <h2>A large model writes the examples, a small model learns from them, and real cases test the result.</h2>
+  <div class="body center">
+    <div class="g3 m3" data-demo="sum3"></div>
+    <p class="callout">The final test always uses real cases.</p>
+  </div>
+  <aside class="notes">Close with the three terms of the session and the rule that holds them together. Ask each person to name one task from their own work and to say which criteria that task meets.</aside>
+</section>
+
+<section class="slide cover" id="s43" data-sec="0">
+  <p class="kicker">Sources and further reading</p>
+  <h2>The overview page holds the full text, the figures, and the terms.</h2>
+  <div class="body center">
+    <ul class="srclist">
+      <li>Overview of the session: <a href="https://worldbank.github.io/ai4data/training/session-02/">worldbank.github.io/ai4data/training/session-02</a></li>
+      <li>Notebooks: <a href="https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-02-small-ai-synthetic-data/notebooks/01-occupation-coding.ipynb">01 Coding survey answers on occupation</a> and <a href="https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-02-small-ai-synthetic-data/notebooks/02-report-tagging.ipynb">02 Tagging reports with topics</a></li>
+      <li>World Bank. 2026. <i>World Development Report 2026: The Promise of Artificial Intelligence</i>. Washington, DC: World Bank. doi:10.1596/978-1-4648-2331-2. Box O.1; spotlight 1, table S1.1 and p. 103; chapter 7, p. 248.</li>
+      <li>Tabiya. <i>occupation_titles_esco</i>: job titles from the job board hahu.jobs with the ESCO occupation assigned by the job board. <a href="https://huggingface.co/datasets/tabiya/occupation_titles_esco">huggingface.co/datasets/tabiya/occupation_titles_esco</a>. CC BY 4.0. Used to train and test the occupation-coding models.</li>
+      <li>International Labour Office. 2012. <i>International Standard Classification of Occupations 2008 (ISCO-08): Structure, Group Definitions and Correspondence Tables</i>. Geneva: ILO.</li>
+      <li>United Nations. 2008. <i>International Standard Industrial Classification of All Economic Activities (ISIC), Revision 4</i>. New York: United Nations.</li>
+      <li>Solatorio, Aivin V. 2024. "GISTEmbed: Guided In-sample Selection of Training Negatives for Text Embedding Fine-tuning." arXiv:2402.16829. Code: <a href="https://github.com/worldbank/GISTEmbed">github.com/worldbank/GISTEmbed</a></li>
+      <li>Hinton, Geoffrey, Oriol Vinyals, and Jeff Dean. 2015. "Distilling the Knowledge in a Neural Network." arXiv:1503.02531.</li>
+      <li>Contact: <span class="sel">aifordata@worldbank.org</span></li>
+    </ul>
+  </div>
+  <aside class="notes">Point to the overview page, which has every figure from this deck in a form people can explore alone, with the list of terms. The two notebooks open in Colab and run both tasks without an account for a large model. Leave this slide up during questions.</aside>
+</section>

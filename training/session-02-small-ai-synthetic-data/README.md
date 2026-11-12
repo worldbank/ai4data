@@ -2,8 +2,6 @@
 
 This session is in preparation. This page introduces its ideas for readers without a background in AI: small AI, synthetic data, and model distillation. It opens with tasks from development work that suit a small model, explains why the examples for training such a model are often written by a large model, and describes the process in nine steps. A worked example then follows the process on one task, with measured results. Linked terms are defined in the Terms section at the end of the page.
 
-On the docs site, the figures on this page are interactive, and a linked term shows its definition when selected. On GitHub the figures are not shown, and the text describes their content.
-
 ## Tasks for a small model
 
 A small model can take on a narrow task that repeats many times, on an organization's own computer. The figure shows six such tasks from development work: matching job seekers to vacancies at a public employment office, sorting complaints sent by text message to a project's grievance mechanism, picking out requests for help from messages after a flood, answering farmers' questions from an extension guide, flagging errors in benefit applications, and coding the occupations written in a household survey. For each task, the figure shows why no training data exist and one practice case with its answer. The tasks and practice cases were written for this page as illustrations.
@@ -47,6 +45,8 @@ The figure describes the process in nine steps. For each step it gives the offic
 7. **Practise the weak spots.** The model is tested on a second set of real cases, and a program finds the kinds of cases with the most mistakes. The large model writes more cases of those kinds, and the model is trained again. In the worked example, these targeted rounds scored 0.037 and 0.041 higher than rounds of the same size spread evenly over all topics, in two repeats of the experiment. On job titles the difference was 0.012, and its 95% interval included zero. Choosing what to practise from the model's mistakes is related to [curriculum learning](#terms), which orders the training cases from easy to hard; the ordering itself was not tested.
 8. **Ask people which is better.** Experienced staff choose the better of two practice cases or two answers. This [preference feedback](#terms) improves the request to the large model and filters the cases. Where the small model writes text, such as an answer to a farmer, it can also train the model towards the preferred answers. The experiments did not use this step.
 9. **Watch and refresh.** People review a sample of the model's answers at regular intervals, and new practice cases are written when the answers, the language, or the situation change. The World Development Report 2026 describes a screening tool for diabetic eye disease that rejected more than one-fifth of the images nurses took, because the lighting in the clinic differed from that in its training images.
+
+Steps 5 to 9 are standard practice in machine learning, the field that builds models from labelled examples. A team that has trained a model on labelled examples has carried them out before. Steps 1 to 4 are specific to synthetic data: a large model writes the examples that people would otherwise collect and label. In step 7 the large model also writes the additional cases.
 
 ## The worked example
 
@@ -100,6 +100,17 @@ Before a team relies on a small model, it checks the following points:
 - The test covers the topics or codes that matter for the work.
 - The model's score has been compared with that of a large model on the same test.
 - A person reviews a sample of the model's output at regular intervals.
+
+## Notebooks
+
+Two notebooks follow the process on one task each. Notebook 01 codes answers to a survey question on occupation with ISCO-08 unit groups. Notebook 02 assigns topics to reports from their abstracts. The examples written by the large model are stored in the repository, so both notebooks run in Google Colab without a key for a large model.
+
+| Notebook | Open in Colab |
+|---|---|
+| [01 · Coding survey answers on occupation](notebooks/01-occupation-coding.ipynb) | [Open](https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-02-small-ai-synthetic-data/notebooks/01-occupation-coding.ipynb) |
+| [02 · Tagging reports with topics](notebooks/02-report-tagging.ipynb) | [Open](https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-02-small-ai-synthetic-data/notebooks/02-report-tagging.ipynb) |
+
+The files that the notebooks read are described in [assets/README.md](assets/README.md).
 
 ## Terms
 

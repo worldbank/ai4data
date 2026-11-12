@@ -1,0 +1,16 @@
+# Packages for the session 02 notebooks. Colab already has most of them.
+# Transformers stays below version 5: DeBERTa-v3-small returned a loss that was not a number with 5.20 and 5.22.
+transformers>=4.50,<5
+datasets
+accelerate>=1.0
+scikit-learn
+pandas
+openpyxl
+requests
+sentencepiece
+protobuf
+openai
+# For regenerating the notebooks with build_notebooks.py
+nbformat
+nbclient
+ipykernel

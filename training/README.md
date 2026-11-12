@@ -5,7 +5,7 @@ Materials for the training series of the AI for Data – Data for AI program: se
 | Session | Title | Format |
 |---|---|---|
 | 01 | [Building AI applications for research and data](session-01-building-ai-applications/README.md) | 90 minutes, slides and guided notebooks, plus 15 to 30 minutes of questions |
-| 02 | [Building specialized small AI using synthetic data](session-02-small-ai-synthetic-data/README.md) | Planned; overview drafted |
+| 02 | [Building specialized small AI using synthetic data](session-02-small-ai-synthetic-data/README.md) | In preparation; overview, slides, and two notebooks drafted |
 | 03 | Evaluating AI systems | Planned |
 | 04 | Applying AI to metadata curation and data quality | Planned |
 | 05 | Building trustworthy AI applications | Planned |
@@ -25,13 +25,22 @@ They open in Google Colab from the `main` branch of `worldbank/ai4data`, and eac
 | [06 · Verification](session-01-building-ai-applications/notebooks/06-verification-and-evaluation.ipynb) | [Open](https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-01-building-ai-applications/notebooks/06-verification-and-evaluation.ipynb) |
 | [07 · Lab: chat with your documents](session-01-building-ai-applications/notebooks/07-lab-chat-with-your-documents.ipynb) | [Open](https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-01-building-ai-applications/notebooks/07-lab-chat-with-your-documents.ipynb) |
 
+### Session 02 notebooks
+
+Each notebook builds a small model for one task from examples written by a large model. The examples are stored in the repository, so the notebooks need no key for a large model. The training cells need a GPU runtime, which Colab offers at no cost. Without a GPU, the notebooks train on a sample of the examples.
+
+| Notebook | Open in Colab |
+|---|---|
+| [01 · Coding survey answers on occupation](session-02-small-ai-synthetic-data/notebooks/01-occupation-coding.ipynb) | [Open](https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-02-small-ai-synthetic-data/notebooks/01-occupation-coding.ipynb) |
+| [02 · Tagging reports with topics](session-02-small-ai-synthetic-data/notebooks/02-report-tagging.ipynb) | [Open](https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-02-small-ai-synthetic-data/notebooks/02-report-tagging.ipynb) |
+
 ## Layout of a session folder
 
 ```
 session-NN-short-name/
   README.md        session plan: audience, objectives, timing, what to prepare, definition of ready
   preface.md       the problem the session addresses, its readers, its ideas, and the notebooks
-  slides/          the deck and its outline, or canva.json with the public view link of a deck kept in Canva
+  slides/          the deck and its outline: deck.html for a deck in one HTML file, or canva.json with the public view link of a deck kept in Canva
   notebooks/       the notebooks, a shared module they import, and the script that regenerates them
   assets/          the worked example: data, metadata, documents with their roles.json, questions, recorded model outputs
   demo/            scripts for live demonstrations, with pretested inputs and fallbacks

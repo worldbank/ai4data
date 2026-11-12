@@ -1,0 +1,258 @@
+<section class="slide cover" id="s01" data-sec="0">
+  <div class="logos"><img class="prog" alt="AI for Data, Data for AI" src="__LOGO__"><img class="ddg" alt="World Bank Group, Development Data Group" src="__DDG__"></div>
+  <p class="kicker">Session 02</p>
+  <h1>Building specialized small AI using synthetic data</h1>
+  <p class="sub">An introduction to small AI, synthetic data, and model distillation</p>
+  <p class="keys"><span><kbd>→</kbd><kbd>←</kbd>Step</span><span><kbd>↓</kbd><kbd>↑</kbd>Slide</span><span><kbd>12</kbd><kbd>Enter</kbd>Slide 12</span><span><kbd>O</kbd>Contents</span><span><kbd>N</kbd>Speaker notes</span><span><kbd>F</kbd>Full screen</span></p>
+  <aside class="notes">Welcome the room and say what the session covers: three ideas, one small model followed from its training texts to its test, and no code. A second small model is in the annex. Nobody needs a background in AI to follow it. Tell people that the slides are interactive and that you will ask them to vote a few times.</aside>
+</section>
+
+<section class="slide" id="s02" data-sec="1">
+  <p class="kicker">A survey response</p>
+  <h2>Someone has to read this response and give it one of 436 codes.</h2>
+  <div class="body center">
+    <div class="suggest" data-demo="suggest"></div>
+    <p class="callout" data-step="1">The task is narrow, it repeats with every response, and each code comes from a fixed list.</p>
+  </div>
+  <p class="src">The responses and the coders' codes were written for this session as illustrations. The suggestions are the recorded output of the small model built for this task. Group names: ISCO-08, International Labour Organization.</p>
+  <aside class="notes">Start with the response before any definition. Ask who codes responses like this in the room's organizations and how long one response takes. Ask the room to guess the group before you press the button. Then go through the responses. The coder's code is the first suggestion for the teacher and the second for the motorcycle taxi. The model misses the roasted maize and the boda boda rider. It was trained on written job titles, and these two responses describe the work in everyday or local words. The last response gives too little detail for any code. Close on the call-out: this kind of task is what the session is about.</aside>
+</section>
+
+<section class="slide" id="s03" data-sec="1">
+  <p class="kicker">Tasks for a small model</p>
+  <h2>The same kind of task appears across development work.</h2>
+  <div class="body"><div class="fill cases" data-demo="cases"></div></div>
+  <p class="src">The tasks illustrate where the method could apply, and the practice cases are illustrations. A card says so where a model was built or tested.</p>
+  <aside class="notes">Open three or four of the eleven tasks. The first row holds the tasks in the description of this session: occupation and industry codes, document classification, metadata quality, semantic search, and entity extraction. The second row holds tasks from services. The first task is the one from the previous slide, and we follow it through the nine steps. Document classification is the task of a second model, which has two slides in the annex. On semantic search, present GISTEmbed: it is our method for training a small search model with a large model as a guide, and the code and the models are open. For each task, read the practice case aloud and point at the answer: it always comes from a list or has a fixed form. Each card also states the examples that a large model would write for the task. We define synthetic data in the third part. Ask the room for one more task from their own work and keep it for the quiz near the end.</aside>
+</section>
+
+<section class="slide" id="s04" data-sec="1">
+  <p class="kicker">Three options</p>
+  <h2>An organization has three ways to get such a task done.</h2>
+  <div class="body center">
+    <div class="g3">
+      <div class="card plain-k opt">
+        <span class="n">OPTION 1</span><h3>By hand</h3>
+        <p class="txt">Coders read every response and look up its code.</p>
+        <p class="limit">Coding by hand is slow when a survey or a census brings in responses in the thousands.</p>
+      </div>
+      <div class="card large-k opt" data-step="1">
+        <span class="n">OPTION 2</span><h3>A large AI service</h3>
+        <p class="txt">A large model at a service company reads each response and returns a code.</p>
+        <p class="limit">Every response is sent to the company that runs the service.</p>
+      </div>
+      <div class="card small-k opt" data-step="2">
+        <span class="n">OPTION 3</span><h3>A small model of its own</h3>
+        <p class="txt">A small model on the office's own computer suggests five codes, and a coder chooses.</p>
+        <p class="limit">The model has to be built first, and building it requires many examples with the right answers.</p>
+      </div>
+    </div>
+    <p class="callout" data-step="3">This session is about option 3 and about where the examples come from.</p>
+  </div>
+  <aside class="notes">Take the options one at a time and let the room name the limit of each before you reveal it. Option 2 is what people know from chat assistants. Option 3 is the subject of the session, and its limit sets up the next two parts: why a small model, and why the examples have to be written.</aside>
+</section>
+
+<section class="slide" id="s05" data-sec="1">
+  <p class="kicker">Overview of the process</p>
+  <h2>A small model learns from practice cases that a large model writes.</h2>
+  <div class="body center"><div class="cycle" data-demo="cycle"></div></div>
+  <aside class="notes">This is the whole approach before the details. Read the five boxes from left to right: the task, the large model that writes practice cases, the small model that learns from them, the test on real cases, and the small model at work. The large model is needed in the second box only. Then show the loop: the test shows the kinds of cases that the small model gets wrong, and the large model writes more cases of those kinds. Then show the parts of the session. The numbers give their order. We start with the small model, because it is the goal, and then turn to the practice cases, which are called synthetic data. Part 4 describes the process in nine steps, and part 5 follows the build of one model from its training texts to its test. The strip at the top of each slide shows the current part. If time is short, parts 1, 2, 4 and 5 carry the core of the session.</aside>
+</section>
+
+<section class="slide" id="s06" data-sec="2">
+  <p class="kicker">Large language models</p>
+  <h2>The chat assistants in wide use run on very large models in data centers.</h2>
+  <div class="body center">
+    <div class="path3">
+      <div class="card machine"><svg viewBox="0 0 46 36" aria-hidden="true"><rect x="4" y="8" width="26" height="18" rx="2"/><path d="M1 29 H33"/><rect x="34" y="6" width="11" height="22" rx="2"/></svg>
+        <p class="name">A phone or laptop</p><p class="txt-s">You type a question.</p></div>
+      <div class="to">the text travels</div>
+      <div class="card machine"><svg viewBox="0 0 46 36" aria-hidden="true"><path d="M12 28 a8 8 0 0 1 0-16 a10 10 0 0 1 19-3 a9.5 9.5 0 0 1 3 19 Z"/></svg>
+        <p class="name">The internet</p><p class="txt-s">The question leaves the organization.</p></div>
+      <div class="to">to the service</div>
+      <div class="card machine large-k"><svg viewBox="0 0 46 36" aria-hidden="true"><rect x="3" y="10" width="40" height="23" rx="1.5"/><path d="M3 10 L23 2 L43 10"/><path d="M10 16 V28 M17 16 V28 M24 16 V28 M31 16 V28 M38 16 V28"/></svg>
+        <p class="name">A data center</p><p class="txt-s">A <button class="term" data-term="llm">large language model</button> with more than 100 billion <button class="term" data-term="parameter">parameters</button> writes the answer. It needs more than 200 GB of memory.</p></div>
+    </div>
+    <p class="callout" data-step="1">A large language model can write, translate, summarize, and answer questions.</p>
+  </div>
+  <p class="src">Memory ranges follow World Bank, World Development Report 2026, spotlight 1, table S1.1. The companies behind hosted chat assistants generally do not publish the size of their main models.</p>
+  <aside class="notes">A chat assistant is the case the room already knows. Make the path visible: the question travels to a data center, a very large model answers, and the answer travels back. Select the dotted words to show their definitions. The breadth of such a model is its strength, and its size keeps it in a data center.</aside>
+</section>
+
+<section class="slide" id="s07" data-sec="2">
+  <p class="kicker">Small AI</p>
+  <h2>A small model has far fewer parameters and is often trained for one task.</h2>
+  <div class="body center">
+    <div class="g2 sizecols">
+      <div>
+        <div class="sizes">
+          <figure><div class="sq" style="width:.64em;height:.64em;background:var(--small)"></div><figcaption><b>Small model</b>142 million parameters</figcaption></figure>
+          <figure><div class="sq" style="width:8.8em;height:8.8em;background:var(--large)"></div><figcaption><b>Large model</b>27 billion parameters</figcaption></figure>
+          <figure><div class="sq xl" style="width:17em;height:17em;background:var(--large-soft);border:.14em dashed var(--large)"></div><figcaption><b>Very large model</b>more than 100 billion parameters</figcaption></figure>
+        </div>
+        <p class="txt-s mt2">The area of each square is in proportion to the number of parameters.</p>
+      </div>
+      <div class="card teal-k" data-step="1">
+        <span class="lbl">World Development Report 2026</span>
+        <p class="quote mt">The report uses the term <button class="term" data-term="smallai">small AI</button> for AI that is small in size or narrow in scope and is built to run where power, internet connectivity, and digital devices are scarce.</p>
+        <p class="txt-s">Each small model in this session does one task. One suggests occupation codes for a survey response, and one assigns topics to a report.</p>
+      </div>
+    </div>
+  </div>
+  <p class="src">World Bank, World Development Report 2026, Box O.1 and spotlight 1. Both small models of this session are this size. The large model is the size of Qwen3.8-27B. <button type="button" class="link" data-go="s08">Annex: where a model can run</button></p>
+  <aside class="notes">Ask the room to find the small model: it is the blue dot on the left. The middle square is a model that an organization can run on one strong server, and the dashed square is a lower bound for the models behind chat assistants. The small model fits in the memory of a laptop, and the very large one fits only in a data center. Then reveal the definition from the World Development Report and stress the second half: narrow in scope.</aside>
+</section>
+
+<section class="slide" id="s09" data-sec="2">
+  <p class="kicker">Why a small model</p>
+  <h2>A small model runs inside the organization once it has been built.</h2>
+  <div class="body center">
+    <div class="g2">
+      <div class="card small-k">
+        <span class="lbl">Once built</span>
+        <ul class="ticks">
+          <li><span>It works without an internet connection.</span></li>
+          <li><span>It runs without a paid service or a <button class="term" data-term="gpu">GPU</button>.</span></li>
+          <li><span>The documents stay on the organization's own computer.</span></li>
+        </ul>
+      </div>
+      <div class="card large-k" data-step="1">
+        <span class="lbl">To build it</span>
+        <ul class="ticks cost">
+          <li><span>A large model writes the examples.</span></li>
+          <li><span>The <button class="term" data-term="training">training</button> runs on a GPU.</span></li>
+          <li><span>The model does one task only, and it has to be built for that task.</span></li>
+        </ul>
+      </div>
+    </div>
+    <p class="callout" data-step="2">Building it requires many examples with the right answers.</p>
+  </div>
+  <aside class="notes">Be even-handed here. The gains come after the model is built, and the costs come before. The call-out is the bridge to the next part: the examples are the hard requirement, and the next slides show why organizations rarely have them.</aside>
+</section>
+
+<section class="slide" id="s10" data-sec="3">
+  <p class="kicker">Labelled examples</p>
+  <h2>A model learns a task from examples with the right answer.</h2>
+  <div class="body center">
+    <div>
+      <div class="ex"><span class="lbl">Example</span><span></span><span class="lbl">Right answer</span></div>
+      <div class="ex"><p class="msg">sells roasted maize by the roadside</p><span class="arrow" aria-hidden="true">→</span><span class="ans">5212 Street food salespersons</span></div>
+      <div class="ex" data-step="1"><p class="msg">class 4 teacher, government primary school</p><span class="arrow" aria-hidden="true">→</span><span class="ans">2341 Primary school teachers</span></div>
+      <div class="ex" data-step="1"><p class="msg">grows maize and beans to feed the family</p><span class="arrow" aria-hidden="true">→</span><span class="ans">6310 Subsistence crop farmers</span></div>
+    </div>
+    <p class="callout" data-step="2">An example with its code is a <button class="term" data-term="labelled">labelled example</button>. The model needs labelled examples of every group.</p>
+  </div>
+  <aside class="notes">Nobody writes rules for a model. It adjusts itself until its answers match the examples, so the examples decide the model's answers. Read the three responses and their codes. A classification has hundreds of groups, and the model needs examples of each one. The next slide shows why such examples are often missing.</aside>
+</section>
+
+<section class="slide" id="s11" data-sec="3">
+  <p class="kicker">The missing examples</p>
+  <h2>For these tasks the labelled examples are often missing.</h2>
+  <div class="body center">
+    <div class="g4">
+      <div class="card reason">
+        <svg viewBox="0 0 160 80" aria-hidden="true"><rect x="8" y="10" width="56" height="42" rx="5" class="iP"/><path d="M8 31 H24 L30 40 H42 L48 31 H64" class="iL"/><text x="36" y="72" text-anchor="middle" font-size="12.5">0 coded</text><path d="M72 31 H92" class="iA" marker-end="url(#ah)"/><rect x="102" y="6" width="50" height="50" rx="8" class="iS"/><circle cx="118" cy="24" r="4" class="iD"/><circle cx="136" cy="38" r="4" class="iD"/><path d="M118 24 L136 38" class="iSS"/><text x="127" y="72" text-anchor="middle" font-size="12.5">day 1</text></svg>
+        <h3>Never collected</h3>
+        <p class="txt-s">After a classification is revised, no past response carries a code of the new version. The model is needed for the first survey that uses it.</p>
+      </div>
+      <div class="card reason" data-step="1">
+        <svg viewBox="0 0 160 80" aria-hidden="true"><rect x="6" y="8" width="58" height="48" rx="5" class="iP"/><rect x="23" y="30" width="24" height="18" rx="3" class="iT"/><path d="M28 30 V25 A7 7 0 0 1 42 25 V30" class="iL"/><text x="35" y="72" text-anchor="middle" font-size="12.5">inside</text><path d="M72 32 H98" class="iA" marker-end="url(#ah)"/><path d="M79 25 L91 39 M91 25 L79 39" class="iLS"/><ellipse cx="128" cy="32" rx="24" ry="20" class="iLg"/><text x="128" y="72" text-anchor="middle" font-size="12.5">outside</text></svg>
+        <h3>Private</h3>
+        <p class="txt-s">Survey responses are confidential. Sending them to an outside service for labelling is often not allowed.</p>
+      </div>
+      <div class="card reason" data-step="2">
+        <svg viewBox="0 0 240 110" aria-hidden="true"><g fill="var(--line)"><circle cx="30" cy="25" r="7"/><circle cx="60" cy="25" r="7"/><circle cx="90" cy="25" r="7"/><circle cx="120" cy="25" r="7"/><circle cx="150" cy="25" r="7"/><circle cx="180" cy="25" r="7"/><circle cx="210" cy="25" r="7"/><circle cx="30" cy="55" r="7"/><circle cx="60" cy="55" r="7"/><circle cx="90" cy="55" r="7"/><circle cx="120" cy="55" r="7"/><circle cx="180" cy="55" r="7"/><circle cx="210" cy="55" r="7"/><circle cx="30" cy="85" r="7"/><circle cx="60" cy="85" r="7"/><circle cx="90" cy="85" r="7"/><circle cx="120" cy="85" r="7"/><circle cx="150" cy="85" r="7"/><circle cx="180" cy="85" r="7"/><circle cx="210" cy="85" r="7"/></g><circle cx="150" cy="55" r="8" fill="var(--bad)"/></svg>
+        <h3>Rare</h3>
+        <p class="txt-s">A classification has hundreds of groups, and a survey meets some of them only a few times.</p>
+      </div>
+      <div class="card reason" data-step="3">
+        <div style="height:5.6em;display:flex;align-items:center"><p class="msg real" style="font-size:.78em">boda boda rider<br>mama lishe<br>fundi wa simu</p></div>
+        <h3>Local language</h3>
+        <p class="txt-s">Real responses use local words, abbreviations, and spelling errors. Labelled examples in local languages are scarce.</p>
+      </div>
+    </div>
+  </div>
+  <p class="src"><button type="button" class="link" data-go="s12">Annex: the real cases of a rare group</button></p>
+  <aside class="notes">Reveal the four reasons one at a time and ask which one applies to the room's own work. Usually more than one does. For survey responses, confidentiality comes first: the text cannot go to an outside service. On the fourth card, boda boda is a motorcycle taxi, mama lishe is a woman who sells cooked food, and fundi wa simu is a phone repairer. The annex has a slide on the third reason.</aside>
+</section>
+
+<section class="slide" id="s13" data-sec="3">
+  <p class="kicker">Synthetic data</p>
+  <h2>Synthetic data are examples written by a computer program.</h2>
+  <div class="body center">
+    <div class="g2">
+      <div class="card large-k">
+        <span class="lbl">Responses and codes written by a large model</span>
+        <div class="ex mt2 exs"><p class="msg">sell chapati and tea at the bus stand every morning</p><span class="arrow" aria-hidden="true">→</span><span class="ans">5212 Street food salespersons</span></div>
+        <div class="ex exs"><p class="msg">i teach standard 3 at the mission school</p><span class="arrow" aria-hidden="true">→</span><span class="ans">2341 Primary school teachers</span></div>
+        <div class="ex exs"><p class="msg">plant cassava and maize, we eat what we grow</p><span class="arrow" aria-hidden="true">→</span><span class="ans">6310 Subsistence crop farmers</span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1.1em;justify-content:center">
+        <div class="card teal-k" data-step="1">
+          <span class="lbl">World Development Report 2026</span>
+          <p class="quote mt">The report describes <button class="term" data-term="synthetic">synthetic data</button> as data that mimic real-world patterns. It presents them as an alternative where real data are too scarce or too sensitive to use.</p>
+        </div>
+        <p class="callout" data-step="2">In this session a large language model writes them.</p>
+      </div>
+    </div>
+  </div>
+  <p class="src">World Bank, World Development Report 2026, chapter 7, p. 248. The three cases were written for this session as illustrations.</p>
+  <aside class="notes">Here is the answer to the missing examples. No respondent gave these three answers. A large model wrote them, together with their codes. The report's wording matters for the room: scarce or sensitive are the two conditions we saw on the previous slides.</aside>
+</section>
+
+<section class="slide" id="s14" data-sec="3">
+  <p class="kicker">An office comparison</p>
+  <h2>A new staff member learns from practice cases written by a colleague.</h2>
+  <div class="body center">
+    <div>
+      <div class="flow">
+        <span class="rowname">In an office</span>
+        <div class="node"><b>An experienced colleague</b><span>knows the work and has no past files to share</span></div>
+        <span class="to">writes</span>
+        <div class="node"><b>Practice cases</b><span>realistic and varied cases with their answers</span></div>
+        <span class="to">studied by</span>
+        <div class="node"><b>A new staff member</b><span>learns the answers</span></div>
+        <span class="to">checked on</span>
+        <div class="node real"><b>Real past files</b><span>reviewed by a supervisor</span></div>
+      </div>
+      <div class="flow" data-step="1">
+        <span class="rowname">With the models</span>
+        <div class="node lg"><b>A large model</b><span>trained on a very large amount of text</span></div>
+        <span class="to">writes</span>
+        <div class="node"><b>Synthetic data</b><span>thousands of examples with their answers</span></div>
+        <span class="to">train</span>
+        <div class="node sm"><b>A small model</b><span>learns to give the same answers</span></div>
+        <span class="to">tested on</span>
+        <div class="node real"><b>Real cases</b><span>with answers given by people</span></div>
+      </div>
+    </div>
+    <p class="callout" data-step="2">The final test always uses real cases.</p>
+  </div>
+  <aside class="notes">This comparison carries the rest of the session, so take a minute on it. Walk the top row first, then reveal the bottom row and match the boxes one to one. End on the last box of each row. Practice cases teach, and real cases test.</aside>
+</section>
+
+<section class="slide" id="s30" data-sec="3">
+  <p class="kicker">Distillation</p>
+  <h2>In distillation a large model passes a skill to a small one.</h2>
+  <div class="body center">
+    <div class="distill">
+      <div class="who t"><span class="lbl">Teacher</span><h3>A large model</h3><p class="txt">27 billion parameters<br>about 31 GB of memory</p></div>
+      <div class="mid">its answers<br>on many examples</div>
+      <div class="who s"><span class="lbl">Student</span><h3>A small model</h3><p class="txt">142 million parameters<br>0.57 GB of memory</p></div>
+    </div>
+    <div class="g2">
+      <div class="card" data-step="1"><span class="lbl">The original form</span><p class="txt mt">The student learns to match the teacher's probability for every possible answer. The probabilities carry more information than the teacher's top answer alone.</p></div>
+      <p class="callout" data-step="2" style="align-self:center">In this session the teacher passes its skill through the examples that it writes.</p>
+    </div>
+  </div>
+  <p class="src">Hinton, Vinyals, and Dean (2015), "Distilling the Knowledge in a Neural Network." The memory of the teacher is that of its 8-bit version.</p>
+  <aside class="notes">Name the method. The teacher is the experienced colleague of the previous slide, and the student is the new staff member. The teacher here is about 190 times the size of the student by number of parameters. In the original form of distillation the student copies the teacher's full set of probabilities. In this session the teacher passes its skill through the examples that it writes, and the student is trained on them.</aside>
+</section>
+
+<section class="slide" id="s15" data-sec="3">
+  <p class="kicker">Labelled data from another source</p>
+  <h2>A large model can rewrite labelled job titles as survey answers.</h2>
+  <div class="body center"><div class="g2 rewritecols" data-demo="rewrite"></div></div>
+  <p class="src">The job title comes from the job board hahu.jobs (dataset published by Tabiya, CC BY 4.0), with the code assigned by the job board.</p>
+  <aside class="notes">Synthetic data can also start from labelled data that we already hold. A job board gives thousands of job titles with a code, and a job title reads differently from a survey answer. We ask a large model to say each title the way a respondent would: in a few words, with the place of work, and as the tasks of the job. The code stays with each answer, and a second model checks it. Part 4 gives the whole process first, and part 5 shows this build and its test.</aside>
+</section>
