@@ -1,0 +1,433 @@
+---
+id: validation
+title: "6. Schema Validation"
+sidebar_label: "6. Validation"
+sidebar_position: 7
+description: Freeze held-out assessments, compare complementary instruments, and adjudicate field, documentation, and representation findings.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 6. Schema Validation
+
+**Question:** What does new artifact evidence reveal about missing concepts, unclear guidance, and representation limits?
+
+## Rationale
+
+A schema may work on development examples and still miss information in other
+items. Testing it on the holdout sample checks whether its fields and guidance
+support the intended use beyond the examples that shaped them. Keeping the
+schema version and test inputs fixed makes findings interpretable: a reviewer
+can see which specification was tested against which evidence.
+
+AI can help look for information the schema handles poorly. A useful assessment
+explains what existing fields can express and what would be lost, with evidence
+from the item. Different questions can reveal different weaknesses, so choose
+checks that suit the application and test whether those checks notice known
+omissions before relying on them.
+
+Review determines the response to a finding. Some issues need a new field;
+others need clearer guidance or a way to represent relationships. Some proposals
+fall outside the agreed scope. Recording the decision and its reason keeps
+model suggestions, accepted changes, and deferred work separate. An unchanged
+field count alone does not establish that the schema is complete.
+
+## Target state
+
+- A validation plan identifies the schema version, holdout items, assessment questions, and examples used to prepare the checks.
+- Findings record source evidence, existing fields, and the information those fields may lose.
+- Human decisions lead to versioned changes or explicit deferrals, with the limits of the assessment recorded.
+
+## Prerequisites
+
+- The holdout sample and source-sharing information from [Chapter 1](./characterization.mdx).
+- The complete schema specification from [Chapter 5](./schema-design.mdx).
+- A reviewer who can inspect the materials, field definitions, and assessment records.
+- New LLM assessments need the [hosted or local setup](./index.mdx#prerequisites) described in the overview. The worked examples use prepared records.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Reviewers test the schema on holdout items and record decisions. |
+| **AI-ready** | Saved inputs, schema versions, and findings make the assessment repeatable. |
+| **AI-native** | AI flags potential gaps; controls check its sensitivity, and reviewers decide what to change. |
+
+:::info[Running example]
+**Recorded findings.** The South Sudan composite and Diffa table show the
+difference between missing fields, unclear guidance, and relationships that a
+flat record cannot express. The study's two assessments and human decisions
+provide the worked evidence below.
+:::
+
+## Recipes
+
+<Recipe title="6.1 Fix the schema version and validation inputs" level="AI-ready" skills="Evaluation practitioner; metadata reviewer" time="30–45 minutes with prepared specifications and manifests">
+
+**Result:** A validation plan records the exact schema version, test items, assessment instructions, and checks to run before interpreting findings.
+
+Save the full specification and actual test-item list before assessment.
+Field names alone are insufficient: changed definitions or guidance can change
+the result. Record any examples used to prepare the instructions or controls
+so they remain distinguishable from untouched test evidence.
+
+**Input example.** The study first assessed v1.1, then assessed documentation-
+revised v1.1.1 on the same holdout collection. Both had 36 fields, but their
+guidance differed. Review the complete specification and item list when planning
+a new assessment; the prepared field excerpts support comparison only.
+
+Calibration means trying the assessment instructions on identified examples
+before the full run. A control tests an expected behavior, such as noticing a
+known field deliberately removed from the schema. Keep those results separate
+from the main assessment.
+
+1. Save the complete schema under a named version. If removing history or prior outcomes from a model-facing copy, retain that copy alongside the original and preserve its substantive guidance.
+2. Save the holdout item list, source versions, and allowed context. Record shared sources and identify any items used to prepare the assessment.
+3. Define each assessment question and response format. Record the model, instructions, and settings, and keep preparation and control results separate from the full assessment.
+4. Match completed results to the saved item list. Check for missing or duplicate items, failed responses, changed settings, and invalid outputs before interpreting findings.
+
+**Worked example: a filled freeze specification.** The following is a teaching
+summary of the recorded inputs and execution. It is not an original protocol file.
+
+| Freeze item | Recorded study specification |
+|---|---|
+| Initial target | Validation 1 used the complete v1.1 schema: 36 fields in nine modules. |
+| Subsequent target | Validation 2 used documentation-revised v1.1.1, with the same 36 fields, through a model-facing copy omitting validation history and prior outcomes. |
+| Assessed evidence | Both runs used the same 202 held-out snapshots, their identities, and available parent-document metadata. |
+| Sampling boundary | Development had 210 snapshots; held-out had 202. Snapshot overlap was zero; 65 parent documents were shared. |
+| Historical configuration | Both used GPT-5.5, medium reasoning, Flex service, prompt caching, an 8,000-token ceiling, and Pydantic Structured Outputs, one snapshot per request. |
+| Completion boundary | Each full run retained 202 unique completed results whose filenames exactly match the held-out manifest. |
+| Calibration boundary | Twelve of the 202 were reused for calibration. None belonged to initial schema development. Calibration/control outputs are excluded from full-run candidate totals. |
+
+**Verification.** Check every result against the saved item list and complete
+schema text. Identify missing, duplicate, or failed responses before interpreting
+coverage. The five field excerpts from Chapter 5 cannot replace the complete
+schema input. In the study example, v1.1 and v1.1.1 remain different targets even
+though both contain 36 fields.
+
+**What this does not do.** A fixed input list does not establish independence
+from shared sources. The study retained its actual selection; repeating its
+unseeded sampling would not necessarily select the same items. Testing a wholly
+new set of reports would require a different sample.
+
+</Recipe>
+
+<Recipe title="6.2 Look for information the schema does not cover" level="AI-native" skills="LLM practitioner; metadata reviewer" time="45–60 minutes for the selected observations and date-boundary review">
+
+**Result:** A candidate list links potentially missing information to evidence and explains why existing fields may be insufficient.
+
+Ask the model to identify useful descriptive information in a holdout item,
+then compare it with the complete schema. A proposed gap should explain what
+existing fields cannot express. This broad check can surface boundary questions
+that reviewers later reject or resolve through clearer guidance.
+
+**Input example: a field with an unclear date boundary.** The
+documentation-revision example records artifact-date families such as
+snapshot_date, snapshot_creation_date, and snapshot_production_date, alongside
+parent-document publication-date proposals. The original time_period definition
+was:
+
+> The period or date range represented by the data.
+
+The [validation request specifications](pathname:///cookbook-files/ai-assisted-metadata-schema-development/validation_request_specs.md)
+provide teaching adaptations of this check and the stricter check in Recipe 6.3.
+They describe logical inputs and outputs; a live run needs complete schema
+inputs, provider integration, a budget, and separate output records.
+
+<details>
+<summary>Validation request specifications</summary>
+
+```markdown file=../../website/static/cookbook-files/ai-assisted-metadata-schema-development/validation_request_specs.md
+```
+
+</details>
+
+1. Supply a holdout item, its identifier and permitted context, the descriptive scope, and the complete saved schema.
+2. Ask what information is covered, poorly represented, missing, outside scope, or uncertain, with evidence and the closest existing fields for each judgment.
+3. Require each proposed field to link back to its supporting observations and explain why existing fields are insufficient.
+4. Review the findings and preserve the evidence for both coverage and potential gaps. Group obvious aliases only as a labelled review aid; repeated suggestions do not establish a requirement.
+
+| Historical fit_status | Meaning in the assessment |
+|---|---|
+| covered | Existing fields represent the concept without material loss. |
+| weak_fit | A related field would distort, omit, or conflate important semantics. |
+| no_fit | The concept is in scope and no field adequately represents it. |
+| out_of_scope | The observation falls outside snapshot metadata, such as extraction output. |
+| uncertain | Evidence or semantic interpretation is insufficient for a reliable decision. |
+
+The historical prompt allowed document-administration proposals when they
+materially enabled snapshot identification, retrieval, verification, or
+interpretation. It did not already enforce every linked-document architecture
+decision later applied by humans. Silently imposing Validation 2's tighter
+parent-document boundary would misdescribe this first instrument.
+
+<details>
+<summary>Study observation and proposal counts</summary>
+
+**Worked example: reconcile observations and proposals.** The recorded fit
+counts sum to 2,876: 2,275 covered, 185 weak_fit, 393 no_fit, 20 uncertain, and
+three out_of_scope. There were 578 candidate objects using 101 exact proposed
+names. Candidate count is its own output-array total. In this run, 185 + 393
+also equals 578; the contract allows a proposal to cite multiple observations,
+so that numerical equality is not a general one-to-one rule.
+
+Human review manually grouped naming variants into 14 provisional families,
+covering 518 candidate rows. The remaining 60 proposals and all 23 uncertain
+or out-of-scope observations were also examined. These review families were
+neither model output nor an accepted schema layer.
+
+</details>
+
+**Worked example: a documentation decision.** The adjudication report distinguishes a represented data period from an
+artifact's creation or production date and a parent document's publication
+date. The latter dates should not be placed in time_period solely because they
+are available. A complete relevant footer statement can remain in
+interpretive_note; parent-document administration remains on the linked record.
+
+The accepted v1.1.1 documentation uses the following exact Markdown wording:
+
+```markdown
+The period or date range represented by the data.
+
+This field describes **when the represented data apply**. It does not describe when the snapshot artifact or parent document was created, prepared, issued, published, revised, or retrieved. When an explicit artifact date appears only as part of a footer or provenance statement, preserve the complete statement in `interpretive_note` rather than treating the date as `time_period`.
+```
+
+The report-level review led to this v1.1.1 clarification while retaining 36
+fields. It was not attributed to one decisive snapshot or to the South Sudan
+URL candidate discussed below.
+
+**Verification.** Match both definitions to documentation-revision in
+[evidence.json](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json). Explain why creation and publication dates
+are different roles from a represented data period. For each inspected candidate,
+check its support identifiers, evidence source, exact closest fields, and
+proposed semantic loss before entering a human decision.
+
+**What this does not do.** A candidate is not a valid missing field by default.
+Neither 578 proposals nor their recurrence establishes 578 requirements or
+universal completeness. The historical run preserved successful results and
+separate errors, resumed successful filenames, and used notebook-driven reruns
+without an automatic retry policy. No live validation is executed here.
+
+</Recipe>
+
+<Recipe title="6.3 Check whether an omission affects use" level="AI-native" skills="Evaluation practitioner; domain reviewer" time="45–60 minutes for the paired example and instrument controls">
+
+**Result:** Review notes explain whether proposed omissions would affect the intended use, with evidence and uncertainty recorded.
+
+A stricter check asks whether information lost under the best use of existing
+fields would hinder the intended task. Define that threshold using real needs;
+additional convenience alone may be insufficient to justify another field.
+The study called this its confirmatory assessment. Its lower proposal count does not establish greater
+accuracy, because it used a different question and revised guidance.
+
+Test the check itself before relying on it. Deliberately removing a known field
+can reveal whether it notices an expected omission. Human review of some no-gap
+results can also reveal misses; the study limits are recorded below.
+
+**Input example: the South Sudan composite.** This holdout figure contains a map,
+two donut charts, and a trend chart with different subjects and periods.
+The [externally linked image](https://huggingface.co/datasets/ai4data/data-snapshot/blob/626f3c54ba6d8f6e0ba0795f9e544e24b2650faf/snapshots/unhcr/protection_trends_paper_no_7_jan-mar_2016_final_figure_004.png) and
+[source register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) retain its provenance. The
+following retained text is sufficient for this exercise.
+
+<details>
+<summary>Study response format</summary>
+
+The historical output has coverage_assessment and critical_or_possible_gaps.
+A no_critical_gap_found result requires an empty array. A possible_gap result
+requires one or more possible gaps and no critical gap. A critical_gap_found
+result requires at least one critical gap. Each candidate records its identifier,
+status, missing concept, proposed name, evidence, snapshot relevance, closest
+fields, possible loss, material consequence, and uncertainty. The no-gap output
+has no snapshot-level explanatory rationale.
+
+</details>
+
+1. Freeze the schema version to be assessed and supply it with the reserved artifact representation and allowed context. If history is removed to reduce anchoring, preserve substantive meanings and guidance. The study's second instrument used a model-facing v1.1.1 copy after documentation revision; a new application need not reproduce that exact sequence.
+2. Set the conditions for a consequential gap using the artifact scope and intended uses. The study required explicit evidence, reusable snapshot metadata, inadequate coverage, and material impact on interpretability or discoverability. Its possible-gap label retained uncertainty while still requiring plausible metadata and impact.
+3. Compare candidate consequences with the application's stated uses and evidence rules. In this confirmatory instrument, convenience or an extra search facet alone did not meet the threshold, and the prompt forbade inventing a user workflow to inflate materiality. Preserve that distinction when interpreting its results.
+4. Check assessment/array consistency, then inspect the underlying evidence. Preserve model assessments separately from human decisions; the historical model was expressly not asked to classify conceptual, documentation, or representation issues.
+
+**Worked example.** The two instruments produced the following retained findings.
+
+| Instrument and frozen target | Recorded result for this artifact | Interpretation for review |
+|---|---|---|
+| Validation 1, v1.1 | Observation obs_11 marked composite visualization types covered by visualization_type and panel_title. Observation obs_16 marked a parent retrieval URL no_fit and supported source_document_url. | The model distinguished descriptive content already covered from a potentially useful parent-document locator. |
+| Validation 2, model-facing v1.1.1 | gap_001 proposed panel_metadata_mapping as possible, with an interpretability consequence. | The concern was preserving which measured concept, period, and visualization type belongs to each panel. |
+
+The first check found titles and visual types expressible; the second
+questioned the associations among them. Both assessed the same item with
+parent-document context, but their prompts and schema guidance differed.
+Both findings remained proposals for human review.
+
+<details>
+<summary>Study results, controls, and limits</summary>
+
+**Recorded full-run result.** There were 197 no_critical_gap_found assessments,
+five possible_gap assessments, and zero critical_gap_found assessments.
+Thus 197 + 5 = 202 snapshots. The five positive snapshots yielded six possible
+gap records: one project table produced two, and the other four produced one
+each. These are artifact-level and gap-level counts with different denominators.
+
+**Calibration and sensitivity limits.** An ablation is a control that deliberately
+removes a known field to test whether the instrument notices the omission.
+The retained Validation 2 sequence was:
+
+| Control or calibration | Recorded outcome | What it establishes |
+|---|---|---|
+| Twelve snapshots with canonical v1.1.1 including prior outcomes | All twelve returned no-gap assessments. | Prior-outcome language created an avoidable anchoring risk. |
+| The same twelve with the model-facing copy | Eleven no-gap assessments and one possible component-relationship gap. | The presentation change was checked while preserving substantive schema content. |
+| Two title-ablation calls | Both returned no-gap assessments after title was removed. | The instrument failed the intended title-sensitivity signal. |
+| One source-and-note ablation | A critical underlying-data-source gap was returned after data_source and interpretive_note were removed. | The instrument detected at least this explicit provenance omission. |
+
+All these calibration/control identities belonged to the same twelve snapshots.
+The full run restored the complete 36-field model-facing specification.
+Calibration results are excluded from the six substantive candidates. The
+remaining 190 snapshots were untouched by this calibration, but the full 202
+had already served as Validation 1 evidence. This is not a fresh independent
+replication or a collection wholly untouched by instrument development.
+
+Human review inspected all six surfaced gaps. The 197 no-gap assessments had
+no independent human false-negative audit. The successful provenance control
+does not repair the failed title control or estimate general recall. A no-gap
+response is a model assessment under this instrument. It does not prove that
+every consequential omission was absent.
+
+</details>
+
+**Verification.** Reconcile snapshot and gap counts separately. Compare the
+South Sudan records under complementary-validation and flat-representation-limits
+in [evidence.json](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json). Explain the different questions, schema
+presentations, and remaining uncertainty before describing the findings as
+complementary evidence.
+
+**What this does not do.** The result does not measure a false-negative rate,
+prove universal saturation, establish superiority over other methodologies, or
+provide an independently audited completeness score. The control removing
+data_source and interpretive_note is a methodological test. The complete
+schema retained those fields.
+
+</Recipe>
+
+<Recipe title="6.4 Review findings and record changes" level="Foundational" skills="Domain expert; metadata designer" time="60–90 minutes for the selected findings and decision worksheet">
+
+**Result:** Human decisions explain which findings justify changes and which are rejected or deferred.
+
+Review each finding against the source, agreed scope, and best use of existing
+fields. A genuine problem may need clearer guidance or a relationship between
+values. Adding another flat field may leave that problem unresolved. Record
+the reason for the chosen action so deferred work cannot be mistaken for an
+implemented fix.
+
+**Input example: table hierarchy.** The retained assessment of the Diffa table
+identifies spanning headers that group incident
+subtypes beneath broader categories. The [externally linked table](https://huggingface.co/datasets/ai4data/data-snapshot/blob/626f3c54ba6d8f6e0ba0795f9e544e24b2650faf/snapshots/unhcr/rapport_du_monitoring_de_protection_de_la_region_de_diffa_du_mois_de_octobre_2022_ciaud_niger_table_002.png) remains available through the pinned dataset record. Existing row, column, and category fields
+can retain labels while losing the parent-child relationship. This exercise
+uses that recorded structural account and does not translate the French labels
+or reconstruct the visibly clipped upper headers. The [source register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv)
+keeps the image externally linked and records that limitation.
+
+Use this issue framework to choose a response:
+
+| Teaching issue category | Review question and possible response |
+|---|---|
+| Missing concept or field | Does necessary, reusable, in-scope information remain inadequately covered? Consider a field only after verifying evidence and operational need. |
+| Documentation ambiguity | Does an existing field cover the concept but lack clear scope or annotation rules? Clarify and version the guidance. |
+| Representation limitation | Are the concepts present but relationships lost? Record the required association or hierarchy and assess a structural design separately. |
+| Unsupported, excluded, or insufficiently material | Does evidence, scope, or material consequence fail the review? Reject or exclude with an attributable reason. |
+| Unresolved | What additional evidence or expert judgment is needed? Defer the decision explicitly. |
+
+1. Save a working copy of the [gap-review template](pathname:///cookbook-files/ai-assisted-metadata-schema-development/gap_review_template.csv). Identify the artifact, schema version, candidate, evidence, and closest fields. The template calls its artifact column snapshot_id for this case; another review should identify its own artifact unit. Pair local candidate identifiers with artifact identities to avoid ambiguity.
+2. Inspect source evidence and compare its meaning with the best use of existing fields. Ask whether the requirement describes the artifact, contextual information, contents outside the agreed scope, or a relationship the representation loses. Judge coverage using the application's scope and its own field definitions.
+3. Classify the issue using the teaching framework above, then document material_impact, decision, decision_reason, revision_or_deferral, and the actual reviewer for a new review. Preserve the source report's terminology when transcribing a historical disposition.
+4. Check that a proposed revision addresses the demonstrated issue. Version accepted field, guidance, or representation changes and compare the specification before and after review. Keep deferred requirements explicit. An unresolved case remains unresolved until additional evidence supports a decision.
+
+These issue categories are a teaching framework. Validation 2 used different
+output labels.
+
+**Worked example.** The table below transcribes recorded human outcomes for teaching.
+The South Sudan rows come from separate assessments of the same item; each
+has its own model finding and human decision. Their model evidence is retained
+in complementary-validation and flat-representation-limits.
+
+| Instrument and target | Candidate finding | Human interpretation | Actual outcome |
+|---|---|---|---|
+| Validation 1, v1.1; documentation-revision | Artifact-date families exposed the time_period boundary. | Data periods differ from artifact creation and parent publication dates. | Clarify guidance in v1.1.1; retain 36 fields and keep document administration on the linked record. |
+| Validation 1, v1.1; South Sudan obs_16 | no_fit parent retrieval information supported source_document_url. | Retrieval metadata belongs to the linked parent-document record in this application. | Exclude the proposed snapshot-level field; no new snapshot field accepted. |
+| Validation 2, model-facing v1.1.1; South Sudan gap_001 | possible panel_metadata_mapping gap with an interpretability consequence. | Relevant concepts exist, but flat values cannot preserve which variable, period, and visual type belong to each panel. | Defer the representation requirement to future v1.2 design; add no top-level flat field. |
+| Validation 2, model-facing v1.1.1; Diffa gap_001 | possible column_group_hierarchy gap. | Category and dimension fields lose parent-child header relationships. | Defer the structural requirement; add no new flat field. |
+
+**Worked example: document a clarification.** In a worksheet row for the date
+family, leave snapshot_id empty and explain that the evidence is report-level.
+Use a clearly labelled teaching family reference in candidate_id; do not invent
+a historical candidate identifier or decisive artifact. Reference
+documentation-revision, record the v1.1 to v1.1.1 change, and compare the exact
+wording in recipe 6.2. The report also discussed future design work. Only
+changes present in the retained revision count as implemented changes.
+
+In the second assessment, human review rejected or excluded four proposals and
+deferred two representation issues. Rarity alone was not the rejection rule.
+Neither validation accepted a new field; the deferred structures were not
+implemented by adding flat fields.
+
+**Verification.** A second reviewer can follow every selected disposition from
+artifact or report reference to the relevant definition, decision, and concrete
+revision or deferral. Historical reviewer identities are not supplied in these
+teaching rows; a new review must record its actual participants. Confirm that
+v1.1 and v1.1.1 contain the same 36 field names and that representation backlog
+items are not claimed as implemented fixes.
+
+**What this does not do.** Stable field count does not mean every definition
+was adequate or every relationship expressible. These decisions support a
+bounded claim about the tested collection and intended application. The later
+standards-informed 37-field endpoint belongs to [chapter 7](./standards-refinement.mdx)
+and did not receive a further independent held-out assessment in this study.
+
+</Recipe>
+
+## Implementation options
+
+Choose a holdout design that matches the intended claim. Separate artifact
+identities test new items; separating relevant source groups can test transfer
+to new origins, at the cost of reserving enough independent groups.
+
+An open-ended assessment can expose a wide range of boundary questions.
+A focused assessment asks whether a loss would affect the intended use, but its
+threshold can miss useful distinctions. Human review can apply either approach.
+For model-assisted assessment, a human audit of selected no-gap results is an
+option for investigating misses; the recorded study did not complete that audit.
+
+## Resources
+
+- The [research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json) supplies study_summary, verification_derived_facts, documentation-revision, complementary-validation, and flat-representation-limits.
+- The existing [gap-review template](pathname:///cookbook-files/ai-assisted-metadata-schema-development/gap_review_template.csv) separates issue type, materiality, human decision, and revision or deferral.
+- The [request specifications](pathname:///cookbook-files/ai-assisted-metadata-schema-development/validation_request_specs.md) distinguish broad residual discovery from the consequential-gap contract.
+- Dy & Solatorio (2026). *Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs*. Working paper. Sections 4.8, 5.5, and 6.6 and Appendix E explain validation, adjudication, and bounded conclusions. The retained Validation 1 and Validation 2 reports supply the calibration controls and recorded dispositions summarized here.
+
+## Common mistakes
+
+- Proposal counts, affected-item counts, and accepted-field counts can be treated as interchangeable.
+- Equal field inventories can obscure differences in schema definitions and model-facing presentation.
+- Two assessments of the same collection can be described as independent replications.
+- A no-gap model response can be mistaken for an independent human completeness audit.
+- A representation limitation can be treated as resolved by adding an isolated flat field.
+
+## Verification
+
+- The plan records complete schema text, test items, shared sources, and examples used to prepare the assessment.
+- Findings link evidence to existing fields and explain any claimed loss or impact.
+- Human decisions identify the reason, reviewer, and accepted change or deferral.
+- Conclusions disclose sensitivity failures, reused evidence, and unreviewed no-gap results. The study notes retain those limits for the worked examples.
+
+## Checklist
+
+<Checklist id="ai-assisted-metadata-schema-development-validation" items={[
+  'The schema version, holdout items, and assessment questions are fixed.',
+  'The checks have been tested for expected omissions, and their limits recorded.',
+  'Proposed gaps retain source evidence and the closest existing fields.',
+  'Human decisions distinguish accepted changes from rejected or deferred proposals.',
+  'Conclusions state the tested scope, reused evidence, and assessment limits.',
+]} />
+
+Use the revised schema, human decisions, and deferred issues in [Chapter 7](./standards-refinement.mdx) for standards review.

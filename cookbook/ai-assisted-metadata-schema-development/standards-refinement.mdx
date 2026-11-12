@@ -1,0 +1,363 @@
+---
+id: standards-refinement
+title: "7. Standards-Informed Schema Refinement"
+sidebar_label: "7. Standards refinement"
+sidebar_position: 8
+description: Compare artifact-derived meanings with authoritative standards, adjudicate refinements, and document the final specification and its evidence boundary.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 7. Standards-Informed Schema Refinement
+
+**Question:** How can standards improve an artifact-derived schema while preserving its established requirements?
+
+## Rationale
+
+Established standards can help clarify field meanings, improve terminology,
+and reveal useful distinctions. Comparing the schema with them brings in
+experience beyond the development collection. It can expose a field that
+combines different roles even when holdout testing has not led to a new field.
+
+A similar name does not guarantee a suitable meaning. An external term may
+refer to a different kind of item, impose a narrower scope, or require
+relationships the current record cannot express. A crosswalk records these
+comparisons so reviewers can adopt useful refinements while preserving what
+their materials and use case require. The choice of standards follows those
+needs; no single vocabulary has to cover every field.
+
+## Target state
+
+- A crosswalk compares local field meanings with authoritative terms and records sources, dates, and scope differences.
+- Human decisions explain which proposed changes are accepted, rejected, or deferred.
+- A complete, versioned specification records approved changes, field formats, and remaining validation needs. The prepared exercise supports selected comparisons and inventory review; it does not reconstruct the complete study specification.
+
+## Prerequisites
+
+- The schema, validation decisions, and deferred issues from [Chapter 6](./validation.mdx).
+- A reviewer who understands the materials and intended uses.
+- Access to authoritative standards documentation for checking term meanings.
+- A working copy of the standards-review worksheet; the prepared exercises require no model calls.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Reviewers compare definitions and record reasons for accepting or declining changes. |
+| **AI-ready** | Crosswalk rows link sources and decisions to saved specification versions. |
+| **AI-native** | Optional AI assistance suggests comparisons; reviewers verify authoritative sources and approve changes. |
+
+:::info[Running example]
+**Recorded refinement.** The Afghanistan table returns to show how standards
+help separate the source data from the people credited for producing an item.
+The printed values are transcribed from the paper; no new extraction was performed.
+:::
+
+## Recipes
+
+<Recipe title="7.1 Compare fields with relevant standards" level="AI-ready" skills="Metadata practitioner; standards reviewer" time="60–90 minutes for the selected field comparisons">
+
+**Result:** A crosswalk compares field meanings with authoritative terms and records possible refinements.
+
+Compare definitions and the kind of item each term describes before proposing
+a replacement. A snapshot title and its parent-report title can both resemble
+a standard title property while naming different things.
+
+**Input example.** Start with the v1.1.1 definitions of title and
+source_document_title, then inspect the subject, measured-variable, provenance,
+and project fields. The first title names the snapshot; the second names its
+parent document. For project_name, the local definition covers a “project,
+program, operation, or initiative.” These meanings set the scope against which
+external terms are compared.
+
+1. Freeze the complete starting specification and identify standards relevant to the artifact class, intended uses, and unresolved semantic or structural questions. The [standards page](./standards.md) lists references used in the worked examples; another class may need different sources, and no single vocabulary must cover every field.
+2. Locate authoritative term definitions and usage notes. Record the term identifier, documentation URL, version or publication date where available, and access date for mutable pages. Inspect the kind of resource and value expected by the term.
+3. Compare those meanings with the local definition and artifact evidence. State whether the external term is broader, narrower, close, or otherwise related. Explain the direction and the scope difference; a shared name alone is insufficient.
+4. Save a working copy of the new [standards-review worksheet](pathname:///cookbook-files/ai-assisted-metadata-schema-development/standards_review_template.csv). Record relationship and candidate_refinement separately from decision and decision_reason. Preserve uncertainty for review, and retain a reference to any eventual specification change.
+
+The worksheet is a teaching aid. Record the local meaning, scope difference,
+authoritative URL, source version or date, and check date, then connect the
+comparison to a reviewer and decision.
+
+**Worked example.** The following selected comparisons retain the recorded
+relationship judgments. Their explanatory notes are teaching summaries checked
+against the linked authoritative sources.
+
+| v1.1.1 field | External term and original scope | Recorded comparison and implication |
+|---|---|---|
+| title; source_document_title | [DCMI title](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/terms/title/) names the resource being described. | Exact, with different resource subjects: the snapshot for title and its parent for source_document_title. Preserve that boundary. |
+| subject_domain | [DCMI subject](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/terms/subject/) describes resource topics. | Standard broader: a thematic domain is a more specific use of subject description. A plural local field can preserve multiple domains without mandatory external coding. |
+| variable_name | [Schema.org variableMeasured](https://schema.org/variableMeasured) describes measured dataset variables through text or structured descriptions. | Close: the snapshot field includes represented variables, indicators, and metrics while keeping a flat value representation. Preserve the local scope. |
+| data_source | [PROV-O wasDerivedFrom](https://www.w3.org/TR/prov-o/#wasDerivedFrom) relates an object to another object used to produce it; [wasAttributedTo](https://www.w3.org/TR/prov-o/#wasAttributedTo) connects an object to its responsible actor. | Related or structural: the local field combined represented-data origins and credited production. The distinction motivates recipe 7.2. |
+| project_name | [Schema.org Project](https://schema.org/Project) describes a planned enterprise and is an Organization type. | Standard narrower in the study's comparison: the local definition also covers programs, operations, and initiatives. Avoid imposing the external class's scope on every local value. |
+
+The Project judgment is an application-specific comparison; it does not assert
+a formal subclass relationship. Likewise, “no direct match” concerns the sources
+reviewed in this study. It does not prove that no useful term exists elsewhere.
+
+<details>
+<summary>Study crosswalk summary</summary>
+
+**Recorded crosswalk categories.** The study summarized the 36 baseline fields
+as follows. These are descriptive review categories. They do not assert formal
+mapping predicates or a machine-enforced relation vocabulary.
+
+| Recorded relationship | Fields | Meaning for this review |
+|---|---:|---|
+| Exact | 10 | The reviewed semantics correspond at the identified resource level. |
+| Close | 11 | The comparison is useful but a bounded local difference remains. |
+| Standard broader | 6 | The external meaning covers more than the local field. |
+| Standard narrower | 3 | The external meaning covers only part of the local requirement. |
+| Related or structural | 1 | The external pattern suggests distinctions or relationships without a direct field equivalent. |
+| No direct match | 5 | The reviewed sources supply no direct counterpart for the local meaning. |
+| Total | 36 | Each baseline field appears once in this summary; a field can have several candidate external correspondences. |
+
+The category counts sum to 36 baseline fields.
+
+</details>
+
+**Verification.** For a selected row, identify the local definition, authoritative term, described resource, scope
+difference, and proposed consequence. The [standards page](./standards.md)
+records the term-check date separately from historical study source dates.
+Each suggestion must remain distinguishable from an accepted change.
+
+**What this does not do.** A crosswalk does not establish formal conformance,
+lossless conversion, or measured interoperability. The study's standards review
+was interactive and multi-turn, with human adjudication. It was not a single
+fixed-prompt inference, deterministic runner, or automatic acceptance process.
+
+</Recipe>
+
+<Recipe title="7.2 Review proposed standards changes" level="Foundational" skills="Domain reviewer; metadata designer" time="60–90 minutes for the provenance split and contrasting decisions">
+
+**Result:** A decision record explains accepted, rejected, partially accepted, and deferred changes.
+
+Decide whether a recommendation improves the schema for its intended use.
+Check meaning, source evidence, consistency, and maintenance effort. A useful
+change in terminology can be accepted while a larger structural change is
+deferred, provided both decisions are recorded.
+
+**Input example: the combined provenance field.** The baseline v1.1.1 field was
+data_source. Its exact definition and accompanying guidance were:
+
+```markdown
+The named dataset, survey, publication, organization, or credited agent from which the represented data originate or which is explicitly credited with producing the snapshot artifact.
+
+In v1.1.1, `data_source` may retain multiple names but does not structurally distinguish roles such as data source, data producer, map maker, preparer, or contributor. A role-bearing representation is deferred to v1.2. Do not copy the parent document's authors or publisher into this field solely because they are associated with the document; the source or attribution must be explicitly relevant to the snapshot or its represented data.
+```
+
+The wording deliberately combined data origin and explicitly credited
+production in one field. Here, an agent is a responsible actor, such as a
+credited person or organization. Standards review supplied a way to distinguish
+the source and credit meanings.
+In [PROV-O](https://www.w3.org/TR/prov-o/#wasDerivedFrom), derivation relates
+entities; [attribution](https://www.w3.org/TR/prov-o/#wasAttributedTo) assigns
+responsibility to an agent. [DCMI source](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/terms/source/)
+also concerns a resource used in deriving another resource. Those distinctions
+support separate local fields without requiring a provenance graph.
+
+**Input artifact.** The [Afghanistan income table](https://huggingface.co/datasets/ai4data/data-snapshot/blob/626f3c54ba6d8f6e0ba0795f9e544e24b2650faf/snapshots/unhcr/108733-revised-public-wb-unhcr-policy-brief-final_table_000.png)
+carries the
+source phrase “Authors’ calculation based on ALCS 2013–14.” The
+[source register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv) retains its external image link and
+visible credit, and provenance-split in [evidence.json](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json)
+preserves the discovery observations and later decision.
+
+1. Compare the recommendation with the complete baseline definition and validation findings. State whether it changes a field's name, meaning, value guidance, or structure. Explain which observed requirement is preserved.
+2. Evaluate benefit and cost against the artifact-derived requirements. Adopt constraints when they fit the intended meanings and supported values; reject restrictions or normalization that would distort them. Assess structural changes against the representation the application needs, and keep interoperability opportunities separate from measured results.
+3. Record the human disposition and rationale. The research used Accept, Partially accept, Reject, and Defer, sometimes combining an accepted flat change with deferred objects. Preserve those labels when reporting its decisions.
+4. Connect accepted wording to the output version. Keep rejected and deferred recommendations inspectable. For a new review, record the actual reviewer and any unresolved evidence requirement; do not invent a historical participant or decision date.
+
+**Worked example: the provenance split.** The recorded decision was **Accept split; defer objects**. The final v1.1.2
+definitions are reproduced exactly below.
+
+| Final field | Cardinality | Exact definition |
+|---|---|---|
+| data_sources | 0..* | The named datasets, surveys, publications, or other entities from which the represented data originate. |
+| attributions | 0..* | The agents explicitly credited with producing or contributing to the snapshot artifact. |
+
+Cardinality states how many values a field may hold. The notation 0..* means
+an optional ordered list of text values in this flat specification. Final guidance preserves explicit attribution roles together
+with the credited agent as source-grounded text. It does not authorize copying
+parent-document authors or publishers solely because they are associated with
+the document. A role-bearing entity structure was deferred.
+
+| Final field | Printed value transcribed from the paper's Appendix H.1 |
+|---|---|
+| data_sources | ALCS 2013–14 |
+| attributions | Authors’ calculation |
+
+The first value names the source data. The second preserves the explicit credit
+and calculation role; it does not resolve “Authors” into named agents. These
+are a two-field transcription of the paper's printed values, with no new model
+run or independent extraction evaluation. A complete typed record remains
+outside the example.
+
+Separating the roles makes a reviewer's interpretation more precise: a credited
+calculation is not itself the underlying survey. It does not establish measured
+retrieval or extraction improvement. The split followed standards comparison;
+it was not an additional missing field accepted during held-out validation.
+
+**Contrasting recorded decisions.** The following are selected outcomes from
+the research decision matrix. The explanations summarize its documented reasons.
+
+| Candidate recommendation | Recorded disposition | Reason and flat-schema outcome |
+|---|---|---|
+| Split data_source into data_sources and attributions; introduce role-bearing objects. | Accept split; defer objects. | Preserve the useful semantic distinction in flat source-grounded text; richer provenance relationships remain later work. |
+| Narrow project_name to Schema.org Project's scope. | Reject. | Keep projects, programs, operations, and initiatives within the local field. Optional external mappings can be used where applicable. |
+| Rename panel_title to panel_titles and introduce panel objects. | Partially accept. | Retain explicit repeated headings in the plural flat field; defer panel objects and their relationships. |
+| Rename subject_domain to subject_domains and require external coding. | Partially accept. | Represent multiple coequal domains while rejecting a mandatory vocabulary that cannot cover all artifacts. |
+
+Each decision follows its consequence for the application: preserve useful
+meanings, avoid unsuitable restrictions, and keep unimplemented structures
+explicitly deferred.
+
+**Verification.** Match the provenance decision and two final definitions to
+provenance-split. In the worksheet, record the candidate, disposition, reason,
+and output reference separately. Explain why “Authors’ calculation” is credited
+production and ALCS is data origin, without inferring agent identities. Confirm
+that rejecting the Project restriction preserves project_name's local scope.
+
+**What this does not do.** The fields are informed by provenance semantics;
+they do not implement PROV-O's entity-agent relations or demonstrate compliance.
+Flat text does not identify agent resources or encode structured attribution
+roles. The selected matrix rows are not a complete historical conversation log,
+and the new worksheet is a teaching aid.
+
+</Recipe>
+
+<Recipe title="7.3 Reconcile refinements and prepare a publication record" level="AI-ready" skills="Metadata designer; documentation reviewer" time="45–60 minutes for inventory reconciliation and a publication checklist">
+
+**Result:** A complete application produces a versioned specification and supporting decisions for publication review. The prepared exercise produces inventory reconciliation and publication-readiness notes from selected study records.
+
+A usable release needs the complete specification and the decisions explaining
+its changes. Names alone cannot show whether meanings were preserved or deferred
+structures were implemented.
+
+**Prepared input.** The [final field inventory](pathname:///cookbook-files/ai-assisted-metadata-schema-development/final_field_inventory.csv)
+and selected definitions from recipes 7.1–7.2 support reconciling the study's
+names and cardinalities and writing publication-readiness notes. Cardinality
+specifies how many values a field may hold. These files do not supply the
+complete schema, so the exercise cannot reconstruct a full publication-ready
+specification.
+
+Two rows illustrate how the inventory records a split. Other CSV columns
+identify the module and schema versions.
+
+| baseline_field | final_field | cardinality |
+|---|---|---|
+| data_source | data_sources | 0..* |
+| data_source | attributions | 0..* |
+
+1. Retain the complete starting specification and approved review decisions. Apply accepted changes to a new named version.
+2. Review every changed field's definition, examples, value format, evidence rules, applicability, and treatment of missing information. Preserve the requirements supported by the materials.
+3. Reconcile the full before-and-after inventory. Link each change to its reason, authoritative references, and reviewer; keep the crosswalk and decision record distinct.
+4. Review the specification and supporting record together. Document deferred requirements and further validation needs before publication.
+
+**Worked example: reconcile the field inventory.** The supplied CSV has 37
+final-field rows and 36 distinct baseline_field values. The baseline data_source
+appears twice because it produces two fields. Every other baseline field has
+one final counterpart. Thus 36 − 1 + 2 = 37. Other renames and definition
+changes matter even though they do not change the count.
+
+| Baseline v1.1.1 | Final v1.1.2 | Recorded refinement |
+|---|---|---|
+| internal_identifier | document_label | Clarify the document-local label meaning. |
+| geographic_granularity | geographic_level | Use clearer terminology for the represented geographic or reporting level. |
+| measure_type | statistical_forms | Distinguish statistical form from the measured concept. |
+| financing_source | funders | Clarify the funding-source meaning. |
+| panel_title; variable_name | panel_titles; variable_names | Express repeatable flat values through plural names. |
+| data_source | data_sources; attributions | Separate data origin from explicitly credited production. |
+
+**Worked example: verify meanings alongside names.** The final definition of
+project_name remains “The project, program, operation, or initiative associated
+with the snapshot.” Its unchanged name does not imply that the narrower external
+Project class was adopted. The final title definition remains “The primary title,
+caption, or heading that identifies the data snapshot.” Relevant mappings and
+guidance still clarify which resource the title names.
+
+The final definition of time_period is “The date, interval, or source expression
+describing when the represented data apply.” This is a further standards-informed
+wording refinement. Keep it separate from both the original v1.1 definition and
+the documentation clarification assessed in chapter 6. Final guidance preserves
+the source expression and forbids unsupported temporal bounds or precision.
+
+Every final field is optional. In the recorded specification, 0..1 denotes a
+single optional text value and 0..* an optional ordered list of text values.
+Missing metadata remains null. Preserve source order and remove only exact
+duplicates within a field; a list of values does not establish associations
+between values in different fields.
+
+**Verification.** For the supplied exercise, check 37 unique final_field
+values, all 36 distinct baseline fields, and the transcribed final cardinalities.
+Explain the repeated baseline entry and trace every highlighted change to a
+recorded decision. Review the selected definitions alongside the names, and
+record the remaining publication and validation needs in the notes. These
+outputs document the flat 37-field v1.1.2 endpoint without reconstructing its
+complete specification.
+
+For another collection, verify that the complete versioned specification
+contains every field's definition and guidance, that accepted changes trace to
+the decision record, and that deferred structures remain identified. State the
+source evidence, reviewer, and evaluation boundary for the proposed publication.
+
+**What this does not do.** Standards-informed alignment is not formal compliance
+or measured interoperability. Reusing terminology differs from implementing a
+standard's required representation and constraints; demonstrating conformance
+would require a defined target and corresponding checks. The final flat schema
+did not receive an additional independent held-out validation after refinement.
+
+</Recipe>
+
+## Implementation options
+
+AI tools can help speed up standards-informed schema refinement by summarizing
+relevant standards documentation, suggesting candidate term mappings, and
+drafting crosswalk rows and revised field definitions. Supply the current
+schema, validation findings, and authoritative references, and ask for source
+links and explanations of scope differences alongside each proposal. Reviewers
+verify those sources and decide which changes preserve the intended meanings.
+The study used an interactive human–AI review for this work, as described in
+Appendix F of the paper.
+
+Manual reading and the existing worksheet are sufficient for selected
+comparisons. Choose standards for the artifact class and use case, as in
+Recipe 7.1. A documented crosswalk
+can support review without an executable mapping; implementing conversions or
+formal conformance requires a defined target, representation rules, and separate
+checks. Deferred structures remain distinct from implemented field changes.
+
+## Resources
+
+- The [research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json) preserves provenance-split, the final provenance definitions, the two-field paper transcription, and the study sequence.
+- The new [standards-review worksheet](pathname:///cookbook-files/ai-assisted-metadata-schema-development/standards_review_template.csv) separates comparison, candidate change, human disposition, and output reference.
+- The [final field inventory](pathname:///cookbook-files/ai-assisted-metadata-schema-development/final_field_inventory.csv) supports complete name and cardinality reconciliation without copying the full specification.
+- The [standards page](./standards.md) links the authoritative terms used in the worked examples and records their verification dates.
+- Dy & Solatorio (2026). *Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs*. Working paper. Sections 5.6 and 6.7, Appendix F, Appendix G, and the sample in Appendix H.1 supply the standards process, endpoint, and provenance example. Appendix I bounds the post-study diagnostic.
+
+## Common mistakes
+
+- Similar names can be mistaken for semantic equivalence at the same resource level.
+- A descriptive crosswalk category can be treated as a formally asserted mapping relation.
+- An external vocabulary can narrow a local meaning or require unsupported normalization.
+- Deferred objects can be presented as implemented relationships in a flat schema.
+- The final standards-informed specification can be described as independently validated or formally compliant without supporting checks.
+
+## Verification
+
+- Crosswalk rows identify authoritative definitions, local scope, source dates, and the proposed relationship.
+- Accepted, rejected, partially accepted, and deferred changes have reasons and output references.
+- The final inventory reconciles with the starting version and preserves required meanings and value formats.
+- Publication notes identify the complete specification, remaining work, and further validation needs; the prepared exercise states its narrower output.
+
+## Checklist
+
+<Checklist id="ai-assisted-metadata-schema-development-standards-refinement" items={[
+  'Mappings identify authoritative terms and their relationship to local meanings.',
+  'Accepted, rejected, and deferred proposals have explicit reasons.',
+  'The final inventory reconciles with the starting version and approved changes.',
+  'The specification and publication notes state remaining work and validation needs.',
+]} />
+
+Review the complete specification and decision record together before publication. Further validation should test any changes introduced after the earlier holdout assessment.

@@ -1,0 +1,1048 @@
+{
+  "title": "Research evidence for AI-Assisted Metadata Schema Development",
+  "prepared_on": "2026-11-06",
+  "sources": [
+    {
+      "id": "paper",
+      "citation": "Dy & Solatorio (2026). Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs. Working paper.",
+      "authors": [
+        "AJ Carl P. Dy",
+        "Aivin V. Solatorio"
+      ],
+      "publication_status": "Working paper; arXiv publication pending.",
+      "reuse_note": "Small attributed research excerpts and factual transcriptions; the manuscript itself is not redistributed."
+    },
+    {
+      "id": "dataset",
+      "identifier": "ai4data/data-snapshot",
+      "url": "https://huggingface.co/datasets/ai4data/data-snapshot",
+      "revision": "626f3c54ba6d8f6e0ba0795f9e544e24b2650faf",
+      "licence_observation": "The pinned dataset card labels the dataset MIT; its licence includes the World Bank IGO rider.",
+      "reuse_note": "Individual source-image republication permission has not been established. Use the links in source_images.csv; images and full metadata records are not included."
+    }
+  ],
+  "study_summary": {
+    "evidence_type": "recorded_study_result",
+    "paper_locators": [
+      "Sections 5 and 6",
+      "Tables 3, 4, 5, 10 and 15",
+      "Appendix G"
+    ],
+    "development_snapshots": 210,
+    "metadata_observations": 3041,
+    "field_profiles": 833,
+    "candidate_concepts": 70,
+    "retained_concepts": 41,
+    "schemas": [
+      {
+        "version": "v1.1",
+        "field_count": 36,
+        "role": "Initial operational specification."
+      },
+      {
+        "version": "v1.1.1",
+        "field_count": 36,
+        "role": "Documentation revision after held-out validation."
+      },
+      {
+        "version": "v1.1.2",
+        "field_count": 37,
+        "role": "Final standards-informed flat specification; not independently held-out validated after refinement."
+      }
+    ],
+    "development_composition": [
+      {
+        "corpus": "unhcr",
+        "figures": 35,
+        "tables": 35
+      },
+      {
+        "corpus": "prwp",
+        "figures": 35,
+        "tables": 35
+      },
+      {
+        "corpus": "refugee",
+        "figures": 35,
+        "tables": 35
+      }
+    ],
+    "heldout_composition": [
+      {
+        "corpus": "unhcr",
+        "figures": 35,
+        "tables": 35
+      },
+      {
+        "corpus": "prwp",
+        "figures": 35,
+        "tables": 35
+      },
+      {
+        "corpus": "refugee",
+        "figures": 27,
+        "tables": 35
+      }
+    ],
+    "heldout_snapshots": 202,
+    "validation1": {
+      "snapshots": 202,
+      "observations": 2876,
+      "candidate_proposals": 578,
+      "accepted_new_fields_after_human_review": 0
+    },
+    "validation2": {
+      "snapshots": 202,
+      "assessments": {
+        "no_critical_gap_found": 197,
+        "possible_gap": 5
+      },
+      "critical_gap_found": 0,
+      "possible_gap_records": 6,
+      "accepted_new_fields_after_human_review": 0
+    }
+  },
+  "verification_derived_facts": {
+    "evidence_type": "deterministic_analysis_during_evidence_preparation",
+    "snapshot_overlap": 0,
+    "development_parent_documents": 132,
+    "heldout_parent_documents": 125,
+    "shared_parent_documents": 65,
+    "original_mapping_profile_count": 833,
+    "original_mapping_residual_profiles": 117,
+    "later_mapping_residual_profiles": 112,
+    "later_mapping_changes": [
+      {
+        "metadata_field": "unit_of_analysis",
+        "original_concept": "not_in_ontology",
+        "later_concept": "indicator_name"
+      },
+      {
+        "metadata_field": "panel_titles",
+        "original_concept": "not_in_ontology",
+        "later_concept": "panel_title"
+      },
+      {
+        "metadata_field": "event_context",
+        "original_concept": "not_in_ontology",
+        "later_concept": "subject_domain"
+      },
+      {
+        "metadata_field": "operational_context",
+        "original_concept": "not_in_ontology",
+        "later_concept": "subject_domain"
+      },
+      {
+        "metadata_field": "contextual_event",
+        "original_concept": "not_in_ontology",
+        "later_concept": "subject_domain"
+      }
+    ],
+    "original_mapping_residual_snapshot_support": 153,
+    "later_mapping_panel_title_is_outside_41_concept_inventory": true
+  },
+  "examples": [
+    {
+      "id": "independent-naming",
+      "title": "Independent discovery and title naming variation",
+      "intended_chapters": [
+        1,
+        2,
+        3
+      ],
+      "teaching_objective": "Compare reusable field names and their observed values before fixing a vocabulary.",
+      "methodology_stage": "metadata_discovery",
+      "evidence_type": "excerpt",
+      "source_ids": [
+        "paper",
+        "dataset"
+      ],
+      "paper_locators": [
+        "Sections 4.1 and 6.1",
+        "Appendix B"
+      ],
+      "snapshot_ids": [
+        "027_Jordan-Emergency-Food-Security-Project_figure_001.png",
+        "108733-revised-public-wb-unhcr-policy-brief-final_table_000.png",
+        "document_11958451_figure_009.png"
+      ],
+      "schema_versions": [],
+      "inputs": {
+        "snapshot_references": [
+          "027_Jordan-Emergency-Food-Security-Project_figure_001.png",
+          "108733-revised-public-wb-unhcr-policy-brief-final_table_000.png",
+          "document_11958451_figure_009.png"
+        ],
+        "request_design": "Each artifact was assessed independently using its image and supplied parent-document metadata."
+      },
+      "outputs": {
+        "recorded_observations": [
+          {
+            "snapshot_id": "027_Jordan-Emergency-Food-Security-Project_figure_001.png",
+            "snapshot_type": "figure",
+            "source": "refugee",
+            "model": "gpt-5.5",
+            "metadata_field": "figure_title",
+            "observed_value": "Figure 2: Share of food expenditure in total expenditure p.c. (%)",
+            "description": "The title or caption identifying the figure and its subject.",
+            "source_level": "snapshot",
+            "discovery_value": "high",
+            "reasoning": "The figure title provides the most direct searchable description of the snapshot content."
+          },
+          {
+            "snapshot_id": "108733-revised-public-wb-unhcr-policy-brief-final_table_000.png",
+            "snapshot_type": "table",
+            "source": "unhcr",
+            "model": "gpt-5.5",
+            "metadata_field": "table_title",
+            "observed_value": "Monthly labor income in Afghanistan and remittances from abroad",
+            "description": "The title or caption identifying the subject of the table.",
+            "source_level": "snapshot",
+            "discovery_value": "high",
+            "reasoning": "The title provides the primary searchable description of the table's contents."
+          },
+          {
+            "snapshot_id": "document_11958451_figure_009.png",
+            "snapshot_type": "figure",
+            "source": "prwp",
+            "model": "gpt-5.5",
+            "metadata_field": "chart_title",
+            "observed_value": "Strength of Total Revenue and Total Expenditure Anti-Cyclicality",
+            "description": "The title displayed within the chart area describing the plotted data.",
+            "source_level": "snapshot",
+            "discovery_value": "medium",
+            "reasoning": "The internal chart title clarifies the specific variables plotted within the broader figure caption."
+          },
+          {
+            "snapshot_id": "document_11958451_figure_009.png",
+            "snapshot_type": "figure",
+            "source": "prwp",
+            "model": "gpt-5.5",
+            "metadata_field": "figure_title",
+            "observed_value": "Russia: Strength of Anti-Cyclicality of Fiscal Revenues and Expenditures",
+            "description": "The formal title or caption identifying the figure's subject.",
+            "source_level": "snapshot",
+            "discovery_value": "high",
+            "reasoning": "The title provides the most direct searchable description of the figure's substantive content."
+          }
+        ]
+      },
+      "limitations": [
+        "These are selected model observations, not complete responses or human-verified metadata records.",
+        "The Russian figure has both a caption and an internal chart title. Their shared vocabulary does not make their values interchangeable."
+      ]
+    },
+    {
+      "id": "exact-name-profile",
+      "title": "Exact-name aggregation with a small real subset",
+      "intended_chapters": [
+        2,
+        3
+      ],
+      "teaching_objective": "Aggregate repeated names without semantic normalization and keep subset counts separate from study totals.",
+      "methodology_stage": "field_profile_aggregation",
+      "evidence_type": "reproducible_exercise",
+      "source_ids": [
+        "paper",
+        "dataset"
+      ],
+      "paper_locators": [
+        "Sections 4.2 and 6.2",
+        "Tables 8 and 9"
+      ],
+      "snapshot_ids": [
+        "027_Jordan-Emergency-Food-Security-Project_figure_001.png",
+        "108733-revised-public-wb-unhcr-policy-brief-final_table_000.png",
+        "document_11958451_figure_009.png"
+      ],
+      "schema_versions": [],
+      "inputs": {
+        "recorded_observations": [
+          {
+            "snapshot_id": "027_Jordan-Emergency-Food-Security-Project_figure_001.png",
+            "snapshot_type": "figure",
+            "source": "refugee",
+            "model": "gpt-5.5",
+            "metadata_field": "geographic_scope",
+            "observed_value": "Jordan, inferred from parent document title and project name; not visible in snapshot",
+            "description": "The country, region, or geographic area to which the figure data applies.",
+            "source_level": "document",
+            "discovery_value": "high",
+            "reasoning": "Geographic context is essential for discovery because it is not shown in the figure itself."
+          },
+          {
+            "snapshot_id": "108733-revised-public-wb-unhcr-policy-brief-final_table_000.png",
+            "snapshot_type": "table",
+            "source": "unhcr",
+            "model": "gpt-5.5",
+            "metadata_field": "geographic_scope",
+            "observed_value": "Afghanistan",
+            "description": "The country, region, or other geographic area covered by the table.",
+            "source_level": "snapshot",
+            "discovery_value": "high",
+            "reasoning": "Geographic scope is essential for filtering and retrieving country-specific data."
+          },
+          {
+            "snapshot_id": "document_11958451_figure_009.png",
+            "snapshot_type": "figure",
+            "source": "prwp",
+            "model": "gpt-5.5",
+            "metadata_field": "geographic_scope",
+            "observed_value": "Russia",
+            "description": "The country, region, or geographic entity covered by the snapshot.",
+            "source_level": "both",
+            "discovery_value": "high",
+            "reasoning": "Geographic scope is essential for filtering and retrieving country-specific fiscal evidence."
+          }
+        ]
+      },
+      "outputs": {
+        "exercise_profile": {
+          "metadata_field": "geographic_scope",
+          "count": 3,
+          "n_snapshots": 3,
+          "support": 1.0,
+          "corpora_count": 3,
+          "figure_count": 2,
+          "table_count": 1,
+          "observed_values": [
+            "Jordan, inferred from parent document title and project name; not visible in snapshot",
+            "Afghanistan",
+            "Russia"
+          ]
+        },
+        "recorded_full_study_profile": {
+          "metadata_field": "geographic_scope",
+          "count": "192",
+          "n_snapshots": "192",
+          "support": "0.9142857142857143",
+          "corpora_count": "3",
+          "figure_count": "96",
+          "table_count": "96",
+          "source_snapshot_count": "65",
+          "source_document_count": "56",
+          "source_both_count": "71",
+          "top_observed_values": "['Lebanon', 'Djibouti', 'Uganda', 'Croatia', 'World / The World Region']",
+          "n_unique_observed_values": "121",
+          "top_description_values": "['Country or geographic area to which the table applies.', 'The broad geographic region covered by the table.', 'Country or geographic area to which the table content applies.']",
+          "top_reasoning_values": "['Geographic scope is essential for country-level search, filtering, and comparison.', 'Geographic context is essential for discovery because it is not shown in the figure itself.', 'Geographic coverage is critical for country-based discovery and comparison.']"
+        }
+      },
+      "limitations": [
+        "The three-record aggregation was computed during evidence preparation; it is not a separately executed research discovery run.",
+        "The full-study profile retains its original CSV cell values, including serialized list columns.",
+        "A source_level of document or both does not establish that the value is visible in the image.",
+        "The compact profile can be joined back to observations by metadata_field; representative lists are not exhaustive provenance."
+      ]
+    },
+    {
+      "id": "canonical-title",
+      "title": "Semantic consolidation of title profiles",
+      "intended_chapters": [
+        3,
+        4
+      ],
+      "teaching_objective": "Use accumulated meaning and evidence to consolidate synonymous candidate fields.",
+      "methodology_stage": "canonical_metadata_concept_synthesis",
+      "evidence_type": "excerpt",
+      "source_ids": [
+        "paper"
+      ],
+      "paper_locators": [
+        "Sections 4.3 and 6.3",
+        "Appendix C"
+      ],
+      "snapshot_ids": [],
+      "schema_versions": [],
+      "inputs": {
+        "recorded_profiles": [
+          {
+            "metadata_field": "figure_title",
+            "count": "84",
+            "n_snapshots": "84",
+            "support": "0.4",
+            "corpora_count": "3",
+            "figure_count": "81",
+            "table_count": "3",
+            "source_snapshot_count": "84",
+            "source_document_count": "0",
+            "source_both_count": "0",
+            "top_observed_values": "['Figure 2: Share of food expenditure in total expenditure p.c. (%)', 'Figure 2: Enrollment pyramid and share of illiterate pupils', 'شكل 1: مصادر القروض في الأردن (2013) / Figure 1: Sources of loans in Jordan (2013)', 'ANNEX 3: Map: Geographical distribution of the refugee population across Djibouti, including settlements and Djibouti.', \"Figure A3-2: Women's literacy rates in Sudan, 2014\"]",
+            "n_unique_observed_values": "83",
+            "top_description_values": "['Title or heading displayed with the figure.', \"The title or caption text identifying the figure's subject.\", 'The title or caption identifying the figure and its subject.']",
+            "top_reasoning_values": "['The figure title provides the most direct searchable description of the snapshot content.', \"The title provides the primary searchable description of the figure's content.\", 'The title provides the most direct semantic description for search and retrieval.']"
+          },
+          {
+            "metadata_field": "table_title",
+            "count": "90",
+            "n_snapshots": "90",
+            "support": "0.42857142857142855",
+            "corpora_count": "3",
+            "figure_count": "1",
+            "table_count": "89",
+            "source_snapshot_count": "90",
+            "source_document_count": "0",
+            "source_both_count": "0",
+            "top_observed_values": "['PROJECT FINANCING DATA (US$, Millions)', 'Violations et abus de droits en décembre 2023', 'Cost-Effectiveness Analysis Summary', 'Estimated Project Costs', 'Team']",
+            "n_unique_observed_values": "76",
+            "top_description_values": "['The title or caption identifying the table content.', 'Title or heading that identifies the subject of the table.', 'The explicit title or caption identifying the table.']",
+            "top_reasoning_values": "['The title provides the primary semantic description needed for search and cataloging.', 'The title directly summarizes the analytical content and supports targeted retrieval of project cost-effectiveness tables.', 'The table title directly captures the table’s main analytical content for retrieval.']"
+          },
+          {
+            "metadata_field": "chart_title",
+            "count": "7",
+            "n_snapshots": "7",
+            "support": "0.03333333333333333",
+            "corpora_count": "3",
+            "figure_count": "7",
+            "table_count": "0",
+            "source_snapshot_count": "7",
+            "source_document_count": "0",
+            "source_both_count": "0",
+            "top_observed_values": "['Inflation (%); Export and import levels (US$ millions); Current account balance to GDP ratio (%); Composition of total debt, 1997 (US$ millions)', 'Inflation (%); Export and import levels (US$ mill.); Current account balance to GDP (%); Composition of 2001 debt (US$ mill.)', 'Inflation (%); Export and import levels (mill. US$); Current account balance to GDP ratio (%); Composition of total debt, 1996 (mill. US$)', 'CIVILIAN CASUALTIES BY TYPE OF ARMED VIOLENCE IN Q3 2020', 'Strength of Total Revenue and Total Expenditure Anti-Cyclicality']",
+            "n_unique_observed_values": "5",
+            "top_description_values": "['Titles of embedded charts or graphical panels.', 'Titles of embedded charts associated with the table.', 'Titles of embedded charts or figure panels within the snapshot.']",
+            "top_reasoning_values": "['Chart titles concisely summarize specific indicators that may not appear in document-level metadata.', 'Chart titles expose additional summary visualizations embedded in the snapshot for search and browsing.', 'Chart titles summarize distinct visualized indicators within the compound snapshot.']"
+          }
+        ]
+      },
+      "outputs": {
+        "recorded_candidate_concept": {
+          "canonical_name": "title",
+          "definition": "The displayed or inferred title, heading, or caption that identifies the snapshot.",
+          "rationale": "Titles are usually the strongest single searchable description of a snapshot’s content and should be normalized across figures, tables, maps, and charts.",
+          "sample_fields": "table_title, figure_title, snapshot_title, chart_title, map_title, table_caption"
+        },
+        "original_profile_assignments": [
+          {
+            "metadata_field": "figure_title",
+            "canonical_name": "title",
+            "confidence": "high"
+          },
+          {
+            "metadata_field": "table_title",
+            "canonical_name": "title",
+            "confidence": "high"
+          },
+          {
+            "metadata_field": "chart_title",
+            "canonical_name": "title",
+            "confidence": "high"
+          }
+        ]
+      },
+      "limitations": [
+        "The candidate concept examples do not enumerate all contributing profiles.",
+        "The assignments are later coverage-assessment evidence, not a hidden output of concept synthesis.",
+        "Terminological consolidation still requires review of differences between captions, internal headings, and panel titles."
+      ]
+    },
+    {
+      "id": "human-concept-decisions",
+      "title": "Human merges, a rename, and exclusions",
+      "intended_chapters": [
+        4
+      ],
+      "teaching_objective": "Distinguish semantic equivalence, naming clarity, and metadata scope when refining concepts.",
+      "methodology_stage": "expert_concept_refinement",
+      "evidence_type": "excerpt",
+      "source_ids": [
+        "paper"
+      ],
+      "paper_locators": [
+        "Section 6.3",
+        "Table 11"
+      ],
+      "snapshot_ids": [],
+      "schema_versions": [],
+      "inputs": {
+        "recorded_merge_rows": [
+          {
+            "canonical_name": "measure_name",
+            "definition": "Name of the quantitative measure or value column reported in the snapshot.",
+            "rationale": "Measure names distinguish costs, counts, percentages, budgets, disbursements, coefficients, rates, and other numeric quantities.",
+            "sample_fields": "measure_name, measure_names, measure_column, measure_labels, value_measure, financial_measure_names",
+            "status": "merge",
+            "merge_into": "indicator_name",
+            "tier": "merge"
+          },
+          {
+            "canonical_name": "axis_variable",
+            "definition": "Variable, indicator, dimension, or measure represented along a chart axis.",
+            "rationale": "Axis variables are essential for interpreting plotted relationships when axis labels contain substantive concepts not in the title.",
+            "sample_fields": "x_axis_dimension, y_axis_variable, x_axis_indicator, y_axis_indicator, y_axis_measure, axis_value_range",
+            "status": "merge",
+            "merge_into": "indicator_name",
+            "tier": "merge"
+          },
+          {
+            "canonical_name": "outcome_variable",
+            "definition": "Dependent variable, outcome, result, or main effect being estimated, measured, or explained.",
+            "rationale": "Outcome-variable metadata is central for finding analytical tables by the substantive result being modeled or evaluated.",
+            "sample_fields": "outcome_variable, dependent_variable, dependent_variables, outcome_variables, model_outcome_variables, outcome_indicator",
+            "status": "merge",
+            "merge_into": "indicator_name",
+            "tier": "merge"
+          }
+        ],
+        "recorded_candidate_to_rename": {
+          "canonical_name": "presentation_type",
+          "definition": "The structural form used to present the data, such as table, map, line chart, bar chart, dashboard, or composite figure.",
+          "rationale": "Presentation type helps users filter for reusable analytical forms and understand whether the snapshot supports trend, spatial, categorical, or tabular analysis.",
+          "sample_fields": "visualization_type, map_type, chart_purpose, statistical_output_type, financial_data_type"
+        }
+      },
+      "outputs": {
+        "recorded_retained_concept": {
+          "canonical_name": "indicator_name",
+          "definition": "Name of the indicator, variable, metric, outcome, or measured concept represented in the snapshot.",
+          "rationale": "Indicator names are the core semantic content needed for fine-grained search and analytical reuse.",
+          "sample_fields": "indicator_name, indicator_names, primary_indicator, outcome_indicators, measured_variable, chart_indicator_names",
+          "status": "keep",
+          "merge_into": "indicator_name",
+          "tier": "Core"
+        },
+        "recorded_renamed_concept": {
+          "canonical_name": "visualization_type",
+          "definition": "The structural form used to present the data, such as table, map, line chart, bar chart, dashboard, or composite figure.",
+          "rationale": "Visualization type helps users filter for reusable analytical forms and understand whether the snapshot supports trend, spatial, categorical, or tabular analysis.",
+          "sample_fields": "visualization_type, map_type, chart_purpose, statistical_output_type, financial_data_type",
+          "status": "keep",
+          "merge_into": "",
+          "tier": "Core"
+        },
+        "paper_decisions_transcription": [
+          {
+            "decision": "merge",
+            "from": [
+              "measure_name",
+              "axis_variable",
+              "outcome_variable"
+            ],
+            "to": "indicator_name"
+          },
+          {
+            "decision": "rename",
+            "from": "presentation_type",
+            "to": "visualization_type"
+          },
+          {
+            "decision": "exclude",
+            "concepts": [
+              "data_values",
+              "legend_semantics"
+            ]
+          }
+        ]
+      },
+      "limitations": [
+        "The paper-decision objects are teaching transcriptions of Table 11, not original structured adjudication records.",
+        "The exclusions apply to the study scope; legend labels can still provide values for retained metadata concepts.",
+        "The retained inventory has 49 rows: 41 keep and eight merge. It is not a complete 70-candidate adjudication ledger."
+      ]
+    },
+    {
+      "id": "rare-and-residual",
+      "title": "Rare concepts and residual classifications",
+      "intended_chapters": [
+        2,
+        4
+      ],
+      "teaching_objective": "Interpret low support without automatic deletion and distinguish analytical content from reusable metadata.",
+      "methodology_stage": "concept_coverage_assessment",
+      "evidence_type": "excerpt",
+      "source_ids": [
+        "paper",
+        "dataset"
+      ],
+      "paper_locators": [
+        "Section 6.4",
+        "Tables 12 and 13",
+        "Appendix D"
+      ],
+      "snapshot_ids": [
+        "051_Pakistan-Balochistan-Human-Capital-Investment-Project_table_000.png",
+        "lebanonhaus2016final_figure_011.png"
+      ],
+      "schema_versions": [],
+      "inputs": {
+        "recorded_observations": [
+          {
+            "snapshot_id": "051_Pakistan-Balochistan-Human-Capital-Investment-Project_table_000.png",
+            "snapshot_type": "table",
+            "source": "refugee",
+            "model": "gpt-5.5",
+            "metadata_field": "financing_instrument",
+            "observed_value": "IDA Credit; IDA Grant; Guarantee Amount",
+            "description": "Types of financing instruments represented in the table.",
+            "source_level": "snapshot",
+            "discovery_value": "high",
+            "reasoning": "Instrument type enables discovery and comparison of credit, grant, and guarantee financing."
+          },
+          {
+            "snapshot_id": "lebanonhaus2016final_figure_011.png",
+            "snapshot_type": "figure",
+            "source": "unhcr",
+            "model": "gpt-5.5",
+            "metadata_field": "sample_size",
+            "observed_value": "n=44",
+            "description": "The number of observations, respondents, or cases represented in the figure.",
+            "source_level": "snapshot",
+            "discovery_value": "high",
+            "reasoning": "Sample size supports assessment of evidence strength and comparability."
+          }
+        ],
+        "recorded_concept": {
+          "canonical_name": "financing_instrument",
+          "definition": "Type or modality of financing, such as loan, credit, grant, guarantee, equity, trust fund, or financing window.",
+          "rationale": "Financing instrument supports comparison of financial structures across project appraisal and portfolio snapshots.",
+          "sample_fields": "financing_instrument, financing_type, financial_instrument_type, financial_instrument_types, funding_type",
+          "status": "keep",
+          "merge_into": "",
+          "tier": "Specialized"
+        }
+      },
+      "outputs": {
+        "original_profile_assignments": [
+          {
+            "metadata_field": "financing_instrument",
+            "canonical_name": "financing_instrument",
+            "confidence": "high"
+          },
+          {
+            "metadata_field": "sample_size",
+            "canonical_name": "not_in_ontology",
+            "confidence": "high"
+          },
+          {
+            "metadata_field": "data_collection_method",
+            "canonical_name": "data_collection_method",
+            "confidence": "high"
+          }
+        ],
+        "snapshot_support_recomputed_from_original_mapping": {
+          "financing_instrument": {
+            "snapshots": 7,
+            "denominator": 210
+          },
+          "data_collection_method": {
+            "snapshots": 9,
+            "denominator": 210
+          }
+        },
+        "paper_interpretation_paraphrase": "Low-support specialized concepts can remain relevant. Residual assignments include analytical values and intentionally excluded material."
+      },
+      "limitations": [
+        "Support counts distinct snapshots after joining all observations to the original mapping, not exact-name occurrence counts.",
+        "not_in_ontology is the historical residual label, not a formal ontology assertion.",
+        "Rejecting a dedicated sample-size concept does not prohibit preserving an explicit sample-size statement in a title or interpretive note."
+      ]
+    },
+    {
+      "id": "operational-panel-title",
+      "title": "Operational design and the restoration of panel_title",
+      "intended_chapters": [
+        4,
+        5
+      ],
+      "teaching_objective": "Explain why a reviewed concept inventory does not map one-to-one onto operational fields.",
+      "methodology_stage": "operational_metadata_schema_design",
+      "evidence_type": "excerpt",
+      "source_ids": [
+        "paper",
+        "dataset"
+      ],
+      "paper_locators": [
+        "Section 6.5",
+        "Table 14"
+      ],
+      "snapshot_ids": [
+        "document_12916918_figure_012.png"
+      ],
+      "schema_versions": [
+        "v1.1"
+      ],
+      "inputs": {
+        "recorded_observation": {
+          "snapshot_id": "document_12916918_figure_012.png",
+          "snapshot_type": "figure",
+          "source": "prwp",
+          "model": "gpt-5.5",
+          "metadata_field": "panel_titles",
+          "observed_value": "Monthly Price; Monthly Returns (% change) and KL (2000) test detected breaks",
+          "description": "Titles of individual panels or subplots within a multi-panel figure.",
+          "source_level": "snapshot",
+          "discovery_value": "high",
+          "reasoning": "Panel titles capture the distinct analytical views contained in the same snapshot."
+        },
+        "original_profile_assignment": {
+          "metadata_field": "panel_titles",
+          "canonical_name": "not_in_ontology",
+          "confidence": "high"
+        },
+        "concept_inventory_contains_panel_title": false
+      },
+      "outputs": {
+        "recorded_initial_schema_definition": "The title or heading of an individual panel within a multi-panel snapshot.\n\nPopulate only when panel titles are explicitly present.",
+        "later_profile_assignment": {
+          "metadata_field": "panel_titles",
+          "canonical_name": "panel_title",
+          "confidence": "high"
+        },
+        "recorded_design_decision_rows": [
+          {
+            "Decision": "Merge",
+            "Representative transformation": "`series_labels` into `indicator_name`",
+            "Rationale": "Separate fields added little annotation or retrieval value."
+          },
+          {
+            "Decision": "Merge",
+            "Representative transformation": "`calculation_method` into `analysis_method`",
+            "Rationale": "The broader field retained the useful distinction without parallel vocabulary."
+          },
+          {
+            "Decision": "Reintroduce",
+            "Representative transformation": "`panel_title`",
+            "Rationale": "Multi-panel figures required an independently annotatable title."
+          },
+          {
+            "Decision": "Remove",
+            "Representative transformation": "`indicator_definition`",
+            "Rationale": "Its operational value did not justify an independent field."
+          },
+          {
+            "Decision": "Rename",
+            "Representative transformation": "`financial_metric` to `financial_measure`",
+            "Rationale": "The latter was clearer and more consistent with the schema vocabulary."
+          },
+          {
+            "Decision": "Refine",
+            "Representative transformation": "`comparison_group`, `reference_date`",
+            "Rationale": "Definitions were broadened to apply across the three corpora."
+          }
+        ]
+      },
+      "limitations": [
+        "Chapter 4 uses the original 41-concept mapping. Chapter 5 introduces the later operational restoration of panel_title.",
+        "The source records provide no exact edit dates or complete deliberation history.",
+        "The soybean figure illustrates the practical need for panel headings; it is not claimed to be the uniquely decisive historical example."
+      ]
+    },
+    {
+      "id": "documentation-revision",
+      "title": "Validation can clarify a field without adding one",
+      "intended_chapters": [
+        6
+      ],
+      "teaching_objective": "Separate a documentation issue from an absent metadata requirement.",
+      "methodology_stage": "schema_validation_and_human_adjudication",
+      "evidence_type": "excerpt",
+      "source_ids": [
+        "paper"
+      ],
+      "paper_locators": [
+        "Sections 5.5 and 6.6",
+        "Appendix E"
+      ],
+      "snapshot_ids": [],
+      "schema_versions": [
+        "v1.1",
+        "v1.1.1"
+      ],
+      "inputs": {
+        "recorded_v1_1_time_period_definition": "The period or date range represented by the data.",
+        "candidate_families_from_adjudication_report": [
+          "snapshot_date",
+          "snapshot_creation_date",
+          "snapshot_production_date",
+          "source-document publication date"
+        ]
+      },
+      "outputs": {
+        "recorded_v1_1_1_time_period_definition": "The period or date range represented by the data.\n\nThis field describes **when the represented data apply**. It does not describe when the snapshot artifact or parent document was created, prepared, issued, published, revised, or retrieved. When an explicit artifact date appears only as part of a footer or provenance statement, preserve the complete statement in `interpretive_note` rather than treating the date as `time_period`.",
+        "decision_paraphrase": "Clarify the data-period meaning and the parent-document boundary; retain the 36-field inventory."
+      },
+      "limitations": [
+        "This is a field-level comparison supported by the adjudication report; no single snapshot is asserted to account for the revision.",
+        "The report also discussed later representation work. Only the documentation change actually present in v1.1.1 is treated as the recorded revision."
+      ]
+    },
+    {
+      "id": "flat-representation-limits",
+      "title": "Panel associations and table-header hierarchy",
+      "intended_chapters": [
+        5,
+        6
+      ],
+      "teaching_objective": "Recognize relationships that another flat field cannot preserve faithfully.",
+      "methodology_stage": "held_out_schema_validation",
+      "evidence_type": "excerpt",
+      "source_ids": [
+        "paper",
+        "dataset"
+      ],
+      "paper_locators": [
+        "Sections 5.5 and 6.6",
+        "Appendix E.2"
+      ],
+      "snapshot_ids": [
+        "protection_trends_paper_no_7_jan-mar_2016_final_figure_004.png",
+        "rapport_du_monitoring_de_protection_de_la_region_de_diffa_du_mois_de_octobre_2022_ciaud_niger_table_002.png"
+      ],
+      "schema_versions": [
+        "v1.1.1"
+      ],
+      "inputs": {
+        "frozen_schema": "v1.1.1, using a history-neutral model-facing presentation",
+        "snapshot_references": [
+          "protection_trends_paper_no_7_jan-mar_2016_final_figure_004.png",
+          "rapport_du_monitoring_de_protection_de_la_region_de_diffa_du_mois_de_octobre_2022_ciaud_niger_table_002.png"
+        ]
+      },
+      "outputs": {
+        "recorded_validation2_assessments": [
+          {
+            "snapshot_id": "protection_trends_paper_no_7_jan-mar_2016_final_figure_004.png",
+            "coverage_assessment": "possible_gap",
+            "critical_or_possible_gaps": [
+              {
+                "gap_id": "gap_001",
+                "gap_status": "possible",
+                "missing_metadata_concept": "Panel-specific binding between each component of a composite snapshot and its applicable measured concept, time period, and visualization type.",
+                "proposed_field_name": "panel_metadata_mapping",
+                "evidence": "The snapshot is a composite figure with distinct panels: a map titled “Known Hazardous Areas and Number of Known Hazards as of 31 March 2016,” a donut chart titled “Types of Hazards - as of 31 March 2016,” a donut chart titled “MRE* Audiences: January - March 2016,” and a bar/line chart titled “Hazardous Areas Dec2013 - Mar2016.”",
+                "why_snapshot_metadata": "The information describes how this snapshot’s own component panels relate to the variables, time periods, and visual encodings shown within the extracted figure, not administrative metadata about the parent document.",
+                "closest_schema_fields": [
+                  "panel_title",
+                  "visualization_type",
+                  "variable_name",
+                  "time_period",
+                  "subject_summary"
+                ],
+                "why_existing_fields_may_be_insufficient": "The existing fields can record panel titles, an overall composite visualization type, multiple variable names, and multiple time periods, but they do not preserve which variable and time period belong to which panel. A flat representation could list “known hazards,” “types of hazards,” “MRE audiences,” “Dec2013 - Mar2016,” and “as of 31 March 2016” without retaining the panel-level associations.",
+                "material_impact": "interpretability",
+                "material_consequence": "For a composite snapshot with multiple panels covering different measures and temporal scopes, users of the metadata record could misinterpret which date range or measured concept applies to which component if the panel relationships are not represented.",
+                "uncertainty_note": "Materiality is possible rather than certain because the snapshot image itself contains the panel labels, and v1.1.1 intentionally provides only coarse composite support through panel_title and visualization_type."
+              }
+            ]
+          },
+          {
+            "snapshot_id": "rapport_du_monitoring_de_protection_de_la_region_de_diffa_du_mois_de_octobre_2022_ciaud_niger_table_002.png",
+            "coverage_assessment": "possible_gap",
+            "critical_or_possible_gaps": [
+              {
+                "gap_id": "gap_001",
+                "gap_status": "possible",
+                "missing_metadata_concept": "Hierarchical grouping of table columns linking specific incident typologies to broader violation categories.",
+                "proposed_field_name": "column_group_hierarchy",
+                "evidence": "The table title states it shows the distribution of incidents by typology and commune. The header is multi-level: commune rows are crossed with incident subtype columns, while spanning headers group those subtypes under broader categories such as “Violation du droit à la liberté,” “Violation du droit à biens,” “Violation du droit à la vie et à l’intégrité,” and “Violences sexuelles.”",
+                "why_snapshot_metadata": "The grouped headers are part of the snapshot’s own table structure and define how the represented incident counts are classified; they are not administrative metadata about the parent document.",
+                "closest_schema_fields": [
+                  "column_dimension",
+                  "category_dimension",
+                  "category_labels",
+                  "row_dimension",
+                  "subject_summary",
+                  "interpretive_note"
+                ],
+                "why_existing_fields_may_be_insufficient": "The existing fields can record that columns represent incident typologies and can list both broad category labels and subtype labels, but they do not encode the parent-child or spanning-header relationship between a broad violation category and the specific incident types beneath it. Flattening all labels may make broad categories and subtypes appear as peer categories and lose the classification structure needed to interpret grouped columns.",
+                "material_impact": "both",
+                "material_consequence": "Without the grouping relationship, metadata-only interpretation or indexing could misrepresent which incident subtypes belong to each broader protection-violation class, impairing understanding of the table’s classification scheme and limiting discovery of snapshots organized around those broader incident categories.",
+                "uncertainty_note": "Possible rather than critical because v1.1.1 partially covers the information through category and dimension fields, and detailed header hierarchy may be considered closer to table-structure extraction than core snapshot metadata."
+              }
+            ]
+          }
+        ],
+        "human_dispositions_paraphrase": [
+          {
+            "proposed_field_name": "panel_metadata_mapping",
+            "decision": "Representation gap; deferred beyond the flat specification.",
+            "rationale": "The concepts exist, but their values cannot be associated with individual panels."
+          },
+          {
+            "proposed_field_name": "column_group_hierarchy",
+            "decision": "Representation gap; deferred beyond the flat specification.",
+            "rationale": "Category and dimension concepts exist, but the flat schema loses parent-child header relationships."
+          }
+        ]
+      },
+      "limitations": [
+        "Model gap assessments are candidates. The human dispositions are paraphrases of the recorded report, not raw model outputs.",
+        "The French table has visibly clipped upper headers; do not infer missing words from the image.",
+        "No extra flat field was accepted from either candidate."
+      ]
+    },
+    {
+      "id": "complementary-validation",
+      "title": "Two instruments on the same held-out artifact",
+      "intended_chapters": [
+        6
+      ],
+      "teaching_objective": "Compare residual discovery and consequential-gap assessment without calling them independent replications.",
+      "methodology_stage": "held_out_schema_validation",
+      "evidence_type": "excerpt",
+      "source_ids": [
+        "paper",
+        "dataset"
+      ],
+      "paper_locators": [
+        "Section 5.5",
+        "Table 5",
+        "Appendix E"
+      ],
+      "snapshot_ids": [
+        "protection_trends_paper_no_7_jan-mar_2016_final_figure_004.png"
+      ],
+      "schema_versions": [
+        "v1.1",
+        "v1.1.1"
+      ],
+      "inputs": {
+        "snapshot_reference": "protection_trends_paper_no_7_jan-mar_2016_final_figure_004.png",
+        "schema_sequence": [
+          "v1.1",
+          "v1.1.1"
+        ]
+      },
+      "outputs": {
+        "recorded_validation1_observations": [
+          {
+            "observation_id": "obs_11",
+            "metadata_concept": "Composite visualization types",
+            "evidence": "The snapshot contains a choropleth/bubble map, two donut charts, and a bar-and-line trend chart in one figure.",
+            "evidence_source": "snapshot",
+            "closest_schema_fields": [
+              "visualization_type",
+              "panel_title"
+            ],
+            "fit_status": "covered",
+            "fit_rationale": "The visualization_type field can list the visual encodings present, and panel_title can identify the titled components of the composite figure."
+          },
+          {
+            "observation_id": "obs_16",
+            "metadata_concept": "Parent source document retrieval URL",
+            "evidence": "The source-document metadata includes a ReliefWeb URL and a PDF attachment URL for the parent document.",
+            "evidence_source": "document",
+            "closest_schema_fields": [
+              "source_document_title",
+              "data_source"
+            ],
+            "fit_status": "no_fit",
+            "fit_rationale": "Existing fields identify the parent document title or underlying data source but do not represent a retrievable locator for the parent document."
+          }
+        ],
+        "recorded_validation1_candidates": [
+          {
+            "proposed_name": "source_document_url",
+            "definition": "A URL, persistent link, or other retrievable locator for the parent source document or document landing page from which the snapshot was extracted.",
+            "supporting_observation_ids": [
+              "obs_16"
+            ],
+            "why_existing_fields_are_insufficient": "source_document_title identifies the parent document but cannot be used to retrieve or verify it, while data_source refers to the origin of the represented data rather than the parent document location.",
+            "operational_value": "Supports retrieval, provenance verification, deduplication, and traceability from a snapshot record back to its source document.",
+            "source_level": "document"
+          }
+        ],
+        "human_adjudication_paraphrase": "Parent-document retrieval metadata remains on the linked document record; no new snapshot field was accepted.",
+        "validation2_example_id": "flat-representation-limits"
+      },
+      "limitations": [
+        "Validation 1 found the panel titles and visualization types covered while Validation 2 questioned their associations.",
+        "Different instruments and schema documentation can produce different candidates on the same artifact.",
+        "This candidate excerpt is not the direct source of the time_period documentation change."
+      ]
+    },
+    {
+      "id": "provenance-split",
+      "title": "Standards-informed derivation and attribution",
+      "intended_chapters": [
+        2,
+        5,
+        7
+      ],
+      "teaching_objective": "Separate the origin of represented data from credit for producing the artifact.",
+      "methodology_stage": "standards_informed_schema_refinement",
+      "evidence_type": "excerpt",
+      "source_ids": [
+        "paper",
+        "dataset"
+      ],
+      "paper_locators": [
+        "Sections 5.6, 5.7 and 6.7",
+        "Appendices F, G and H.1"
+      ],
+      "snapshot_ids": [
+        "108733-revised-public-wb-unhcr-policy-brief-final_table_000.png"
+      ],
+      "schema_versions": [
+        "v1.1.1",
+        "v1.1.2"
+      ],
+      "inputs": {
+        "recorded_observations": [
+          {
+            "snapshot_id": "108733-revised-public-wb-unhcr-policy-brief-final_table_000.png",
+            "snapshot_type": "table",
+            "source": "unhcr",
+            "model": "gpt-5.5",
+            "metadata_field": "data_source_name",
+            "observed_value": "ALCS 2013-14",
+            "description": "The named dataset, survey, or source data used to produce the table.",
+            "source_level": "snapshot",
+            "discovery_value": "high",
+            "reasoning": "Data source names support provenance tracking and dataset-based discovery."
+          },
+          {
+            "snapshot_id": "108733-revised-public-wb-unhcr-policy-brief-final_table_000.png",
+            "snapshot_type": "table",
+            "source": "unhcr",
+            "model": "gpt-5.5",
+            "metadata_field": "source_citation",
+            "observed_value": "Authors’ calculation based on ALCS 2013-14",
+            "description": "The citation or provenance statement shown for the table.",
+            "source_level": "snapshot",
+            "discovery_value": "high",
+            "reasoning": "Source citation documents provenance and helps assess reliability."
+          }
+        ],
+        "validated_field": "data_source",
+        "standard_term_urls": [
+          "https://www.w3.org/TR/prov-o/#wasDerivedFrom",
+          "https://www.w3.org/TR/prov-o/#wasAttributedTo"
+        ]
+      },
+      "outputs": {
+        "recorded_standards_decision": {
+          "v1.1.1 field": "`data_source`",
+          "Crosswalk finding": "PROV-O distinguishes derivation from attribution",
+          "Candidate refinement": "Split into flat `data_sources` and `attributions`; later introduce role-bearing objects",
+          "Decision": "Accept split; defer objects",
+          "Rationale and v1.1.2 outcome": "The distinction is semantically useful without requiring nesting. Preserve explicit attribution roles as flat source-grounded text."
+        },
+        "recorded_final_field_specifications": [
+          {
+            "Field": "`data_sources`",
+            "Cardinality": "0..*",
+            "Definition": "The named datasets, surveys, publications, or other entities from which the represented data originate.",
+            "Standards alignment and usage guidance": "Reflects the derivation distinction expressed by PROV-O `wasDerivedFrom` and DCMI `source`. Do not copy parent-document authors or publishers solely because they are associated with the document."
+          },
+          {
+            "Field": "`attributions`",
+            "Cardinality": "0..*",
+            "Definition": "The agents explicitly credited with producing or contributing to the snapshot artifact.",
+            "Standards alignment and usage guidance": "Reflects PROV-O `wasAttributedTo` and related Schema.org attribution properties. Preserve an explicit role together with the credited agent as a complete source-grounded expression."
+          }
+        ],
+        "sample_record_transcription_from_paper_appendix_h_1": {
+          "data_sources": "ALCS 2013–14",
+          "attributions": "Authors’ calculation"
+        }
+      },
+      "limitations": [
+        "The sample record is a two-field transcription from the paper, not a newly generated or independently evaluated extraction.",
+        "The 36-to-37 change clarifies an overloaded provenance field; it was not a new requirement accepted in held-out validation.",
+        "The standards review was interactive and human-adjudicated. No fixed historical prompt or automated pipeline is supplied."
+      ]
+    }
+  ]
+}
