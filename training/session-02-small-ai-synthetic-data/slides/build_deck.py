@@ -91,7 +91,7 @@ STEPS = [
     dict(short='Test on real cases',
          h='The test uses real cases that no model has trained on.',
          office='Before the new staff member works alone, a supervisor checks their decisions on real past files.',
-         model='A few hundred real cases, with answers given by people, are set aside for testing only.',
+         model='A few hundred real cases with answers given by people are set aside for testing only.',
          used=('yes', '300 real report abstracts with recorded topics.'), demo='test',
          notes='Turn the switch on and ask the room what is wrong with the picture. A test on practice cases '
                'measures how well the small model copies the writing habits of the large model. The real cases are '

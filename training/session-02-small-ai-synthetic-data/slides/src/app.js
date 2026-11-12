@@ -57,7 +57,7 @@ DEMOS.suggest = {
       </div>
     </div>
     <div class="card small-k sgright" aria-live="polite">
-      <span class="lbl">Five codes suggested by the small model, with its score for each</span>
+      <span class="lbl">Five codes suggested by the small model and their scores</span>
       ${st.shown ? `<div class="sg">${rows}</div><p class="def">${verdict}</p>`
         : `<div class="sgempty">Which of the ${DATA.occ.groups} groups fits this response?</div>`}
     </div>
@@ -344,8 +344,8 @@ DEMOS.test = {
   render(st) {
     const o = DATA.occ;
     return `<div class="piles">
-      <div class="pile${st.wrong ? ' bad' : ''}"><b>Practice cases</b><span>Thousands, written by the large model</span><span class="use">${st.wrong ? 'Used for training and testing' : 'Used for training'}</span></div>
-      <div class="pile${st.wrong ? '' : ' test'}"><b>Real cases</b><span>A few hundred or more, answers given by people</span><span class="use">${st.wrong ? 'Not used' : 'Used only for testing'}</span></div>
+      <div class="pile${st.wrong ? ' bad' : ''}"><b>Practice cases</b><span>Thousands of cases written by the large model</span><span class="use">${st.wrong ? 'Used for training and testing' : 'Used for training'}</span></div>
+      <div class="pile${st.wrong ? '' : ' test'}"><b>Real cases</b><span>A few hundred or more with answers given by people</span><span class="use">${st.wrong ? 'Not used' : 'Used only for testing'}</span></div>
     </div>
     <label class="toggle"><input type="checkbox" data-a="wrong" data-v="1"${st.wrong ? ' checked' : ''}>Test on practice cases</label>
     <p class="def" aria-live="polite">${st.wrong
@@ -502,7 +502,7 @@ DEMOS.cycle = {
     return `<ol class="cygrid cyflow">${CYCLE.map((x) => `<li class="card ${x.k}-k"><svg viewBox="0 0 120 72" aria-hidden="true">${x.icon}</svg>
       <span class="lbl">${x.lbl}</span><b>${esc(x.t)}</b></li>`).join('')}</ol>
     <div class="cygrid cyloop" data-step="1"><span class="cap">More practice cases for the kinds of cases that the small model gets wrong</span><span class="arc"></span></div>
-    <div class="cyparts" data-step="2"><span class="lbl">Parts of the session, numbered in their order</span>
+    <div class="cyparts" data-step="2"><span class="lbl">Parts of the session</span>
       <div class="cygrid">${PARTS.map(part).join('')}</div></div>`;
   },
 };
@@ -714,7 +714,7 @@ DEMOS.speed = {
       </svg>
       <p class="legend"><span><i style="background:var(--small)"></i>small model (the student)</span><span><i style="background:var(--large)"></i>large model</span></p></div>
     <div style="display:flex;flex-direction:column;gap:1.3em">
-      <div class="card small-k"><p class="stat">${small.gb} GB<small>of memory for the student, which a laptop has</small></p></div>
+      <div class="card small-k"><p class="stat">${small.gb} GB<small>of memory is enough to run the student on a laptop</small></p></div>
       <div class="card small-k"><p class="stat">${Math.round(times[0])} to ${Math.round(times[1])}×<small>faster on an ordinary processor than the three large models</small></p></div>
     </div>`;
   },
