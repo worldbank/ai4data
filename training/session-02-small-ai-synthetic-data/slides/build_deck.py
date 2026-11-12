@@ -150,12 +150,13 @@ def overview_slide():
   <h2>The process from a task to a small model has nine steps.</h2>
   <div class="body center">
     <div class="groups">{''.join(groups)}
-      <p class="gkind k-syn" data-step="3"><span>Specific to synthetic data</span></p>
-      <p class="gkind k-std" data-step="3"><span>Standard <button class="term" data-term="ml">machine learning</button> practice</span></p>
+      <p class="gloop" data-step="3"><span class="cap">The large model writes more cases where the small model fails</span><i class="a"></i><i class="b"></i><i class="c"></i></p>
+      <p class="gkind k-syn" data-step="4"><span>Specific to synthetic data</span></p>
+      <p class="gkind k-std" data-step="4"><span>Standard <button class="term" data-term="ml">machine learning</button> practice</span></p>
     </div>
-    <p class="txt" data-step="4">We follow one example through the nine steps: coding the occupations written in a household survey.</p>
+    <p class="txt" data-step="5">We follow one example through the nine steps: coding the occupations written in a household survey.</p>
   </div>
-  <aside class="notes">This is the process from the start of the session, now in nine steps. We look at all nine before we take them one at a time. The first four steps produce the cases, the next two build and test the model, and the last three keep improving it. Steps 5 to 9 are standard machine learning practice. A team that has trained a model on labelled examples has done them before. Steps 1 to 4 are specific to synthetic data: a large model writes the examples that people would otherwise collect and label. In step 7 the large model also writes the extra cases. Each number opens its step. We use occupation coding for all nine steps because the room saw it on the second slide.</aside>
+  <aside class="notes">This is the process from the start of the session, now in nine steps. We look at all nine before we take them one at a time. The first four steps produce the cases, the next two build and test the model, and the last three keep improving it. The arrow above the steps shows that the process is a loop. Where the test shows mistakes, the large model writes more cases of those kinds, and the small model is trained and tested again. Step 7 runs this loop during the project. Steps 8 and 9 also end with new cases and another round of training. Steps 5 to 9 are standard machine learning practice. A team that has trained a model on labelled examples has done them before. Steps 1 to 4 are specific to synthetic data: a large model writes the examples that people would otherwise collect and label. In step 7 the large model also writes the extra cases. Each number opens its step. We use occupation coding for all nine steps because the room saw it on the second slide.</aside>
 </section>'''
 
 

@@ -332,6 +332,16 @@ button.cypart { cursor: pointer; } button.cypart:hover { border-color: var(--tea
 .groups { display: grid; grid-template-columns: 4fr 2fr 3fr; gap: 1.2em; }
 .group { background: var(--card); border: 1px solid var(--line); border-radius: .9em; padding: 1em; }
 .group > .lbl { margin-bottom: .8em; }
+.gloop { grid-column: 1 / -1; grid-row: 1; display: grid; grid-template-columns: subgrid; row-gap: .5em; margin-bottom: -.55em; }
+.gloop .cap { grid-column: 1 / -1; text-align: center; font-size: .8em; font-weight: 600; color: var(--teal-text); line-height: 1.3; }
+.gloop i { height: 1.2em; border-top: 2px solid var(--teal); position: relative; }
+.gloop .a { margin: 0 -1.2em 0 50%; border-left: 2px solid var(--teal); border-radius: .9em 0 0 0; }
+.gloop .b { margin-right: -1.2em; }
+.gloop .c { height: auto; margin: 0 50% -.6em 0; border-right: 2px solid var(--teal); border-radius: 0 .9em 0 0; }
+.gloop .a::after {
+  content: ""; position: absolute; top: 100%; left: calc(-.38em - 1px);
+  border: .38em solid transparent; border-top: .5em solid var(--teal); border-bottom: 0;
+}
 .gkind { margin-top: -.5em; font-size: .82em; font-weight: 600; text-align: center; color: var(--muted); }
 .gkind::before {
   content: ""; display: block; height: .6em; margin: 0 .9em .45em; border: .14em solid var(--faint); border-top: 0;
@@ -528,6 +538,8 @@ button.cypart { cursor: pointer; } button.cypart:hover { border-color: var(--tea
   .cyloop .cap, .cypart.wide { grid-column: 1; } .cyloop .cap { text-align: left; }
   .cyloop .cap::before { content: "Loop after the test. "; } .cypart { order: var(--o, 0); }
   .group ol { grid-auto-flow: row; }
+  .gloop { grid-row: auto; margin: 0; } .gloop i { display: none; } .gloop .cap { text-align: left; }
+  .gloop .cap::before { content: "Loop after steps 7 to 9. "; }
   .gkind { margin-top: 0; text-align: left; } .gkind.k-std { grid-column: 1; } .gkind::before { display: none; }
   .gkind.k-syn span::before { content: "Steps 1 to 4. "; } .gkind.k-std span::before { content: "Steps 5 to 9. "; }
   .rail9 { grid-template-columns: 1fr 1fr; } .loop { grid-template-columns: 1fr 1fr; }

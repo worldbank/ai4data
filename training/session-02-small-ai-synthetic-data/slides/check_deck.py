@@ -176,6 +176,14 @@ def controls(browser):
       return [Math.abs(a.left - g[0].left), Math.abs(a.right - g[0].right), Math.abs(b.left - g[1].left), Math.abs(b.right - g[2].right), a.top >= g[0].bottom];
     }""")
     ok('slide 15: the marks under the steps span steps 1 to 4 and steps 5 to 9', all(v < 2 for v in geo[:4]) and geo[4], geo)
+    geo = pg.evaluate("""() => {
+      const r = (q) => document.querySelector('.slide.on ' + q).getBoundingClientRect();
+      const c = (b) => b.left + b.width / 2;
+      const g = [...document.querySelectorAll('.slide.on .group')].map((n) => n.getBoundingClientRect());
+      const a = r('.gloop .a'), b = r('.gloop .b'), e = r('.gloop .c');
+      return [Math.abs(a.left + 1 - c(g[0])), Math.abs(e.right - 1 - c(g[2])), a.right >= b.left, b.right >= e.left, a.bottom <= g[0].top];
+    }""")
+    ok('slide 15: the loop runs from the third group of steps to the first', geo[0] < 2 and geo[1] < 2 and all(geo[2:]), geo)
     pg.locator('.slide.on .stepbtn').nth(6).click(); ok('step 7 on the process slide opens slide 22', cur() == 's22')
 
     # Demonstrations.
