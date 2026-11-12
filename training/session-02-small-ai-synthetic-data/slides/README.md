@@ -2,7 +2,7 @@
 
 - `deck.html`: the deck, 50 slides in one HTML file. It opens in a browser from a local copy of the repository and needs no server. GitHub shows the file as source text.
 - `outline.md`: the headline and the speaker notes of every slide. This is the file to review and comment on.
-- `build_deck.py`: builds both files from the sources in `src/` and from the recorded data in `../assets/overview.json`, `../assets/occupation/`, `src/occupation.json`, and `src/cost.json`.
+- `build_deck.py`: builds both files from the sources in `src/` and from the recorded data in `../assets/overview.json`, `../assets/occupation/`, `src/occupation.json`, `src/learn.json`, and `src/cost.json`.
 - `src/`: the slide sources, the styles, and the script of the demonstrations.
 - `fit_slides.py` and `check_deck.py`: the scripts that size the slides and test the deck in a browser.
 
@@ -45,8 +45,8 @@ The fonts (Inter and JetBrains Mono) load from Google Fonts. Without an internet
 | 2 to 6 | Tasks | A survey response to code, eleven tasks from data work and services, three ways to get a task done, a diagram of the process with the parts of the session |
 | 7 to 11 | Small model | Large language models, small AI, the memory a model needs, the cost of building a small model |
 | 12 to 18 | Synthetic data | Labelled examples, why they are missing, rare cases, synthetic data, the office comparison, labelled job titles rewritten as survey answers |
-| 19 to 29 | Nine steps | The process, then one slide for each step with a demonstration on occupation coding |
-| 30 to 40 | Occupation coding | The three sets of training texts, the request that rewrites a job title as survey answers, the check by a second model, a word-counting model trained in the page, distillation, five suggested codes for eight responses, the scores by training set, the comparison with three large models, speed, the measured cost of each build |
+| 19 to 29 | Nine steps | The process, then one slide for each step with an illustrative example from occupation coding. These slides show no scores of the models |
+| 30 to 40 | Occupation coding | The three sets of training texts, the request that rewrites a job title as survey answers, the check by a second model, the recorded training run of the small model, distillation, five suggested codes for eight responses, the scores by training set, the comparison with three large models, speed, the measured cost of each build. The line above each headline names the step of the process |
 | 41 to 43 | Report tagging | A second small model that tags reports with topics, and its scores on 300 real reports |
 | 44 to 50 | Small or large | Criteria, a six-task exercise for the room, checks before relying on a small model, the requirements of a first attempt, summary, sources |
 
@@ -59,27 +59,27 @@ The first slide of each part is its divider.
 | `src/slides-01-15.html`, `src/slides-26-43.html` | The slides with the ids `s01` to `s15` and `s26` to `s43`, one `<section>` for each slide, with the speaker notes in `<aside class="notes">` |
 | `STEPS` in `build_deck.py` | The slides `s16` to `s25`: the process slide and, for each step, the office comparison, the model version, and the notes |
 | `DIVIDERS` in `build_deck.py` | The dividers `p1` to `p7`: for each part, the line under its name and the notes. The names of the parts come from `SECS` in `src/app.js` |
-| `learn_data()` in `build_deck.py` | The answers of the word-counting model on slide `s29`: 40 training answers and 14 test answers for each of four occupation groups, taken from `../assets/occupation/` |
 | `src/app.js` | Navigation, the definitions of the terms, and the demonstrations |
 | `src/style.css` | Styles for the stage, the reading layout, and the light and dark themes |
 | `src/shell.html` | The frame of the page: the stage, the bar under it, the notes panel, and the contents |
 | `src/fit.css` | The text scale of each slide, written by `fit_slides.py` |
 | `src/occupation.json` | The recorded results of the occupation-coding models: the suggestions for the eight survey responses of slide `s02`, the job title and answers of slide `s15`, and the counts, examples, scores, and times of slides `s26` to `s34` |
+| `src/learn.json` | The training run of slide `s29`. The file holds the mean scores of three runs of the occupation model on the 1,000 survey-style test answers: before training, at twelve points of training, and for the saved model. It also holds the first code of one run for six test answers |
 | `src/cost.json` | The requests, tokens, kept examples, training runs, and minutes of the three builds on slide `s35`, taken from the run logs |
 
 ### Occupation coding
 
 The job titles come from the dataset [`tabiya/occupation_titles_esco`](https://huggingface.co/datasets/tabiya/occupation_titles_esco) (CC BY 4.0), which holds titles from the job board hahu.jobs. The code of each title is the ESCO occupation assigned by the job board, mapped to its ISCO-08 unit group. No trained coder reviewed these codes. Group names follow ISCO-08 (International Labour Organization), and the group descriptions on the slides are shortened paraphrases.
 
-The deck shows two occupation models. The first was trained on job titles that a large model wrote from the group definitions. Slide `s02` and the slides of the nine steps use this model. The second was trained on three sets: the titles of the first model, the job-board titles, and survey-style answers that a large model wrote from the job-board titles. The slides `s26` to `s34` describe this model. Qwen3.8-27B wrote the answers, and Gemma 4 31B checked them.
+The deck shows two occupation models. The first was trained on job titles that a large model wrote from the group definitions. Slide `s02` uses this model. The second was trained on three sets: the titles of the first model, the job-board titles, and survey-style answers that a large model wrote from the job-board titles. The slides `s26` to `s34` describe this model. Qwen3.8-27B wrote the answers, and Gemma 4 31B checked them.
 
 Each score of slides `s32` and `s33` is the mean of three training runs. The two test sets hold 1,000 texts each, from job titles set aside before training. One holds the job titles. The other holds survey-style answers that Gemini 3.8 Flash wrote from those titles, because coded survey responses were not available. Three limits apply to the comparison on slide `s33`, and its speaker notes state them. Gemini 3.8 Flash is scored on answers that it wrote. The request for the test answers resembles the request for the training answers. The real job titles of the test come from the same job board as the training titles.
 
 The times on slide `s34` are medians for one answer. The large models were timed over 50 single requests each, and the times of the hosted services include the network and the load of the provider.
 
-The survey responses on slide `s02` and on the slides of the nine steps, and the codes shown for them, were written for the session as illustrations, and the slides say so. The five suggestions for each response on slide `s02` are the recorded output of the first model. Slide `s31` shows six responses from the survey-style test and two of the illustrations, with the recorded suggestions of the second model.
+The survey responses on slide `s02` and on the slides of the nine steps, and the codes shown for them, were written for the session as illustrations, and the slides say so. The slides of the nine steps show no output of a model, and the model codes in the test table of step 7 belong to the illustration. The five suggestions for each response on slide `s02` are the recorded output of the first model. Slide `s31` shows six responses from the survey-style test and two of the illustrations, with the recorded suggestions of the second model.
 
-The word-counting model on slide `s29` is a naive Bayes classifier in `src/app.js`. It trains in the browser on the answers selected by `learn_data()`, and it is separate from the two occupation models.
+Slide `s29` shows the training of the second model. The three training runs behind slides `s32` and `s33` were repeated with the same texts, settings, and random starts. In each run the model was scored on the test answers before training, at twelve points up to six passes over the training texts, and after training. The saved models of the repeated runs give the scores of the first runs. The scores on the slide are means of the three runs. The six test answers show the run with the suggestions of slide `s31`. One pass reads 35,515 of the 44,058 training texts. The other texts are held out, and training keeps the pass with the lowest loss on held-out texts.
 
 ### Other slides
 

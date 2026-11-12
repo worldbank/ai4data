@@ -22,7 +22,7 @@ Someone has to read this response and give it one of 436 codes.
 
 The slide has an interactive demonstration.
 
-Notes: Start with the response before any definition. Ask who codes responses like this in the room's organizations and how long one response takes. Ask the room to guess the group before you press the button. Then go through the responses. The coder's code is the first suggestion for the teacher and the second for the motorcycle taxi. The model misses the roasted maize and the boda boda rider. It was trained on written job titles, and these two responses describe the work in everyday or local words. The last response gives too little detail for any code. On 1,000 real job titles from a job board, the right code was among the five suggestions for 56.5 percent. Close on the call-out: this kind of task is what the session is about.
+Notes: Start with the response before any definition. Ask who codes responses like this in the room's organizations and how long one response takes. Ask the room to guess the group before you press the button. Then go through the responses. The coder's code is the first suggestion for the teacher and the second for the motorcycle taxi. The model misses the roasted maize and the boda boda rider. It was trained on written job titles, and these two responses describe the work in everyday or local words. The last response gives too little detail for any code. Close on the call-out: this kind of task is what the session is about.
 
 ### 4. Tasks for a small model
 
@@ -134,7 +134,7 @@ Notes: Synthetic data can also start from labelled data that we already hold. A 
 
 Nine steps
 
-Notes: The room has now seen the task, the small model, and synthetic data. This part puts them together as a process of nine steps, and each step is shown with occupation coding.
+Notes: The room has now seen the task, the small model, and synthetic data. This part puts them together as a process of nine steps. Each step has a short example from occupation coding. The scores of the models come in parts 5 and 6.
 
 ### 20. The process
 
@@ -180,7 +180,7 @@ The small model studies the checked cases until its answers match.
 
 The slide has an interactive demonstration.
 
-Notes: This step is short on the slide and long in practice. The checked cases go in, and a model comes out. We will train a simple model live in part 5, so I will take questions about learning there.
+Notes: This step is short on the slide and long in practice. The checked cases go in, and a model comes out. Part 5 shows the scores of the occupation model during its training, so I will take questions about learning there.
 
 ### 26. Step 6 of 9 · Test on real cases
 
@@ -188,7 +188,7 @@ The test uses real cases that no model has trained on.
 
 The slide has an interactive demonstration.
 
-Notes: Turn the switch on and ask the room what is wrong with the picture. A test on practice cases measures how well the small model copies the writing habits of the large model. The real cases are set aside before anything is written, and no model trains on them. The chart shows the occupation-coding model on 1,000 real job titles: the first code is right for 35 percent, and the right code is among five suggestions for 56.5 percent. The titles come from the job board hahu.jobs, and the job board assigned their codes. A test on coded survey responses is still needed before use on a survey.
+Notes: Turn the switch on and ask the room what is wrong with the picture. A test on practice cases measures how well the small model copies the writing habits of the large model. The real cases are set aside before anything is written, and no model trains on them. We read two scores from the test: the share of cases where the first code of the model is right, and the share where the right code is among its first five. Part 5 shows the test of the occupation model.
 
 ### 27. Step 7 of 9 · Practise the weak spots
 
@@ -196,7 +196,7 @@ Extra cases are aimed at the kinds of cases the model gets wrong.
 
 The slide has an interactive demonstration.
 
-Notes: Read the loop first. Then compare the three bars: the first set, extra cases spread evenly, and extra cases aimed at the mistakes. For occupation codes, both kinds of extra cases gave a higher score than the first set, the difference between them is within the margin of error, and the small model stays below the orange band. For report topics, the targeted rounds were better in both repeats and reached the band, which is the level of the large models.
+Notes: Go through one round with the button. The test shows where the model is wrong, the mistakes are counted for each group, the large model writes more cases for the weakest group, and the model is trained and tested again. The test cases never enter training. Part 6 shows the scores of the report model before and after rounds like this one.
 
 ### 28. Step 8 of 9 · Ask people which is better
 
@@ -220,17 +220,17 @@ Notes: The example from the report is about images. The same thing happens with 
 
 Occupation coding
 
-Notes: The nine steps described the process, with a first model trained on titles written from the definitions. That model stayed below the large models. This part shows the build that followed: two more sets of training texts, the check, and the test. It ends with the scores next to three large models, the speed, and the cost.
+Notes: Part 4 gave the process. This part applies it to one model: the training texts, the request to the large model, the check, the training run, and the test. The line above each headline names the step. The part ends with the scores next to three large models, the speed, and the cost. This build did not include steps 8 and 9.
 
-### 31. The training texts
+### 31. Steps 2 to 4 · The training texts
 
 Three sets of texts take the place of a coded survey in training.
 
 The slide has an interactive demonstration.
 
-Notes: We had no survey responses with codes for training. So the model learns from three sets of texts. The first is the set of the nine steps: job titles that a large model wrote from the definitions. The second is real: job titles from a job board, with the code that the job board assigned. They are worded as advertisements. The third joins the two ideas: a large model rewrites each real job title as the answers of a respondent, and the code stays with each answer. The next two slides show how the third set was written and checked.
+Notes: We had no survey responses with codes for training. So the model learns from three sets of texts. The first holds job titles that a large model wrote from the definitions of the groups. The second is real: job titles from a job board, with the code that the job board assigned. They are worded as advertisements. The third joins the two ideas: a large model rewrites each real job title as the answers of a respondent, and the code stays with each answer. The next two slides show how the third set was written and checked.
 
-### 32. The request
+### 32. Step 4 · The request
 
 One request turns a job title into three answers of a respondent.
 
@@ -238,7 +238,7 @@ The slide has an interactive demonstration.
 
 Notes: Select the button and let the answers arrive. Read one job title and its three answers aloud. The first answer is short, the second adds the place of work, and the third gives the tasks. The code of the job title stays with each answer. Ask the room whether the answers sound like the answers of a respondent. The request on the slide is shortened: the full request has three more rules.
 
-### 33. The check
+### 33. Step 4 · The check
 
 A second model removed about a quarter of the answers.
 
@@ -246,13 +246,13 @@ The slide has an interactive demonstration.
 
 Notes: A wrong code in training becomes a wrong answer in use, so every answer was checked. A second large model read the answer alone and chose a group. We kept the answer when it chose the group of the job title. Go through the job titles on the right. Short answers were removed most often, because a short answer such as "officer" fits several groups. The check also removes answers that are correct and too short to identify one group among 436.
 
-### 34. A model learns
+### 34. Step 5 · The training run
 
-A model that counts words learns four occupation groups from examples.
+In one training run the small model goes from 0 to 68 percent of first codes right.
 
 The slide has an interactive demonstration.
 
-Notes: This model is trained live in the page, and it is a simpler kind of model than our small model: it counts the words of each group. With one example for each group it gets 14 of 56 right. A random guess gets the same. Move to three, ten, and forty, and watch the squares fill. Then type an answer from the room and see which group the model gives it. Our small model also learns from examples. It reads many more of them, and it separates 436 groups.
+Notes: This is the training run of our small model, recorded at 13 points. Press play. Before training the model gives every answer the same code, and no first code is right. After half of one pass over the training texts it is right for 27 percent of the 1,000 test answers. After one pass it is right for half of them, and after two passes for 63 percent. From there the curve is nearly flat, and the score moves by a few points from one pass to the next. The table shows the same for six of the test answers in one run: a code can be right at one point and wrong at the next. After each pass the model is checked on training texts that it does not learn from. Training stops when that check stops improving, and the best pass is saved. The saved models get 68.4 percent on average. The three runs differ only in their random start.
 
 ### 35. Distillation
 
@@ -260,23 +260,23 @@ In distillation a large model passes a skill to a small one.
 
 Notes: Name the method. The teacher is about 190 times the size of the student by number of parameters. In the original form of distillation the student copies the teacher's full set of probabilities. In our case the teacher passes its skill through the examples that it writes: the job titles, the answers, and the checks.
 
-### 36. The model at work
+### 36. Step 6 · The model on test responses
 
 A coder chooses among five codes that the model suggests.
 
 The slide has an interactive demonstration.
 
-Notes: Here is the trained model on eight responses. Go through them. In three the reference code is the first suggestion, and in two it is the second. In the last three it is missing from the five. The last two describe informal work in everyday or local words. On 29 informal responses the first code of this model was right for about a third, against about half for the model trained on the definitions alone. More training texts raised the score on the test and lowered it on these responses.
+Notes: Here is the trained model on eight responses. Go through them. In three the reference code is the first suggestion, and in two it is the second. In the last three it is missing from the five. The last two describe informal work in everyday or local words. On 29 informal responses the first code of this model was right for about a third, against about half for the model trained on the definitions alone. More training texts raised the score on the test and lowered it on these responses. Under step 7, the next round of cases goes to this weak spot: answers about informal work, and the 127 groups that have no title from the job board. That round has not been run.
 
-### 37. Scores by training set
+### 37. Steps 6 and 7 · Scores by training set
 
 Adding the rewritten answers raised the share of right first codes from 46 to 66 in 100.
 
 The slide has an interactive demonstration.
 
-Notes: Each bar is one model, trained on a different set of texts and tested on the same 1,000 survey-style answers. With real job titles alone, the first code was right for 46 answers in 100. With the rewritten answers added, it was right for 66. The titles written from the definitions add a little more. Then switch the test to real job titles. There the rewritten answers change the score little, from 58 to 60 in 100. The other control shows the share of answers with the right code among five.
+Notes: Each bar is one model, trained on a different set of texts and tested on the same 1,000 survey-style answers. With real job titles alone, the first code was right for 46 answers in 100. With the rewritten answers added, it was right for 66. This is step 7 at the scale of a whole set: the test showed that the model was weak on the wording of respondents, and the new texts were written in that wording. The titles written from the definitions add a little more. Then switch the test to real job titles. There the rewritten answers change the score little, from 58 to 60 in 100. The other control shows the share of answers with the right code among five.
 
-### 38. Compared with large models
+### 38. Step 6 · Compared with large models
 
 On survey-style answers the small model scored about the same as the best of three large models.
 

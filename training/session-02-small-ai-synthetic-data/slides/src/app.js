@@ -420,7 +420,7 @@ DEMOS.train = {
       <text x="58" y="98" text-anchor="middle" font-size="8">checked cases</text><text x="131" y="42" text-anchor="middle" font-size="8">training</text><text x="190" y="98" text-anchor="middle" font-size="8">small model</text>
     </svg>
     <p class="def">Training turns the cases into a model that answers on its own, on the organization's own computer.</p>
-    <p class="txt-s" style="margin-top:auto">A slide of part 5 trains a simple model in the page, so we can watch a model learn from examples. <button type="button" class="link" data-go="s29" style="font-size:1em">Go to that slide</button></p>`;
+    <p class="txt-s" style="margin-top:auto">Part 5 shows the scores of the occupation model at 13 points of its training. <button type="button" class="link" data-go="s29" style="font-size:1em">Go to that slide</button></p>`;
   },
 };
 
@@ -429,7 +429,6 @@ DEMOS.test = {
   state: () => ({wrong: false}),
   on(st, a, v) { st.wrong = !!v; },
   render(st) {
-    const o = DATA.occ;
     return `<div class="piles">
       <div class="pile${st.wrong ? ' bad' : ''}"><b>Practice cases</b><span>Thousands of cases written by the large model</span><span class="use">${st.wrong ? 'Used for training and testing' : 'Used for training'}</span></div>
       <div class="pile${st.wrong ? '' : ' test'}"><b>Real cases</b><span>A few hundred or more with answers given by people</span><span class="use">${st.wrong ? 'Not used' : 'Used only for testing'}</span></div>
@@ -438,42 +437,39 @@ DEMOS.test = {
     <p class="def" aria-live="polite">${st.wrong
       ? 'The practice cases used for testing share the writing habits of the training cases. A high score then says little about real responses.'
       : 'The real cases are set aside before any practice case is written, and no model is trained on them.'}</p>
-    <div class="topn">
-      <span class="lbl">The occupation-coding model on ${fmt(o.testTitles)} real job titles</span>
-      <div class="sb mt">${o.topn.map((t) => `<span>${t.n === 1 ? 'First code is right' : `Right code among ${t.n}`}</span>${bar(t.share, 'var(--small)')}<b class="v">${(t.share * 100).toFixed(1)}%</b>`).join('')}</div>
-      <p class="hint mt">The titles come from the job board hahu.jobs (dataset published by Tabiya, CC BY 4.0). Each code is the ESCO occupation assigned by the job board, mapped to ISCO-08. Coded survey responses were not available for the test.</p>
-    </div>`;
+    <div class="scores"><span class="lbl">Two scores from one test</span>
+      <p><b>First code is right</b>The share of test cases where the model's first code is the code given by people.</p>
+      <p><b>Right code among five</b>The share of test cases where that code is among the model's first five codes.</p></div>`;
   },
 };
 
 // Step 7: practise the weak spots.
-const ARMS = {first: 'First set of cases', control: 'Plus evenly spread rounds', targeted: 'Plus targeted rounds'};
+const ROUND = ['Test on separate real cases', 'Find the weakest groups', 'Write more cases on them', 'Train again'];
+const ROUND_TEST = [
+  ['teacher at the primary school', '2341 Primary school', '2341 Primary school'],
+  ['sells roasted maize by the roadside', '5212 Street food', '5223 Shop sales'],
+  ['fries chips and sells them outside the school', '5212 Street food', '5223 Shop sales'],
+  ['weeds and harvests on a tea estate, paid by the day', '9211 Farm labour', '9211 Farm labour'],
+];
+const ROUND_NEW = ['fry cassava and sell it by the road in the evening', 'cook rice and beans and sell to builders at the site', 'sell chapati and tea near the bus park'];
 DEMOS.rounds = {
-  state: () => ({r: 0}),
-  on(st, a, v) { st.r = Number(v); },
+  state: () => ({k: 0}),
+  on(st) { st.k = (st.k + 1) % ROUND.length; },
   render(st) {
-    const w = DATA.workflow, o = DATA.occ, MAX = 0.6;
-    const sets = [
-      {name: 'Occupation codes', weak: 'groups', label: `Share of ${fmt(o.testTitles)} real job titles with the right first code (0 to 1)`,
-        arms: o.arms, large: o.large.map((x) => x.score), difference: o.difference, interval: o.interval},
-      ...w.rounds.map((x) => ({name: `Report topics, repeat ${x.replicate}`, weak: 'topics', label: 'Score on 300 real report abstracts (F1, 0 to 1)',
-        arms: x.arms.map((a) => ({arm: a.arm, score: a.f1, examples: a.examples})), large: w.large.map((m) => m.f1),
-        difference: x.difference, interval: x.interval})),
-    ];
-    const s = sets[st.r];
-    const lo = Math.min(...s.large), hi = Math.max(...s.large);
-    const band = `<i class="band" style="left:${lo / MAX * 100}%;width:${(hi - lo) / MAX * 100}%"></i>`;
-    const loop = ['Test on separate real cases', `Find the weakest ${s.weak}`, 'Write more cases on them', 'Train again'];
-    return `<div class="loop">${loop.map((t, i) => `<span><b>${i + 1}</b>${t}</span>`).join('')}</div>
-    <div class="row">${seg('r', sets.map((x, i) => [i, x.name]), st.r, 'Task')}
-    <span class="lbl">${s.label}</span></div>
-    <div class="rbars">
-      <div class="rbar rbar3"><span></span><div class="bandlbl"><span style="right:${100 - hi / MAX * 100}%">three large models</span></div><span></span></div>
-      ${s.arms.map((a) => `<div class="rbar rbar3"><span>${ARMS[a.arm]}<small>${fmt(a.examples)} cases</small></span>
-        ${bar(a.score / MAX, a.arm === 'targeted' ? 'var(--small)' : 'var(--faint)', band)}<b class="v">${a.score.toFixed(3)}</b></div>`).join('')}
-      <div class="rbar rbar3"><span></span><div class="axis">${[0, 0.2, 0.4, 0.6].map((t) => `<span style="left:${t / MAX * 100}%">${t.toFixed(1)}</span>`).join('')}</div><span></span></div>
-    </div>
-    <p class="hint" style="margin-top:auto">Orange band: three large models asked directly (${lo.toFixed(3)} to ${hi.toFixed(3)}). Targeted minus evenly spread: +${s.difference.toFixed(3)} (95% interval ${s.interval[0].toFixed(3)} to ${s.interval[1].toFixed(3)}). Each score of the small model is the mean of three training runs.</p>`;
+    const stage = [
+      `<div class="checkt" role="table" aria-label="Test responses with the coder's code and the model's first code">
+        <div class="head" role="row"><span role="columnheader">Real response</span><span role="columnheader">Coder's code</span><span role="columnheader">Model's first code</span></div>
+        ${ROUND_TEST.map(([text, coder, model]) => `<div role="row"${coder === model ? '' : ' class="drop"'}><span role="cell" class="txtc">${esc(text)}</span><span role="cell">${esc(coder)}</span><span role="cell">${esc(model)}${coder === model ? '' : '<em>✕ wrong</em>'}</span></div>`).join('')}
+      </div>`,
+      `<p class="def">The mistakes are counted for each group. The weakest group in this test is <b>5212 Street food salespersons</b>: the model gives these responses the code of shop sales assistants.</p>`,
+      `<span class="lbl">Cases written by the large model for group 5212</span>
+      <div class="msgs">${ROUND_NEW.map((t) => `<p class="msg">${esc(t)}</p>`).join('')}</div>`,
+      `<p class="def">The model is trained on the earlier cases and the new ones. It takes the same test again, and the test cases stay out of training.</p>`,
+    ][st.k];
+    return `<div class="loop">${ROUND.map((t, i) => `<span${i === st.k ? ' class="on" aria-current="step"' : ''}><b>${i + 1}</b>${t}</span>`).join('')}</div>
+    <div class="roundstage" aria-live="polite">${stage}</div>
+    <div class="row" style="margin-top:auto"><button type="button" class="btn" data-a="next" data-v="1">${st.k === ROUND.length - 1 ? 'Start the next round' : 'Next stage'}</button>
+    <span class="hint">The responses on this slide were written for this session as an illustration.</span></div>`;
   },
 };
 
@@ -685,71 +681,70 @@ DEMOS.checked = {
   },
 };
 
-// A model that learns in the page (s29). It counts the words of each group (naive Bayes).
+// The training run of the occupation model (s29): its scores on the test answers at recorded points of training.
 DEMOS.learn = {
   mount(el) {
-    const d = DATA.learn, stop = new Set(d.stop);
-    const tok = (t) => (t.toLowerCase().match(/[a-z]+/g) || []).filter((w) => w.length > 2 && !stop.has(w));
-    const train = (n) => {
-      const counts = {}, totals = {}, vocab = new Set();
-      for (const t of d.groups) {
-        counts[t] = new Map(); totals[t] = 0;
-        for (const s of d.sentences[t].slice(0, n)) for (const w of tok(s)) { counts[t].set(w, (counts[t].get(w) || 0) + 1); totals[t]++; vocab.add(w); }
-      }
-      return {counts, totals, size: vocab.size + 1};
-    };
-    const rate = (m, t, w) => ((m.counts[t].get(w) || 0) + 1) / (m.totals[t] + m.size);
-    const predict = (m, words) => {
-      const logs = d.groups.map((t) => words.reduce((s, w) => s + Math.log(rate(m, t, w)), 0));
-      const top = Math.max(...logs), e = logs.map((l) => Math.exp(l - top)), z = e.reduce((a, b) => a + b, 0);
-      return e.map((x) => x / z);
-    };
-    const learned = (m, group, k = 5) => [...m.counts[group].entries()].filter(([, c]) => c >= 2)
-      .map(([w]) => [w, rate(m, group, w) / Math.max(...d.groups.filter((t) => t !== group).map((t) => rate(m, t, w)))])
-      .sort((a, b) => b[1] - a[1]).slice(0, k).map(([w]) => w);
-
-    let n = 1, model = train(n);
-    el.innerHTML = `<div class="card" style="display:flex;flex-direction:column;gap:.7em">
-      <p class="txt-s">This model counts the words of each group. It is much simpler than the small model that codes occupations.</p>
-      <div class="row"><span class="lbl">Examples read per group</span><div class="seg" role="group" aria-label="Examples read per group">${[1, 3, 10, 40].map((k) =>
-        `<button type="button" data-n="${k}" aria-pressed="${k === n}" style="min-width:3.4em;font-size:.9em">${k}</button>`).join('')}</div></div>
-      <span class="lbl mt">Words the model links to each group</span>
-      <div class="wordt" data-words aria-live="polite"></div>
+    const d = DATA.learn, pts = d.points, N = pts.length, last = pts[N - 1].passes;   // stop N is the saved model
+    const W = 600, H = 330, L = 46, R = 14, T = 18, B = 46, SAVED = last + 0.8;
+    const x = (p) => L + p / (last + 1.15) * (W - L - R), y = (v) => T + (1 - v) * (H - T - B);
+    const path = (k, n) => pts.slice(0, n + 1).map((p, i) => `${i ? 'L' : 'M'}${x(p.passes).toFixed(1)} ${y(p[k]).toFixed(1)}`).join(' ');
+    const pc = (v) => `${(v * 100).toFixed(1)}%`;
+    const code = (c) => `<b>${c.code}</b><small title="${esc(c.name)}">${esc(c.name)}</small>`;
+    let i = N, timer = null;
+    el.innerHTML = `<div class="card lcard">
+      <div data-read aria-live="polite"></div>
+      <svg class="lchart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Share of the ${fmt(d.testAnswers)} test answers with the right code, at ${N} points of training and for the saved model" data-chart></svg>
+      <div class="row lctl"><button type="button" class="btn" data-play></button>
+        <input type="range" min="0" max="${N}" step="1" value="${N}" aria-label="Point of the training run" data-at></div>
     </div>
-    <div style="display:flex;flex-direction:column;gap:1em;min-height:0">
-      <div class="card"><span class="lbl">Test on ${d.tests.length} answers</span>
-        <p class="big mt" aria-live="polite"><span data-right></span> of ${d.tests.length} given the right group</p>
-        <div class="dotrows" data-dots></div>
-        <p class="txt-s mt" style="font-size:.72em">Each square is one answer, filled when the model gives it the right group. A random guess among the four groups gets ${d.tests.length / d.groups.length} right.</p></div>
-      <div class="card"><div class="try">
-        <div><label class="lbl" for="tryin">Try an answer</label><input id="tryin" type="text" autocomplete="off" spellcheck="false" value="I look after patients on the night shift at the clinic"></div>
-        <div class="pb" data-probs aria-live="polite"></div>
-      </div></div>
+    <div class="card lcard">
+      <span class="lbl">Six test answers in one of the runs</span>
+      <div class="checkt learnt" role="table" aria-label="Six test answers, their reference code and the model's first code" aria-live="polite" data-rows></div>
+      <p class="txt-s" style="margin-top:auto" aria-live="polite" data-match></p>
     </div>`;
-    const input = $('#tryin', el);
-    const probs = () => {
-      const p = predict(model, tok(input.value));
-      $('[data-probs]', el).innerHTML = d.groups.map((t, i) =>
-        `<span>${t}</span>${bar(p[i], 'var(--small)')}<span class="v">${Math.round(p[i] * 100)}%</span>`).join('');
-    };
+    const svg = $('[data-chart]', el), range = $('[data-at]', el), playBtn = $('[data-play]', el);
     const draw = () => {
-      model = train(n);
-      $$('[data-n]', el).forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.n) === n)));
-      $('[data-words]', el).innerHTML = d.groups.map((t) => {
-        const w = learned(model, t);
-        return `<b>${t}</b>${chips(w.length ? w : ['none yet'], w.length ? '' : 'off')}`;
-      }).join('');
-      const guesses = d.tests.map((x) => {
-        const p = predict(model, x.w), best = d.groups[p.indexOf(Math.max(...p))];
-        return {...x, best, right: best === x.group};
-      });
-      $('[data-right]', el).textContent = guesses.filter((g) => g.right).length;
-      $('[data-dots]', el).innerHTML = d.groups.map((t) => `<span>${t}</span><div class="dotg">${guesses.filter((g) => g.group === t).map((g) =>
-        `<i${g.right ? ' class="r"' : ''} title="${esc(g.title)}\nRight group: ${g.group}\nModel's guess: ${g.best}"></i>`).join('')}</div>`).join('');
-      probs();
+      const saved = i === N, p = saved ? d.saved : pts[i], n = Math.min(i, N - 1), px = x(saved ? SAVED : p.passes);
+      const when = saved ? 'Saved model' : i === 0 ? 'Before training'
+        : `${fmt(p.texts)} texts read · ${p.passes < 1 ? `${Math.round(p.passes * 100)}% of one pass` : p.passes === 1 ? 'one pass' : `${p.passes} passes`}`;
+      $('[data-read]', el).innerHTML = `<span class="lbl">${when}</span>
+        <div class="lstats"><p><i></i><b>${pc(p.top1)}</b>first code is right</p><p><i class="k5"></i><b>${pc(p.top5)}</b>right code among five</p></div>`;
+      const dot = (k, q, cx, cls = '') => `<circle class="ld${cls}" cx="${cx.toFixed(1)}" cy="${y(q[k]).toFixed(1)}" r="${cls === ' sel' ? 6 : 3}"/>`;
+      svg.innerHTML = `${[0, 0.25, 0.5, 0.75, 1].map((t) => `<path class="lg" d="M${L} ${y(t)} H${W - R}"/><text class="lt" x="${L - 8}" y="${y(t) + 4}" text-anchor="end">${t * 100}%</text>`).join('')}
+        ${Array.from({length: last + 1}, (_, t) => `<text class="lt" x="${x(t)}" y="${H - B + 18}" text-anchor="middle">${t}</text>`).join('')}
+        <text class="lt" x="${x(SAVED)}" y="${H - B + 18}" text-anchor="middle">saved</text>
+        <text class="lt" x="${(L + x(last)) / 2}" y="${H - 6}" text-anchor="middle">Passes over the training texts</text>
+        <path class="ll ghost" d="${path('top5', N - 1)}"/><path class="ll ghost" d="${path('top1', N - 1)}"/>
+        <path class="lsel" d="M${px.toFixed(1)} ${T} V${H - B}"/>
+        <path class="ll k5" d="${path('top5', n)}"/><path class="ll" d="${path('top1', n)}"/>
+        ${pts.slice(0, n + 1).map((q) => dot('top5', q, x(q.passes)) + dot('top1', q, x(q.passes))).join('')}
+        ${['top5', 'top1'].map((k) => dot(k, d.saved, x(SAVED), saved ? '' : ' off')).join('')}
+        ${dot('top5', p, px, ' sel')}${dot('top1', p, px, ' sel')}
+        <text class="lname" x="${x(3.5)}" y="${y(d.saved.top5) + 24}" text-anchor="middle">right code among five</text>
+        <text class="lname" x="${x(3.5)}" y="${y(d.saved.top1) + 30}" text-anchor="middle">first code is right</text>`;
+      const firsts = d.answers.map((a) => a.first[i]);
+      $('[data-rows]', el).innerHTML = `<div class="head" role="row"><span role="columnheader">Test answer</span><span role="columnheader">Reference code</span><span role="columnheader">Model's first code</span></div>
+        ${d.answers.map((a, k) => `<div role="row"${firsts[k].code === a.code ? ' class="hit"' : ''}><span role="cell">${esc(a.text)}</span><span role="cell">${code(a)}</span><span role="cell">${firsts[k].code === a.code ? '<em>✓</em>' : ''}${code(firsts[k])}</span></div>`).join('')}`;
+      const right = firsts.filter((f, k) => f.code === d.answers[k].code).length;
+      $('[data-match]', el).innerHTML = new Set(firsts.map((f) => f.code)).size === 1
+        ? 'The model gives the six answers the same code.'
+        : `The first code is the reference code for <b>${right} of ${firsts.length}</b> answers.`;
+      range.value = i;
+      playBtn.textContent = timer ? 'Pause' : 'Play the training run';
     };
-    el.addEventListener('click', (ev) => { const b = ev.target.closest('[data-n]'); if (b) { n = Number(b.dataset.n); draw(); } });
-    input.addEventListener('input', probs);
+    const stop = () => { clearInterval(timer); timer = null; };
+    playBtn.addEventListener('click', () => {
+      if (timer) { stop(); draw(); return; }
+      i = 0;
+      timer = setInterval(() => { i++; if (i >= N) stop(); draw(); }, 800);
+      draw();
+    });
+    range.addEventListener('input', () => { stop(); i = Number(range.value); draw(); });
+    svg.addEventListener('click', (ev) => {
+      const m = svg.getScreenCTM(), at = m ? (ev.clientX - m.e) / m.a : 0;
+      const xs = [...pts.map((p) => x(p.passes)), x(SAVED)];
+      stop(); i = xs.reduce((best, v, k) => Math.abs(v - at) < Math.abs(xs[best] - at) ? k : best, 0); draw();
+    });
     draw();
   },
 };

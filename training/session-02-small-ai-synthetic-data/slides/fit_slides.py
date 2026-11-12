@@ -1,4 +1,4 @@
-"""Find, for each slide, the largest body scale that fits in every state its controls reach.
+"""Find, for each slide, the largest body scale that fits in every state its controls reach (buttons, checkboxes, sliders).
 
 Reads deck.html and writes src/fit.css with one --z per slide. The search sets --z inline, so the
 values already in fit.css do not affect it. `build_deck.py --fit` runs this script and rebuilds.
@@ -51,9 +51,16 @@ CLICK = """([id, i]) => {
   if (b) b.click();
 }"""
 
+RANGES = """(id) => document.getElementById(id).querySelectorAll('.body input[type=range]').length"""
+SLIDE = """([id, k, v]) => {
+  const r = document.getElementById(id).querySelectorAll('.body input[type=range]')[k];
+  if (v === null) return Number(r.max);
+  r.value = v; r.dispatchEvent(new Event('input', {bubbles: true})); r.dispatchEvent(new Event('change', {bubbles: true}));
+}"""
+
 
 def worst(pg, sid):
-    """Largest overflow over the default state and the states reached by one pass of clicks."""
+    """Largest overflow over the default state, the states reached by one pass of clicks, and each slider position."""
     w, why = pg.evaluate(OVER, sid)
     n = pg.evaluate(CLICKS, sid)
     for i in range(min(n, 40)):
@@ -61,6 +68,11 @@ def worst(pg, sid):
         pg.wait_for_timeout(30)
         w2, why2 = pg.evaluate(OVER, sid)
         if w2 > w: w, why = w2, f'{why2} (after control {i})'
+    for k in range(pg.evaluate(RANGES, sid)):
+        for v in range(pg.evaluate(SLIDE, [sid, k, None]) + 1):
+            pg.evaluate(SLIDE, [sid, k, v])
+            w2, why2 = pg.evaluate(OVER, sid)
+            if w2 > w: w, why = w2, f'{why2} (slider at {v})'
     return w, why
 
 

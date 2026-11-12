@@ -164,7 +164,7 @@ def controls(browser):
     ok('a contents item opens its slide', cur() == 's23' and not pg.is_visible('#toc'))
     pg.click('#bToc'); pg.keyboard.press('Escape'); ok('Esc closes the contents', not pg.is_visible('#toc'))
     pg.keyboard.press('n')
-    ok('N opens the notes of the current slide', pg.is_visible('#notespanel') and pg.inner_text('#notestext').startswith('Read the loop first'))
+    ok('N opens the notes of the current slide', pg.is_visible('#notespanel') and pg.inner_text('#notestext').startswith('Go through one round'))
     pg.keyboard.press('ArrowRight'); ok('the notes follow the slide', 'vote' in pg.inner_text('#notestext'), cur())
     pg.keyboard.press('n'); ok('N closes the notes', not pg.is_visible('#notespanel'))
     pg.locator('.slide.on .minirail button').nth(4).click(); ok('step number 5 opens s21', cur() == 's21')
@@ -203,25 +203,31 @@ def controls(browser):
     pg.locator('.slide.on .stepbtn').nth(6).click(); ok('step 7 on the process slide opens s23', cur() == 's23')
 
     # Demonstrations.
-    pg.locator('.slide.on .seg button').nth(1).click()
-    ok('s23: the second task', 'Report topics' in pg.locator('.slide.on .seg button[aria-pressed="true"]').inner_text())
+    stages = []
+    for _ in range(4):
+        stages.append(pg.locator('.slide.on .loop span.on b').inner_text())
+        pg.locator('.slide.on [data-a="next"]').click(); pg.wait_for_timeout(80)
+    ok('s23: the button goes through the four stages of a round and starts again',
+       stages == ['1', '2', '3', '4'] and pg.locator('.slide.on .loop span.on b').inner_text() == '1', stages)
     at('s29')
-    res = []
-    for n in ('1', '3', '10', '40'):
-        pg.locator(f'.slide.on [data-n="{n}"]').click()
-        pg.wait_for_timeout(120)
-        res.append(pg.evaluate("() => (document.querySelector('.slide.on .body').innerText.match(/(\\d+) of 56/) || [])[1]"))
-    ok('s29: 14, 49, 53, and 55 of 56 answers with 1, 3, 10, and 40 examples', res == ['14', '49', '53', '55'], res)
-    pg.locator('.slide.on input[type=text], .slide.on input:not([type])').first.fill('I design roads and bridges')
-    pg.wait_for_timeout(150)
-    ok('s29: a typed answer gets a group', pg.evaluate("""() => {
-        const cells = [...document.querySelectorAll('.slide.on [data-probs] > *')];
-        let best = ['', -1];
-        for (let i = 0; i < cells.length; i += 3) { const v = parseInt(cells[i + 2].textContent, 10); if (v > best[1]) best = [cells[i].textContent, v]; }
-        return best[0];
-    }""") == 'Civil engineers')
-    pg.keyboard.press('ArrowRight'); ok('s29: an arrow key in the text box keeps the slide', cur() == 's29')
-    pg.keyboard.press('Escape'); pg.keyboard.press('ArrowRight'); ok('s29: after Esc the arrow key moves on', cur() == 's30', cur())
+    read = lambda: pg.locator('.slide.on [data-read]').inner_text()
+    stops = int(pg.locator('.slide.on [data-at]').get_attribute('max'))
+    ok('s29: the slide opens on the saved model', 'SAVED MODEL' in read().upper() and '68.4%' in read() and '93.8%' in read(), read())
+    ok('s29: the saved model has the first codes of s31', '3 of 6' in pg.inner_text('.slide.on [data-match]'))
+    pg.locator('.slide.on [data-at]').fill('0'); pg.wait_for_timeout(100)
+    ok('s29: before training no first code is right', 'BEFORE TRAINING' in read().upper() and '0.0%' in read()
+       and 'same code' in pg.inner_text('.slide.on [data-match]'), read())
+    pg.locator('.slide.on [data-at]').fill('7'); pg.wait_for_timeout(100)
+    ok('s29: one pass', 'one pass' in read().lower() and '35,515' in read() and '50.9%' in read(), read())
+    pg.locator('.slide.on [data-at]').focus(); pg.keyboard.press('ArrowRight')
+    ok('s29: an arrow key on the slider moves the point and keeps the slide', cur() == 's29' and '1.5 passes' in read().lower(), read())
+    pg.locator('.slide.on [data-play]').click(); pg.wait_for_timeout(300)
+    ok('s29: play starts before training', 'BEFORE TRAINING' in read().upper() and pg.inner_text('.slide.on [data-play]') == 'Pause')
+    pg.locator('.slide.on [data-play]').click()
+    ok('s29: pause', pg.inner_text('.slide.on [data-play]') != 'Pause')
+    ok('s29: the points of the record', stops == 13, stops)
+    pg.locator('.slide.on [data-at]').focus(); pg.keyboard.press('Escape'); pg.keyboard.press('ArrowRight')
+    ok('s29: after Esc the arrow key moves on', cur() == 's30', cur())
     at('s27'); pg.locator('.slide.on .btn').first.click(); pg.wait_for_timeout(2700)
     ok('s27: the answers of the job titles arrive', pg.locator('.slide.on .sents > *').count() >= 3)
     at('s28'); kept = pg.locator('.slide.on .ck3 .drop').count(); pg.locator('.slide.on [data-a="go"][data-v="1"]').click(); pg.wait_for_timeout(150)

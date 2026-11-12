@@ -1,16 +1,16 @@
 <section class="slide" id="s26" data-sec="5">
-  <p class="kicker">The training texts</p>
+  <p class="kicker">Steps 2 to 4 · The training texts</p>
   <h2>Three sets of texts take the place of a coded survey in training.</h2>
   <div class="body center">
     <div class="g3 sets" data-demo="sets"></div>
     <p class="callout" data-step="3">After repeated texts are removed, the model trains on 44,058 different texts.</p>
   </div>
   <p class="src">The job titles come from the job board hahu.jobs (dataset published by Tabiya, CC BY 4.0), and the job board assigned their codes.</p>
-  <aside class="notes">We had no survey responses with codes for training. So the model learns from three sets of texts. The first is the set of the nine steps: job titles that a large model wrote from the definitions. The second is real: job titles from a job board, with the code that the job board assigned. They are worded as advertisements. The third joins the two ideas: a large model rewrites each real job title as the answers of a respondent, and the code stays with each answer. The next two slides show how the third set was written and checked.</aside>
+  <aside class="notes">We had no survey responses with codes for training. So the model learns from three sets of texts. The first holds job titles that a large model wrote from the definitions of the groups. The second is real: job titles from a job board, with the code that the job board assigned. They are worded as advertisements. The third joins the two ideas: a large model rewrites each real job title as the answers of a respondent, and the code stays with each answer. The next two slides show how the third set was written and checked.</aside>
 </section>
 
 <section class="slide" id="s27" data-sec="5">
-  <p class="kicker">The request</p>
+  <p class="kicker">Step 4 · The request</p>
   <h2>One request turns a job title into three answers of a respondent.</h2>
   <div class="body"><div class="fill story" data-demo="write"></div></div>
   <p class="src">The run made one request for each of 10,134 job titles and received 30,299 answers. Qwen3.8-27B wrote them.</p>
@@ -18,7 +18,7 @@
 </section>
 
 <section class="slide" id="s28" data-sec="5">
-  <p class="kicker">The check</p>
+  <p class="kicker">Step 4 · The check</p>
   <h2>A second model removed about a quarter of the answers.</h2>
   <div class="body"><div class="g2 fill checkcols" data-demo="checked"></div></div>
   <p class="src">Gemma 4 31B read each answer without the job title and without the code. It chose among the group of the title, the groups next to it in the classification, groups drawn at random, and the reply that none of the listed groups fits.</p>
@@ -26,11 +26,11 @@
 </section>
 
 <section class="slide" id="s29" data-sec="5">
-  <p class="kicker">A model learns</p>
-  <h2>A model that counts words learns four occupation groups from examples.</h2>
+  <p class="kicker">Step 5 · The training run</p>
+  <h2>In one training run the small model goes from 0 to 68 percent of first codes right.</h2>
   <div class="body"><div class="fill learn" data-demo="learn"></div></div>
-  <p class="src">The four groups share few words, so the model learns them from few examples. A large model wrote the training and test answers from real job titles.</p>
-  <aside class="notes">This model is trained live in the page, and it is a simpler kind of model than our small model: it counts the words of each group. With one example for each group it gets 14 of 56 right. A random guess gets the same. Move to three, ten, and forty, and watch the squares fill. Then type an answer from the room and see which group the model gives it. Our small model also learns from examples. It reads many more of them, and it separates 436 groups.</aside>
+  <p class="src">The scores are the mean of three training runs on 1,000 survey-style test answers. One pass reads 35,515 of the 44,058 training texts, and the other texts are held out.</p>
+  <aside class="notes">This is the training run of our small model, recorded at 13 points. Press play. Before training the model gives every answer the same code, and no first code is right. After half of one pass over the training texts it is right for 27 percent of the 1,000 test answers. After one pass it is right for half of them, and after two passes for 63 percent. From there the curve is nearly flat, and the score moves by a few points from one pass to the next. The table shows the same for six of the test answers in one run: a code can be right at one point and wrong at the next. After each pass the model is checked on training texts that it does not learn from. Training stops when that check stops improving, and the best pass is saved. The saved models get 68.4 percent on average. The three runs differ only in their random start.</aside>
 </section>
 
 <section class="slide" id="s30" data-sec="5">
@@ -52,23 +52,23 @@
 </section>
 
 <section class="slide" id="s31" data-sec="5">
-  <p class="kicker">The model at work</p>
+  <p class="kicker">Step 6 · The model on test responses</p>
   <h2>A coder chooses among five codes that the model suggests.</h2>
   <div class="body"><div class="suggest" data-demo="atwork"></div></div>
   <p class="src">The first six responses come from the test, where a large model wrote them from real job titles. The last two come from 29 informal responses written as illustrations, and no occupation coder has checked their codes.</p>
-  <aside class="notes">Here is the trained model on eight responses. Go through them. In three the reference code is the first suggestion, and in two it is the second. In the last three it is missing from the five. The last two describe informal work in everyday or local words. On 29 informal responses the first code of this model was right for about a third, against about half for the model trained on the definitions alone. More training texts raised the score on the test and lowered it on these responses.</aside>
+  <aside class="notes">Here is the trained model on eight responses. Go through them. In three the reference code is the first suggestion, and in two it is the second. In the last three it is missing from the five. The last two describe informal work in everyday or local words. On 29 informal responses the first code of this model was right for about a third, against about half for the model trained on the definitions alone. More training texts raised the score on the test and lowered it on these responses. Under step 7, the next round of cases goes to this weak spot: answers about informal work, and the 127 groups that have no title from the job board. That round has not been run.</aside>
 </section>
 
 <section class="slide" id="s32" data-sec="5">
-  <p class="kicker">Scores by training set</p>
+  <p class="kicker">Steps 6 and 7 · Scores by training set</p>
   <h2>Adding the rewritten answers raised the share of right first codes from 46 to 66 in 100.</h2>
   <div class="body center"><div class="bt" data-demo="bytraining"></div></div>
   <p class="src">Each score is the mean of three training runs. Each test set holds 1,000 texts from job titles set aside before training.</p>
-  <aside class="notes">Each bar is one model, trained on a different set of texts and tested on the same 1,000 survey-style answers. With real job titles alone, the first code was right for 46 answers in 100. With the rewritten answers added, it was right for 66. The titles written from the definitions add a little more. Then switch the test to real job titles. There the rewritten answers change the score little, from 58 to 60 in 100. The other control shows the share of answers with the right code among five.</aside>
+  <aside class="notes">Each bar is one model, trained on a different set of texts and tested on the same 1,000 survey-style answers. With real job titles alone, the first code was right for 46 answers in 100. With the rewritten answers added, it was right for 66. This is step 7 at the scale of a whole set: the test showed that the model was weak on the wording of respondents, and the new texts were written in that wording. The titles written from the definitions add a little more. Then switch the test to real job titles. There the rewritten answers change the score little, from 58 to 60 in 100. The other control shows the share of answers with the right code among five.</aside>
 </section>
 
 <section class="slide" id="s33" data-sec="5">
-  <p class="kicker">Compared with large models</p>
+  <p class="kicker">Step 6 · Compared with large models</p>
   <h2>On survey-style answers the small model scored about the same as the best of three large models.</h2>
   <div class="body center"><div class="vs" data-demo="versus"></div></div>
   <p class="src">The 1,000 test answers were written by Gemini 3.8 Flash from real job titles, because no survey answers coded by people were available. The small model's scores are the mean of three training runs.</p>

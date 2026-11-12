@@ -470,7 +470,7 @@
    {
     "n": 15865,
     "name": "Job titles written from the definitions",
-    "how": "A large model wrote them from the definition of each group. This is the set of the nine steps.",
+    "how": "A large model wrote them from the definition of each group.",
     "example": {
      "text": "Hot food street seller",
      "code": "5212",

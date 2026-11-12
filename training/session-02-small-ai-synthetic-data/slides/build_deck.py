@@ -13,7 +13,6 @@ number.
                                        that adds its own
 """
 import base64
-import gzip
 import html
 import io
 import json
@@ -39,11 +38,6 @@ HEAD = ('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="
         'padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui}img{max-width:100%}'
         '[hidden]{display:none!important}</style>')
 
-# The four occupation groups of the model that learns in the page (s29), and the number of training answers and test
-# answers taken for each group.
-LEARN_GROUPS = [('2411', 'Accountants'), ('2221', 'Nursing professionals'), ('2142', 'Civil engineers'),
-                ('2511', 'Systems analysts')]
-LEARN_TRAIN, LEARN_TEST = 40, 14
 
 # The captions of the model sizes on s08. They replace the captions written for the overview page.
 MODELS = {
@@ -94,7 +88,8 @@ STEPS = [
          model='The small model is trained on the checked cases until its answers match theirs.',
          demo='train',
          notes='This step is short on the slide and long in practice. The checked cases go in, and a model comes '
-               'out. We will train a simple model live in part 5, so I will take questions about learning there.'),
+               'out. Part 5 shows the scores of the occupation model during its training, so I will take questions about '
+               'learning there.'),
     dict(short='Test on real cases',
          h='The test uses real cases that no model has trained on.',
          office='Before the new staff member works alone, a supervisor checks their decisions on real past files.',
@@ -102,22 +97,19 @@ STEPS = [
          demo='test',
          notes='Turn the switch on and ask the room what is wrong with the picture. A test on practice cases '
                'measures how well the small model copies the writing habits of the large model. The real cases are '
-               'set aside before anything is written, and no model trains on them. The chart shows the '
-               'occupation-coding model on 1,000 real job titles: the first code is right for 35 percent, and the '
-               'right code is among five suggestions for 56.5 percent. The titles come from the job board hahu.jobs, and '
-               'the job board assigned their codes. A test on coded survey responses is still needed before use on '
-               'a survey.'),
+               'set aside before anything is written, and no model trains on them. We read two scores from the test: '
+               'the share of cases where the first code of the model is right, and the share where the right code '
+               'is among its first five. Part 5 shows the test of the occupation model.'),
     dict(short='Practise the weak spots',
          h='Extra cases are aimed at the kinds of cases the model gets wrong.',
          office='The colleague writes more practice cases of the kinds the new staff member gets wrong.',
          model='A program finds where the model makes most mistakes and asks the large model for more cases of '
                'those kinds. The model is trained again.',
          demo='rounds',
-         notes='Read the loop first. Then compare the three bars: the first set, extra cases spread evenly, and '
-               'extra cases aimed at the mistakes. For occupation codes, both kinds of extra cases gave a higher '
-               'score than the first set, the difference between them is within the margin of error, and the small '
-               'model stays below the orange band. For report topics, the targeted rounds were better in both '
-               'repeats and reached the band, which is the level of the large models.'),
+         notes='Go through one round with the button. The test shows where the model is wrong, the mistakes are '
+               'counted for each group, the large model writes more cases for the weakest group, and the model is '
+               'trained and tested again. The test cases never enter training. Part 6 shows the scores of the '
+               'report model before and after rounds like this one.'),
     dict(short='Ask people which is better',
          h='Experienced staff choose the better of two cases.',
          office='Experienced staff compare two practice cases, or two answers, and say which one is better.',
@@ -152,13 +144,14 @@ DIVIDERS = [
     ('A small model needs labelled examples. In this part a large model writes them.',
      'The room now knows what a small model is. This part explains the examples that the model '
      'learns from, why real ones are often missing, and how a large model writes them.'),
-    ('We follow occupation coding through the nine steps of the process.',
+    ('We go through the process one step at a time, with examples from occupation coding.',
      'The room has now seen the task, the small model, and synthetic data. This part puts them '
-     'together as a process of nine steps, and each step is shown with occupation coding.'),
-    ('We follow the build of one occupation model from its training texts to its test.',
-     'The nine steps described the process, with a first model trained on titles written from the definitions. That '
-     'model stayed below the large models. This part shows the build that followed: two more sets of training texts, '
-     'the check, and the test. It ends with the scores next to three large models, the speed, and the cost.'),
+     'together as a process of nine steps. Each step has a short example from occupation coding. The scores of the '
+     'models come in parts 5 and 6.'),
+    ('We apply the steps to one occupation model that was built and tested.',
+     'Part 4 gave the process. This part applies it to one model: the training texts, the request to the large '
+     'model, the check, the training run, and the test. The line above each headline names the step. The part ends '
+     'with the scores next to three large models, the speed, and the cost. This build did not include steps 8 and 9.'),
     ('We look at a second small model that tags reports with topics.',
      'This part is short. A second small model tags reports with topics, and it was tested on 300 real reports.'),
     ('We end with the choice between a small and a large model for a task.',
@@ -258,53 +251,6 @@ def logo_uri(name, height):
     return 'data:image/png;base64,' + base64.b64encode(raw).decode()
 
 
-def rows(name):
-    with gzip.open(OCC / name, 'rt') as f:
-        return [json.loads(line) for line in f]
-
-
-def learn_data(stop):
-    """The answers of the model that learns in the page: 40 training answers and 14 test answers for each group.
-
-    The training answers are rewritten job titles that passed the check. One answer is taken from each job title, and
-    the three kinds of answer take turns. The test answers are the first ones of each group in the test file.
-    """
-    tok = lambda t: [w for w in re.findall(r'[a-z]+', t.lower()) if len(w) > 2 and w not in stop]
-    answers, tests = rows('answers.jsonl.gz'), rows('test-answers.jsonl.gz')
-
-    def pick(code):
-        by, order = {}, []
-        for r in answers:
-            if r['code'] != code:
-                continue
-            if r['id'] not in by:
-                by[r['id']] = {}
-                order.append(r['id'])
-            by[r['id']][r['style']] = r
-        out, seen, k = [], set(), 0
-        for i in order:
-            if not any(x['kept'] for x in by[i].values()):
-                continue
-            r = by[i].get(k % 3 + 1)
-            k += 1
-            if not r or not r['kept'] or r['answer'].lower() in seen:
-                continue
-            seen.add(r['answer'].lower())
-            out.append(r['answer'])
-            if len(out) == LEARN_TRAIN:
-                break
-        assert len(out) == LEARN_TRAIN, (code, len(out))
-        return out
-
-    return {
-        'groups': [name for _, name in LEARN_GROUPS],
-        'stop': sorted(stop),
-        'sentences': {name: pick(code) for code, name in LEARN_GROUPS},
-        'tests': [{'title': r['answer'], 'group': name, 'w': tok(r['answer'])}
-                  for code, name in LEARN_GROUPS for r in [x for x in tests if x['code'] == code][:LEARN_TEST]],
-    }
-
-
 def data():
     d = json.loads(DATA.read_text())
     di = d['distillation']
@@ -321,7 +267,7 @@ def data():
         'workflow': d['workflow'],
         'occ': occ,
         'cost': json.loads((SRC / 'cost.json').read_text()),
-        'learn': learn_data(set(d['learn']['stop'])),
+        'learn': json.loads((SRC / 'learn.json').read_text()),
     }
 
 
