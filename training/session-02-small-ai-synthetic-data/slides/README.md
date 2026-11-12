@@ -8,6 +8,8 @@
 
 The deck follows the [overview of the session](../README.md) in the same order. Each slide has a one-sentence headline, one figure or demonstration, and speaker notes.
 
+The docs site shows `deck.html` on the Slides page of the session. The site build copies the file, so a rebuilt deck appears on the site after the next build.
+
 ## Presenting
 
 | Key | Action |

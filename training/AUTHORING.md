@@ -11,7 +11,8 @@ training/
   session-NN-short-name/
     README.md                     session overview page
     preface.md                    Preface page
-    slides/canva.json             Slides page (optional)
+    slides/canva.json             Slides page for a deck kept in Canva (optional)
+    slides/deck.html              Slides page for a deck that is one HTML file (optional)
     notebooks/NN-short-name.ipynb one page per notebook
     resources/README.md           Participant guide, the first page of Participant resources
     resources/*.md                further pages of Participant resources
@@ -30,6 +31,7 @@ training/
 | `README.md` | the session's category, labelled `NN · <title>`, and its overview page | The first line is `# Session NN · <title>`. The sections `Roles` and `Definition of ready` stay on GitHub. |
 | `preface.md` | Preface | A `# Title` line. |
 | `slides/canva.json` | Slides, with the deck in Canva's embedded viewer | See [Slides](#slides). |
+| `slides/deck.html` | Slides, with the deck in a frame, and the deck itself at `deck` under the session's address | See [Slides](#slides). A session has one of the two files. |
 | `notebooks/NN-*.ipynb` | Notebooks, one page each, in file-name order | See [Notebooks](#notebooks). |
 | `resources/README.md` | Participant guide | A `# Title` line. |
 | `resources/<name>.md` | a page at `resources/<name>` | A `# Title` line. Pages follow the order in which `resources/README.md` first links to them; files without a link follow in alphabetical order. |
@@ -54,7 +56,9 @@ A session README can place interactive figures on its overview page. A line of t
 
 ## Slides
 
-The Slides page shows a deck kept in Canva. `slides/canva.json` holds the page title and the public view link of the deck:
+The Slides page shows the deck of the session. The deck is kept in Canva or is one HTML file in the repository.
+
+For a deck in Canva, `slides/canva.json` holds the page title and the public view link of the deck:
 
 ```json
 {
@@ -64,6 +68,8 @@ The Slides page shows a deck kept in Canva. `slides/canva.json` holds the page t
 ```
 
 The link is the one Canva gives under **Share → Public view link**, or the address that a `canva.link` short link redirects to. Its query string is kept, because Canva attributes views by it. Anyone with the link can view the deck, so the deck holds only material that may be public. The names of colleagues appear only with their agreement.
+
+For a deck in the repository, `slides/deck.html` is the whole deck in one file, with its styles, scripts, and data inside it. The site build copies the file and serves it at `/training/session-NN/deck`. The Slides page shows that address in a frame, with buttons that open the deck in a new tab and in full screen. The frame gives the deck a window of 1280 by 760 pixels and scales it to the width of the page, so the deck is laid out for a 16:9 window. The deck follows the colour mode of the site when its styles read the `data-theme` attribute of the root element. The session's `slides/README.md` describes how the file is built.
 
 ## Document collection
 

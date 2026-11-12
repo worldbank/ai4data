@@ -40,7 +40,7 @@ Each notebook builds a small model for one task from examples written by a large
 session-NN-short-name/
   README.md        session plan: audience, objectives, timing, what to prepare, definition of ready
   preface.md       the problem the session addresses, its readers, its ideas, and the notebooks
-  slides/          the deck and its outline, or canva.json with the public view link of a deck kept in Canva
+  slides/          the deck and its outline: deck.html for a deck in one HTML file, or canva.json with the public view link of a deck kept in Canva
   notebooks/       the notebooks, a shared module they import, and the script that regenerates them
   assets/          the worked example: data, metadata, documents with their roles.json, questions, recorded model outputs
   demo/            scripts for live demonstrations, with pretested inputs and fallbacks

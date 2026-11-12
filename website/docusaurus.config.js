@@ -66,6 +66,13 @@ const config = {
   organizationName: 'worldbank',
   projectName: 'ai4data',
 
+  // generated/static holds the files that scripts/docs/build_training_site.py copies
+  // for the site to serve as they are, such as the HTML slide deck of a training session.
+  staticDirectories: [
+    'static',
+    ...(fs.existsSync(path.join(__dirname, 'generated/static')) ? ['generated/static'] : []),
+  ],
+
   onBrokenLinks: 'throw',
 
   markdown: {
