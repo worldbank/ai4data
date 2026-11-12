@@ -290,8 +290,10 @@ def deck_page(src: Path, out: Path, *, position: float) -> None:
         "",
         "import DeckFrame from '@site/src/components/training/DeckFrame';",
         "",
-        "The slides of the session are interactive. After a click inside the frame, the arrow keys move through "
-        "them.",
+        (
+            "The slides of the session are interactive. After a click inside the frame, the arrow keys move "
+            "through them."
+        ),
         "",
         f'<DeckFrame src="/training/{session}/deck/" title="Slides of the session" />',
         "",
