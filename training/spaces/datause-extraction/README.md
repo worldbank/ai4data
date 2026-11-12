@@ -4,7 +4,7 @@ emoji: 🔎
 colorFrom: indigo
 colorTo: blue
 sdk: gradio
-sdk_version: 5.50.0
+sdk_version: 6.31.0
 python_version: 3.12.12
 app_file: app.py
 pinned: false
@@ -14,6 +14,8 @@ short_description: Small AI that finds datasets in text and how they are used
 # Data-use extraction · Small AI
 
 A [Small AI](https://worldbank.github.io/ai4data/) demo from the AI for Data – Data for AI program. It finds the datasets that a passage mentions and reads how each named dataset is used. Both models are loaded when the Space starts, so a visitor does not wait for a download. The GPU is attached for the few seconds that a request runs ([ZeroGPU](https://huggingface.co/docs/hub/spaces-zerogpu)).
+
+The page is the interface of the earlier in-browser demo, `rafmacalaba/datause-extraction-webgpu`: the same layout, samples and Pretty, JSON and Trace views. The inference moved from the browser to this Space.
 
 ## Pipeline
 
@@ -30,7 +32,11 @@ passage
 | Mentions | [`rafmacalaba/gliner_agents_v3`](https://huggingface.co/rafmacalaba/gliner_agents_v3) | `urchade/gliner_large-v2.1` |
 | Attributes and usage | [`rafmacalaba/lfm2.5-350M-focus-metadata`](https://huggingface.co/rafmacalaba/lfm2.5-350M-focus-metadata) | `LiquidAI/LFM2.5-350M` |
 
-The passage is split into windows of 200 words with an overlap of 50, because GLiNER was fine-tuned on short passages. Overlapping spans keep the one with the higher score. The metadata model reads only named mentions, and it labels a mention that is already known; it does not detect mentions. An attribute value (producer, year, geography, acronym) is shown only when it appears in the passage.
+The passage is split into windows of 200 words with an overlap of 50, because GLiNER was fine-tuned on short passages. Overlapping spans keep the one with the higher score. The metadata model reads only named mentions, and it labels a mention that is already known; it does not detect mentions. An attribute value (producer, year, geography, acronym, version) is shown only when it appears in the passage.
+
+## How the page talks to the models
+
+`app.py` uses Gradio's [Server mode](https://www.gradio.app/guides/server-mode): it serves `index.html` and `main.js` and registers one endpoint, `extract`, which goes through Gradio's queue. The endpoint streams twice, first the mentions and then their attributes and usage, so the page shows the mentions as soon as GLiNER finishes. Inside the Hugging Face page, `main.js` passes the visitor's ZeroGPU headers along with the request, as Gradio's own frontend does, so a signed-in visitor uses their own quota.
 
 ## Privacy
 
@@ -44,4 +50,4 @@ This is a demo. The text is processed on the Space's server and is not stored by
 
 ## Files
 
-`app.py` is the app, `header.html` and `style.css` are the page, `examples.json` holds the example passages, and `requirements.txt` lists the packages. The Space has no binary files, so nothing depends on Git LFS.
+`app.py` holds the models and the endpoint, `index.html` and `main.js` are the page, and `requirements.txt` lists the packages. The Space has no binary files, so nothing depends on Git LFS; the logo is inlined in `index.html`.

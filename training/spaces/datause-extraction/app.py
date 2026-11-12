@@ -8,19 +8,21 @@ Two fine-tuned models run in sequence, both loaded once at startup:
    the passage chunk it came from and answers two tasks as JSON: source attributes
    (``attributes``) and how the author uses the data (``usage``).
 
-The GPU is attached only while ``_extract`` runs (ZeroGPU).
+The page (``index.html`` and ``main.js``) is served by Gradio's Server mode, and it calls
+the ``extract`` endpoint through Gradio's queue, so ZeroGPU attaches a GPU only while a
+request runs. ``extract`` streams twice: first the mentions, then their metadata.
 """
 
-import html
 import json
 import re
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Iterator, List, Optional
 
 import gradio as gr
 import spaces
 import torch
+from fastapi.responses import FileResponse
 from gliner import GLiNER
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -29,7 +31,7 @@ ENTITY_ID = "rafmacalaba/gliner_agents_v3"
 METADATA_ID = "rafmacalaba/lfm2.5-350M-focus-metadata"
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
-ENTITY_LABELS = {"NAMED_DATA": "Named", "DESCRIPTIVE_DATA": "Descriptive", "VAGUE_DATA": "Vague"}
+ENTITY_LABELS = ["NAMED_DATA", "DESCRIPTIVE_DATA", "VAGUE_DATA"]
 THEME_TAGS = {"geospatial", "forced_displacement", "agriculture", "employment", "poverty", "education", "health", "climate"}
 DATA_TYPES = {"survey", "census", "administrative", "microdata", "database", "indicator", "geospatial", "report", "other"}
 USAGE_ROLES = {"primary", "supporting", "background"}
@@ -88,7 +90,7 @@ def find_mentions(text: str, threshold: float) -> List[Dict[str, Any]]:
     """Run GLiNER over each chunk and keep the best non-overlapping spans."""
     candidates = []
     for offset, chunk in chunk_text(text):
-        for ent in entity_model.predict_entities(chunk, list(ENTITY_LABELS), threshold=threshold):
+        for ent in entity_model.predict_entities(chunk, ENTITY_LABELS, threshold=threshold):
             candidates.append({
                 "start": offset + ent["start"],
                 "end": offset + ent["end"],
@@ -102,7 +104,7 @@ def find_mentions(text: str, threshold: float) -> List[Dict[str, Any]]:
             kept.append(cand)
     kept.sort(key=lambda c: c["start"])
     for m in kept:
-        m["mention"] = text[m["start"]:m["end"]]
+        m["text"] = text[m["start"]:m["end"]]
     return kept
 
 
@@ -159,147 +161,91 @@ def verbatim(value: Any, passage: str) -> str:
     return value if value and value.lower() in passage.lower() else ""
 
 
-def metadata_fields(mention: Dict[str, Any], attrs: Optional[Dict], usage: Optional[Dict]) -> Dict[str, Any]:
-    """Validated attributes and usage of one named mention."""
+def metadata(mention: Dict[str, Any], attrs: Optional[Dict], usage: Optional[Dict]) -> Dict[str, Any]:
+    """Validated attributes and usage of one named mention, with empty values left out."""
     passage = mention["passage"]
     body = (attrs or {}).get("attributes") or {}
     usage = usage or {}
     data_type = body.get("data_type")
-    return {
+    attributes = {
+        "acronym": verbatim(body.get("acronym"), passage),
         "producer": verbatim(body.get("producer"), passage),
         "year": verbatim(body.get("year"), passage),
         "geography": verbatim(body.get("geography"), passage),
-        "acronym": verbatim(body.get("acronym"), passage),
+        "version": verbatim(body.get("version"), passage),
         "data_type": data_type if data_type in DATA_TYPES else "",
         "themes": [t for t in (attrs or {}).get("tags") or [] if t in THEME_TAGS],
-        "role": usage.get("role") if usage.get("role") in USAGE_ROLES else "",
-        "usage_action": usage.get("usage_action") if usage.get("usage_action") in USAGE_ACTIONS else "",
+    }
+    role, action = usage.get("role"), usage.get("usage_action")
+    use = {
+        "role": role if role in USAGE_ROLES else "",
+        "usage_action": action if action in USAGE_ACTIONS else "",
         "summary": str(usage.get("summary") or "").strip(),
+    }
+    return {
+        "attributes": {k: v for k, v in attributes.items() if v},
+        "usage": {k: v for k, v in use.items() if v},
     }
 
 
-def _duration(text: str, threshold: float) -> int:
+def public(mention: Dict[str, Any]) -> Dict[str, Any]:
+    """The mention as the page receives it."""
+    return {
+        "text": mention["text"],
+        "label": mention["label"],
+        "score": round(mention["score"], 4),
+        **mention.get("metadata", {}),
+    }
+
+
+def _duration(text: str, threshold: float = 0.6) -> int:
     return min(120, 20 + len(text.split()) // 40)
 
 
 @spaces.GPU(duration=_duration)
-def _extract(text: str, threshold: float) -> List[Dict[str, Any]]:
+def _extract(text: str, threshold: float = 0.6) -> Iterator[Dict[str, Any]]:
+    started = time.perf_counter()
     mentions = find_mentions(text, threshold)
+    span_ms = round((time.perf_counter() - started) * 1000)
+    yield {"stage": "spans", "mentions": [public(m) for m in mentions], "timings": {"span_ms": span_ms}}
+
     named = [m for m in mentions if m["label"] == "NAMED_DATA"]
-    items = [{"passage": m["passage"], "mention": m["mention"]} for m in named]
+    items = [{"passage": m["passage"], "mention": m["text"]} for m in named]
     attrs = run_task(ATTRIBUTES_SYSTEM, items) if items else []
     usage = run_task(USAGE_SYSTEM, items) if items else []
     for m, a, u in zip(named, attrs, usage):
-        m["fields"] = metadata_fields(m, a, u)
-    return mentions
+        m["metadata"] = metadata(m, a, u)
+    total_ms = round((time.perf_counter() - started) * 1000)
+    yield {
+        "stage": "done",
+        "mentions": [public(m) for m in mentions],
+        "timings": {"span_ms": span_ms, "attribution_ms": total_ms - span_ms, "total_ms": total_ms},
+    }
 
 
-# ── rendering: plain HTML that grows with its content, so only the page scrolls ──
-def esc(value: Any) -> str:
-    return html.escape(str(value), quote=True)
+server = gr.Server()
 
 
-def render_passage(text: str, mentions: List[Dict[str, Any]]) -> str:
-    parts, pos = [], 0
-    for m in mentions:
-        kind = ENTITY_LABELS[m["label"]]
-        parts.append(esc(text[pos:m["start"]]))
-        parts.append(f'<mark class="hl {kind.lower()}" title="{kind} · score {m["score"]:.2f}">{esc(m["mention"])}</mark>')
-        pos = m["end"]
-    parts.append(esc(text[pos:]))
-    return "".join(parts)
+@server.get("/")
+def index() -> FileResponse:
+    return FileResponse(HERE / "index.html")
 
 
-def render_card(m: Dict[str, Any]) -> str:
-    f = m["fields"]
-    facts = [
-        ("Producer", f["producer"]), ("Year", f["year"]), ("Geography", f["geography"]),
-        ("Acronym", f["acronym"]), ("Data type", f["data_type"]), ("Themes", ", ".join(f["themes"])),
-    ]
-    rows = "".join(f"<dt>{k}</dt><dd>{esc(v)}</dd>" for k, v in facts if v)
-    badges = "".join(
-        f'<span class="badge {cls}">{esc(v)}</span>'
-        for cls, v in (("role", f["role"]), ("action", f["usage_action"])) if v
-    )
-    summary = f'<p class="summary">{esc(f["summary"])}</p>' if f["summary"] else ""
-    return (
-        f'<article class="mcard"><h3>{esc(m["mention"])}</h3>'
-        f'<div class="badges">{badges}</div>{summary}'
-        f'{"<dl>" + rows + "</dl>" if rows else ""}</article>'
-    )
+@server.get("/main.js")
+def main_js() -> FileResponse:
+    return FileResponse(HERE / "main.js", media_type="text/javascript")
 
 
-def render_results(text: str, mentions: List[Dict[str, Any]], elapsed: float) -> str:
-    if not mentions:
-        return '<div class="results"><p class="empty">No data mentions found at this threshold. Try lowering it.</p></div>'
-    counts = {label: sum(ENTITY_LABELS[m["label"]] == label for m in mentions) for label in ENTITY_LABELS.values()}
-    legend = "".join(f'<span class="legend {k.lower()}">{k} {n}</span>' for k, n in counts.items())
-    named = [m for m in mentions if m["label"] == "NAMED_DATA"]
-    other = [m for m in mentions if m["label"] != "NAMED_DATA"]
-    cards = "".join(render_card(m) for m in named)
-    others = ""
-    if other:
-        chips = "".join(
-            f'<span class="chip {ENTITY_LABELS[m["label"]].lower()}">{esc(m["mention"])}</span>' for m in other
-        )
-        others = (
-            '<section class="panel"><h2>Descriptive and vague mentions</h2>'
-            '<p class="note">The metadata model reads named mentions only.</p>'
-            f'<div class="chips">{chips}</div></section>'
-        )
-    sections = [
-        f'<p class="status"><strong>{len(mentions)} mentions</strong> in {elapsed:.1f} s</p>',
-        f'<section class="panel"><h2>Data mentions</h2><div class="legends">{legend}</div>'
-        f'<p class="passage">{render_passage(text, mentions)}</p></section>',
-    ]
-    if named:
-        sections.append(f'<section><h2>Named mentions</h2><div class="mgrid">{cards}</div></section>')
-    sections.append(others)
-    return '<div class="results">' + "".join(sections) + "</div>"
-
-
-def run(text: str, threshold: float) -> str:
+@server.api(name="extract")
+def extract(text: str, threshold: float = 0.6) -> Iterator[Dict[str, Any]]:
+    """Find data mentions in a passage and read the attributes and usage of each named one."""
     text = (text or "").strip()
     if not text:
         raise gr.Error("Paste a passage first.")
     if len(text.split()) > MAX_WORDS:
         raise gr.Error(f"The text is over {MAX_WORDS:,} words. Paste a shorter passage.")
-    started = time.perf_counter()
-    mentions = _extract(text, threshold)
-    return render_results(text, mentions, time.perf_counter() - started)
+    yield from _extract(text, min(max(float(threshold), 0.05), 0.95))
 
-
-EXAMPLES = json.loads((HERE / "examples.json").read_text(encoding="utf-8"))
-HEADER = (HERE / "header.html").read_text(encoding="utf-8")
-CSS = (HERE / "style.css").read_text(encoding="utf-8")
-
-THEME = gr.themes.Soft(primary_hue="indigo", neutral_hue="slate")
-PLACEHOLDER = '<div class="results"><p class="empty">Press <strong>Extract data use</strong> to run the two models.</p></div>'
-
-with gr.Blocks(title="Data-use extraction — AI for Data", theme=THEME, css=CSS, analytics_enabled=False) as demo:
-    gr.HTML(HEADER)
-    with gr.Column(elem_classes="card"):
-        text = gr.Textbox(
-            label="Passage",
-            lines=7,
-            max_lines=30,  # grows with the text instead of scrolling
-            placeholder="Paste a passage from a report or paper…",
-            value=EXAMPLES[0]["text"],
-        )
-        with gr.Row(equal_height=True):
-            threshold = gr.Slider(
-                0.1, 0.9, value=0.5, step=0.05, label="Mention threshold",
-                info="Higher keeps fewer, surer mentions. On the holdout set, 0.5 gave the best F1 and 0.6 the best F0.5.",
-                scale=3,
-            )
-            button = gr.Button("Extract data use", variant="primary", scale=1, min_width=180)
-        with gr.Row(elem_classes="examples"):
-            gr.HTML('<span class="examples-label">Examples</span>', elem_classes="examples-label-wrap")
-            for example in EXAMPLES:
-                chip = gr.Button(example["label"], size="sm", variant="secondary", min_width=0)
-                chip.click(lambda t=example["text"]: t, None, text)
-    results = gr.HTML(PLACEHOLDER)
-    button.click(run, [text, threshold], results)
 
 if __name__ == "__main__":
-    demo.queue().launch()
+    server.launch()
