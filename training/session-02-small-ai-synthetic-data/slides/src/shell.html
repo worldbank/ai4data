@@ -18,10 +18,13 @@
     </main>
   </div>
   <div class="bar">
-    <button type="button" class="nav" id="bPrev" aria-label="Previous slide">←</button>
-    <button type="button" class="nav" id="bNext" aria-label="Next slide">→</button>
-    <span class="where" id="where" aria-live="polite"></span>
-    <div class="progress" aria-hidden="true"><i id="prog"></i></div>
+    <button type="button" class="nav" id="bSkipPrev" aria-label="Previous slide" title="Previous slide (↑)">«</button>
+    <button type="button" class="nav" id="bPrev" aria-label="Previous step" title="Previous step (←)">←</button>
+    <button type="button" class="nav" id="bNext" aria-label="Next step" title="Next step (→)">→</button>
+    <button type="button" class="nav" id="bSkipNext" aria-label="Next slide" title="Next slide (↓)">»</button>
+    <label class="where" id="where" title="Type a slide number and press Enter"><span class="sr">Slide</span><input id="goto" type="text" inputmode="numeric" autocomplete="off" size="2" maxlength="3"><span id="total"></span></label>
+    <div class="scrub" id="scrub" role="group" aria-label="Slides"></div>
+    <div class="scrubtip" id="scrubtip" hidden></div>
     <button type="button" id="bToc">Contents<kbd>O</kbd></button>
     <button type="button" id="bNotes" class="stageonly" aria-pressed="false">Notes<kbd>N</kbd></button>
     <button type="button" id="bFull" class="stageonly">Full screen<kbd>F</kbd></button>

@@ -1,8 +1,9 @@
 """Build the session 02 deck as one HTML file.
 
 Reads the slide sources in src/, the recorded data of the overview page (../assets/overview.json),
-and the program mark. The slides of the nine steps (15 to 24) and the slide of the steps used for the report-tagging model (26)
-are generated from the STEPS table below.
+and the program mark. The slides of the nine steps (s16 to s25) and the slide of the steps used for the report-tagging
+model (s27) are generated from the STEPS table below. The divider that opens each part (p1 to p6) is generated from the
+DIVIDERS table. A slide keeps its id when slides are added before it, so the id is not the slide number.
 
     python3 build_deck.py              write deck.html and outline.md
     python3 build_deck.py --fit        also recompute the scale of each slide (src/fit.css); needs Playwright
@@ -35,7 +36,7 @@ HEAD = ('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="
 
 USED = {'yes': 'Used', 'partly': 'Partly used', 'no': 'Not used'}
 
-# The captions of the model sizes on slide 8. They replace the captions written for the overview page.
+# The captions of the model sizes on s08. They replace the captions written for the overview page.
 MODELS = {
     'Small model': dict(role='Both small models of this session are this size.'),
     'Large model': dict(memory='about 31 GB of memory in its 8-bit version (about 56 GB at full 16-bit precision)',
@@ -134,7 +135,67 @@ STEPS = [
 GROUPS = [('Write the cases', range(0, 4), None), ('Train and test', range(4, 6), 1),
           ('Improve and maintain', range(6, 9), 2)]
 
+# One divider opens each part. Each entry holds the line under the name of the part and the speaker notes.
+# The names of the parts are the SECS constant of src/app.js.
+DIVIDERS = [
+    ('We start with the task: a survey response needs one code from a fixed list.',
+     'Say that the session has six parts and name them from the strip at the bottom of the slide. The first part shows '
+     'the task: one survey response, then other tasks of the same kind, then an outline of the process.'),
+    ('We compare a small model with a large one: size, memory, and cost.',
+     'The room has seen the task and the outline of the process. This part explains the small '
+     'model: its size next to a large language model, the memory it needs, and the reasons to build one.'),
+    ('A small model needs labelled examples. In this part a large model writes them.',
+     'The room now knows what a small model is. This part explains the examples that the model '
+     'learns from, why real ones are often missing, and how a large model writes them.'),
+    ('We follow occupation coding through the nine steps of the process.',
+     'The room has now seen the task, the small model, and synthetic data. This part puts them '
+     'together as a process of nine steps, and each step is shown with occupation coding.'),
+    ('We look at a second small model and its test on 300 real reports.',
+     'The nine steps used occupation coding. This part shows a second small model, built to tag '
+     'reports with topics, and its test on 300 real reports.'),
+    ('We end with the choice between a small and a large model for a task.',
+     'The last part is about the choice between a small and a large model. It has an exercise '
+     'for the room, the checks before relying on a small model, and the requirements of a first attempt.'),
+]
+
 e = html.escape
+
+
+def part_names():
+    names = re.search(r"const SECS = \[(.*?)\];", (SRC / 'app.js').read_text()).group(1)
+    return [n.strip().strip("'") for n in names.split(',')]
+
+
+def divider_slide(n):
+    """The slide that opens part n (1 to 6): the name of the part, one line, and the six parts as a strip."""
+    names = part_names()[1:]
+    assert len(names) == len(DIVIDERS)
+    line, notes = DIVIDERS[n - 1]
+    cells = []
+    for k, name in enumerate(names, start=1):
+        if k == n:
+            cells.append(f'<li class="here" aria-current="step"><span><i>{k}</i>{e(name)}</span></li>')
+        else:
+            past = ' class="past"' if k < n else ''
+            cells.append(f'<li{past}><button type="button" data-go="p{k}"><i>{k}</i>{e(name)}</button></li>')
+    return f'''<section class="slide divider" id="p{n}" data-sec="{n}">
+  <p class="kicker">Part {n} of {len(names)}</p>
+  <div class="dvtitle">
+    <h2>{e(names[n - 1])}</h2>
+    <p class="sub">{e(line)}</p>
+  </div>
+  <span class="dvnum" aria-hidden="true">{n}</span>
+  <ol class="route" aria-label="Parts of the session">{''.join(cells)}</ol>
+  <aside class="notes">{e(notes)}</aside>
+</section>'''
+
+
+def with_dividers(slides):
+    """Put the divider of each part before the first slide of the part."""
+    for n in range(1, len(DIVIDERS) + 1):
+        tag = re.search(rf'<section class="slide[^>]*data-sec="{n}"', slides)
+        slides = slides[:tag.start()] + divider_slide(n) + '\n\n' + slides[tag.start():]
+    return slides
 
 
 def overview_slide():
@@ -156,7 +217,7 @@ def overview_slide():
     </div>
     <p class="txt" data-step="5">We follow one example through the nine steps: coding the occupations written in a household survey.</p>
   </div>
-  <aside class="notes">This is the process from the start of the session, now in nine steps. We look at all nine before we take them one at a time. The first four steps produce the cases, the next two build and test the model, and the last three keep improving it. The arrow above the steps shows that the process is a loop. Where the test shows mistakes, the large model writes more cases of those kinds, and the small model is trained and tested again. Step 7 runs this loop during the project. Steps 8 and 9 also end with new cases and another round of training. Steps 5 to 9 are standard machine learning practice. A team that has trained a model on labelled examples has done them before. Steps 1 to 4 are specific to synthetic data: a large model writes the examples that people would otherwise collect and label. In step 7 the large model also writes the extra cases. Each number opens its step. We use occupation coding for all nine steps because the room saw it on the second slide.</aside>
+  <aside class="notes">This is the process from the start of the session, now in nine steps. We look at all nine before we take them one at a time. The first four steps produce the cases, the next two build and test the model, and the last three keep improving it. The arrow above the steps shows that the process is a loop. Where the test shows mistakes, the large model writes more cases of those kinds, and the small model is trained and tested again. Step 7 runs this loop during the project. Steps 8 and 9 also end with new cases and another round of training. Steps 5 to 9 are standard machine learning practice. A team that has trained a model on labelled examples has done them before. Steps 1 to 4 are specific to synthetic data: a large model writes the examples that people would otherwise collect and label. In step 7 the large model also writes the extra cases. Each number opens its step. We use occupation coding for all nine steps because the room saw it at the start of the session.</aside>
 </section>'''
 
 
@@ -238,6 +299,7 @@ def page():
         overview_slide(), *[step_slide(i, s) for i, s in enumerate(STEPS)],
         (SRC / 'slides-26-43.html').read_text().replace('<!--__USED__-->', used_slide()),
     ])
+    slides = with_dividers(slides)
     payload = json.dumps(data(), ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
     js = (SRC / 'app.js').read_text().replace('/*__DATA__*/null', payload)
     fit = SRC / 'fit.css'
@@ -248,8 +310,7 @@ def page():
 
 def outline(slides):
     """The headline and the speaker notes of every slide, as Markdown for review."""
-    parts = re.search(r"const SECS = \[(.*?)\];", (SRC / 'app.js').read_text()).group(1)
-    parts = [p.strip().strip("'") for p in parts.split(',')]
+    parts = part_names()
     text = lambda s: re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', '', s))).strip()
     first = lambda pat, s: (lambda m: text(m.group(1)) if m else '')(re.search(pat, s, re.S))
     lines = ['# Session 02 deck outline', '',

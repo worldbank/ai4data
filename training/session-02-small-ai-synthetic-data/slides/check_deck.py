@@ -117,44 +117,60 @@ def controls(browser):
             pg.keyboard.press('ArrowRight')
 
     # Keys.
+    ids, secs = pg.evaluate("() => { const s = [...document.querySelectorAll('.slide')]; return [s.map((x) => x.id), s.map((x) => x.dataset.sec)]; }")
+    total, last = len(ids), ids[-1]
+    whole = lambda sid: cur() == sid and pend() == 0
     presses, seen = 0, [cur()]
-    while cur() != 's43' and presses < 200:
+    while cur() != last and presses < 250:
         pg.keyboard.press('ArrowRight')
         presses += 1
         if cur() != seen[-1]:
             seen.append(cur())
-    ok('forward walk visits 43 slides in order', seen == [f's{i:02d}' for i in range(1, 44)], f'{presses} presses')
-    ok('slide counter', pg.inner_text('#where') == '43 / 43', pg.inner_text('#where'))
+    ok(f'forward walk visits {total} slides in order', seen == ids, f'{presses} presses')
+    ok('each part opens with its divider', all(ids[secs.index(str(n))] == f'p{n}' for n in range(1, 7)), ids)
+    ok('slide counter', pg.input_value('#goto') == str(total) and pg.inner_text('#total') == f'/ {total}', pg.inner_text('#total'))
     back = 0
-    while cur() != 's01' and back < 200:
+    while cur() != 's01' and back < 250:
         pg.keyboard.press('ArrowLeft')
         back += 1
     ok('backward walk returns to the first slide in the same number of presses', back == presses, back)
+    pg.keyboard.press('ArrowRight'); ok('the first step forward opens the divider of part 1', cur() == 'p1')
     pg.keyboard.press('ArrowRight')
     n0 = pend()
     pg.keyboard.press('ArrowRight')
     ok('a key press shows the next reveal', cur() == 's02' and pend() < n0)
-    pg.keyboard.press('End'); ok('End', cur() == 's43')
+    pg.keyboard.press('r'); ok('R hides the reveals of the slide again', cur() == 's02' and pend() == n0, pend())
+    pg.keyboard.press('ArrowDown'); ok('the down arrow opens the next slide with every reveal shown', whole('s03'), cur())
+    pg.keyboard.press('ArrowUp'); ok('the up arrow opens the previous slide with every reveal shown', whole('s02'), cur())
+    pg.click('#bSkipNext'); ok('the button for the next slide', whole('s03'), cur())
+    pg.click('#bSkipPrev'); ok('the button for the previous slide', whole('s02'), cur())
+    pg.keyboard.press('1'); pg.keyboard.press('2'); pg.keyboard.press('Enter')
+    ok('a number and Enter open that slide', whole(ids[11]) and pg.evaluate("() => document.activeElement.id") != 'goto', cur())
+    pg.locator('#scrub button').nth(20).hover()
+    ok('a mark of the strip shows its slide', pg.is_visible('#scrubtip') and 'Slide 21' in pg.inner_text('#scrubtip'))
+    pg.locator('#scrub button').nth(20).click(); ok('a mark of the strip opens its slide', whole(ids[20]), cur())
+    pg.keyboard.press('End'); ok('End', cur() == last)
     pg.keyboard.press('Home'); ok('Home', cur() == 's01')
-    pg.keyboard.press('PageDown'); ok('PageDown', cur() == 's02')
+    pg.keyboard.press('PageDown'); ok('PageDown', cur() == 'p1')
     pg.keyboard.press('PageUp'); ok('PageUp', cur() == 's01')
-    pg.keyboard.press('Space'); ok('Space', cur() == 's02')
+    pg.keyboard.press('Space'); ok('Space', cur() == 'p1')
+    ok('a divider names its part and hides the strip of part names', 'Part 1 of 6' in pg.text_content('.slide.on .kicker') and not pg.is_visible('#secnav'))
+    pg.locator('.slide.on .route [data-go="p4"]').click(); ok('a part on a divider opens the divider of that part', cur() == 'p4', cur())
 
     # Contents, notes, and links between slides.
     pg.keyboard.press('o'); ok('O opens the contents', pg.is_visible('#toc'))
-    ok('the contents list 43 slides', pg.locator('#toclist button').count() == 43)
-    pg.locator('#toclist button').nth(22).click()
+    ok(f'the contents list {total} slides', pg.locator('#toclist button').count() == total)
+    pg.locator('#toclist button').nth(ids.index('s23')).click()
     ok('a contents item opens its slide', cur() == 's23' and not pg.is_visible('#toc'))
     pg.click('#bToc'); pg.keyboard.press('Escape'); ok('Esc closes the contents', not pg.is_visible('#toc'))
     pg.keyboard.press('n')
     ok('N opens the notes of the current slide', pg.is_visible('#notespanel') and pg.inner_text('#notestext').startswith('Read the loop first'))
     pg.keyboard.press('ArrowRight'); ok('the notes follow the slide', 'vote' in pg.inner_text('#notestext'), cur())
     pg.keyboard.press('n'); ok('N closes the notes', not pg.is_visible('#notespanel'))
-    pg.locator('.slide.on .minirail button').nth(4).click(); ok('step number 5 opens slide 21', cur() == 's21')
-    pg.locator('.slide.on [data-go="s31"]').first.click(); ok('the link on slide 21 opens slide 31', cur() == 's31')
-    pg.locator('#secnav [data-sec="2"]').click(); ok('a part name opens the first slide of the part', cur() == 's06', cur())
-    while pend():
-        pg.keyboard.press('ArrowRight')
+    pg.locator('.slide.on .minirail button').nth(4).click(); ok('step number 5 opens s21', cur() == 's21')
+    pg.locator('.slide.on [data-go="s31"]').first.click(); ok('the link on s21 opens s31', cur() == 's31')
+    pg.locator('#secnav [data-sec="2"]').click(); ok('a part name opens the divider of the part', cur() == 'p2', cur())
+    at('s06')
     pg.locator('.slide.on .term').first.click()
     ok('a term opens its definition', pg.locator('.pop').count() == 1)
     box = pg.locator('.pop').bounding_box()
@@ -166,8 +182,8 @@ def controls(browser):
       const cards = [...document.querySelectorAll('.slide.on .cyflow .card')], arc = document.querySelector('.slide.on .cyloop .arc').getBoundingClientRect();
       return [cards.length, Math.abs(arc.left + 1 - c(cards[1])), Math.abs(arc.right - 1 - c(cards[3])), arc.bottom <= cards[1].getBoundingClientRect().top];
     }""")
-    ok('slide 5: the loop runs from the test to the practice cases', geo[0] == 5 and geo[1] < 2 and geo[2] < 2 and geo[3], geo)
-    pg.locator('.slide.on .cypart[data-go="s06"]').click(); ok('slide 5: a part of the session opens its first slide', cur() == 's06', cur())
+    ok('s05: the loop runs from the test to the practice cases', geo[0] == 5 and geo[1] < 2 and geo[2] < 2 and geo[3], geo)
+    pg.locator('.slide.on .cypart[data-go="p2"]').click(); ok('s05: a part of the session opens its divider', cur() == 'p2', cur())
     at('s16')
     geo = pg.evaluate("""() => {
       const r = (q) => document.querySelector('.slide.on ' + q).getBoundingClientRect();
@@ -175,7 +191,7 @@ def controls(browser):
       const a = r('.gkind.k-syn'), b = r('.gkind.k-std');
       return [Math.abs(a.left - g[0].left), Math.abs(a.right - g[0].right), Math.abs(b.left - g[1].left), Math.abs(b.right - g[2].right), a.top >= g[0].bottom];
     }""")
-    ok('slide 16: the marks under the steps span steps 1 to 4 and steps 5 to 9', all(v < 2 for v in geo[:4]) and geo[4], geo)
+    ok('s16: the marks under the steps span steps 1 to 4 and steps 5 to 9', all(v < 2 for v in geo[:4]) and geo[4], geo)
     geo = pg.evaluate("""() => {
       const r = (q) => document.querySelector('.slide.on ' + q).getBoundingClientRect();
       const c = (b) => b.left + b.width / 2;
@@ -183,51 +199,51 @@ def controls(browser):
       const a = r('.gloop .a'), b = r('.gloop .b'), e = r('.gloop .c');
       return [Math.abs(a.left + 1 - c(g[0])), Math.abs(e.right - 1 - c(g[2])), a.right >= b.left, b.right >= e.left, a.bottom <= g[0].top];
     }""")
-    ok('slide 16: the loop runs from the third group of steps to the first', geo[0] < 2 and geo[1] < 2 and all(geo[2:]), geo)
-    pg.locator('.slide.on .stepbtn').nth(6).click(); ok('step 7 on the process slide opens slide 23', cur() == 's23')
+    ok('s16: the loop runs from the third group of steps to the first', geo[0] < 2 and geo[1] < 2 and all(geo[2:]), geo)
+    pg.locator('.slide.on .stepbtn').nth(6).click(); ok('step 7 on the process slide opens s23', cur() == 's23')
 
     # Demonstrations.
     pg.locator('.slide.on .seg button').nth(1).click()
-    ok('slide 23: the second task', 'Report topics' in pg.locator('.slide.on .seg button[aria-pressed="true"]').inner_text())
+    ok('s23: the second task', 'Report topics' in pg.locator('.slide.on .seg button[aria-pressed="true"]').inner_text())
     at('s31')
     res = []
     for n in ('1', '10', '40'):
         pg.locator(f'.slide.on [data-n="{n}"]').click()
         pg.wait_for_timeout(120)
         res.append(pg.evaluate("() => (document.querySelector('.slide.on .body').innerText.match(/(\\d+) of 60/) || [])[1]"))
-    ok('slide 31: 17, 31, and 34 of 60 reports with 1, 10, and 40 examples', res == ['17', '31', '34'], res)
+    ok('s31: 17, 31, and 34 of 60 reports with 1, 10, and 40 examples', res == ['17', '31', '34'], res)
     pg.locator('.slide.on input[type=text], .slide.on input:not([type])').first.fill('The clinic needs more nurses and vaccines')
     pg.wait_for_timeout(150)
-    ok('slide 31: a typed sentence gets a topic', 'Health' in body())
-    pg.keyboard.press('ArrowRight'); ok('slide 31: an arrow key in the text box keeps the slide', cur() == 's31')
-    pg.keyboard.press('Escape'); pg.keyboard.press('ArrowRight'); ok('slide 31: after Esc the arrow key moves on', cur() == 's32', cur())
+    ok('s31: a typed sentence gets a topic', 'Health' in body())
+    pg.keyboard.press('ArrowRight'); ok('s31: an arrow key in the text box keeps the slide', cur() == 's31')
+    pg.keyboard.press('Escape'); pg.keyboard.press('ArrowRight'); ok('s31: after Esc the arrow key moves on', cur() == 's32', cur())
     at('s29'); pg.locator('.slide.on .btn').first.click(); pg.wait_for_timeout(2500)
-    ok('slide 29: the sentences arrive', pg.locator('.slide.on .sents > *').count() >= 3)
+    ok('s29: the sentences arrive', pg.locator('.slide.on .sents > *').count() >= 3)
     at('s02'); pg.locator('.slide.on .btn').first.click(); pg.wait_for_timeout(200)
-    ok('slide 2: five codes are suggested', pg.locator('.slide.on .sgrow').count() == 5 and pg.locator('.slide.on .sgrow.hit').count() == 1)
+    ok('s02: five codes are suggested', pg.locator('.slide.on .sgrow').count() == 5 and pg.locator('.slide.on .sgrow.hit').count() == 1)
     at('s12'); pg.locator('.slide.on .btn').first.click(); pg.wait_for_timeout(600)
-    ok('slide 12: written cases are added', '120' in body())
+    ok('s12: written cases are added', '120' in body())
     at('s24'); pg.locator('.slide.on .demo button').first.click(); pg.wait_for_timeout(200)
-    ok('slide 24: a choice gets feedback', 'of 1' in pg.inner_text('.slide.on .demo'))
+    ok('s24: a choice gets feedback', 'of 1' in pg.inner_text('.slide.on .demo'))
     at('s39'); pg.locator('.slide.on .body button').first.click(); pg.wait_for_timeout(200)
-    ok('slide 39: an answer shows the suggestion', 'Suggested' in body())
+    ok('s39: an answer shows the suggestion', 'Suggested' in body())
     at('s08'); pg.locator('.slide.on .seg button').nth(2).click(); pg.wait_for_timeout(200)
-    ok('slide 8: the very large model does not fit a laptop', 'Too large for this computer' in body())
+    ok('s08: the very large model does not fit a laptop', 'Too large for this computer' in body())
     at('s03'); n = pg.locator('.slide.on .casebtn').count()
     for i in range(n):
         pg.locator('.slide.on .casebtn').nth(i).click()
         pg.wait_for_timeout(60)
-    ok('slide 3: eleven tasks', n == 11, n)
+    ok('s03: eleven tasks', n == 11, n)
     at('s15'); first = body(); pg.locator('.slide.on .seg button').nth(1).click(); pg.wait_for_timeout(200)
-    ok('slide 15: the two scores of the rewritten answers', '66.0%' in first and '92.4%' in body())
+    ok('s15: the two scores of the rewritten answers', '66.0%' in first and '92.4%' in body())
     at('s36'); pg.locator('.slide.on .seg button').nth(2).click(); pg.wait_for_timeout(200)
-    ok('slide 36: the example price changes the three amounts', all(v in body() for v in ('$21', '$39', '$172')))
+    ok('s36: the example price changes the three amounts', all(v in body() for v in ('$21', '$39', '$172')))
     at('s22'); pg.locator('.slide.on input[type=checkbox]').check()
-    ok('slide 22: the switch mixes practice cases into the test', 'Used for training and testing' in pg.inner_text('.slide.on .demo'))
+    ok('s22: the switch mixes practice cases into the test', 'Used for training and testing' in pg.inner_text('.slide.on .demo'))
     at('s19')
     for i in range(1, 6):
         pg.locator('.slide.on .chip').nth(i).click()
-    ok('slide 19: 864 possible requests', '864' in pg.inner_text('.slide.on .demo'))
+    ok('s19: 864 possible requests', '864' in pg.inner_text('.slide.on .demo'))
     pg.keyboard.press('f'); pg.wait_for_timeout(200)
     ok('controls: no console or page errors', not errs, errs[:5])
     pg.close()

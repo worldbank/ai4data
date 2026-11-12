@@ -32,7 +32,7 @@ const TERMS = {
 /* ------------------------------------------------------------------ demos */
 const DEMOS = {};
 
-// A survey response and the five codes suggested for it (slide 2).
+// A survey response and the five codes suggested for it (s02).
 const ORDINAL = ['first', 'second', 'third', 'fourth', 'fifth'];
 DEMOS.suggest = {
   state: () => ({i: 0, shown: false}),
@@ -72,7 +72,7 @@ DEMOS.suggest = {
   },
 };
 
-// Tasks for a small model (slide 3).
+// Tasks for a small model (s03).
 const REASONS = {
   private: ['Private', 'The real records hold personal data and cannot be sent to an outside service.'],
   rare: ['Rare', 'The important cases are a small share of all cases.'],
@@ -212,7 +212,7 @@ DEMOS.cases = {
   },
 };
 
-// Where a model can run (slide 8).
+// Where a model can run (s08).
 const MACHINE_ICONS = {
   device: '<rect x="4" y="8" width="26" height="18" rx="2"/><path d="M1 29 H33"/><rect x="34" y="6" width="11" height="22" rx="2"/>',
   server: '<rect x="8" y="3" width="30" height="8" rx="1.5"/><rect x="8" y="14" width="30" height="8" rx="1.5"/><rect x="8" y="25" width="30" height="8" rx="1.5"/><path d="M12 7 H14 M12 18 H14 M12 29 H14"/>',
@@ -253,7 +253,7 @@ DEMOS.machines = {
   },
 };
 
-// Rare cases (slide 12).
+// Rare cases (s12).
 DEMOS.rare = {
   state: () => ({on: false}),
   on(st) { st.on = !st.on; },
@@ -277,7 +277,7 @@ DEMOS.rare = {
   },
 };
 
-// Labelled job titles rewritten as survey answers (slide 15).
+// Labelled job titles rewritten as survey answers (s15).
 DEMOS.rewrite = {
   state: () => ({k: 'top1'}),
   on(st, a, v) { st.k = v; },
@@ -521,7 +521,7 @@ DEMOS.watch = {
   },
 };
 
-// The report on slide 26.
+// The report on s26.
 DEMOS.report = {
   on() { return false; },
   render() {
@@ -534,7 +534,7 @@ DEMOS.report = {
   },
 };
 
-// The method in three steps (slides 28 and 42).
+// The method in three steps (s28 and s42).
 const METHOD = [
   {term: 'Synthetic data', kind: 'large', go: 's29', link: 'See one request',
     title: 'A large model writes practice examples',
@@ -556,7 +556,7 @@ const methodCards = (view, links) => METHOD.map((s, i) =>
   `<div class="card ${s.kind}-k"><svg viewBox="0 0 120 72" aria-hidden="true">${s.icon}</svg>
     <span class="lbl">Step ${i + 1} · ${s.term}</span><h3>${s.title}</h3><p class="txt">${esc(s[view])}</p>
     ${links ? `<button type="button" class="link" data-go="${s.go}" style="margin-top:auto;text-align:left">${s.link}</button>` : ''}</div>`).join('');
-// The process and the parts of the session (slide 5).
+// The process and the parts of the session (s05).
 const CYCLE = [
   {k: 'plain', lbl: 'The task', t: 'A response needs one code from a fixed list',
     icon: '<rect x="6" y="19" width="52" height="32" rx="9" class="iP"/><path d="M16 31 H48 M16 39 H38" class="iL"/><path d="M63 35 H75" class="iA" marker-end="url(#ah)"/><rect x="80" y="23" width="36" height="24" rx="12" class="iT"/><text x="98" y="39.5" text-anchor="middle" font-size="11.5" font-weight="650">5212</text>'},
@@ -568,11 +568,11 @@ const CYCLE = [
 ];
 const PARTS = [
   {cls: 'here', name: 'Tasks', sub: 'This part'},
-  {cls: 'large', n: 2, go: 's10', name: 'Synthetic data', sub: 'Where the practice cases come from'},
-  {cls: 'small', n: 1, go: 's06', name: 'Small model', sub: 'Size, memory, and cost'},
-  {cls: '', n: 4, go: 's26', name: 'Report tagging', sub: 'A second model and its test on real reports'},
-  {cls: '', n: 5, go: 's38', name: 'Small or large', sub: 'The tasks that fit a small model'},
-  {cls: 'wide', n: 3, go: 's16', name: 'Nine steps', sub: 'The whole process in nine steps'},
+  {cls: 'large', n: 3, go: 'p3', name: 'Synthetic data', sub: 'Where the practice cases come from'},
+  {cls: 'small', n: 2, go: 'p2', name: 'Small model', sub: 'Size, memory, and cost'},
+  {cls: '', n: 5, go: 'p5', name: 'Report tagging', sub: 'A second model and its test on real reports'},
+  {cls: '', n: 6, go: 'p6', name: 'Small or large', sub: 'The tasks that fit a small model'},
+  {cls: 'wide', n: 4, go: 'p4', name: 'Nine steps', sub: 'The whole process in nine steps'},
 ];
 DEMOS.cycle = {
   on() { return false; },
@@ -599,7 +599,7 @@ DEMOS.m3 = {
 };
 DEMOS.sum3 = {on() { return false; }, render: () => methodCards('method', false)};
 
-// Step 1 of the method: one request and its sentences (slide 29).
+// Step 1 of the method: one request and its sentences (s29).
 DEMOS.write = {
   mount(el) {
     const s = DATA.synth;
@@ -636,7 +636,7 @@ DEMOS.write = {
   },
 };
 
-// The wording of the request (slide 30).
+// The wording of the request (s30).
 DEMOS.wording = {
   on() { return false; },
   render() {
@@ -657,7 +657,7 @@ DEMOS.wording = {
   },
 };
 
-// A model that learns in the page (slide 31).
+// A model that learns in the page (s31).
 DEMOS.learn = {
   mount(el) {
     const d = DATA.learn, stop = new Set(d.stop);
@@ -725,7 +725,7 @@ DEMOS.learn = {
   },
 };
 
-// The student at work on one report (slide 33).
+// The student at work on one report (s33).
 DEMOS.work = {
   on() { return false; },
   render() {
@@ -747,7 +747,7 @@ DEMOS.work = {
   },
 };
 
-// Results on 300 real reports (slide 34).
+// Results on 300 real reports (s34).
 DEMOS.results = {
   on() { return false; },
   render() {
@@ -768,7 +768,7 @@ DEMOS.results = {
   },
 };
 
-// Speed (slide 35).
+// Speed (s35).
 DEMOS.speed = {
   on() { return false; },
   render() {
@@ -801,13 +801,13 @@ DEMOS.speed = {
   },
 };
 
-// Topics covered by the test (slide 37).
+// Topics covered by the test (s37).
 DEMOS.g86 = {
   on() { return false; },
   render() { let h = ''; for (let i = 0; i < 86; i++) h += `<i${i < 44 ? ' class="on"' : ''}></i>`; return h; },
 };
 
-// Cost of building (slide 36).
+// Cost of building (s36).
 DEMOS.cost = {
   state: () => ({p: '2'}),
   on(st, a, v) { st.p = v; },
@@ -830,7 +830,7 @@ DEMOS.cost = {
   },
 };
 
-// Small model or large model (slide 39).
+// Small model or large model (s39).
 DEMOS.quiz = {
   state: () => ({ans: DATA.tasks.map(() => null), all: false}),
   on(st, a, v) {
@@ -880,6 +880,7 @@ function mountDemo(el) {
 /* ------------------------------------------------------------- navigation */
 const SECS = ['', 'Tasks', 'Small model', 'Synthetic data', 'Nine steps', 'Report tagging', 'Small or large'];
 const stage = $('#stage'), slides = $$('.slide', stage), toc = $('#toc'), notesPanel = $('#notespanel');
+const gotoBox = $('#goto'), tip = $('#scrubtip');
 let idx = 0, step = 0;
 
 const headline = (s) => ($('h1, h2', s) || {textContent: ''}).textContent.trim();
@@ -904,6 +905,26 @@ $('#secnav').addEventListener('click', (ev) => {
   if (b) show(slides.findIndex((s) => s.dataset.sec === b.dataset.sec));
 });
 
+// The strip of slides in the bar: one mark for each slide, and a taller mark for the slide that opens a part.
+const isDivider = (s) => s.classList.contains('divider');
+$('#total').textContent = `/ ${slides.length}`;
+$('#scrub').innerHTML = slides.map((s, i) =>
+  `<button type="button" tabindex="-1" data-go="${s.id}" class="${isDivider(s) || i === slides.length - 1 ? 'part' : ''}" aria-label="Slide ${i + 1}: ${esc(headline(s))}"></button>`).join('');
+const ticks = $$('#scrub button');
+// A click on a mark leaves the focus where it was, so that Space and Enter keep stepping through the slides.
+$('#scrub').addEventListener('mousedown', (ev) => ev.preventDefault());
+$('#scrub').addEventListener('pointerover', (ev) => {
+  const b = ev.target.closest('button');
+  if (!b) return;
+  const i = ticks.indexOf(b), s = slides[i], sec = s.dataset.sec;
+  const part = isDivider(s) ? kicker(s) : sec === '0' ? '' : SECS[Number(sec)];
+  tip.innerHTML = `<small>Slide ${i + 1}${part ? ' · ' + esc(part) : ''}</small>${esc(headline(s))}`;
+  tip.hidden = false;
+  const bar = tip.parentElement.getBoundingClientRect(), r = b.getBoundingClientRect(), w = tip.offsetWidth;
+  tip.style.left = `${Math.max(0, Math.min(r.left + r.width / 2 - bar.left - w / 2, bar.width - w))}px`;
+});
+$('#scrub').addEventListener('pointerleave', () => { tip.hidden = true; });
+
 function show(i, dir = 0) {
   i = Math.max(0, Math.min(slides.length - 1, i));
   closePop();
@@ -911,23 +932,26 @@ function show(i, dir = 0) {
   idx = i;
   const s = slides[idx];
   s.classList.add('on');
-  step = dir < 0 ? maxStep(s) : 0;
+  // A step forward starts the reveals of the next slide. Every other move shows the whole slide.
+  step = dir > 0 ? 0 : maxStep(s);
   applySteps();
   const sec = s.dataset.sec;
-  stage.classList.toggle('plain', sec === '0');
+  stage.classList.toggle('plain', sec === '0' || isDivider(s));
   $$('#secnav [data-sec]').forEach((b) => {
     b.classList.toggle('on', b.dataset.sec === sec);
     b.classList.toggle('done', sec !== '0' && Number(b.dataset.sec) < Number(sec));
     b.toggleAttribute('aria-current', b.dataset.sec === sec);
   });
   $('#count').textContent = `${idx + 1} / ${slides.length}`;
-  $('#where').textContent = `${idx + 1} / ${slides.length}`;
-  $('#prog').style.width = `${idx / (slides.length - 1) * 100}%`;
+  gotoBox.value = idx + 1;
+  ticks.forEach((b, k) => { b.classList.toggle('on', k === idx); b.classList.toggle('done', k < idx); });
+  tip.hidden = true;
   $('#notestext').textContent = ($('.notes', s) || {textContent: ''}).textContent;
   $$('#toclist button').forEach((b, k) => b.classList.toggle('on', k === idx));
 }
 const next = () => { if (step < maxStep(slides[idx])) { step++; applySteps(); } else if (idx < slides.length - 1) show(idx + 1, 1); };
 const prev = () => { if (step > 0) { step--; applySteps(); } else if (idx > 0) show(idx - 1, -1); };
+const skip = (d) => show(idx + d);
 const go = (id) => {
   const i = slides.findIndex((s) => s.id === id);
   if (i < 0) return;
@@ -941,7 +965,7 @@ const go = (id) => {
   slides.forEach((s, i) => {
     const sec = s.dataset.sec, name = sec === '0' ? (i === 0 ? 'Opening' : 'Close') : SECS[Number(sec)];
     if (!groups.length || groups[groups.length - 1].name !== name) groups.push({name, items: []});
-    groups[groups.length - 1].items.push(`<li><button type="button" data-go="${s.id}"><i>${i + 1}</i><span>${esc(headline(s))}</span><small>${esc(kicker(s))}</small></button></li>`);
+    groups[groups.length - 1].items.push(`<li><button type="button" data-go="${s.id}"${isDivider(s) ? ' class="part"' : ''}><i>${i + 1}</i><span>${esc(headline(s))}</span><small>${esc(kicker(s))}</small></button></li>`);
   });
   $('#toclist').innerHTML = groups.map((g) => `<h3>${g.name}</h3><ol>${g.items.join('')}</ol>`).join('');
 })();
@@ -966,6 +990,19 @@ const toggleFull = () => {
 $('#bFull').addEventListener('click', toggleFull);
 $('#bPrev').addEventListener('click', prev);
 $('#bNext').addEventListener('click', next);
+$('#bSkipPrev').addEventListener('click', () => skip(-1));
+$('#bSkipNext').addEventListener('click', () => skip(1));
+
+// The slide number in the bar. A number and Enter open that slide.
+gotoBox.addEventListener('focus', () => gotoBox.select());
+gotoBox.addEventListener('blur', () => { gotoBox.value = idx + 1; });
+gotoBox.addEventListener('keydown', (ev) => {
+  if (ev.key !== 'Enter') return;
+  const n = parseInt(gotoBox.value, 10);
+  if (n >= 1 && n <= slides.length) show(n - 1);
+  gotoBox.blur();
+  ev.preventDefault();
+});
 
 // Definitions of terms.
 let pop = null, popFor = null;
@@ -1010,11 +1047,16 @@ document.addEventListener('keydown', (ev) => {
   if (!toc.hidden) { if (ev.key === 'o' || ev.key === 'O') { closeToc(); ev.preventDefault(); } return; }
   if (ev.key === 'o' || ev.key === 'O') { openToc(); ev.preventDefault(); return; }
   if (readingMQ.matches) return;
+  // A digit moves the focus to the slide number in the bar, and the digit is typed there.
+  if (ev.key >= '0' && ev.key <= '9' && ev.key.length === 1) { gotoBox.focus(); gotoBox.value = ''; return; }
   const onControl = t.closest && t.closest('button, a, label, input, [tabindex]');
   switch (ev.key) {
     case 'ArrowRight': case 'PageDown': next(); break;
     case ' ': case 'Enter': if (onControl) return; next(); break;
     case 'ArrowLeft': case 'PageUp': prev(); break;
+    case 'ArrowDown': skip(1); break;
+    case 'ArrowUp': skip(-1); break;
+    case 'r': case 'R': step = 0; applySteps(); break;
     case 'Home': show(0); break;
     case 'End': show(slides.length - 1); break;
     case 'n': case 'N': toggleNotes(); break;

@@ -4,7 +4,7 @@
 :root {
   --page: #E6EBF0; --surface: #F7F9FB; --card: #FFFFFF; --ink: #16191D; --muted: #565F68; --faint: #8A939C;
   --line: #E2E5E8; --soft: #EEF2F5;
-  --teal: #00A898; --teal-text: #00786D; --teal-soft: #DDF4F1;
+  --teal: #00A898; --teal-text: #00786D; --teal-soft: #DDF4F1; --teal-done: #8FD6CE; --mark: #B4BEC8;
   --blue: #0058B0; --on-blue: #FFFFFF;
   --small: #2A78D6; --small-soft: #E3EEFA; --small-text: #1F5FAE;
   --large: #EB6834; --large-soft: #FBE6DC; --large-text: #A9431B;
@@ -18,7 +18,7 @@
   :root:not([data-theme="light"]) {
     --page: #0A0D11; --surface: #12161C; --card: #1A2029; --ink: #E9EDF1; --muted: #A3ADB8; --faint: #6F7A86;
     --line: #2A323C; --soft: #171C24;
-    --teal: #2CC5B5; --teal-text: #4FD4C6; --teal-soft: #12332F;
+    --teal: #2CC5B5; --teal-text: #4FD4C6; --teal-soft: #12332F; --teal-done: #1F6F68; --mark: #3B4653;
     --blue: #5AA2F0; --on-blue: #0A0D11;
     --small: #3987E5; --small-soft: #1E3A5F; --small-text: #7DB4F3;
     --large: #D95926; --large-soft: #4A2A1C; --large-text: #F29A72;
@@ -31,7 +31,7 @@
 :root[data-theme="dark"] {
   --page: #0A0D11; --surface: #12161C; --card: #1A2029; --ink: #E9EDF1; --muted: #A3ADB8; --faint: #6F7A86;
   --line: #2A323C; --soft: #171C24;
-  --teal: #2CC5B5; --teal-text: #4FD4C6; --teal-soft: #12332F;
+  --teal: #2CC5B5; --teal-text: #4FD4C6; --teal-soft: #12332F; --teal-done: #1F6F68; --mark: #3B4653;
   --blue: #5AA2F0; --on-blue: #0A0D11;
   --small: #3987E5; --small-soft: #1E3A5F; --small-text: #7DB4F3;
   --large: #D95926; --large-soft: #4A2A1C; --large-text: #F29A72;
@@ -75,7 +75,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 
 .bar {
   height: 3.4rem; width: 100%; max-width: 1100px; display: flex; align-items: center; gap: .5rem; font-size: .8rem;
-  color: var(--muted);
+  color: var(--muted); position: relative;
 }
 .bar button {
   border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: .5rem; height: 2.1rem;
@@ -83,9 +83,30 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 }
 .bar button:hover { border-color: var(--faint); }
 .bar button[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
-.bar .progress { flex: 1; height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; min-width: 40px; }
-.bar .progress i { display: block; height: 100%; width: 0; background: var(--teal); transition: width .25s; }
-.bar .where { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bar .nav + .nav { margin-left: -.25rem; }
+.bar .where { font-variant-numeric: tabular-nums; white-space: nowrap; display: flex; align-items: center; gap: .35rem; }
+.bar .where input {
+  width: 2.6rem; height: 2.1rem; border: 1px solid var(--line); border-radius: .5rem; background: var(--card); color: var(--ink);
+  font: inherit; font-weight: 600; font-variant-numeric: tabular-nums; text-align: center; padding: 0;
+}
+.bar .where input:hover { border-color: var(--faint); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* The strip of slides: one mark for each slide. */
+.bar .scrub { flex: 1; min-width: 60px; height: 2.1rem; display: flex; align-items: stretch; }
+.bar .scrub button {
+  flex: 1 1 0; min-width: 0; height: auto; padding: 0 1px; border: 0; border-radius: 0; background: none; display: flex; align-items: center;
+}
+.bar .scrub button::before { content: ""; flex: 1; height: 5px; border-radius: 2px; background: var(--mark); }
+.bar .scrub button.part { padding-left: 5px; } .bar .scrub button.part::before { height: 13px; }
+.bar .scrub button.done::before { background: var(--teal-done); }
+.bar .scrub button.on::before { background: var(--teal); height: 13px; }
+.bar .scrub button:hover::before { background: var(--ink); }
+.scrubtip {
+  position: absolute; bottom: calc(100% - .35rem); left: 0; z-index: 25; max-width: min(30rem, 100%); background: var(--ink);
+  color: var(--surface); border-radius: .5rem; padding: .45rem .7rem; font-size: .8rem; font-weight: 550; line-height: 1.3;
+  pointer-events: none; box-shadow: var(--shadow);
+}
+.scrubtip small { display: block; font-size: .68rem; font-weight: 500; opacity: .75; }
 .bar kbd {
   font-family: var(--mono); font-size: .7rem; border: 1px solid var(--line); border-radius: .25rem; padding: 0 .3rem;
   margin-left: .35rem; color: var(--muted);
@@ -194,6 +215,36 @@ svg text { fill: var(--muted); font-family: var(--sans); }
 .cover .keys kbd { font-family: var(--mono); border: 1px solid rgba(255, 255, 255, .4); border-radius: .3em; padding: .05em .45em; margin-right: .4em; color: #fff; }
 .cover a { color: #fff; }
 .cover h2 { font-size: 2.6em; }
+
+/* ---------- the slide that opens a part ---------- */
+.slide.divider {
+  background: linear-gradient(135deg, var(--cover), var(--cover-2)); color: var(--cover-ink); padding: 4.4em 6em 3.4em;
+  justify-content: space-between; overflow: hidden;
+}
+.divider .kicker { color: var(--cover-muted); font-size: .95em; margin: 0; }
+.divider .dvtitle { position: relative; z-index: 1; max-width: 46em; }
+.divider h2 { font-size: 5.4em; line-height: 1.02; font-weight: 700; letter-spacing: -.03em; max-width: none; }
+.divider .sub { font-size: 1.6em; line-height: 1.35; color: var(--cover-muted); margin-top: .9em; max-width: 27em; text-wrap: balance; }
+.divider .dvnum {
+  position: absolute; right: .16em; top: 50%; transform: translateY(-54%); font-size: 30em; line-height: 1; font-weight: 700;
+  letter-spacing: -.05em; color: rgba(255, 255, 255, .09); font-variant-numeric: lining-nums;
+}
+.route { display: grid; grid-template-columns: repeat(6, 1fr); gap: .7em; position: relative; z-index: 1; }
+.route li > * {
+  width: 100%; display: flex; align-items: center; gap: .55em; text-align: left; font-size: .86em; font-weight: 550; line-height: 1.2;
+  color: var(--cover-muted); background: none; border: 0; border-top: .28em solid rgba(255, 255, 255, .28); padding: .75em 0 0;
+}
+.route li i {
+  flex: none; width: 1.75em; height: 1.75em; border-radius: 50%; display: grid; place-items: center; font-style: normal;
+  font-size: .82em; font-weight: 700; border: 1px solid rgba(255, 255, 255, .45);
+}
+.route li.past > * { border-top-color: var(--teal); }
+.route li.past i { background: rgba(255, 255, 255, .16); border-color: transparent; }
+.route li.here > * { color: #fff; font-weight: 700; border-top-color: #fff; }
+.route li.here i { background: #fff; color: var(--cover-2); border-color: #fff; }
+.route button:hover { color: #fff; }
+.divider.on .route li.here > * { animation: routein .7s ease .15s backwards; }
+@keyframes routein { from { border-top-color: rgba(255, 255, 255, .28); } }
 .srclist { display: flex; flex-direction: column; gap: 1em; font-size: 1em; line-height: 1.45; max-width: 52em; }
 .srclist li { padding-left: 1.2em; border-left: .2em solid rgba(255, 255, 255, .35); }
 .srclist .sel { font-family: var(--mono); user-select: all; }
@@ -511,13 +562,14 @@ button.cypart { cursor: pointer; } button.cypart:hover { border-color: var(--tea
   padding: .6rem .8rem; display: grid; grid-template-columns: 1.8rem 1fr; gap: .2rem .4rem; font-size: .84rem; line-height: 1.35;
 }
 .toc ol button.on { border-color: var(--teal); box-shadow: inset 0 0 0 1px var(--teal); }
+.toc ol button.part { background: var(--teal-soft); border-color: transparent; font-weight: 650; }
 .toc ol button i { font-style: normal; color: var(--faint); font-variant-numeric: tabular-nums; }
 .toc ol button small { grid-column: 2; color: var(--muted); font-size: .72rem; }
 .toc .close { border: 1px solid var(--line); background: var(--card); border-radius: .5rem; padding: .4rem .9rem; font-size: .84rem; }
 
 @media (prefers-reduced-motion: reduce) {
-  .slide.on, .sent, .raregrid .written { animation: none; }
-  [data-step], .track .fillb, .bar .progress i { transition: none; }
+  .slide.on, .sent, .raregrid .written, .divider.on .route li.here > * { animation: none; }
+  [data-step], .track .fillb { transition: none; }
 }
 
 /* ---------- reading mode: narrow or short screens ---------- */
@@ -525,10 +577,12 @@ button.cypart { cursor: pointer; } button.cypart:hover { border-color: var(--tea
   .app { display: block; }
   .stagewrap { display: block; }
   .stage { width: auto; height: auto; font-size: 16px; background: none; box-shadow: none; overflow: visible; border-radius: 0; }
-  .secnav, .minirail, .bar .nav, .bar .where, .bar .progress, .bar kbd, .cover .keys { display: none; }
+  .secnav, .minirail, .bar .nav, .bar .where, .bar .scrub, .scrubtip, .bar kbd, .cover .keys { display: none; }
   .bar { height: auto; padding: 1rem 0 1.4rem; justify-content: center; }
   .slide { position: static; display: flex; padding: 1.8rem 0; border-bottom: 1px solid var(--line); animation: none; }
-  .slide.cover { padding: 2rem 1.3rem; border-radius: 1rem; margin-top: 1rem; border: 0; }
+  .slide.cover, .slide.divider { padding: 2rem 1.3rem; border-radius: 1rem; margin-top: 1rem; border: 0; }
+  .slide.divider { gap: 1.4rem; } .slide.divider h2 { font-size: 2.3em; } .divider .sub { font-size: 1.05em; }
+  .divider .dvnum { font-size: 9em; right: .1em; top: 0; transform: none; } .route { grid-template-columns: 1fr 1fr; }
   .slide h2 { font-size: 1.45em; } .cover h1 { font-size: 2.1em; } .cover h2 { font-size: 1.6em; } .cover .sub { font-size: 1.05em; }
   [data-step].pending { opacity: 1; transform: none; pointer-events: auto; }
   .g2, .g3, .g4, .g5, .suggest, .cases, .casepanel, .cygrid, .machines, .rare, .groups, .stepgrid, .story, .learn, .try, .distill,
@@ -649,7 +703,7 @@ svg text.ink { fill: var(--ink); }
 @media (max-width: 820px), (max-height: 460px) {
   .slide { --z: 1 !important; }
   .pb { grid-template-columns: 6em 1fr 2.6em; }
-  .cover .notes { color: rgba(255, 255, 255, .82); border-left-color: rgba(255, 255, 255, .4); }
+  .cover .notes, .divider .notes { color: rgba(255, 255, 255, .82); border-left-color: rgba(255, 255, 255, .4); }
   .cover a { overflow-wrap: anywhere; }
   .hundred { max-width: 9em; }
   .checkt { grid-template-columns: 1fr 7.6em 7.6em; } .checkt span { padding: .42em .3em; }
@@ -694,8 +748,19 @@ svg text.ink { fill: var(--ink); }
   <p class="kicker">Session 02</p>
   <h1>Building specialized small AI using synthetic data</h1>
   <p class="sub">An introduction to small AI, synthetic data, and model distillation</p>
-  <p class="keys"><span><kbd>→</kbd>Next</span><span><kbd>←</kbd>Back</span><span><kbd>O</kbd>Contents</span><span><kbd>N</kbd>Speaker notes</span><span><kbd>F</kbd>Full screen</span></p>
+  <p class="keys"><span><kbd>→</kbd><kbd>←</kbd>Step</span><span><kbd>↓</kbd><kbd>↑</kbd>Slide</span><span><kbd>12</kbd><kbd>Enter</kbd>Slide 12</span><span><kbd>O</kbd>Contents</span><span><kbd>N</kbd>Speaker notes</span><span><kbd>F</kbd>Full screen</span></p>
   <aside class="notes">Welcome the room and say what the session covers: three ideas, two small models that were built and tested, and no code. Nobody needs a background in AI to follow it. Tell people that the slides are interactive and that you will ask them to vote a few times.</aside>
+</section>
+
+<section class="slide divider" id="p1" data-sec="1">
+  <p class="kicker">Part 1 of 6</p>
+  <div class="dvtitle">
+    <h2>Tasks</h2>
+    <p class="sub">We start with the task: a survey response needs one code from a fixed list.</p>
+  </div>
+  <span class="dvnum" aria-hidden="true">1</span>
+  <ol class="route" aria-label="Parts of the session"><li class="here" aria-current="step"><span><i>1</i>Tasks</span></li><li><button type="button" data-go="p2"><i>2</i>Small model</button></li><li><button type="button" data-go="p3"><i>3</i>Synthetic data</button></li><li><button type="button" data-go="p4"><i>4</i>Nine steps</button></li><li><button type="button" data-go="p5"><i>5</i>Report tagging</button></li><li><button type="button" data-go="p6"><i>6</i>Small or large</button></li></ol>
+  <aside class="notes">Say that the session has six parts and name them from the strip at the bottom of the slide. The first part shows the task: one survey response, then other tasks of the same kind, then an outline of the process.</aside>
 </section>
 
 <section class="slide" id="s02" data-sec="1">
@@ -748,6 +813,17 @@ svg text.ink { fill: var(--ink); }
   <h2>A small model learns from practice cases that a large model writes.</h2>
   <div class="body center"><div class="cycle" data-demo="cycle"></div></div>
   <aside class="notes">This is the whole approach before the details. Read the five boxes from left to right: the task, the large model that writes practice cases, the small model that learns from them, the test on real cases, and the small model at work. The large model is needed in the second box only. Then show the loop: the test shows the kinds of cases that the small model gets wrong, and the large model writes more cases of those kinds. Then show the parts of the session. The numbers give their order. We start with the small model, because it is the goal, and then turn to the practice cases, which are called synthetic data. The strip at the top of each slide shows the current part. If time is short, parts 1, 2 and 4 carry the core of the session.</aside>
+</section>
+
+<section class="slide divider" id="p2" data-sec="2">
+  <p class="kicker">Part 2 of 6</p>
+  <div class="dvtitle">
+    <h2>Small model</h2>
+    <p class="sub">We compare a small model with a large one: size, memory, and cost.</p>
+  </div>
+  <span class="dvnum" aria-hidden="true">2</span>
+  <ol class="route" aria-label="Parts of the session"><li class="past"><button type="button" data-go="p1"><i>1</i>Tasks</button></li><li class="here" aria-current="step"><span><i>2</i>Small model</span></li><li><button type="button" data-go="p3"><i>3</i>Synthetic data</button></li><li><button type="button" data-go="p4"><i>4</i>Nine steps</button></li><li><button type="button" data-go="p5"><i>5</i>Report tagging</button></li><li><button type="button" data-go="p6"><i>6</i>Small or large</button></li></ol>
+  <aside class="notes">The room has seen the task and the outline of the process. This part explains the small model: its size next to a large language model, the memory it needs, and the reasons to build one.</aside>
 </section>
 
 <section class="slide" id="s06" data-sec="2">
@@ -827,6 +903,17 @@ svg text.ink { fill: var(--ink); }
     <p class="callout" data-step="2">Building it requires many examples with the right answers.</p>
   </div>
   <aside class="notes">Be even-handed here. The gains come after the model is built, and the costs come before. The call-out is the bridge to the next part: the examples are the hard requirement, and the next slides show why organizations rarely have them.</aside>
+</section>
+
+<section class="slide divider" id="p3" data-sec="3">
+  <p class="kicker">Part 3 of 6</p>
+  <div class="dvtitle">
+    <h2>Synthetic data</h2>
+    <p class="sub">A small model needs labelled examples. In this part a large model writes them.</p>
+  </div>
+  <span class="dvnum" aria-hidden="true">3</span>
+  <ol class="route" aria-label="Parts of the session"><li class="past"><button type="button" data-go="p1"><i>1</i>Tasks</button></li><li class="past"><button type="button" data-go="p2"><i>2</i>Small model</button></li><li class="here" aria-current="step"><span><i>3</i>Synthetic data</span></li><li><button type="button" data-go="p4"><i>4</i>Nine steps</button></li><li><button type="button" data-go="p5"><i>5</i>Report tagging</button></li><li><button type="button" data-go="p6"><i>6</i>Small or large</button></li></ol>
+  <aside class="notes">The room now knows what a small model is. This part explains the examples that the model learns from, why real ones are often missing, and how a large model writes them.</aside>
 </section>
 
 <section class="slide" id="s10" data-sec="3">
@@ -945,6 +1032,17 @@ svg text.ink { fill: var(--ink); }
 </section>
 
 
+<section class="slide divider" id="p4" data-sec="4">
+  <p class="kicker">Part 4 of 6</p>
+  <div class="dvtitle">
+    <h2>Nine steps</h2>
+    <p class="sub">We follow occupation coding through the nine steps of the process.</p>
+  </div>
+  <span class="dvnum" aria-hidden="true">4</span>
+  <ol class="route" aria-label="Parts of the session"><li class="past"><button type="button" data-go="p1"><i>1</i>Tasks</button></li><li class="past"><button type="button" data-go="p2"><i>2</i>Small model</button></li><li class="past"><button type="button" data-go="p3"><i>3</i>Synthetic data</button></li><li class="here" aria-current="step"><span><i>4</i>Nine steps</span></li><li><button type="button" data-go="p5"><i>5</i>Report tagging</button></li><li><button type="button" data-go="p6"><i>6</i>Small or large</button></li></ol>
+  <aside class="notes">The room has now seen the task, the small model, and synthetic data. This part puts them together as a process of nine steps, and each step is shown with occupation coding.</aside>
+</section>
+
 <section class="slide" id="s16" data-sec="4">
   <p class="kicker">The process</p>
   <h2>The process from a task to a small model has nine steps.</h2>
@@ -956,7 +1054,7 @@ svg text.ink { fill: var(--ink); }
     </div>
     <p class="txt" data-step="5">We follow one example through the nine steps: coding the occupations written in a household survey.</p>
   </div>
-  <aside class="notes">This is the process from the start of the session, now in nine steps. We look at all nine before we take them one at a time. The first four steps produce the cases, the next two build and test the model, and the last three keep improving it. The arrow above the steps shows that the process is a loop. Where the test shows mistakes, the large model writes more cases of those kinds, and the small model is trained and tested again. Step 7 runs this loop during the project. Steps 8 and 9 also end with new cases and another round of training. Steps 5 to 9 are standard machine learning practice. A team that has trained a model on labelled examples has done them before. Steps 1 to 4 are specific to synthetic data: a large model writes the examples that people would otherwise collect and label. In step 7 the large model also writes the extra cases. Each number opens its step. We use occupation coding for all nine steps because the room saw it on the second slide.</aside>
+  <aside class="notes">This is the process from the start of the session, now in nine steps. We look at all nine before we take them one at a time. The first four steps produce the cases, the next two build and test the model, and the last three keep improving it. The arrow above the steps shows that the process is a loop. Where the test shows mistakes, the large model writes more cases of those kinds, and the small model is trained and tested again. Step 7 runs this loop during the project. Steps 8 and 9 also end with new cases and another round of training. Steps 5 to 9 are standard machine learning practice. A team that has trained a model on labelled examples has done them before. Steps 1 to 4 are specific to synthetic data: a large model writes the examples that people would otherwise collect and label. In step 7 the large model also writes the extra cases. Each number opens its step. We use occupation coding for all nine steps because the room saw it at the start of the session.</aside>
 </section>
 
 <section class="slide" id="s17" data-sec="4" data-stepno="1">
@@ -1074,6 +1172,17 @@ svg text.ink { fill: var(--ink); }
     <div class="card demo" data-demo="watch"></div>
   </div></div>
   <aside class="notes">The example from the report is about images. The same thing happens with text when new kinds of work appear or a survey moves to another language. Ask the room who would review the sample in their organization after the project ends.</aside>
+</section>
+
+<section class="slide divider" id="p5" data-sec="5">
+  <p class="kicker">Part 5 of 6</p>
+  <div class="dvtitle">
+    <h2>Report tagging</h2>
+    <p class="sub">We look at a second small model and its test on 300 real reports.</p>
+  </div>
+  <span class="dvnum" aria-hidden="true">5</span>
+  <ol class="route" aria-label="Parts of the session"><li class="past"><button type="button" data-go="p1"><i>1</i>Tasks</button></li><li class="past"><button type="button" data-go="p2"><i>2</i>Small model</button></li><li class="past"><button type="button" data-go="p3"><i>3</i>Synthetic data</button></li><li class="past"><button type="button" data-go="p4"><i>4</i>Nine steps</button></li><li class="here" aria-current="step"><span><i>5</i>Report tagging</span></li><li><button type="button" data-go="p6"><i>6</i>Small or large</button></li></ol>
+  <aside class="notes">The nine steps used occupation coding. This part shows a second small model, built to tag reports with topics, and its test on 300 real reports.</aside>
 </section>
 
 <section class="slide" id="s26" data-sec="5">
@@ -1211,6 +1320,17 @@ svg text.ink { fill: var(--ink); }
   <aside class="notes">Give the limits the same weight as the results. Nearly half of the topics never appear in the test, so we know nothing about them. The reference answers are imperfect. On occupation coding, the model that learned from written titles alone was clearly behind the large models. A team that wants to use the method has to test it on its own task.</aside>
 </section>
 
+<section class="slide divider" id="p6" data-sec="6">
+  <p class="kicker">Part 6 of 6</p>
+  <div class="dvtitle">
+    <h2>Small or large</h2>
+    <p class="sub">We end with the choice between a small and a large model for a task.</p>
+  </div>
+  <span class="dvnum" aria-hidden="true">6</span>
+  <ol class="route" aria-label="Parts of the session"><li class="past"><button type="button" data-go="p1"><i>1</i>Tasks</button></li><li class="past"><button type="button" data-go="p2"><i>2</i>Small model</button></li><li class="past"><button type="button" data-go="p3"><i>3</i>Synthetic data</button></li><li class="past"><button type="button" data-go="p4"><i>4</i>Nine steps</button></li><li class="past"><button type="button" data-go="p5"><i>5</i>Report tagging</button></li><li class="here" aria-current="step"><span><i>6</i>Small or large</span></li></ol>
+  <aside class="notes">The last part is about the choice between a small and a large model. It has an exercise for the room, the checks before relying on a small model, and the requirements of a first attempt.</aside>
+</section>
+
 <section class="slide" id="s38" data-sec="6">
   <p class="kicker">Small or large</p>
   <h2>A small model suits a narrow task that repeats many times.</h2>
@@ -1319,10 +1439,13 @@ svg text.ink { fill: var(--ink); }
     </main>
   </div>
   <div class="bar">
-    <button type="button" class="nav" id="bPrev" aria-label="Previous slide">←</button>
-    <button type="button" class="nav" id="bNext" aria-label="Next slide">→</button>
-    <span class="where" id="where" aria-live="polite"></span>
-    <div class="progress" aria-hidden="true"><i id="prog"></i></div>
+    <button type="button" class="nav" id="bSkipPrev" aria-label="Previous slide" title="Previous slide (↑)">«</button>
+    <button type="button" class="nav" id="bPrev" aria-label="Previous step" title="Previous step (←)">←</button>
+    <button type="button" class="nav" id="bNext" aria-label="Next step" title="Next step (→)">→</button>
+    <button type="button" class="nav" id="bSkipNext" aria-label="Next slide" title="Next slide (↓)">»</button>
+    <label class="where" id="where" title="Type a slide number and press Enter"><span class="sr">Slide</span><input id="goto" type="text" inputmode="numeric" autocomplete="off" size="2" maxlength="3"><span id="total"></span></label>
+    <div class="scrub" id="scrub" role="group" aria-label="Slides"></div>
+    <div class="scrubtip" id="scrubtip" hidden></div>
     <button type="button" id="bToc">Contents<kbd>O</kbd></button>
     <button type="button" id="bNotes" class="stageonly" aria-pressed="false">Notes<kbd>N</kbd></button>
     <button type="button" id="bFull" class="stageonly">Full screen<kbd>F</kbd></button>
@@ -1371,7 +1494,7 @@ const TERMS = {
 /* ------------------------------------------------------------------ demos */
 const DEMOS = {};
 
-// A survey response and the five codes suggested for it (slide 2).
+// A survey response and the five codes suggested for it (s02).
 const ORDINAL = ['first', 'second', 'third', 'fourth', 'fifth'];
 DEMOS.suggest = {
   state: () => ({i: 0, shown: false}),
@@ -1411,7 +1534,7 @@ DEMOS.suggest = {
   },
 };
 
-// Tasks for a small model (slide 3).
+// Tasks for a small model (s03).
 const REASONS = {
   private: ['Private', 'The real records hold personal data and cannot be sent to an outside service.'],
   rare: ['Rare', 'The important cases are a small share of all cases.'],
@@ -1551,7 +1674,7 @@ DEMOS.cases = {
   },
 };
 
-// Where a model can run (slide 8).
+// Where a model can run (s08).
 const MACHINE_ICONS = {
   device: '<rect x="4" y="8" width="26" height="18" rx="2"/><path d="M1 29 H33"/><rect x="34" y="6" width="11" height="22" rx="2"/>',
   server: '<rect x="8" y="3" width="30" height="8" rx="1.5"/><rect x="8" y="14" width="30" height="8" rx="1.5"/><rect x="8" y="25" width="30" height="8" rx="1.5"/><path d="M12 7 H14 M12 18 H14 M12 29 H14"/>',
@@ -1592,7 +1715,7 @@ DEMOS.machines = {
   },
 };
 
-// Rare cases (slide 12).
+// Rare cases (s12).
 DEMOS.rare = {
   state: () => ({on: false}),
   on(st) { st.on = !st.on; },
@@ -1616,7 +1739,7 @@ DEMOS.rare = {
   },
 };
 
-// Labelled job titles rewritten as survey answers (slide 15).
+// Labelled job titles rewritten as survey answers (s15).
 DEMOS.rewrite = {
   state: () => ({k: 'top1'}),
   on(st, a, v) { st.k = v; },
@@ -1860,7 +1983,7 @@ DEMOS.watch = {
   },
 };
 
-// The report on slide 26.
+// The report on s26.
 DEMOS.report = {
   on() { return false; },
   render() {
@@ -1873,7 +1996,7 @@ DEMOS.report = {
   },
 };
 
-// The method in three steps (slides 28 and 42).
+// The method in three steps (s28 and s42).
 const METHOD = [
   {term: 'Synthetic data', kind: 'large', go: 's29', link: 'See one request',
     title: 'A large model writes practice examples',
@@ -1895,7 +2018,7 @@ const methodCards = (view, links) => METHOD.map((s, i) =>
   `<div class="card ${s.kind}-k"><svg viewBox="0 0 120 72" aria-hidden="true">${s.icon}</svg>
     <span class="lbl">Step ${i + 1} · ${s.term}</span><h3>${s.title}</h3><p class="txt">${esc(s[view])}</p>
     ${links ? `<button type="button" class="link" data-go="${s.go}" style="margin-top:auto;text-align:left">${s.link}</button>` : ''}</div>`).join('');
-// The process and the parts of the session (slide 5).
+// The process and the parts of the session (s05).
 const CYCLE = [
   {k: 'plain', lbl: 'The task', t: 'A response needs one code from a fixed list',
     icon: '<rect x="6" y="19" width="52" height="32" rx="9" class="iP"/><path d="M16 31 H48 M16 39 H38" class="iL"/><path d="M63 35 H75" class="iA" marker-end="url(#ah)"/><rect x="80" y="23" width="36" height="24" rx="12" class="iT"/><text x="98" y="39.5" text-anchor="middle" font-size="11.5" font-weight="650">5212</text>'},
@@ -1907,11 +2030,11 @@ const CYCLE = [
 ];
 const PARTS = [
   {cls: 'here', name: 'Tasks', sub: 'This part'},
-  {cls: 'large', n: 2, go: 's10', name: 'Synthetic data', sub: 'Where the practice cases come from'},
-  {cls: 'small', n: 1, go: 's06', name: 'Small model', sub: 'Size, memory, and cost'},
-  {cls: '', n: 4, go: 's26', name: 'Report tagging', sub: 'A second model and its test on real reports'},
-  {cls: '', n: 5, go: 's38', name: 'Small or large', sub: 'The tasks that fit a small model'},
-  {cls: 'wide', n: 3, go: 's16', name: 'Nine steps', sub: 'The whole process in nine steps'},
+  {cls: 'large', n: 3, go: 'p3', name: 'Synthetic data', sub: 'Where the practice cases come from'},
+  {cls: 'small', n: 2, go: 'p2', name: 'Small model', sub: 'Size, memory, and cost'},
+  {cls: '', n: 5, go: 'p5', name: 'Report tagging', sub: 'A second model and its test on real reports'},
+  {cls: '', n: 6, go: 'p6', name: 'Small or large', sub: 'The tasks that fit a small model'},
+  {cls: 'wide', n: 4, go: 'p4', name: 'Nine steps', sub: 'The whole process in nine steps'},
 ];
 DEMOS.cycle = {
   on() { return false; },
@@ -1938,7 +2061,7 @@ DEMOS.m3 = {
 };
 DEMOS.sum3 = {on() { return false; }, render: () => methodCards('method', false)};
 
-// Step 1 of the method: one request and its sentences (slide 29).
+// Step 1 of the method: one request and its sentences (s29).
 DEMOS.write = {
   mount(el) {
     const s = DATA.synth;
@@ -1975,7 +2098,7 @@ DEMOS.write = {
   },
 };
 
-// The wording of the request (slide 30).
+// The wording of the request (s30).
 DEMOS.wording = {
   on() { return false; },
   render() {
@@ -1996,7 +2119,7 @@ DEMOS.wording = {
   },
 };
 
-// A model that learns in the page (slide 31).
+// A model that learns in the page (s31).
 DEMOS.learn = {
   mount(el) {
     const d = DATA.learn, stop = new Set(d.stop);
@@ -2064,7 +2187,7 @@ DEMOS.learn = {
   },
 };
 
-// The student at work on one report (slide 33).
+// The student at work on one report (s33).
 DEMOS.work = {
   on() { return false; },
   render() {
@@ -2086,7 +2209,7 @@ DEMOS.work = {
   },
 };
 
-// Results on 300 real reports (slide 34).
+// Results on 300 real reports (s34).
 DEMOS.results = {
   on() { return false; },
   render() {
@@ -2107,7 +2230,7 @@ DEMOS.results = {
   },
 };
 
-// Speed (slide 35).
+// Speed (s35).
 DEMOS.speed = {
   on() { return false; },
   render() {
@@ -2140,13 +2263,13 @@ DEMOS.speed = {
   },
 };
 
-// Topics covered by the test (slide 37).
+// Topics covered by the test (s37).
 DEMOS.g86 = {
   on() { return false; },
   render() { let h = ''; for (let i = 0; i < 86; i++) h += `<i${i < 44 ? ' class="on"' : ''}></i>`; return h; },
 };
 
-// Cost of building (slide 36).
+// Cost of building (s36).
 DEMOS.cost = {
   state: () => ({p: '2'}),
   on(st, a, v) { st.p = v; },
@@ -2169,7 +2292,7 @@ DEMOS.cost = {
   },
 };
 
-// Small model or large model (slide 39).
+// Small model or large model (s39).
 DEMOS.quiz = {
   state: () => ({ans: DATA.tasks.map(() => null), all: false}),
   on(st, a, v) {
@@ -2219,6 +2342,7 @@ function mountDemo(el) {
 /* ------------------------------------------------------------- navigation */
 const SECS = ['', 'Tasks', 'Small model', 'Synthetic data', 'Nine steps', 'Report tagging', 'Small or large'];
 const stage = $('#stage'), slides = $$('.slide', stage), toc = $('#toc'), notesPanel = $('#notespanel');
+const gotoBox = $('#goto'), tip = $('#scrubtip');
 let idx = 0, step = 0;
 
 const headline = (s) => ($('h1, h2', s) || {textContent: ''}).textContent.trim();
@@ -2243,6 +2367,26 @@ $('#secnav').addEventListener('click', (ev) => {
   if (b) show(slides.findIndex((s) => s.dataset.sec === b.dataset.sec));
 });
 
+// The strip of slides in the bar: one mark for each slide, and a taller mark for the slide that opens a part.
+const isDivider = (s) => s.classList.contains('divider');
+$('#total').textContent = `/ ${slides.length}`;
+$('#scrub').innerHTML = slides.map((s, i) =>
+  `<button type="button" tabindex="-1" data-go="${s.id}" class="${isDivider(s) || i === slides.length - 1 ? 'part' : ''}" aria-label="Slide ${i + 1}: ${esc(headline(s))}"></button>`).join('');
+const ticks = $$('#scrub button');
+// A click on a mark leaves the focus where it was, so that Space and Enter keep stepping through the slides.
+$('#scrub').addEventListener('mousedown', (ev) => ev.preventDefault());
+$('#scrub').addEventListener('pointerover', (ev) => {
+  const b = ev.target.closest('button');
+  if (!b) return;
+  const i = ticks.indexOf(b), s = slides[i], sec = s.dataset.sec;
+  const part = isDivider(s) ? kicker(s) : sec === '0' ? '' : SECS[Number(sec)];
+  tip.innerHTML = `<small>Slide ${i + 1}${part ? ' · ' + esc(part) : ''}</small>${esc(headline(s))}`;
+  tip.hidden = false;
+  const bar = tip.parentElement.getBoundingClientRect(), r = b.getBoundingClientRect(), w = tip.offsetWidth;
+  tip.style.left = `${Math.max(0, Math.min(r.left + r.width / 2 - bar.left - w / 2, bar.width - w))}px`;
+});
+$('#scrub').addEventListener('pointerleave', () => { tip.hidden = true; });
+
 function show(i, dir = 0) {
   i = Math.max(0, Math.min(slides.length - 1, i));
   closePop();
@@ -2250,23 +2394,26 @@ function show(i, dir = 0) {
   idx = i;
   const s = slides[idx];
   s.classList.add('on');
-  step = dir < 0 ? maxStep(s) : 0;
+  // A step forward starts the reveals of the next slide. Every other move shows the whole slide.
+  step = dir > 0 ? 0 : maxStep(s);
   applySteps();
   const sec = s.dataset.sec;
-  stage.classList.toggle('plain', sec === '0');
+  stage.classList.toggle('plain', sec === '0' || isDivider(s));
   $$('#secnav [data-sec]').forEach((b) => {
     b.classList.toggle('on', b.dataset.sec === sec);
     b.classList.toggle('done', sec !== '0' && Number(b.dataset.sec) < Number(sec));
     b.toggleAttribute('aria-current', b.dataset.sec === sec);
   });
   $('#count').textContent = `${idx + 1} / ${slides.length}`;
-  $('#where').textContent = `${idx + 1} / ${slides.length}`;
-  $('#prog').style.width = `${idx / (slides.length - 1) * 100}%`;
+  gotoBox.value = idx + 1;
+  ticks.forEach((b, k) => { b.classList.toggle('on', k === idx); b.classList.toggle('done', k < idx); });
+  tip.hidden = true;
   $('#notestext').textContent = ($('.notes', s) || {textContent: ''}).textContent;
   $$('#toclist button').forEach((b, k) => b.classList.toggle('on', k === idx));
 }
 const next = () => { if (step < maxStep(slides[idx])) { step++; applySteps(); } else if (idx < slides.length - 1) show(idx + 1, 1); };
 const prev = () => { if (step > 0) { step--; applySteps(); } else if (idx > 0) show(idx - 1, -1); };
+const skip = (d) => show(idx + d);
 const go = (id) => {
   const i = slides.findIndex((s) => s.id === id);
   if (i < 0) return;
@@ -2280,7 +2427,7 @@ const go = (id) => {
   slides.forEach((s, i) => {
     const sec = s.dataset.sec, name = sec === '0' ? (i === 0 ? 'Opening' : 'Close') : SECS[Number(sec)];
     if (!groups.length || groups[groups.length - 1].name !== name) groups.push({name, items: []});
-    groups[groups.length - 1].items.push(`<li><button type="button" data-go="${s.id}"><i>${i + 1}</i><span>${esc(headline(s))}</span><small>${esc(kicker(s))}</small></button></li>`);
+    groups[groups.length - 1].items.push(`<li><button type="button" data-go="${s.id}"${isDivider(s) ? ' class="part"' : ''}><i>${i + 1}</i><span>${esc(headline(s))}</span><small>${esc(kicker(s))}</small></button></li>`);
   });
   $('#toclist').innerHTML = groups.map((g) => `<h3>${g.name}</h3><ol>${g.items.join('')}</ol>`).join('');
 })();
@@ -2305,6 +2452,19 @@ const toggleFull = () => {
 $('#bFull').addEventListener('click', toggleFull);
 $('#bPrev').addEventListener('click', prev);
 $('#bNext').addEventListener('click', next);
+$('#bSkipPrev').addEventListener('click', () => skip(-1));
+$('#bSkipNext').addEventListener('click', () => skip(1));
+
+// The slide number in the bar. A number and Enter open that slide.
+gotoBox.addEventListener('focus', () => gotoBox.select());
+gotoBox.addEventListener('blur', () => { gotoBox.value = idx + 1; });
+gotoBox.addEventListener('keydown', (ev) => {
+  if (ev.key !== 'Enter') return;
+  const n = parseInt(gotoBox.value, 10);
+  if (n >= 1 && n <= slides.length) show(n - 1);
+  gotoBox.blur();
+  ev.preventDefault();
+});
 
 // Definitions of terms.
 let pop = null, popFor = null;
@@ -2349,11 +2509,16 @@ document.addEventListener('keydown', (ev) => {
   if (!toc.hidden) { if (ev.key === 'o' || ev.key === 'O') { closeToc(); ev.preventDefault(); } return; }
   if (ev.key === 'o' || ev.key === 'O') { openToc(); ev.preventDefault(); return; }
   if (readingMQ.matches) return;
+  // A digit moves the focus to the slide number in the bar, and the digit is typed there.
+  if (ev.key >= '0' && ev.key <= '9' && ev.key.length === 1) { gotoBox.focus(); gotoBox.value = ''; return; }
   const onControl = t.closest && t.closest('button, a, label, input, [tabindex]');
   switch (ev.key) {
     case 'ArrowRight': case 'PageDown': next(); break;
     case ' ': case 'Enter': if (onControl) return; next(); break;
     case 'ArrowLeft': case 'PageUp': prev(); break;
+    case 'ArrowDown': skip(1); break;
+    case 'ArrowUp': skip(-1); break;
+    case 'r': case 'R': step = 0; applySteps(); break;
     case 'Home': show(0); break;
     case 'End': show(slides.length - 1); break;
     case 'n': case 'N': toggleNotes(); break;
