@@ -46,6 +46,8 @@ The figure describes the process in nine steps. For each step it gives the offic
 8. **Ask people which is better.** Experienced staff choose the better of two practice cases or two answers. This [preference feedback](#terms) improves the request to the large model and filters the cases. Where the small model writes text, such as an answer to a farmer, it can also train the model towards the preferred answers. The experiments did not use this step.
 9. **Watch and refresh.** People review a sample of the model's answers at regular intervals, and new practice cases are written when the answers, the language, or the situation change. The World Development Report 2026 describes a screening tool for diabetic eye disease that rejected more than one-fifth of the images nurses took, because the lighting in the clinic differed from that in its training images.
 
+Steps 5 to 9 are standard practice in machine learning, the field that builds models from labelled examples. A team that has trained a model on labelled examples has carried them out before. Steps 1 to 4 are specific to synthetic data: a large model writes the examples that people would otherwise collect and label. In step 7 the large model also writes the additional cases.
+
 ## The worked example
 
 An organization holds thousands of reports and wants each one tagged with its topics, such as Education or Transport, from a fixed list of 86. Tagging by hand is slow. A large AI service could do the tagging, but every report would then be sent to the company that runs the service. The organization also has no tagged reports from which to train a [model](#terms) of its own.

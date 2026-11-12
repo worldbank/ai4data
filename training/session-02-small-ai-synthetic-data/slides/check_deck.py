@@ -168,7 +168,15 @@ def controls(browser):
     }""")
     ok('slide 5: the loop runs from the test to the practice cases', geo[0] == 5 and geo[1] < 2 and geo[2] < 2 and geo[3], geo)
     pg.locator('.slide.on .cypart[data-go="s06"]').click(); ok('slide 5: a part of the session opens its first slide', cur() == 's06', cur())
-    at('s15'); pg.locator('.slide.on .stepbtn').nth(6).click(); ok('step 7 on the process slide opens slide 22', cur() == 's22')
+    at('s15')
+    geo = pg.evaluate("""() => {
+      const r = (q) => document.querySelector('.slide.on ' + q).getBoundingClientRect();
+      const g = [...document.querySelectorAll('.slide.on .group')].map((n) => n.getBoundingClientRect());
+      const a = r('.gkind.k-syn'), b = r('.gkind.k-std');
+      return [Math.abs(a.left - g[0].left), Math.abs(a.right - g[0].right), Math.abs(b.left - g[1].left), Math.abs(b.right - g[2].right), a.top >= g[0].bottom];
+    }""")
+    ok('slide 15: the marks under the steps span steps 1 to 4 and steps 5 to 9', all(v < 2 for v in geo[:4]) and geo[4], geo)
+    pg.locator('.slide.on .stepbtn').nth(6).click(); ok('step 7 on the process slide opens slide 22', cur() == 's22')
 
     # Demonstrations.
     pg.locator('.slide.on .seg button').nth(1).click()

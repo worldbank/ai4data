@@ -24,6 +24,7 @@ const TERMS = {
   gpu: ['GPU', 'A graphics processor, now also used to run AI models. Large models run on GPUs or similar chips, which cost more and use more power than an ordinary processor.'],
   training: ['Training', 'The step in which a model adjusts its parameters until its answers match a set of labelled examples.'],
   labelled: ['Labelled example', 'An example together with the right answer. For occupation coding, a survey response together with its code.'],
+  ml: ['Machine learning', 'The methods that build a model from examples. A team gives the model labelled examples, and training adjusts the model until its answers match them.'],
   synthetic: ['Synthetic data', 'Examples written by a computer program. In this session a large language model writes them.'],
 };
 

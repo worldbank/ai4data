@@ -331,6 +331,13 @@ button.cypart { cursor: pointer; } button.cypart:hover { border-color: var(--tea
 .groups { display: grid; grid-template-columns: 4fr 2fr 3fr; gap: 1.2em; }
 .group { background: var(--card); border: 1px solid var(--line); border-radius: .9em; padding: 1em; }
 .group > .lbl { margin-bottom: .8em; }
+.gkind { margin-top: -.5em; font-size: .82em; font-weight: 600; text-align: center; color: var(--muted); }
+.gkind::before {
+  content: ""; display: block; height: .6em; margin: 0 .9em .45em; border: .14em solid var(--faint); border-top: 0;
+  border-radius: 0 0 .6em .6em;
+}
+.gkind.k-syn::before { border-color: var(--large); }
+.gkind.k-std { grid-column: 2 / 4; }
 .group ol { display: grid; gap: .6em; grid-auto-flow: column; grid-auto-columns: 1fr; }
 .stepbtn { width: 100%; height: 100%; background: var(--soft); border: 1px solid var(--line); border-radius: .7em; padding: .8em .7em; text-align: left; display: flex; flex-direction: column; gap: .5em; font-size: .86em; font-weight: 600; line-height: 1.25; }
 .stepbtn:hover { border-color: var(--small); }
@@ -520,6 +527,8 @@ button.cypart { cursor: pointer; } button.cypart:hover { border-color: var(--tea
   .cyloop .cap, .cypart.wide { grid-column: 1; } .cyloop .cap { text-align: left; }
   .cyloop .cap::before { content: "Loop after the test. "; } .cypart { order: var(--o, 0); }
   .group ol { grid-auto-flow: row; }
+  .gkind { margin-top: 0; text-align: left; } .gkind.k-std { grid-column: 1; } .gkind::before { display: none; }
+  .gkind.k-syn span::before { content: "Steps 1 to 4. "; } .gkind.k-std span::before { content: "Steps 5 to 9. "; }
   .rail9 { grid-template-columns: 1fr 1fr; } .loop { grid-template-columns: 1fr 1fr; }
   .raregrid { grid-template-columns: repeat(25, 1fr); }
   .rbar, .res, .hb { grid-template-columns: 1fr; gap: .3em; } .hb .v { display: none; }
