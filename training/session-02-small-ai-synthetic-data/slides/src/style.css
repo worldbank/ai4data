@@ -218,7 +218,8 @@ svg text { fill: var(--muted); font-family: var(--sans); }
 .dl dt { color: var(--muted); } .dl dd { margin: 0; font-weight: 600; }
 
 .cases { display: flex; flex-direction: column; gap: .9em; flex: 1; min-height: 0; }
-.caselist { display: grid; grid-template-columns: repeat(6, 1fr); gap: .6em; }
+.caselist { display: grid; grid-template-columns: 5.2em repeat(6, 1fr); gap: .5em .6em; }
+.caselist > .lbl { grid-column: 1; align-self: center; line-height: 1.3; }
 .casebtn {
   background: var(--card); border: 1px solid var(--line); border-radius: .7em; padding: .6em .7em; text-align: left;
   font-size: .8em; font-weight: 600; display: flex; align-items: center; gap: .5em; line-height: 1.25;
@@ -519,7 +520,7 @@ button.cypart { cursor: pointer; } button.cypart:hover { border-color: var(--tea
   [data-step].pending { opacity: 1; transform: none; pointer-events: auto; }
   .g2, .g3, .g4, .g5, .suggest, .cases, .casepanel, .cygrid, .machines, .rare, .groups, .stepgrid, .story, .learn, .try, .distill,
   .work, .limits, .quiz, .pairc, .piles, .evidence, .ex { grid-template-columns: 1fr; }
-  .caselist { grid-template-columns: 1fr 1fr; }
+  .caselist { grid-template-columns: 1fr 1fr; } .caselist > .lbl { grid-column: 1 / -1; }
   .arrow, .distill .mid::after { transform: rotate(90deg); justify-self: center; }
   .distill .mid::after { display: inline-block; }
   .flow { grid-template-columns: 1fr; } .flow .to::after { content: "↓"; }

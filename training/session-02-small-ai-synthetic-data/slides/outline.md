@@ -24,7 +24,7 @@ The same kind of task appears across development work.
 
 The slide has an interactive demonstration.
 
-Notes: Open two or three of the six tasks. The first is the task from the previous slide, and we follow it through the nine steps. For each task, read the practice case aloud and point at the answer: it always comes from a list or has a fixed form. Ask the room for a seventh task from their own work and keep it for the quiz near the end.
+Notes: Open three or four of the eleven tasks. The first row holds the tasks in the description of this session: occupation and industry codes, document classification, metadata quality, semantic search, and entity extraction. The second row holds tasks from services. The first task is the one from the previous slide, and we follow it through the nine steps. Document classification is the second model of the session. On semantic search, present GISTEmbed: it is our method for training a small search model with a large model as a guide, and the code and the models are open. For each task, read the practice case aloud and point at the answer: it always comes from a list or has a fixed form. Each card also states the examples that a large model would write for the task. We define synthetic data in the third part. Ask the room for one more task from their own work and keep it for the quiz near the end.
 
 ### 4. Three options
 
@@ -274,7 +274,7 @@ Notes: Give the limits the same weight as the results. Nearly half of the topics
 
 A small model suits a narrow task that repeats many times.
 
-Notes: These criteria summarize everything so far. Go back to the survey response from the start: a fixed list of codes, a task that repeats, confidential records. Then reveal the other side. A large model remains the right tool for open questions and for writing.
+Notes: These criteria summarize everything so far. Go back to the survey response from the start: a fixed list of codes, a task that repeats, confidential records. Then reveal the other side. A large model remains the right tool for open questions and for writing. Then reveal the two results. The description of this session says that a specialized model can be more accurate, more efficient, and cheaper than a general-purpose model. Our two tests support the efficiency. On accuracy, the small model reached the large models on report topics and stayed below them on occupation codes. A test on real cases settles the question for each task.
 
 ### 37. Your turn
 

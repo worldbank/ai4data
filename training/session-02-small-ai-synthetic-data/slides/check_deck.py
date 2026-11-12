@@ -209,7 +209,7 @@ def controls(browser):
     for i in range(n):
         pg.locator('.slide.on .casebtn').nth(i).click()
         pg.wait_for_timeout(60)
-    ok('slide 3: six tasks', n == 6, n)
+    ok('slide 3: eleven tasks', n == 11, n)
     at('s21'); pg.locator('.slide.on input[type=checkbox]').check()
     ok('slide 21: the switch mixes practice cases into the test', 'Used for training and testing' in pg.inner_text('.slide.on .demo'))
     at('s18')
