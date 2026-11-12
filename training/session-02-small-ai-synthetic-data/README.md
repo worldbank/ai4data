@@ -101,6 +101,17 @@ Before a team relies on a small model, it checks the following points:
 - The model's score has been compared with that of a large model on the same test.
 - A person reviews a sample of the model's output at regular intervals.
 
+## Notebooks
+
+Two notebooks follow the process on one task each. Notebook 01 codes answers to a survey question on occupation with ISCO-08 unit groups. Notebook 02 assigns topics to reports from their abstracts. The examples written by the large model are stored in the repository, so both notebooks run in Google Colab without a key for a large model.
+
+| Notebook | Open in Colab |
+|---|---|
+| [01 · Coding survey answers on occupation](notebooks/01-occupation-coding.ipynb) | [Open](https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-02-small-ai-synthetic-data/notebooks/01-occupation-coding.ipynb) |
+| [02 · Tagging reports with topics](notebooks/02-report-tagging.ipynb) | [Open](https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-02-small-ai-synthetic-data/notebooks/02-report-tagging.ipynb) |
+
+The files that the notebooks read are described in [assets/README.md](assets/README.md).
+
 ## Terms
 
 - **Abstract**: The short summary at the start of a report.
