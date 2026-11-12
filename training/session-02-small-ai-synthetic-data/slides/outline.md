@@ -10,11 +10,11 @@ Notes: Welcome the room and say what the session covers: three ideas, two small 
 
 ## Tasks
 
-### 2. Part 1 of 6
+### 2. Part 1 of 7
 
 Tasks
 
-Notes: Say that the session has six parts and name them from the strip at the bottom of the slide. The first part shows the task: one survey response, then other tasks of the same kind, then an outline of the process.
+Notes: Say that the session has seven parts and name them from the strip at the bottom of the slide. The first part shows the task: one survey response, then other tasks of the same kind, then an outline of the process.
 
 ### 3. A survey response
 
@@ -44,21 +44,21 @@ A small model learns from practice cases that a large model writes.
 
 The slide has an interactive demonstration.
 
-Notes: This is the whole approach before the details. Read the five boxes from left to right: the task, the large model that writes practice cases, the small model that learns from them, the test on real cases, and the small model at work. The large model is needed in the second box only. Then show the loop: the test shows the kinds of cases that the small model gets wrong, and the large model writes more cases of those kinds. Then show the parts of the session. The numbers give their order. We start with the small model, because it is the goal, and then turn to the practice cases, which are called synthetic data. The strip at the top of each slide shows the current part. If time is short, parts 1, 2 and 4 carry the core of the session.
+Notes: This is the whole approach before the details. Read the five boxes from left to right: the task, the large model that writes practice cases, the small model that learns from them, the test on real cases, and the small model at work. The large model is needed in the second box only. Then show the loop: the test shows the kinds of cases that the small model gets wrong, and the large model writes more cases of those kinds. Then show the parts of the session. The numbers give their order. We start with the small model, because it is the goal, and then turn to the practice cases, which are called synthetic data. Part 4 describes the process in nine steps, and part 5 follows the build of one model from its training texts to its test. The strip at the top of each slide shows the current part. If time is short, parts 1, 2, 4 and 5 carry the core of the session.
 
 ## Small model
 
-### 7. Part 2 of 6
+### 7. Part 2 of 7
 
 Small model
 
-Notes: The room has seen the task and the outline of the process. This part explains the small model: its size next to a large language model, the memory it needs, and the reasons to build one.
+Notes: The room has seen the task and the outline of the process. This part explains the small model: its size next to a large language model, its memory, and the reasons to build one.
 
 ### 8. Large language models
 
 The chat assistants in wide use run on very large models in data centers.
 
-Notes: A chat assistant is the case the room already knows. Make the path visible: the question travels to a data center, a very large model answers, and the answer travels back. Select the dotted words to show their definitions. The breadth of such a model is its strength, and its size is the reason it lives in a data center.
+Notes: A chat assistant is the case the room already knows. Make the path visible: the question travels to a data center, a very large model answers, and the answer travels back. Select the dotted words to show their definitions. The breadth of such a model is its strength, and its size keeps it in a data center.
 
 ### 9. Small AI
 
@@ -82,7 +82,7 @@ Notes: Be even-handed here. The gains come after the model is built, and the cos
 
 ## Synthetic data
 
-### 12. Part 3 of 6
+### 12. Part 3 of 7
 
 Synthetic data
 
@@ -126,11 +126,11 @@ A large model can rewrite labelled job titles as survey answers.
 
 The slide has an interactive demonstration.
 
-Notes: Synthetic data can also start from labelled data that we already hold. A job board gives thousands of job titles with a code, and a job title reads differently from a survey answer. We ask a large model to say each title the way a respondent would: in a few words, with the place of work, and as the tasks of the job. The code stays with each answer, and a second model checks it. Then select the two scores. With the rewritten answers, the first code is right for 66 of 100 survey-style answers, up from 46. Be clear about the test: a model wrote those answers too. On 29 answers written by hand for this session, about street food, small farms and similar work, the rewritten answers helped little, because the job board has few titles for that work. The titles written from the definitions cover those groups.
+Notes: Synthetic data can also start from labelled data that we already hold. A job board gives thousands of job titles with a code, and a job title reads differently from a survey answer. We ask a large model to say each title the way a respondent would: in a few words, with the place of work, and as the tasks of the job. The code stays with each answer, and a second model checks it. Part 5 shows this build and its test.
 
 ## Nine steps
 
-### 19. Part 4 of 6
+### 19. Part 4 of 7
 
 Nine steps
 
@@ -180,7 +180,7 @@ The small model studies the checked cases until its answers match.
 
 The slide has an interactive demonstration.
 
-Notes: This step is short on the slide and long in practice. The checked cases go in, and a model comes out. We will train a small model live on a later slide, so I will take questions about learning there.
+Notes: This step is short on the slide and long in practice. The checked cases go in, and a model comes out. We will train a simple model live in part 5, so I will take questions about learning there.
 
 ### 26. Step 6 of 9 · Test on real cases
 
@@ -214,121 +214,131 @@ The slide has an interactive demonstration.
 
 Notes: The example from the report is about images. The same thing happens with text when new kinds of work appear or a survey moves to another language. Ask the room who would review the sample in their organization after the project ends.
 
-## Report tagging
+## Occupation coding
 
-### 30. Part 5 of 6
+### 30. Part 5 of 7
 
-Report tagging
+Occupation coding
 
-Notes: The nine steps used occupation coding. This part shows a second small model, built to tag reports with topics, and its test on 300 real reports.
+Notes: The nine steps described the process, with a first model trained on titles written from the definitions. That model stayed below the large models. This part shows the build that followed: two more sets of training texts, the check, and the test. It ends with the scores next to three large models, the speed, and the cost.
 
-### 31. Tagging reports with topics
+### 31. The training texts
 
-An organization wants each report tagged with topics from a fixed list of 86.
-
-The slide has an interactive demonstration.
-
-Notes: We now turn to a second task, report tagging, and go through its results in detail. Read the title of the report and its topics. Then bring back the three options from the start of the session. The third obstacle is the one that synthetic data remove.
-
-### 32. Steps used for this model
-
-The small model for this task was built with five of the nine steps in full.
-
-Notes: Before the results, be clear about how this model was built. Five steps were used in full and one in part. Real samples, the choices of experienced staff, and review after deployment were not part of it. Keep that in mind when we read the scores.
-
-### 33. The method in three steps
-
-The large model is needed in the first two steps only.
+Three sets of texts take the place of a coded survey in training.
 
 The slide has an interactive demonstration.
 
-Notes: This is the whole method on one slide. Read the three cards, then switch to the office comparison to connect them with the earlier slide. The next slides take the steps one at a time, with recorded data.
+Notes: We had no survey responses with codes for training. So the model learns from three sets of texts. The first is the set of the nine steps: job titles that a large model wrote from the definitions. The second is real: job titles from a job board, with the code that the job board assigned. They are worded as advertisements. The third joins the two ideas: a large model rewrites each real job title as the answers of a respondent, and the code stays with each answer. The next two slides show how the third set was written and checked.
 
-### 34. Step 1 · Synthetic data
+### 32. The request
 
-One request names eight topics and returns 20 labelled sentences.
-
-The slide has an interactive demonstration.
-
-Notes: Select the button and let the sentences arrive. Read two of them aloud, one with a single topic and one with two. Ask the room whether the sentences read like report text. Then give the scale: a thousand requests like this one, about twenty thousand sentences.
-
-### 35. Step 1 · The wording of the request · Go deeper
-
-The small model did worse when the sentences had to avoid the topic names.
+One request turns a job title into three answers of a respondent.
 
 The slide has an interactive demonstration.
 
-Notes: Skip this slide if time is short. One line in the request changed, and the score of the small model changed with it. The lesson for the room is that the request is a design choice, and that its effect has to be measured on real reports.
+Notes: Select the button and let the answers arrive. Read one job title and its three answers aloud. The first answer is short, the second adds the place of work, and the third gives the tasks. The code of the job title stays with each answer. Ask the room whether the answers sound like the answers of a respondent. The request on the slide is shortened: the full request has three more rules.
 
-### 36. Step 2 · The small model learns
+### 33. The check
 
-A simple model gets more reports right as it reads more examples.
+A second model removed about a quarter of the answers.
 
 The slide has an interactive demonstration.
 
-Notes: This model is trained live in the page, on four topics. Start with one example per topic and show the words linked to each topic. Move to ten, then forty, and watch the squares fill. Then type a sentence from the room and see which topic the model gives it.
+Notes: A wrong code in training becomes a wrong answer in use, so every answer was checked. A second large model read the answer alone and chose a group. We kept the answer when it chose the group of the job title. Go through the job titles on the right. Short answers were removed most often, because a short answer such as "officer" fits several groups. The check also removes answers that are correct and too short to identify one group among 436.
 
-### 37. Distillation
+### 34. A model learns
+
+A model that counts words learns four occupation groups from examples.
+
+The slide has an interactive demonstration.
+
+Notes: This model is trained live in the page, and it is a simpler kind of model than our small model: it counts the words of each group. With one example for each group it gets 14 of 56 right. A random guess gets the same. Move to three, ten, and forty, and watch the squares fill. Then type an answer from the room and see which group the model gives it. Our small model also learns from examples. It reads many more of them, and it separates 436 groups.
+
+### 35. Distillation
 
 In distillation a large model passes a skill to a small one.
 
-Notes: Name the method. The teacher is about 190 times the size of the student by number of parameters. In the original form of distillation the student copies the teacher's full set of probabilities. In our case the teacher has a second job, because it writes the training sentences as well.
+Notes: Name the method. The teacher is about 190 times the size of the student by number of parameters. In the original form of distillation the student copies the teacher's full set of probabilities. In our case the teacher passes its skill through the examples that it writes: the job titles, the answers, and the checks.
 
-### 38. Step 3 · The small model at work
+### 36. The model at work
 
-The student scores every topic and assigns the topics above a threshold.
-
-The slide has an interactive demonstration.
-
-Notes: Here is the student at work on the report we saw earlier. It gives each of the 86 topics a score, and the chart shows the top eight. Four topics pass the threshold, and all four are among the topics recorded for the report. One report proves little, so the next slide gives the result on 300 reports.
-
-### 39. Results on 300 real reports
-
-The student scored about the same as three large models asked directly.
+A coder chooses among five codes that the model suggests.
 
 The slide has an interactive demonstration.
 
-Notes: Show the three large models first. Each one was asked directly for the topics of every report. Then reveal the student after the first set of sentences, and after the further rounds on its weak topics. The gap closes from about 0.06 to less than 0.01.
+Notes: Here is the trained model on eight responses. Go through them. In three the reference code is the first suggestion, and in two it is the second. In the last three it is missing from the five. The last two describe informal work in everyday or local words. On 29 informal responses the first code of this model was right for about a third, against about half for the model trained on the definitions alone. More training texts raised the score on the test and lowered it on these responses.
 
-### 40. Speed and computer
+### 37. Scores by training set
 
-The student answers in 0.19 seconds on an ordinary processor.
-
-The slide has an interactive demonstration.
-
-Notes: The axis is logarithmic, so each step to the right is ten times slower. The student on an ordinary processor is about 3 to 20 times faster than the large models, and those ran on a GPU or through an online service. This is the practical gain: the model fits on a laptop and needs no connection.
-
-### 41. Cost of building
-
-Each model was built in less than an hour on one server.
+Adding the rewritten answers raised the share of right first codes from 46 to 66 in 100.
 
 The slide has an interactive demonstration.
 
-Notes: People ask what this costs, so here is what we measured. For report topics, the large model answered 1,750 requests and the whole build took 32 minutes, with six training runs of the small model inside that time. The two occupation builds are larger because a second model checks every example. Now select a price. We ran open models on our own server, so we paid no price for each token. With a hosted service, the cost is the number of tokens times the provider's price, and prices change often. Select the three examples to show the range. We did not measure our own time for writing the requests, reading samples, and deciding what to fix.
+Notes: Each bar is one model, trained on a different set of texts and tested on the same 1,000 survey-style answers. With real job titles alone, the first code was right for 46 answers in 100. With the rewritten answers added, it was right for 66. The titles written from the definitions add a little more. Then switch the test to real job titles. There the rewritten answers change the score little, from 58 to 60 in 100. The other control shows the share of answers with the right code among five.
 
-### 42. Limits of the result
+### 38. Compared with large models
 
-These results come from one task and cover about half of the topics.
+On survey-style answers the small model scored about the same as the best of three large models.
 
 The slide has an interactive demonstration.
 
-Notes: Give the limits the same weight as the results. Nearly half of the topics never appear in the test, so we know nothing about them. The reference answers are imperfect. On occupation coding, the model that learned from written titles alone was clearly behind the large models. A team that wants to use the method has to test it on its own task.
+Notes: Each large model was asked directly for the code of every answer. The small model and the best large model are within the margin of error of each other, and the small model is ahead of the other two. Give the three cautions. A large model wrote the test answers, and that same model is the best of the three. The request that wrote the test answers resembles the request that wrote the training answers, which favours the small model. And on real job titles the small model trained on titles of the same job board. A test on answers coded by people is still needed.
+
+### 39. Speed and computer
+
+The small model answers in 0.05 seconds on an ordinary processor.
+
+The slide has an interactive demonstration.
+
+Notes: The axis is logarithmic, so each step to the right is ten times slower. On an ordinary processor the small model answers in about 0.05 seconds. The fastest large model ran on its own GPU and took 0.37 seconds. The hosted services took longer, and the slowest also reasons before each answer. The small model fits on a laptop and needs no connection.
+
+### 40. Cost of building
+
+Each build took less than an hour on one server.
+
+The slide has an interactive demonstration.
+
+Notes: People ask what this costs, so here is what we measured. For the titles written from the definitions, the large model answered 2,700 requests and the build took 48 minutes. The rewriting build made about 20,000 requests, because a second model checks every answer, and it took 50 minutes. The third card is the report-tagging model of the next part: 1,750 requests and 32 minutes, with six training runs inside that time. Now select a price. We ran open models on our own server, so we paid no price for each token. With a hosted service, the cost is the number of tokens times the provider's price, and prices change often. Select the three examples to show the range. We did not measure our own time for writing the requests, reading samples, and deciding what to fix.
+
+## Report tagging
+
+### 41. Part 6 of 7
+
+Report tagging
+
+Notes: This part is short. A second small model tags reports with topics, and it was tested on 300 real reports.
+
+### 42. Tagging reports with topics
+
+A second small model tags each report with topics from a fixed list of 86.
+
+The slide has an interactive demonstration.
+
+Notes: The same process built a second model for a different task. An organization wants each report tagged with topics from a fixed list of 86, and it has no tagged reports for training. Read the title of the report and its topics. Then reveal the three facts. Here the test uses real reports with topics recorded by people.
+
+### 43. Results on 300 real reports
+
+On 300 real reports the small model scored about the same as three large models.
+
+The slide has an interactive demonstration.
+
+Notes: Show the three large models first. Each one was asked directly for the topics of every report. Then reveal the small model after the first set of sentences, and after the further rounds on its weak topics. The gap closes from about 0.06 to less than 0.01. Give two cautions. The 300 reports cover 44 of the 86 topics, so the scores say nothing about the other 42. And the recorded topics of a report can omit a topic that the abstract covers.
 
 ## Small or large
 
-### 43. Part 6 of 6
+### 44. Part 7 of 7
 
 Small or large
 
 Notes: The last part is about the choice between a small and a large model. It has an exercise for the room, the checks before relying on a small model, and the requirements of a first attempt.
 
-### 44. Small or large
+### 45. Small or large
 
 A small model suits a narrow task that repeats many times.
 
-Notes: These criteria summarize everything so far. Go back to the survey response from the start: a fixed list of codes, a task that repeats, confidential records. Then reveal the other side. A large model remains the right tool for open questions and for writing. Then reveal the two results. The description of this session says that a specialized model can be more accurate, more efficient, and cheaper than a general-purpose model. Our two tests support the efficiency. On accuracy, the small model reached the large models on report topics. On occupation codes, the first code was right for 35 of 100 real job titles when the model had learned from written titles alone, and for 50 of 100 with the best large model. With labelled job titles and their rewritten answers added, the small model reached 60 of 100. Say that this last test favours the small model, because its labelled titles come from the same job board as the test titles. A test on real cases settles the question for each task.
+Notes: These criteria summarize everything so far. Go back to the survey response from the start: a fixed list of codes, a task that repeats, confidential records. Then reveal the other side. A large model remains the right tool for open questions and for writing. Then reveal the two results. The description of this session says that a specialized model can be more accurate, more efficient, and cheaper than a general-purpose model. Our two tests support the efficiency. On accuracy, both small models scored about the same as the large models, and neither scored clearly higher. The occupation test has a weakness, because a large model wrote its answers. A test on real cases settles the question for each task.
 
-### 45. Your turn
+### 46. Your turn
 
 Which kind of model suits each of these six tasks?
 
@@ -336,19 +346,19 @@ The slide has an interactive demonstration.
 
 Notes: Let the room vote on each task by a show of hands before you select an answer. The last three tasks have a second lesson: a small model can still do a narrower part of the work. If a task from the room came up earlier, apply the same criteria to it now.
 
-### 46. Before relying on a small model
+### 47. Before relying on a small model
 
 A team checks four points before it relies on a small model.
 
-Notes: This is the slide to take back to the office. Each point answers one of the limits we saw. If a supplier offers a small model, these are the four questions to ask.
+Notes: This is the slide to take back to the office. Each point answers a weakness of our own tests: the occupation test used answers that a model wrote, and the report test covers 44 of the 86 topics. If a supplier offers a small model, these are the four questions to ask.
 
-### 47. A first attempt
+### 48. A first attempt
 
 A first attempt needs a subject specialist, real cases with known answers, and one GPU.
 
-Notes: Here is what you need for a first attempt on your own task. Start with the people. The specialist matters most, because the specialist knows where two groups are easy to confuse and can tell a realistic example from a poor one. Then the real cases. We used 788 real reports for report tagging, and the occupation model was tested on 1,000 real job titles. Collect them first and keep them away from training. Then the computer. Each training run took between one and four minutes on one server GPU, and a smaller GPU takes longer. The notebooks let you repeat both builds with the recorded examples, without a large model and without a key.
+Notes: Here is what you need for a first attempt on your own task. Start with the people. The specialist matters most, because the specialist knows where two groups are easy to confuse and can tell a realistic example from a poor one. Then the real cases. The occupation model was tested on 1,000 real job titles and on answers written from them, and the report-tagging model on 300 real reports. Collect the real cases first and keep them away from training. Then the computer. Each training run took between one and four minutes on one server GPU, and a smaller GPU takes longer. The notebooks let you repeat both builds with the recorded examples, without a large model and without a key.
 
-### 48. Summary
+### 49. Summary
 
 A large model writes the examples, a small model learns from them, and real cases test the result.
 
@@ -356,7 +366,7 @@ The slide has an interactive demonstration.
 
 Notes: Close with the three terms of the session and the rule that holds them together. Ask each person to name one task from their own work and to say which criteria that task meets.
 
-### 49. Sources and further reading
+### 50. Sources and further reading
 
 The overview page holds the full text, the figures, and the terms.
 

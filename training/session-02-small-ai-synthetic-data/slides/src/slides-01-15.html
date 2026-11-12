@@ -56,7 +56,7 @@
   <p class="kicker">Overview of the process</p>
   <h2>A small model learns from practice cases that a large model writes.</h2>
   <div class="body center"><div class="cycle" data-demo="cycle"></div></div>
-  <aside class="notes">This is the whole approach before the details. Read the five boxes from left to right: the task, the large model that writes practice cases, the small model that learns from them, the test on real cases, and the small model at work. The large model is needed in the second box only. Then show the loop: the test shows the kinds of cases that the small model gets wrong, and the large model writes more cases of those kinds. Then show the parts of the session. The numbers give their order. We start with the small model, because it is the goal, and then turn to the practice cases, which are called synthetic data. The strip at the top of each slide shows the current part. If time is short, parts 1, 2 and 4 carry the core of the session.</aside>
+  <aside class="notes">This is the whole approach before the details. Read the five boxes from left to right: the task, the large model that writes practice cases, the small model that learns from them, the test on real cases, and the small model at work. The large model is needed in the second box only. Then show the loop: the test shows the kinds of cases that the small model gets wrong, and the large model writes more cases of those kinds. Then show the parts of the session. The numbers give their order. We start with the small model, because it is the goal, and then turn to the practice cases, which are called synthetic data. Part 4 describes the process in nine steps, and part 5 follows the build of one model from its training texts to its test. The strip at the top of each slide shows the current part. If time is short, parts 1, 2, 4 and 5 carry the core of the session.</aside>
 </section>
 
 <section class="slide" id="s06" data-sec="2">
@@ -76,7 +76,7 @@
     <p class="callout" data-step="1">A large language model can write, translate, summarize, and answer questions.</p>
   </div>
   <p class="src">Memory ranges follow World Bank, World Development Report 2026, spotlight 1, table S1.1. The companies behind hosted chat assistants generally do not publish the size of their main models.</p>
-  <aside class="notes">A chat assistant is the case the room already knows. Make the path visible: the question travels to a data center, a very large model answers, and the answer travels back. Select the dotted words to show their definitions. The breadth of such a model is its strength, and its size is the reason it lives in a data center.</aside>
+  <aside class="notes">A chat assistant is the case the room already knows. Make the path visible: the question travels to a data center, a very large model answers, and the answer travels back. Select the dotted words to show their definitions. The breadth of such a model is its strength, and its size keeps it in a data center.</aside>
 </section>
 
 <section class="slide" id="s07" data-sec="2">
@@ -249,6 +249,6 @@
   <p class="kicker">Labelled data from another source</p>
   <h2>A large model can rewrite labelled job titles as survey answers.</h2>
   <div class="body center"><div class="g2 rewritecols" data-demo="rewrite"></div></div>
-  <p class="src">The job title comes from the job board hahu.jobs (dataset published by Tabiya, CC BY 4.0), with the code assigned by the job board. A third large model wrote the 1,000 test answers from job titles kept out of training. Coded survey responses were not available for the test.</p>
-  <aside class="notes">Synthetic data can also start from labelled data that we already hold. A job board gives thousands of job titles with a code, and a job title reads differently from a survey answer. We ask a large model to say each title the way a respondent would: in a few words, with the place of work, and as the tasks of the job. The code stays with each answer, and a second model checks it. Then select the two scores. With the rewritten answers, the first code is right for 66 of 100 survey-style answers, up from 46. Be clear about the test: a model wrote those answers too. On 29 answers written by hand for this session, about street food, small farms and similar work, the rewritten answers helped little, because the job board has few titles for that work. The titles written from the definitions cover those groups.</aside>
+  <p class="src">The job title comes from the job board hahu.jobs (dataset published by Tabiya, CC BY 4.0), with the code assigned by the job board.</p>
+  <aside class="notes">Synthetic data can also start from labelled data that we already hold. A job board gives thousands of job titles with a code, and a job title reads differently from a survey answer. We ask a large model to say each title the way a respondent would: in a few words, with the place of work, and as the tasks of the job. The code stays with each answer, and a second model checks it. Part 5 shows this build and its test.</aside>
 </section>

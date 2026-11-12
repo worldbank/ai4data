@@ -1,9 +1,10 @@
 """Build the session 02 deck as one HTML file.
 
 Reads the slide sources in src/, the recorded data of the overview page (../assets/overview.json),
-and the two logos of the cover. The slides of the nine steps (s16 to s25) and the slide of the steps used for the report-tagging
-model (s27) are generated from the STEPS table below. The divider that opens each part (p1 to p6) is generated from the
-DIVIDERS table. A slide keeps its id when slides are added before it, so the id is not the slide number.
+the recorded files of the occupation model (../assets/occupation/), and the two logos of the cover. The slides of the
+nine steps (s16 to s25) are generated from the STEPS table below. The divider that opens each part (p1 to p7) is
+generated from the DIVIDERS table. A slide keeps its id when slides are added before it, so the id is not the slide
+number.
 
     python3 build_deck.py              write deck.html and outline.md
     python3 build_deck.py --fit        also recompute the scale of each slide (src/fit.css); needs Playwright
@@ -12,6 +13,7 @@ DIVIDERS table. A slide keeps its id when slides are added before it, so the id 
                                        that adds its own
 """
 import base64
+import gzip
 import html
 import io
 import json
@@ -24,6 +26,7 @@ HERE = Path(__file__).resolve().parent
 SRC = HERE / 'src'
 REPO = HERE.parents[2]
 DATA = HERE.parent / 'assets/overview.json'
+OCC = HERE.parent / 'assets/occupation'
 IMG = REPO / 'website/static/img'
 # The logos of the cover, each with the height in pixels at which it is embedded.
 LOGOS = {'__LOGO__': ('program-logo.png', 150), '__DDG__': ('ddg-logo.png', 100)}
@@ -36,7 +39,11 @@ HEAD = ('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="
         'padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui}img{max-width:100%}'
         '[hidden]{display:none!important}</style>')
 
-USED = {'yes': 'Used', 'partly': 'Partly used', 'no': 'Not used'}
+# The four occupation groups of the model that learns in the page (s29), and the number of training answers and test
+# answers taken for each group.
+LEARN_GROUPS = [('2411', 'Accountants'), ('2221', 'Nursing professionals'), ('2142', 'Civil engineers'),
+                ('2511', 'Systems analysts')]
+LEARN_TRAIN, LEARN_TEST = 40, 14
 
 # The captions of the model sizes on s08. They replace the captions written for the overview page.
 MODELS = {
@@ -50,7 +57,7 @@ STEPS = [
          h='The team writes down the possible answers and defines each one.',
          office='The manager writes down the decisions the new staff member will make.',
          model='The team writes the list of possible answers, with a definition of each.',
-         used=('yes', 'A list of 86 topics.'), demo='task',
+         demo='task',
          notes='Start with the list of answers. Select two or three groups and read the descriptions aloud. The full '
                'list has 436 groups, and the first digit of a code gives its major group. A seller of cooked food '
                '(5212) and a street vendor of other goods (9520) sit in different major groups. Ask the room who '
@@ -60,7 +67,7 @@ STEPS = [
          h='A few real cases show the large model how people describe their work.',
          office='The colleague who writes the practice cases first reads a few real files.',
          model='A few dozen real examples go into the request to the large model. Personal details are removed first.',
-         used=('no', 'The requests named the topics only.'), demo='seeds',
+         demo='seeds',
          notes='Switch between the two requests. Without samples the large model writes official job titles. With '
                'three real responses in the request, the written cases take on their style: lower case, a place, a '
                'product.'),
@@ -68,7 +75,6 @@ STEPS = [
          h='Each request to the large model asks for a different kind of case.',
          office='The colleague writes cases of every kind: short and long, calm and angry, easy and hard.',
          model='Each request sets a different combination of answer, length, style, language, and difficulty.',
-         used=('partly', 'Each request named a different set of eight topics and asked for varied length and style.'),
          demo='vary',
          notes='Turn on the attributes one at a time and watch the number of possible requests grow to 864. Draw a '
                'few requests. Then point at the measured result below: asked for the same thing many times, a large '
@@ -78,7 +84,6 @@ STEPS = [
          office='A second colleague reads each practice case and its answer before it is used.',
          model='A second model labels each case on its own. Scripts remove repeats, answers outside the list, and '
                'cases where the two models disagree.',
-         used=('yes', 'Scripts checked every set. In the later rounds, a second model also labelled each sentence.'),
          demo='check',
          notes='Run the checks and count the cases that remain. Each removed case has its reason next to it. The '
                'third row matters most: the writer was wrong about its own case, and the second model caught it. A '
@@ -87,15 +92,14 @@ STEPS = [
          h='The small model studies the checked cases until its answers match.',
          office='The new staff member studies the practice cases.',
          model='The small model is trained on the checked cases until its answers match theirs.',
-         used=('yes', 'About 20,000 sentences in the first set.'), demo='train',
+         demo='train',
          notes='This step is short on the slide and long in practice. The checked cases go in, and a model comes '
-               'out. We will train a small model live on a later slide, so I will take questions about learning '
-               'there.'),
+               'out. We will train a simple model live in part 5, so I will take questions about learning there.'),
     dict(short='Test on real cases',
          h='The test uses real cases that no model has trained on.',
          office='Before the new staff member works alone, a supervisor checks their decisions on real past files.',
          model='A few hundred real cases with answers given by people are set aside for testing only.',
-         used=('yes', '300 real report abstracts with recorded topics.'), demo='test',
+         demo='test',
          notes='Turn the switch on and ask the room what is wrong with the picture. A test on practice cases '
                'measures how well the small model copies the writing habits of the large model. The real cases are '
                'set aside before anything is written, and no model trains on them. The chart shows the '
@@ -108,7 +112,6 @@ STEPS = [
          office='The colleague writes more practice cases of the kinds the new staff member gets wrong.',
          model='A program finds where the model makes most mistakes and asks the large model for more cases of '
                'those kinds. The model is trained again.',
-         used=('yes', 'Up to five rounds, compared with rounds of the same size spread evenly over all topics.'),
          demo='rounds',
          notes='Read the loop first. Then compare the three bars: the first set, extra cases spread evenly, and '
                'extra cases aimed at the mistakes. For occupation codes, both kinds of extra cases gave a higher '
@@ -119,7 +122,7 @@ STEPS = [
          h='Experienced staff choose the better of two cases.',
          office='Experienced staff compare two practice cases, or two answers, and say which one is better.',
          model='People choose between pairs. The choices improve the request to the large model and filter the cases.',
-         used=('no', 'The cases were not compared by people.'), demo='pairs',
+         demo='pairs',
          notes='Run this as a vote. Read each pair and ask the room for A or B before you select one. People who '
                'know the work can tell within seconds which case is realistic, and choosing between two is quicker '
                'than writing a case.'),
@@ -128,7 +131,7 @@ STEPS = [
          office="The supervisor keeps reviewing a sample of the staff member's decisions.",
          model="People review a sample of the model's answers at regular intervals. When the answers, the language, "
                'or the situation change, new cases are written and the model is trained again.',
-         used=('no', 'The work ended at the test on real reports.'), demo='watch',
+         demo='watch',
          notes='The example from the report is about images. The same thing happens with text when new kinds of '
                'work appear or a survey moves to another language. Ask the room who would review the sample in '
                'their organization after the project ends.'),
@@ -141,20 +144,23 @@ GROUPS = [('Write the cases', range(0, 4), None), ('Train and test', range(4, 6)
 # The names of the parts are the SECS constant of src/app.js.
 DIVIDERS = [
     ('We start with the task: a survey response needs one code from a fixed list.',
-     'Say that the session has six parts and name them from the strip at the bottom of the slide. The first part shows '
+     'Say that the session has seven parts and name them from the strip at the bottom of the slide. The first part shows '
      'the task: one survey response, then other tasks of the same kind, then an outline of the process.'),
     ('We compare a small model with a large one: size, memory, and cost.',
      'The room has seen the task and the outline of the process. This part explains the small '
-     'model: its size next to a large language model, the memory it needs, and the reasons to build one.'),
+     'model: its size next to a large language model, its memory, and the reasons to build one.'),
     ('A small model needs labelled examples. In this part a large model writes them.',
      'The room now knows what a small model is. This part explains the examples that the model '
      'learns from, why real ones are often missing, and how a large model writes them.'),
     ('We follow occupation coding through the nine steps of the process.',
      'The room has now seen the task, the small model, and synthetic data. This part puts them '
      'together as a process of nine steps, and each step is shown with occupation coding.'),
-    ('We look at a second small model and its test on 300 real reports.',
-     'The nine steps used occupation coding. This part shows a second small model, built to tag '
-     'reports with topics, and its test on 300 real reports.'),
+    ('We follow the build of one occupation model from its training texts to its test.',
+     'The nine steps described the process, with a first model trained on titles written from the definitions. That '
+     'model stayed below the large models. This part shows the build that followed: two more sets of training texts, '
+     'the check, and the test. It ends with the scores next to three large models, the speed, and the cost.'),
+    ('We look at a second small model that tags reports with topics.',
+     'This part is short. A second small model tags reports with topics, and it was tested on 300 real reports.'),
     ('We end with the choice between a small and a large model for a task.',
      'The last part is about the choice between a small and a large model. It has an exercise '
      'for the room, the checks before relying on a small model, and the requirements of a first attempt.'),
@@ -169,7 +175,7 @@ def part_names():
 
 
 def divider_slide(n):
-    """The slide that opens part n (1 to 6): the name of the part, one line, and the six parts as a strip."""
+    """The slide that opens part n: the name of the part, one line, and all the parts as a strip."""
     names = part_names()[1:]
     assert len(names) == len(DIVIDERS)
     line, notes = DIVIDERS[n - 1]
@@ -238,22 +244,6 @@ def step_slide(i, s):
 </section>'''
 
 
-def used_slide():
-    cards = ''.join(
-        f'<li class="u9 {s["used"][0]}"><span class="num">{i + 1}</span><div><b>{e(s["short"])}</b>'
-        f'<span class="usedrow"><span class="usedmark {s["used"][0]}" aria-hidden="true"></span>{USED[s["used"][0]]}</span>'
-        f'<span class="usednote">{e(s["used"][1])}</span></div></li>'
-        for i, s in enumerate(STEPS))
-    return f'''<section class="slide" id="s27" data-sec="5">
-  <p class="kicker">Steps used for this model</p>
-  <h2>The small model for this task was built with five of the nine steps in full.</h2>
-  <div class="body center">
-    <ol class="used9">{cards}</ol>
-  </div>
-  <aside class="notes">Before the results, be clear about how this model was built. Five steps were used in full and one in part. Real samples, the choices of experienced staff, and review after deployment were not part of it. Keep that in mind when we read the scores.</aside>
-</section>'''
-
-
 def logo_uri(name, height):
     raw = (IMG / name).read_bytes()
     try:
@@ -268,31 +258,70 @@ def logo_uri(name, height):
     return 'data:image/png;base64,' + base64.b64encode(raw).decode()
 
 
+def rows(name):
+    with gzip.open(OCC / name, 'rt') as f:
+        return [json.loads(line) for line in f]
+
+
+def learn_data(stop):
+    """The answers of the model that learns in the page: 40 training answers and 14 test answers for each group.
+
+    The training answers are rewritten job titles that passed the check. One answer is taken from each job title, and
+    the three kinds of answer take turns. The test answers are the first ones of each group in the test file.
+    """
+    tok = lambda t: [w for w in re.findall(r'[a-z]+', t.lower()) if len(w) > 2 and w not in stop]
+    answers, tests = rows('answers.jsonl.gz'), rows('test-answers.jsonl.gz')
+
+    def pick(code):
+        by, order = {}, []
+        for r in answers:
+            if r['code'] != code:
+                continue
+            if r['id'] not in by:
+                by[r['id']] = {}
+                order.append(r['id'])
+            by[r['id']][r['style']] = r
+        out, seen, k = [], set(), 0
+        for i in order:
+            if not any(x['kept'] for x in by[i].values()):
+                continue
+            r = by[i].get(k % 3 + 1)
+            k += 1
+            if not r or not r['kept'] or r['answer'].lower() in seen:
+                continue
+            seen.add(r['answer'].lower())
+            out.append(r['answer'])
+            if len(out) == LEARN_TRAIN:
+                break
+        assert len(out) == LEARN_TRAIN, (code, len(out))
+        return out
+
+    return {
+        'groups': [name for _, name in LEARN_GROUPS],
+        'stop': sorted(stop),
+        'sentences': {name: pick(code) for code, name in LEARN_GROUPS},
+        'tests': [{'title': r['answer'], 'group': name, 'w': tok(r['answer'])}
+                  for code, name in LEARN_GROUPS for r in [x for x in tests if x['code'] == code][:LEARN_TEST]],
+    }
+
+
 def data():
     d = json.loads(DATA.read_text())
-    sy, di, le = d['synthetic'], d['distillation'], d['learn']
-    stop = set(le['stop'])
-    tok = lambda t: [w for w in re.findall(r'[a-z]+', t.lower()) if len(w) > 2 and w not in stop]
-    rule = lambda p: next(l[2:] for l in p.split('\n') if l.startswith('- ') and 'topic names' in l)
-    mean = lambda xs: sum(xs) / len(xs)
+    di = d['distillation']
+    occ = json.loads((SRC / 'occupation.json').read_text())
+    # The request of the rewriting run, without its opening paragraph and with the first of its four rules.
+    paras = json.loads((OCC / 'results.json').read_text())['prompt'].split('\n\n')
+    occ['request'] = '\n\n'.join([*paras[1:3], paras[3].split('\n')[1][2:]])
     return {
         'tasks': d['smallAI']['tasks'],
         'machines': {**d['smallAI']['machines'],
                      'models': [{**m, **MODELS.get(m['name'], {})} for m in d['smallAI']['machines']['models']]},
-        'synth': {
-            'request': sy['request'], 'writer': sy['writer'], 'topics': sy['topics'],
-            'opening': sy['prompt']['allow'].split('\n')[0],
-            'sentences': [{'text': s['text'], 'labels': s['labels']} for s in sy['sets']['allow']['sentences']],
-            'sets': {k: {'rule': rule(sy['prompt'][k]), 'share': v['named'] / v['total'], 'f1': mean(v['report_f1'])}
-                     for k, v in sy['sets'].items()},
-        },
-        'doc': {k: di['documents'][0][k] for k in ('title', 'year', 'text', 'reference', 'student')},
-        'dist': {'threshold': di['threshold'], 'top': di['top'], 'scores': di['scores'], 'speed': di['speed']},
+        'doc': {k: di['documents'][0][k] for k in ('title', 'year', 'text', 'reference')},
+        'dist': {'scores': [{**x, 'model': x['model'].replace('Student', 'Small model')} for x in di['scores']]},
         'workflow': d['workflow'],
-        'occ': json.loads((SRC / 'occupation.json').read_text()),
+        'occ': occ,
         'cost': json.loads((SRC / 'cost.json').read_text()),
-        'learn': {'topics': le['topics'], 'stop': le['stop'], 'sentences': le['sentences'],
-                  'tests': [{'title': t['title'], 'topic': t['topic'], 'w': tok(t['text'])} for t in le['tests']]},
+        'learn': learn_data(set(d['learn']['stop'])),
     }
 
 
@@ -303,7 +332,7 @@ def page():
     slides = '\n\n'.join([
         first,
         overview_slide(), *[step_slide(i, s) for i, s in enumerate(STEPS)],
-        (SRC / 'slides-26-43.html').read_text().replace('<!--__USED__-->', used_slide()),
+        (SRC / 'slides-26-43.html').read_text(),
     ])
     slides = with_dividers(slides)
     payload = json.dumps(data(), ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')

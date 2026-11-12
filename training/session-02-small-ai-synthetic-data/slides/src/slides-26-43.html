@@ -1,56 +1,39 @@
 <section class="slide" id="s26" data-sec="5">
-  <p class="kicker">Tagging reports with topics</p>
-  <h2>An organization wants each report tagged with topics from a fixed list of 86.</h2>
-  <div class="body"><div class="g2 fill">
-    <div class="card report" data-demo="report"></div>
-    <div style="display:flex;flex-direction:column;justify-content:center;gap:.9em">
-      <span class="lbl">The three options again</span>
-      <ul class="obst">
-        <li data-step="1"><span class="lbl">By hand</span>Tagging by hand is slow.</li>
-        <li data-step="2"><span class="lbl">A large AI service</span>Every report would be sent to the company that runs the service.</li>
-        <li data-step="3"><span class="lbl">A small model of its own</span>The organization has no tagged reports from which to train one.</li>
-      </ul>
-    </div>
-  </div></div>
-  <p class="src">The report and its topics come from the World Bank documents database.</p>
-  <aside class="notes">We now turn to a second task, report tagging, and go through its results in detail. Read the title of the report and its topics. Then bring back the three options from the start of the session. The third obstacle is the one that synthetic data remove.</aside>
+  <p class="kicker">The training texts</p>
+  <h2>Three sets of texts take the place of a coded survey in training.</h2>
+  <div class="body center">
+    <div class="g3 sets" data-demo="sets"></div>
+    <p class="callout" data-step="3">After repeated texts are removed, the model trains on 44,058 different texts.</p>
+  </div>
+  <p class="src">The job titles come from the job board hahu.jobs (dataset published by Tabiya, CC BY 4.0), and the job board assigned their codes.</p>
+  <aside class="notes">We had no survey responses with codes for training. So the model learns from three sets of texts. The first is the set of the nine steps: job titles that a large model wrote from the definitions. The second is real: job titles from a job board, with the code that the job board assigned. They are worded as advertisements. The third joins the two ideas: a large model rewrites each real job title as the answers of a respondent, and the code stays with each answer. The next two slides show how the third set was written and checked.</aside>
 </section>
 
-<!--__USED__-->
+<section class="slide" id="s27" data-sec="5">
+  <p class="kicker">The request</p>
+  <h2>One request turns a job title into three answers of a respondent.</h2>
+  <div class="body"><div class="fill story" data-demo="write"></div></div>
+  <p class="src">The run made one request for each of 10,134 job titles and received 30,299 answers. Qwen3.8-27B wrote them.</p>
+  <aside class="notes">Select the button and let the answers arrive. Read one job title and its three answers aloud. The first answer is short, the second adds the place of work, and the third gives the tasks. The code of the job title stays with each answer. Ask the room whether the answers sound like the answers of a respondent. The request on the slide is shortened: the full request has three more rules.</aside>
+</section>
 
 <section class="slide" id="s28" data-sec="5">
-  <p class="kicker">The method in three steps</p>
-  <h2>The large model is needed in the first two steps only.</h2>
-  <div class="body"><div class="fill m3" data-demo="m3" style="display:flex;flex-direction:column;gap:1em"></div></div>
-  <p class="src">In step 3 the reports do not leave the organization.</p>
-  <aside class="notes">This is the whole method on one slide. Read the three cards, then switch to the office comparison to connect them with the earlier slide. The next slides take the steps one at a time, with recorded data.</aside>
+  <p class="kicker">The check</p>
+  <h2>A second model removed about a quarter of the answers.</h2>
+  <div class="body"><div class="g2 fill checkcols" data-demo="checked"></div></div>
+  <p class="src">Gemma 4 31B read each answer without the job title and without the code. It chose among the group of the title, the groups next to it in the classification, groups drawn at random, and the reply that none of the listed groups fits.</p>
+  <aside class="notes">A wrong code in training becomes a wrong answer in use, so every answer was checked. A second large model read the answer alone and chose a group. We kept the answer when it chose the group of the job title. Go through the job titles on the right. Short answers were removed most often, because a short answer such as "officer" fits several groups. The check also removes answers that are correct and too short to identify one group among 436.</aside>
 </section>
 
 <section class="slide" id="s29" data-sec="5">
-  <p class="kicker">Step 1 · Synthetic data</p>
-  <h2>One request names eight topics and returns 20 labelled sentences.</h2>
-  <div class="body"><div class="fill story" data-demo="write"></div></div>
-  <p class="src">The request and the sentences are recorded from the run that produced the training data. The run made 1,000 requests, each with eight of the 86 topics, and they gave about 20,000 labelled sentences.</p>
-  <aside class="notes">Select the button and let the sentences arrive. Read two of them aloud, one with a single topic and one with two. Ask the room whether the sentences read like report text. Then give the scale: a thousand requests like this one, about twenty thousand sentences.</aside>
+  <p class="kicker">A model learns</p>
+  <h2>A model that counts words learns four occupation groups from examples.</h2>
+  <div class="body"><div class="fill learn" data-demo="learn"></div></div>
+  <p class="src">The four groups share few words, so the model learns them from few examples. A large model wrote the training and test answers from real job titles.</p>
+  <aside class="notes">This model is trained live in the page, and it is a simpler kind of model than our small model: it counts the words of each group. With one example for each group it gets 14 of 56 right. A random guess gets the same. Move to three, ten, and forty, and watch the squares fill. Then type an answer from the room and see which group the model gives it. Our small model also learns from examples. It reads many more of them, and it separates 436 groups.</aside>
 </section>
 
 <section class="slide" id="s30" data-sec="5">
-  <p class="kicker">Step 1 · The wording of the request <span class="deeper">Go deeper</span></p>
-  <h2>The small model did worse when the sentences had to avoid the topic names.</h2>
-  <div class="body center"><div data-demo="wording" style="display:flex;flex-direction:column;gap:1.3em"></div></div>
-  <p class="src">Scores are F1 on 300 real report abstracts. The score for names allowed is the mean of three training runs. The score for names avoided comes from one run.</p>
-  <aside class="notes">Skip this slide if time is short. One line in the request changed, and the score of the small model changed with it. The lesson for the room is that the request is a design choice, and that its effect has to be measured on real reports.</aside>
-</section>
-
-<section class="slide" id="s31" data-sec="5">
-  <p class="kicker">Step 2 · The small model learns</p>
-  <h2>A simple model gets more reports right as it reads more examples.</h2>
-  <div class="body"><div class="fill learn" data-demo="learn"></div></div>
-  <p class="src">This demonstration model runs in the page and counts words only. It stops improving after about 20 examples per topic. The report-tagging model learns all 86 topics from about 20,000 examples.</p>
-  <aside class="notes">This model is trained live in the page, on four topics. Start with one example per topic and show the words linked to each topic. Move to ten, then forty, and watch the squares fill. Then type a sentence from the room and see which topic the model gives it.</aside>
-</section>
-
-<section class="slide" id="s32" data-sec="5">
   <p class="kicker">Distillation</p>
   <h2>In distillation a large model passes a skill to a small one.</h2>
   <div class="body center">
@@ -61,72 +44,80 @@
     </div>
     <div class="g2">
       <div class="card" data-step="1"><span class="lbl">The original form</span><p class="txt mt">The student learns to match the teacher's probability for every possible answer. The probabilities carry more information than the teacher's top answer alone.</p></div>
-      <p class="callout" data-step="2" style="align-self:center">In this session the teacher also writes the examples.</p>
+      <p class="callout" data-step="2" style="align-self:center">In this session the teacher passes its skill through the examples that it writes.</p>
     </div>
   </div>
   <p class="src">Hinton, Vinyals, and Dean (2015), "Distilling the Knowledge in a Neural Network." The teacher's memory is that of the 8-bit version used for this model.</p>
-  <aside class="notes">Name the method. The teacher is about 190 times the size of the student by number of parameters. In the original form of distillation the student copies the teacher's full set of probabilities. In our case the teacher has a second job, because it writes the training sentences as well.</aside>
+  <aside class="notes">Name the method. The teacher is about 190 times the size of the student by number of parameters. In the original form of distillation the student copies the teacher's full set of probabilities. In our case the teacher passes its skill through the examples that it writes: the job titles, the answers, and the checks.</aside>
+</section>
+
+<section class="slide" id="s31" data-sec="5">
+  <p class="kicker">The model at work</p>
+  <h2>A coder chooses among five codes that the model suggests.</h2>
+  <div class="body"><div class="suggest" data-demo="atwork"></div></div>
+  <p class="src">The first six responses come from the test, where a large model wrote them from real job titles. The last two come from 29 informal responses written as illustrations, and no occupation coder has checked their codes.</p>
+  <aside class="notes">Here is the trained model on eight responses. Go through them. In three the reference code is the first suggestion, and in two it is the second. In the last three it is missing from the five. The last two describe informal work in everyday or local words. On 29 informal responses the first code of this model was right for about a third, against about half for the model trained on the definitions alone. More training texts raised the score on the test and lowered it on these responses.</aside>
+</section>
+
+<section class="slide" id="s32" data-sec="5">
+  <p class="kicker">Scores by training set</p>
+  <h2>Adding the rewritten answers raised the share of right first codes from 46 to 66 in 100.</h2>
+  <div class="body center"><div class="bt" data-demo="bytraining"></div></div>
+  <p class="src">Each score is the mean of three training runs. Each test set holds 1,000 texts from job titles set aside before training.</p>
+  <aside class="notes">Each bar is one model, trained on a different set of texts and tested on the same 1,000 survey-style answers. With real job titles alone, the first code was right for 46 answers in 100. With the rewritten answers added, it was right for 66. The titles written from the definitions add a little more. Then switch the test to real job titles. There the rewritten answers change the score little, from 58 to 60 in 100. The other control shows the share of answers with the right code among five.</aside>
 </section>
 
 <section class="slide" id="s33" data-sec="5">
-  <p class="kicker">Step 3 · The small model at work</p>
-  <h2>The student scores every topic and assigns the topics above a threshold.</h2>
-  <div class="body"><div class="fill work" data-demo="work"></div></div>
-  <p class="src">The student assigns a topic when its score is at least 0.03, up to five topics per report. The report and the scores are recorded.</p>
-  <aside class="notes">Here is the student at work on the report we saw earlier. It gives each of the 86 topics a score, and the chart shows the top eight. Four topics pass the threshold, and all four are among the topics recorded for the report. One report proves little, so the next slide gives the result on 300 reports.</aside>
+  <p class="kicker">Compared with large models</p>
+  <h2>On survey-style answers the small model scored about the same as the best of three large models.</h2>
+  <div class="body center"><div class="vs" data-demo="versus"></div></div>
+  <p class="src">The 1,000 test answers were written by Gemini 3.8 Flash from real job titles, because no survey answers coded by people were available. The small model's scores are the mean of three training runs.</p>
+  <aside class="notes">Each large model was asked directly for the code of every answer. The small model and the best large model are within the margin of error of each other, and the small model is ahead of the other two. Give the three cautions. A large model wrote the test answers, and that same model is the best of the three. The request that wrote the test answers resembles the request that wrote the training answers, which favours the small model. And on real job titles the small model trained on titles of the same job board. A test on answers coded by people is still needed.</aside>
 </section>
 
 <section class="slide" id="s34" data-sec="5">
-  <p class="kicker">Results on 300 real reports</p>
-  <h2>The student scored about the same as three large models asked directly.</h2>
-  <div class="body center"><div data-demo="results"></div></div>
-  <p class="src">F1 on 300 real report abstracts, on a scale from 0 to 1. The student's scores are the mean of three training runs.</p>
-  <aside class="notes">Show the three large models first. Each one was asked directly for the topics of every report. Then reveal the student after the first set of sentences, and after the further rounds on its weak topics. The gap closes from about 0.06 to less than 0.01.</aside>
+  <p class="kicker">Speed and computer</p>
+  <h2>The small model answers in 0.05 seconds on an ordinary processor.</h2>
+  <div class="body center"><div class="g2 speedcols" data-demo="speed"></div></div>
+  <p class="src">Each time is the median for one answer. The large models were timed over 50 requests each. The times of the hosted services include the network and the service's queue. The CPU time was measured with four threads of a server processor.</p>
+  <aside class="notes">The axis is logarithmic, so each step to the right is ten times slower. On an ordinary processor the small model answers in about 0.05 seconds. The fastest large model ran on its own GPU and took 0.37 seconds. The hosted services took longer, and the slowest also reasons before each answer. The small model fits on a laptop and needs no connection.</aside>
 </section>
 
 <section class="slide" id="s35" data-sec="5">
-  <p class="kicker">Speed and computer</p>
-  <h2>The student answers in 0.19 seconds on an ordinary processor.</h2>
-  <div class="body center"><div class="g2 speedcols" data-demo="speed"></div></div>
-  <p class="src">The times of the hosted services include the network and the service's queue. The CPU time was measured with four threads of a server processor on 100 of the abstracts, and the time of Qwen3.8-27B on 50.</p>
-  <aside class="notes">The axis is logarithmic, so each step to the right is ten times slower. The student on an ordinary processor is about 3 to 20 times faster than the large models, and those ran on a GPU or through an online service. This is the practical gain: the model fits on a laptop and needs no connection.</aside>
-</section>
-
-<section class="slide" id="s36" data-sec="5">
   <p class="kicker">Cost of building</p>
-  <h2>Each model was built in less than an hour on one server.</h2>
+  <h2>Each build took less than an hour on one server.</h2>
   <div class="body"><div class="fill" data-demo="cost" style="display:flex;flex-direction:column;justify-content:center"></div></div>
   <p class="src">Requests, tokens and times come from the logs of the runs. Open models wrote and checked the examples on one server with two GPUs, so no price for each token was paid. The price is an example for comparison with the current price list of a provider. The time of the people who wrote the requests and reviewed the examples was not recorded.</p>
-  <aside class="notes">People ask what this costs, so here is what we measured. For report topics, the large model answered 1,750 requests and the whole build took 32 minutes, with six training runs of the small model inside that time. The two occupation builds are larger because a second model checks every example. Now select a price. We ran open models on our own server, so we paid no price for each token. With a hosted service, the cost is the number of tokens times the provider's price, and prices change often. Select the three examples to show the range. We did not measure our own time for writing the requests, reading samples, and deciding what to fix.</aside>
+  <aside class="notes">People ask what this costs, so here is what we measured. For the titles written from the definitions, the large model answered 2,700 requests and the build took 48 minutes. The rewriting build made about 20,000 requests, because a second model checks every answer, and it took 50 minutes. The third card is the report-tagging model of the next part: 1,750 requests and 32 minutes, with six training runs inside that time. Now select a price. We ran open models on our own server, so we paid no price for each token. With a hosted service, the cost is the number of tokens times the provider's price, and prices change often. Select the three examples to show the range. We did not measure our own time for writing the requests, reading samples, and deciding what to fix.</aside>
 </section>
 
-<section class="slide" id="s37" data-sec="5">
-  <p class="kicker">Limits of the result</p>
-  <h2>These results come from one task and cover about half of the topics.</h2>
-  <div class="body center">
-    <div class="limits">
-      <div class="card">
-        <span class="lbl">Topics in the test</span>
-        <p class="stat mt">44 <span style="font-size:.5em;font-weight:600">of 86</span></p>
-        <div class="g86" data-demo="g86"></div>
-        <p class="txt-s">The 300 test reports cover 44 of the 86 topics. The scores say nothing about the other 42.</p>
-      </div>
-      <div class="card" data-step="1">
-        <span class="lbl">The reference answers</span>
-        <p class="big mt">A record can omit a topic.</p>
-        <p class="txt-s mt">The right answers are the topics recorded for each report in the documents database. A record can omit a topic that the abstract covers.</p>
-      </div>
-      <div class="card" data-step="2">
-        <span class="lbl">A second task</span>
-        <p class="stat mt">0.15 <span style="font-size:.5em;font-weight:600">lower</span></p>
-        <p class="txt-s mt2">Trained only on job titles written from the definitions, the occupation model scored 0.15 below the best large model on real job titles.</p>
-      </div>
+<section class="slide" id="s36" data-sec="6">
+  <p class="kicker">Tagging reports with topics</p>
+  <h2>A second small model tags each report with topics from a fixed list of 86.</h2>
+  <div class="body"><div class="g2 fill">
+    <div class="card report" data-demo="report"></div>
+    <div style="display:flex;flex-direction:column;justify-content:center;gap:.9em">
+      <span class="lbl">How the model was built</span>
+      <ul class="obst">
+        <li data-step="1"><span class="lbl">Training</span>A large model wrote more than 30,000 labelled sentences. No real report was used.</li>
+        <li data-step="2"><span class="lbl">Threshold</span>488 real reports set the score above which the model assigns a topic.</li>
+        <li data-step="3"><span class="lbl">Test</span>300 other real reports with recorded topics test the model.</li>
+      </ul>
     </div>
-  </div>
-  <aside class="notes">Give the limits the same weight as the results. Nearly half of the topics never appear in the test, so we know nothing about them. The reference answers are imperfect. On occupation coding, the model that learned from written titles alone was clearly behind the large models. A team that wants to use the method has to test it on its own task.</aside>
+  </div></div>
+  <p class="src">The report and its topics come from the World Bank documents database.</p>
+  <aside class="notes">The same process built a second model for a different task. An organization wants each report tagged with topics from a fixed list of 86, and it has no tagged reports for training. Read the title of the report and its topics. Then reveal the three facts. Here the test uses real reports with topics recorded by people.</aside>
 </section>
 
-<section class="slide" id="s38" data-sec="6">
+<section class="slide" id="s37" data-sec="6">
+  <p class="kicker">Results on 300 real reports</p>
+  <h2>On 300 real reports the small model scored about the same as three large models.</h2>
+  <div class="body center"><div data-demo="results"></div></div>
+  <p class="src">F1 on 300 real report abstracts, on a scale from 0 to 1. The small model's scores are the mean of three training runs. The test covers 44 of the 86 topics. The small model takes 0.19 seconds per report on an ordinary processor.</p>
+  <aside class="notes">Show the three large models first. Each one was asked directly for the topics of every report. Then reveal the small model after the first set of sentences, and after the further rounds on its weak topics. The gap closes from about 0.06 to less than 0.01. Give two cautions. The 300 reports cover 44 of the 86 topics, so the scores say nothing about the other 42. And the recorded topics of a report can omit a topic that the abstract covers.</aside>
+</section>
+
+<section class="slide" id="s38" data-sec="7">
   <p class="kicker">Small or large</p>
   <h2>A small model suits a narrow task that repeats many times.</h2>
   <div class="body center">
@@ -148,19 +139,19 @@
         </ul>
       </div>
     </div>
-    <p class="callout" data-step="2">On report topics, our small model scored about the same as three large models and answered faster on an ordinary processor. On occupation codes, it scored lower with written titles alone and higher once labelled job titles were added.</p>
+    <p class="callout" data-step="2">On survey-style answers about occupation, our small model scored about the same as the best of three large models and answered in 0.05 seconds on an ordinary processor. On report topics, a second small model also scored about the same as three large models.</p>
   </div>
-  <aside class="notes">These criteria summarize everything so far. Go back to the survey response from the start: a fixed list of codes, a task that repeats, confidential records. Then reveal the other side. A large model remains the right tool for open questions and for writing. Then reveal the two results. The description of this session says that a specialized model can be more accurate, more efficient, and cheaper than a general-purpose model. Our two tests support the efficiency. On accuracy, the small model reached the large models on report topics. On occupation codes, the first code was right for 35 of 100 real job titles when the model had learned from written titles alone, and for 50 of 100 with the best large model. With labelled job titles and their rewritten answers added, the small model reached 60 of 100. Say that this last test favours the small model, because its labelled titles come from the same job board as the test titles. A test on real cases settles the question for each task.</aside>
+  <aside class="notes">These criteria summarize everything so far. Go back to the survey response from the start: a fixed list of codes, a task that repeats, confidential records. Then reveal the other side. A large model remains the right tool for open questions and for writing. Then reveal the two results. The description of this session says that a specialized model can be more accurate, more efficient, and cheaper than a general-purpose model. Our two tests support the efficiency. On accuracy, both small models scored about the same as the large models, and neither scored clearly higher. The occupation test has a weakness, because a large model wrote its answers. A test on real cases settles the question for each task.</aside>
 </section>
 
-<section class="slide" id="s39" data-sec="6">
+<section class="slide" id="s39" data-sec="7">
   <p class="kicker">Your turn</p>
   <h2>Which kind of model suits each of these six tasks?</h2>
   <div class="body"><div class="fill" data-demo="quiz" style="display:flex;flex-direction:column;gap:.7em"></div></div>
   <aside class="notes">Let the room vote on each task by a show of hands before you select an answer. The last three tasks have a second lesson: a small model can still do a narrower part of the work. If a task from the room came up earlier, apply the same criteria to it now.</aside>
 </section>
 
-<section class="slide" id="s40" data-sec="6">
+<section class="slide" id="s40" data-sec="7">
   <p class="kicker">Before relying on a small model</p>
   <h2>A team checks four points before it relies on a small model.</h2>
   <div class="body center">
@@ -171,10 +162,10 @@
       <li data-step="3"><span class="box">4</span>A person reviews a sample of the output at regular intervals.</li>
     </ol>
   </div>
-  <aside class="notes">This is the slide to take back to the office. Each point answers one of the limits we saw. If a supplier offers a small model, these are the four questions to ask.</aside>
+  <aside class="notes">This is the slide to take back to the office. Each point answers a weakness of our own tests: the occupation test used answers that a model wrote, and the report test covers 44 of the 86 topics. If a supplier offers a small model, these are the four questions to ask.</aside>
 </section>
 
-<section class="slide" id="s41" data-sec="6">
+<section class="slide" id="s41" data-sec="7">
   <p class="kicker">A first attempt</p>
   <h2>A first attempt needs a subject specialist, real cases with known answers, and one GPU.</h2>
   <div class="body center">
@@ -186,8 +177,8 @@
       </div>
       <div class="card plain-k" data-step="1">
         <span class="lbl">Real cases</span>
-        <p class="stat mt">788<small>real reports with known topics for the report-tagging model</small></p>
-        <p class="txt-s mt2">488 reports set the threshold and 300 made the test. None of them was used for training.</p>
+        <p class="stat mt">1,000<small>real job titles with codes set aside for the occupation test</small></p>
+        <p class="txt-s mt2">The report-tagging model was tested on 300 real reports. Survey answers coded by people would make a stronger test for the occupation model.</p>
       </div>
       <div class="card small-k" data-step="2">
         <span class="lbl">Computer</span>
@@ -195,13 +186,13 @@
         <p class="txt-s mt2">The large model that writes the examples can be a hosted service or an open model on the organization's server.</p>
       </div>
     </div>
-    <p class="callout" data-step="3">The two notebooks of the session run both tasks from the examples to the test.</p>
+    <p class="callout" data-step="3">The two notebooks of the session run both builds from the examples to the test.</p>
   </div>
   <p class="src">The training times were measured on one server GPU. The notebooks are listed on the last slide.</p>
-  <aside class="notes">Here is what you need for a first attempt on your own task. Start with the people. The specialist matters most, because the specialist knows where two groups are easy to confuse and can tell a realistic example from a poor one. Then the real cases. We used 788 real reports for report tagging, and the occupation model was tested on 1,000 real job titles. Collect them first and keep them away from training. Then the computer. Each training run took between one and four minutes on one server GPU, and a smaller GPU takes longer. The notebooks let you repeat both builds with the recorded examples, without a large model and without a key.</aside>
+  <aside class="notes">Here is what you need for a first attempt on your own task. Start with the people. The specialist matters most, because the specialist knows where two groups are easy to confuse and can tell a realistic example from a poor one. Then the real cases. The occupation model was tested on 1,000 real job titles and on answers written from them, and the report-tagging model on 300 real reports. Collect the real cases first and keep them away from training. Then the computer. Each training run took between one and four minutes on one server GPU, and a smaller GPU takes longer. The notebooks let you repeat both builds with the recorded examples, without a large model and without a key.</aside>
 </section>
 
-<section class="slide" id="s42" data-sec="6">
+<section class="slide" id="s42" data-sec="7">
   <p class="kicker">Summary</p>
   <h2>A large model writes the examples, a small model learns from them, and real cases test the result.</h2>
   <div class="body center">

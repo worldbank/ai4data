@@ -127,7 +127,7 @@ def controls(browser):
         if cur() != seen[-1]:
             seen.append(cur())
     ok(f'forward walk visits {total} slides in order', seen == ids, f'{presses} presses')
-    ok('each part opens with its divider', all(ids[secs.index(str(n))] == f'p{n}' for n in range(1, 7)), ids)
+    ok('each part opens with its divider', all(ids[secs.index(str(n))] == f'p{n}' for n in range(1, 8)), ids)
     ok('slide counter', pg.input_value('#goto') == str(total) and pg.inner_text('#total') == f'/ {total}', pg.inner_text('#total'))
     back = 0
     while cur() != 's01' and back < 250:
@@ -154,7 +154,7 @@ def controls(browser):
     pg.keyboard.press('PageDown'); ok('PageDown', cur() == 'p1')
     pg.keyboard.press('PageUp'); ok('PageUp', cur() == 's01')
     pg.keyboard.press('Space'); ok('Space', cur() == 'p1')
-    ok('a divider names its part and hides the strip of part names', 'Part 1 of 6' in pg.text_content('.slide.on .kicker') and not pg.is_visible('#secnav'))
+    ok('a divider names its part and hides the strip of part names', 'Part 1 of 7' in pg.text_content('.slide.on .kicker') and not pg.is_visible('#secnav'))
     pg.locator('.slide.on .route [data-go="p4"]').click(); ok('a part on a divider opens the divider of that part', cur() == 'p4', cur())
 
     # Contents, notes, and links between slides.
@@ -168,7 +168,7 @@ def controls(browser):
     pg.keyboard.press('ArrowRight'); ok('the notes follow the slide', 'vote' in pg.inner_text('#notestext'), cur())
     pg.keyboard.press('n'); ok('N closes the notes', not pg.is_visible('#notespanel'))
     pg.locator('.slide.on .minirail button').nth(4).click(); ok('step number 5 opens s21', cur() == 's21')
-    pg.locator('.slide.on [data-go="s31"]').first.click(); ok('the link on s21 opens s31', cur() == 's31')
+    pg.locator('.slide.on [data-go="s29"]').first.click(); ok('the link on s21 opens s29', cur() == 's29')
     pg.locator('#secnav [data-sec="2"]').click(); ok('a part name opens the divider of the part', cur() == 'p2', cur())
     at('s06')
     pg.locator('.slide.on .term').first.click()
@@ -205,20 +205,31 @@ def controls(browser):
     # Demonstrations.
     pg.locator('.slide.on .seg button').nth(1).click()
     ok('s23: the second task', 'Report topics' in pg.locator('.slide.on .seg button[aria-pressed="true"]').inner_text())
-    at('s31')
+    at('s29')
     res = []
-    for n in ('1', '10', '40'):
+    for n in ('1', '3', '10', '40'):
         pg.locator(f'.slide.on [data-n="{n}"]').click()
         pg.wait_for_timeout(120)
-        res.append(pg.evaluate("() => (document.querySelector('.slide.on .body').innerText.match(/(\\d+) of 60/) || [])[1]"))
-    ok('s31: 17, 31, and 34 of 60 reports with 1, 10, and 40 examples', res == ['17', '31', '34'], res)
-    pg.locator('.slide.on input[type=text], .slide.on input:not([type])').first.fill('The clinic needs more nurses and vaccines')
+        res.append(pg.evaluate("() => (document.querySelector('.slide.on .body').innerText.match(/(\\d+) of 56/) || [])[1]"))
+    ok('s29: 14, 49, 53, and 55 of 56 answers with 1, 3, 10, and 40 examples', res == ['14', '49', '53', '55'], res)
+    pg.locator('.slide.on input[type=text], .slide.on input:not([type])').first.fill('I design roads and bridges')
     pg.wait_for_timeout(150)
-    ok('s31: a typed sentence gets a topic', 'Health' in body())
-    pg.keyboard.press('ArrowRight'); ok('s31: an arrow key in the text box keeps the slide', cur() == 's31')
-    pg.keyboard.press('Escape'); pg.keyboard.press('ArrowRight'); ok('s31: after Esc the arrow key moves on', cur() == 's32', cur())
-    at('s29'); pg.locator('.slide.on .btn').first.click(); pg.wait_for_timeout(2500)
-    ok('s29: the sentences arrive', pg.locator('.slide.on .sents > *').count() >= 3)
+    ok('s29: a typed answer gets a group', pg.evaluate("""() => {
+        const cells = [...document.querySelectorAll('.slide.on [data-probs] > *')];
+        let best = ['', -1];
+        for (let i = 0; i < cells.length; i += 3) { const v = parseInt(cells[i + 2].textContent, 10); if (v > best[1]) best = [cells[i].textContent, v]; }
+        return best[0];
+    }""") == 'Civil engineers')
+    pg.keyboard.press('ArrowRight'); ok('s29: an arrow key in the text box keeps the slide', cur() == 's29')
+    pg.keyboard.press('Escape'); pg.keyboard.press('ArrowRight'); ok('s29: after Esc the arrow key moves on', cur() == 's30', cur())
+    at('s27'); pg.locator('.slide.on .btn').first.click(); pg.wait_for_timeout(2700)
+    ok('s27: the answers of the job titles arrive', pg.locator('.slide.on .sents > *').count() >= 3)
+    at('s28'); kept = pg.locator('.slide.on .ck3 .drop').count(); pg.locator('.slide.on [data-a="go"][data-v="1"]').click(); pg.wait_for_timeout(150)
+    ok('s28: the check shows kept and removed answers', kept == 1 and 'Job title 2 of 5' in body() and '8,031' in body(), kept)
+    at('s31'); ok('s31: five codes are shown for each response', pg.locator('.slide.on .sgrow').count() == 5 and pg.locator('.slide.on .btn').count() == 0)
+    at('s33'); first = body(); pg.locator('.slide.on .seg button').nth(2).click(); pg.wait_for_timeout(200)
+    ok('s33: the comparison has three views', '68.4%' in first and '67.5%' in first and '59.5%' in body() and '49.7%' in body())
+    at('s34'); ok('s34: times and memory of the small model', all(v in body() for v in ('0.048 s', '0.57 GB', '7×')))
     at('s02'); pg.locator('.slide.on .btn').first.click(); pg.wait_for_timeout(200)
     ok('s02: five codes are suggested', pg.locator('.slide.on .sgrow').count() == 5 and pg.locator('.slide.on .sgrow.hit').count() == 1)
     at('s12'); pg.locator('.slide.on .btn').first.click(); pg.wait_for_timeout(600)
@@ -234,10 +245,10 @@ def controls(browser):
         pg.locator('.slide.on .casebtn').nth(i).click()
         pg.wait_for_timeout(60)
     ok('s03: eleven tasks', n == 11, n)
-    at('s15'); first = body(); pg.locator('.slide.on .seg button').nth(1).click(); pg.wait_for_timeout(200)
-    ok('s15: the two scores of the rewritten answers', '66.0%' in first and '92.4%' in body())
-    at('s36'); pg.locator('.slide.on .seg button').nth(2).click(); pg.wait_for_timeout(200)
-    ok('s36: the example price changes the three amounts', all(v in body() for v in ('$21', '$39', '$172')))
+    at('s32'); first = body(); pg.locator('.slide.on .seg button').nth(1).click(); pg.wait_for_timeout(200)
+    ok('s32: the two scores of the rewritten answers', '66.0%' in first and '92.4%' in body())
+    at('s35'); pg.locator('.slide.on .seg button').nth(2).click(); pg.wait_for_timeout(200)
+    ok('s35: the example price changes the three amounts', all(v in body() for v in ('$21', '$39', '$172')))
     at('s22'); pg.locator('.slide.on input[type=checkbox]').check()
     ok('s22: the switch mixes practice cases into the test', 'Used for training and testing' in pg.inner_text('.slide.on .demo'))
     at('s19')

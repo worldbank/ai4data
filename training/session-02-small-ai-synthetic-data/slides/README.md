@@ -1,12 +1,12 @@
 # Slides
 
-- `deck.html`: the deck, 49 slides in one HTML file. It opens in a browser from a local copy of the repository and needs no server. GitHub shows the file as source text.
+- `deck.html`: the deck, 50 slides in one HTML file. It opens in a browser from a local copy of the repository and needs no server. GitHub shows the file as source text.
 - `outline.md`: the headline and the speaker notes of every slide. This is the file to review and comment on.
-- `build_deck.py`: builds both files from the sources in `src/` and from the recorded data in `../assets/overview.json`, `src/occupation.json`, and `src/cost.json`.
+- `build_deck.py`: builds both files from the sources in `src/` and from the recorded data in `../assets/overview.json`, `../assets/occupation/`, `src/occupation.json`, and `src/cost.json`.
 - `src/`: the slide sources, the styles, and the script of the demonstrations.
 - `fit_slides.py` and `check_deck.py`: the scripts that size the slides and test the deck in a browser.
 
-The deck follows the [overview of the session](../README.md) in the same order. Each slide has a one-sentence headline, one figure or demonstration, and speaker notes.
+The deck covers the concepts of the [overview of the session](../README.md). Its longest example is occupation coding, and the report-tagging model of the overview is a second case of two slides. Each slide has a one-sentence headline, one figure or demonstration, and speaker notes.
 
 The docs site shows `deck.html` on the Slides page of the session. The site build copies the file, so a rebuilt deck appears on the site after the next build.
 
@@ -27,11 +27,11 @@ The docs site shows `deck.html` on the Slides page of the session. The site buil
 
 A slide reached with → starts with its reveals hidden. Every other move opens a slide with all its reveals shown.
 
-The bar under the stage has four buttons: `«` and `»` move by one slide, and `←` and `→` move by one reveal. Next to them are a box for a slide number and a strip with one mark for each slide. A mark shows the number and the headline of its slide under the pointer, and a click on the mark opens the slide. The taller marks are the first slides of the six parts.
+The bar under the stage has four buttons: `«` and `»` move by one slide, and `←` and `→` move by one reveal. Next to them are a box for a slide number and a strip with one mark for each slide. A mark shows the number and the headline of its slide under the pointer, and a click on the mark opens the slide. The taller marks are the first slides of the seven parts.
 
-Each part opens with a divider slide. The divider names the part, describes its content in one line, and lists the six parts with the current one marked. The part names at the top of the other slides link to these dividers. Words with a dotted underline show their definition when selected.
+Each part opens with a divider slide. The divider names the part, describes its content in one line, and lists the seven parts with the current one marked. The part names at the top of the other slides link to these dividers. Words with a dotted underline show their definition when selected.
 
-Each slide has an id, and the address of a slide is the file address followed by `#` and the id, for example `deck.html#s22`. The ids of the dividers are `p1` to `p6`, and the ids of the other slides are `s01` to `s43`. A slide keeps its id when slides are added before it, so the id differs from the slide number in the bar.
+Each slide has an id, and the address of a slide is the file address followed by `#` and the id, for example `deck.html#s22`. The ids of the dividers are `p1` to `p7`, and the ids of the other slides are `s01` to `s43`. A slide keeps its id when slides are added before it, so the id differs from the slide number in the bar.
 
 In a window narrower than 820 pixels, the deck is laid out as one scrolling page with the notes under each slide.
 
@@ -46,8 +46,9 @@ The fonts (Inter and JetBrains Mono) load from Google Fonts. Without an internet
 | 7 to 11 | Small model | Large language models, small AI, the memory a model needs, the cost of building a small model |
 | 12 to 18 | Synthetic data | Labelled examples, why they are missing, rare cases, synthetic data, the office comparison, labelled job titles rewritten as survey answers |
 | 19 to 29 | Nine steps | The process, then one slide for each step with a demonstration on occupation coding |
-| 30 to 42 | Report tagging | The task, the steps used, the request and the sentences, a model trained in the page, distillation, results, speed, the measured cost of building each model, limits |
-| 43 to 49 | Small or large | Criteria, a six-task exercise for the room, checks before relying on a small model, the requirements of a first attempt, summary, sources |
+| 30 to 40 | Occupation coding | The three sets of training texts, the request that rewrites a job title as survey answers, the check by a second model, a word-counting model trained in the page, distillation, five suggested codes for eight responses, the scores by training set, the comparison with three large models, speed, the measured cost of each build |
+| 41 to 43 | Report tagging | A second small model that tags reports with topics, and its scores on 300 real reports |
+| 44 to 50 | Small or large | Criteria, a six-task exercise for the room, checks before relying on a small model, the requirements of a first attempt, summary, sources |
 
 The first slide of each part is its divider.
 
@@ -55,17 +56,34 @@ The first slide of each part is its divider.
 
 | File | Content |
 |---|---|
-| `src/slides-01-15.html`, `src/slides-26-43.html` | The slides with the ids `s01` to `s15`, `s26`, and `s28` to `s43`, one `<section>` for each slide, with the speaker notes in `<aside class="notes">` |
-| `STEPS` in `build_deck.py` | The slides `s16` to `s25` and `s27`: for each step, the office comparison, the model version, the notes, and its use for the report-tagging model |
-| `DIVIDERS` in `build_deck.py` | The dividers `p1` to `p6`: for each part, the line under its name and the notes. The names of the parts come from `SECS` in `src/app.js` |
+| `src/slides-01-15.html`, `src/slides-26-43.html` | The slides with the ids `s01` to `s15` and `s26` to `s43`, one `<section>` for each slide, with the speaker notes in `<aside class="notes">` |
+| `STEPS` in `build_deck.py` | The slides `s16` to `s25`: the process slide and, for each step, the office comparison, the model version, and the notes |
+| `DIVIDERS` in `build_deck.py` | The dividers `p1` to `p7`: for each part, the line under its name and the notes. The names of the parts come from `SECS` in `src/app.js` |
+| `learn_data()` in `build_deck.py` | The answers of the word-counting model on slide `s29`: 40 training answers and 14 test answers for each of four occupation groups, taken from `../assets/occupation/` |
 | `src/app.js` | Navigation, the definitions of the terms, and the demonstrations |
 | `src/style.css` | Styles for the stage, the reading layout, and the light and dark themes |
 | `src/shell.html` | The frame of the page: the stage, the bar under it, the notes panel, and the contents |
 | `src/fit.css` | The text scale of each slide, written by `fit_slides.py` |
-| `src/occupation.json` | The recorded results of the occupation-coding model, its suggestions for the eight survey responses of slide `s02`, and the rewritten job title and scores of slide `s15` |
-| `src/cost.json` | The requests, tokens, kept examples, training runs, and minutes of the three builds on slide `s36`, taken from the run logs |
+| `src/occupation.json` | The recorded results of the occupation-coding models: the suggestions for the eight survey responses of slide `s02`, the job title and answers of slide `s15`, and the counts, examples, scores, and times of slides `s26` to `s34` |
+| `src/cost.json` | The requests, tokens, kept examples, training runs, and minutes of the three builds on slide `s35`, taken from the run logs |
 
-The scores, the request, the sentences, and the reports in the report-tagging part come from `../assets/overview.json`, the recorded data behind the figures of the overview page. The scores of the occupation-coding model in `src/occupation.json` were measured on 1,000 job titles from the job board hahu.jobs, as means over three training runs. The titles come from the dataset [`tabiya/occupation_titles_esco`](https://huggingface.co/datasets/tabiya/occupation_titles_esco) (CC BY 4.0). The code of each title is the ESCO occupation assigned by the job board, mapped to its ISCO-08 unit group, and no trained coder reviewed these codes. Slide `s15` shows one title from the dataset with three survey-style answers that a large model wrote from it. Its scores are means over three training runs on 1,000 survey-style answers, which a third large model wrote from the test titles. Coded survey responses were not available for that test. The dollar amounts on slide `s36` multiply the logged tokens by an example price selected on the slide. The runs used open models on one server, and no price per token was paid. The survey responses on slide `s02` and on the slides of the nine steps, and the codes shown for them, were written for the session as illustrations, and the slides say so. The five suggestions for each response on slide `s02` are the recorded output of the occupation-coding model. Group names follow ISCO-08 (International Labour Organization), and the group descriptions on the slides are shortened paraphrases. The tasks and practice cases on slide `s03` are illustrations written for the session. The first row holds the applications named in the description of the session. The match on the semantic-search card is the first result recorded in the [repository README](../../../README.md) for the model `avsolatorio/GIST-all-MiniLM-L6-v2`.
+### Occupation coding
+
+The job titles come from the dataset [`tabiya/occupation_titles_esco`](https://huggingface.co/datasets/tabiya/occupation_titles_esco) (CC BY 4.0), which holds titles from the job board hahu.jobs. The code of each title is the ESCO occupation assigned by the job board, mapped to its ISCO-08 unit group. No trained coder reviewed these codes. Group names follow ISCO-08 (International Labour Organization), and the group descriptions on the slides are shortened paraphrases.
+
+The deck shows two occupation models. The first was trained on job titles that a large model wrote from the group definitions. Slide `s02` and the slides of the nine steps use this model. The second was trained on three sets: the titles of the first model, the job-board titles, and survey-style answers that a large model wrote from the job-board titles. The slides `s26` to `s34` describe this model. Qwen3.8-27B wrote the answers, and Gemma 4 31B checked them.
+
+Each score of slides `s32` and `s33` is the mean of three training runs. The two test sets hold 1,000 texts each, from job titles set aside before training. One holds the job titles. The other holds survey-style answers that Gemini 3.8 Flash wrote from those titles, because coded survey responses were not available. Three limits apply to the comparison on slide `s33`, and its speaker notes state them. Gemini 3.8 Flash is scored on answers that it wrote. The request for the test answers resembles the request for the training answers. The real job titles of the test come from the same job board as the training titles.
+
+The times on slide `s34` are medians for one answer. The large models were timed over 50 single requests each, and the times of the hosted services include the network and the load of the provider.
+
+The survey responses on slide `s02` and on the slides of the nine steps, and the codes shown for them, were written for the session as illustrations, and the slides say so. The five suggestions for each response on slide `s02` are the recorded output of the first model. Slide `s31` shows six responses from the survey-style test and two of the illustrations, with the recorded suggestions of the second model.
+
+The word-counting model on slide `s29` is a naive Bayes classifier in `src/app.js`. It trains in the browser on the answers selected by `learn_data()`, and it is separate from the two occupation models.
+
+### Other slides
+
+The report, the topics, and the scores in the report-tagging part come from `../assets/overview.json`, the recorded data behind the figures of the overview page. The dollar amounts on slide `s35` multiply the logged tokens by an example price selected on the slide. The runs used open models on one server, and no price per token was paid. The tasks and practice cases on slide `s03` are illustrations written for the session. The first row holds the applications named in the description of the session. The match on the semantic-search card is the first result recorded in the [repository README](../../../README.md) for the model `avsolatorio/GIST-all-MiniLM-L6-v2`.
 
 ## Regenerating
 

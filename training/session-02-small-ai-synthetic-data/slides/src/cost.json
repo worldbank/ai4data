@@ -1,11 +1,33 @@
 {
-  "prices": [0.5, 2, 10],
-  "builds": [
-    {"name": "Report topics", "minutes": 32, "requests": 1750, "tokens": 2079468,
-     "kept": "35,256 sentences", "trainings": "6 runs of 67 to 128 seconds"},
-    {"name": "Occupation codes from the definitions", "minutes": 48, "requests": 2700, "tokens": 3930758,
-     "kept": "15,865 of 27,000 titles", "trainings": "4 runs of 136 to 213 seconds"},
-    {"name": "Occupation codes from rewritten job titles", "minutes": 50, "requests": 20266, "tokens": 17172524,
-     "kept": "22,268 of 30,299 answers", "trainings": "1 run of 205 seconds"}
-  ]
+ "prices": [
+  0.5,
+  2,
+  10
+ ],
+ "builds": [
+  {
+   "name": "Occupation codes from the definitions",
+   "minutes": 48,
+   "requests": 2700,
+   "tokens": 3930758,
+   "kept": "15,865 of 27,000 titles",
+   "trainings": "4 runs of 136 to 213 seconds"
+  },
+  {
+   "name": "Occupation codes from rewritten job titles",
+   "minutes": 50,
+   "requests": 20266,
+   "tokens": 17172524,
+   "kept": "22,268 of 30,299 answers",
+   "trainings": "1 run of 205 seconds"
+  },
+  {
+   "name": "Report topics",
+   "minutes": 32,
+   "requests": 1750,
+   "tokens": 2079468,
+   "kept": "35,256 sentences",
+   "trainings": "6 runs of 67 to 128 seconds"
+  }
+ ]
 }

@@ -32,45 +32,50 @@ const TERMS = {
 /* ------------------------------------------------------------------ demos */
 const DEMOS = {};
 
-// A survey response and the five codes suggested for it (s02).
+// A response and the five codes suggested for it (s02 and s31).
 const ORDINAL = ['first', 'second', 'third', 'fourth', 'fifth'];
-DEMOS.suggest = {
-  state: () => ({i: 0, shown: false}),
-  on(st, a, v) {
-    if (a === 'show') { st.shown = true; return; }
-    st.i = Math.max(0, Math.min(DATA.occ.responses.length - 1, st.i + Number(v)));
-    st.shown = false;
-  },
-  render(st) {
-    const all = DATA.occ.responses, r = all[st.i];
-    const rank = r.suggestions.findIndex((x) => x.code === r.expected);
-    const verdict = !r.expected ? 'The response does not say what the person does. The model still returns five codes, and none of them can be checked.'
-      : rank < 0 ? 'The coder\'s code is missing from the five suggestions.'
-      : `The coder's code is the ${ORDINAL[rank]} suggestion.`;
-    const rows = r.suggestions.map((x) => `<div class="sgrow${x.code === r.expected ? ' hit' : ''}"><b class="code">${x.code}</b><span>${esc(x.name)}${x.code === r.expected ? ' <em>✓ coder\'s code</em>' : ''}</span>${bar(x.score, 'var(--small)')}<span class="v">${x.score.toFixed(2)}</span></div>`).join('');
-    return `<div class="card sgleft">
-      <span class="lbl">Household survey · question on the main job</span>
-      <p class="sgq">What kind of work do you do in your main job?</p>
-      <span class="lbl mt">Response</span>
-      <p class="msg real">${esc(r.text)}</p>
-      <div class="sgcoder"${st.shown ? '' : ' style="visibility:hidden"'}>
-        <span class="lbl">Code given by a coder</span>
-        <p>${r.expected ? `<b class="code">${r.expected}</b> ${esc(r.expectedName)}` : 'No code. The coder asks for more detail.'}</p>
+const suggestDemo = (list, o = {}) => {
+  const ref = o.ref || 'coder\'s code';
+  return {
+    state: () => ({i: 0, shown: !!o.open}),
+    on(st, a, v) {
+      if (a === 'show') { st.shown = true; return; }
+      st.i = Math.max(0, Math.min(list().length - 1, st.i + Number(v)));
+      st.shown = !!o.open;
+    },
+    render(st) {
+      const all = list(), r = all[st.i];
+      const rank = r.suggestions.findIndex((x) => x.code === r.expected);
+      const verdict = !r.expected ? 'The response does not say what the person does. The model still returns five codes, and none of them can be checked.'
+        : rank < 0 ? `The ${ref} is missing from the five suggestions.`
+        : `The ${ref} is the ${ORDINAL[rank]} suggestion.`;
+      const rows = r.suggestions.map((x) => `<div class="sgrow${x.code === r.expected ? ' hit' : ''}"><b class="code">${x.code}</b><span>${esc(x.name)}${x.code === r.expected ? ` <em>✓ ${ref}</em>` : ''}</span>${bar(x.score, 'var(--small)')}<span class="v">${x.score.toFixed(2)}</span></div>`).join('');
+      return `<div class="card sgleft">
+        <span class="lbl">Household survey · question on the main job</span>
+        <p class="sgq">What kind of work do you do in your main job?</p>
+        <span class="lbl mt">Response</span>
+        <p class="msg real">${esc(r.text)}</p>
+        <div class="sgcoder"${st.shown ? '' : ' style="visibility:hidden"'}>
+          <span class="lbl">${o.refLabel || 'Code given by a coder'}</span>
+          <p>${r.expected ? `<b class="code">${r.expected}</b> ${esc(r.expectedName)}` : 'No code. The coder asks for more detail.'}</p>
+        </div>
       </div>
-    </div>
-    <div class="card small-k sgright" aria-live="polite">
-      <span class="lbl">Five codes suggested by the small model and their scores</span>
-      ${st.shown ? `<div class="sg">${rows}</div><p class="def">${verdict}</p>`
-        : `<div class="sgempty">Which of the ${DATA.occ.groups} groups fits this response?</div>`}
-    </div>
-    <div class="row">
-      <button type="button" class="btn" data-a="show" data-v="1"${st.shown ? ' disabled' : ''}>Suggest five codes</button>
-      <button type="button" class="link" data-a="go" data-v="-1"${st.i === 0 ? ' disabled' : ''}>Previous response</button>
-      <button type="button" class="link" data-a="go" data-v="1"${st.i === all.length - 1 ? ' disabled' : ''}>Next response</button>
-      <span class="txt-s" style="margin-left:auto">Response ${st.i + 1} of ${all.length}</span>
-    </div>`;
-  },
+      <div class="card small-k sgright" aria-live="polite">
+        <span class="lbl">Five codes suggested by the small model and their scores</span>
+        ${st.shown ? `<div class="sg">${rows}</div><p class="def">${verdict}</p>`
+          : `<div class="sgempty">Which of the ${DATA.occ.groups} groups fits this response?</div>`}
+      </div>
+      <div class="row">
+        ${o.open ? '' : `<button type="button" class="btn" data-a="show" data-v="1"${st.shown ? ' disabled' : ''}>Suggest five codes</button>`}
+        <button type="button" class="link" data-a="go" data-v="-1"${st.i === 0 ? ' disabled' : ''}>Previous response</button>
+        <button type="button" class="link" data-a="go" data-v="1"${st.i === all.length - 1 ? ' disabled' : ''}>Next response</button>
+        <span class="txt-s" style="margin-left:auto">Response ${st.i + 1} of ${all.length}</span>
+      </div>`;
+    },
+  };
 };
+DEMOS.suggest = suggestDemo(() => DATA.occ.responses);
+DEMOS.atwork = suggestDemo(() => DATA.occ.atWork, {open: true, ref: 'reference code', refLabel: 'Reference code'});
 
 // Tasks for a small model (s03).
 const REASONS = {
@@ -89,7 +94,7 @@ const CASES = [
     input: 'sells roasted maize by the roadside', inputKind: 'Survey response',
     answer: [['Occupation group', 'Street food salespersons'], ['Code (ISCO-08)', '5212']],
     runs: 'On the laptops of the office\'s survey team, without an internet connection in the field.',
-    note: 'The session follows this task. A small model was built for it and tested on job titles from a job board.',
+    note: 'The session follows this task through the nine steps and through the build of a small model.',
     synth: 'A large model writes survey responses in the respondents\' own words and gives the code of each.',
     icon: `<rect x="10" y="8" width="38" height="40" rx="3" class="iP"/><path d="M16 18 H20 M24 18 H42 M16 28 H20 M24 28 H38 M16 38 H20 M24 38 H40" class="iL"/>${ARROW('M54 28 H66')}<rect x="70" y="20" width="24" height="16" rx="3" class="iT"/>`},
   {key: 'isic', name: 'Industry codes (ISIC)', who: 'A national statistical office',
@@ -106,7 +111,7 @@ const CASES = [
     input: 'The project paved 120 km of rural roads. Travel time to the nearest secondary school fell, and attendance rose.', inputKind: 'Report abstract',
     answer: [['Topic', 'Transport'], ['Topic', 'Education']],
     runs: 'On a laptop or a server of the organization. No report leaves the organization.',
-    note: 'Later in the session we build a small model for this task and test it on 300 real reports.',
+    note: 'Part 6 of the session shows a small model for this task and its test on 300 real reports.',
     synth: 'A large model writes sentences in the style of a report and gives the topics of each.',
     icon: `<rect x="16" y="6" width="30" height="38" rx="3" class="iP"/><rect x="10" y="12" width="30" height="38" rx="3" class="iP"/><path d="M16 22 H34 M16 30 H34 M16 38 H28" class="iL"/>${ARROW('M52 28 H64')}<rect x="68" y="14" width="24" height="8" rx="4" class="iT"/><rect x="68" y="27" width="18" height="8" rx="4" class="iT"/><rect x="68" y="40" width="22" height="8" rx="4" class="iT"/>`},
   {key: 'metadata', name: 'Metadata quality', who: 'The team of a data catalogue',
@@ -277,24 +282,25 @@ DEMOS.rare = {
   },
 };
 
-// Labelled job titles rewritten as survey answers (s15).
+// A labelled job title rewritten as survey answers (s15).
 DEMOS.rewrite = {
-  state: () => ({k: 'top1'}),
-  on(st, a, v) { st.k = v; },
-  render(st) {
+  on() { return false; },
+  render() {
     const r = DATA.occ.rewrite;
     return `<div class="card large-k">
       <span class="lbl">A labelled job title</span>
       <div class="rwtitle mt"><b>${esc(r.title)}</b><span class="ans">${esc(r.code)} ${esc(r.name)}</span></div>
       <span class="lbl mt2" style="display:block">Three answers written by a large model</span>
       <ul class="rwlist">${r.answers.map((x) => `<li><small>${esc(x.style)}</small><span class="msg">${esc(x.text)}</span></li>`).join('')}</ul>
-      <p class="txt-s mt">${fmt(r.titles)} job titles gave ${fmt(r.written)} answers. A second model checked each answer against the code and ${fmt(r.kept)} were kept.</p>
     </div>
-    <div class="card small-k" style="display:flex;flex-direction:column;gap:.9em">
-      <span class="lbl">The small model on ${fmt(r.test)} survey-style answers</span>
-      ${seg('k', [['top1', 'First code is right'], ['top5', 'Right code among 5']], st.k, 'Score')}
-      <div class="hb rwbars" aria-live="polite">${r.arms.map((x, i) => `<b>${esc(x.label)}</b>${bar(x[st.k], i ? 'var(--small)' : 'var(--faint)')}<span class="v">${(x[st.k] * 100).toFixed(1)}%</span>`).join('')}</div>
-      <p class="txt-s" style="margin-top:auto">Each score is the mean of three training runs.</p>
+    <div class="card small-k" style="display:flex;flex-direction:column">
+      <span class="lbl">From a job title to survey answers</span>
+      <ul class="ticks">
+        <li data-step="1">The wording changes from an advertisement to the words of a respondent.</li>
+        <li data-step="2">The code of the job title stays with each answer.</li>
+        <li data-step="3">A second model checks each answer against the code.</li>
+      </ul>
+      <p class="txt-s" style="margin-top:auto"><button type="button" class="link" data-go="p5" style="font-size:1em">Part 5 shows this build and its test</button></p>
     </div>`;
   },
 };
@@ -414,7 +420,7 @@ DEMOS.train = {
       <text x="58" y="98" text-anchor="middle" font-size="8">checked cases</text><text x="131" y="42" text-anchor="middle" font-size="8">training</text><text x="190" y="98" text-anchor="middle" font-size="8">small model</text>
     </svg>
     <p class="def">Training turns the cases into a model that answers on its own, on the organization's own computer.</p>
-    <p class="txt-s" style="margin-top:auto">A later slide trains a simple model in the page, so we can watch a model learn from examples. <button type="button" class="link" data-go="s31" style="font-size:1em">Go to that slide</button></p>`;
+    <p class="txt-s" style="margin-top:auto">A slide of part 5 trains a simple model in the page, so we can watch a model learn from examples. <button type="button" class="link" data-go="s29" style="font-size:1em">Go to that slide</button></p>`;
   },
 };
 
@@ -521,7 +527,7 @@ DEMOS.watch = {
   },
 };
 
-// The report on s26.
+// The report on s36.
 DEMOS.report = {
   on() { return false; },
   render() {
@@ -534,28 +540,26 @@ DEMOS.report = {
   },
 };
 
-// The method in three steps (s28 and s42).
+// The method in three steps (s42). The process on s05 uses the same icons.
 const METHOD = [
-  {term: 'Synthetic data', kind: 'large', go: 's29', link: 'See one request',
+  {term: 'Synthetic data', kind: 'large',
     title: 'A large model writes practice examples',
-    method: 'A large AI model writes thousands of example sentences and lists the topics of each one.',
-    office: 'An experienced officer writes practice cases, each with the correct answer.',
+    method: 'A large model writes thousands of examples, each with its answer.',
     icon: '<rect x="6" y="14" width="44" height="44" rx="8" class="iLg"/><path d="M18 30 H38 M18 38 H38 M18 46 H30" class="iLS"/><path d="M56 36 H66" class="iA" marker-end="url(#ah)"/><rect x="72" y="10" width="42" height="52" rx="4" class="iP"/><path d="M79 20 H107 M79 26 H101" class="iL"/><rect x="79" y="31" width="18" height="6" rx="3" class="iT"/><path d="M79 44 H107 M79 50 H97" class="iL"/><rect x="79" y="54" width="14" height="5" rx="2.5" class="iT"/>'},
-  {term: 'Distillation', kind: 'small', go: 's31', link: 'Watch a model learn',
+  {term: 'Distillation', kind: 'small',
     title: 'A small model learns from the examples',
-    method: 'A small model is trained on the examples until it gives the same topics to the same sentences.',
-    office: 'A new staff member studies the practice cases and learns the answers.',
+    method: 'A small model is trained on the examples until it gives the same answers.',
     icon: '<rect x="6" y="10" width="42" height="52" rx="4" class="iP"/><path d="M13 20 H41 M13 26 H35" class="iL"/><rect x="13" y="31" width="18" height="6" rx="3" class="iT"/><path d="M13 44 H41 M13 50 H31" class="iL"/><rect x="13" y="54" width="14" height="5" rx="2.5" class="iT"/><path d="M54 36 H68" class="iA" marker-end="url(#ah)"/><rect x="76" y="22" width="28" height="28" rx="6" class="iS"/><circle cx="86" cy="33" r="2.5" class="iD"/><circle cx="95" cy="40" r="2.5" class="iD"/><path d="M86 33 L95 40" class="iSS"/>'},
-  {term: 'Small AI', kind: 'small', go: 's33', link: 'See the small model at work',
+  {term: 'Small AI', kind: 'small',
     title: 'The small model works alone',
-    method: 'The small model tags the reports on the organization\'s own computer, without the large model and without an internet connection.',
-    office: 'The new staff member handles the routine files alone, and the files stay in the office.',
+    method: 'The small model does the task on the organization\'s own computer, without the large model and without an internet connection.',
     icon: '<rect x="20" y="12" width="80" height="44" rx="4" class="iP"/><path d="M10 62 H110" class="iL" stroke-width="4"/><rect x="30" y="22" width="22" height="22" rx="5" class="iS"/><circle cx="38" cy="31" r="2" class="iD"/><circle cx="45" cy="36" r="2" class="iD"/><path d="M38 31 L45 36" class="iSS"/><path d="M60 26 H90 M60 32 H84" class="iL"/><rect x="60" y="38" width="18" height="6" rx="3" class="iT"/>'},
 ];
-const methodCards = (view, links) => METHOD.map((s, i) =>
+const methodCards = () => METHOD.map((s, i) =>
   `<div class="card ${s.kind}-k"><svg viewBox="0 0 120 72" aria-hidden="true">${s.icon}</svg>
-    <span class="lbl">Step ${i + 1} · ${s.term}</span><h3>${s.title}</h3><p class="txt">${esc(s[view])}</p>
-    ${links ? `<button type="button" class="link" data-go="${s.go}" style="margin-top:auto;text-align:left">${s.link}</button>` : ''}</div>`).join('');
+    <span class="lbl">Step ${i + 1} · ${s.term}</span><h3>${s.title}</h3><p class="txt">${esc(s.method)}</p></div>`).join('');
+DEMOS.sum3 = {on() { return false; }, render: methodCards};
+
 // The process and the parts of the session (s05).
 const CYCLE = [
   {k: 'plain', lbl: 'The task', t: 'A response needs one code from a fixed list',
@@ -570,9 +574,10 @@ const PARTS = [
   {cls: 'here', name: 'Tasks', sub: 'This part'},
   {cls: 'large', n: 3, go: 'p3', name: 'Synthetic data', sub: 'Where the practice cases come from'},
   {cls: 'small', n: 2, go: 'p2', name: 'Small model', sub: 'Size, memory, and cost'},
-  {cls: '', n: 5, go: 'p5', name: 'Report tagging', sub: 'A second model and its test on real reports'},
-  {cls: '', n: 6, go: 'p6', name: 'Small or large', sub: 'The tasks that fit a small model'},
+  {cls: '', n: 6, go: 'p6', name: 'Report tagging', sub: 'A second model and its test on real reports'},
+  {cls: '', n: 7, go: 'p7', name: 'Small or large', sub: 'The tasks that fit a small model'},
   {cls: 'wide', n: 4, go: 'p4', name: 'Nine steps', sub: 'The whole process in nine steps'},
+  {cls: 'wide', n: 5, go: 'p5', name: 'Occupation coding', sub: 'The build of one model from the examples to the test'},
 ];
 DEMOS.cycle = {
   on() { return false; },
@@ -588,83 +593,106 @@ DEMOS.cycle = {
   },
 };
 
-DEMOS.m3 = {
-  state: () => ({v: 'method'}),
-  on(st, a, v) { st.v = v; },
-  render(st) {
-    return `<div class="row">${seg('v', [['method', 'The method'], ['office', 'An office comparison']], st.v, 'View')}
-      <p class="legend"><span><i style="background:var(--large)"></i>large model</span><span><i style="background:var(--small)"></i>small model</span></p></div>
-    <div class="g3 fill" aria-live="polite">${methodCards(st.v, true)}</div>`;
+// The three sets of training texts (s26).
+DEMOS.sets = {
+  on() { return false; },
+  render() {
+    const kinds = ['large-k', 'teal-k', 'large-k'], units = ['job titles', 'job titles', 'answers'];
+    return DATA.occ.sets.items.map((x, i) => `<div class="card ${kinds[i]}"${i ? ` data-step="${i}"` : ''}>
+      <span class="lbl">${esc(x.name)}</span>
+      <p class="stat mt">${fmt(x.n)}<small>${units[i]}</small></p>
+      <p class="txt-s">${esc(x.how)}</p>
+      <span class="lbl">Example</span>
+      <p class="msg">${esc(x.example.text)}</p>
+      <p class="txt-s"><b class="code">${esc(x.example.code)}</b> ${esc(x.example.name)}</p>
+    </div>`).join('');
   },
 };
-DEMOS.sum3 = {on() { return false; }, render: () => methodCards('method', false)};
 
-// Step 1 of the method: one request and its sentences (s29).
+// One request and the answers written from it (s27).
+const answerList = (answers) => `<ul class="rwlist">${answers.map((a) =>
+  `<li><small>${esc(a.style)}</small><span class="msg">${esc(a.text)}</span></li>`).join('')}</ul>`;
 DEMOS.write = {
   mount(el) {
-    const s = DATA.synth;
+    const list = DATA.occ.rewritten;
     let timer = null;
+    const request = (x) => esc(DATA.occ.request).replace('{title}', () => `<b>${esc(x.title)}</b>`).replace('{label}', () => `<b>${esc(x.name)}</b>`);
     el.innerHTML = `<div class="card storyleft">
-      <span class="lbl">Request ${esc(s.request)} to ${esc(s.writer)}</span>
-      <p class="prompt" style="min-height:0">${esc(s.opening)}</p>
-      <span class="lbl">The eight topics named in this request</span>
-      ${chips(s.topics, 'off')}
-      <div class="row" style="margin-top:auto"><button type="button" class="btn">Write the sentences</button><span class="txt-s" aria-live="polite"></span></div>
+      <span class="lbl">Shortened request to the large model</span>
+      <p class="prompt request">${request(list[0])}</p>
+      <div class="row" style="margin-top:auto"><button type="button" class="btn">Write the answers</button><span class="txt-s" aria-live="polite"></span></div>
     </div>
     <div style="display:flex;flex-direction:column;min-height:0">
-      <div class="empty">The sentences written by the large model appear here.</div>
-      <div class="sents" hidden tabindex="0" aria-label="Sentences written by the large model"></div>
+      <div class="empty">The answers written by the large model appear here.</div>
+      <div class="sents" hidden tabindex="0" aria-label="Answers written by the large model"></div>
     </div>`;
-    const btn = $('.btn', el), count = $('.row .txt-s', el), empty = $('.empty', el), list = $('.sents', el);
+    const btn = $('.btn', el), count = $('.row .txt-s', el), empty = $('.empty', el), box = $('.sents', el), prompt = $('.prompt', el);
     const add = (i) => {
-      const x = s.sentences[i];
-      list.insertAdjacentHTML('beforeend', `<div class="sent">${esc(x.text)}${chips(x.labels)}</div>`);
-      list.scrollTop = list.scrollHeight;
-      count.textContent = `${i + 1} of ${s.sentences.length} sentences`;
+      const x = list[i];
+      prompt.innerHTML = request(x);
+      box.insertAdjacentHTML('beforeend', `<div class="sent"><div class="rwtitle"><b>${esc(x.title)}</b><span class="ans">${esc(x.code)} ${esc(x.name)}</span></div>${answerList(x.answers)}</div>`);
+      box.scrollTop = box.scrollHeight;
+      count.textContent = `${i + 1} of ${list.length} job titles`;
     };
     btn.addEventListener('click', () => {
       clearTimeout(timer);
-      list.innerHTML = '';
+      box.innerHTML = '';
       empty.hidden = true;
-      list.hidden = false;
+      box.hidden = false;
       btn.textContent = 'Write again';
-      if (reduced) { s.sentences.forEach((_, i) => add(i)); list.scrollTop = 0; return; }
+      if (reduced) { list.forEach((_, i) => add(i)); box.scrollTop = 0; return; }
       let i = 0;
-      const tick = () => { add(i++); if (i < s.sentences.length) timer = setTimeout(tick, 650); };
+      const tick = () => { add(i++); if (i < list.length) timer = setTimeout(tick, 700); };
       timer = setTimeout(tick, 300);
     });
   },
 };
 
-// The wording of the request (s30).
-DEMOS.wording = {
-  on() { return false; },
-  render() {
-    const {allow, avoid} = DATA.synth.sets;
-    const rows = (max, f) => [['Topic names allowed', allow, 'var(--small)'], ['Topic names avoided', avoid, 'var(--faint)']].map(([name, set, color]) =>
-      `<b>${name}</b>${bar(f(set)[0] / max, color)}<span class="v">${f(set)[1]}</span>`).join('');
-    const axis = (a, b) => `<span></span><div class="axis"><span style="left:0">${a}</span><span style="left:100%">${b}</span></div><span></span>`;
-    return `<div class="g2">
-      <div class="card small-k"><span class="lbl">Version 1 · topic names allowed</span><p class="prompt mt" style="min-height:0">${esc(allow.rule)}</p></div>
-      <div class="card plain-k"><span class="lbl">Version 2 · topic names avoided</span><p class="prompt mt" style="min-height:0">${esc(avoid.rule)}</p></div>
+// The check of the rewritten answers (s28).
+DEMOS.checked = {
+  state: () => ({i: 0}),
+  on(st, a, v) { st.i = Math.max(0, Math.min(DATA.occ.rewritten.length - 1, st.i + Number(v))); },
+  render(st) {
+    const c = DATA.occ.check, all = DATA.occ.rewritten, x = all[st.i];
+    const styles = c.byStyle.map((y) => {
+      const share = y.kept / (y.kept + y.removed);
+      return `<b>${esc(y.style)}</b>${bar(share, 'var(--large)')}<span class="v">${Math.round(share * 100)}%</span>`;
+    }).join('');
+    const rows = x.answers.map((a) => {
+      const chosen = a.kept ? `${x.code} ${x.name}` : a.second ? `${a.second} ${a.secondName}` : 'None of the listed groups';
+      return `<div role="row"${a.kept ? '' : ' class="drop"'}><span role="cell"><small>${esc(a.style)}</small>${esc(a.text)}</span><span role="cell">${esc(chosen)}</span><span role="cell"><b>${a.kept ? '✓ Kept' : '✕ Removed'}</b></span></div>`;
+    }).join('');
+    return `<div class="card large-k">
+      <p class="stat">${fmt(c.written - c.kept)}<small>of ${fmt(c.written)} answers removed by the check</small></p>
+      <span class="lbl mt2" style="display:block">Share of answers kept for each kind of answer</span>
+      <div class="hb ckbars mt">${styles}</div>
+      <span class="lbl mt2" style="display:block">Reply of the second model for the removed answers</span>
+      <dl class="facts" style="margin-top:.5em;border-top:0;padding-top:0"><dt>None of the listed groups</dt><dd>${fmt(c.none)}</dd><dt>Another group</dt><dd>${fmt(c.other)}</dd></dl>
     </div>
-    <div class="g2">
-      <div class="card"><span class="lbl">Sentences that name one of their topics</span>
-        <div class="hb mt2">${rows(1, (x) => [x.share, (x.share * 100).toFixed(1) + '%'])}${axis('0%', '100%')}</div></div>
-      <div class="card"><span class="lbl">Score of a small model trained on each version (F1)</span>
-        <div class="hb mt2">${rows(0.6, (x) => [x.f1, x.f1.toFixed(3)])}${axis('0.0', '0.6')}</div></div>
+    <div class="card" style="display:flex;flex-direction:column;gap:.7em">
+      <span class="lbl">One job title and its three answers</span>
+      <div class="rwtitle"><b>${esc(x.title)}</b><span class="ans">${esc(x.code)} ${esc(x.name)}</span></div>
+      <div class="checkt ck3" role="table" aria-label="Three answers and the group chosen by the second model" aria-live="polite">
+        <div class="head" role="row"><span role="columnheader">Answer</span><span role="columnheader">Group chosen by the second model</span><span role="columnheader">Result</span></div>
+        ${rows}
+      </div>
+      <div class="row" style="margin-top:auto">
+        <button type="button" class="link" data-a="go" data-v="-1"${st.i === 0 ? ' disabled' : ''}>Previous job title</button>
+        <button type="button" class="link" data-a="go" data-v="1"${st.i === all.length - 1 ? ' disabled' : ''}>Next job title</button>
+        <span class="txt-s" style="margin-left:auto">Job title ${st.i + 1} of ${all.length}</span>
+      </div>
     </div>`;
   },
 };
 
-// A model that learns in the page (s31).
+// A model that learns in the page (s29). It counts the words of each group (naive Bayes).
 DEMOS.learn = {
   mount(el) {
     const d = DATA.learn, stop = new Set(d.stop);
     const tok = (t) => (t.toLowerCase().match(/[a-z]+/g) || []).filter((w) => w.length > 2 && !stop.has(w));
     const train = (n) => {
       const counts = {}, totals = {}, vocab = new Set();
-      for (const t of d.topics) {
+      for (const t of d.groups) {
         counts[t] = new Map(); totals[t] = 0;
         for (const s of d.sentences[t].slice(0, n)) for (const w of tok(s)) { counts[t].set(w, (counts[t].get(w) || 0) + 1); totals[t]++; vocab.add(w); }
       }
@@ -672,51 +700,52 @@ DEMOS.learn = {
     };
     const rate = (m, t, w) => ((m.counts[t].get(w) || 0) + 1) / (m.totals[t] + m.size);
     const predict = (m, words) => {
-      const logs = d.topics.map((t) => words.reduce((s, w) => s + Math.log(rate(m, t, w)), 0));
+      const logs = d.groups.map((t) => words.reduce((s, w) => s + Math.log(rate(m, t, w)), 0));
       const top = Math.max(...logs), e = logs.map((l) => Math.exp(l - top)), z = e.reduce((a, b) => a + b, 0);
       return e.map((x) => x / z);
     };
-    const learned = (m, topic, k = 6) => [...m.counts[topic].entries()].filter(([, c]) => c >= 2)
-      .map(([w]) => [w, rate(m, topic, w) / Math.max(...d.topics.filter((t) => t !== topic).map((t) => rate(m, t, w)))])
+    const learned = (m, group, k = 5) => [...m.counts[group].entries()].filter(([, c]) => c >= 2)
+      .map(([w]) => [w, rate(m, group, w) / Math.max(...d.groups.filter((t) => t !== group).map((t) => rate(m, t, w)))])
       .sort((a, b) => b[1] - a[1]).slice(0, k).map(([w]) => w);
 
     let n = 1, model = train(n);
     el.innerHTML = `<div class="card" style="display:flex;flex-direction:column;gap:.7em">
-      <div class="row"><span class="lbl">Examples read per topic</span><div class="seg" role="group" aria-label="Examples read per topic">${[1, 10, 40].map((k) =>
+      <p class="txt-s">This model counts the words of each group. It is much simpler than the small model that codes occupations.</p>
+      <div class="row"><span class="lbl">Examples read per group</span><div class="seg" role="group" aria-label="Examples read per group">${[1, 3, 10, 40].map((k) =>
         `<button type="button" data-n="${k}" aria-pressed="${k === n}" style="min-width:3.4em;font-size:.9em">${k}</button>`).join('')}</div></div>
-      <span class="lbl mt">Words the model links to each topic</span>
+      <span class="lbl mt">Words the model links to each group</span>
       <div class="wordt" data-words aria-live="polite"></div>
     </div>
     <div style="display:flex;flex-direction:column;gap:1em;min-height:0">
-      <div class="card"><span class="lbl">Test on 60 real reports</span>
-        <p class="big mt" aria-live="polite"><span data-right></span> of ${d.tests.length} given the right topic</p>
+      <div class="card"><span class="lbl">Test on ${d.tests.length} answers</span>
+        <p class="big mt" aria-live="polite"><span data-right></span> of ${d.tests.length} given the right group</p>
         <div class="dotrows" data-dots></div>
-        <p class="txt-s mt" style="font-size:.72em">Each square is one report, filled when the model gives it the right topic. A random guess among the four topics gets about 15 right.</p></div>
+        <p class="txt-s mt" style="font-size:.72em">Each square is one answer, filled when the model gives it the right group. A random guess among the four groups gets ${d.tests.length / d.groups.length} right.</p></div>
       <div class="card"><div class="try">
-        <div><label class="lbl" for="tryin">Try a sentence</label><input id="tryin" type="text" autocomplete="off" spellcheck="false" value="The new road cuts the travel time from farms to the market."></div>
+        <div><label class="lbl" for="tryin">Try an answer</label><input id="tryin" type="text" autocomplete="off" spellcheck="false" value="I look after patients on the night shift at the clinic"></div>
         <div class="pb" data-probs aria-live="polite"></div>
       </div></div>
     </div>`;
     const input = $('#tryin', el);
     const probs = () => {
       const p = predict(model, tok(input.value));
-      $('[data-probs]', el).innerHTML = d.topics.map((t, i) =>
+      $('[data-probs]', el).innerHTML = d.groups.map((t, i) =>
         `<span>${t}</span>${bar(p[i], 'var(--small)')}<span class="v">${Math.round(p[i] * 100)}%</span>`).join('');
     };
     const draw = () => {
       model = train(n);
       $$('[data-n]', el).forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.n) === n)));
-      $('[data-words]', el).innerHTML = d.topics.map((t) => {
+      $('[data-words]', el).innerHTML = d.groups.map((t) => {
         const w = learned(model, t);
         return `<b>${t}</b>${chips(w.length ? w : ['none yet'], w.length ? '' : 'off')}`;
       }).join('');
       const guesses = d.tests.map((x) => {
-        const p = predict(model, x.w), best = d.topics[p.indexOf(Math.max(...p))];
-        return {...x, best, right: best === x.topic};
+        const p = predict(model, x.w), best = d.groups[p.indexOf(Math.max(...p))];
+        return {...x, best, right: best === x.group};
       });
       $('[data-right]', el).textContent = guesses.filter((g) => g.right).length;
-      $('[data-dots]', el).innerHTML = d.topics.map((t) => `<span>${t}</span><div class="dotg">${guesses.filter((g) => g.topic === t).map((g) =>
-        `<i${g.right ? ' class="r"' : ''} title="${esc(g.title)}\nRecorded topic: ${g.topic}\nModel's guess: ${g.best}"></i>`).join('')}</div>`).join('');
+      $('[data-dots]', el).innerHTML = d.groups.map((t) => `<span>${t}</span><div class="dotg">${guesses.filter((g) => g.group === t).map((g) =>
+        `<i${g.right ? ' class="r"' : ''} title="${esc(g.title)}\nRight group: ${g.group}\nModel's guess: ${g.best}"></i>`).join('')}</div>`).join('');
       probs();
     };
     el.addEventListener('click', (ev) => { const b = ev.target.closest('[data-n]'); if (b) { n = Number(b.dataset.n); draw(); } });
@@ -725,29 +754,53 @@ DEMOS.learn = {
   },
 };
 
-// The student at work on one report (s33).
-DEMOS.work = {
-  on() { return false; },
-  render() {
-    const d = DATA.doc, {threshold, top} = DATA.dist;
-    const rows = d.student.slice(0, 8), max = rows[0].score;
-    const chosen = d.student.slice(0, top).filter((x) => x.score >= threshold).map((x) => x.label);
-    const right = chosen.filter((l) => d.reference.includes(l)).length;
-    const line = `<i class="thr" style="left:${threshold / max * 100}%"></i>`;
-    return `<div class="card report"><span class="lbl">The report</span><h3>${esc(d.title)}</h3><p class="abs" style="-webkit-line-clamp:11">${esc(d.text)}</p></div>
-    <div class="card"><span class="lbl">The student's scores, top eight of 86 topics</span>
-      <div class="sb mt2">${rows.map((x) => `<span>${esc(x.label)}</span>${bar(x.score / max, chosen.includes(x.label) ? 'var(--small)' : 'var(--faint)', line)}<b class="v">${x.score.toFixed(3)}</b>`).join('')}</div>
-      <p class="txt-s mt2" style="font-size:.72em"><span class="thrkey"></span>The dashed line marks the threshold of ${threshold}.</p></div>
-    <div class="card" style="display:flex;flex-direction:column;gap:.6em">
-      <span class="lbl">Topics recorded for the report</span>${chips(d.reference, 'off')}
-      <span class="lbl mt">Topics the student assigned</span>
-      <div class="chips">${chosen.map((l) => `<span class="chip ${d.reference.includes(l) ? 'ok' : 'warn'}">${d.reference.includes(l) ? '✓ ' : ''}${esc(l)}</span>`).join('')}</div>
-      <p class="callout" style="margin-top:auto;font-size:.95em">The student assigned ${chosen.length} topics, and ${right === chosen.length ? `all ${right}` : `${right} of them`} are recorded for the report.</p>
-    </div>`;
+// Scores of the small model by training set (s32).
+const BT_TESTS = {
+  survey: ['Survey-style answers', 'The test holds 1,000 survey-style answers. A large model wrote them from job titles set aside before training.'],
+  titles: ['Real job titles', 'The test holds 1,000 job titles of the job board, set aside before training. 90 of them have the same wording as a training title.'],
+};
+DEMOS.bytraining = {
+  state: () => ({k: 'top1', t: 'survey'}),
+  on(st, a, v) { st[a] = v; },
+  render(st) {
+    const rows = DATA.occ.byTraining.map((x) => {
+      const v = x[st.t][st.k], plain = x.arm === 'defs' || x.arm === 'titles';
+      return `<b>${esc(x.label)}<small>${fmt(x.examples)} texts</small></b>${bar(v, plain ? 'var(--faint)' : 'var(--small)')}<span class="v">${(v * 100).toFixed(1)}%</span>`;
+    }).join('');
+    return `<div class="row">${seg('k', [['top1', 'First code is right'], ['top5', 'Right code among 5']], st.k, 'Score')}
+      ${seg('t', Object.entries(BT_TESTS).map(([k, x]) => [k, x[0]]), st.t, 'Test')}</div>
+    <div class="hb btbars" aria-live="polite">${rows}</div>
+    <p class="legend"><span><i style="background:var(--faint)"></i>trained without the survey-style answers</span><span><i style="background:var(--small)"></i>trained with the survey-style answers</span></p>
+    <p class="hint">${BT_TESTS[st.t][1]}</p>`;
   },
 };
 
-// Results on 300 real reports (s34).
+// The small model next to three large models (s33).
+const VS_VIEWS = {
+  survey1: ['Survey-style answers · first code', 'Gemini 3.8 Flash wrote the test answers. Its difference from the small model is within the margin of error.'],
+  survey5: ['Survey-style answers · among five codes', 'Each large model was asked for five codes in order.'],
+  titles1: ['Real job titles · first code', 'The small model trained on other job titles of the same job board. 90 of the 1,000 test titles have the same wording as a training title.'],
+};
+DEMOS.versus = {
+  state: () => ({v: 'survey1'}),
+  on(st, a, v) { st.v = v; },
+  render(st) {
+    const MAX = 1.1;
+    const row = (x) => {
+      const w = x.score / MAX * 100;
+      return `<div class="name">${esc(x.model)}<small>${x.kind === 'small' ? 'trained on the three sets' : 'large model asked directly'}</small></div>
+      <div class="track" title="${esc(x.model)}: ${(x.score * 100).toFixed(1)}%"><i class="fillb" style="width:${w}%;background:var(--${x.kind})"></i><span class="val" style="left:${w}%">${(x.score * 100).toFixed(1)}%</span></div>`;
+    };
+    return `${seg('v', Object.entries(VS_VIEWS).map(([k, x]) => [k, x[0]]), st.v, 'Test and score')}
+    <div class="res" aria-live="polite">${DATA.occ.versus[st.v].map(row).join('')}
+      <span></span><div class="axis">${[0, 0.25, 0.5, 0.75, 1].map((t) => `<span style="left:${t / MAX * 100}%">${t * 100}%</span>`).join('')}</div>
+      <span></span><p class="legend"><span><i style="background:var(--small)"></i>small model</span><span><i style="background:var(--large)"></i>large model</span></p>
+    </div>
+    <p class="hint">${VS_VIEWS[st.v][1]}</p>`;
+  },
+};
+
+// Results on 300 real reports (s37).
 DEMOS.results = {
   on() { return false; },
   render() {
@@ -763,25 +816,23 @@ DEMOS.results = {
     };
     return `<div class="res">${order.map(row).join('')}
       <span></span><div class="axis">${[0, 0.2, 0.4, 0.6].map((t) => `<span style="left:${t / MAX * 100}%">${t.toFixed(1)}</span>`).join('')}</div>
-      <span></span><p class="legend"><span><i style="background:var(--large)"></i>large model</span><span><i style="background:var(--small)"></i>small model (the student)</span></p>
+      <span></span><p class="legend"><span><i style="background:var(--large)"></i>large model</span><span><i style="background:var(--small)"></i>small model</span></p>
     </div>`;
   },
 };
 
-// Speed (s35).
+// Speed (s34).
 DEMOS.speed = {
   on() { return false; },
   render() {
-    const rows = DATA.dist.speed, W = 560, L = 190, R = 62, top = 36, gap = 54;
+    const {rows, gb} = DATA.occ.speed, W = 600, L = 215, R = 70, top = 36, gap = 50;
     const lo = Math.log10(0.003), hi = Math.log10(10);
     const x = (s) => L + (Math.log10(s) - lo) / (hi - lo) * (W - L - R);
     const H = top + rows.length * gap + 26;
     const ticks = [0.01, 0.1, 1, 10];
     const cpu = rows.find((r) => /CPU/.test(r.where)), large = rows.filter((r) => r.kind === 'large').map((r) => r.seconds);
-    const times = [Math.min(...large) / cpu.seconds, Math.max(...large) / cpu.seconds];
-    const small = DATA.machines.models[0];
-    return `<div class="card"><span class="lbl">Seconds per report (logarithmic scale)</span>
-      <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Time per report for the student and three large models" style="width:100%;margin-top:.6em">
+    return `<div class="card"><span class="lbl">Seconds per answer (logarithmic scale)</span>
+      <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Time per answer for the small model and three large models" style="width:100%;margin-top:.6em">
         ${ticks.map((t) => `<line x1="${x(t)}" x2="${x(t)}" y1="${top - 14}" y2="${H - 30}" stroke="var(--line)"/><text x="${x(t)}" y="${H - 12}" text-anchor="middle" font-size="15">${t} s</text>`).join('')}
         ${rows.map((r, i) => {
           const y = top + i * gap + 8, hot = r === cpu;
@@ -793,21 +844,15 @@ DEMOS.speed = {
             <text x="${x(r.seconds) + 16}" y="${y + 6}" font-size="17" class="ink" font-weight="${hot ? 700 : 600}">${r.seconds} s</text></g>`;
         }).join('')}
       </svg>
-      <p class="legend"><span><i style="background:var(--small)"></i>small model (the student)</span><span><i style="background:var(--large)"></i>large model</span></p></div>
+      <p class="legend"><span><i style="background:var(--small)"></i>small model</span><span><i style="background:var(--large)"></i>large model</span></p></div>
     <div style="display:flex;flex-direction:column;gap:1.3em">
-      <div class="card small-k"><p class="stat">${small.gb} GB<small>of memory is enough to run the student on a laptop</small></p></div>
-      <div class="card small-k"><p class="stat">${Math.round(times[0])} to ${Math.round(times[1])}×<small>faster on an ordinary processor than the three large models</small></p></div>
+      <div class="card small-k"><p class="stat">${gb} GB<small>of memory is enough to run the small model on a laptop</small></p></div>
+      <div class="card small-k"><p class="stat">${Math.floor(Math.min(...large) / cpu.seconds)}×<small>faster on an ordinary processor than the fastest of the three large models</small></p></div>
     </div>`;
   },
 };
 
-// Topics covered by the test (s37).
-DEMOS.g86 = {
-  on() { return false; },
-  render() { let h = ''; for (let i = 0; i < 86; i++) h += `<i${i < 44 ? ' class="on"' : ''}></i>`; return h; },
-};
-
-// Cost of building (s36).
+// Cost of building (s35).
 DEMOS.cost = {
   state: () => ({p: '2'}),
   on(st, a, v) { st.p = v; },
@@ -878,7 +923,7 @@ function mountDemo(el) {
 }
 
 /* ------------------------------------------------------------- navigation */
-const SECS = ['', 'Tasks', 'Small model', 'Synthetic data', 'Nine steps', 'Report tagging', 'Small or large'];
+const SECS = ['', 'Tasks', 'Small model', 'Synthetic data', 'Nine steps', 'Occupation coding', 'Report tagging', 'Small or large'];
 const stage = $('#stage'), slides = $$('.slide', stage), toc = $('#toc'), notesPanel = $('#notespanel');
 const gotoBox = $('#goto'), tip = $('#scrubtip');
 let idx = 0, step = 0;
