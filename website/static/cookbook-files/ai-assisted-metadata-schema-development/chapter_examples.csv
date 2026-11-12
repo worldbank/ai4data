@@ -1,0 +1,20 @@
+chapter,chapter_title,example_id,evidence_selection,reuse,evidence_type
+1,Artifact Characterization and Sampling,independent-naming,snapshot_ids; source_images.csv,"Identify the artifact class, corpus and artifact type using the three development examples; explain the full study sampling separately.",excerpt
+2,Metadata Discovery,independent-naming,outputs.recorded_observations,"Inspect original field names, observed values and source levels before vocabulary consolidation.",excerpt
+2,Metadata Discovery,exact-name-profile,inputs.recorded_observations,Identify repeated geographic_scope names in three independent discoveries.,reproducible_exercise
+2,Metadata Discovery,rare-and-residual,inputs.recorded_observations,Keep specialized and potentially out-of-scope observations visible during discovery.,excerpt
+2,Metadata Discovery,provenance-split,inputs.recorded_observations,Inspect the original source_citation and data_source_name hypotheses; reserve the split for chapter 7.,excerpt
+3,Field Profiles and Metadata Concept Synthesis,independent-naming,outputs.recorded_observations,Compare field-name variation without treating every different string as a new concept.,excerpt
+3,Field Profiles and Metadata Concept Synthesis,exact-name-profile,inputs; outputs.exercise_profile; outputs.recorded_full_study_profile,Recompute the small exact-name profile and distinguish its denominator from the full study profile.,reproducible_exercise
+3,Field Profiles and Metadata Concept Synthesis,canonical-title,inputs.recorded_profiles; outputs.recorded_candidate_concept,Connect accumulated title profiles to candidate concept synthesis; introduce assignments in chapter 4.,excerpt
+4,Expert Concept Refinement and Assessment,canonical-title,outputs.original_profile_assignments,Inspect classifications against the original reviewed concept inventory.,excerpt
+4,Expert Concept Refinement and Assessment,human-concept-decisions,inputs; outputs,Review recorded merges and the paper-transcribed rename and exclusions; preserve the transcription labels.,excerpt
+4,Expert Concept Refinement and Assessment,rare-and-residual,inputs.recorded_concept; outputs,Use only the original mapping to interpret specialized support and the residual sample_size classification.,excerpt
+4,Expert Concept Refinement and Assessment,operational-panel-title,inputs.original_profile_assignment; inputs.concept_inventory_contains_panel_title,Show the original residual classification only. Do not introduce the later panel_title assignment into this assessment.,excerpt
+5,Operational Metadata Schema Design,operational-panel-title,inputs.recorded_observation; outputs,Explain the later restoration of panel_title and operational decisions using the initial schema.,excerpt
+5,Operational Metadata Schema Design,flat-representation-limits,snapshot_ids; source_images.csv,Use the source images to discuss what flat fields can express; reserve their recorded validation findings for chapter 6.,excerpt
+5,Operational Metadata Schema Design,provenance-split,inputs.recorded_observations; inputs.validated_field,Inspect the combined provenance meaning; introduce the standards-informed split in chapter 7.,excerpt
+6,Schema Validation,documentation-revision,inputs; outputs,Compare the recorded time_period definitions and the documentation-only revision.,excerpt
+6,Schema Validation,flat-representation-limits,outputs,Inspect the original possible-gap records and separately labelled human dispositions.,excerpt
+6,Schema Validation,complementary-validation,inputs; outputs,"Compare the two instruments on the same South Sudan artifact, with their respective schema versions.",excerpt
+7,Standards-Informed Schema Refinement,provenance-split,inputs; outputs,"Trace the source phrase through the standards decision, final fields and explicitly transcribed sample record.",excerpt

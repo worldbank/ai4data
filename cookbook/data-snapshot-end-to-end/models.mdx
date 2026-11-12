@@ -1,0 +1,140 @@
+---
+id: models
+title: "7. Models and settings"
+sidebar_label: "7. Models and settings"
+sidebar_position: 8
+description: This chapter introduces available snapshot models and shows how to select detector, device, and metadata provider settings.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 7. Models and settings
+
+**Question:** Which models and settings are available, and how are they selected?
+
+## Rationale
+
+The tutorial uses DocLayout-YOLO on CPU and OpenRouter for metadata extraction. Changing `--model` selects a different snapshot detector, `--device` selects its inference device, and `--metadata-provider` selects the service used for metadata requests.
+
+Benchmark results can guide snapshot extraction model selection for a document collection. This chapter also shows how to select between the supported providers for metadata extraction.
+
+## Target state
+
+- The reader understands the available parameters and how to choose their values.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | A developer selects the detector, device, and metadata provider through command parameters. |
+| **AI-ready** | The selected detector has the required dependencies, and its outputs are checked on representative documents. |
+| **AI-native** | An organization monitors output quality and reassesses its detector choices as its document collection changes. This requires additional tooling. |
+
+:::info[Running example]
+The sample PDF used in the tutorial uses `--model=doclayoutyolo --device=cpu` for detection and `--metadata-provider=openrouter` for metadata extraction. These defaults remain sufficient for the tutorial.
+:::
+
+## Recipes
+
+<Recipe title="7.1 Change the snapshot detector and device" level="AI-ready" skills="Developer and data curator" time="Ten minutes to select parameters; installation and inference time vary">
+
+**Result:** The snapshot-only or combined command selects the intended detector and device.
+
+Use `--model` in the commands from [chapter 2](./snapshots.mdx) or [chapter 5](./combined.mdx). Install the corresponding extra before changing the detector:
+
+| Detector | Parameter | Installation extra |
+|---|---|---|
+| DocLayout-YOLO (default) | `--model=doclayoutyolo` | `data-snapshot` |
+| TF-ID-Large | `--model=tfid` | `data-snapshot-tfid` |
+| YOLOv11 medium | `--model=yolo11` | `data-snapshot-yolo11` |
+| YOLOv26 medium | `--model=yolo26` | `data-snapshot-yolo26` |
+
+For example, install YOLOv11 with `python -m pip install ".[data-snapshot-yolo11]"`. Keep `data-snapshot-metadata` installed for combined execution. TF-ID requires a separate environment because its dependencies conflict with the other detector stacks; consult the [production README](https://github.com/worldbank/ai4data/blob/main/src/ai4data/data_snapshot/README.md#tf-id-installation) for installation details.
+
+The following tables are reproduced from the [benchmark paper](https://arxiv.org/abs/2606.06242). They summarize benchmark results across all documents.
+
+Detection metrics measure how reliably a model finds relevant data snapshots: precision is the proportion of detections that are correct, while recall is the proportion of reference snapshots found. Spatial accuracy measures how closely the extracted boundaries match the intended region, including whether useful context is omitted or unrelated content is included. These spatial metrics cover matched detections only. See [Section 5 and Figure 2](https://arxiv.org/html/2606.06242v1#S5) for metric definitions, benchmark conditions, and visual examples.
+
+**Figures**
+
+| Category | Metric | TF-ID-Large | DocLayout-YOLO | YOLOv11 medium | YOLOv26 medium |
+| --- | --- | ---: | ---: | ---: | ---: |
+| Detection | Precision | **0.628** | 0.547 | 0.378 | 0.388 |
+|  | Recall | 0.488 | **0.802** | 0.761 | 0.721 |
+| Spatial accuracy | IoU | **0.877** | 0.820 | 0.817 | 0.817 |
+|  | Area precision | 0.935 | **0.996** | 0.990 | 0.990 |
+|  | Area recall | **0.938** | 0.824 | 0.826 | 0.826 |
+
+**Tables**
+
+| Category | Metric | TF-ID-Large | DocLayout-YOLO | YOLOv11 medium | YOLOv26 medium |
+| --- | --- | ---: | ---: | ---: | ---: |
+| Detection | Precision | **0.562** | 0.468 | 0.487 | 0.460 |
+|  | Recall | 0.861 | **0.893** | 0.862 | 0.891 |
+| Spatial accuracy | IoU | **0.919** | 0.834 | 0.817 | 0.824 |
+|  | Area precision | 0.972 | 0.993 | **0.994** | 0.994 |
+|  | Area recall | **0.946** | 0.841 | 0.822 | 0.829 |
+
+The paper also provides results for each corpus: UNHCR / ReliefWeb reports, Policy Research Working Papers, and refugee Project Appraisal Documents. Compare the layouts and analytical content of the intended dataset with those corpora to identify which model might perform best, then check the selected model on representative PDFs before applying it to the full collection.
+
+1. Select a detector using `--model` and install its extra from the table above.
+2. Keep `--device=cpu`, or select `--device=cuda:0` if a compatible NVIDIA GPU and CUDA runtime are available. An unavailable CUDA device causes an error; there is no automatic CPU fallback.
+3. Choose a fresh `--output-dir` when comparing detectors or settings to preserve previous results and avoid PDF-level skipping.
+
+**Worked example.** To try YOLOv11 on the sample PDF, use `--model=yolo11 --device=cpu --output-dir=output/cookbook-data-snapshot-yolo11` with the snapshot-only command from chapter 2. The tutorial's recorded detector outputs use DocLayout-YOLO.
+
+**What this does not do.** Benchmark results guide model selection but do not guarantee the same performance on a different document collection.
+
+</Recipe>
+
+<Recipe title="7.2 Select the metadata provider" level="AI-ready" skills="Developer and data curator" time="Five minutes to select a provider and configure its key">
+
+**Result:** Metadata requests use the selected provider and its API key.
+
+Use `--metadata-provider` in the metadata-only command from [chapter 3](./metadata.mdx) or the combined command from [chapter 5](./combined.mdx):
+
+| Provider | Parameter | Required key |
+|---|---|---|
+| OpenRouter (default) | `--metadata-provider=openrouter` | `OPENROUTER_API_KEY` |
+| OpenAI | `--metadata-provider=openai` | `OPENAI_API_KEY` |
+
+1. Choose the provider and set its parameter in the command.
+2. Set the corresponding key in the environment or working directory's `.env`, following [Recipe 1.2](./preparation.mdx#recipe-1-2). Only the selected key is needed; exported variables take precedence over `.env`.
+3. Keep the packaged metadata model settings unchanged. The prompts were developed using `gpt-5.6-luna`, which both provider presets select.
+
+**Worked example.** The tutorial's metadata requests use OpenRouter. To select OpenAI directly, change the parameter to `--metadata-provider=openai` and set `OPENAI_API_KEY`.
+
+**What this does not do.** Changing the reasoning model is untested and beyond this cookbook's scope. Other models may not support the image input or structured-output requirements used with the Pydantic schema, and extraction or validation may fail.
+
+</Recipe>
+
+## Implementation options
+
+Use `--model`, `--device`, and `--metadata-provider` to select the detector, inference device, and metadata provider. Additional execution settings include `--dpi` for rendering resolution, `--output-dir` for the destination, `--force` for replacing existing outputs, and `--input` for a PDF or directory. [Chapter 5](./combined.mdx) explains these settings and their effects.
+
+## Resources
+
+- The [production README](https://github.com/worldbank/ai4data/blob/main/src/ai4data/data_snapshot/README.md) provides detector installation instructions.
+- The [benchmark paper](https://arxiv.org/abs/2606.06242) provides corpus descriptions, aggregate and corpus-specific results, and evaluation limitations.
+
+## Common mistakes
+
+- Changing `--model` without installing its detector extra causes dependency errors.
+- Selecting a metadata provider without its API key prevents requests.
+- Assuming that another reasoning model for metadata extraction supports the same structured output can cause extraction or validation failures.
+
+## Verification
+
+- Check that the detector parameter matches the installed extra and that the selected device is available.
+- Check that the provider parameter matches the configured key and that the packaged metadata model settings remain unchanged.
+- Inspect outputs from representative documents before using a detector across the collection.
+
+## Checklist
+
+<Checklist id="data-snapshot-end-to-end-models" items={[
+  "The detector parameter matches the installed dependencies.",
+  "The selected inference device is available.",
+  "The metadata provider and API key agree.",
+  "The packaged metadata model settings remain unchanged."
+]} />

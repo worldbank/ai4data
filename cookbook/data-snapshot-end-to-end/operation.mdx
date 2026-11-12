@@ -1,0 +1,107 @@
+---
+id: operation
+title: "6. Recovery and controlled execution"
+sidebar_label: "6. Recovery and controlled execution"
+sidebar_position: 7
+description: This chapter explains partial failures, stage-specific recovery, safe replacement, and control of metadata request volume.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 6. Recovery and controlled execution
+
+**Question:** How can the pipeline be operated reliably?
+
+## Rationale
+
+The package has conservative skip rules and destructive forced replacement. These rules prevent accidental overwrites during ordinary reruns, but they do not prove that an existing run is complete. A single matching output is enough to skip a PDF, and an existing metadata JSON is skipped without checking whether it is valid.
+
+Operational reliability therefore depends on checking output completeness and choosing the right stage for recovery. Requests are sequential, there are no automatic retries, and the metadata writer stops after the first failed image. Earlier data snapshots and completed JSON records remain available for inspection and selective continuation.
+
+## Target state
+
+- The operator can recover missing metadata without rerunning detection.
+- The run configuration and cost boundaries are retained.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | An operator inspects existing files and chooses a recovery action manually while preserving needed prior results. |
+| **AI-ready** | Recovery instructions distinguish PDF-level skipping from per-image metadata skipping, and the selected configuration and request scope are documented. |
+| **AI-native** | An organization monitors failures and usage and adds controlled recovery with human oversight. Scheduling, retry orchestration, and spending enforcement require additional implementation. |
+
+:::info[Running example]
+The staged run for the sample PDF used in the tutorial has eight candidate images and metadata for only the selected chart and table. This intentionally partial set explains why a combined rerun in the same root would skip the PDF, while metadata-only execution is the appropriate path for missing selected records.
+:::
+
+## Recipes
+
+<Recipe title="6.1 Resume or replace the correct stage" level="AI-ready" skills="Developer and data curator" time="Fifteen minutes to inspect a partial run and choose recovery">
+
+**Result:** The operator can rerun a stage without confusing skip and replacement behavior.
+
+The correct recovery command depends on which files already exist. A fresh output root is the safest way to compare a changed detector or configuration while preserving an earlier run.
+
+| Command | Ordinary rerun | Forced rerun |
+|---|---|---|
+| Snapshot-only | Skips a PDF if any matching data snapshot or metadata exists. | Deletes matching data snapshots and metadata, then extracts data snapshots. |
+| Combined | Uses the same PDF-level skip rule. | Deletes matching data snapshots and metadata, then runs both stages. |
+| Metadata-only | Skips each image with an existing JSON. | Deletes that JSON before attempting replacement and preserves the image. |
+
+1. Inspect missing or invalid records before choosing a command. A successful skip is not a completeness check.
+2. Use metadata-only execution on missing selected records after a metadata failure. To replace an existing invalid JSON, target its image with the metadata-only command and add `--force`; an ordinary rerun would skip that JSON. Preserve any needed original before replacement. A `snapshots` directory or an image directly inside it defaults to the sibling `metadata` directory.
+3. Use a new destination when comparing settings. If replacement is intended, preserve any needed previous results before `--force`.
+4. Expect forced deletion to occur before model loading or replacement succeeds. Failure does not restore the old files.
+
+**Worked example.** After the snapshot-only run for the sample PDF, invoking the combined command with `output/cookbook-data-snapshot` would skip the PDF. The two metadata-only commands in [chapter 3](./metadata.mdx) are the appropriate way to enrich selected images. The remaining candidate images intentionally have no metadata.
+
+**What this does not do.** The package does not automatically resume missing pages, retry failed requests, or maintain a job ledger. An empty-detection PDF has no completion marker and can be processed again.
+
+</Recipe>
+
+<Recipe title="6.2 Record settings and bound paid work" level="AI-ready" skills="Developer and data curator" time="Fifteen minutes to document settings and plan request volume">
+
+**Result:** A future reader can identify the configuration and the operator can limit request volume.
+
+The source links and worked examples in this guide state what was processed and which settings were used.
+
+1. Note the source publication, detector, device, DPI, metadata model, and selected outputs alongside the example.
+2. Inspect and select data snapshots before paid metadata extraction. Per-image commands bound the number of attempts; the combined command does not offer a spending cap or candidate selection.
+3. Record actual provider billing separately if cost measurements are needed. Token usage is available through the Python `ExtractionResult` when returned by the provider, but ordinary JSON output files do not retain it.
+4. Check the provider preset before a rerun. Changing the model or its settings can change its response and billing.
+
+**Worked example.** This guide uses one local detector run and successful metadata requests for only the selected figure and table. It reports no monetary cost estimate.
+
+**What this does not do.** The workflow has no total-token or monetary enforcement switch and cannot guarantee identical future model responses.
+
+</Recipe>
+
+## Implementation options
+
+The Python metadata API returns structured errors, including incomplete-response details where available. The batch writer saves each validated JSON through a temporary file and replacement. This protects the individual file while it is being saved; a later failure can still leave the overall run incomplete. Preserve failed-request diagnostics separately when operating beyond this small exercise.
+
+## Resources
+
+- The [production README](https://github.com/worldbank/ai4data/blob/main/src/ai4data/data_snapshot/README.md) documents installation, supported commands, and Python interfaces.
+
+## Common mistakes
+
+- Using a PDF command with `--force` to fill missing metadata deletes working data snapshots. Metadata-only recovery avoids that deletion.
+- Assuming skipped JSON is valid hides corrupted or obsolete records.
+- Using metadata-only `--force` on a whole directory regenerates existing records and can cause unnecessary paid requests.
+
+## Verification
+
+- Inspect which selected images already have JSON files before choosing recovery. In the recorded example, the other six candidates intentionally lack metadata and do not constitute failed requests.
+- Compare the intended command with the rerun table. Filling a missing selected JSON should use metadata-only execution; any planned `--force` replacement should account for files deleted before success is known.
+
+## Checklist
+
+<Checklist id="data-snapshot-end-to-end-operation" items={[
+  "The intended request scope and missing selected outputs are identified.",
+  "The recovery command targets the required stage.",
+  "Needed prior files are preserved before replacement.",
+  "Settings and paid request volume are understood."
+]} />

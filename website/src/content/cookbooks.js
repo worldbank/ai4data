@@ -5,6 +5,17 @@ import {isHiddenCookbook, isHiddenPath, isIndexedCookbook} from './visibility';
 // website/cookbook-visibility.json are dropped from every list exported here.
 export const allCookbooks = [
   {
+    id: 'data-snapshot-end-to-end',
+    version: '0.1',
+    date: 'October 2026',
+    audience: 'Developers and data curators working with institutional PDFs',
+    title: 'Practical Guide to the Data Snapshot End-to-End Workflow',
+    description:
+      'Eight chapters cover PDF preparation, snapshot extraction, semantic metadata, output review, combined execution, safe recovery, model selection, and a proposed improvement roadmap, using data snapshots from the sample PDF used in the tutorial and two selected metadata requests.',
+    chapters: 8,
+    to: '/cookbook/data-snapshot-end-to-end/',
+  },
+  {
     id: 'ai-ready-dissemination',
     version: '0.1',
     date: 'October 2026',
@@ -158,6 +169,17 @@ export const allCookbooks = [
     chapters: 6,
     to: '/cookbook/ai-assistants-at-work/',
   },
+  {
+    id: 'ai-assisted-metadata-schema-development',
+    version: '0.1',
+    date: 'November 2026',
+    audience: 'Technical practitioners starting a metadata schema for their own materials and use case',
+    title: 'Practical Guide to AI-Assisted Metadata Schema Development',
+    description:
+      'Develop a metadata schema from real examples through AI-assisted discovery, human review, validation, and standards comparison.',
+    chapters: 7,
+    to: '/cookbook/ai-assisted-metadata-schema-development/',
+  },
 ];
 
 export const cookbooks = allCookbooks.filter((c) => !isHiddenCookbook(c.id));
@@ -183,11 +205,11 @@ export function cookbookPage(pathname) {
 const allGroups = [
   {
     title: 'Data products that AI can use',
-    ids: ['ai-ready-dissemination', 'microdata-documentation', 'data-from-documents', 'ml-ready-datasets'],
+    ids: ['ai-ready-dissemination', 'microdata-documentation', 'data-from-documents', 'data-snapshot-end-to-end', 'ml-ready-datasets'],
   },
   {
     title: 'Metadata and interfaces',
-    ids: ['metadata-curation-with-llms', 'serving-statistics-to-agents'],
+    ids: ['metadata-curation-with-llms', 'ai-assisted-metadata-schema-development', 'serving-statistics-to-agents'],
   },
   {
     title: 'Models inside the office',

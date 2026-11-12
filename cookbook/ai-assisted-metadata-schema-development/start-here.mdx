@@ -1,0 +1,105 @@
+---
+id: start-here
+title: Self-assessment
+sidebar_label: Self-assessment
+sidebar_position: 1
+description: Seven practice checkpoints align schema development with the cookbook learning milestones.
+---
+
+import SelfAssessment from '@site/src/components/Cookbook/SelfAssessment';
+
+# Self-assessment
+
+Select the statement that best describes the organization in each chapter.
+Answers are stored in this browser only. These draft checkpoints suggest a
+reading order. They do not certify schema quality or replace verification.
+
+<SelfAssessment
+  base="/cookbook/ai-assisted-metadata-schema-development/"
+  questions={[
+    {
+      id: 'characterization',
+      title: '1. Artifacts and sampling',
+      question: "What must the schema describe, and which artifacts provide credible evidence of its requirements?",
+      options: [
+        "The type of item and reasons for selecting examples have not been written.",
+        "A reviewer has agreed on the scope and selected examples.",
+        "A structured list records item identifiers, sources, relevant differences, and development or holdout membership.",
+        "Optional AI suggestions about scope or sampling are checked against the materials and approved by a reviewer.",
+      ],
+    },
+    {
+      id: 'discovery',
+      title: '2. Discovery',
+      question: "How can descriptive requirements emerge independently from artifacts?",
+      options: [
+        "Metadata suggestions are collected without consistent source references.",
+        "A reviewer can explain retained observations and their sources.",
+        "Structured observations record item identifiers, evidence sources, and processing status.",
+        "Independent model requests preserve settings and failures, and outputs remain candidates for review.",
+      ],
+    },
+    {
+      id: 'concept-synthesis',
+      title: '3. Profiles and synthesis',
+      question: "How do local observations become manageable evidence for shared concepts?",
+      options: [
+        "Observations are compared without a defined aggregation rule.",
+        "A reviewer compares names alongside the values and explanations supporting them.",
+        "Repeatable grouping preserves exact names, counts, and supporting observations.",
+        "Model-assisted synthesis preserves evidence and uncertain distinctions for expert review.",
+      ],
+    },
+    {
+      id: 'concept-refinement',
+      title: '4. Concept refinement',
+      question: "Which concepts should remain, and how does the development evidence support them?",
+      options: [
+        "Concept decisions are undocumented or based only on frequency.",
+        "A human records selected merge, rename, and exclusion reasons.",
+        "A saved concept list and assignments make decisions and support counts traceable.",
+        "AI assignments use the fixed concept list, and reviewers check uncertain or unmatched profiles.",
+      ],
+    },
+    {
+      id: 'schema-design',
+      title: '5. Schema design',
+      question: "How do meaningful concepts become fields that people can use consistently?",
+      options: [
+        "Concepts are copied into fields without checking their practical purpose.",
+        "A readable specification and selected decision reasons exist.",
+        "Definitions, evidence rules, examples, and versions support consistent annotation.",
+        "Optional AI assistance flags unclear guidance, and reviewers decide changes using the materials.",
+      ],
+    },
+    {
+      id: 'validation',
+      title: '6. Validation',
+      question: "What does new artifact evidence reveal about missing concepts, unclear guidance, and representation limits?",
+      options: [
+        "The schema is judged only against development artifacts.",
+        "Reviewers test the schema on holdout items and record findings.",
+        "Saved schema versions, inputs, and findings make the assessment repeatable.",
+        "AI assessments are tested for expected omissions, and reviewers record changes and limits.",
+      ],
+    },
+    {
+      id: 'standards-refinement',
+      title: '7. Standards refinement',
+      question: "How can standards improve an artifact-derived schema while preserving its established requirements?",
+      options: [
+        "Fields are replaced with standards terms without a documented comparison.",
+        "Humans compare definitions and record mapping reasons.",
+        "A crosswalk links authoritative sources and human decisions to the specification version.",
+        "Optional AI assistance suggests comparisons, and reviewers verify sources and approve changes.",
+      ],
+    },
+  ]}
+/>
+
+## Interpretation of the result
+
+The artifact and discovery chapters establish evidence for subsequent concepts.
+Concept refinement and schema design require explicit human decisions.
+Validation and standards review require an operational specification.
+All maturity levels preserve human responsibility for accepting changes.

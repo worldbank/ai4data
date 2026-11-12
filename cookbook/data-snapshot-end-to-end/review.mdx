@@ -1,0 +1,111 @@
+---
+id: review
+title: "4. Data snapshot and metadata review"
+sidebar_label: "4. Data snapshot and metadata review"
+sidebar_position: 5
+description: This chapter compares data snapshots and metadata with the source to identify missing context, irrelevant detections, and interpretation errors.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 4. Data snapshot and metadata review
+
+**Question:** Are the extracted outputs fit for use?
+
+## Rationale
+
+A useful review asks two separate questions: whether the data snapshot preserves the analytical artifact, and whether the metadata accurately describes the available evidence. A schema check answers neither question on its own. Detection can find the right region while excluding the title, or can find a photograph that is irrelevant to analytical extraction.
+
+Comparing the source pages, data snapshots, and generated metadata helps determine whether the outputs contain enough context for the intended use.
+
+## Target state
+
+- Missing context and irrelevant detections are identified in the selected data snapshots.
+- Metadata fields are checked against the visible content of each data snapshot.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | A curator opens data snapshots and metadata beside the source pages and notes missing context or questionable interpretations. |
+| **AI-ready** | Review distinguishes candidate relevance, data snapshot completeness, and metadata correctness. |
+| **AI-native** | An organization uses model-assisted prioritization and repeated quality checks to direct human attention to uncertain outputs. This is an organizational practice that would require additional tooling. |
+
+:::info[Running example]
+Review brings together the photograph detected as a figure, the selected data snapshots that omit their captions and sources, and the chart response that treats an axis label as a title.
+:::
+
+## Recipes
+
+<Recipe title="4.1 Compare candidates with the PDF page" level="AI-ready" skills="Developer and data curator" time="Twenty minutes to review the twelve-page source and candidate inventory">
+
+**Result:** The curator identifies missing context and irrelevant detections.
+
+A review of saved files alone cannot discover every missed artifact. The source page is needed to identify relevant regions and inspect their boundaries.
+
+1. Compare all source pages with the candidate image inventory when assessing coverage. Inspect the selected page at [full size](pathname:///cookbook-files/data-snapshot-end-to-end/shona-page-4.webp).
+2. Check titles, row and column headings, scales, legends, footnotes, and sources for truncation or omission.
+3. Identify irrelevant candidates, split composites, merged adjacent artifacts, and missing small analytical regions.
+
+**Worked example.** The cover photograph in the sample PDF is labelled `figure` by the layout detector, yet it is not an analytical data snapshot. On PDF page 4, the selected chart and table are analytical, but their captions lie outside the data snapshots. Both limitations were observed in the recorded run.
+
+**What this does not do.** This comparison identifies visible issues in the sample PDF. It does not establish how reliably the detector will perform on other documents.
+
+</Recipe>
+
+<Recipe title="4.2 Audit metadata against visible evidence" level="AI-ready" skills="Developer and data curator" time="Twenty to thirty minutes to inspect the two metadata records">
+
+**Result:** The curator can explain which metadata fields need attention and how each finding relates to the image.
+
+The image boundary determines what the model can observe. A document title, country, date, or source outside that boundary should not be silently supplied as though it was extracted from the data snapshot. Source-document metadata belongs in a separate record describing the parent publication. It is not supplied to the metadata model in this workflow.
+
+1. (Optional) Repeat the local validation check in [Recipe 3.2](./metadata.mdx#recipe-3-2) if the saved JSON needs checking. The extraction script already validates each response before saving it.
+2. For an absent field, check whether the relevant information is visible in the data snapshot and whether the concept applies.
+3. Check each non-null field against the data snapshot, especially titles, units, percentages, time ranges, and roles.
+
+**Worked example.** The chart-title finding in [Recipe 3.2](./metadata.mdx#recipe-3-2) illustrates a populated field that misinterprets visible text. Comparing the JSON with the image reveals the problem.
+
+The following examples connect the observed issues to the content that needs checking.
+
+| Material | Observation from inspection | What to check |
+|---|---|---|
+| Cover photograph, `figure_000` | The detector labels the photograph as a figure, but it contains no analytical chart or table. | Check whether each candidate contains analytical information before selecting it for metadata extraction. |
+| Chart data snapshot, `figure_001` | The chart and legend are present; the printed caption and source note are outside the data snapshot. | Compare the boundaries with PDF page 4 to identify omitted context. |
+| Raw chart JSON | The `title` field contains the vertical-axis label `Percent of population`. | Compare the title with the axis label and the printed caption. |
+| Table data snapshot, `table_000` | The five rows and two year columns are present; the caption and source note are outside the data snapshot. | Check whether the omitted context is needed to interpret the table. |
+
+**What this does not do.** Inspecting metadata does not automatically correct the JSON or recover information outside the data snapshot. Numerical observations are outside the schema and this cookbook.
+
+</Recipe>
+
+After the two image–JSON pairs have been inspected, [chapter 5](./combined.mdx) explains how to run both extraction stages with one command for a PDF or directory of PDFs.
+
+## Implementation options
+
+Numerical extraction and verification are later steps in the [document cookbook](/cookbook/data-from-documents/).
+
+## Resources
+
+- The [production README](https://github.com/worldbank/ai4data/blob/main/src/ai4data/data_snapshot/README.md) documents installation, supported commands, and Python interfaces.
+- The [schema reference](/docs/data-snapshots/metadata-schema/) explains the metadata fields and validation boundaries.
+
+## Common mistakes
+
+- Reviewing only successful data snapshots conceals missed artifacts.
+- Assuming that every detected region is complete can hide omitted captions or notes.
+- Treating a null `geographic_coverage` field as an error can be misleading when no location is visible in the data snapshot.
+
+## Verification
+
+- Compare the candidate inventory with the source PDF. The cover photograph should be recognized as a layout figure that does not meet the analytical definition of a data snapshot.
+- Open the two selected data snapshots beside PDF page 4. Both should show their main analytical content, while their printed captions and sources are visible only on the page.
+- Compare the chart JSON with the chart image. The axis-label title interpretation should be identifiable from the visible content.
+
+## Checklist
+
+<Checklist id="data-snapshot-end-to-end-review" items={[
+  "Irrelevant candidate content has been identified.",
+  "Missing data snapshot context has been noted.",
+  "Questionable metadata fields have been checked against the visible content."
+]} />

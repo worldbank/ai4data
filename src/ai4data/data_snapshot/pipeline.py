@@ -18,6 +18,7 @@ def run_extraction(
     *,
     dpi: int = 300,
     force: bool = False,
+    device: str = "cpu",
 ) -> list[Path]:
     """Extract snapshots beneath a directory named for the selected model.
 
@@ -34,6 +35,8 @@ def run_extraction(
     force : bool, optional
         Delete existing snapshots and metadata for each source PDF before
         extracting it.
+    device : str, optional
+        Inference device, such as ``"cpu"`` or ``"cuda:0"``.
 
     Returns
     -------
@@ -55,7 +58,7 @@ def run_extraction(
     if not pending_pdf_paths:
         return []
 
-    detector = create_adapter(normalized_name)
+    detector = create_adapter(normalized_name, device=device)
     output_paths: list[Path] = []
     pdf_progress = tqdm(pending_pdf_paths, desc="PDFs", unit="pdf")
     for pdf_path in pdf_progress:
@@ -72,6 +75,7 @@ def run_pipeline(
     dpi: int = 300,
     force: bool = False,
     metadata_provider: str = "openrouter",
+    device: str = "cpu",
 ) -> list[Path]:
     """Run snapshot extraction followed by semantic metadata extraction.
 
@@ -89,6 +93,8 @@ def run_pipeline(
         Replace outputs belonging to each source PDF.
     metadata_provider : str, optional
         API provider used for semantic metadata extraction.
+    device : str, optional
+        Inference device for snapshot detection.
 
     Returns
     -------
@@ -109,6 +115,7 @@ def run_pipeline(
         normalized_name,
         dpi=dpi,
         force=force,
+        device=device,
     )
     metadata_paths = extract_metadata_files(
         snapshot_paths,

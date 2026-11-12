@@ -26,7 +26,7 @@ export const HUB = {
       {title: 'Generative AI for metadata quality', to: '/docs/metadata-quality/generative-ai-for-metadata-quality', note: 'Scoring records on completeness, alignment, specificity, and consistency.'},
       {title: 'Mapping to the GSBPM', to: '/docs/gsbpm-mapping', note: 'Where each workstream applies in the statistical production process.'},
     ],
-    cookbooks: ['microdata-documentation', 'metadata-curation-with-llms', 'data-from-documents', 'ai-ready-dissemination'],
+    cookbooks: ['microdata-documentation', 'metadata-curation-with-llms', 'data-from-documents', 'data-snapshot-end-to-end', 'ai-ready-dissemination'],
     dimensions: ['2.1', '2.2', '2.3'],
   },
   connect: {

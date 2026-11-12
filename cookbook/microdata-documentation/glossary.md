@@ -41,7 +41,7 @@ description: Terms used in the Practical Guide to AI-Ready Microdata Documentati
 
 **Data dictionary.** The documentation of a data file's variables: names, labels, types, value codes, missing codes, universes, questions.
 
-**Data snapshot.** The image of one table or figure cropped from a page, with its coordinates, class, and source document; the unit of extraction and of citation.
+**Data snapshot.** A bounded visual region of a document page containing structured or semi-structured information for analytical interpretation or operational reuse, such as a statistical table, chart, analytical map, or monitoring dashboard. A crop should retain the context needed to interpret it.
 
 **DataCite.** The registration agency and metadata schema for dataset DOIs. The World Bank Microdata Library assigns DataCite DOIs.
 

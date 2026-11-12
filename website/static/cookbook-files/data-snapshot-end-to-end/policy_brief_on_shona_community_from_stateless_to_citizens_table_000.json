@@ -1,0 +1,143 @@
+{
+  "title": null,
+  "document_label": null,
+  "subject_domains": [
+    "Demographics"
+  ],
+  "subject_summary": "Comparison of selected demographic and household indicators in 2019 and 2024.",
+  "panel_titles": null,
+  "variables": [
+    {
+      "name": "Median age",
+      "unit": {
+        "source_text": "years",
+        "code": null,
+        "multiplier_exponent": null
+      },
+      "currency": null,
+      "analytical_roles": null,
+      "axis_roles": null,
+      "multi_axis_assignments": null,
+      "statistical_forms": [
+        {
+          "source_text": "Median",
+          "normalized_value": "median"
+        }
+      ]
+    },
+    {
+      "name": "Gender (Female)",
+      "unit": {
+        "source_text": "percent",
+        "code": null,
+        "multiplier_exponent": null
+      },
+      "currency": null,
+      "analytical_roles": null,
+      "axis_roles": null,
+      "multi_axis_assignments": null,
+      "statistical_forms": [
+        {
+          "source_text": "in percent",
+          "normalized_value": "percentage"
+        }
+      ]
+    },
+    {
+      "name": "Mean household size",
+      "unit": null,
+      "currency": null,
+      "analytical_roles": null,
+      "axis_roles": null,
+      "multi_axis_assignments": null,
+      "statistical_forms": [
+        {
+          "source_text": "Mean",
+          "normalized_value": "arithmetic_mean"
+        }
+      ]
+    },
+    {
+      "name": "Female headed households",
+      "unit": {
+        "source_text": "%",
+        "code": null,
+        "multiplier_exponent": null
+      },
+      "currency": null,
+      "analytical_roles": null,
+      "axis_roles": null,
+      "multi_axis_assignments": null,
+      "statistical_forms": [
+        {
+          "source_text": null,
+          "normalized_value": "percentage"
+        }
+      ]
+    },
+    {
+      "name": "Literacy rate (can read and write in any language, aged 15+)",
+      "unit": {
+        "source_text": "%",
+        "code": null,
+        "multiplier_exponent": null
+      },
+      "currency": null,
+      "analytical_roles": null,
+      "axis_roles": null,
+      "multi_axis_assignments": null,
+      "statistical_forms": [
+        {
+          "source_text": "rate",
+          "normalized_value": "rate"
+        }
+      ]
+    }
+  ],
+  "dimensions": [
+    {
+      "name": "Year",
+      "categories": [
+        {
+          "source_text": "2019",
+          "code": null,
+          "scheme": null,
+          "uri": null
+        },
+        {
+          "source_text": "2024",
+          "code": null,
+          "scheme": null,
+          "uri": null
+        }
+      ],
+      "category_groups": null,
+      "presentation_roles": [
+        "column"
+      ]
+    }
+  ],
+  "population_group": null,
+  "visualization_types": [
+    {
+      "source_text": null,
+      "normalized_value": "table"
+    }
+  ],
+  "temporal_coverage": null,
+  "geographic_coverage": null,
+  "comparisons": null,
+  "provenance": null,
+  "languages": [
+    {
+      "source_text": null,
+      "tag": "en"
+    }
+  ],
+  "interpretive_notes": null,
+  "project": null,
+  "intervention_types": null,
+  "financing": null,
+  "analysis_methods": null,
+  "data_collection_methods": null
+}
