@@ -47,7 +47,7 @@ The fonts (Inter and JetBrains Mono) load from Google Fonts. Without an internet
 | 11 to 17 | Synthetic data | Labelled examples, why they are missing, synthetic data, the office comparison, distillation, labelled job titles rewritten as survey answers |
 | 18 to 28 | Nine steps | The process, then one slide for each step with an illustrative example from occupation coding. These slides show no scores of the models |
 | 29 to 35 | Occupation coding | The three sets of training texts, the recorded training run of the small model, five suggested codes for eight responses, the scores by training set, the comparison with three large models, speed. The line above each headline names the step of the process |
-| 36 to 42 | Small or large | Criteria, a six-task exercise for the room, checks before relying on a small model, the requirements of a first attempt, summary, sources |
+| 36 to 42 | Small or large | Criteria, checks before relying on a small model, the requirements of a first attempt, a six-task exercise for the room, summary, sources |
 | 43 to 50 | Annex | The memory a model needs (`s08`), the real cases of a rare group (`s12`), the request that rewrites a job title as survey answers (`s27`), the check by a second model (`s28`), the measured cost of each build (`s35`), a second small model that tags reports with topics (`s36`) and its scores on 300 real reports (`s37`) |
 
 The first slide of each part is its divider.

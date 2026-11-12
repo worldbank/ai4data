@@ -154,8 +154,8 @@ DIVIDERS = [
      'test. The line above each headline names the step. The part ends with the scores next to three large models '
      'and the speed. This build did not include steps 8 and 9.'),
     ('We end with the choice between a small and a large model for a task.',
-     'The last part is about the choice between a small and a large model. It has an exercise '
-     'for the room, the checks before relying on a small model, and the requirements of a first attempt.'),
+     'The last part is about the choice between a small and a large model. It has the criteria, '
+     'the checks before relying on a small model, the requirements of a first attempt, and an exercise for the room.'),
 ]
 
 # The divider of the annex: the line under the title and the speaker notes.

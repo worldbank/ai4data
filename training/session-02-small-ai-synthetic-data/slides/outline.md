@@ -266,7 +266,7 @@ Notes: The axis is logarithmic, so each step to the right is ten times slower. O
 
 Small or large
 
-Notes: The last part is about the choice between a small and a large model. It has an exercise for the room, the checks before relying on a small model, and the requirements of a first attempt.
+Notes: The last part is about the choice between a small and a large model. It has the criteria, the checks before relying on a small model, the requirements of a first attempt, and an exercise for the room.
 
 ### 37. Small or large
 
@@ -274,25 +274,25 @@ A small model suits a narrow task that repeats many times.
 
 Notes: These criteria summarize everything so far. Go back to the survey response from the start: a fixed list of codes, a task that repeats, confidential records. Then reveal the other side. A large model remains the right tool for open questions and for writing. Then reveal the two results. The second result is new to the room. The same process built a model that tags reports with topics from a fixed list of 86, and it was tested on 300 real reports. The annex has its two slides. The description of this session says that a specialized model can be more accurate, more efficient, and cheaper than a general-purpose model. Our two tests support the efficiency. On accuracy, both small models scored about the same as the large models, and neither scored clearly higher. The occupation test has a weakness, because a large model wrote its answers. A test on real cases settles the question for each task.
 
-### 38. Your turn
-
-Which kind of model suits each of these six tasks?
-
-The slide has an interactive demonstration.
-
-Notes: Let the room vote on each task by a show of hands before you select an answer. The last three tasks have a second lesson: a small model can still do a narrower part of the work. If a task from the room came up earlier, apply the same criteria to it now.
-
-### 39. Before relying on a small model
+### 38. Before relying on a small model
 
 A team checks four points before it relies on a small model.
 
 Notes: This is the slide to take back to the office. Each point answers a weakness of our own tests: the occupation test used answers that a model wrote, and the test of the report-tagging model covers 44 of its 86 topics. If a supplier offers a small model, these are the four questions to ask.
 
-### 40. A first attempt
+### 39. A first attempt
 
 A first attempt needs a subject specialist, real cases with known answers, and one GPU.
 
 Notes: Here is what you need for a first attempt on your own task. Start with the people. The specialist matters most, because the specialist knows where two groups are easy to confuse and can tell a realistic example from a poor one. Then the real cases. The occupation model was tested on 1,000 real job titles and on answers written from them, and the report-tagging model on 300 real reports. Collect the real cases first and keep them away from training. Then the computer. Each training run took between one and four minutes on one server GPU, and a smaller GPU takes longer. The notebooks let you repeat both builds with the recorded examples, without a large model and without a key.
+
+### 40. Your turn
+
+Which kind of model suits each of these six tasks?
+
+The slide has an interactive demonstration.
+
+Notes: The exercise uses the criteria from the start of this part. Let the room vote on each task by a show of hands before you select an answer. The last three tasks have a second lesson: a small model can still do a narrower part of the work. If a task from the room came up earlier, apply the same criteria to it now. If time is short, take three of the six tasks.
 
 ### 41. Summary
 
