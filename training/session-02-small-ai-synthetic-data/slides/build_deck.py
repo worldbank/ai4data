@@ -1,7 +1,7 @@
 """Build the session 02 deck as one HTML file.
 
 Reads the slide sources in src/, the recorded data of the overview page (../assets/overview.json),
-and the program mark. The slides of the nine steps (s16 to s25) and the slide of the steps used for the report-tagging
+and the two logos of the cover. The slides of the nine steps (s16 to s25) and the slide of the steps used for the report-tagging
 model (s27) are generated from the STEPS table below. The divider that opens each part (p1 to p6) is generated from the
 DIVIDERS table. A slide keeps its id when slides are added before it, so the id is not the slide number.
 
@@ -24,7 +24,9 @@ HERE = Path(__file__).resolve().parent
 SRC = HERE / 'src'
 REPO = HERE.parents[2]
 DATA = HERE.parent / 'assets/overview.json'
-LOGO = REPO / 'website/static/img/program-mark.png'
+IMG = REPO / 'website/static/img'
+# The logos of the cover, each with the height in pixels at which it is embedded.
+LOGOS = {'__LOGO__': ('program-logo.png', 150), '__DDG__': ('ddg-logo.png', 100)}
 OUT = HERE / 'deck.html'
 OUTLINE = HERE / 'outline.md'
 
@@ -252,11 +254,12 @@ def used_slide():
 </section>'''
 
 
-def logo_uri():
-    raw = LOGO.read_bytes()
+def logo_uri(name, height):
+    raw = (IMG / name).read_bytes()
     try:
         from PIL import Image
-        im = Image.open(io.BytesIO(raw)).convert('RGBA').resize((144, 144), Image.LANCZOS)
+        im = Image.open(io.BytesIO(raw)).convert('RGBA')
+        im = im.resize((round(im.width * height / im.height), height), Image.LANCZOS)
         buf = io.BytesIO()
         im.save(buf, 'PNG', optimize=True)
         raw = buf.getvalue()
@@ -294,8 +297,11 @@ def data():
 
 
 def page():
+    first = (SRC / 'slides-01-15.html').read_text()
+    for mark, (name, height) in LOGOS.items():
+        first = first.replace(mark, logo_uri(name, height))
     slides = '\n\n'.join([
-        (SRC / 'slides-01-15.html').read_text().replace('__LOGO__', logo_uri()),
+        first,
         overview_slide(), *[step_slide(i, s) for i, s in enumerate(STEPS)],
         (SRC / 'slides-26-43.html').read_text().replace('<!--__USED__-->', used_slide()),
     ])

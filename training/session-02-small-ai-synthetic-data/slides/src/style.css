@@ -206,8 +206,10 @@ svg text { fill: var(--muted); font-family: var(--sans); }
 .cover .kicker { color: var(--cover-muted); }
 .cover h1 { font-size: 3.9em; line-height: 1.06; font-weight: 700; letter-spacing: -.025em; margin: 0; max-width: 15em; text-wrap: balance; }
 .cover .sub { font-size: 1.35em; color: var(--cover-muted); margin-top: 1.1em; max-width: 34em; line-height: 1.35; }
-.cover .logo { width: 5.2em; height: 5.2em; background: #fff; border-radius: 1.1em; padding: .55em; margin-bottom: 2.6em; }
-.cover .logo img { width: 100%; height: 100%; display: block; }
+.cover .logos { align-self: flex-start; display: flex; align-items: center; gap: 1.5em; background: #fff; border-radius: 1em; padding: .7em 1.5em .7em 1.1em; margin-bottom: 2.4em; }
+.cover .logos img { display: block; width: auto; max-width: none; }
+.cover .logos .prog { height: 4.3em; }
+.cover .logos .ddg { height: 2.7em; padding-left: 1.5em; border-left: 1px solid #D5DCE5; box-sizing: content-box; }
 .cover .keys { margin-top: auto; font-size: .8em; color: var(--cover-muted); display: flex; gap: 1.6em; flex-wrap: wrap; }
 .cover .keys kbd { font-family: var(--mono); border: 1px solid rgba(255, 255, 255, .4); border-radius: .3em; padding: .05em .45em; margin-right: .4em; color: #fff; }
 .cover a { color: #fff; }
@@ -578,6 +580,8 @@ button.cypart { cursor: pointer; } button.cypart:hover { border-color: var(--tea
   .bar { height: auto; padding: 1rem 0 1.4rem; justify-content: center; }
   .slide { position: static; display: flex; padding: 1.8rem 0; border-bottom: 1px solid var(--line); animation: none; }
   .slide.cover, .slide.divider { padding: 2rem 1.3rem; border-radius: 1rem; margin-top: 1rem; border: 0; }
+  .cover .logos { flex-wrap: wrap; gap: .7em 1.2em; padding: .7em 1em; margin-bottom: 1.4em; } .cover .logos .prog { height: 3.2em; }
+  .cover .logos .ddg { height: 2em; padding-left: 0; border-left: 0; }
   .slide.divider { gap: 1.4rem; } .slide.divider h2 { font-size: 2.3em; } .divider .sub { font-size: 1.05em; }
   .divider .dvnum { font-size: 9em; right: .1em; top: 0; transform: none; } .route { grid-template-columns: 1fr 1fr; }
   .slide h2 { font-size: 1.45em; } .cover h1 { font-size: 2.1em; } .cover h2 { font-size: 1.6em; } .cover .sub { font-size: 1.05em; }
