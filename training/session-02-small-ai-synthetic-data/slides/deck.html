@@ -839,9 +839,9 @@ svg text.ink { fill: var(--ink); }
       <div class="ex" data-step="1"><p class="msg">class 4 teacher, government primary school</p><span class="arrow" aria-hidden="true">→</span><span class="ans">2341 Primary school teachers</span></div>
       <div class="ex" data-step="1"><p class="msg">grows maize and beans to feed the family</p><span class="arrow" aria-hidden="true">→</span><span class="ans">6310 Subsistence crop farmers</span></div>
     </div>
-    <p class="callout" data-step="2">An example with its code is a <button class="term" data-term="labelled">labelled example</button>. About 15,900 were written for the occupation-coding model of this session.</p>
+    <p class="callout" data-step="2">An example with its code is a <button class="term" data-term="labelled">labelled example</button>. The model needs labelled examples of every group.</p>
   </div>
-  <aside class="notes">Nobody writes rules for a model. It adjusts itself until its answers match the examples, so the examples decide the model's answers. Read the three responses and their codes, then give the number for the occupation-coding model so the room feels the scale of the requirement.</aside>
+  <aside class="notes">Nobody writes rules for a model. It adjusts itself until its answers match the examples, so the examples decide the model's answers. Read the three responses and their codes. A classification has hundreds of groups, and the model needs examples of each one. The next slide shows why such examples are often missing.</aside>
 </section>
 
 <section class="slide" id="s11" data-sec="3">
@@ -878,7 +878,7 @@ svg text.ink { fill: var(--ink); }
   <p class="kicker">Rare cases</p>
   <h2>A model sees only a few real cases of a rare group.</h2>
   <div class="body"><div class="fill rare" data-demo="rare"></div></div>
-  <aside class="notes">Each dot is one real response, and the four red dots come from one occupation group. Ask the room whether a new coder could learn how people describe that work from four responses. Then add the written responses. Point out what happens to the four real ones: they are kept for testing. The last line gives a measured case from the occupation-coding model.</aside>
+  <aside class="notes">Each dot is one real response, and the four red dots come from one occupation group. Ask the room whether a new coder could learn how people describe that work from four responses. Then add the written responses. Point out what happens to the four real ones: they are kept for testing. The last line gives a count from 1,000 real job titles of a job board.</aside>
 </section>
 
 <section class="slide" id="s13" data-sec="3">
@@ -1611,7 +1611,7 @@ DEMOS.rare = {
         ? 'The model now learns from 120 written responses of varied wording for the group. The 4 real ones are kept for testing.'
         : 'Among 400 real responses, 4 come from one occupation group. A model trained on them sees too few to learn how people describe that work.'}</p>
       <p class="mt2"><button type="button" class="btn" data-a="t" data-v="1">${st.on ? 'Remove the written responses' : 'Add 120 written responses for the group'}</button></p>
-      <p class="txt-s mt2">A measured case: ${o.groups - o.groupsInTest} of the ${o.groups} groups of ISCO-08 have no title among the ${fmt(o.testTitles)} real job titles used to test the occupation-coding model.</p>
+      <p class="txt-s mt2">Among ${fmt(o.testTitles)} real job titles from a job board, ${o.groups - o.groupsInTest} of the ${o.groups} groups of ISCO-08 do not occur.</p>
     </div>`;
   },
 };

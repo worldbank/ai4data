@@ -74,7 +74,7 @@ Notes: Be even-handed here. The gains come after the model is built, and the cos
 
 A model learns a task from examples with the right answer.
 
-Notes: Nobody writes rules for a model. It adjusts itself until its answers match the examples, so the examples decide the model's answers. Read the three responses and their codes, then give the number for the occupation-coding model so the room feels the scale of the requirement.
+Notes: Nobody writes rules for a model. It adjusts itself until its answers match the examples, so the examples decide the model's answers. Read the three responses and their codes. A classification has hundreds of groups, and the model needs examples of each one. The next slide shows why such examples are often missing.
 
 ### 11. The missing examples
 
@@ -88,7 +88,7 @@ A model sees only a few real cases of a rare group.
 
 The slide has an interactive demonstration.
 
-Notes: Each dot is one real response, and the four red dots come from one occupation group. Ask the room whether a new coder could learn how people describe that work from four responses. Then add the written responses. Point out what happens to the four real ones: they are kept for testing. The last line gives a measured case from the occupation-coding model.
+Notes: Each dot is one real response, and the four red dots come from one occupation group. Ask the room whether a new coder could learn how people describe that work from four responses. Then add the written responses. Point out what happens to the four real ones: they are kept for testing. The last line gives a count from 1,000 real job titles of a job board.
 
 ### 13. Synthetic data
 

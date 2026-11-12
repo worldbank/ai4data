@@ -272,7 +272,7 @@ DEMOS.rare = {
         ? 'The model now learns from 120 written responses of varied wording for the group. The 4 real ones are kept for testing.'
         : 'Among 400 real responses, 4 come from one occupation group. A model trained on them sees too few to learn how people describe that work.'}</p>
       <p class="mt2"><button type="button" class="btn" data-a="t" data-v="1">${st.on ? 'Remove the written responses' : 'Add 120 written responses for the group'}</button></p>
-      <p class="txt-s mt2">A measured case: ${o.groups - o.groupsInTest} of the ${o.groups} groups of ISCO-08 have no title among the ${fmt(o.testTitles)} real job titles used to test the occupation-coding model.</p>
+      <p class="txt-s mt2">Among ${fmt(o.testTitles)} real job titles from a job board, ${o.groups - o.groupsInTest} of the ${o.groups} groups of ISCO-08 do not occur.</p>
     </div>`;
   },
 };
