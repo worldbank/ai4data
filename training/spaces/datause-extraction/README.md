@@ -15,7 +15,7 @@ short_description: Small AI that finds datasets in text and how they are used
 
 A [Small AI](https://worldbank.github.io/ai4data/) demo from the AI for Data – Data for AI program. It finds the datasets that a passage mentions and reads how each named dataset is used. Both models are loaded when the Space starts, so a visitor does not wait for a download. The GPU is attached for the few seconds that a request runs ([ZeroGPU](https://huggingface.co/docs/hub/spaces-zerogpu)).
 
-The page is the interface of the earlier in-browser demo, `rafmacalaba/datause-extraction-webgpu`: the same layout, samples and Pretty, JSON and Trace views. The inference moved from the browser to this Space.
+The page is the interface of the earlier in-browser demo, `rafmacalaba/datause-extraction-webgpu`: the same layout, samples, streaming text and Pretty, JSON and Trace views. The page opens with the "Spatial (DHS + GLSS)" example loaded. The inference moved from the browser to this Space.
 
 ## Pipeline
 
@@ -36,7 +36,11 @@ The passage is split into windows of 200 words with an overlap of 50, because GL
 
 ## How the page talks to the models
 
-`app.py` uses Gradio's [Server mode](https://www.gradio.app/guides/server-mode): it serves `index.html` and `main.js` and registers one endpoint, `extract`, which goes through Gradio's queue. The endpoint streams twice, first the mentions and then their attributes and usage, so the page shows the mentions as soon as GLiNER finishes. Inside the Hugging Face page, `main.js` passes the visitor's ZeroGPU headers along with the request, as Gradio's own frontend does, so a signed-in visitor uses their own quota.
+`app.py` uses Gradio's [Server mode](https://www.gradio.app/guides/server-mode): it serves `index.html` and `main.js` and registers one endpoint, `extract`, which goes through Gradio's queue. The endpoint streams. It sends the mentions as soon as GLiNER finishes. Then, for each named mention, it sends the text that the metadata model is writing token by token, followed by the parsed attributes and usage of each task. `main.js` writes that text into the mention's tree, so the page shows the model writing, and then it swaps in the parsed fields.
+
+Generation runs for one mention and one task at a time, in a thread with a `TextIteratorStreamer`. It is not batched, so a passage with many named mentions takes longer in total.
+
+Inside the Hugging Face page, `main.js` passes the visitor's ZeroGPU headers along with the request, as Gradio's own frontend does, so a signed-in visitor uses their own quota.
 
 ## Privacy
 

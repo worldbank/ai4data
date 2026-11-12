@@ -208,12 +208,11 @@ def usage_fields(parsed: Optional[Dict]) -> Dict[str, Any]:
 
 def public(mention: Dict[str, Any]) -> Dict[str, Any]:
     """The mention as the page receives it."""
-    return {
-        "text": mention["text"],
-        "label": mention["label"],
-        "score": round(mention["score"], 4),
-        **{k: v for k, v in (("attributes", mention.get("attributes")), ("usage", mention.get("usage"))) if v},
-    }
+    out = {"text": mention["text"], "label": mention["label"], "score": round(mention["score"], 4)}
+    for key in ("attributes", "usage"):
+        if mention.get(key):
+            out[key] = mention[key]
+    return out
 
 
 def _duration(text: str, threshold: float = 0.6) -> int:

@@ -380,3 +380,6 @@ thresholdInput?.addEventListener("input", () => {
 });
 
 textEl.addEventListener("input", () => setStep("input"));
+
+// The page opens with a real-world example loaded: "Spatial (DHS + GLSS)".
+selectSample(document.querySelector('.sample-chip[data-sample="6"]'));
