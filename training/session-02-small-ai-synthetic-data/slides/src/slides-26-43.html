@@ -49,33 +49,7 @@
   <aside class="notes">The axis is logarithmic, so each step to the right is ten times slower. On an ordinary processor the small model answers in about 0.05 seconds. The fastest large model ran on its own GPU and took 0.37 seconds. The hosted services took longer, and the slowest also reasons before each answer. The small model fits on a laptop and needs no connection. Each build took less than an hour on one server. The annex has the requests and the minutes of each build.</aside>
 </section>
 
-<section class="slide" id="s36" data-sec="6">
-  <p class="kicker">Tagging reports with topics</p>
-  <h2>A second small model tags each report with topics from a fixed list of 86.</h2>
-  <div class="body"><div class="g2 fill">
-    <div class="card report" data-demo="report"></div>
-    <div style="display:flex;flex-direction:column;justify-content:center;gap:.9em">
-      <span class="lbl">How the model was built</span>
-      <ul class="obst">
-        <li data-step="1"><span class="lbl">Training</span>A large model wrote more than 30,000 labelled sentences. No real report was used.</li>
-        <li data-step="2"><span class="lbl">Threshold</span>488 real reports set the score above which the model assigns a topic.</li>
-        <li data-step="3"><span class="lbl">Test</span>300 other real reports with recorded topics test the model.</li>
-      </ul>
-    </div>
-  </div></div>
-  <p class="src">The report and its topics come from the World Bank documents database.</p>
-  <aside class="notes">The same process built a second model for a different task. An organization wants each report tagged with topics from a fixed list of 86, and it has no tagged reports for training. Read the title of the report and its topics. Then reveal the three facts. Here the test uses real reports with topics recorded by people.</aside>
-</section>
-
-<section class="slide" id="s37" data-sec="6">
-  <p class="kicker">Results on 300 real reports</p>
-  <h2>On 300 real reports the small model scored about the same as three large models.</h2>
-  <div class="body center"><div data-demo="results"></div></div>
-  <p class="src">F1 on 300 real report abstracts, on a scale from 0 to 1. The small model's scores are the mean of three training runs. The test covers 44 of the 86 topics. The small model takes 0.19 seconds per report on an ordinary processor.</p>
-  <aside class="notes">Show the three large models first. Each one was asked directly for the topics of every report. Then reveal the small model after the first set of sentences, and after the further rounds on its weak topics. The gap closes from about 0.06 to less than 0.01. Give two cautions. The 300 reports cover 44 of the 86 topics, so the scores say nothing about the other 42. And the recorded topics of a report can omit a topic that the abstract covers.</aside>
-</section>
-
-<section class="slide" id="s38" data-sec="7">
+<section class="slide" id="s38" data-sec="6">
   <p class="kicker">Small or large</p>
   <h2>A small model suits a narrow task that repeats many times.</h2>
   <div class="body center">
@@ -99,17 +73,18 @@
     </div>
     <p class="callout" data-step="2">On survey-style answers about occupation, our small model scored about the same as the best of three large models and answered in 0.05 seconds on an ordinary processor. On report topics, a second small model also scored about the same as three large models.</p>
   </div>
-  <aside class="notes">These criteria summarize everything so far. Go back to the survey response from the start: a fixed list of codes, a task that repeats, confidential records. Then reveal the other side. A large model remains the right tool for open questions and for writing. Then reveal the two results. The description of this session says that a specialized model can be more accurate, more efficient, and cheaper than a general-purpose model. Our two tests support the efficiency. On accuracy, both small models scored about the same as the large models, and neither scored clearly higher. The occupation test has a weakness, because a large model wrote its answers. A test on real cases settles the question for each task.</aside>
+  <p class="src"><button type="button" class="link" data-go="s36">Annex: the report-tagging model</button><button type="button" class="link" data-go="s37">Annex: the report-tagging scores</button></p>
+  <aside class="notes">These criteria summarize everything so far. Go back to the survey response from the start: a fixed list of codes, a task that repeats, confidential records. Then reveal the other side. A large model remains the right tool for open questions and for writing. Then reveal the two results. The second result is new to the room. The same process built a model that tags reports with topics from a fixed list of 86, and it was tested on 300 real reports. The annex has its two slides. The description of this session says that a specialized model can be more accurate, more efficient, and cheaper than a general-purpose model. Our two tests support the efficiency. On accuracy, both small models scored about the same as the large models, and neither scored clearly higher. The occupation test has a weakness, because a large model wrote its answers. A test on real cases settles the question for each task.</aside>
 </section>
 
-<section class="slide" id="s39" data-sec="7">
+<section class="slide" id="s39" data-sec="6">
   <p class="kicker">Your turn</p>
   <h2>Which kind of model suits each of these six tasks?</h2>
   <div class="body"><div class="fill" data-demo="quiz" style="display:flex;flex-direction:column;gap:.7em"></div></div>
   <aside class="notes">Let the room vote on each task by a show of hands before you select an answer. The last three tasks have a second lesson: a small model can still do a narrower part of the work. If a task from the room came up earlier, apply the same criteria to it now.</aside>
 </section>
 
-<section class="slide" id="s40" data-sec="7">
+<section class="slide" id="s40" data-sec="6">
   <p class="kicker">Before relying on a small model</p>
   <h2>A team checks four points before it relies on a small model.</h2>
   <div class="body center">
@@ -120,10 +95,10 @@
       <li data-step="3"><span class="box">4</span>A person reviews a sample of the output at regular intervals.</li>
     </ol>
   </div>
-  <aside class="notes">This is the slide to take back to the office. Each point answers a weakness of our own tests: the occupation test used answers that a model wrote, and the report test covers 44 of the 86 topics. If a supplier offers a small model, these are the four questions to ask.</aside>
+  <aside class="notes">This is the slide to take back to the office. Each point answers a weakness of our own tests: the occupation test used answers that a model wrote, and the test of the report-tagging model covers 44 of its 86 topics. If a supplier offers a small model, these are the four questions to ask.</aside>
 </section>
 
-<section class="slide" id="s41" data-sec="7">
+<section class="slide" id="s41" data-sec="6">
   <p class="kicker">A first attempt</p>
   <h2>A first attempt needs a subject specialist, real cases with known answers, and one GPU.</h2>
   <div class="body center">
@@ -150,7 +125,7 @@
   <aside class="notes">Here is what you need for a first attempt on your own task. Start with the people. The specialist matters most, because the specialist knows where two groups are easy to confuse and can tell a realistic example from a poor one. Then the real cases. The occupation model was tested on 1,000 real job titles and on answers written from them, and the report-tagging model on 300 real reports. Collect the real cases first and keep them away from training. Then the computer. Each training run took between one and four minutes on one server GPU, and a smaller GPU takes longer. The notebooks let you repeat both builds with the recorded examples, without a large model and without a key.</aside>
 </section>
 
-<section class="slide" id="s42" data-sec="7">
+<section class="slide" id="s42" data-sec="6">
   <p class="kicker">Summary</p>
   <h2>A large model writes the examples, a small model learns from them, and real cases test the result.</h2>
   <div class="body center">

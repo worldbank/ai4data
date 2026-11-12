@@ -127,10 +127,10 @@ def controls(browser):
         if cur() != seen[-1]:
             seen.append(cur())
     ok(f'forward walk visits {total} slides in order', seen == ids, f'{presses} presses')
-    ok('each part opens with its divider', all(ids[secs.index(str(n))] == f'p{n}' for n in range(1, 8)), ids)
+    ok('each part opens with its divider', all(ids[secs.index(str(n))] == f'p{n}' for n in range(1, int(secs[-1]))), ids)
     ok('slide counter', pg.input_value('#goto') == str(total) and pg.inner_text('#total') == f'/ {total}', pg.inner_text('#total'))
     main = ids.index('pa')
-    ok('the annex follows the closing slide', ids[main - 1] == 's43' and all(s == '8' for s in secs[main:]) and '8' not in secs[:main], ids[main - 1:])
+    ok('the annex follows the closing slide', ids[main - 1] == 's43' and len(set(secs[main:])) == 1 and secs[main] not in secs[:main], ids[main - 1:])
     ok('the counter of an annex slide', pg.inner_text('#count') == f'Annex {total - main - 1} / {total - main - 1}', pg.inner_text('#count'))
     back = 0
     while cur() != 's01' and back < 250:
@@ -157,7 +157,7 @@ def controls(browser):
     pg.keyboard.press('PageDown'); ok('PageDown', cur() == 'p1')
     pg.keyboard.press('PageUp'); ok('PageUp', cur() == 's01')
     pg.keyboard.press('Space'); ok('Space', cur() == 'p1')
-    ok('a divider names its part and hides the strip of part names', 'Part 1 of 7' in pg.text_content('.slide.on .kicker') and not pg.is_visible('#secnav'))
+    ok('a divider names its part and hides the strip of part names', 'Part 1 of 6' in pg.text_content('.slide.on .kicker') and not pg.is_visible('#secnav'))
     pg.locator('.slide.on .route [data-go="p4"]').click(); ok('a part on a divider opens the divider of that part', cur() == 'p4', cur())
 
     # Contents, notes, and links between slides.
@@ -176,10 +176,10 @@ def controls(browser):
     # The annex.
     at('s42')
     ok('the counter of the main part leaves out the annex', pg.inner_text('#count') == f'{main - 1} / {main}' and pg.inner_text('#total') == f'/ {main}', pg.inner_text('#count'))
-    pg.locator('#secnav [data-sec="8"]').click(); ok('the name of the annex opens its divider', cur() == 'pa', cur())
+    pg.locator(f'#secnav [data-sec="{secs[main]}"]').click(); ok('the name of the annex opens its divider', cur() == 'pa', cur())
     ok('the divider of the annex lists its slides', pg.locator('.slide.on .route button').count() == total - main - 1 and not pg.is_visible('#secnav'))
     pg.locator('.slide.on .route [data-go="s28"]').click(); ok('a slide on the divider of the annex opens', cur() == 's28', cur())
-    for src, annex in (('s07', 's08'), ('s11', 's12'), ('s26', 's27'), ('s26', 's28'), ('s34', 's35')):
+    for src, annex in (('s07', 's08'), ('s11', 's12'), ('s26', 's27'), ('s26', 's28'), ('s34', 's35'), ('s38', 's36'), ('s38', 's37')):
         at(src)
         pg.locator(f'.slide.on .src [data-go="{annex}"]').click(); there = cur()
         label = pg.inner_text('.slide.on .kicker .back')

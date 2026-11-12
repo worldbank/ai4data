@@ -109,8 +109,8 @@ STEPS = [
          demo='rounds',
          notes='Go through one round with the button. The test shows where the model is wrong, the mistakes are '
                'counted for each group, the large model writes more cases for the weakest group, and the model is '
-               'trained and tested again. The test cases never enter training. Part 6 shows the scores of the '
-               'report model before and after rounds like this one.'),
+               'trained and tested again. The test cases never enter training. The annex has the scores of the '
+               'report-tagging model before and after rounds like this one.'),
     dict(short='Ask people which is better',
          h='Experienced staff choose the better of two cases.',
          office='Experienced staff compare two practice cases, or two answers, and say which one is better.',
@@ -137,7 +137,7 @@ GROUPS = [('Write the cases', range(0, 4), None), ('Train and test', range(4, 6)
 # The names of the parts are the SECS constant of src/app.js. The last name of SECS is the annex.
 DIVIDERS = [
     ('We start with the task: a survey response needs one code from a fixed list.',
-     'Say that the session has seven parts and name them from the strip at the bottom of the slide. The first part shows '
+     'Say that the session has six parts and name them from the strip at the bottom of the slide. The first part shows '
      'the task: one survey response, then other tasks of the same kind, then an outline of the process.'),
     ('We compare a small model with a large one and give the reasons to build one.',
      'The room has seen the task and the outline of the process. This part explains the small '
@@ -148,13 +148,11 @@ DIVIDERS = [
     ('We go through the process one step at a time, with examples from occupation coding.',
      'The room has now seen the task, the small model, and synthetic data. This part puts them '
      'together as a process of nine steps. Each step has a short example from occupation coding. The scores of the '
-     'models come in parts 5 and 6.'),
+     'occupation model come in part 5.'),
     ('We apply the steps to one occupation model that was built and tested.',
      'Part 4 gave the process. This part applies it to one model: the training texts, the training run, and the '
      'test. The line above each headline names the step. The part ends with the scores next to three large models '
      'and the speed. This build did not include steps 8 and 9.'),
-    ('We look at a second small model that tags reports with topics.',
-     'This part is short. A second small model tags reports with topics, and it was tested on 300 real reports.'),
     ('We end with the choice between a small and a large model for a task.',
      'The last part is about the choice between a small and a large model. It has an exercise '
      'for the room, the checks before relying on a small model, and the requirements of a first attempt.'),
@@ -163,7 +161,8 @@ DIVIDERS = [
 # The divider of the annex: the line under the title and the speaker notes.
 ANNEX = ('These slides add detail to the main part. Each one links back to its slide.',
          'The annex holds slides with more detail: where a model can run, the real cases of a rare group, the request '
-         'and the check of the rewritten answers, and the cost of building. Open one when a question calls for it. '
+         'and the check of the rewritten answers, the cost of building, and a second small model that tags reports '
+         'with topics. Open one when a question calls for it. '
          'The button in the top line of each slide returns to its slide in the main part.')
 
 e = html.escape
@@ -193,7 +192,7 @@ def divider_slide(n):
     <p class="sub">{e(line)}</p>
   </div>
   <span class="dvnum" aria-hidden="true">{n}</span>
-  <ol class="route" aria-label="Parts of the session">{''.join(cells)}</ol>
+  <ol class="route" style="--cols:{len(names)}" aria-label="Parts of the session">{''.join(cells)}</ol>
   <aside class="notes">{e(notes)}</aside>
 </section>'''
 

@@ -70,7 +70,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 }
 .secnav button.on { color: var(--ink); font-weight: 650; border-bottom-color: var(--teal); }
 .secnav button.done { color: var(--muted); }
-.secnav button[data-sec="8"] { margin-left: .9em; }
+.secnav button:last-of-type { margin-left: .9em; }
 .secnav .count { margin-left: auto; font-size: .7em; color: var(--faint); font-variant-numeric: tabular-nums; }
 .stage.plain .secnav { display: none; }
 
@@ -330,7 +330,7 @@ button.cypart { cursor: pointer; } button.cypart:hover { border-color: var(--tea
 .cypart.large { border-color: var(--large); background: var(--large-soft); }
 .cypart.small { border-color: var(--small); background: var(--small-soft); }
 .cypart.here { border-style: dashed; background: none; grid-template-columns: 1fr; } .cypart.here b, .cypart.here span { grid-column: 1; }
-.cyparts .cygrid { grid-template-columns: repeat(10, 1fr); } .cyparts .cypart { grid-column: span 2; } .cyparts .cypart.wide { grid-column: span 5; }
+.cyparts .cygrid { grid-template-columns: repeat(10, 1fr); } .cyparts .cypart { grid-column: span 2; } .cyparts .cypart.two { grid-column: span 4; } .cyparts .cypart.wide { grid-column: span 5; }
 .iR { fill: var(--teal-soft); stroke: var(--teal); stroke-width: 2; }
 .iRS { stroke: var(--teal-text); stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 
@@ -595,7 +595,7 @@ button.cypart { cursor: pointer; } button.cypart:hover { border-color: var(--tea
   .distill .mid::after { display: inline-block; }
   .flow { grid-template-columns: 1fr; } .flow .to::after { content: "↓"; }
   .cyloop { order: 0; } .cyloop .arc, .cyflow .card + .card::before { display: none; }
-  .cyparts .cygrid { grid-template-columns: 1fr; } .cyloop .cap, .cyparts .cypart, .cyparts .cypart.wide { grid-column: 1; } .cyloop .cap { text-align: left; }
+  .cyparts .cygrid { grid-template-columns: 1fr; } .cyloop .cap, .cyparts .cypart, .cyparts .cypart.two, .cyparts .cypart.wide { grid-column: 1; } .cyloop .cap { text-align: left; }
   .cyloop .cap::before { content: "Loop after the test. "; } .cypart { order: var(--o, 0); }
   .group ol { grid-auto-flow: row; }
   .gloop { grid-row: auto; margin: 0; } .gloop i { display: none; } .gloop .cap { text-align: left; }
@@ -674,8 +674,6 @@ svg text.ink { fill: var(--ink); }
 #s32 { --z: 1.27; }
 #s33 { --z: 1.25; }
 #s34 { --z: 1.29; }
-#s36 { --z: 1.3; }
-#s37 { --z: 1.42; }
 #s38 { --z: 1.42; }
 #s39 { --z: 1.22; }
 #s40 { --z: 1.42; }
@@ -687,6 +685,8 @@ svg text.ink { fill: var(--ink); }
 #s27 { --z: 1.07; }
 #s28 { --z: 1.26; }
 #s35 { --z: 1.04; }
+#s36 { --z: 1.29; }
+#s37 { --z: 1.42; }
 
 @media (max-width: 820px), (max-height: 460px) {
   .slide { --z: 1 !important; }
@@ -758,14 +758,14 @@ svg text.ink { fill: var(--ink); }
 </section>
 
 <section class="slide divider" id="p1" data-sec="1">
-  <p class="kicker">Part 1 of 7</p>
+  <p class="kicker">Part 1 of 6</p>
   <div class="dvtitle">
     <h2>Tasks</h2>
     <p class="sub">We start with the task: a survey response needs one code from a fixed list.</p>
   </div>
   <span class="dvnum" aria-hidden="true">1</span>
-  <ol class="route" aria-label="Parts of the session"><li class="here" aria-current="step"><span><i>1</i>Tasks</span></li><li><button type="button" data-go="p2"><i>2</i>Small model</button></li><li><button type="button" data-go="p3"><i>3</i>Synthetic data</button></li><li><button type="button" data-go="p4"><i>4</i>Nine steps</button></li><li><button type="button" data-go="p5"><i>5</i>Occupation coding</button></li><li><button type="button" data-go="p6"><i>6</i>Report tagging</button></li><li><button type="button" data-go="p7"><i>7</i>Small or large</button></li></ol>
-  <aside class="notes">Say that the session has seven parts and name them from the strip at the bottom of the slide. The first part shows the task: one survey response, then other tasks of the same kind, then an outline of the process.</aside>
+  <ol class="route" style="--cols:6" aria-label="Parts of the session"><li class="here" aria-current="step"><span><i>1</i>Tasks</span></li><li><button type="button" data-go="p2"><i>2</i>Small model</button></li><li><button type="button" data-go="p3"><i>3</i>Synthetic data</button></li><li><button type="button" data-go="p4"><i>4</i>Nine steps</button></li><li><button type="button" data-go="p5"><i>5</i>Occupation coding</button></li><li><button type="button" data-go="p6"><i>6</i>Small or large</button></li></ol>
+  <aside class="notes">Say that the session has six parts and name them from the strip at the bottom of the slide. The first part shows the task: one survey response, then other tasks of the same kind, then an outline of the process.</aside>
 </section>
 
 <section class="slide" id="s02" data-sec="1">
@@ -821,13 +821,13 @@ svg text.ink { fill: var(--ink); }
 </section>
 
 <section class="slide divider" id="p2" data-sec="2">
-  <p class="kicker">Part 2 of 7</p>
+  <p class="kicker">Part 2 of 6</p>
   <div class="dvtitle">
     <h2>Small model</h2>
     <p class="sub">We compare a small model with a large one and give the reasons to build one.</p>
   </div>
   <span class="dvnum" aria-hidden="true">2</span>
-  <ol class="route" aria-label="Parts of the session"><li class="past"><button type="button" data-go="p1"><i>1</i>Tasks</button></li><li class="here" aria-current="step"><span><i>2</i>Small model</span></li><li><button type="button" data-go="p3"><i>3</i>Synthetic data</button></li><li><button type="button" data-go="p4"><i>4</i>Nine steps</button></li><li><button type="button" data-go="p5"><i>5</i>Occupation coding</button></li><li><button type="button" data-go="p6"><i>6</i>Report tagging</button></li><li><button type="button" data-go="p7"><i>7</i>Small or large</button></li></ol>
+  <ol class="route" style="--cols:6" aria-label="Parts of the session"><li class="past"><button type="button" data-go="p1"><i>1</i>Tasks</button></li><li class="here" aria-current="step"><span><i>2</i>Small model</span></li><li><button type="button" data-go="p3"><i>3</i>Synthetic data</button></li><li><button type="button" data-go="p4"><i>4</i>Nine steps</button></li><li><button type="button" data-go="p5"><i>5</i>Occupation coding</button></li><li><button type="button" data-go="p6"><i>6</i>Small or large</button></li></ol>
   <aside class="notes">The room has seen the task and the outline of the process. This part explains the small model: its size next to a large language model and the reasons to build one.</aside>
 </section>
 
@@ -903,13 +903,13 @@ svg text.ink { fill: var(--ink); }
 </section>
 
 <section class="slide divider" id="p3" data-sec="3">
-  <p class="kicker">Part 3 of 7</p>
+  <p class="kicker">Part 3 of 6</p>
   <div class="dvtitle">
     <h2>Synthetic data</h2>
     <p class="sub">A small model needs labelled examples. In this part a large model writes them.</p>
   </div>
   <span class="dvnum" aria-hidden="true">3</span>
-  <ol class="route" aria-label="Parts of the session"><li class="past"><button type="button" data-go="p1"><i>1</i>Tasks</button></li><li class="past"><button type="button" data-go="p2"><i>2</i>Small model</button></li><li class="here" aria-current="step"><span><i>3</i>Synthetic data</span></li><li><button type="button" data-go="p4"><i>4</i>Nine steps</button></li><li><button type="button" data-go="p5"><i>5</i>Occupation coding</button></li><li><button type="button" data-go="p6"><i>6</i>Report tagging</button></li><li><button type="button" data-go="p7"><i>7</i>Small or large</button></li></ol>
+  <ol class="route" style="--cols:6" aria-label="Parts of the session"><li class="past"><button type="button" data-go="p1"><i>1</i>Tasks</button></li><li class="past"><button type="button" data-go="p2"><i>2</i>Small model</button></li><li class="here" aria-current="step"><span><i>3</i>Synthetic data</span></li><li><button type="button" data-go="p4"><i>4</i>Nine steps</button></li><li><button type="button" data-go="p5"><i>5</i>Occupation coding</button></li><li><button type="button" data-go="p6"><i>6</i>Small or large</button></li></ol>
   <aside class="notes">The room now knows what a small model is. This part explains the examples that the model learns from, why real ones are often missing, and how a large model writes them. It also names the method: distillation.</aside>
 </section>
 
@@ -1042,14 +1042,14 @@ svg text.ink { fill: var(--ink); }
 
 
 <section class="slide divider" id="p4" data-sec="4">
-  <p class="kicker">Part 4 of 7</p>
+  <p class="kicker">Part 4 of 6</p>
   <div class="dvtitle">
     <h2>Nine steps</h2>
     <p class="sub">We go through the process one step at a time, with examples from occupation coding.</p>
   </div>
   <span class="dvnum" aria-hidden="true">4</span>
-  <ol class="route" aria-label="Parts of the session"><li class="past"><button type="button" data-go="p1"><i>1</i>Tasks</button></li><li class="past"><button type="button" data-go="p2"><i>2</i>Small model</button></li><li class="past"><button type="button" data-go="p3"><i>3</i>Synthetic data</button></li><li class="here" aria-current="step"><span><i>4</i>Nine steps</span></li><li><button type="button" data-go="p5"><i>5</i>Occupation coding</button></li><li><button type="button" data-go="p6"><i>6</i>Report tagging</button></li><li><button type="button" data-go="p7"><i>7</i>Small or large</button></li></ol>
-  <aside class="notes">The room has now seen the task, the small model, and synthetic data. This part puts them together as a process of nine steps. Each step has a short example from occupation coding. The scores of the models come in parts 5 and 6.</aside>
+  <ol class="route" style="--cols:6" aria-label="Parts of the session"><li class="past"><button type="button" data-go="p1"><i>1</i>Tasks</button></li><li class="past"><button type="button" data-go="p2"><i>2</i>Small model</button></li><li class="past"><button type="button" data-go="p3"><i>3</i>Synthetic data</button></li><li class="here" aria-current="step"><span><i>4</i>Nine steps</span></li><li><button type="button" data-go="p5"><i>5</i>Occupation coding</button></li><li><button type="button" data-go="p6"><i>6</i>Small or large</button></li></ol>
+  <aside class="notes">The room has now seen the task, the small model, and synthetic data. This part puts them together as a process of nine steps. Each step has a short example from occupation coding. The scores of the occupation model come in part 5.</aside>
 </section>
 
 <section class="slide" id="s16" data-sec="4">
@@ -1154,7 +1154,7 @@ svg text.ink { fill: var(--ink); }
     </div>
     <div class="card demo" data-demo="rounds"></div>
   </div></div>
-  <aside class="notes">Go through one round with the button. The test shows where the model is wrong, the mistakes are counted for each group, the large model writes more cases for the weakest group, and the model is trained and tested again. The test cases never enter training. Part 6 shows the scores of the report model before and after rounds like this one.</aside>
+  <aside class="notes">Go through one round with the button. The test shows where the model is wrong, the mistakes are counted for each group, the large model writes more cases for the weakest group, and the model is trained and tested again. The test cases never enter training. The annex has the scores of the report-tagging model before and after rounds like this one.</aside>
 </section>
 
 <section class="slide" id="s24" data-sec="4" data-stepno="8">
@@ -1184,13 +1184,13 @@ svg text.ink { fill: var(--ink); }
 </section>
 
 <section class="slide divider" id="p5" data-sec="5">
-  <p class="kicker">Part 5 of 7</p>
+  <p class="kicker">Part 5 of 6</p>
   <div class="dvtitle">
     <h2>Occupation coding</h2>
     <p class="sub">We apply the steps to one occupation model that was built and tested.</p>
   </div>
   <span class="dvnum" aria-hidden="true">5</span>
-  <ol class="route" aria-label="Parts of the session"><li class="past"><button type="button" data-go="p1"><i>1</i>Tasks</button></li><li class="past"><button type="button" data-go="p2"><i>2</i>Small model</button></li><li class="past"><button type="button" data-go="p3"><i>3</i>Synthetic data</button></li><li class="past"><button type="button" data-go="p4"><i>4</i>Nine steps</button></li><li class="here" aria-current="step"><span><i>5</i>Occupation coding</span></li><li><button type="button" data-go="p6"><i>6</i>Report tagging</button></li><li><button type="button" data-go="p7"><i>7</i>Small or large</button></li></ol>
+  <ol class="route" style="--cols:6" aria-label="Parts of the session"><li class="past"><button type="button" data-go="p1"><i>1</i>Tasks</button></li><li class="past"><button type="button" data-go="p2"><i>2</i>Small model</button></li><li class="past"><button type="button" data-go="p3"><i>3</i>Synthetic data</button></li><li class="past"><button type="button" data-go="p4"><i>4</i>Nine steps</button></li><li class="here" aria-current="step"><span><i>5</i>Occupation coding</span></li><li><button type="button" data-go="p6"><i>6</i>Small or large</button></li></ol>
   <aside class="notes">Part 4 gave the process. This part applies it to one model: the training texts, the training run, and the test. The line above each headline names the step. The part ends with the scores next to three large models and the speed. This build did not include steps 8 and 9.</aside>
 </section>
 
@@ -1246,54 +1246,17 @@ svg text.ink { fill: var(--ink); }
 </section>
 
 <section class="slide divider" id="p6" data-sec="6">
-  <p class="kicker">Part 6 of 7</p>
-  <div class="dvtitle">
-    <h2>Report tagging</h2>
-    <p class="sub">We look at a second small model that tags reports with topics.</p>
-  </div>
-  <span class="dvnum" aria-hidden="true">6</span>
-  <ol class="route" aria-label="Parts of the session"><li class="past"><button type="button" data-go="p1"><i>1</i>Tasks</button></li><li class="past"><button type="button" data-go="p2"><i>2</i>Small model</button></li><li class="past"><button type="button" data-go="p3"><i>3</i>Synthetic data</button></li><li class="past"><button type="button" data-go="p4"><i>4</i>Nine steps</button></li><li class="past"><button type="button" data-go="p5"><i>5</i>Occupation coding</button></li><li class="here" aria-current="step"><span><i>6</i>Report tagging</span></li><li><button type="button" data-go="p7"><i>7</i>Small or large</button></li></ol>
-  <aside class="notes">This part is short. A second small model tags reports with topics, and it was tested on 300 real reports.</aside>
-</section>
-
-<section class="slide" id="s36" data-sec="6">
-  <p class="kicker">Tagging reports with topics</p>
-  <h2>A second small model tags each report with topics from a fixed list of 86.</h2>
-  <div class="body"><div class="g2 fill">
-    <div class="card report" data-demo="report"></div>
-    <div style="display:flex;flex-direction:column;justify-content:center;gap:.9em">
-      <span class="lbl">How the model was built</span>
-      <ul class="obst">
-        <li data-step="1"><span class="lbl">Training</span>A large model wrote more than 30,000 labelled sentences. No real report was used.</li>
-        <li data-step="2"><span class="lbl">Threshold</span>488 real reports set the score above which the model assigns a topic.</li>
-        <li data-step="3"><span class="lbl">Test</span>300 other real reports with recorded topics test the model.</li>
-      </ul>
-    </div>
-  </div></div>
-  <p class="src">The report and its topics come from the World Bank documents database.</p>
-  <aside class="notes">The same process built a second model for a different task. An organization wants each report tagged with topics from a fixed list of 86, and it has no tagged reports for training. Read the title of the report and its topics. Then reveal the three facts. Here the test uses real reports with topics recorded by people.</aside>
-</section>
-
-<section class="slide" id="s37" data-sec="6">
-  <p class="kicker">Results on 300 real reports</p>
-  <h2>On 300 real reports the small model scored about the same as three large models.</h2>
-  <div class="body center"><div data-demo="results"></div></div>
-  <p class="src">F1 on 300 real report abstracts, on a scale from 0 to 1. The small model's scores are the mean of three training runs. The test covers 44 of the 86 topics. The small model takes 0.19 seconds per report on an ordinary processor.</p>
-  <aside class="notes">Show the three large models first. Each one was asked directly for the topics of every report. Then reveal the small model after the first set of sentences, and after the further rounds on its weak topics. The gap closes from about 0.06 to less than 0.01. Give two cautions. The 300 reports cover 44 of the 86 topics, so the scores say nothing about the other 42. And the recorded topics of a report can omit a topic that the abstract covers.</aside>
-</section>
-
-<section class="slide divider" id="p7" data-sec="7">
-  <p class="kicker">Part 7 of 7</p>
+  <p class="kicker">Part 6 of 6</p>
   <div class="dvtitle">
     <h2>Small or large</h2>
     <p class="sub">We end with the choice between a small and a large model for a task.</p>
   </div>
-  <span class="dvnum" aria-hidden="true">7</span>
-  <ol class="route" aria-label="Parts of the session"><li class="past"><button type="button" data-go="p1"><i>1</i>Tasks</button></li><li class="past"><button type="button" data-go="p2"><i>2</i>Small model</button></li><li class="past"><button type="button" data-go="p3"><i>3</i>Synthetic data</button></li><li class="past"><button type="button" data-go="p4"><i>4</i>Nine steps</button></li><li class="past"><button type="button" data-go="p5"><i>5</i>Occupation coding</button></li><li class="past"><button type="button" data-go="p6"><i>6</i>Report tagging</button></li><li class="here" aria-current="step"><span><i>7</i>Small or large</span></li></ol>
+  <span class="dvnum" aria-hidden="true">6</span>
+  <ol class="route" style="--cols:6" aria-label="Parts of the session"><li class="past"><button type="button" data-go="p1"><i>1</i>Tasks</button></li><li class="past"><button type="button" data-go="p2"><i>2</i>Small model</button></li><li class="past"><button type="button" data-go="p3"><i>3</i>Synthetic data</button></li><li class="past"><button type="button" data-go="p4"><i>4</i>Nine steps</button></li><li class="past"><button type="button" data-go="p5"><i>5</i>Occupation coding</button></li><li class="here" aria-current="step"><span><i>6</i>Small or large</span></li></ol>
   <aside class="notes">The last part is about the choice between a small and a large model. It has an exercise for the room, the checks before relying on a small model, and the requirements of a first attempt.</aside>
 </section>
 
-<section class="slide" id="s38" data-sec="7">
+<section class="slide" id="s38" data-sec="6">
   <p class="kicker">Small or large</p>
   <h2>A small model suits a narrow task that repeats many times.</h2>
   <div class="body center">
@@ -1317,17 +1280,18 @@ svg text.ink { fill: var(--ink); }
     </div>
     <p class="callout" data-step="2">On survey-style answers about occupation, our small model scored about the same as the best of three large models and answered in 0.05 seconds on an ordinary processor. On report topics, a second small model also scored about the same as three large models.</p>
   </div>
-  <aside class="notes">These criteria summarize everything so far. Go back to the survey response from the start: a fixed list of codes, a task that repeats, confidential records. Then reveal the other side. A large model remains the right tool for open questions and for writing. Then reveal the two results. The description of this session says that a specialized model can be more accurate, more efficient, and cheaper than a general-purpose model. Our two tests support the efficiency. On accuracy, both small models scored about the same as the large models, and neither scored clearly higher. The occupation test has a weakness, because a large model wrote its answers. A test on real cases settles the question for each task.</aside>
+  <p class="src"><button type="button" class="link" data-go="s36">Annex: the report-tagging model</button><button type="button" class="link" data-go="s37">Annex: the report-tagging scores</button></p>
+  <aside class="notes">These criteria summarize everything so far. Go back to the survey response from the start: a fixed list of codes, a task that repeats, confidential records. Then reveal the other side. A large model remains the right tool for open questions and for writing. Then reveal the two results. The second result is new to the room. The same process built a model that tags reports with topics from a fixed list of 86, and it was tested on 300 real reports. The annex has its two slides. The description of this session says that a specialized model can be more accurate, more efficient, and cheaper than a general-purpose model. Our two tests support the efficiency. On accuracy, both small models scored about the same as the large models, and neither scored clearly higher. The occupation test has a weakness, because a large model wrote its answers. A test on real cases settles the question for each task.</aside>
 </section>
 
-<section class="slide" id="s39" data-sec="7">
+<section class="slide" id="s39" data-sec="6">
   <p class="kicker">Your turn</p>
   <h2>Which kind of model suits each of these six tasks?</h2>
   <div class="body"><div class="fill" data-demo="quiz" style="display:flex;flex-direction:column;gap:.7em"></div></div>
   <aside class="notes">Let the room vote on each task by a show of hands before you select an answer. The last three tasks have a second lesson: a small model can still do a narrower part of the work. If a task from the room came up earlier, apply the same criteria to it now.</aside>
 </section>
 
-<section class="slide" id="s40" data-sec="7">
+<section class="slide" id="s40" data-sec="6">
   <p class="kicker">Before relying on a small model</p>
   <h2>A team checks four points before it relies on a small model.</h2>
   <div class="body center">
@@ -1338,10 +1302,10 @@ svg text.ink { fill: var(--ink); }
       <li data-step="3"><span class="box">4</span>A person reviews a sample of the output at regular intervals.</li>
     </ol>
   </div>
-  <aside class="notes">This is the slide to take back to the office. Each point answers a weakness of our own tests: the occupation test used answers that a model wrote, and the report test covers 44 of the 86 topics. If a supplier offers a small model, these are the four questions to ask.</aside>
+  <aside class="notes">This is the slide to take back to the office. Each point answers a weakness of our own tests: the occupation test used answers that a model wrote, and the test of the report-tagging model covers 44 of its 86 topics. If a supplier offers a small model, these are the four questions to ask.</aside>
 </section>
 
-<section class="slide" id="s41" data-sec="7">
+<section class="slide" id="s41" data-sec="6">
   <p class="kicker">A first attempt</p>
   <h2>A first attempt needs a subject specialist, real cases with known answers, and one GPU.</h2>
   <div class="body center">
@@ -1368,7 +1332,7 @@ svg text.ink { fill: var(--ink); }
   <aside class="notes">Here is what you need for a first attempt on your own task. Start with the people. The specialist matters most, because the specialist knows where two groups are easy to confuse and can tell a realistic example from a poor one. Then the real cases. The occupation model was tested on 1,000 real job titles and on answers written from them, and the report-tagging model on 300 real reports. Collect the real cases first and keep them away from training. Then the computer. Each training run took between one and four minutes on one server GPU, and a smaller GPU takes longer. The notebooks let you repeat both builds with the recorded examples, without a large model and without a key.</aside>
 </section>
 
-<section class="slide" id="s42" data-sec="7">
+<section class="slide" id="s42" data-sec="6">
   <p class="kicker">Summary</p>
   <h2>A large model writes the examples, a small model learns from them, and real cases test the result.</h2>
   <div class="body center">
@@ -1398,18 +1362,18 @@ svg text.ink { fill: var(--ink); }
 </section>
 
 
-<section class="slide divider" id="pa" data-sec="8">
+<section class="slide divider" id="pa" data-sec="7">
   <p class="kicker">Annex</p>
   <div class="dvtitle">
     <h2>Further detail</h2>
     <p class="sub">These slides add detail to the main part. Each one links back to its slide.</p>
   </div>
   <span class="dvnum" aria-hidden="true">A</span>
-  <ol class="route" style="--cols:5" aria-label="Slides of the annex"><li><button type="button" data-go="s08"><i>1</i>Where a model can run</button></li><li><button type="button" data-go="s12"><i>2</i>Rare cases</button></li><li><button type="button" data-go="s27"><i>3</i>The request</button></li><li><button type="button" data-go="s28"><i>4</i>The check</button></li><li><button type="button" data-go="s35"><i>5</i>Cost of building</button></li></ol>
-  <aside class="notes">The annex holds slides with more detail: where a model can run, the real cases of a rare group, the request and the check of the rewritten answers, and the cost of building. Open one when a question calls for it. The button in the top line of each slide returns to its slide in the main part.</aside>
+  <ol class="route" style="--cols:7" aria-label="Slides of the annex"><li><button type="button" data-go="s08"><i>1</i>Where a model can run</button></li><li><button type="button" data-go="s12"><i>2</i>Rare cases</button></li><li><button type="button" data-go="s27"><i>3</i>The request</button></li><li><button type="button" data-go="s28"><i>4</i>The check</button></li><li><button type="button" data-go="s35"><i>5</i>Cost of building</button></li><li><button type="button" data-go="s36"><i>6</i>Report-tagging model</button></li><li><button type="button" data-go="s37"><i>7</i>Report-tagging scores</button></li></ol>
+  <aside class="notes">The annex holds slides with more detail: where a model can run, the real cases of a rare group, the request and the check of the rewritten answers, the cost of building, and a second small model that tags reports with topics. Open one when a question calls for it. The button in the top line of each slide returns to its slide in the main part.</aside>
 </section>
 
-<section class="slide" id="s08" data-sec="8" data-back="s07">
+<section class="slide" id="s08" data-sec="7" data-back="s07">
   <p class="kicker">Annex · Where a model can run</p>
   <h2>A model has to fit in the memory of the computer that runs it.</h2>
   <div class="body"><div class="fill" data-demo="machines" style="display:flex;flex-direction:column;gap:.9em"></div></div>
@@ -1417,14 +1381,14 @@ svg text.ink { fill: var(--ink); }
   <aside class="notes">Select the three models in turn and let the room read the verdicts. The small model takes about half of one square on a laptop. The large model needs a server, and the very large one fits only in a data center. Point at the last two rows of each card: the size of the model decides whether the text has to travel.</aside>
 </section>
 
-<section class="slide" id="s12" data-sec="8" data-back="s11">
+<section class="slide" id="s12" data-sec="7" data-back="s11">
   <p class="kicker">Annex · Rare cases</p>
   <h2>A model sees only a few real cases of a rare group.</h2>
   <div class="body"><div class="fill rare" data-demo="rare"></div></div>
   <aside class="notes">Each dot is one real response, and the four red dots come from one occupation group. Ask the room whether a new coder could learn how people describe that work from four responses. Then add the written responses. Point out what happens to the four real ones: they are kept for testing. The last line gives a count from 1,000 real job titles of a job board.</aside>
 </section>
 
-<section class="slide" id="s27" data-sec="8" data-back="s26">
+<section class="slide" id="s27" data-sec="7" data-back="s26">
   <p class="kicker">Annex · Step 4 · The request</p>
   <h2>One request turns a job title into three answers of a respondent.</h2>
   <div class="body"><div class="fill story" data-demo="write"></div></div>
@@ -1432,7 +1396,7 @@ svg text.ink { fill: var(--ink); }
   <aside class="notes">Select the button and let the answers arrive. Read one job title and its three answers aloud. The first answer is short, the second adds the place of work, and the third gives the tasks. The code of the job title stays with each answer. Ask the room whether the answers sound like the answers of a respondent. The request on the slide is shortened: the full request has three more rules.</aside>
 </section>
 
-<section class="slide" id="s28" data-sec="8" data-back="s26">
+<section class="slide" id="s28" data-sec="7" data-back="s26">
   <p class="kicker">Annex · Step 4 · The check</p>
   <h2>A second model removed about a quarter of the answers.</h2>
   <div class="body"><div class="g2 fill checkcols" data-demo="checked"></div></div>
@@ -1440,12 +1404,38 @@ svg text.ink { fill: var(--ink); }
   <aside class="notes">A wrong code in training becomes a wrong answer in use, so every answer was checked. A second large model read the answer alone and chose a group. We kept the answer when it chose the group of the job title. Go through the job titles on the right. Short answers were removed most often, because a short answer such as "officer" fits several groups. The check also removes answers that are correct and too short to identify one group among 436.</aside>
 </section>
 
-<section class="slide" id="s35" data-sec="8" data-back="s34">
+<section class="slide" id="s35" data-sec="7" data-back="s34">
   <p class="kicker">Annex · Cost of building</p>
   <h2>Each build took less than an hour on one server.</h2>
   <div class="body"><div class="fill" data-demo="cost" style="display:flex;flex-direction:column;justify-content:center"></div></div>
   <p class="src">Requests, tokens and times come from the logs of the runs. Open models wrote and checked the examples on one server with two GPUs, so no price for each token was paid. The price is an example for comparison with the current price list of a provider. The time of the people who wrote the requests and reviewed the examples was not recorded.</p>
-  <aside class="notes">People ask what this costs, so here is what we measured. For the titles written from the definitions, the large model answered 2,700 requests and the build took 48 minutes. The rewriting build made about 20,000 requests, because a second model checks every answer, and it took 50 minutes. The third card is the report-tagging model of part 6: 1,750 requests and 32 minutes, with six training runs inside that time. Now select a price. We ran open models on our own server, so we paid no price for each token. With a hosted service, the cost is the number of tokens times the provider's price, and prices change often. Select the three examples to show the range. We did not measure our own time for writing the requests, reading samples, and deciding what to fix.</aside>
+  <aside class="notes">People ask what this costs, so here is what we measured. For the titles written from the definitions, the large model answered 2,700 requests and the build took 48 minutes. The rewriting build made about 20,000 requests, because a second model checks every answer, and it took 50 minutes. The third card is the report-tagging model of the next two slides: 1,750 requests and 32 minutes, with six training runs inside that time. Now select a price. We ran open models on our own server, so we paid no price for each token. With a hosted service, the cost is the number of tokens times the provider's price, and prices change often. Select the three examples to show the range. We did not measure our own time for writing the requests, reading samples, and deciding what to fix.</aside>
+</section>
+
+<section class="slide" id="s36" data-sec="7" data-back="s38">
+  <p class="kicker">Annex · Report-tagging model</p>
+  <h2>A second small model tags each report with topics from a fixed list of 86.</h2>
+  <div class="body"><div class="g2 fill">
+    <div class="card report" data-demo="report"></div>
+    <div style="display:flex;flex-direction:column;justify-content:center;gap:.9em">
+      <span class="lbl">How the model was built</span>
+      <ul class="obst">
+        <li data-step="1"><span class="lbl">Training</span>A large model wrote more than 30,000 labelled sentences. No real report was used.</li>
+        <li data-step="2"><span class="lbl">Threshold</span>488 real reports set the score above which the model assigns a topic.</li>
+        <li data-step="3"><span class="lbl">Test</span>300 other real reports with recorded topics test the model.</li>
+      </ul>
+    </div>
+  </div></div>
+  <p class="src">The report and its topics come from the World Bank documents database.</p>
+  <aside class="notes">The same process built a second model for a different task. An organization wants each report tagged with topics from a fixed list of 86, and it has no tagged reports for training. Read the title of the report and its topics. Then reveal the three facts. Here the test uses real reports with topics recorded by people.</aside>
+</section>
+
+<section class="slide" id="s37" data-sec="7" data-back="s38">
+  <p class="kicker">Annex · Report-tagging scores</p>
+  <h2>On 300 real reports the small model scored about the same as three large models.</h2>
+  <div class="body center"><div data-demo="results"></div></div>
+  <p class="src">F1 on 300 real report abstracts, on a scale from 0 to 1. The small model's scores are the mean of three training runs. The test covers 44 of the 86 topics. The small model takes 0.19 seconds per report on an ordinary processor.</p>
+  <aside class="notes">Show the three large models first. Each one was asked directly for the topics of every report. Then reveal the small model after the first set of sentences, and after the further rounds on its weak topics. The gap closes from about 0.06 to less than 0.01. Give two cautions. The 300 reports cover 44 of the 86 topics, so the scores say nothing about the other 42. And the recorded topics of a report can omit a topic that the abstract covers.</aside>
 </section>
 
 
@@ -1586,7 +1576,7 @@ const CASES = [
     input: 'The project paved 120 km of rural roads. Travel time to the nearest secondary school fell, and attendance rose.', inputKind: 'Report abstract',
     answer: [['Topic', 'Transport'], ['Topic', 'Education']],
     runs: 'On a laptop or a server of the organization. No report leaves the organization.',
-    note: 'Part 6 of the session shows a small model for this task and its test on 300 real reports.',
+    note: 'The annex has a small model for this task and its test on 300 real reports.',
     synth: 'A large model writes sentences in the style of a report and gives the topics of each.',
     icon: `<rect x="16" y="6" width="30" height="38" rx="3" class="iP"/><rect x="10" y="12" width="30" height="38" rx="3" class="iP"/><path d="M16 22 H34 M16 30 H34 M16 38 H28" class="iL"/>${ARROW('M52 28 H64')}<rect x="68" y="14" width="24" height="8" rx="4" class="iT"/><rect x="68" y="27" width="18" height="8" rx="4" class="iT"/><rect x="68" y="40" width="22" height="8" rx="4" class="iT"/>`},
   {key: 'metadata', name: 'Metadata quality', who: 'The team of a data catalogue',
@@ -2045,8 +2035,7 @@ const PARTS = [
   {cls: 'here', name: 'Tasks', sub: 'This part'},
   {cls: 'large', n: 3, go: 'p3', name: 'Synthetic data', sub: 'Where the practice cases come from'},
   {cls: 'small', n: 2, go: 'p2', name: 'Small model', sub: 'Size, memory, and cost'},
-  {cls: '', n: 6, go: 'p6', name: 'Report tagging', sub: 'A second model and its test on real reports'},
-  {cls: '', n: 7, go: 'p7', name: 'Small or large', sub: 'The tasks that fit a small model'},
+  {cls: 'two', n: 6, go: 'p6', name: 'Small or large', sub: 'The tasks that fit a small model'},
   {cls: 'wide', n: 4, go: 'p4', name: 'Nine steps', sub: 'The whole process in nine steps'},
   {cls: 'wide', n: 5, go: 'p5', name: 'Occupation coding', sub: 'The build of one model from the examples to the test'},
 ];
@@ -2394,7 +2383,7 @@ function mountDemo(el) {
 
 /* ------------------------------------------------------------- navigation */
 // The last name is the annex. Its slides follow the closing slide and are counted apart from the main part.
-const SECS = ['', 'Tasks', 'Small model', 'Synthetic data', 'Nine steps', 'Occupation coding', 'Report tagging', 'Small or large', 'Annex'];
+const SECS = ['', 'Tasks', 'Small model', 'Synthetic data', 'Nine steps', 'Occupation coding', 'Small or large', 'Annex'];
 const ANNEX = String(SECS.length - 1);
 const stage = $('#stage'), slides = $$('.slide', stage), toc = $('#toc'), notesPanel = $('#notespanel');
 const gotoBox = $('#goto'), tip = $('#scrubtip');

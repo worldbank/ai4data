@@ -10,11 +10,11 @@ Notes: Welcome the room and say what the session covers: three ideas, two small 
 
 ## Tasks
 
-### 2. Part 1 of 7
+### 2. Part 1 of 6
 
 Tasks
 
-Notes: Say that the session has seven parts and name them from the strip at the bottom of the slide. The first part shows the task: one survey response, then other tasks of the same kind, then an outline of the process.
+Notes: Say that the session has six parts and name them from the strip at the bottom of the slide. The first part shows the task: one survey response, then other tasks of the same kind, then an outline of the process.
 
 ### 3. A survey response
 
@@ -48,7 +48,7 @@ Notes: This is the whole approach before the details. Read the five boxes from l
 
 ## Small model
 
-### 7. Part 2 of 7
+### 7. Part 2 of 6
 
 Small model
 
@@ -74,7 +74,7 @@ Notes: Be even-handed here. The gains come after the model is built, and the cos
 
 ## Synthetic data
 
-### 11. Part 3 of 7
+### 11. Part 3 of 6
 
 Synthetic data
 
@@ -120,11 +120,11 @@ Notes: Synthetic data can also start from labelled data that we already hold. A 
 
 ## Nine steps
 
-### 18. Part 4 of 7
+### 18. Part 4 of 6
 
 Nine steps
 
-Notes: The room has now seen the task, the small model, and synthetic data. This part puts them together as a process of nine steps. Each step has a short example from occupation coding. The scores of the models come in parts 5 and 6.
+Notes: The room has now seen the task, the small model, and synthetic data. This part puts them together as a process of nine steps. Each step has a short example from occupation coding. The scores of the occupation model come in part 5.
 
 ### 19. The process
 
@@ -186,7 +186,7 @@ Extra cases are aimed at the kinds of cases the model gets wrong.
 
 The slide has an interactive demonstration.
 
-Notes: Go through one round with the button. The test shows where the model is wrong, the mistakes are counted for each group, the large model writes more cases for the weakest group, and the model is trained and tested again. The test cases never enter training. Part 6 shows the scores of the report model before and after rounds like this one.
+Notes: Go through one round with the button. The test shows where the model is wrong, the mistakes are counted for each group, the large model writes more cases for the weakest group, and the model is trained and tested again. The test cases never enter training. The annex has the scores of the report-tagging model before and after rounds like this one.
 
 ### 27. Step 8 of 9 · Ask people which is better
 
@@ -206,7 +206,7 @@ Notes: The example from the report is about images. The same thing happens with 
 
 ## Occupation coding
 
-### 29. Part 5 of 7
+### 29. Part 5 of 6
 
 Occupation coding
 
@@ -260,45 +260,21 @@ The slide has an interactive demonstration.
 
 Notes: The axis is logarithmic, so each step to the right is ten times slower. On an ordinary processor the small model answers in about 0.05 seconds. The fastest large model ran on its own GPU and took 0.37 seconds. The hosted services took longer, and the slowest also reasons before each answer. The small model fits on a laptop and needs no connection. Each build took less than an hour on one server. The annex has the requests and the minutes of each build.
 
-## Report tagging
-
-### 36. Part 6 of 7
-
-Report tagging
-
-Notes: This part is short. A second small model tags reports with topics, and it was tested on 300 real reports.
-
-### 37. Tagging reports with topics
-
-A second small model tags each report with topics from a fixed list of 86.
-
-The slide has an interactive demonstration.
-
-Notes: The same process built a second model for a different task. An organization wants each report tagged with topics from a fixed list of 86, and it has no tagged reports for training. Read the title of the report and its topics. Then reveal the three facts. Here the test uses real reports with topics recorded by people.
-
-### 38. Results on 300 real reports
-
-On 300 real reports the small model scored about the same as three large models.
-
-The slide has an interactive demonstration.
-
-Notes: Show the three large models first. Each one was asked directly for the topics of every report. Then reveal the small model after the first set of sentences, and after the further rounds on its weak topics. The gap closes from about 0.06 to less than 0.01. Give two cautions. The 300 reports cover 44 of the 86 topics, so the scores say nothing about the other 42. And the recorded topics of a report can omit a topic that the abstract covers.
-
 ## Small or large
 
-### 39. Part 7 of 7
+### 36. Part 6 of 6
 
 Small or large
 
 Notes: The last part is about the choice between a small and a large model. It has an exercise for the room, the checks before relying on a small model, and the requirements of a first attempt.
 
-### 40. Small or large
+### 37. Small or large
 
 A small model suits a narrow task that repeats many times.
 
-Notes: These criteria summarize everything so far. Go back to the survey response from the start: a fixed list of codes, a task that repeats, confidential records. Then reveal the other side. A large model remains the right tool for open questions and for writing. Then reveal the two results. The description of this session says that a specialized model can be more accurate, more efficient, and cheaper than a general-purpose model. Our two tests support the efficiency. On accuracy, both small models scored about the same as the large models, and neither scored clearly higher. The occupation test has a weakness, because a large model wrote its answers. A test on real cases settles the question for each task.
+Notes: These criteria summarize everything so far. Go back to the survey response from the start: a fixed list of codes, a task that repeats, confidential records. Then reveal the other side. A large model remains the right tool for open questions and for writing. Then reveal the two results. The second result is new to the room. The same process built a model that tags reports with topics from a fixed list of 86, and it was tested on 300 real reports. The annex has its two slides. The description of this session says that a specialized model can be more accurate, more efficient, and cheaper than a general-purpose model. Our two tests support the efficiency. On accuracy, both small models scored about the same as the large models, and neither scored clearly higher. The occupation test has a weakness, because a large model wrote its answers. A test on real cases settles the question for each task.
 
-### 41. Your turn
+### 38. Your turn
 
 Which kind of model suits each of these six tasks?
 
@@ -306,19 +282,19 @@ The slide has an interactive demonstration.
 
 Notes: Let the room vote on each task by a show of hands before you select an answer. The last three tasks have a second lesson: a small model can still do a narrower part of the work. If a task from the room came up earlier, apply the same criteria to it now.
 
-### 42. Before relying on a small model
+### 39. Before relying on a small model
 
 A team checks four points before it relies on a small model.
 
-Notes: This is the slide to take back to the office. Each point answers a weakness of our own tests: the occupation test used answers that a model wrote, and the report test covers 44 of the 86 topics. If a supplier offers a small model, these are the four questions to ask.
+Notes: This is the slide to take back to the office. Each point answers a weakness of our own tests: the occupation test used answers that a model wrote, and the test of the report-tagging model covers 44 of its 86 topics. If a supplier offers a small model, these are the four questions to ask.
 
-### 43. A first attempt
+### 40. A first attempt
 
 A first attempt needs a subject specialist, real cases with known answers, and one GPU.
 
 Notes: Here is what you need for a first attempt on your own task. Start with the people. The specialist matters most, because the specialist knows where two groups are easy to confuse and can tell a realistic example from a poor one. Then the real cases. The occupation model was tested on 1,000 real job titles and on answers written from them, and the report-tagging model on 300 real reports. Collect the real cases first and keep them away from training. Then the computer. Each training run took between one and four minutes on one server GPU, and a smaller GPU takes longer. The notebooks let you repeat both builds with the recorded examples, without a large model and without a key.
 
-### 44. Summary
+### 41. Summary
 
 A large model writes the examples, a small model learns from them, and real cases test the result.
 
@@ -326,7 +302,7 @@ The slide has an interactive demonstration.
 
 Notes: Close with the three terms of the session and the rule that holds them together. Ask each person to name one task from their own work and to say which criteria that task meets.
 
-### 45. Sources and further reading
+### 42. Sources and further reading
 
 The overview page holds the full text, the figures, and the terms.
 
@@ -334,13 +310,13 @@ Notes: Point to the overview page, which has every figure from this deck in a fo
 
 ## Annex
 
-### 46. Annex
+### 43. Annex
 
 Further detail
 
-Notes: The annex holds slides with more detail: where a model can run, the real cases of a rare group, the request and the check of the rewritten answers, and the cost of building. Open one when a question calls for it. The button in the top line of each slide returns to its slide in the main part.
+Notes: The annex holds slides with more detail: where a model can run, the real cases of a rare group, the request and the check of the rewritten answers, the cost of building, and a second small model that tags reports with topics. Open one when a question calls for it. The button in the top line of each slide returns to its slide in the main part.
 
-### 47. Annex · Where a model can run
+### 44. Annex · Where a model can run
 
 A model has to fit in the memory of the computer that runs it.
 
@@ -348,7 +324,7 @@ The slide has an interactive demonstration.
 
 Notes: Select the three models in turn and let the room read the verdicts. The small model takes about half of one square on a laptop. The large model needs a server, and the very large one fits only in a data center. Point at the last two rows of each card: the size of the model decides whether the text has to travel.
 
-### 48. Annex · Rare cases
+### 45. Annex · Rare cases
 
 A model sees only a few real cases of a rare group.
 
@@ -356,7 +332,7 @@ The slide has an interactive demonstration.
 
 Notes: Each dot is one real response, and the four red dots come from one occupation group. Ask the room whether a new coder could learn how people describe that work from four responses. Then add the written responses. Point out what happens to the four real ones: they are kept for testing. The last line gives a count from 1,000 real job titles of a job board.
 
-### 49. Annex · Step 4 · The request
+### 46. Annex · Step 4 · The request
 
 One request turns a job title into three answers of a respondent.
 
@@ -364,7 +340,7 @@ The slide has an interactive demonstration.
 
 Notes: Select the button and let the answers arrive. Read one job title and its three answers aloud. The first answer is short, the second adds the place of work, and the third gives the tasks. The code of the job title stays with each answer. Ask the room whether the answers sound like the answers of a respondent. The request on the slide is shortened: the full request has three more rules.
 
-### 50. Annex · Step 4 · The check
+### 47. Annex · Step 4 · The check
 
 A second model removed about a quarter of the answers.
 
@@ -372,10 +348,26 @@ The slide has an interactive demonstration.
 
 Notes: A wrong code in training becomes a wrong answer in use, so every answer was checked. A second large model read the answer alone and chose a group. We kept the answer when it chose the group of the job title. Go through the job titles on the right. Short answers were removed most often, because a short answer such as "officer" fits several groups. The check also removes answers that are correct and too short to identify one group among 436.
 
-### 51. Annex · Cost of building
+### 48. Annex · Cost of building
 
 Each build took less than an hour on one server.
 
 The slide has an interactive demonstration.
 
-Notes: People ask what this costs, so here is what we measured. For the titles written from the definitions, the large model answered 2,700 requests and the build took 48 minutes. The rewriting build made about 20,000 requests, because a second model checks every answer, and it took 50 minutes. The third card is the report-tagging model of part 6: 1,750 requests and 32 minutes, with six training runs inside that time. Now select a price. We ran open models on our own server, so we paid no price for each token. With a hosted service, the cost is the number of tokens times the provider's price, and prices change often. Select the three examples to show the range. We did not measure our own time for writing the requests, reading samples, and deciding what to fix.
+Notes: People ask what this costs, so here is what we measured. For the titles written from the definitions, the large model answered 2,700 requests and the build took 48 minutes. The rewriting build made about 20,000 requests, because a second model checks every answer, and it took 50 minutes. The third card is the report-tagging model of the next two slides: 1,750 requests and 32 minutes, with six training runs inside that time. Now select a price. We ran open models on our own server, so we paid no price for each token. With a hosted service, the cost is the number of tokens times the provider's price, and prices change often. Select the three examples to show the range. We did not measure our own time for writing the requests, reading samples, and deciding what to fix.
+
+### 49. Annex · Report-tagging model
+
+A second small model tags each report with topics from a fixed list of 86.
+
+The slide has an interactive demonstration.
+
+Notes: The same process built a second model for a different task. An organization wants each report tagged with topics from a fixed list of 86, and it has no tagged reports for training. Read the title of the report and its topics. Then reveal the three facts. Here the test uses real reports with topics recorded by people.
+
+### 50. Annex · Report-tagging scores
+
+On 300 real reports the small model scored about the same as three large models.
+
+The slide has an interactive demonstration.
+
+Notes: Show the three large models first. Each one was asked directly for the topics of every report. Then reveal the small model after the first set of sentences, and after the further rounds on its weak topics. The gap closes from about 0.06 to less than 0.01. Give two cautions. The 300 reports cover 44 of the 86 topics, so the scores say nothing about the other 42. And the recorded topics of a report can omit a topic that the abstract covers.

@@ -111,7 +111,7 @@ const CASES = [
     input: 'The project paved 120 km of rural roads. Travel time to the nearest secondary school fell, and attendance rose.', inputKind: 'Report abstract',
     answer: [['Topic', 'Transport'], ['Topic', 'Education']],
     runs: 'On a laptop or a server of the organization. No report leaves the organization.',
-    note: 'Part 6 of the session shows a small model for this task and its test on 300 real reports.',
+    note: 'The annex has a small model for this task and its test on 300 real reports.',
     synth: 'A large model writes sentences in the style of a report and gives the topics of each.',
     icon: `<rect x="16" y="6" width="30" height="38" rx="3" class="iP"/><rect x="10" y="12" width="30" height="38" rx="3" class="iP"/><path d="M16 22 H34 M16 30 H34 M16 38 H28" class="iL"/>${ARROW('M52 28 H64')}<rect x="68" y="14" width="24" height="8" rx="4" class="iT"/><rect x="68" y="27" width="18" height="8" rx="4" class="iT"/><rect x="68" y="40" width="22" height="8" rx="4" class="iT"/>`},
   {key: 'metadata', name: 'Metadata quality', who: 'The team of a data catalogue',
@@ -570,8 +570,7 @@ const PARTS = [
   {cls: 'here', name: 'Tasks', sub: 'This part'},
   {cls: 'large', n: 3, go: 'p3', name: 'Synthetic data', sub: 'Where the practice cases come from'},
   {cls: 'small', n: 2, go: 'p2', name: 'Small model', sub: 'Size, memory, and cost'},
-  {cls: '', n: 6, go: 'p6', name: 'Report tagging', sub: 'A second model and its test on real reports'},
-  {cls: '', n: 7, go: 'p7', name: 'Small or large', sub: 'The tasks that fit a small model'},
+  {cls: 'two', n: 6, go: 'p6', name: 'Small or large', sub: 'The tasks that fit a small model'},
   {cls: 'wide', n: 4, go: 'p4', name: 'Nine steps', sub: 'The whole process in nine steps'},
   {cls: 'wide', n: 5, go: 'p5', name: 'Occupation coding', sub: 'The build of one model from the examples to the test'},
 ];
@@ -919,7 +918,7 @@ function mountDemo(el) {
 
 /* ------------------------------------------------------------- navigation */
 // The last name is the annex. Its slides follow the closing slide and are counted apart from the main part.
-const SECS = ['', 'Tasks', 'Small model', 'Synthetic data', 'Nine steps', 'Occupation coding', 'Report tagging', 'Small or large', 'Annex'];
+const SECS = ['', 'Tasks', 'Small model', 'Synthetic data', 'Nine steps', 'Occupation coding', 'Small or large', 'Annex'];
 const ANNEX = String(SECS.length - 1);
 const stage = $('#stage'), slides = $$('.slide', stage), toc = $('#toc'), notesPanel = $('#notespanel');
 const gotoBox = $('#goto'), tip = $('#scrubtip');
