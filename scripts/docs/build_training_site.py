@@ -290,14 +290,12 @@ def deck_page(src: Path, out: Path, *, position: float) -> None:
         "",
         "import DeckFrame from '@site/src/components/training/DeckFrame';",
         "",
-        "This page shows the slides of the session. The slides are interactive: the buttons on a slide run its "
-        "demonstrations. After a click inside the frame, the arrow keys move through the slides. The Open in a "
-        "new tab button shows the slides at the full size of the window.",
+        "The slides of the session are interactive. After a click inside the frame, the arrow keys move through "
+        "them.",
         "",
         f'<DeckFrame src="/training/{session}/deck/" title="Slides of the session" />',
         "",
-        f"The sources of the slides, their outline, and the keys for presenting are in [`{rel}`]({TREE}/{rel}) "
-        "on GitHub.",
+        f"The sources of the slides are in [`{rel}`]({TREE}/{rel}) on GitHub.",
         "",
     ]))
 
