@@ -156,7 +156,7 @@ The test uses real cases that no model has trained on.
 
 The slide has an interactive demonstration.
 
-Notes: Turn the switch on and ask the room what is wrong with the picture. A test on practice cases measures how well the small model copies the writing habits of the large model. The real cases are set aside before anything is written, and no model trains on them. The chart shows the occupation-coding model on 1,000 real job titles: the first code is right for 35 percent, and the right code is among five suggestions for 56.5 percent. The titles come from a job board, so a test on coded survey responses is still needed before use on a survey.
+Notes: Turn the switch on and ask the room what is wrong with the picture. A test on practice cases measures how well the small model copies the writing habits of the large model. The real cases are set aside before anything is written, and no model trains on them. The chart shows the occupation-coding model on 1,000 real job titles: the first code is right for 35 percent, and the right code is among five suggestions for 56.5 percent. The titles come from the job board hahu.jobs, and the job board assigned their codes. A test on coded survey responses is still needed before use on a survey.
 
 ### 22. Step 7 of 9 · Practise the weak spots
 

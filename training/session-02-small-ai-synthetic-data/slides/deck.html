@@ -600,7 +600,7 @@ svg text.ink { fill: var(--ink); }
 #s18 { --z: 1.12; }
 #s19 { --z: 1.04; }
 #s20 { --z: 1.24; }
-#s21 { --z: 1.11; }
+#s21 { --z: 1.09; }
 #s22 { --z: 1.17; }
 #s23 { --z: 1.42; }
 #s24 { --z: 1.22; }
@@ -619,7 +619,7 @@ svg text.ink { fill: var(--ink); }
 #s37 { --z: 1.22; }
 #s38 { --z: 1.42; }
 #s39 { --z: 1.17; }
-#s40 { --z: 1.42; }
+#s40 { --z: 1.26; }
 
 @media (max-width: 820px), (max-height: 460px) {
   .slide { --z: 1 !important; }
@@ -976,7 +976,7 @@ svg text.ink { fill: var(--ink); }
     </div>
     <div class="card demo" data-demo="test"></div>
   </div></div>
-  <aside class="notes">Turn the switch on and ask the room what is wrong with the picture. A test on practice cases measures how well the small model copies the writing habits of the large model. The real cases are set aside before anything is written, and no model trains on them. The chart shows the occupation-coding model on 1,000 real job titles: the first code is right for 35 percent, and the right code is among five suggestions for 56.5 percent. The titles come from a job board, so a test on coded survey responses is still needed before use on a survey.</aside>
+  <aside class="notes">Turn the switch on and ask the room what is wrong with the picture. A test on practice cases measures how well the small model copies the writing habits of the large model. The real cases are set aside before anything is written, and no model trains on them. The chart shows the occupation-coding model on 1,000 real job titles: the first code is right for 35 percent, and the right code is among five suggestions for 56.5 percent. The titles come from the job board hahu.jobs, and the job board assigned their codes. A test on coded survey responses is still needed before use on a survey.</aside>
 </section>
 
 <section class="slide" id="s22" data-sec="4" data-stepno="7">
@@ -1209,6 +1209,8 @@ svg text.ink { fill: var(--ink); }
     <ul class="srclist">
       <li>Overview of the session: <a href="https://worldbank.github.io/ai4data/training/session-02/">worldbank.github.io/ai4data/training/session-02</a></li>
       <li>World Bank. 2026. <i>World Development Report 2026: The Promise of Artificial Intelligence</i>. Washington, DC: World Bank. doi:10.1596/978-1-4648-2331-2. Box O.1; spotlight 1, table S1.1 and p. 103; chapter 7, p. 248.</li>
+      <li>Tabiya. <i>occupation_titles_esco</i>: job titles from the job board hahu.jobs with the ESCO occupation assigned by the job board. <a href="https://huggingface.co/datasets/tabiya/occupation_titles_esco">huggingface.co/datasets/tabiya/occupation_titles_esco</a>. CC BY 4.0. Used to test the occupation-coding model.</li>
+      <li>International Labour Office. 2012. <i>International Standard Classification of Occupations 2008 (ISCO-08): Structure, Group Definitions and Correspondence Tables</i>. Geneva: ILO.</li>
       <li>Hinton, Geoffrey, Oriol Vinyals, and Jeff Dean. 2015. "Distilling the Knowledge in a Neural Network." arXiv:1503.02531.</li>
       <li>Contact: <span class="sel">aifordata@worldbank.org</span></li>
     </ul>
@@ -1594,7 +1596,7 @@ DEMOS.test = {
     <div class="topn">
       <span class="lbl">The occupation-coding model on ${fmt(o.testTitles)} real job titles</span>
       <div class="sb mt">${o.topn.map((t) => `<span>${t.n === 1 ? 'First code is right' : `Right code among ${t.n}`}</span>${bar(t.share, 'var(--small)')}<b class="v">${(t.share * 100).toFixed(1)}%</b>`).join('')}</div>
-      <p class="hint mt">The titles come from a job board. Coded survey responses were not available for the test.</p>
+      <p class="hint mt">The titles come from the job board hahu.jobs (dataset published by Tabiya, CC BY 4.0). Each code is the ESCO occupation assigned by the job board, mapped to ISCO-08. Coded survey responses were not available for the test.</p>
     </div>`;
   },
 };

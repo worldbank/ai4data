@@ -354,7 +354,7 @@ DEMOS.test = {
     <div class="topn">
       <span class="lbl">The occupation-coding model on ${fmt(o.testTitles)} real job titles</span>
       <div class="sb mt">${o.topn.map((t) => `<span>${t.n === 1 ? 'First code is right' : `Right code among ${t.n}`}</span>${bar(t.share, 'var(--small)')}<b class="v">${(t.share * 100).toFixed(1)}%</b>`).join('')}</div>
-      <p class="hint mt">The titles come from a job board. Coded survey responses were not available for the test.</p>
+      <p class="hint mt">The titles come from the job board hahu.jobs (dataset published by Tabiya, CC BY 4.0). Each code is the ESCO occupation assigned by the job board, mapped to ISCO-08. Coded survey responses were not available for the test.</p>
     </div>`;
   },
 };
