@@ -5,24 +5,8 @@
     <div class="g3 sets" data-demo="sets"></div>
     <p class="callout" data-step="3">After repeated texts are removed, the model trains on 44,058 different texts.</p>
   </div>
-  <p class="src">The job titles come from the job board hahu.jobs (dataset published by Tabiya, CC BY 4.0), and the job board assigned their codes.</p>
-  <aside class="notes">We had no survey responses with codes for training. So the model learns from three sets of texts. The first holds job titles that a large model wrote from the definitions of the groups. The second is real: job titles from a job board, with the code that the job board assigned. They are worded as advertisements. The third joins the two ideas: a large model rewrites each real job title as the answers of a respondent, and the code stays with each answer. The next two slides show how the third set was written and checked.</aside>
-</section>
-
-<section class="slide" id="s27" data-sec="5">
-  <p class="kicker">Step 4 · The request</p>
-  <h2>One request turns a job title into three answers of a respondent.</h2>
-  <div class="body"><div class="fill story" data-demo="write"></div></div>
-  <p class="src">The run made one request for each of 10,134 job titles and received 30,299 answers. Qwen3.8-27B wrote them.</p>
-  <aside class="notes">Select the button and let the answers arrive. Read one job title and its three answers aloud. The first answer is short, the second adds the place of work, and the third gives the tasks. The code of the job title stays with each answer. Ask the room whether the answers sound like the answers of a respondent. The request on the slide is shortened: the full request has three more rules.</aside>
-</section>
-
-<section class="slide" id="s28" data-sec="5">
-  <p class="kicker">Step 4 · The check</p>
-  <h2>A second model removed about a quarter of the answers.</h2>
-  <div class="body"><div class="g2 fill checkcols" data-demo="checked"></div></div>
-  <p class="src">Gemma 4 31B read each answer without the job title and without the code. It chose among the group of the title, the groups next to it in the classification, groups drawn at random, and the reply that none of the listed groups fits.</p>
-  <aside class="notes">A wrong code in training becomes a wrong answer in use, so every answer was checked. A second large model read the answer alone and chose a group. We kept the answer when it chose the group of the job title. Go through the job titles on the right. Short answers were removed most often, because a short answer such as "officer" fits several groups. The check also removes answers that are correct and too short to identify one group among 436.</aside>
+  <p class="src">The job titles come from the job board hahu.jobs (dataset published by Tabiya, CC BY 4.0), and the job board assigned their codes. <button type="button" class="link" data-go="s27">Annex: the request</button> <button type="button" class="link" data-go="s28">Annex: the check</button></p>
+  <aside class="notes">We had no survey responses with codes for training. So the model learns from three sets of texts. The first holds job titles that a large model wrote from the definitions of the groups. The second is real: job titles from a job board, with the code that the job board assigned. They are worded as advertisements. The third joins the two ideas: a large model rewrites each real job title as the answers of a respondent, and the code stays with each answer. A second large model checked every rewritten answer and removed about a quarter of them. The annex has the request and the check.</aside>
 </section>
 
 <section class="slide" id="s29" data-sec="5">
@@ -61,16 +45,8 @@
   <p class="kicker">Speed and computer</p>
   <h2>The small model answers in 0.05 seconds on an ordinary processor.</h2>
   <div class="body center"><div class="g2 speedcols" data-demo="speed"></div></div>
-  <p class="src">Each time is the median for one answer. The large models were timed over 50 requests each. The times of the hosted services include the network and the service's queue. The CPU time was measured with four threads of a server processor.</p>
-  <aside class="notes">The axis is logarithmic, so each step to the right is ten times slower. On an ordinary processor the small model answers in about 0.05 seconds. The fastest large model ran on its own GPU and took 0.37 seconds. The hosted services took longer, and the slowest also reasons before each answer. The small model fits on a laptop and needs no connection.</aside>
-</section>
-
-<section class="slide" id="s35" data-sec="5">
-  <p class="kicker">Cost of building</p>
-  <h2>Each build took less than an hour on one server.</h2>
-  <div class="body"><div class="fill" data-demo="cost" style="display:flex;flex-direction:column;justify-content:center"></div></div>
-  <p class="src">Requests, tokens and times come from the logs of the runs. Open models wrote and checked the examples on one server with two GPUs, so no price for each token was paid. The price is an example for comparison with the current price list of a provider. The time of the people who wrote the requests and reviewed the examples was not recorded.</p>
-  <aside class="notes">People ask what this costs, so here is what we measured. For the titles written from the definitions, the large model answered 2,700 requests and the build took 48 minutes. The rewriting build made about 20,000 requests, because a second model checks every answer, and it took 50 minutes. The third card is the report-tagging model of the next part: 1,750 requests and 32 minutes, with six training runs inside that time. Now select a price. We ran open models on our own server, so we paid no price for each token. With a hosted service, the cost is the number of tokens times the provider's price, and prices change often. Select the three examples to show the range. We did not measure our own time for writing the requests, reading samples, and deciding what to fix.</aside>
+  <p class="src">Each time is the median for one answer. The large models were timed over 50 requests each. The times of the hosted services include the network and the service's queue. The CPU time was measured with four threads of a server processor. <button type="button" class="link" data-go="s35">Annex: the cost of building</button></p>
+  <aside class="notes">The axis is logarithmic, so each step to the right is ten times slower. On an ordinary processor the small model answers in about 0.05 seconds. The fastest large model ran on its own GPU and took 0.37 seconds. The hosted services took longer, and the slowest also reasons before each answer. The small model fits on a laptop and needs no connection. Each build took less than an hour on one server. The annex has the requests and the minutes of each build.</aside>
 </section>
 
 <section class="slide" id="s36" data-sec="6">

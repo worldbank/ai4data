@@ -3,8 +3,9 @@
 Reads the slide sources in src/, the recorded data of the overview page (../assets/overview.json),
 the recorded files of the occupation model (../assets/occupation/), and the two logos of the cover. The slides of the
 nine steps (s16 to s25) are generated from the STEPS table below. The divider that opens each part (p1 to p7) is
-generated from the DIVIDERS table. A slide keeps its id when slides are added before it, so the id is not the slide
-number.
+generated from the DIVIDERS table. The annex (src/slides-annex.html) follows the closing slide, and its divider (pa)
+lists the slides of the annex. A slide keeps its id when slides are added before it or when it moves to the annex, so
+the id is not the slide number.
 
     python3 build_deck.py              write deck.html and outline.md
     python3 build_deck.py --fit        also recompute the scale of each slide (src/fit.css); needs Playwright
@@ -133,14 +134,14 @@ GROUPS = [('Write the cases', range(0, 4), None), ('Train and test', range(4, 6)
           ('Improve and maintain', range(6, 9), 2)]
 
 # One divider opens each part. Each entry holds the line under the name of the part and the speaker notes.
-# The names of the parts are the SECS constant of src/app.js.
+# The names of the parts are the SECS constant of src/app.js. The last name of SECS is the annex.
 DIVIDERS = [
     ('We start with the task: a survey response needs one code from a fixed list.',
      'Say that the session has seven parts and name them from the strip at the bottom of the slide. The first part shows '
      'the task: one survey response, then other tasks of the same kind, then an outline of the process.'),
-    ('We compare a small model with a large one: size, memory, and cost.',
+    ('We compare a small model with a large one and give the reasons to build one.',
      'The room has seen the task and the outline of the process. This part explains the small '
-     'model: its size next to a large language model, its memory, and the reasons to build one.'),
+     'model: its size next to a large language model and the reasons to build one.'),
     ('A small model needs labelled examples. In this part a large model writes them.',
      'The room now knows what a small model is. This part explains the examples that the model '
      'learns from, why real ones are often missing, and how a large model writes them. It also names the method: distillation.'),
@@ -149,15 +150,21 @@ DIVIDERS = [
      'together as a process of nine steps. Each step has a short example from occupation coding. The scores of the '
      'models come in parts 5 and 6.'),
     ('We apply the steps to one occupation model that was built and tested.',
-     'Part 4 gave the process. This part applies it to one model: the training texts, the request to the large '
-     'model, the check, the training run, and the test. The line above each headline names the step. The part ends '
-     'with the scores next to three large models, the speed, and the cost. This build did not include steps 8 and 9.'),
+     'Part 4 gave the process. This part applies it to one model: the training texts, the training run, and the '
+     'test. The line above each headline names the step. The part ends with the scores next to three large models '
+     'and the speed. This build did not include steps 8 and 9.'),
     ('We look at a second small model that tags reports with topics.',
      'This part is short. A second small model tags reports with topics, and it was tested on 300 real reports.'),
     ('We end with the choice between a small and a large model for a task.',
      'The last part is about the choice between a small and a large model. It has an exercise '
      'for the room, the checks before relying on a small model, and the requirements of a first attempt.'),
 ]
+
+# The divider of the annex: the line under the title and the speaker notes.
+ANNEX = ('These slides add detail to the main part. Each one links back to its slide.',
+         'The annex holds slides with more detail: where a model can run, the real cases of a rare group, the request '
+         'and the check of the rewritten answers, and the cost of building. Open one when a question calls for it. '
+         'The button in the top line of each slide returns to its slide in the main part.')
 
 e = html.escape
 
@@ -169,7 +176,7 @@ def part_names():
 
 def divider_slide(n):
     """The slide that opens part n: the name of the part, one line, and all the parts as a strip."""
-    names = part_names()[1:]
+    names = part_names()[1:-1]
     assert len(names) == len(DIVIDERS)
     line, notes = DIVIDERS[n - 1]
     cells = []
@@ -187,6 +194,26 @@ def divider_slide(n):
   </div>
   <span class="dvnum" aria-hidden="true">{n}</span>
   <ol class="route" aria-label="Parts of the session">{''.join(cells)}</ol>
+  <aside class="notes">{e(notes)}</aside>
+</section>'''
+
+
+def annex_divider(annex):
+    """The slide that opens the annex: the title, one line, and the slides of the annex as a strip."""
+    name, n = part_names()[-1], len(DIVIDERS) + 1
+    line, notes = ANNEX
+    heads = re.findall(r'<section class="slide" id="(\w+)" data-sec="(\d)"[^>]*>\s*<p class="kicker">(.*?)</p>', annex)
+    assert heads and all(sec == str(n) for _, sec, _ in heads)
+    cells = [f'<li><button type="button" data-go="{sid}"><i>{k}</i>{kicker.split(" · ")[-1]}</button></li>'
+             for k, (sid, _, kicker) in enumerate(heads, start=1)]
+    return f'''<section class="slide divider" id="pa" data-sec="{n}">
+  <p class="kicker">{e(name)}</p>
+  <div class="dvtitle">
+    <h2>Further detail</h2>
+    <p class="sub">{e(line)}</p>
+  </div>
+  <span class="dvnum" aria-hidden="true">A</span>
+  <ol class="route" style="--cols:{len(cells)}" aria-label="Slides of the annex">{''.join(cells)}</ol>
   <aside class="notes">{e(notes)}</aside>
 </section>'''
 
@@ -280,7 +307,8 @@ def page():
         overview_slide(), *[step_slide(i, s) for i, s in enumerate(STEPS)],
         (SRC / 'slides-26-43.html').read_text(),
     ])
-    slides = with_dividers(slides)
+    annex = (SRC / 'slides-annex.html').read_text()
+    slides = '\n\n'.join([with_dividers(slides), annex_divider(annex), annex])
     payload = json.dumps(data(), ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
     js = (SRC / 'app.js').read_text().replace('/*__DATA__*/null', payload)
     fit = SRC / 'fit.css'

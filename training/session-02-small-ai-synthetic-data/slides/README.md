@@ -1,6 +1,6 @@
 # Slides
 
-- `deck.html`: the deck, 50 slides in one HTML file. It opens in a browser from a local copy of the repository and needs no server. GitHub shows the file as source text.
+- `deck.html`: the deck in one HTML file, with 45 slides in the main part and 6 in the annex. It opens in a browser from a local copy of the repository and needs no server. GitHub shows the file as source text.
 - `outline.md`: the headline and the speaker notes of every slide. This is the file to review and comment on.
 - `build_deck.py`: builds both files from the sources in `src/` and from the recorded data in `../assets/overview.json`, `../assets/occupation/`, `src/occupation.json`, `src/learn.json`, and `src/cost.json`.
 - `src/`: the slide sources, the styles, and the script of the demonstrations.
@@ -27,11 +27,11 @@ The docs site shows `deck.html` on the Slides page of the session. The site buil
 
 A slide reached with → starts with its reveals hidden. Every other move opens a slide with all its reveals shown.
 
-The bar under the stage has four buttons: `«` and `»` move by one slide, and `←` and `→` move by one reveal. Next to them are a box for a slide number and a strip with one mark for each slide. A mark shows the number and the headline of its slide under the pointer, and a click on the mark opens the slide. The taller marks are the first slides of the seven parts.
+The bar under the stage has four buttons: `«` and `»` move by one slide, and `←` and `→` move by one reveal. Next to them are a box for a slide number and a strip with one mark for each slide. A mark shows the number and the headline of its slide under the pointer, and a click on the mark opens the slide. The taller marks are the first slides of the seven parts, the closing slide, and the first slide of the annex. The counter at the top right gives the position in the main part, and on an annex slide the position in the annex.
 
 Each part opens with a divider slide. The divider names the part, describes its content in one line, and lists the seven parts with the current one marked. The part names at the top of the other slides link to these dividers. Words with a dotted underline show their definition when selected.
 
-Each slide has an id, and the address of a slide is the file address followed by `#` and the id, for example `deck.html#s22`. The ids of the dividers are `p1` to `p7`, and the ids of the other slides are `s01` to `s43`. A slide keeps its id when slides are added before it or when it moves to another part, so the id differs from the slide number in the bar.
+Each slide has an id, and the address of a slide is the file address followed by `#` and the id, for example `deck.html#s22`. The ids of the dividers are `p1` to `p7` and `pa` for the annex, and the ids of the other slides are `s01` to `s43`. A slide keeps its id when slides are added before it or when it moves to another part or to the annex, so the id differs from the slide number in the bar.
 
 In a window narrower than 820 pixels, the deck is laid out as one scrolling page with the notes under each slide.
 
@@ -43,27 +43,31 @@ The fonts (Inter and JetBrains Mono) load from Google Fonts. Without an internet
 |---|---|---|
 | 1 | | Title |
 | 2 to 6 | Tasks | A survey response to code, eleven tasks from data work and services, three ways to get a task done, a diagram of the process with the parts of the session |
-| 7 to 11 | Small model | Large language models, small AI, the memory a model needs, the cost of building a small model |
-| 12 to 19 | Synthetic data | Labelled examples, why they are missing, rare cases, synthetic data, the office comparison, distillation, labelled job titles rewritten as survey answers |
-| 20 to 30 | Nine steps | The process, then one slide for each step with an illustrative example from occupation coding. These slides show no scores of the models |
-| 31 to 40 | Occupation coding | The three sets of training texts, the request that rewrites a job title as survey answers, the check by a second model, the recorded training run of the small model, five suggested codes for eight responses, the scores by training set, the comparison with three large models, speed, the measured cost of each build. The line above each headline names the step of the process |
-| 41 to 43 | Report tagging | A second small model that tags reports with topics, and its scores on 300 real reports |
-| 44 to 50 | Small or large | Criteria, a six-task exercise for the room, checks before relying on a small model, the requirements of a first attempt, summary, sources |
+| 7 to 10 | Small model | Large language models, small AI, the cost of building a small model |
+| 11 to 17 | Synthetic data | Labelled examples, why they are missing, synthetic data, the office comparison, distillation, labelled job titles rewritten as survey answers |
+| 18 to 28 | Nine steps | The process, then one slide for each step with an illustrative example from occupation coding. These slides show no scores of the models |
+| 29 to 35 | Occupation coding | The three sets of training texts, the recorded training run of the small model, five suggested codes for eight responses, the scores by training set, the comparison with three large models, speed. The line above each headline names the step of the process |
+| 36 to 38 | Report tagging | A second small model that tags reports with topics, and its scores on 300 real reports |
+| 39 to 45 | Small or large | Criteria, a six-task exercise for the room, checks before relying on a small model, the requirements of a first attempt, summary, sources |
+| 46 to 51 | Annex | The memory a model needs (`s08`), the real cases of a rare group (`s12`), the request that rewrites a job title as survey answers (`s27`), the check by a second model (`s28`), the measured cost of each build (`s35`) |
 
 The first slide of each part is its divider.
+
+The annex holds slides with more detail. They are outside the main part so that the main part fits a session of 60 minutes. The main part ends at the sources slide, and the annex follows it. The source line of slides `s07`, `s11`, `s26`, and `s34` links to the related annex slides, and each annex slide has a button that returns to its slide in the main part (the `data-back` attribute of its `<section>`). To move a slide to the annex, move its `<section>` to `src/slides-annex.html`, set `data-sec="8"` and `data-back`, and start its kicker with "Annex".
 
 ## Sources
 
 | File | Content |
 |---|---|
 | `src/slides-01-15.html`, `src/slides-26-43.html` | The slides with the ids `s01` to `s15` and `s26` to `s43`, one `<section>` for each slide, with the speaker notes in `<aside class="notes">`. Slide `s30` (distillation) is in the first file, after `s14` |
+| `src/slides-annex.html` | The slides of the annex: `s08`, `s12`, `s27`, `s28`, and `s35`. The divider `pa` is generated from `ANNEX` in `build_deck.py` and lists these slides |
 | `STEPS` in `build_deck.py` | The slides `s16` to `s25`: the process slide and, for each step, the office comparison, the model version, and the notes |
-| `DIVIDERS` in `build_deck.py` | The dividers `p1` to `p7`: for each part, the line under its name and the notes. The names of the parts come from `SECS` in `src/app.js` |
+| `DIVIDERS` in `build_deck.py` | The dividers `p1` to `p7`: for each part, the line under its name and the notes. The names of the parts come from `SECS` in `src/app.js`, where the last name is the annex |
 | `src/app.js` | Navigation, the definitions of the terms, and the demonstrations |
 | `src/style.css` | Styles for the stage, the reading layout, and the light and dark themes |
 | `src/shell.html` | The frame of the page: the stage, the bar under it, the notes panel, and the contents |
 | `src/fit.css` | The text scale of each slide, written by `fit_slides.py` |
-| `src/occupation.json` | The recorded results of the occupation-coding models: the suggestions for the eight survey responses of slide `s02`, the job title and answers of slide `s15`, and the counts, examples, scores, and times of slides `s26` to `s34` |
+| `src/occupation.json` | The recorded results of the occupation-coding models: the suggestions for the eight survey responses of slide `s02`, the job title and answers of slide `s15`, and the counts, examples, scores, and times of slides `s26` to `s34`, including the annex slides `s27` and `s28` |
 | `src/learn.json` | The training run of slide `s29`. The file holds the mean scores of three runs of the occupation model on the 1,000 survey-style test answers: before training, at twelve points of training, and for the saved model. It also holds the first code of one run for six test answers |
 | `src/cost.json` | The requests, tokens, kept examples, training runs, and minutes of the three builds on slide `s35`, taken from the run logs |
 

@@ -129,6 +129,9 @@ def controls(browser):
     ok(f'forward walk visits {total} slides in order', seen == ids, f'{presses} presses')
     ok('each part opens with its divider', all(ids[secs.index(str(n))] == f'p{n}' for n in range(1, 8)), ids)
     ok('slide counter', pg.input_value('#goto') == str(total) and pg.inner_text('#total') == f'/ {total}', pg.inner_text('#total'))
+    main = ids.index('pa')
+    ok('the annex follows the closing slide', ids[main - 1] == 's43' and all(s == '8' for s in secs[main:]) and '8' not in secs[:main], ids[main - 1:])
+    ok('the counter of an annex slide', pg.inner_text('#count') == f'Annex {total - main - 1} / {total - main - 1}', pg.inner_text('#count'))
     back = 0
     while cur() != 's01' and back < 250:
         pg.keyboard.press('ArrowLeft')
@@ -170,6 +173,18 @@ def controls(browser):
     pg.locator('.slide.on .minirail button').nth(4).click(); ok('step number 5 opens s21', cur() == 's21')
     pg.locator('.slide.on [data-go="s29"]').first.click(); ok('the link on s21 opens s29', cur() == 's29')
     pg.locator('#secnav [data-sec="2"]').click(); ok('a part name opens the divider of the part', cur() == 'p2', cur())
+    # The annex.
+    at('s42')
+    ok('the counter of the main part leaves out the annex', pg.inner_text('#count') == f'{main - 1} / {main}' and pg.inner_text('#total') == f'/ {main}', pg.inner_text('#count'))
+    pg.locator('#secnav [data-sec="8"]').click(); ok('the name of the annex opens its divider', cur() == 'pa', cur())
+    ok('the divider of the annex lists its slides', pg.locator('.slide.on .route button').count() == total - main - 1 and not pg.is_visible('#secnav'))
+    pg.locator('.slide.on .route [data-go="s28"]').click(); ok('a slide on the divider of the annex opens', cur() == 's28', cur())
+    for src, annex in (('s07', 's08'), ('s11', 's12'), ('s26', 's27'), ('s26', 's28'), ('s34', 's35')):
+        at(src)
+        pg.locator(f'.slide.on .src [data-go="{annex}"]').click(); there = cur()
+        label = pg.inner_text('.slide.on .kicker .back')
+        pg.locator('.slide.on .kicker .back').click()
+        ok(f'{src}: the link opens {annex}, and its button returns', there == annex and cur() == src and label.startswith(f'Back to slide {ids.index(src) + 1}: '), (there, cur(), label))
     at('s06')
     pg.locator('.slide.on .term').first.click()
     ok('a term opens its definition', pg.locator('.pop').count() == 1)

@@ -1,0 +1,38 @@
+<section class="slide" id="s08" data-sec="8" data-back="s07">
+  <p class="kicker">Annex · Where a model can run</p>
+  <h2>A model has to fit in the memory of the computer that runs it.</h2>
+  <div class="body"><div class="fill" data-demo="machines" style="display:flex;flex-direction:column;gap:.9em"></div></div>
+  <p class="src">One square stands for 1 GB of memory. Memory ranges are rounded orders of magnitude for typical computers, following World Bank, World Development Report 2026, spotlight 1, table S1.1.</p>
+  <aside class="notes">Select the three models in turn and let the room read the verdicts. The small model takes about half of one square on a laptop. The large model needs a server, and the very large one fits only in a data center. Point at the last two rows of each card: the size of the model decides whether the text has to travel.</aside>
+</section>
+
+<section class="slide" id="s12" data-sec="8" data-back="s11">
+  <p class="kicker">Annex · Rare cases</p>
+  <h2>A model sees only a few real cases of a rare group.</h2>
+  <div class="body"><div class="fill rare" data-demo="rare"></div></div>
+  <aside class="notes">Each dot is one real response, and the four red dots come from one occupation group. Ask the room whether a new coder could learn how people describe that work from four responses. Then add the written responses. Point out what happens to the four real ones: they are kept for testing. The last line gives a count from 1,000 real job titles of a job board.</aside>
+</section>
+
+<section class="slide" id="s27" data-sec="8" data-back="s26">
+  <p class="kicker">Annex · Step 4 · The request</p>
+  <h2>One request turns a job title into three answers of a respondent.</h2>
+  <div class="body"><div class="fill story" data-demo="write"></div></div>
+  <p class="src">The run made one request for each of 10,134 job titles and received 30,299 answers. Qwen3.8-27B wrote them.</p>
+  <aside class="notes">Select the button and let the answers arrive. Read one job title and its three answers aloud. The first answer is short, the second adds the place of work, and the third gives the tasks. The code of the job title stays with each answer. Ask the room whether the answers sound like the answers of a respondent. The request on the slide is shortened: the full request has three more rules.</aside>
+</section>
+
+<section class="slide" id="s28" data-sec="8" data-back="s26">
+  <p class="kicker">Annex · Step 4 · The check</p>
+  <h2>A second model removed about a quarter of the answers.</h2>
+  <div class="body"><div class="g2 fill checkcols" data-demo="checked"></div></div>
+  <p class="src">Gemma 4 31B read each answer without the job title and without the code. It chose among the group of the title, the groups next to it in the classification, groups drawn at random, and the reply that none of the listed groups fits.</p>
+  <aside class="notes">A wrong code in training becomes a wrong answer in use, so every answer was checked. A second large model read the answer alone and chose a group. We kept the answer when it chose the group of the job title. Go through the job titles on the right. Short answers were removed most often, because a short answer such as "officer" fits several groups. The check also removes answers that are correct and too short to identify one group among 436.</aside>
+</section>
+
+<section class="slide" id="s35" data-sec="8" data-back="s34">
+  <p class="kicker">Annex · Cost of building</p>
+  <h2>Each build took less than an hour on one server.</h2>
+  <div class="body"><div class="fill" data-demo="cost" style="display:flex;flex-direction:column;justify-content:center"></div></div>
+  <p class="src">Requests, tokens and times come from the logs of the runs. Open models wrote and checked the examples on one server with two GPUs, so no price for each token was paid. The price is an example for comparison with the current price list of a provider. The time of the people who wrote the requests and reviewed the examples was not recorded.</p>
+  <aside class="notes">People ask what this costs, so here is what we measured. For the titles written from the definitions, the large model answered 2,700 requests and the build took 48 minutes. The rewriting build made about 20,000 requests, because a second model checks every answer, and it took 50 minutes. The third card is the report-tagging model of part 6: 1,750 requests and 32 minutes, with six training runs inside that time. Now select a price. We ran open models on our own server, so we paid no price for each token. With a hosted service, the cost is the number of tokens times the provider's price, and prices change often. Select the three examples to show the range. We did not measure our own time for writing the requests, reading samples, and deciding what to fix.</aside>
+</section>

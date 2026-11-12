@@ -918,7 +918,9 @@ function mountDemo(el) {
 }
 
 /* ------------------------------------------------------------- navigation */
-const SECS = ['', 'Tasks', 'Small model', 'Synthetic data', 'Nine steps', 'Occupation coding', 'Report tagging', 'Small or large'];
+// The last name is the annex. Its slides follow the closing slide and are counted apart from the main part.
+const SECS = ['', 'Tasks', 'Small model', 'Synthetic data', 'Nine steps', 'Occupation coding', 'Report tagging', 'Small or large', 'Annex'];
+const ANNEX = String(SECS.length - 1);
 const stage = $('#stage'), slides = $$('.slide', stage), toc = $('#toc'), notesPanel = $('#notespanel');
 const gotoBox = $('#goto'), tip = $('#scrubtip');
 let idx = 0, step = 0;
@@ -930,6 +932,14 @@ const applySteps = () => $$('[data-step]', slides[idx]).forEach((n) => n.classLi
 
 $$('[data-demo]').forEach(mountDemo);
 slides.forEach((s) => $$('[data-step]', s).forEach((n) => n.classList.add('pending')));
+
+// The number of slides in the main part, and the button of each annex slide that returns to its slide there.
+const mainCount = slides.findIndex((s) => s.dataset.sec === ANNEX);
+slides.filter((s) => s.dataset.back).forEach((s) => {
+  const i = slides.findIndex((t) => t.id === s.dataset.back);
+  $('.kicker', s).insertAdjacentHTML('beforeend',
+    `<button type="button" class="link back" data-go="${s.dataset.back}">Back to slide ${i + 1}: ${esc(kicker(slides[i]).split(' · ').pop())}</button>`);
+});
 
 // The row of nine numbered buttons on the step slides.
 const stepSlides = slides.filter((s) => s.dataset.stepno);
@@ -947,9 +957,8 @@ $('#secnav').addEventListener('click', (ev) => {
 
 // The strip of slides in the bar: one mark for each slide, and a taller mark for the slide that opens a part.
 const isDivider = (s) => s.classList.contains('divider');
-$('#total').textContent = `/ ${slides.length}`;
 $('#scrub').innerHTML = slides.map((s, i) =>
-  `<button type="button" tabindex="-1" data-go="${s.id}" class="${isDivider(s) || i === slides.length - 1 ? 'part' : ''}" aria-label="Slide ${i + 1}: ${esc(headline(s))}"></button>`).join('');
+  `<button type="button" tabindex="-1" data-go="${s.id}" class="${isDivider(s) || i === mainCount - 1 ? 'part' : ''}${i === mainCount ? ' annex' : ''}" aria-label="Slide ${i + 1}: ${esc(headline(s))}"></button>`).join('');
 const ticks = $$('#scrub button');
 // A click on a mark leaves the focus where it was, so that Space and Enter keep stepping through the slides.
 $('#scrub').addEventListener('mousedown', (ev) => ev.preventDefault());
@@ -982,7 +991,8 @@ function show(i, dir = 0) {
     b.classList.toggle('done', sec !== '0' && Number(b.dataset.sec) < Number(sec));
     b.toggleAttribute('aria-current', b.dataset.sec === sec);
   });
-  $('#count').textContent = `${idx + 1} / ${slides.length}`;
+  $('#count').textContent = idx < mainCount ? `${idx + 1} / ${mainCount}` : `Annex ${idx - mainCount} / ${slides.length - mainCount - 1}`;
+  $('#total').textContent = `/ ${idx < mainCount ? mainCount : slides.length}`;
   gotoBox.value = idx + 1;
   ticks.forEach((b, k) => { b.classList.toggle('on', k === idx); b.classList.toggle('done', k < idx); });
   tip.hidden = true;
