@@ -654,6 +654,7 @@ svg text.ink { fill: var(--ink); }
 #s12 { --z: 1.42; }
 #s13 { --z: 1.42; }
 #s14 { --z: 1.3; }
+#s30 { --z: 1.42; }
 #s15 { --z: 1.21; }
 #s16 { --z: 1.42; }
 #s17 { --z: 1.25; }
@@ -669,7 +670,6 @@ svg text.ink { fill: var(--ink); }
 #s27 { --z: 1.09; }
 #s28 { --z: 1.27; }
 #s29 { --z: 1.0; }
-#s30 { --z: 1.42; }
 #s31 { --z: 1.26; }
 #s32 { --z: 1.27; }
 #s33 { --z: 1.25; }
@@ -914,7 +914,7 @@ svg text.ink { fill: var(--ink); }
   </div>
   <span class="dvnum" aria-hidden="true">3</span>
   <ol class="route" aria-label="Parts of the session"><li class="past"><button type="button" data-go="p1"><i>1</i>Tasks</button></li><li class="past"><button type="button" data-go="p2"><i>2</i>Small model</button></li><li class="here" aria-current="step"><span><i>3</i>Synthetic data</span></li><li><button type="button" data-go="p4"><i>4</i>Nine steps</button></li><li><button type="button" data-go="p5"><i>5</i>Occupation coding</button></li><li><button type="button" data-go="p6"><i>6</i>Report tagging</button></li><li><button type="button" data-go="p7"><i>7</i>Small or large</button></li></ol>
-  <aside class="notes">The room now knows what a small model is. This part explains the examples that the model learns from, why real ones are often missing, and how a large model writes them.</aside>
+  <aside class="notes">The room now knows what a small model is. This part explains the examples that the model learns from, why real ones are often missing, and how a large model writes them. It also names the method: distillation.</aside>
 </section>
 
 <section class="slide" id="s10" data-sec="3">
@@ -1022,6 +1022,24 @@ svg text.ink { fill: var(--ink); }
     <p class="callout" data-step="2">The final test always uses real cases.</p>
   </div>
   <aside class="notes">This comparison carries the rest of the session, so take a minute on it. Walk the top row first, then reveal the bottom row and match the boxes one to one. End on the last box of each row. Practice cases teach, and real cases test.</aside>
+</section>
+
+<section class="slide" id="s30" data-sec="3">
+  <p class="kicker">Distillation</p>
+  <h2>In distillation a large model passes a skill to a small one.</h2>
+  <div class="body center">
+    <div class="distill">
+      <div class="who t"><span class="lbl">Teacher</span><h3>A large model</h3><p class="txt">27 billion parameters<br>about 31 GB of memory</p></div>
+      <div class="mid">its answers<br>on many examples</div>
+      <div class="who s"><span class="lbl">Student</span><h3>A small model</h3><p class="txt">142 million parameters<br>0.57 GB of memory</p></div>
+    </div>
+    <div class="g2">
+      <div class="card" data-step="1"><span class="lbl">The original form</span><p class="txt mt">The student learns to match the teacher's probability for every possible answer. The probabilities carry more information than the teacher's top answer alone.</p></div>
+      <p class="callout" data-step="2" style="align-self:center">In this session the teacher passes its skill through the examples that it writes.</p>
+    </div>
+  </div>
+  <p class="src">Hinton, Vinyals, and Dean (2015), "Distilling the Knowledge in a Neural Network." The memory of the teacher is that of its 8-bit version.</p>
+  <aside class="notes">Name the method. The teacher is the experienced colleague of the previous slide, and the student is the new staff member. The teacher here is about 190 times the size of the student by number of parameters. In the original form of distillation the student copies the teacher's full set of probabilities. In this session the teacher passes its skill through the examples that it writes, and the student is trained on them.</aside>
 </section>
 
 <section class="slide" id="s15" data-sec="3">
@@ -1219,24 +1237,6 @@ svg text.ink { fill: var(--ink); }
   <div class="body"><div class="fill learn" data-demo="learn"></div></div>
   <p class="src">The scores are the mean of three training runs on 1,000 survey-style test answers. One pass reads 35,515 of the 44,058 training texts, and the other texts are held out.</p>
   <aside class="notes">This is the training run of our small model, recorded at 13 points. Press play. Before training the model gives every answer the same code, and no first code is right. After half of one pass over the training texts it is right for 27 percent of the 1,000 test answers. After one pass it is right for half of them, and after two passes for 63 percent. From there the curve is nearly flat, and the score moves by a few points from one pass to the next. The table shows the same for six of the test answers in one run: a code can be right at one point and wrong at the next. After each pass the model is checked on training texts that it does not learn from. Training stops when that check stops improving, and the best pass is saved. The saved models get 68.4 percent on average. The three runs differ only in their random start.</aside>
-</section>
-
-<section class="slide" id="s30" data-sec="5">
-  <p class="kicker">Distillation</p>
-  <h2>In distillation a large model passes a skill to a small one.</h2>
-  <div class="body center">
-    <div class="distill">
-      <div class="who t"><span class="lbl">Teacher</span><h3>A large model</h3><p class="txt">27 billion parameters<br>about 31 GB of memory</p></div>
-      <div class="mid">its answers<br>on many examples</div>
-      <div class="who s"><span class="lbl">Student</span><h3>A small model</h3><p class="txt">142 million parameters<br>0.57 GB of memory</p></div>
-    </div>
-    <div class="g2">
-      <div class="card" data-step="1"><span class="lbl">The original form</span><p class="txt mt">The student learns to match the teacher's probability for every possible answer. The probabilities carry more information than the teacher's top answer alone.</p></div>
-      <p class="callout" data-step="2" style="align-self:center">In this session the teacher passes its skill through the examples that it writes.</p>
-    </div>
-  </div>
-  <p class="src">Hinton, Vinyals, and Dean (2015), "Distilling the Knowledge in a Neural Network." The teacher's memory is that of the 8-bit version used for this model.</p>
-  <aside class="notes">Name the method. The teacher is about 190 times the size of the student by number of parameters. In the original form of distillation the student copies the teacher's full set of probabilities. In our case the teacher passes its skill through the examples that it writes: the job titles, the answers, and the checks.</aside>
 </section>
 
 <section class="slide" id="s31" data-sec="5">

@@ -86,7 +86,7 @@ Notes: Be even-handed here. The gains come after the model is built, and the cos
 
 Synthetic data
 
-Notes: The room now knows what a small model is. This part explains the examples that the model learns from, why real ones are often missing, and how a large model writes them.
+Notes: The room now knows what a small model is. This part explains the examples that the model learns from, why real ones are often missing, and how a large model writes them. It also names the method: distillation.
 
 ### 13. Labelled examples
 
@@ -120,7 +120,13 @@ A new staff member learns from practice cases written by a colleague.
 
 Notes: This comparison carries the rest of the session, so take a minute on it. Walk the top row first, then reveal the bottom row and match the boxes one to one. End on the last box of each row. Practice cases teach, and real cases test.
 
-### 18. Labelled data from another source
+### 18. Distillation
+
+In distillation a large model passes a skill to a small one.
+
+Notes: Name the method. The teacher is the experienced colleague of the previous slide, and the student is the new staff member. The teacher here is about 190 times the size of the student by number of parameters. In the original form of distillation the student copies the teacher's full set of probabilities. In this session the teacher passes its skill through the examples that it writes, and the student is trained on them.
+
+### 19. Labelled data from another source
 
 A large model can rewrite labelled job titles as survey answers.
 
@@ -130,19 +136,19 @@ Notes: Synthetic data can also start from labelled data that we already hold. A 
 
 ## Nine steps
 
-### 19. Part 4 of 7
+### 20. Part 4 of 7
 
 Nine steps
 
 Notes: The room has now seen the task, the small model, and synthetic data. This part puts them together as a process of nine steps. Each step has a short example from occupation coding. The scores of the models come in parts 5 and 6.
 
-### 20. The process
+### 21. The process
 
 The process from a task to a small model has nine steps.
 
 Notes: This is the process from the start of the session, now in nine steps. We look at all nine before we take them one at a time. The first four steps produce the cases, the next two build and test the model, and the last three keep improving it. The arrow above the steps shows that the process is a loop. Where the test shows mistakes, the large model writes more cases of those kinds, and the small model is trained and tested again. Step 7 runs this loop during the project. Steps 8 and 9 also end with new cases and another round of training. Steps 5 to 9 are standard machine learning practice. A team that has trained a model on labelled examples has done them before. Steps 1 to 4 are specific to synthetic data: a large model writes the examples that people would otherwise collect and label. In step 7 the large model also writes the extra cases. Each number opens its step. We use occupation coding for all nine steps because the room saw it at the start of the session.
 
-### 21. Step 1 of 9 · Describe the task
+### 22. Step 1 of 9 · Describe the task
 
 The team writes down the possible answers and defines each one.
 
@@ -150,7 +156,7 @@ The slide has an interactive demonstration.
 
 Notes: Start with the list of answers. Select two or three groups and read the descriptions aloud. The full list has 436 groups, and the first digit of a code gives its major group. A seller of cooked food (5212) and a street vendor of other goods (9520) sit in different major groups. Ask the room who keeps this list in their organization. The same descriptions go to the large model, to the people who check the cases, and to the test.
 
-### 22. Step 2 of 9 · Show a few real cases
+### 23. Step 2 of 9 · Show a few real cases
 
 A few real cases show the large model how people describe their work.
 
@@ -158,7 +164,7 @@ The slide has an interactive demonstration.
 
 Notes: Switch between the two requests. Without samples the large model writes official job titles. With three real responses in the request, the written cases take on their style: lower case, a place, a product.
 
-### 23. Step 3 of 9 · Vary the cases
+### 24. Step 3 of 9 · Vary the cases
 
 Each request to the large model asks for a different kind of case.
 
@@ -166,7 +172,7 @@ The slide has an interactive demonstration.
 
 Notes: Turn on the attributes one at a time and watch the number of possible requests grow to 864. Draw a few requests. Then point at the measured result below: asked for the same thing many times, a large model repeated itself in more than a third of the cases.
 
-### 24. Step 4 of 9 · Write and check
+### 25. Step 4 of 9 · Write and check
 
 A second model checks every case before it is used.
 
@@ -174,7 +180,7 @@ The slide has an interactive demonstration.
 
 Notes: Run the checks and count the cases that remain. Each removed case has its reason next to it. The third row matters most: the writer was wrong about its own case, and the second model caught it. A wrong answer in training becomes a wrong answer in use.
 
-### 25. Step 5 of 9 · Train the small model
+### 26. Step 5 of 9 · Train the small model
 
 The small model studies the checked cases until its answers match.
 
@@ -182,7 +188,7 @@ The slide has an interactive demonstration.
 
 Notes: This step is short on the slide and long in practice. The checked cases go in, and a model comes out. Part 5 shows the scores of the occupation model during its training, so I will take questions about learning there.
 
-### 26. Step 6 of 9 · Test on real cases
+### 27. Step 6 of 9 · Test on real cases
 
 The test uses real cases that no model has trained on.
 
@@ -190,7 +196,7 @@ The slide has an interactive demonstration.
 
 Notes: Turn the switch on and ask the room what is wrong with the picture. A test on practice cases measures how well the small model copies the writing habits of the large model. The real cases are set aside before anything is written, and no model trains on them. We read two scores from the test: the share of cases where the first code of the model is right, and the share where the right code is among its first five. Part 5 shows the test of the occupation model.
 
-### 27. Step 7 of 9 · Practise the weak spots
+### 28. Step 7 of 9 · Practise the weak spots
 
 Extra cases are aimed at the kinds of cases the model gets wrong.
 
@@ -198,7 +204,7 @@ The slide has an interactive demonstration.
 
 Notes: Go through one round with the button. The test shows where the model is wrong, the mistakes are counted for each group, the large model writes more cases for the weakest group, and the model is trained and tested again. The test cases never enter training. Part 6 shows the scores of the report model before and after rounds like this one.
 
-### 28. Step 8 of 9 · Ask people which is better
+### 29. Step 8 of 9 · Ask people which is better
 
 Experienced staff choose the better of two cases.
 
@@ -206,7 +212,7 @@ The slide has an interactive demonstration.
 
 Notes: Run this as a vote. Read each pair and ask the room for A or B before you select one. People who know the work can tell within seconds which case is realistic, and choosing between two is quicker than writing a case.
 
-### 29. Step 9 of 9 · Watch and refresh
+### 30. Step 9 of 9 · Watch and refresh
 
 A model in use needs regular review by people.
 
@@ -216,13 +222,13 @@ Notes: The example from the report is about images. The same thing happens with 
 
 ## Occupation coding
 
-### 30. Part 5 of 7
+### 31. Part 5 of 7
 
 Occupation coding
 
 Notes: Part 4 gave the process. This part applies it to one model: the training texts, the request to the large model, the check, the training run, and the test. The line above each headline names the step. The part ends with the scores next to three large models, the speed, and the cost. This build did not include steps 8 and 9.
 
-### 31. Steps 2 to 4 · The training texts
+### 32. Steps 2 to 4 · The training texts
 
 Three sets of texts take the place of a coded survey in training.
 
@@ -230,7 +236,7 @@ The slide has an interactive demonstration.
 
 Notes: We had no survey responses with codes for training. So the model learns from three sets of texts. The first holds job titles that a large model wrote from the definitions of the groups. The second is real: job titles from a job board, with the code that the job board assigned. They are worded as advertisements. The third joins the two ideas: a large model rewrites each real job title as the answers of a respondent, and the code stays with each answer. The next two slides show how the third set was written and checked.
 
-### 32. Step 4 · The request
+### 33. Step 4 · The request
 
 One request turns a job title into three answers of a respondent.
 
@@ -238,7 +244,7 @@ The slide has an interactive demonstration.
 
 Notes: Select the button and let the answers arrive. Read one job title and its three answers aloud. The first answer is short, the second adds the place of work, and the third gives the tasks. The code of the job title stays with each answer. Ask the room whether the answers sound like the answers of a respondent. The request on the slide is shortened: the full request has three more rules.
 
-### 33. Step 4 · The check
+### 34. Step 4 · The check
 
 A second model removed about a quarter of the answers.
 
@@ -246,19 +252,13 @@ The slide has an interactive demonstration.
 
 Notes: A wrong code in training becomes a wrong answer in use, so every answer was checked. A second large model read the answer alone and chose a group. We kept the answer when it chose the group of the job title. Go through the job titles on the right. Short answers were removed most often, because a short answer such as "officer" fits several groups. The check also removes answers that are correct and too short to identify one group among 436.
 
-### 34. Step 5 · The training run
+### 35. Step 5 · The training run
 
 In one training run the small model goes from 0 to 68 percent of first codes right.
 
 The slide has an interactive demonstration.
 
 Notes: This is the training run of our small model, recorded at 13 points. Press play. Before training the model gives every answer the same code, and no first code is right. After half of one pass over the training texts it is right for 27 percent of the 1,000 test answers. After one pass it is right for half of them, and after two passes for 63 percent. From there the curve is nearly flat, and the score moves by a few points from one pass to the next. The table shows the same for six of the test answers in one run: a code can be right at one point and wrong at the next. After each pass the model is checked on training texts that it does not learn from. Training stops when that check stops improving, and the best pass is saved. The saved models get 68.4 percent on average. The three runs differ only in their random start.
-
-### 35. Distillation
-
-In distillation a large model passes a skill to a small one.
-
-Notes: Name the method. The teacher is about 190 times the size of the student by number of parameters. In the original form of distillation the student copies the teacher's full set of probabilities. In our case the teacher passes its skill through the examples that it writes: the job titles, the answers, and the checks.
 
 ### 36. Step 6 · The model on test responses
 

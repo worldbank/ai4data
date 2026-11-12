@@ -31,7 +31,7 @@ The bar under the stage has four buttons: `«` and `»` move by one slide, and `
 
 Each part opens with a divider slide. The divider names the part, describes its content in one line, and lists the seven parts with the current one marked. The part names at the top of the other slides link to these dividers. Words with a dotted underline show their definition when selected.
 
-Each slide has an id, and the address of a slide is the file address followed by `#` and the id, for example `deck.html#s22`. The ids of the dividers are `p1` to `p7`, and the ids of the other slides are `s01` to `s43`. A slide keeps its id when slides are added before it, so the id differs from the slide number in the bar.
+Each slide has an id, and the address of a slide is the file address followed by `#` and the id, for example `deck.html#s22`. The ids of the dividers are `p1` to `p7`, and the ids of the other slides are `s01` to `s43`. A slide keeps its id when slides are added before it or when it moves to another part, so the id differs from the slide number in the bar.
 
 In a window narrower than 820 pixels, the deck is laid out as one scrolling page with the notes under each slide.
 
@@ -44,9 +44,9 @@ The fonts (Inter and JetBrains Mono) load from Google Fonts. Without an internet
 | 1 | | Title |
 | 2 to 6 | Tasks | A survey response to code, eleven tasks from data work and services, three ways to get a task done, a diagram of the process with the parts of the session |
 | 7 to 11 | Small model | Large language models, small AI, the memory a model needs, the cost of building a small model |
-| 12 to 18 | Synthetic data | Labelled examples, why they are missing, rare cases, synthetic data, the office comparison, labelled job titles rewritten as survey answers |
-| 19 to 29 | Nine steps | The process, then one slide for each step with an illustrative example from occupation coding. These slides show no scores of the models |
-| 30 to 40 | Occupation coding | The three sets of training texts, the request that rewrites a job title as survey answers, the check by a second model, the recorded training run of the small model, distillation, five suggested codes for eight responses, the scores by training set, the comparison with three large models, speed, the measured cost of each build. The line above each headline names the step of the process |
+| 12 to 19 | Synthetic data | Labelled examples, why they are missing, rare cases, synthetic data, the office comparison, distillation, labelled job titles rewritten as survey answers |
+| 20 to 30 | Nine steps | The process, then one slide for each step with an illustrative example from occupation coding. These slides show no scores of the models |
+| 31 to 40 | Occupation coding | The three sets of training texts, the request that rewrites a job title as survey answers, the check by a second model, the recorded training run of the small model, five suggested codes for eight responses, the scores by training set, the comparison with three large models, speed, the measured cost of each build. The line above each headline names the step of the process |
 | 41 to 43 | Report tagging | A second small model that tags reports with topics, and its scores on 300 real reports |
 | 44 to 50 | Small or large | Criteria, a six-task exercise for the room, checks before relying on a small model, the requirements of a first attempt, summary, sources |
 
@@ -56,7 +56,7 @@ The first slide of each part is its divider.
 
 | File | Content |
 |---|---|
-| `src/slides-01-15.html`, `src/slides-26-43.html` | The slides with the ids `s01` to `s15` and `s26` to `s43`, one `<section>` for each slide, with the speaker notes in `<aside class="notes">` |
+| `src/slides-01-15.html`, `src/slides-26-43.html` | The slides with the ids `s01` to `s15` and `s26` to `s43`, one `<section>` for each slide, with the speaker notes in `<aside class="notes">`. Slide `s30` (distillation) is in the first file, after `s14` |
 | `STEPS` in `build_deck.py` | The slides `s16` to `s25`: the process slide and, for each step, the office comparison, the model version, and the notes |
 | `DIVIDERS` in `build_deck.py` | The dividers `p1` to `p7`: for each part, the line under its name and the notes. The names of the parts come from `SECS` in `src/app.js` |
 | `src/app.js` | Navigation, the definitions of the terms, and the demonstrations |

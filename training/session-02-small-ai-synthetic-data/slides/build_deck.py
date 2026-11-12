@@ -143,7 +143,7 @@ DIVIDERS = [
      'model: its size next to a large language model, its memory, and the reasons to build one.'),
     ('A small model needs labelled examples. In this part a large model writes them.',
      'The room now knows what a small model is. This part explains the examples that the model '
-     'learns from, why real ones are often missing, and how a large model writes them.'),
+     'learns from, why real ones are often missing, and how a large model writes them. It also names the method: distillation.'),
     ('We go through the process one step at a time, with examples from occupation coding.',
      'The room has now seen the task, the small model, and synthetic data. This part puts them '
      'together as a process of nine steps. Each step has a short example from occupation coding. The scores of the '

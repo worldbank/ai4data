@@ -227,7 +227,7 @@ def controls(browser):
     ok('s29: pause', pg.inner_text('.slide.on [data-play]') != 'Pause')
     ok('s29: the points of the record', stops == 13, stops)
     pg.locator('.slide.on [data-at]').focus(); pg.keyboard.press('Escape'); pg.keyboard.press('ArrowRight')
-    ok('s29: after Esc the arrow key moves on', cur() == 's30', cur())
+    ok('s29: after Esc the arrow key moves on', cur() == 's31', cur())
     at('s27'); pg.locator('.slide.on .btn').first.click(); pg.wait_for_timeout(2700)
     ok('s27: the answers of the job titles arrive', pg.locator('.slide.on .sents > *').count() >= 3)
     at('s28'); kept = pg.locator('.slide.on .ck3 .drop').count(); pg.locator('.slide.on [data-a="go"][data-v="1"]').click(); pg.wait_for_timeout(150)

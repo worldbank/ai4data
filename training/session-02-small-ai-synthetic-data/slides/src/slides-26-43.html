@@ -33,24 +33,6 @@
   <aside class="notes">This is the training run of our small model, recorded at 13 points. Press play. Before training the model gives every answer the same code, and no first code is right. After half of one pass over the training texts it is right for 27 percent of the 1,000 test answers. After one pass it is right for half of them, and after two passes for 63 percent. From there the curve is nearly flat, and the score moves by a few points from one pass to the next. The table shows the same for six of the test answers in one run: a code can be right at one point and wrong at the next. After each pass the model is checked on training texts that it does not learn from. Training stops when that check stops improving, and the best pass is saved. The saved models get 68.4 percent on average. The three runs differ only in their random start.</aside>
 </section>
 
-<section class="slide" id="s30" data-sec="5">
-  <p class="kicker">Distillation</p>
-  <h2>In distillation a large model passes a skill to a small one.</h2>
-  <div class="body center">
-    <div class="distill">
-      <div class="who t"><span class="lbl">Teacher</span><h3>A large model</h3><p class="txt">27 billion parameters<br>about 31 GB of memory</p></div>
-      <div class="mid">its answers<br>on many examples</div>
-      <div class="who s"><span class="lbl">Student</span><h3>A small model</h3><p class="txt">142 million parameters<br>0.57 GB of memory</p></div>
-    </div>
-    <div class="g2">
-      <div class="card" data-step="1"><span class="lbl">The original form</span><p class="txt mt">The student learns to match the teacher's probability for every possible answer. The probabilities carry more information than the teacher's top answer alone.</p></div>
-      <p class="callout" data-step="2" style="align-self:center">In this session the teacher passes its skill through the examples that it writes.</p>
-    </div>
-  </div>
-  <p class="src">Hinton, Vinyals, and Dean (2015), "Distilling the Knowledge in a Neural Network." The teacher's memory is that of the 8-bit version used for this model.</p>
-  <aside class="notes">Name the method. The teacher is about 190 times the size of the student by number of parameters. In the original form of distillation the student copies the teacher's full set of probabilities. In our case the teacher passes its skill through the examples that it writes: the job titles, the answers, and the checks.</aside>
-</section>
-
 <section class="slide" id="s31" data-sec="5">
   <p class="kicker">Step 6 · The model on test responses</p>
   <h2>A coder chooses among five codes that the model suggests.</h2>
