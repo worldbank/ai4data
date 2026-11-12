@@ -10,13 +10,15 @@ Two fine-tuned models run in sequence, both loaded once at startup:
 
 The page (``index.html`` and ``main.js``) is served by Gradio's Server mode, and it calls
 the ``extract`` endpoint through Gradio's queue, so ZeroGPU attaches a GPU only while a
-request runs. ``extract`` streams twice: first the mentions, then their metadata.
+request runs. ``extract`` streams: first the mentions, then, for each named mention, the
+text that the metadata model is writing token by token, then the parsed attributes and usage.
 """
 
 import json
 import re
 import time
 from pathlib import Path
+from threading import Thread
 from typing import Any, Dict, Iterator, List, Optional
 
 import gradio as gr
@@ -24,7 +26,7 @@ import spaces
 import torch
 from fastapi.responses import FileResponse
 from gliner import GLiNER
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, TextIteratorStreamer
 
 HERE = Path(__file__).parent
 ENTITY_ID = "rafmacalaba/gliner_agents_v3"
@@ -61,6 +63,7 @@ USAGE_SYSTEM = (
 CHUNK_WORDS, CHUNK_OVERLAP = 200, 50  # GLiNER was fine-tuned on short passages
 MAX_WORDS = 4000
 MAX_PROMPT_TOKENS = 2048
+STREAM_EVERY_S = 0.05  # at most this often, so a long passage does not flood the connection
 
 # Models go on the GPU at import time; ZeroGPU emulates CUDA outside @spaces.GPU.
 entity_model = GLiNER.from_pretrained(ENTITY_ID)
@@ -119,40 +122,53 @@ def _parse_json(raw: str) -> Optional[Dict[str, Any]]:
     return parsed if isinstance(parsed, dict) else None
 
 
-def run_task(system: str, items: List[Dict[str, str]], batch_size: int = 16) -> List[Optional[Dict[str, Any]]]:
-    """Greedy generation for one task over (passage, mention) items, in input order."""
-    prompts = [
-        tokenizer.apply_chat_template(
-            [
-                {"role": "system", "content": system},
-                {"role": "user", "content": f'Text: {it["passage"]}\n\nMention: "{it["mention"]}"'},
-            ],
-            add_generation_prompt=True,
-            tokenize=False,
-        )
-        for it in items
-    ]
-    order = sorted(range(len(items)), key=lambda i: len(prompts[i]))  # similar lengths per batch
-    results: List[Optional[Dict[str, Any]]] = [None] * len(items)
-    tokenizer.padding_side = tokenizer.truncation_side = "left"
-    for b in range(0, len(order), batch_size):
-        idx = order[b:b + batch_size]
-        enc = tokenizer(
-            [prompts[i] for i in idx],
-            return_tensors="pt",
-            padding=True,
-            truncation=True,
-            max_length=MAX_PROMPT_TOKENS,
-            add_special_tokens=False,  # the chat template already adds them
-        ).to(metadata_model.device)
-        with torch.no_grad():
-            out = metadata_model.generate(
-                **enc, max_new_tokens=256, do_sample=False, pad_token_id=tokenizer.pad_token_id
-            )
-        prompt_len = enc["input_ids"].shape[1]
-        for row, i in zip(out, idx):
-            results[i] = _parse_json(tokenizer.decode(row[prompt_len:], skip_special_tokens=True))
-    return results
+def stream_task(system: str, mention: Dict[str, Any], index: int, slot: str) -> Iterator[Dict[str, Any]]:
+    """Generate one task for one mention, yielding the text written so far.
+
+    Generation runs in a thread and the streamer hands over the new text as it appears.
+    The generator's return value is the parsed JSON, or None when the output has none.
+    """
+    prompt = tokenizer.apply_chat_template(
+        [
+            {"role": "system", "content": system},
+            {"role": "user", "content": f'Text: {mention["passage"]}\n\nMention: "{mention["text"]}"'},
+        ],
+        add_generation_prompt=True,
+        tokenize=False,
+    )
+    tokenizer.truncation_side = "left"
+    enc = tokenizer(
+        prompt,
+        return_tensors="pt",
+        truncation=True,
+        max_length=MAX_PROMPT_TOKENS,
+        add_special_tokens=False,  # the chat template already adds them
+    ).to(metadata_model.device)
+    streamer = TextIteratorStreamer(tokenizer, skip_prompt=True, skip_special_tokens=True)
+
+    def generate() -> None:
+        try:
+            with torch.no_grad():
+                metadata_model.generate(
+                    **enc, streamer=streamer, max_new_tokens=256, do_sample=False,
+                    pad_token_id=tokenizer.pad_token_id,
+                )
+        except Exception:
+            streamer.end()  # release the reader below, then report the error
+            raise
+
+    thread = Thread(target=generate)
+    thread.start()
+    text, last = "", 0.0
+    for piece in streamer:
+        text += piece
+        now = time.perf_counter()
+        if now - last >= STREAM_EVERY_S:
+            last = now
+            yield {"stage": "token", "index": index, "slot": slot, "text": text}
+    thread.join()
+    yield {"stage": "token", "index": index, "slot": slot, "text": text}  # the throttle may have skipped the tail
+    return _parse_json(text)
 
 
 def verbatim(value: Any, passage: str) -> str:
@@ -161,31 +177,33 @@ def verbatim(value: Any, passage: str) -> str:
     return value if value and value.lower() in passage.lower() else ""
 
 
-def metadata(mention: Dict[str, Any], attrs: Optional[Dict], usage: Optional[Dict]) -> Dict[str, Any]:
-    """Validated attributes and usage of one named mention, with empty values left out."""
+def attribute_fields(mention: Dict[str, Any], parsed: Optional[Dict]) -> Dict[str, Any]:
+    """Validated attributes of one named mention, with empty values left out."""
     passage = mention["passage"]
-    body = (attrs or {}).get("attributes") or {}
-    usage = usage or {}
+    body = (parsed or {}).get("attributes") or {}
     data_type = body.get("data_type")
-    attributes = {
+    fields = {
         "acronym": verbatim(body.get("acronym"), passage),
         "producer": verbatim(body.get("producer"), passage),
         "year": verbatim(body.get("year"), passage),
         "geography": verbatim(body.get("geography"), passage),
         "version": verbatim(body.get("version"), passage),
         "data_type": data_type if data_type in DATA_TYPES else "",
-        "themes": [t for t in (attrs or {}).get("tags") or [] if t in THEME_TAGS],
+        "themes": [t for t in (parsed or {}).get("tags") or [] if t in THEME_TAGS],
     }
-    role, action = usage.get("role"), usage.get("usage_action")
-    use = {
+    return {k: v for k, v in fields.items() if v}
+
+
+def usage_fields(parsed: Optional[Dict]) -> Dict[str, Any]:
+    """Validated usage of one named mention, with empty values left out."""
+    parsed = parsed or {}
+    role, action = parsed.get("role"), parsed.get("usage_action")
+    fields = {
         "role": role if role in USAGE_ROLES else "",
         "usage_action": action if action in USAGE_ACTIONS else "",
-        "summary": str(usage.get("summary") or "").strip(),
+        "summary": str(parsed.get("summary") or "").strip(),
     }
-    return {
-        "attributes": {k: v for k, v in attributes.items() if v},
-        "usage": {k: v for k, v in use.items() if v},
-    }
+    return {k: v for k, v in fields.items() if v}
 
 
 def public(mention: Dict[str, Any]) -> Dict[str, Any]:
@@ -194,12 +212,12 @@ def public(mention: Dict[str, Any]) -> Dict[str, Any]:
         "text": mention["text"],
         "label": mention["label"],
         "score": round(mention["score"], 4),
-        **mention.get("metadata", {}),
+        **{k: v for k, v in (("attributes", mention.get("attributes")), ("usage", mention.get("usage"))) if v},
     }
 
 
 def _duration(text: str, threshold: float = 0.6) -> int:
-    return min(120, 20 + len(text.split()) // 40)
+    return min(120, 30 + len(text.split()) // 25)
 
 
 @spaces.GPU(duration=_duration)
@@ -209,12 +227,16 @@ def _extract(text: str, threshold: float = 0.6) -> Iterator[Dict[str, Any]]:
     span_ms = round((time.perf_counter() - started) * 1000)
     yield {"stage": "spans", "mentions": [public(m) for m in mentions], "timings": {"span_ms": span_ms}}
 
-    named = [m for m in mentions if m["label"] == "NAMED_DATA"]
-    items = [{"passage": m["passage"], "mention": m["text"]} for m in named]
-    attrs = run_task(ATTRIBUTES_SYSTEM, items) if items else []
-    usage = run_task(USAGE_SYSTEM, items) if items else []
-    for m, a, u in zip(named, attrs, usage):
-        m["metadata"] = metadata(m, a, u)
+    for index, mention in enumerate(mentions):
+        if mention["label"] != "NAMED_DATA":
+            continue
+        parsed = yield from stream_task(ATTRIBUTES_SYSTEM, mention, index, "attributes")
+        mention["attributes"] = attribute_fields(mention, parsed)
+        yield {"stage": "slot", "index": index, "slot": "attributes", "value": mention["attributes"]}
+        parsed = yield from stream_task(USAGE_SYSTEM, mention, index, "usage")
+        mention["usage"] = usage_fields(parsed)
+        yield {"stage": "slot", "index": index, "slot": "usage", "value": mention["usage"]}
+
     total_ms = round((time.perf_counter() - started) * 1000)
     yield {
         "stage": "done",

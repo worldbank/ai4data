@@ -1,7 +1,8 @@
 // Data-use extraction front end.
 // The models run on the Space (ZeroGPU). This page sends the text to the Gradio
-// `extract` endpoint, which streams the mentions first and their metadata second,
-// and renders the result as a tree, as JSON, or as a trace.
+// `extract` endpoint. It streams the mentions first and then, for each named mention,
+// the text that the metadata model is writing, token by token. The page renders the
+// result as a tree, as JSON, or as a trace.
 
 const MAX_WORDS = 4000;
 
@@ -97,7 +98,8 @@ async function errorMessage(response) {
 }
 
 // Calls `extract` through Gradio's queue and reads the server-sent events.
-// `onUpdate` receives each yielded payload: {stage: "spans"} and then {stage: "done"}.
+// `onUpdate` receives each yielded event: "spans", then "token" and "slot" events for each
+// named mention, then "done".
 async function callExtract(text, threshold, onUpdate) {
   const headers = { "Content-Type": "application/json", ...(await zerogpuHeaders()) };
   const join = await fetch("gradio_api/call/extract", {
@@ -171,7 +173,7 @@ function confidenceChip(score) {
   return `<span class="tree-conf ${level}" title="confidence ${pct}%">${pct}%</span>`;
 }
 
-function mentionTreeHtml(m, pending) {
+function mentionTreeHtml(m, index, pending) {
   const badge = `<span class="badge badge-${m.label}">${escapeHtml(m.label)}</span>`;
   const name = `<span class="tree-name">${escapeHtml(m.text)}</span>`;
   const root = `<div class="tree-root">${badge}${name}${confidenceChip(m.score)}</div>`;
@@ -179,10 +181,13 @@ function mentionTreeHtml(m, pending) {
     return `<div class="tree">${root}<div class="tree-none">no attributes: the metadata model reads named mentions only</div></div>`;
   }
   const waiting = '<div class="tree-stream streaming">attributing…</div>';
+  const slot = (name, keys, label) =>
+    `<div class="tree-group"><div class="tree-label">${label}</div>` +
+    `<div class="tree-slot" data-slot="${name}">${pending ? waiting : leavesHtml(m[name], keys)}</div></div>`;
   return (
-    `<div class="tree">${root}<div class="tree-body">` +
-    `<div class="tree-group"><div class="tree-label">attributes</div><div class="tree-slot">${pending ? waiting : leavesHtml(m.attributes, ATTRIBUTE_KEYS)}</div></div>` +
-    `<div class="tree-group"><div class="tree-label">usage</div><div class="tree-slot">${pending ? waiting : leavesHtml(m.usage, USAGE_KEYS)}</div></div>` +
+    `<div class="tree" data-mention="${index}">${root}<div class="tree-body">` +
+    slot("attributes", ATTRIBUTE_KEYS, "attributes") +
+    slot("usage", USAGE_KEYS, "usage") +
     `</div></div>`
   );
 }
@@ -197,8 +202,26 @@ function renderPretty(payload, pending) {
     `<span class="stat">named <b>${named}</b></span>` +
     `<span class="stat">attribution <b>${pending ? "…" : t.attribution_ms + " ms"}</b></span>` +
     `</div>`;
-  const trees = payload.mentions.map((m) => mentionTreeHtml(m, pending)).join("");
+  const trees = payload.mentions.map((m, i) => mentionTreeHtml(m, i, pending)).join("");
   resultsPretty.innerHTML = payload.mentions.length ? perf + trees : perf + '<div class="empty">No mentions found.</div>';
+}
+
+function slotElement(index, slot) {
+  return resultsPretty.querySelector(`.tree[data-mention="${index}"] [data-slot="${slot}"]`);
+}
+
+// Writes the model's text into its slot as it arrives, then swaps in the parsed fields.
+function handleEvent(event) {
+  if (event.stage === "spans" || event.stage === "done") {
+    renderPretty(event, event.stage === "spans");
+    if (event.stage === "spans") setStatus("Reading named mentions", "busy");
+  } else if (event.stage === "token") {
+    const el = slotElement(event.index, event.slot);
+    if (el) el.innerHTML = `<div class="tree-stream streaming">${escapeHtml(event.text)}</div>`;
+  } else if (event.stage === "slot") {
+    const el = slotElement(event.index, event.slot);
+    if (el) el.innerHTML = leavesHtml(event.value, event.slot === "attributes" ? ATTRIBUTE_KEYS : USAGE_KEYS);
+  }
 }
 
 function renderError(message) {
@@ -284,11 +307,11 @@ runBtn.addEventListener("click", async () => {
   const started = performance.now();
   let latest = null;
   try {
-    await callExtract(text, Number($("span-threshold").value), (payload) => {
-      latest = payload;
-      renderPretty(payload, payload.stage !== "done");
-      if (payload.stage !== "done") setStatus("Reading named mentions", "busy");
+    await callExtract(text, Number($("span-threshold").value), (event) => {
+      if (event.stage === "done") latest = event;
+      handleEvent(event);
     });
+    if (!latest) throw new Error("The server finished without a result.");
     const roundTrip = Math.round(performance.now() - started);
     const labelCounts = {};
     for (const m of latest.mentions) labelCounts[m.label] = (labelCounts[m.label] || 0) + 1;
