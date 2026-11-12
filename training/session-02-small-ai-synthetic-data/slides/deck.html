@@ -674,10 +674,10 @@ svg text.ink { fill: var(--ink); }
 #s32 { --z: 1.27; }
 #s33 { --z: 1.25; }
 #s34 { --z: 1.29; }
-#s38 { --z: 1.42; }
-#s39 { --z: 1.22; }
+#s38 { --z: 1.31; }
 #s40 { --z: 1.42; }
 #s41 { --z: 1.22; }
+#s39 { --z: 1.22; }
 #s42 { --z: 1.21; }
 #s43 { --z: 1.04; }
 #s08 { --z: 1.29; }
@@ -754,7 +754,7 @@ svg text.ink { fill: var(--ink); }
   <h1>Building specialized small AI using synthetic data</h1>
   <p class="sub">An introduction to small AI, synthetic data, and model distillation</p>
   <p class="keys"><span><kbd>→</kbd><kbd>←</kbd>Step</span><span><kbd>↓</kbd><kbd>↑</kbd>Slide</span><span><kbd>12</kbd><kbd>Enter</kbd>Slide 12</span><span><kbd>O</kbd>Contents</span><span><kbd>N</kbd>Speaker notes</span><span><kbd>F</kbd>Full screen</span></p>
-  <aside class="notes">Welcome the room and say what the session covers: three ideas, two small models that were built and tested, and no code. Nobody needs a background in AI to follow it. Tell people that the slides are interactive and that you will ask them to vote a few times.</aside>
+  <aside class="notes">Welcome the room and say what the session covers: three ideas, one small model followed from its training texts to its test, and no code. A second small model is in the annex. Nobody needs a background in AI to follow it. Tell people that the slides are interactive and that you will ask them to vote a few times.</aside>
 </section>
 
 <section class="slide divider" id="p1" data-sec="1">
@@ -784,7 +784,7 @@ svg text.ink { fill: var(--ink); }
   <h2>The same kind of task appears across development work.</h2>
   <div class="body"><div class="fill cases" data-demo="cases"></div></div>
   <p class="src">The tasks illustrate where the method could apply, and the practice cases are illustrations. A card says so where a model was built or tested.</p>
-  <aside class="notes">Open three or four of the eleven tasks. The first row holds the tasks in the description of this session: occupation and industry codes, document classification, metadata quality, semantic search, and entity extraction. The second row holds tasks from services. The first task is the one from the previous slide, and we follow it through the nine steps. Document classification is the second model of the session. On semantic search, present GISTEmbed: it is our method for training a small search model with a large model as a guide, and the code and the models are open. For each task, read the practice case aloud and point at the answer: it always comes from a list or has a fixed form. Each card also states the examples that a large model would write for the task. We define synthetic data in the third part. Ask the room for one more task from their own work and keep it for the quiz near the end.</aside>
+  <aside class="notes">Open three or four of the eleven tasks. The first row holds the tasks in the description of this session: occupation and industry codes, document classification, metadata quality, semantic search, and entity extraction. The second row holds tasks from services. The first task is the one from the previous slide, and we follow it through the nine steps. Document classification is the task of a second model, which has two slides in the annex. On semantic search, present GISTEmbed: it is our method for training a small search model with a large model as a guide, and the code and the models are open. For each task, read the practice case aloud and point at the answer: it always comes from a list or has a fixed form. Each card also states the examples that a large model would write for the task. We define synthetic data in the third part. Ask the room for one more task from their own work and keep it for the quiz near the end.</aside>
 </section>
 
 <section class="slide" id="s04" data-sec="1">
@@ -1037,7 +1037,7 @@ svg text.ink { fill: var(--ink); }
   <h2>A large model can rewrite labelled job titles as survey answers.</h2>
   <div class="body center"><div class="g2 rewritecols" data-demo="rewrite"></div></div>
   <p class="src">The job title comes from the job board hahu.jobs (dataset published by Tabiya, CC BY 4.0), with the code assigned by the job board.</p>
-  <aside class="notes">Synthetic data can also start from labelled data that we already hold. A job board gives thousands of job titles with a code, and a job title reads differently from a survey answer. We ask a large model to say each title the way a respondent would: in a few words, with the place of work, and as the tasks of the job. The code stays with each answer, and a second model checks it. Part 5 shows this build and its test.</aside>
+  <aside class="notes">Synthetic data can also start from labelled data that we already hold. A job board gives thousands of job titles with a code, and a job title reads differently from a survey answer. We ask a large model to say each title the way a respondent would: in a few words, with the place of work, and as the tasks of the job. The code stays with each answer, and a second model checks it. Part 4 gives the whole process first, and part 5 shows this build and its test.</aside>
 </section>
 
 
@@ -1202,7 +1202,7 @@ svg text.ink { fill: var(--ink); }
     <p class="callout" data-step="3">After repeated texts are removed, the model trains on 44,058 different texts.</p>
   </div>
   <p class="src">The job titles come from the job board hahu.jobs (dataset published by Tabiya, CC BY 4.0), and the job board assigned their codes. <button type="button" class="link" data-go="s27">Annex: the request</button> <button type="button" class="link" data-go="s28">Annex: the check</button></p>
-  <aside class="notes">We had no survey responses with codes for training. So the model learns from three sets of texts. The first holds job titles that a large model wrote from the definitions of the groups. The second is real: job titles from a job board, with the code that the job board assigned. They are worded as advertisements. The third joins the two ideas: a large model rewrites each real job title as the answers of a respondent, and the code stays with each answer. A second large model checked every rewritten answer and removed about a quarter of them. The annex has the request and the check.</aside>
+  <aside class="notes">We had no survey responses with codes for training. So the model learns from three sets of texts. The first holds job titles that a large model wrote from the definitions of the groups. The model that coded the survey response at the start of the session was trained on this set alone. The second is real: job titles from a job board, with the code that the job board assigned. They are worded as advertisements. The third joins the two ideas: a large model rewrites each real job title as the answers of a respondent, and the code stays with each answer. A second large model checked every rewritten answer and removed about a quarter of them. The annex has the request and the check.</aside>
 </section>
 
 <section class="slide" id="s29" data-sec="5">
@@ -1218,7 +1218,7 @@ svg text.ink { fill: var(--ink); }
   <h2>A coder chooses among five codes that the model suggests.</h2>
   <div class="body"><div class="suggest" data-demo="atwork"></div></div>
   <p class="src">The first six responses come from the test, where a large model wrote them from real job titles. The last two come from 29 informal responses written as illustrations, and no occupation coder has checked their codes.</p>
-  <aside class="notes">Here is the trained model on eight responses. Go through them. In three the reference code is the first suggestion, and in two it is the second. In the last three it is missing from the five. The last two describe informal work in everyday or local words. On 29 informal responses the first code of this model was right for about a third, against about half for the model trained on the definitions alone. More training texts raised the score on the test and lowered it on these responses. Under step 7, the next round of cases goes to this weak spot: answers about informal work, and the 127 groups that have no title from the job board. That round has not been run.</aside>
+  <aside class="notes">Here is the trained model on eight responses. Go through them. In three the reference code is the first suggestion, and in two it is the second. In the last three it is missing from the five. The last two describe informal work in everyday or local words. The room saw both at the start of the session with the suggestions of that earlier model. On 29 informal responses the first code of this model was right for about a third, against about half for the model trained on the definitions alone. More training texts raised the score on the test and lowered it on these responses. Under step 7, the next round of cases goes to this weak spot: answers about informal work, and the 127 groups that have no title from the job board. That round has not been run.</aside>
 </section>
 
 <section class="slide" id="s32" data-sec="5">
@@ -1278,7 +1278,7 @@ svg text.ink { fill: var(--ink); }
         </ul>
       </div>
     </div>
-    <p class="callout" data-step="2">On survey-style answers about occupation, our small model scored about the same as the best of three large models and answered in 0.05 seconds on an ordinary processor. On report topics, a second small model also scored about the same as three large models.</p>
+    <p class="callout" data-step="2">On survey-style answers about occupation, our small model scored about the same as the best of three large models and answered in 0.05 seconds on an ordinary processor. On 300 real reports, a second small model that assigns topics also scored about the same as three large models.</p>
   </div>
   <p class="src"><button type="button" class="link" data-go="s36">Annex: the report-tagging model</button><button type="button" class="link" data-go="s37">Annex: the report-tagging scores</button></p>
   <aside class="notes">These criteria summarize everything so far. Go back to the survey response from the start: a fixed list of codes, a task that repeats, confidential records. Then reveal the other side. A large model remains the right tool for open questions and for writing. Then reveal the two results. The second result is new to the room. The same process built a model that tags reports with topics from a fixed list of 86, and it was tested on 300 real reports. The annex has its two slides. The description of this session says that a specialized model can be more accurate, more efficient, and cheaper than a general-purpose model. Our two tests support the efficiency. On accuracy, both small models scored about the same as the large models, and neither scored clearly higher. The occupation test has a weakness, because a large model wrote its answers. A test on real cases settles the question for each task.</aside>
