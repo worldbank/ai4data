@@ -244,3 +244,11 @@
   </div>
   <aside class="notes">This comparison carries the rest of the session, so take a minute on it. Walk the top row first, then reveal the bottom row and match the boxes one to one. End on the last box of each row. Practice cases teach, and real cases test.</aside>
 </section>
+
+<section class="slide" id="s15" data-sec="3">
+  <p class="kicker">Labelled data from another source</p>
+  <h2>A large model can rewrite labelled job titles as survey answers.</h2>
+  <div class="body center"><div class="g2 rewritecols" data-demo="rewrite"></div></div>
+  <p class="src">The job title comes from the job board hahu.jobs (dataset published by Tabiya, CC BY 4.0), with the code assigned by the job board. A third large model wrote the 1,000 test answers from job titles kept out of training. Coded survey responses were not available for the test.</p>
+  <aside class="notes">Synthetic data can also start from labelled data that we already hold. A job board gives thousands of job titles with a code, and a job title reads differently from a survey answer. We ask a large model to say each title the way a respondent would: in a few words, with the place of work, and as the tasks of the job. The code stays with each answer, and a second model checks it. Then select the two scores. With the rewritten answers, the first code is right for 66 of 100 survey-style answers, up from 46. Be clear about the test: a model wrote those answers too. On 29 answers written by hand for this session, about street food, small farms and similar work, the rewritten answers helped little, because the job board has few titles for that work. The titles written from the definitions cover those groups.</aside>
+</section>

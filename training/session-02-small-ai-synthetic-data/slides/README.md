@@ -1,8 +1,8 @@
 # Slides
 
-- `deck.html`: the deck, 40 slides in one HTML file. It opens in a browser from a local copy of the repository and needs no server. GitHub shows the file as source text.
+- `deck.html`: the deck, 43 slides in one HTML file. It opens in a browser from a local copy of the repository and needs no server. GitHub shows the file as source text.
 - `outline.md`: the headline and the speaker notes of every slide. This is the file to review and comment on.
-- `build_deck.py`: builds both files from the sources in `src/` and from the recorded data in `../assets/overview.json` and `src/occupation.json`.
+- `build_deck.py`: builds both files from the sources in `src/` and from the recorded data in `../assets/overview.json`, `src/occupation.json`, and `src/cost.json`.
 - `src/`: the slide sources, the styles, and the script of the demonstrations.
 - `fit_slides.py` and `check_deck.py`: the scripts that size the slides and test the deck in a browser.
 
@@ -33,24 +33,25 @@ The fonts (Inter and JetBrains Mono) load from Google Fonts. Without an internet
 | 1 | | Title |
 | 2 to 5 | Tasks | A survey response to code, eleven tasks from data work and services, three ways to get a task done, a diagram of the process with the parts of the session |
 | 6 to 9 | Small model | Large language models, small AI, the memory a model needs, the cost of building a small model |
-| 10 to 14 | Synthetic data | Labelled examples, why they are missing, rare cases, synthetic data, the office comparison |
-| 15 to 24 | Nine steps | The process, then one slide for each step with a demonstration on occupation coding |
-| 25 to 35 | Report tagging | The task, the steps used, the request and the sentences, a model trained in the page, distillation, results, speed, limits |
-| 36 to 40 | Small or large | Criteria, a six-task exercise for the room, checks before relying on a small model, summary, sources |
+| 10 to 15 | Synthetic data | Labelled examples, why they are missing, rare cases, synthetic data, the office comparison, labelled job titles rewritten as survey answers |
+| 16 to 25 | Nine steps | The process, then one slide for each step with a demonstration on occupation coding |
+| 26 to 37 | Report tagging | The task, the steps used, the request and the sentences, a model trained in the page, distillation, results, speed, the measured cost of building each model, limits |
+| 38 to 43 | Small or large | Criteria, a six-task exercise for the room, checks before relying on a small model, the requirements of a first attempt, summary, sources |
 
 ## Sources
 
 | File | Content |
 |---|---|
-| `src/slides-01-14.html`, `src/slides-25-40.html` | Slides 1 to 14, 25, and 27 to 40, one `<section>` for each slide, with the speaker notes in `<aside class="notes">` |
-| `STEPS` in `build_deck.py` | Slides 15 to 24 and 26: for each step, the office comparison, the model version, the notes, and its use for the report-tagging model |
+| `src/slides-01-15.html`, `src/slides-26-43.html` | Slides 1 to 15, 26, and 28 to 43, one `<section>` for each slide, with the speaker notes in `<aside class="notes">` |
+| `STEPS` in `build_deck.py` | Slides 16 to 25 and 27: for each step, the office comparison, the model version, the notes, and its use for the report-tagging model |
 | `src/app.js` | Navigation, the definitions of the terms, and the demonstrations |
 | `src/style.css` | Styles for the stage, the reading layout, and the light and dark themes |
 | `src/shell.html` | The frame of the page: the stage, the bar under it, the notes panel, and the contents |
 | `src/fit.css` | The text scale of each slide, written by `fit_slides.py` |
-| `src/occupation.json` | The recorded results of the occupation-coding model and its suggestions for the eight survey responses of slide 2 |
+| `src/occupation.json` | The recorded results of the occupation-coding model, its suggestions for the eight survey responses of slide 2, and the rewritten job title and scores of slide 15 |
+| `src/cost.json` | The requests, tokens, kept examples, training runs, and minutes of the three builds on slide 36, taken from the run logs |
 
-The scores, the request, the sentences, and the reports in the report-tagging part come from `../assets/overview.json`, the recorded data behind the figures of the overview page. The scores of the occupation-coding model in `src/occupation.json` were measured on 1,000 job titles from the job board hahu.jobs, as means over three training runs. The titles come from the dataset [`tabiya/occupation_titles_esco`](https://huggingface.co/datasets/tabiya/occupation_titles_esco) (CC BY 4.0). The code of each title is the ESCO occupation assigned by the job board, mapped to its ISCO-08 unit group, and no trained coder reviewed these codes. The deck holds no title from the dataset. The survey responses on slide 2 and on the slides of the nine steps, and the codes shown for them, were written for the session as illustrations, and the slides say so. The five suggestions for each response on slide 2 are the recorded output of the occupation-coding model. Group names follow ISCO-08 (International Labour Organization), and the group descriptions on the slides are shortened paraphrases. The tasks and practice cases on slide 3 are illustrations written for the session. The first row holds the applications named in the description of the session. The match on the semantic-search card is the first result recorded in the [repository README](../../../README.md) for the model `avsolatorio/GIST-all-MiniLM-L6-v2`.
+The scores, the request, the sentences, and the reports in the report-tagging part come from `../assets/overview.json`, the recorded data behind the figures of the overview page. The scores of the occupation-coding model in `src/occupation.json` were measured on 1,000 job titles from the job board hahu.jobs, as means over three training runs. The titles come from the dataset [`tabiya/occupation_titles_esco`](https://huggingface.co/datasets/tabiya/occupation_titles_esco) (CC BY 4.0). The code of each title is the ESCO occupation assigned by the job board, mapped to its ISCO-08 unit group, and no trained coder reviewed these codes. Slide 15 shows one title from the dataset with three survey-style answers that a large model wrote from it. Its scores are means over three training runs on 1,000 survey-style answers, which a third large model wrote from the test titles. Coded survey responses were not available for that test. The dollar amounts on slide 36 multiply the logged tokens by an example price selected on the slide. The runs used open models on one server, and no price per token was paid. The survey responses on slide 2 and on the slides of the nine steps, and the codes shown for them, were written for the session as illustrations, and the slides say so. The five suggestions for each response on slide 2 are the recorded output of the occupation-coding model. Group names follow ISCO-08 (International Labour Organization), and the group descriptions on the slides are shortened paraphrases. The tasks and practice cases on slide 3 are illustrations written for the session. The first row holds the applications named in the description of the session. The match on the semantic-search card is the first result recorded in the [repository README](../../../README.md) for the model `avsolatorio/GIST-all-MiniLM-L6-v2`.
 
 ## Regenerating
 

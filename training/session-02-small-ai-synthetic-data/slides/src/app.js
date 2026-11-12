@@ -25,6 +25,7 @@ const TERMS = {
   training: ['Training', 'The step in which a model adjusts its parameters until its answers match a set of labelled examples.'],
   labelled: ['Labelled example', 'An example together with the right answer. For occupation coding, a survey response together with its code.'],
   ml: ['Machine learning', 'The methods that build a model from examples. A team gives the model labelled examples, and training adjusts the model until its answers match them.'],
+  token: ['Token', 'A unit of text for a language model, about three quarters of an English word. Hosted services charge for the tokens that a model reads and writes.'],
   synthetic: ['Synthetic data', 'Examples written by a computer program. In this session a large language model writes them.'],
 };
 
@@ -276,6 +277,28 @@ DEMOS.rare = {
   },
 };
 
+// Labelled job titles rewritten as survey answers (slide 15).
+DEMOS.rewrite = {
+  state: () => ({k: 'top1'}),
+  on(st, a, v) { st.k = v; },
+  render(st) {
+    const r = DATA.occ.rewrite;
+    return `<div class="card large-k">
+      <span class="lbl">A labelled job title</span>
+      <div class="rwtitle mt"><b>${esc(r.title)}</b><span class="ans">${esc(r.code)} ${esc(r.name)}</span></div>
+      <span class="lbl mt2" style="display:block">Three answers written by a large model</span>
+      <ul class="rwlist">${r.answers.map((x) => `<li><small>${esc(x.style)}</small><span class="msg">${esc(x.text)}</span></li>`).join('')}</ul>
+      <p class="txt-s mt">${fmt(r.titles)} job titles gave ${fmt(r.written)} answers. A second model checked each answer against the code and ${fmt(r.kept)} were kept.</p>
+    </div>
+    <div class="card small-k" style="display:flex;flex-direction:column;gap:.9em">
+      <span class="lbl">The small model on ${fmt(r.test)} survey-style answers</span>
+      ${seg('k', [['top1', 'First code is right'], ['top5', 'Right code among 5']], st.k, 'Score')}
+      <div class="hb rwbars" aria-live="polite">${r.arms.map((x, i) => `<b>${esc(x.label)}</b>${bar(x[st.k], i ? 'var(--small)' : 'var(--faint)')}<span class="v">${(x[st.k] * 100).toFixed(1)}%</span>`).join('')}</div>
+      <p class="txt-s" style="margin-top:auto">Each score is the mean of three training runs.</p>
+    </div>`;
+  },
+};
+
 // Step 1: describe the task.
 const UNITS = [
   ['5212', 'Street food salespersons', 'Service and sales workers', 'Prepare food and drinks that are ready to eat and sell them in streets and public places.'],
@@ -391,7 +414,7 @@ DEMOS.train = {
       <text x="58" y="98" text-anchor="middle" font-size="8">checked cases</text><text x="131" y="42" text-anchor="middle" font-size="8">training</text><text x="190" y="98" text-anchor="middle" font-size="8">small model</text>
     </svg>
     <p class="def">Training turns the cases into a model that answers on its own, on the organization's own computer.</p>
-    <p class="txt-s" style="margin-top:auto">A later slide trains a simple model in the page, so we can watch a model learn from examples. <button type="button" class="link" data-go="s30" style="font-size:1em">Go to that slide</button></p>`;
+    <p class="txt-s" style="margin-top:auto">A later slide trains a simple model in the page, so we can watch a model learn from examples. <button type="button" class="link" data-go="s31" style="font-size:1em">Go to that slide</button></p>`;
   },
 };
 
@@ -498,7 +521,7 @@ DEMOS.watch = {
   },
 };
 
-// The report on slide 25.
+// The report on slide 26.
 DEMOS.report = {
   on() { return false; },
   render() {
@@ -511,19 +534,19 @@ DEMOS.report = {
   },
 };
 
-// The method in three steps (slides 27 and 39).
+// The method in three steps (slides 28 and 42).
 const METHOD = [
-  {term: 'Synthetic data', kind: 'large', go: 's28', link: 'See one request',
+  {term: 'Synthetic data', kind: 'large', go: 's29', link: 'See one request',
     title: 'A large model writes practice examples',
     method: 'A large AI model writes thousands of example sentences and lists the topics of each one.',
     office: 'An experienced officer writes practice cases, each with the correct answer.',
     icon: '<rect x="6" y="14" width="44" height="44" rx="8" class="iLg"/><path d="M18 30 H38 M18 38 H38 M18 46 H30" class="iLS"/><path d="M56 36 H66" class="iA" marker-end="url(#ah)"/><rect x="72" y="10" width="42" height="52" rx="4" class="iP"/><path d="M79 20 H107 M79 26 H101" class="iL"/><rect x="79" y="31" width="18" height="6" rx="3" class="iT"/><path d="M79 44 H107 M79 50 H97" class="iL"/><rect x="79" y="54" width="14" height="5" rx="2.5" class="iT"/>'},
-  {term: 'Distillation', kind: 'small', go: 's30', link: 'Watch a model learn',
+  {term: 'Distillation', kind: 'small', go: 's31', link: 'Watch a model learn',
     title: 'A small model learns from the examples',
     method: 'A small model is trained on the examples until it gives the same topics to the same sentences.',
     office: 'A new staff member studies the practice cases and learns the answers.',
     icon: '<rect x="6" y="10" width="42" height="52" rx="4" class="iP"/><path d="M13 20 H41 M13 26 H35" class="iL"/><rect x="13" y="31" width="18" height="6" rx="3" class="iT"/><path d="M13 44 H41 M13 50 H31" class="iL"/><rect x="13" y="54" width="14" height="5" rx="2.5" class="iT"/><path d="M54 36 H68" class="iA" marker-end="url(#ah)"/><rect x="76" y="22" width="28" height="28" rx="6" class="iS"/><circle cx="86" cy="33" r="2.5" class="iD"/><circle cx="95" cy="40" r="2.5" class="iD"/><path d="M86 33 L95 40" class="iSS"/>'},
-  {term: 'Small AI', kind: 'small', go: 's32', link: 'See the small model at work',
+  {term: 'Small AI', kind: 'small', go: 's33', link: 'See the small model at work',
     title: 'The small model works alone',
     method: 'The small model tags the reports on the organization\'s own computer, without the large model and without an internet connection.',
     office: 'The new staff member handles the routine files alone, and the files stay in the office.',
@@ -547,9 +570,9 @@ const PARTS = [
   {cls: 'here', name: 'Tasks', sub: 'This part'},
   {cls: 'large', n: 2, go: 's10', name: 'Synthetic data', sub: 'Where the practice cases come from'},
   {cls: 'small', n: 1, go: 's06', name: 'Small model', sub: 'Size, memory, and cost'},
-  {cls: '', n: 4, go: 's25', name: 'Report tagging', sub: 'A second model and its test on real reports'},
-  {cls: '', n: 5, go: 's36', name: 'Small or large', sub: 'The tasks that fit a small model'},
-  {cls: 'wide', n: 3, go: 's15', name: 'Nine steps', sub: 'The whole process in nine steps'},
+  {cls: '', n: 4, go: 's26', name: 'Report tagging', sub: 'A second model and its test on real reports'},
+  {cls: '', n: 5, go: 's38', name: 'Small or large', sub: 'The tasks that fit a small model'},
+  {cls: 'wide', n: 3, go: 's16', name: 'Nine steps', sub: 'The whole process in nine steps'},
 ];
 DEMOS.cycle = {
   on() { return false; },
@@ -576,7 +599,7 @@ DEMOS.m3 = {
 };
 DEMOS.sum3 = {on() { return false; }, render: () => methodCards('method', false)};
 
-// Step 1 of the method: one request and its sentences (slide 28).
+// Step 1 of the method: one request and its sentences (slide 29).
 DEMOS.write = {
   mount(el) {
     const s = DATA.synth;
@@ -613,7 +636,7 @@ DEMOS.write = {
   },
 };
 
-// The wording of the request (slide 29).
+// The wording of the request (slide 30).
 DEMOS.wording = {
   on() { return false; },
   render() {
@@ -634,7 +657,7 @@ DEMOS.wording = {
   },
 };
 
-// A model that learns in the page (slide 30).
+// A model that learns in the page (slide 31).
 DEMOS.learn = {
   mount(el) {
     const d = DATA.learn, stop = new Set(d.stop);
@@ -702,7 +725,7 @@ DEMOS.learn = {
   },
 };
 
-// The student at work on one report (slide 32).
+// The student at work on one report (slide 33).
 DEMOS.work = {
   on() { return false; },
   render() {
@@ -724,7 +747,7 @@ DEMOS.work = {
   },
 };
 
-// Results on 300 real reports (slide 33).
+// Results on 300 real reports (slide 34).
 DEMOS.results = {
   on() { return false; },
   render() {
@@ -745,7 +768,7 @@ DEMOS.results = {
   },
 };
 
-// Speed (slide 34).
+// Speed (slide 35).
 DEMOS.speed = {
   on() { return false; },
   render() {
@@ -778,13 +801,36 @@ DEMOS.speed = {
   },
 };
 
-// Topics covered by the test (slide 35).
+// Topics covered by the test (slide 37).
 DEMOS.g86 = {
   on() { return false; },
   render() { let h = ''; for (let i = 0; i < 86; i++) h += `<i${i < 44 ? ' class="on"' : ''}></i>`; return h; },
 };
 
-// Small model or large model (slide 37).
+// Cost of building (slide 36).
+DEMOS.cost = {
+  state: () => ({p: '2'}),
+  on(st, a, v) { st.p = v; },
+  render(st) {
+    const c = DATA.cost, price = Number(st.p);
+    const usd = (tokens) => { const d = tokens / 1e6 * price; return d < 10 ? `$${d.toFixed(2)}` : `$${Math.round(d)}`; };
+    return `<div class="g3">${c.builds.map((b) => `<div class="card">
+      <span class="lbl">${esc(b.name)}</span>
+      <p class="stat mt">${b.minutes}<small>minutes from the first request to the trained model</small></p>
+      <dl class="facts">
+        <dt>Requests to the large models</dt><dd>${fmt(b.requests)}</dd>
+        <dt>Tokens read and written</dt><dd>${(b.tokens / 1e6).toFixed(1)} million</dd>
+        <dt>Examples kept</dt><dd>${esc(b.kept)}</dd>
+        <dt>Training</dt><dd>${esc(b.trainings)}</dd>
+      </dl>
+      <p class="price" aria-live="polite"><b>${usd(b.tokens)}</b> for the tokens at the example price</p>
+    </div>`).join('')}</div>
+    <div class="row" style="margin-top:1.1em"><span class="lbl">Example price for one million <button class="term" data-term="token">tokens</button></span>
+      ${seg('p', c.prices.map((x) => [x, `$${x.toFixed(2)}`]), st.p, 'Example price for one million tokens')}</div>`;
+  },
+};
+
+// Small model or large model (slide 39).
 DEMOS.quiz = {
   state: () => ({ans: DATA.tasks.map(() => null), all: false}),
   on(st, a, v) {

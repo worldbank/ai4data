@@ -1,4 +1,4 @@
-<section class="slide" id="s25" data-sec="5">
+<section class="slide" id="s26" data-sec="5">
   <p class="kicker">Tagging reports with topics</p>
   <h2>An organization wants each report tagged with topics from a fixed list of 86.</h2>
   <div class="body"><div class="g2 fill">
@@ -18,7 +18,7 @@
 
 <!--__USED__-->
 
-<section class="slide" id="s27" data-sec="5">
+<section class="slide" id="s28" data-sec="5">
   <p class="kicker">The method in three steps</p>
   <h2>The large model is needed in the first two steps only.</h2>
   <div class="body"><div class="fill m3" data-demo="m3" style="display:flex;flex-direction:column;gap:1em"></div></div>
@@ -26,7 +26,7 @@
   <aside class="notes">This is the whole method on one slide. Read the three cards, then switch to the office comparison to connect them with the earlier slide. The next slides take the steps one at a time, with recorded data.</aside>
 </section>
 
-<section class="slide" id="s28" data-sec="5">
+<section class="slide" id="s29" data-sec="5">
   <p class="kicker">Step 1 · Synthetic data</p>
   <h2>One request names eight topics and returns 20 labelled sentences.</h2>
   <div class="body"><div class="fill story" data-demo="write"></div></div>
@@ -34,7 +34,7 @@
   <aside class="notes">Select the button and let the sentences arrive. Read two of them aloud, one with a single topic and one with two. Ask the room whether the sentences read like report text. Then give the scale: a thousand requests like this one, about twenty thousand sentences.</aside>
 </section>
 
-<section class="slide" id="s29" data-sec="5">
+<section class="slide" id="s30" data-sec="5">
   <p class="kicker">Step 1 · The wording of the request <span class="deeper">Go deeper</span></p>
   <h2>The small model did worse when the sentences had to avoid the topic names.</h2>
   <div class="body center"><div data-demo="wording" style="display:flex;flex-direction:column;gap:1.3em"></div></div>
@@ -42,7 +42,7 @@
   <aside class="notes">Skip this slide if time is short. One line in the request changed, and the score of the small model changed with it. The lesson for the room is that the request is a design choice, and that its effect has to be measured on real reports.</aside>
 </section>
 
-<section class="slide" id="s30" data-sec="5">
+<section class="slide" id="s31" data-sec="5">
   <p class="kicker">Step 2 · The small model learns</p>
   <h2>A simple model gets more reports right as it reads more examples.</h2>
   <div class="body"><div class="fill learn" data-demo="learn"></div></div>
@@ -50,7 +50,7 @@
   <aside class="notes">This model is trained live in the page, on four topics. Start with one example per topic and show the words linked to each topic. Move to ten, then forty, and watch the squares fill. Then type a sentence from the room and see which topic the model gives it.</aside>
 </section>
 
-<section class="slide" id="s31" data-sec="5">
+<section class="slide" id="s32" data-sec="5">
   <p class="kicker">Distillation</p>
   <h2>In distillation a large model passes a skill to a small one.</h2>
   <div class="body center">
@@ -68,7 +68,7 @@
   <aside class="notes">Name the method. The teacher is about 190 times the size of the student by number of parameters. In the original form of distillation the student copies the teacher's full set of probabilities. In our case the teacher has a second job, because it writes the training sentences as well.</aside>
 </section>
 
-<section class="slide" id="s32" data-sec="5">
+<section class="slide" id="s33" data-sec="5">
   <p class="kicker">Step 3 · The small model at work</p>
   <h2>The student scores every topic and assigns the topics above a threshold.</h2>
   <div class="body"><div class="fill work" data-demo="work"></div></div>
@@ -76,7 +76,7 @@
   <aside class="notes">Here is the student at work on the report we saw earlier. It gives each of the 86 topics a score, and the chart shows the top eight. Four topics pass the threshold, and all four are among the topics recorded for the report. One report proves little, so the next slide gives the result on 300 reports.</aside>
 </section>
 
-<section class="slide" id="s33" data-sec="5">
+<section class="slide" id="s34" data-sec="5">
   <p class="kicker">Results on 300 real reports</p>
   <h2>The student scored about the same as three large models asked directly.</h2>
   <div class="body center"><div data-demo="results"></div></div>
@@ -84,7 +84,7 @@
   <aside class="notes">Show the three large models first. Each one was asked directly for the topics of every report. Then reveal the student after the first set of sentences, and after the further rounds on its weak topics. The gap closes from about 0.06 to less than 0.01.</aside>
 </section>
 
-<section class="slide" id="s34" data-sec="5">
+<section class="slide" id="s35" data-sec="5">
   <p class="kicker">Speed and computer</p>
   <h2>The student answers in 0.19 seconds on an ordinary processor.</h2>
   <div class="body center"><div class="g2 speedcols" data-demo="speed"></div></div>
@@ -92,7 +92,15 @@
   <aside class="notes">The axis is logarithmic, so each step to the right is ten times slower. The student on an ordinary processor is about 3 to 20 times faster than the large models, and those ran on a GPU or through an online service. This is the practical gain: the model fits on a laptop and needs no connection.</aside>
 </section>
 
-<section class="slide" id="s35" data-sec="5">
+<section class="slide" id="s36" data-sec="5">
+  <p class="kicker">Cost of building</p>
+  <h2>Each model was built in less than an hour on one server.</h2>
+  <div class="body"><div class="fill" data-demo="cost" style="display:flex;flex-direction:column;justify-content:center"></div></div>
+  <p class="src">Requests, tokens and times come from the logs of the runs. Open models wrote and checked the examples on one server with two GPUs, so no price for each token was paid. The price is an example for comparison with the current price list of a provider. The time of the people who wrote the requests and reviewed the examples was not recorded.</p>
+  <aside class="notes">People ask what this costs, so here is what we measured. For report topics, the large model answered 1,750 requests and the whole build took 32 minutes, with six training runs of the small model inside that time. The two occupation builds are larger because a second model checks every example. Now select a price. We ran open models on our own server, so we paid no price for each token. With a hosted service, the cost is the number of tokens times the provider's price, and prices change often. Select the three examples to show the range. We did not measure our own time for writing the requests, reading samples, and deciding what to fix.</aside>
+</section>
+
+<section class="slide" id="s37" data-sec="5">
   <p class="kicker">Limits of the result</p>
   <h2>These results come from one task and cover about half of the topics.</h2>
   <div class="body center">
@@ -111,14 +119,14 @@
       <div class="card" data-step="2">
         <span class="lbl">A second task</span>
         <p class="stat mt">0.15 <span style="font-size:.5em;font-weight:600">lower</span></p>
-        <p class="txt-s mt2">On coding job titles to an occupation classification, the student scored 0.15 below the best large model.</p>
+        <p class="txt-s mt2">Trained only on job titles written from the definitions, the occupation model scored 0.15 below the best large model on real job titles.</p>
       </div>
     </div>
   </div>
-  <aside class="notes">Give the limits the same weight as the results. Nearly half of the topics never appear in the test, so we know nothing about them. The reference answers are imperfect. On a second task the student was clearly behind. A team that wants to use the method has to test it on its own task.</aside>
+  <aside class="notes">Give the limits the same weight as the results. Nearly half of the topics never appear in the test, so we know nothing about them. The reference answers are imperfect. On occupation coding, the model that learned from written titles alone was clearly behind the large models. A team that wants to use the method has to test it on its own task.</aside>
 </section>
 
-<section class="slide" id="s36" data-sec="6">
+<section class="slide" id="s38" data-sec="6">
   <p class="kicker">Small or large</p>
   <h2>A small model suits a narrow task that repeats many times.</h2>
   <div class="body center">
@@ -140,19 +148,19 @@
         </ul>
       </div>
     </div>
-    <p class="callout" data-step="2">On report topics, our small model scored about the same as three large models and answered faster on an ordinary processor. On occupation codes it scored lower.</p>
+    <p class="callout" data-step="2">On report topics, our small model scored about the same as three large models and answered faster on an ordinary processor. On occupation codes, it scored lower with written titles alone and higher once labelled job titles were added.</p>
   </div>
-  <aside class="notes">These criteria summarize everything so far. Go back to the survey response from the start: a fixed list of codes, a task that repeats, confidential records. Then reveal the other side. A large model remains the right tool for open questions and for writing. Then reveal the two results. The description of this session says that a specialized model can be more accurate, more efficient, and cheaper than a general-purpose model. Our two tests support the efficiency. On accuracy, the small model reached the large models on report topics and stayed below them on occupation codes. A test on real cases settles the question for each task.</aside>
+  <aside class="notes">These criteria summarize everything so far. Go back to the survey response from the start: a fixed list of codes, a task that repeats, confidential records. Then reveal the other side. A large model remains the right tool for open questions and for writing. Then reveal the two results. The description of this session says that a specialized model can be more accurate, more efficient, and cheaper than a general-purpose model. Our two tests support the efficiency. On accuracy, the small model reached the large models on report topics. On occupation codes, the first code was right for 35 of 100 real job titles when the model had learned from written titles alone, and for 50 of 100 with the best large model. With labelled job titles and their rewritten answers added, the small model reached 60 of 100. Say that this last test favours the small model, because its labelled titles come from the same job board as the test titles. A test on real cases settles the question for each task.</aside>
 </section>
 
-<section class="slide" id="s37" data-sec="6">
+<section class="slide" id="s39" data-sec="6">
   <p class="kicker">Your turn</p>
   <h2>Which kind of model suits each of these six tasks?</h2>
   <div class="body"><div class="fill" data-demo="quiz" style="display:flex;flex-direction:column;gap:.7em"></div></div>
   <aside class="notes">Let the room vote on each task by a show of hands before you select an answer. The last three tasks have a second lesson: a small model can still do a narrower part of the work. If a task from the room came up earlier, apply the same criteria to it now.</aside>
 </section>
 
-<section class="slide" id="s38" data-sec="6">
+<section class="slide" id="s40" data-sec="6">
   <p class="kicker">Before relying on a small model</p>
   <h2>A team checks four points before it relies on a small model.</h2>
   <div class="body center">
@@ -166,7 +174,34 @@
   <aside class="notes">This is the slide to take back to the office. Each point answers one of the limits we saw. If a supplier offers a small model, these are the four questions to ask.</aside>
 </section>
 
-<section class="slide" id="s39" data-sec="6">
+<section class="slide" id="s41" data-sec="6">
+  <p class="kicker">A first attempt</p>
+  <h2>A first attempt needs a subject specialist, real cases with known answers, and one GPU.</h2>
+  <div class="body center">
+    <div class="g3">
+      <div class="card teal-k">
+        <span class="lbl">People</span>
+        <p class="stat mt">2<small>roles in the team</small></p>
+        <p class="txt-s mt2">A subject specialist describes the groups and reviews samples of the written examples. A second person runs the notebooks.</p>
+      </div>
+      <div class="card plain-k" data-step="1">
+        <span class="lbl">Real cases</span>
+        <p class="stat mt">788<small>real reports with known topics for the report-tagging model</small></p>
+        <p class="txt-s mt2">488 reports set the threshold and 300 made the test. None of them was used for training.</p>
+      </div>
+      <div class="card small-k" data-step="2">
+        <span class="lbl">Computer</span>
+        <p class="stat mt">1 GPU<small>for one to four minutes for each training run</small></p>
+        <p class="txt-s mt2">The large model that writes the examples can be a hosted service or an open model on the organization's server.</p>
+      </div>
+    </div>
+    <p class="callout" data-step="3">The two notebooks of the session run both tasks from the examples to the test.</p>
+  </div>
+  <p class="src">The training times were measured on one server GPU. The notebooks are listed on the last slide.</p>
+  <aside class="notes">Here is what you need for a first attempt on your own task. Start with the people. The specialist matters most, because the specialist knows where two groups are easy to confuse and can tell a realistic example from a poor one. Then the real cases. We used 788 real reports for report tagging, and the occupation model was tested on 1,000 real job titles. Collect them first and keep them away from training. Then the computer. Each training run took between one and four minutes on one server GPU, and a smaller GPU takes longer. The notebooks let you repeat both builds with the recorded examples, without a large model and without a key.</aside>
+</section>
+
+<section class="slide" id="s42" data-sec="6">
   <p class="kicker">Summary</p>
   <h2>A large model writes the examples, a small model learns from them, and real cases test the result.</h2>
   <div class="body center">
@@ -176,14 +211,15 @@
   <aside class="notes">Close with the three terms of the session and the rule that holds them together. Ask each person to name one task from their own work and to say which criteria that task meets.</aside>
 </section>
 
-<section class="slide cover" id="s40" data-sec="0">
+<section class="slide cover" id="s43" data-sec="0">
   <p class="kicker">Sources and further reading</p>
   <h2>The overview page holds the full text, the figures, and the terms.</h2>
   <div class="body center">
     <ul class="srclist">
       <li>Overview of the session: <a href="https://worldbank.github.io/ai4data/training/session-02/">worldbank.github.io/ai4data/training/session-02</a></li>
+      <li>Notebooks: <a href="https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-02-small-ai-synthetic-data/notebooks/01-occupation-coding.ipynb">01 Coding survey answers on occupation</a> and <a href="https://colab.research.google.com/github/worldbank/ai4data/blob/main/training/session-02-small-ai-synthetic-data/notebooks/02-report-tagging.ipynb">02 Tagging reports with topics</a></li>
       <li>World Bank. 2026. <i>World Development Report 2026: The Promise of Artificial Intelligence</i>. Washington, DC: World Bank. doi:10.1596/978-1-4648-2331-2. Box O.1; spotlight 1, table S1.1 and p. 103; chapter 7, p. 248.</li>
-      <li>Tabiya. <i>occupation_titles_esco</i>: job titles from the job board hahu.jobs with the ESCO occupation assigned by the job board. <a href="https://huggingface.co/datasets/tabiya/occupation_titles_esco">huggingface.co/datasets/tabiya/occupation_titles_esco</a>. CC BY 4.0. Used to test the occupation-coding model.</li>
+      <li>Tabiya. <i>occupation_titles_esco</i>: job titles from the job board hahu.jobs with the ESCO occupation assigned by the job board. <a href="https://huggingface.co/datasets/tabiya/occupation_titles_esco">huggingface.co/datasets/tabiya/occupation_titles_esco</a>. CC BY 4.0. Used to train and test the occupation-coding models.</li>
       <li>International Labour Office. 2012. <i>International Standard Classification of Occupations 2008 (ISCO-08): Structure, Group Definitions and Correspondence Tables</i>. Geneva: ILO.</li>
       <li>United Nations. 2008. <i>International Standard Industrial Classification of All Economic Activities (ISIC), Revision 4</i>. New York: United Nations.</li>
       <li>Solatorio, Aivin V. 2024. "GISTEmbed: Guided In-sample Selection of Training Negatives for Text Embedding Fine-tuning." arXiv:2402.16829. Code: <a href="https://github.com/worldbank/GISTEmbed">github.com/worldbank/GISTEmbed</a></li>
@@ -191,5 +227,5 @@
       <li>Contact: <span class="sel">aifordata@worldbank.org</span></li>
     </ul>
   </div>
-  <aside class="notes">Point to the overview page, which has every figure from this deck in a form people can explore alone, with the list of terms. Leave this slide up during questions.</aside>
+  <aside class="notes">Point to the overview page, which has every figure from this deck in a form people can explore alone, with the list of terms. The two notebooks open in Colab and run both tasks without an account for a large model. Leave this slide up during questions.</aside>
 </section>

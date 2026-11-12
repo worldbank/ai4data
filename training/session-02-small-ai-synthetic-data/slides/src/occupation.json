@@ -316,5 +316,40 @@
     }
    ]
   }
- ]
+ ],
+ "rewrite": {
+  "title": "Pediatric Nurse & NICU",
+  "code": "2221",
+  "name": "Nursing professionals",
+  "answers": [
+   {
+    "style": "Short answer",
+    "text": "nurse"
+   },
+   {
+    "style": "Job and place of work",
+    "text": "nurse at the children's hospital"
+   },
+   {
+    "style": "Tasks in everyday words",
+    "text": "checking on sick babies and giving them medicine"
+   }
+  ],
+  "titles": 10134,
+  "written": 30299,
+  "kept": 22268,
+  "test": 1000,
+  "arms": [
+   {
+    "label": "Trained on the job titles",
+    "top1": 0.461,
+    "top5": 0.774
+   },
+   {
+    "label": "Trained on the job titles and the rewritten answers",
+    "top1": 0.66,
+    "top5": 0.924
+   }
+  ]
+ }
 }

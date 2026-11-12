@@ -611,3 +611,24 @@ svg text.ink { fill: var(--ink); }
   .ex:first-child { display: none; }
   [data-demo="machines"] > .row { flex-wrap: wrap !important; } [data-demo="machines"] > .row > .seg { flex: 0 1 auto; }
 }
+
+/* Cost of building and rewritten job titles. */
+.facts { display: grid; grid-template-columns: 1fr auto; gap: .4em 1em; font-size: .8em; margin-top: 1em; border-top: 1px solid var(--line); padding-top: .8em; }
+.facts dt { color: var(--muted); } .facts dd { margin: 0; font-weight: 650; text-align: right; font-variant-numeric: tabular-nums; }
+.price { margin-top: .9em; font-size: .86em; color: var(--muted); } .price b { font-size: 1.5em; color: var(--ink); font-variant-numeric: tabular-nums; margin-right: .25em; }
+.rewritecols { grid-template-columns: 1.15fr 1fr; align-items: stretch; }
+.rwtitle { display: flex; gap: .8em; align-items: center; flex-wrap: wrap; } .rwtitle b { font-size: 1.15em; }
+.rwtitle .ans { font-weight: 650; font-size: .86em; background: var(--small-soft); color: var(--small-text); border-radius: .5em; padding: .35em .8em; }
+.rwlist { list-style: none; margin: .5em 0 0; padding: 0; display: grid; gap: .5em; }
+.rwlist li { display: grid; grid-template-columns: 10.5em 1fr; gap: .8em; align-items: baseline; background: var(--soft); border-radius: .5em; padding: .5em .8em; }
+.rwlist small { font-size: .74em; color: var(--muted); font-weight: 600; } .rwlist .msg { font-size: .95em; }
+.rwbars { grid-template-columns: 11em 1fr 4em; } .rwbars .track { height: 2em; } .rwbars b { line-height: 1.25; }
+@media (max-width: 820px), (max-height: 460px) {
+  .rewritecols, .rwlist li, .rwbars { grid-template-columns: 1fr; }
+}
+.lbl .term { text-transform: uppercase; letter-spacing: inherit; font-weight: inherit; }
+[data-demo="cost"] .card > .lbl { min-height: 2.5em; }
+.srclist { display: grid; grid-template-columns: 1fr 1fr; gap: 1em 2.6em; max-width: none; align-items: start; }
+@media (max-width: 820px), (max-height: 460px) {
+  .srclist { grid-template-columns: 1fr; }
+}

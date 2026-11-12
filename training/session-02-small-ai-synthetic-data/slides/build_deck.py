@@ -141,11 +141,11 @@ def overview_slide():
     groups = []
     for name, idxs, step in GROUPS:
         items = ''.join(
-            f'<li><button class="stepbtn" data-go="s{16 + i}"><span class="num">{i + 1}</span>{e(STEPS[i]["short"])}</button></li>'
+            f'<li><button class="stepbtn" data-go="s{17 + i}"><span class="num">{i + 1}</span>{e(STEPS[i]["short"])}</button></li>'
             for i in idxs)
         attr = f' data-step="{step}"' if step else ''
         groups.append(f'<div class="group"{attr}><span class="lbl">{name}</span><ol>{items}</ol></div>')
-    return f'''<section class="slide" id="s15" data-sec="4">
+    return f'''<section class="slide" id="s16" data-sec="4">
   <p class="kicker">The process</p>
   <h2>The process from a task to a small model has nine steps.</h2>
   <div class="body center">
@@ -161,7 +161,7 @@ def overview_slide():
 
 
 def step_slide(i, s):
-    return f'''<section class="slide" id="s{16 + i}" data-sec="4" data-stepno="{i + 1}">
+    return f'''<section class="slide" id="s{17 + i}" data-sec="4" data-stepno="{i + 1}">
   <p class="kicker">Step {i + 1} of 9 · {e(s['short'])}</p>
   <h2>{e(s['h'])}</h2>
   <div class="body"><div class="stepgrid">
@@ -181,7 +181,7 @@ def used_slide():
         f'<span class="usedrow"><span class="usedmark {s["used"][0]}" aria-hidden="true"></span>{USED[s["used"][0]]}</span>'
         f'<span class="usednote">{e(s["used"][1])}</span></div></li>'
         for i, s in enumerate(STEPS))
-    return f'''<section class="slide" id="s26" data-sec="5">
+    return f'''<section class="slide" id="s27" data-sec="5">
   <p class="kicker">Steps used for this model</p>
   <h2>The small model for this task was built with five of the nine steps in full.</h2>
   <div class="body center">
@@ -226,6 +226,7 @@ def data():
         'dist': {'threshold': di['threshold'], 'top': di['top'], 'scores': di['scores'], 'speed': di['speed']},
         'workflow': d['workflow'],
         'occ': json.loads((SRC / 'occupation.json').read_text()),
+        'cost': json.loads((SRC / 'cost.json').read_text()),
         'learn': {'topics': le['topics'], 'stop': le['stop'], 'sentences': le['sentences'],
                   'tests': [{'title': t['title'], 'topic': t['topic'], 'w': tok(t['text'])} for t in le['tests']]},
     }
@@ -233,9 +234,9 @@ def data():
 
 def page():
     slides = '\n\n'.join([
-        (SRC / 'slides-01-14.html').read_text().replace('__LOGO__', logo_uri()),
+        (SRC / 'slides-01-15.html').read_text().replace('__LOGO__', logo_uri()),
         overview_slide(), *[step_slide(i, s) for i, s in enumerate(STEPS)],
-        (SRC / 'slides-25-40.html').read_text().replace('<!--__USED__-->', used_slide()),
+        (SRC / 'slides-26-43.html').read_text().replace('<!--__USED__-->', used_slide()),
     ])
     payload = json.dumps(data(), ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
     js = (SRC / 'app.js').read_text().replace('/*__DATA__*/null', payload)
