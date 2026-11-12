@@ -1,0 +1,38 @@
+module,baseline_version,baseline_field,final_version,final_field,cardinality
+Identity and discovery,v1.1.1,title,v1.1.2,title,0..1
+Identity and discovery,v1.1.1,internal_identifier,v1.1.2,document_label,0..1
+Identity and discovery,v1.1.1,subject_domain,v1.1.2,subject_domains,0..*
+Identity and discovery,v1.1.1,subject_summary,v1.1.2,subject_summary,0..1
+Identity and discovery,v1.1.1,panel_title,v1.1.2,panel_titles,0..*
+Subject and semantics,v1.1.1,variable_name,v1.1.2,variable_names,0..*
+Subject and semantics,v1.1.1,category_dimension,v1.1.2,category_dimensions,0..*
+Subject and semantics,v1.1.1,category_labels,v1.1.2,category_labels,0..*
+Subject and semantics,v1.1.1,population_group,v1.1.2,population_group,0..1
+Temporal context,v1.1.1,time_period,v1.1.2,time_period,0..1
+Temporal context,v1.1.1,temporal_granularity,v1.1.2,temporal_granularity,0..1
+Spatial context,v1.1.1,geographic_scope,v1.1.2,geographic_scope,0..1
+Spatial context,v1.1.1,geographic_entities,v1.1.2,geographic_entities,0..*
+Spatial context,v1.1.1,geographic_granularity,v1.1.2,geographic_level,0..1
+Spatial context,v1.1.1,geographic_role,v1.1.2,geographic_roles,0..*
+Spatial context,v1.1.1,location_type,v1.1.2,location_types,0..*
+Measurement context,v1.1.1,unit_of_measure,v1.1.2,units_of_measure,0..*
+Measurement context,v1.1.1,currency,v1.1.2,currencies,0..*
+Measurement context,v1.1.1,measure_type,v1.1.2,statistical_forms,0..*
+Measurement context,v1.1.1,comparison_group,v1.1.2,comparisons,0..*
+Structural organization,v1.1.1,row_dimension,v1.1.2,row_dimensions,0..*
+Structural organization,v1.1.1,column_dimension,v1.1.2,column_dimensions,0..*
+Structural organization,v1.1.1,visualization_type,v1.1.2,visualization_types,0..*
+Provenance and attribution,v1.1.1,data_source,v1.1.2,data_sources,0..*
+Provenance and attribution,v1.1.1,data_source,v1.1.2,attributions,0..*
+Provenance and attribution,v1.1.1,source_document_title,v1.1.2,source_document_title,0..1
+Provenance and attribution,v1.1.1,language,v1.1.2,languages,0..*
+Provenance and attribution,v1.1.1,interpretive_note,v1.1.2,interpretive_notes,0..*
+Project and operational context,v1.1.1,project_name,v1.1.2,project_name,0..1
+Project and operational context,v1.1.1,project_identifier,v1.1.2,project_identifiers,0..*
+Project and operational context,v1.1.1,project_component,v1.1.2,project_components,0..*
+Project and operational context,v1.1.1,intervention_type,v1.1.2,intervention_types,0..*
+Project and operational context,v1.1.1,financial_measure,v1.1.2,financing_measures,0..*
+Project and operational context,v1.1.1,financing_source,v1.1.2,funders,0..*
+Project and operational context,v1.1.1,financing_instrument,v1.1.2,financing_instruments,0..*
+Analytical and methodological context,v1.1.1,analysis_method,v1.1.2,analysis_methods,0..*
+Analytical and methodological context,v1.1.1,data_collection_method,v1.1.2,data_collection_methods,0..*

@@ -1,0 +1,334 @@
+---
+id: concept-synthesis
+title: "3. Field Profiles and Metadata Concept Synthesis"
+sidebar_label: "3. Profiles and synthesis"
+sidebar_position: 4
+description: Aggregate exact field names reproducibly, inspect semantic evidence, and propose candidate concepts for subsequent human refinement.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 3. Field Profiles and Metadata Concept Synthesis
+
+**Question:** How do local observations become manageable evidence for shared concepts?
+
+## Rationale
+
+Discovery can produce many suggestions for the same property under different
+names. Comparing every observation individually quickly becomes difficult.
+A field profile groups observations with the exact same proposed name while
+retaining their values, explanations, and sources. This makes repeated
+suggestions easier to inspect without deciding what they mean yet.
+
+The next step compares meanings across profiles. Different names may describe
+the same thing, while similar names may refer to different parts of an item.
+AI can help propose shared concepts: defined meanings that bring related
+suggestions together. Keeping the supporting observations and unresolved
+distinctions lets reviewers check those proposals before accepting them in
+[Chapter 4](./concept-refinement.mdx).
+
+## Target state
+
+- Field profiles group exact names, record how often they occur and how many items support them, and retain the evidence.
+- Comparison notes explain which profiles may share a meaning and which distinctions remain uncertain.
+- A candidate concept list gives each proposed meaning a name, definition, rationale, and example fields for review.
+
+## Prerequisites
+
+- Metadata observations and item identifiers from [Chapter 2](./discovery.mdx).
+- Access to the observations' values, explanations, and evidence sources.
+- Python 3.10 or newer for the profiling example; no external packages are needed.
+- New model-assisted synthesis needs the [hosted or local setup](./index.mdx#prerequisites) described in the overview. The worked example uses recorded outputs.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | A reviewer compares names and the evidence supporting their meanings. |
+| **AI-ready** | Repeatable grouping retains the original observations and explains every count. |
+| **AI-native** | AI proposes shared concepts from profiles; reviewers check the evidence and uncertain distinctions. |
+
+:::info[Running example]
+**Worked example.** Three recorded geographic_scope observations become one
+profile. Title suggestions from Chapter 2 then illustrate how several names
+can lead to a shared concept proposal.
+:::
+
+## Recipes
+
+<Recipe title="3.1 Group repeated names into field profiles" level="AI-ready" skills="Python practitioner; metadata reviewer" time="20–30 minutes for the worked example">
+
+**Result:** A JSON profile groups identical names, counts their supporting items, and retains the original observations.
+
+Occurrence count measures how often a name was proposed. The distinct-item
+count measures how many different artifacts contributed at least one such
+observation. Repeated observations from one artifact increase the first count
+without increasing the second. Support is the distinct supporting count divided
+by an explicitly identified artifact denominator.
+
+**Prepared input.** Place [geographic_observations.json](pathname:///cookbook-files/ai-assisted-metadata-schema-development/geographic_observations.json) and [profile_observations.py](pathname:///cookbook-files/ai-assisted-metadata-schema-development/profile_observations.py)
+in a new working directory. The script uses only the Python standard library
+and needs no images, model credentials, or model calls. If the Python 3.10 or
+newer interpreter is named python3, substitute that name in the command below.
+The input retains the three recorded observations summarized below, including
+their full identifiers, descriptions, and reasoning.
+
+| Artifact | metadata_field | Recorded observed_value | source_level |
+|---|---|---|---|
+| Jordan chart | geographic_scope | Jordan, inferred from parent document title and project name; not visible in snapshot | document |
+| Afghanistan table | geographic_scope | Afghanistan | snapshot |
+| Russian chart | geographic_scope | Russia | both |
+
+1. Open the JSON array and identify snapshot_id and metadata_field in each record.
+2. Inspect metadata_field, snapshot_id, observed_value, description, source_level, and reasoning. The three names are identical, but their values and evidence sources differ. Keep the Jordan inference wording intact.
+3. Run the command below from that working directory. It groups the exact string in metadata_field without lowercasing, trimming, synonym replacement, or semantic merging. It creates a new output and refuses to replace an existing file.
+4. Inspect the profile counts and evidence. Confirm that all three input records remain present and that the denominator counts distinct snapshots across the whole input file.
+
+**Worked example.** The command produces the following summary and writes a
+profile in a separate output directory. This is a deterministic transformation
+of recorded observations; it does not rerun metadata discovery.
+
+```bash
+python profile_observations.py geographic_observations.json --output outputs/geographic_profiles.json
+```
+
+```text
+observations: 3; snapshots: 3; exact-name profiles: 1
+geographic_scope: count=3, n_snapshots=3, support=1.000
+Wrote outputs/geographic_profiles.json
+```
+
+**JSON output excerpt.** The following is taken from the generated profile.
+The first evidence record is shown unchanged; the other two records are omitted
+from this display only. The output file retains all three observations.
+
+```json
+[
+  {
+    "metadata_field": "geographic_scope",
+    "count": 3,
+    "n_snapshots": 3,
+    "total_snapshots": 3,
+    "support": 1.0,
+    "evidence": [
+      {
+        "snapshot_id": "027_Jordan-Emergency-Food-Security-Project_figure_001.png",
+        "snapshot_type": "figure",
+        "source": "refugee",
+        "model": "gpt-5.5",
+        "metadata_field": "geographic_scope",
+        "observed_value": "Jordan, inferred from parent document title and project name; not visible in snapshot",
+        "description": "The country, region, or geographic area to which the figure data applies.",
+        "source_level": "document",
+        "discovery_value": "high",
+        "reasoning": "Geographic context is essential for discovery because it is not shown in the figure itself."
+      }
+    ]
+  }
+]
+```
+
+For another collection, keep property names unchanged during grouping and
+count distinct items separately from observations. State which items form the
+denominator. The supplied script counts only distinct items present in the
+input observations. Including items with no observations would require a
+separate sample list and a different denominator. The teaching script uses snapshot_id and the study's source labels; adapt those names and
+checks to the new inputs. Larger summaries should retain links to the full
+observations even when they display only selected evidence.
+
+The downloadable script contains the complete deterministic transformation
+and safe output handling. It has no external dependencies or model client.
+
+<details>
+<summary>Exact-name aggregation script</summary>
+
+```python file=../../website/static/cookbook-files/ai-assisted-metadata-schema-development/profile_observations.py
+```
+
+</details>
+
+**Verification.** The output must contain one profile with count 3,
+n_snapshots 3, total_snapshots 3, and support 1.0. Its evidence must equal the
+three input records. The count sum must equal the number of input observations.
+For another run, choose a new output filename. The script refuses an existing
+output or input path and exits with status 2 for invalid input or an unavailable output destination. It validates input
+before creating the output directory.
+
+<details>
+<summary>Study counts and their denominators</summary>
+
+| Statistic | Unit and denominator | Recorded or exercise scope |
+|---|---|---|
+| 3 geographic_scope observations | This counts exact-name occurrences in the three-record input. | This is the worked example. |
+| 192 geographic_scope observations | This counts exact-name occurrences across the 210-snapshot development collection. The profile also records 192 distinct supporting snapshots. | This is the recorded full-study profile. |
+| 194 snapshots supporting geographic_scope | This counts distinct snapshots after profiles were assigned to a canonical concept; its denominator is 210. | This is later concept coverage, addressed in chapter 4. |
+
+The full-study exact-name support is 192 / 210, approximately 91.4%. Later
+canonical-concept support is 194 / 210, approximately 92.4%. Semantic
+consolidation changes the unit being summarized. Neither percentage can be
+inferred from the three-record example.
+
+</details>
+
+**What this does not do.** The script does not discover synonyms, evaluate
+correctness, or establish sample coverage. Its denominator includes only
+snapshots represented in the observation input. Accounting for artifacts with
+no observations requires a manifest denominator and an explicit policy.
+This exercise does not implement that extension.
+
+</Recipe>
+
+<Recipe title="3.2 Compare related names and meanings" level="Foundational" skills="Domain reviewer; metadata practitioner" time="30–45 minutes for the title comparison">
+
+**Result:** Comparison notes propose shared meanings and identify distinctions needing review.
+
+Compare meanings using the values and explanations in each profile. Similar
+names can serve different roles: an overall caption and an internal heading,
+for example, may need to remain distinguishable.
+
+**Input example.** Exact-name aggregation preserved three separate profiles.
+All counts below are recorded full-study values. The small observation
+exercise does not compute these counts.
+
+| Exact name | Observations | Distinct snapshots | Relevant profile evidence |
+|---|---:|---:|---|
+| figure_title | 84 | 84 | Descriptions include a figure's displayed title or caption. The profile records 81 figure and three table occurrences. |
+| table_title | 90 | 90 | Values include project-financing headings and cost-effectiveness summaries; descriptions concern a table title or caption. |
+| chart_title | 7 | 7 | Descriptions include embedded-chart or panel titles; values include compound headings and the Russian internal heading. |
+
+1. Select profiles whose names or evidence suggest a possible shared meaning. For the supplied exercise, open canonical-title in [evidence.json](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json) and use its recorded_profiles input. Its later assignments belong to chapter 4.
+2. Compare the exact names and their statistics. Check the object types and source levels as well as the frequencies; a name does not validate the artifact class by itself.
+3. Compare descriptions and values in their artifact contexts. Ask whether similar names describe the same object, component, or role. The two Russian headings in independent-naming illustrate this test for whole-object and internal titles.
+4. Write a provisional relationship note with the proposed common meaning, evidence for it, and a remaining ambiguity. Retain uncertain distinctions for the synthesis request and human review.
+
+**Worked example.** The worksheet below is newly written teaching reasoning
+based on those records. It is not a recovered historical adjudication log.
+
+| Comparison question | Provisional note |
+|---|---|
+| Is there a shared descriptive purpose? | The three profiles contain titles or headings useful for identifying analytical content. |
+| Is the evidence only lexical? | Definitions, observed values, and retrieval rationales also support a common title-related meaning. |
+| What remains unresolved? | A whole-object caption and an internal or panel heading may need a distinction for annotation or representation. |
+| What should happen next? | Propose a common concept conservatively and retain the uncertain scope for expert review. |
+
+The Russian headings illustrate the unresolved boundary: one names the whole
+figure, the other an internal chart. A common title concept need not erase that
+role or replace either original value.
+
+**Verification.** A reviewer should be able to explain both the proposed
+similarity and the unresolved role distinction using the evidence. A note that
+only says the names contain “title” is insufficient. Preserve the original
+counts and distinguish them from semantic concept support.
+
+**What this does not do.** The comparison does not accept final concepts,
+normalize observation values, or design separate caption and panel fields.
+Those conceptual and operational decisions require later human review.
+
+</Recipe>
+
+<Recipe title="3.3 Propose shared concepts from profiles" level="AI-native" skills="LLM practitioner; metadata reviewer" time="45–60 minutes to prepare and inspect the retained example">
+
+**Result:** A synthesis request and candidate concept list are ready for human review. The worked example reviews a recorded candidate without making a model call.
+
+Ask for defined meanings supported by the profiles, combining clear synonyms
+and retaining uncertain distinctions for review. Let the evidence determine
+the size of the candidate list. Representative field names illustrate a concept;
+they do not show that every profile has been assigned or that the final schema
+has been designed.
+
+**Input example.** Use the figure_title, table_title, and chart_title profiles
+compared in Recipe 3.2. Their names, example values, descriptions, and counts
+supply evidence for a possible shared title meaning. The complete study used
+all profiles; the selected excerpts support preparing and reviewing the request.
+
+The [synthesis request](pathname:///cookbook-files/ai-assisted-metadata-schema-development/concept_synthesis_request.md) is an independently
+written teaching adaptation. It illustrates the instruction and output
+structure without running a model or claiming to reproduce the full prompt.
+
+<details>
+<summary>Concept synthesis request specification</summary>
+
+```markdown file=../../website/static/cookbook-files/ai-assisted-metadata-schema-development/concept_synthesis_request.md
+```
+
+</details>
+
+1. Specify the input profiles using their names, descriptions, values, rationales, and occurrence statistics, along with the artifact class and descriptive purpose. Verify that the complete intended input is within the chosen model interface's capacity.
+2. Ask for reusable concepts across the contexts represented in the artifact collection, consolidation of clear synonyms, and retention of plausible distinctions when uncertain. Low frequency alone is not an exclusion rule.
+3. Specify a shared label (canonical_name), definition, rationale, and sample_fields for each proposed concept. Treat representative field names as examples; they do not prove that every profile was assigned correctly.
+4. Review the recorded candidate below for definitions, unsupported merges, lost distinctions, and ambiguous scope. Preserve the candidate output and input reference before handing it to [expert refinement](./concept-refinement.mdx).
+
+**Worked example.** The following title candidate is a recorded output,
+available under recorded_candidate_concept in canonical-title.
+
+| Candidate attribute | Recorded output |
+|---|---|
+| canonical_name | title |
+| definition | The displayed or inferred title, heading, or caption that identifies the snapshot. |
+| rationale | Titles are usually the strongest single searchable description of a snapshot’s content and should be normalized across figures, tables, maps, and charts. |
+| sample_fields | table_title, figure_title, snapshot_title, chart_title, map_title, table_caption |
+
+The rationale records the model's judgment; retrieval performance was not
+measured. The definition's allowance for an inferred title needs review; it does not authorize inventing
+a missing caption or establish the final annotation rule.
+
+:::note[Study input and output]
+Synthesis used all 833 profiles in one CSV-supported GPT-5.5 request, with high
+reasoning and a 12,000-token ceiling. The prompt suggested 50–70 concepts and
+returned 70. Those counts are not targets for another collection. A request
+using only the three displayed profiles would be a different, smaller example.
+:::
+
+**Verification.** The prepared request specifies all four output attributes
+and identifies the intended profile input. The recorded title candidate contains
+those attributes and connects to the displayed profiles. Review notes retain
+the unresolved distinction between a whole-object title and an internal heading.
+
+**What this does not do.** The worked example makes no live synthesis call.
+Candidate concepts still need human review before field design; they are not
+an accepted schema or a formal ontology.
+
+</Recipe>
+
+## Implementation options
+
+A spreadsheet or table-processing tool can apply the same exact-name grouping
+and distinct-item counts as Recipe 3.1. Automation is useful when the collection
+is too large to check each group manually, but the counting rules and evidence
+links must remain explicit. Review meanings manually for a small profile set,
+or use model assistance to propose relationships for review. Splitting a large
+synthesis input across requests requires checking consistency across the
+resulting concept proposals; it changes the study's single-request approach.
+
+## Resources
+
+- The [observation input](pathname:///cookbook-files/ai-assisted-metadata-schema-development/geographic_observations.json) supplies the three real records used by the [profiling script](pathname:///cookbook-files/ai-assisted-metadata-schema-development/profile_observations.py).
+- The [research evidence](pathname:///cookbook-files/ai-assisted-metadata-schema-development/evidence.json) preserves full-study profile excerpts and the recorded candidate title concept.
+- The [teaching synthesis request](pathname:///cookbook-files/ai-assisted-metadata-schema-development/concept_synthesis_request.md) explains the semantic task and historical boundary.
+- Dy & Solatorio (2026). *Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs*. Working paper. Sections 4.2–4.3 and 6.2–6.3 and Appendix C supply the aggregation and synthesis methodology.
+
+## Common mistakes
+
+- Exact-name grouping can silently become semantic normalization if names are rewritten first.
+- Repeated observations from one artifact can be counted as additional supporting snapshots.
+- A subset's 100% support can be mistaken for full-collection coverage.
+- Representative field names can be mistaken for exhaustive concept assignments.
+- A candidate concept inventory can be treated as an accepted schema or formal ontology.
+
+## Verification
+
+- The profiling output matches the input counts and retains the original observations.
+- Counts distinguish repeated observations from distinct supporting items and state their denominator.
+- Candidate definitions explain the proposed shared meanings and preserve unresolved distinctions for review.
+
+## Checklist
+
+<Checklist id="ai-assisted-metadata-schema-development-concept-synthesis" items={[
+  'Exact names are grouped without silent normalization or semantic merging.',
+  'Counts state both occurrences and distinct supporting items, with a clear denominator.',
+  'Profiles retain the original observations and their sources.',
+  'Candidate definitions and unresolved distinctions are ready for human review.',
+]} />
+
+Take the profiles and candidate concepts to [Chapter 4](./concept-refinement.mdx) for human review.

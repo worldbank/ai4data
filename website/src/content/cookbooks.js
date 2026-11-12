@@ -180,6 +180,17 @@ export const allCookbooks = [
     chapters: 6,
     to: '/cookbook/data-snapshot-metadata-council/',
   },
+  {
+    id: 'ai-assisted-metadata-schema-development',
+    version: '0.1',
+    date: 'November 2026',
+    audience: 'Technical practitioners starting a metadata schema for their own materials and use case',
+    title: 'Practical Guide to AI-Assisted Metadata Schema Development',
+    description:
+      'Develop a metadata schema from real examples through AI-assisted discovery, human review, validation, and standards comparison.',
+    chapters: 7,
+    to: '/cookbook/ai-assisted-metadata-schema-development/',
+  },
 ];
 
 export const cookbooks = allCookbooks.filter((c) => !isHiddenCookbook(c.id));
@@ -209,7 +220,7 @@ const allGroups = [
   },
   {
     title: 'Metadata and interfaces',
-    ids: ['metadata-curation-with-llms', 'serving-statistics-to-agents'],
+    ids: ['metadata-curation-with-llms', 'ai-assisted-metadata-schema-development', 'serving-statistics-to-agents'],
   },
   {
     title: 'Models inside the office',

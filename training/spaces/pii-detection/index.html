@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PII detection — AI for Data</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+<header class="site-intro">
+  <div class="intro-text">
+    <p class="eyebrow">Small AI demo</p>
+    <h1>Multilingual PII detection</h1>
+    <div class="sub">Spot <span class="has-pop"><button type="button" class="hint" aria-describedby="types-pop" aria-expanded="false">40 kinds of personal data</button><span class="hint-pop types-pop" id="types-pop" role="tooltip"><strong class="pop-title">The 40 kinds of personal data, in 11 domains</strong><span class="type-grid"><span class="type-group" style="--pii-color:var(--d-identity)"><span class="type-head"><i></i>Identity <em>7</em></span><span class="type-list"><span>Person name</span><span>SSN</span><span>National ID</span><span>Passport</span><span>Driver's license</span><span>Date of birth</span><span>Tax ID</span></span></span><span class="type-group" style="--pii-color:var(--d-contact)"><span class="type-head"><i></i>Contact <em>5</em></span><span class="type-list"><span>Email</span><span>Phone</span><span>Address</span><span>Postal code</span><span>IP address</span></span></span><span class="type-group" style="--pii-color:var(--d-financial)"><span class="type-head"><i></i>Financial <em>6</em></span><span class="type-list"><span>Credit card</span><span>IBAN</span><span>Bank account</span><span>SWIFT/BIC</span><span>Crypto wallet</span><span>Amount</span></span></span><span class="type-group" style="--pii-color:var(--d-credential)"><span class="type-head"><i></i>Credentials <em>6</em></span><span class="type-list"><span>API key</span><span>Password</span><span>Private key</span><span>JWT</span><span>Connection string</span><span>Login credentials</span></span></span><span class="type-group" style="--pii-color:var(--d-online)"><span class="type-head"><i></i>Online <em>2</em></span><span class="type-list"><span>Username</span><span>URL</span></span></span><span class="type-group" style="--pii-color:var(--d-device)"><span class="type-head"><i></i>Device <em>3</em></span><span class="type-list"><span>MAC address</span><span>IMEI</span><span>Device ID</span></span></span><span class="type-group" style="--pii-color:var(--d-location)"><span class="type-head"><i></i>Location <em>1</em></span><span class="type-list"><span>GPS coordinates</span></span></span><span class="type-group" style="--pii-color:var(--d-healthcare)"><span class="type-head"><i></i>Healthcare <em>4</em></span><span class="type-list"><span>Medical record</span><span>Condition</span><span>Medication</span><span>Health plan ID</span></span></span><span class="type-group" style="--pii-color:var(--d-org)"><span class="type-head"><i></i>Organization <em>1</em></span><span class="type-list"><span>Company name</span></span></span><span class="type-group" style="--pii-color:var(--d-special)"><span class="type-head"><i></i>Special category <em>4</em></span><span class="type-list"><span>Religion</span><span>Political</span><span>Orientation</span><span>Health status</span></span></span><span class="type-group" style="--pii-color:var(--d-legal)"><span class="type-head"><i></i>Legal <em>1</em></span><span class="type-list"><span>Case number</span></span></span></span></span></span> across <span class="has-pop"><button type="button" class="hint" aria-describedby="langs-pop" aria-expanded="false">16 languages</button><span class="hint-pop langs-pop" id="langs-pop" role="tooltip"><strong class="pop-title">The 16 languages</strong><span class="lang-list"><span>English</span><span>German</span><span>French</span><span>Spanish</span><span>Portuguese</span><span>Italian</span><span>Polish</span><span>Russian</span><span>Chinese</span><span>Japanese</span><span>Korean</span><span>Arabic</span><span>Hindi</span><span>Indonesian</span><span>Vietnamese</span><span>Thai</span></span></span></span> and redact them, in one pass. A 350M-parameter model that runs on a basic CPU, with no GPU.</div>
+  </div>
+  <a class="brand" href="https://worldbank.github.io/ai4data/" target="_blank" rel="noopener"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAAB5CAMAAAAjxkttAAAAwFBMVEX+/v4DopgAAAACVakIIjtcrbAoq6N06+wKJUIbqaAusa9wc3dentcLmdcnarEEaMUZcHQncLMcY66i3N8I9vcjOE8ZMEmcreBacKswoNKnqK1d0LV5fvocJXIjdOQjodIspNwAAP8vdsQounkzy6Qdb8T/AAAwRFv9tbUA/wAQOrd//3+c3LX/fHz/AP8A/38VJjz//wDgtOAMwtRDp9r//384wrUbwcjz7K9xuHFEnLkyw83/f/9CfsVyOXIAfwC0mOzNAAAAQHRSTlMB9wD63hJdCdmgCwge92P7DQigDQFmmQwaVwgZBQUJnwoBWAQTpAFLAwEEAgoCAQKvAQj5QgJJpQUDQlUCSgQCIV0fDwAAI11JREFUeNrNXYli47auZZChGImKR7bkJd5iZ519ptP2tre9773//6sHkBQFSpS8TDK97DSJV1FHIJYDgBLiRwfU/wP9O+rt9Z8gQLzIgP5HZx8BXmhuL3RSzZw6QEP03cCfg/ZpwcGjwVkzfLF3v/jFOOp81nKx244/jDebMf4cj3OhxRcIIF2PX+fgPwzWqRi9NqR9r67z7QeIjO2HtRbii38bAJw4SfgZV6b50D+tIGJX389pOR4TqGKe392NJjQeHx9Ho7s8F/T8Zjx3n1vD9hGlvH02hD3UX3rkhQgkMCaO5yyDHrGGQ4r/pIPCmTNV4y2CVOajx7eXl5dv/bik8fbx7rc5vrweK5LnD+Xbt3cwbqvrM6wVwIuu458px3D06/ydixxhzO8eCeLLyKBnJyOS7J2sdjDBp8T2HzpleN2jwotPs5GmBQrzHFGOg9ygTVgDfICcHtxBPuAYwoua55/vosErXBSJMOeTQyjX4/FOgP1rvqUjwVHnDofn9hIOnp8FRD57ppaCH77CVsMqNIAkzJdHDhTrif2DtLS3MABnXeuTzmLwDRBMg5tiGDSMJx0VYODcYHBuKM3/Mzke5mCQ4/Eia7FZFz8zlhsA7exDgohHcvke8sfLc8cdfDg4KTjJU4IXUKtwkncLr6PaIQR6C+IuIs1vj1TXl2J9RmgMZ9sTEK/vM/zo8olFAsUYthEv7vJxcocxSp7P5/jjZjQinRyFHrX0Fn50OgCv7nidFyQfOhwcG4Who3bXcSkwDBTdABzDmElcpLdwAuP28jEB/BdRcH32c4za+W3XScaxQx5pvlQ0UKjxAYWM8Gc+uuyoGet4CDHI5Z0/6bOAhvMvCLzCuvoAO6YO3qJ7TCgX27FSEapJGhZEbDuGU+xf1pzAa3wFdJzPnxarr8dcbSDMO5zLh7Ea+Mh+Pd51dQ2K9EsRjefoAfivUBv9s6gK4LL5iMJccJTb0Z6h4mAh8oiWLnyscCAYgYHoYIi1A4CXXRzwYwT2CR+Qe8HU8wRhHsvDByi0iLgeN5CJZXaSeThOk8PAwn8Frvg1vlltOM53CLM6Rjpy8Rjz8QS5KZU+Rx7gNB/l7NRB9Q+4KHi0/VpMPGLIEO3mBwkZGhncRcOYG/iySgBWx1ISeNYqzAuwt2vdye3CYNjYF7MrtTZuEx5KrSulTwkYXyQ2BUqP1JL59m0Oe3n0cdd3k643/fYRT+UiXUF23BSK/R4XQFXsi32YEtnv8dmiqFDmn37QHYyk4orxeCAh0xM9/xCHUmXg5fkRven9oTOpCYEnM/93GC1SrMgQx/xhenGB36yOmsWfMbmvhjJKWi71qYHQHONaNr7T3PMfcJDgkHfe/hu9sVGz6DcLp7/EUXm07YfCiwgifmcBz8vPycXFRQJawTChAebok9oGP1X+3ZWYT9wLaJsV93o29ngCTorL2ktvYqOxxVFQa2ETonAC0O3XGv8Z1cZYn34Z1yqXWyxEqAEn40oSfXGRCpDiY4xkb4DWojn3kY8qUW+IuX8+h6pxrPE4YqG1PlUCY9ZkQnb/0IXaj81YzH9MhcyhdoUnc9iqYYKP26H2q6qUMsfaDwSiAHlhRvoJpDdyEHNZ82Y5kb8ifmleb4CWoL3rrWE5nV1dXb2ZadDH2ywt4mzjZFFnlHtFCRoJOicbYxVttV7UM5iIGEtxtAeUmblk7u/0wg2FSNduQ4zslTBpESX+iFyia/uMOBdXb2hcXelDpQhcFPqApmW02A9FzDAeYX3F3Wg0FmowqB/CCsS4PlHEWUKf1B7AnBQAlEmSrODJTEZ98kivYOXryLrlIxJkIF/Cq8wqkOgaaIPzlYW6I9G9AoeHq3qBvpxEabD6bBsLNoLxaQQ/R3LuFDS6ZIUUcB75DqRCkwunlZf2ucTL9HsJvTmdAkIb5WTXrNNAR7tP/L4ktXFloNYwP94DHgDaId0jR0cDPYQ9eg2idusWaij7AwOpPQBViFqC09JcL5V5pFNRqL5pcLF157zxjmwE6A1M37hBqmN5hHaEw0DHIXQf3DGgtx0q4FhR3LpvmYiiOKtAzSqmBlXy6Wo97ZGuI5fugt4GprDG1M0/Z09aLYok1szCPNXFs4RhewKhJmR+XSfKWv8iwV3ffbWWUio/2ZZEs/gV9Hqt1voAyW/+rZ/cyZS0YqHthh0BvfkeDauLZqygaCGdwEM8A6plx7sdkYdpZ5ozHb13rsOSlMbV1XPtBdB0/2P93BbFSCIAT/tm/o1rY4oJgwTRROTWmNlSQ1KGtqoQK95+90B/Hq/X6/pA/p3j8XogjDQAofV79JoRumUvR62MZb7LRMKATuCraPkeSRCNs3IoWHQZKT9ZbgwL98mFNYSLzUZrVZlvkhuKmVDbF7W46dobW2ygNphMdcyhkBTW82Nv0c8k6cVP5dvFYky0mAEQn2kkug4TEH7zTso7Uf3hIQpu7VxoW8l1SskW+JJeZQ4eAu1Q1fdecyutxBGmkE+mCnQ0njN8oZOz+tkSpfSDxB+WekG/ihoHhwg9XnaNoRF/Nf/AHZ4JHnWJ8biX88kIsZSUD1n7pxYmbkFmaIHBO3snroZ8EDxpK+ZIyUu5RIWjtLVkOD45okvEHPXazFASRt3c3IYS/bn2xdT7T42a7haJwh7yqAvg1CCX6LV5ajqbGTN4NZ1OZ7iYkNpDOM2zs9kUBXmDs9pDMaPXUb0UMxwa2kD71N2C24ZStAwGRv7jjg1Bud7lkIdPj+YgD+jXEksIEGdGaiE+zYMqWkXr0ie4dMXN7TWOvyUDWkLpFBHcQ+bFXA55TpeTv0Lx7USGtIq+G7Vx5f6fUt4BnmdWmbhY0fAAU/PUDH/T84WR6qqlo8HothHDD+ad5bWAGNAR9PGdEgYKdiz9tjB4u1HiHMrVaqXUiiR6gDjZIczXdtw2kSAKb/KJVKq5SCuvVJRUEbKNTZ/9uYGWROcW6NrlsBHLlKLxmXtgf17hc+UCXUCCfTq1TxbGYxSiawUUs7eTMHLy+EWAjuDMxKOnsAzBXOLxXHk5/nycPzHxTOG+zxHPIL+1KN/coMrxHymTi1RC9lSU8iOpaaY8WpeLS4YI/qYDfAmBps+UszoopJBlCv9ezt5w6A3SS02+Nr4+83GNbnsd9RyY0zOJ+9kiAvQoGvRgSLLvAboWTVTVTTU/Mnhc4UY5U/qSHVhxvilpUSxBWplOpbDqw1Af96iGMu/16bBw8cu4Oc0RMOFC8sFMLgQaHdb5lUeUJPoXMasfefVhHL+pf5OV6EVHdYh2MBKD1MzlWKDx+eIQGbDuBzqNA+1xvvkFi2t2mRIItzQAgzTCnaB5RU1d4FVM4yLtTLFDUsyZcJlVWLWBhvUcTRthitL6bfbt2QN6hcZv5gNzYXRzjfTsykp02+swg8dLsv57ghxSM5fR267qGDeM9iQQ6QNlx4vTJdrifJvbHAo5WrpCRFN4j2r9HUGbWhOIdrEOZlZPWXDoMTBoxzkrEJEkg22gbbQvDZxXxpBrh/PULCrtxHsmGomeTZeL5dIdkkn0vmuNL8vSPJjMjRfgn89HzI+jgRUWtj5xYoq4GvnIYagJlk6cqY7LLtCxzMjyS044G4NXQ7cUqUhL7IZDq5c0K0IqJtJBIQk0QI7+FzsX5wHJ01Ida8fdOXCXFJRMLb2E3gfoBbJ+Fmn0MqbmYlwR5tCUjnBjqLpWYo7M/IjkdYPxH0Bz6G7AkpNMS3onhoci0HhdAo+xqA3Ql5cHJdpMeifIDgqTxX3vFqLC6CS1OkGvWPTy0Ii01WJQJ3Ya3w5CKbqcI677IATXTttoq4yX5LJZn3oGm71JM9UXYepUxxV62lJU3ciw6QTgqoNiGDwAXWAsL/xeC+pIeOU92lArqzJz9wE4+HXJmKkeX41L9OUxQI+N4sgphCvvie2XxptDoD8ZyJmzh1/gI3EeiMM+SGGZMWF6cNviOgpnTTzQG9BWPegnDZZ1B+uDzBzDd1Vw87TtAo2zF4H2Qgd0PGoRTiMI2Tvz2fGaQkPbdzkZoABDdV1tmUTTWhnW0XRlBNlBxNlw+uU7oDN6Ly6cRH8UKQ9fFPyr/jLlj/7Ltsd4+9rfUEd3gNbwbBXxvLZtWkydIDsqdcmD2vVBP5oC8Jgz0QU6h3mkZrkFtFdZpqV7i+wJVt3lHua3IdApVF3O0VpCka/RlzZeHZZwIISyUcMB81H6x4kLnwCAm8Kor5RXAU2qOdBXCPTCamLUw/MaaNId9JQwfjS+onmhYMS9497dCIm6+EzafHQ0MoxKdMC8GE2V+86JXh3tqUd8+29GoHcYYScMwrTmQxWX6JX1R9oeXhGjOTjh8SFUHeuuRFu5nQnp7B24Fw3QRnmzisy96HAdVA4eRHaXRwBtTOHo2OyBUU+jySNpmDuy//kld+8yLtFZuBoUlpxYj0NRvq/REIrALImGAp4GuMDSUu2/sazqVTse1ByWuB0EelmrjtJleQQ8TbmOJivZaA5uEqjNZl8tJXPN8Mp+vzwGaKrqGg2kaaAVFeZUNffWnRJ6mjvK81KmFyk/jOqSetBSt4U9Mp/L9XiLlf4mUinnJQYpTHI9c0RM1KrNmbpHGZSf7WTWYrjnaIInFfDR0AF6Yb27msrARTK7etOQSW9qiYZ2uUG+2I03e9OxGov3kPYsl2LSBzQ34uhZLxaTFtBBQRkrOr8D8iCbsRR5wOWFBWuOrivxQ0sssOviTNK19KJuVwSLDgvLzR8SaIwfdJsmdWq4Vh1rYckMFFxtwy5tg8OpdbAJ6EC4Ws5kwHROBEeW6OUI0BMkDZZMcYxEy73bdh1hyavAcg2OupML7LQvwVN5ueDEXn5jUH57fYv0K5KkTzyBZZgkn3UBmdQqWrGkFuZpbckRN4UTPpiIlRzobVdH15H2FJ2eotiAZZgoZzt9Y2nSBmjVzhm2nLhto0bELldyJyKqYwLFBvhDU8DUC7SLPe8Y0IKnGkqRX/uBwR8Pz2mgHSTai0ijkIUmec6yrMrw5BSVyX5PjOqgR6vmXTy1w+ItO+Zcxro5Qw7072LheKQZpa7eFY7Jm9VXYNaKaQcV1bxsTOVYseCJs6IowmVT8ENA77iAM6D9kQsO9DjInuVw0wB93QGaCI5ijtiVt39DALQsXcaAqgt0RrE7GUNtjuuVdGX2AWECLXD/IBSMjfmPPb+DbmTIgCY9Yh08sns4PKk098Q/T4MO1nWID7mXaCwkEvkkxiHRi5zlIxUrRtHCQY90zlXHbgDodzC/vb59pHGL4+Y3SlpqpeC3i+uLVk4Wmw+TNE3xj0/m3ApSzabI6L4dHM4Dq8forRHP4rWAxjVDQBOPsbT6b9aQpjVNimV/Bmino1l1wADO63Wgy0JfYh6WnozvuC2c9Lt30KKtDkh0p9JvNy9RbdwQbDeB25FK6bV15esNEkpOPzTW8MFV6jaHW7C4nDsjsp0zBG4Mjeb9cxbQ/vjHM+ii0dGN7qj6gaZaOJS8vDd0Cg33VvRX4fBINB/n42zHuqlQQw8BrebVbocbhI2zMf7OdmNSzur2mnDOVV0IppLA/ygdyWCCxYI89cRnbNArUTyxseB0Yh5k8RjQS9sd4YgjBzS6aFMOM5H8yKk1frQ4Aug72JDvOO8NQxbb+THEfwvoWi5V7U2YQsMBoKtOS4LI0wtrJ39HrSzR2ybdLNNIxUFJ0KLqaFKHiJUqYdS33jQXLNHhOrRhkozq0Paxp6GN/yGsI18bww2raVHx+uiRL6FdBLU8/9P4EmsdpBNHv4RFP5MIe0fW/saMnEoT7FgPA41GD0ea4r/01gwDGIbgJp629q+g30HkbmMEA3RO2rR+saROHRh5d65sNW3w1/LmL6ivg5yasaw1L4qwxvTKN6w2oPqZwhy2MO95rrkOq2ZEBGU0Z/tFk/FpKH7p2xDGVOwNJReNgA8bdWog7ZYnt855KLFOf02pWd2uF2oDra47g3QFZKoyHkSWSQq8iwDolVnrFujsI57DgwdatWKgdnk9eyXyps4T/+bfpYM3tVytOhrAcnmzUUNpKwCa8AIvZ274WsSfeWrvgQK6uWVFR4s56DGxdxOTysJX8sVigV+5lk3NJer1W8fTmfpMqOX8ANAWIwsx/r69QflV3HMi0XoKgUbR/VquCOiSFJUHmiINocfF2Lh04y5/u9nUr+2LjQkJik2QUcYejoK7qnpjApZN86TmqHfNeT02Tc8quGaeupxOUkdYUe33rq9dbQLZGDdB85g1BHCKw0m0B9r23vQD/WdV3vCR3CiShKxst2LKzxm3hoZzIvc5/X3FgVbACO59u+gSIj06fVkLOHI7wKaBQOYLSdmTnER6uVRBs7XftRKTaoo1CNXT1Qvr6kvz7Bov/x72Jt+yxK/FZTLn7QA7BrTm2/twkuELjwx/j+zVUWWq08dS6JDGzpDllknq7KKMA92F6wU2lAF44Y0peisXB6awY6rjY0Myo40Z1QP5utpiktHE1z+/e4c/3+FP+mdwr+T7MAOJn+JehxTaOxpEVWeeKFXhiobX3QsX4Ige84Ndm8236CP3OYUtk2gV4NSMT6Jkj9Ab++MP8jjsuL3FB+TO7RSjbCrpMi1N9R3LhGMapmGoSUebYEYiLZIVhcTfkgq/1bmiKo7ZyAFO3t+knfuX91l2nxU43Sr8CJ0HnUUWthQ6oK9LITN7jibzv3BjvCCJln+RWf7rr79yLHZQF9cXrXH9h7L9V+Tf4fe4DEDi4C7h34oTTkIrDrSrEe+45/fqffXS223ASRs9QLxV2Rh8PlOIm9iwra/2o7fN6zpg7+aC196ZoKMF86/43x8lKFvhDDWNh8ypIEBRIYfOXsZyLiUmcekDSTgyuRKmeQ4O7+8oVfaAiyGTp4j2WTvogi9Q/syTISy7V5leNDuWEPNxqgZyRIV7HTJwiKEi4VbNkLsbG7JgyguLYwgylG38yBJhWr3DPzLM4gcVBwkmy1MfGaJb+hHURWcgG+UijmG9UcU98EMtyqAxP1Dx7NbRGyZR6B8UfmbedCPQjacF4VZI2RjdGwm7+vW8RSrJdha8u8pzesf130TXpQ7KhCyepZGIr6tCoFVTU6qMnxsB2rxzFUO6JZK1BD2EJdfDOxJq1/ICvxy192HrTQ+B8JVNDQYHOrqWmK3C/WIGgQ4xViTdCPUF6o8/mnR3Ymh/cECrturwwKI0aBEKSDsdRqEOdEvXmsWadkohDu85R7E7kdbfpgD707VIkNfHOVb1R3QANMSKm48GOmfhym9Ebaj5EvNRf/x6fR32U4C78gQ0T5CnQX9WZimLPqCpI1QNtOgypdQpT+0DcI3X/dlV/H4Dfbq6vg8EmhJyEAVaxz560wd0q2wX8oDmoPC7wkz5Hv4O8TF5almrDkYjoVPdgJNR+9cg0OS06AEzVzCgH+CoG4jYYps3daXe6QGLbKX7M6/g9CHVIfslehjoa5MyzAT2r8jgMn8C4SUagdZl6rMAqhSsnMaYkAGgaQWo1m6s0HhoRVd1DO5gZzyHwrPWdc7cRzBwcCc1bChrTbfpgxgG2hDsDOjdgOpAigATWDe3blioFZm0UoQWggGN1YUER0p+GyrvwudmUysKVZ8x7BZDaux9wXCmYu0JTKI50OQR3WPeUrerZvGYvgPjTS3RsS7jPo2VhZrDLtKYMfw4+FnMgg9INKgwqvjNYJ0TFNk7TiMJm8WzQNuvNxGmlMzyUpkHDOtoV2djCpg/Zll9YOs1a4zDvnugP5ugzBU4ZM1eSTJ0H3xRNTXFPbduywFH7A+nRY8owCGJJhovb9w72Q80VXTttjkmsbAgEjNaeB6/eZnmsYxdTZVTHZ9tm8W9jSqaiT7YCRYMaHz45/cySVvKg8yeKVZeYaSATZCUW3fEZCPRdYkPRrn0Thv54HuQAW9YKijqbPkivk8mDOvpp65Am9w+tP1oAfHuiCZgEQORIa+9M9hmMDc8tQy5/tXTV66jU6YAmCvpt5trSm8werHBZRqINGp2tK4N/pRbJ/Qxzc5CHMq5i6XOgo+npsSk8kBuPrvqUtC0QRDUJLYRfp8qwJfwkbZbggRcVCbSmHaDw340I8etTKBfW5MdmEBAac2J58GwJjeBdvANXzDbaItJOYSJzS48UIgof6enSSpdmb5oa1UVSDR20isSyZBmldASJLKqS9E1nYB+vUzbby34Hv+m/ABbMOp4UjMaX+sgYv6i29kZGdNztWs5oDr8ozlamTwzpJKQ/dV27aCLDClltxT6Evi5LLUnJhvVb2e2cpeoug94PHNaH0PVoZySZWiVFazSrhgpET3l7tKu0+aExXMxs51cxfNzYTf9gGXxjAHMdKpNsYjR48/PU/N4ia9MF839INi6TRN2ALcNAAda9cY7NcOKUQiJ8FqujWDSgxKvA16LmImo4JaaZSu7kVJZusmSLiF0UskVh2h4DkqBu9WkGNDuWireSJoFG1OwovYI0BGcnY8pbEr8ijV9zg2oU1fVhOhP3c5jz3Vbs6vf8yuYWaKE/en0ywHVwZeG0dEk0m0+DNr3qanFG/0Ik02s8D9a85At6WJV/NrTfpmGGGQaOqkjjFB11F/Ow4KkjLojq5hEJ3FnXNVAB7VMVDdrG2td//ibWYGVsbYWxLQ1m7ctWPFc8/2cKhNfqgHVAbFb0RifzLD5uNAV3yei9UmodR72VvzqPA+VYc7EbpSxYlMqP5dWC2kpGEyuh4Wzd9+baJWld5OIATKoxlRHjzNuRE47BF3B2BU2MLfbmql7H0x1E7U121f8vljQWBhaPBn7/vsO0JUYvGdjLXNpYjnh8sBt2lDPKNP+psgOgbCFdrrkZ1yXSjc1StyD4TvWmCQ6tK1O6lNjGPXwHq80ojqyi8hbnbmSLYleho8t/s91ddObWsv47Zr44pO4TBnqXw/70W1JbeQrodI4uM+0GNzFLa/Ur7+aYLw0W2PibxEYM8qqtCFdiWZPtbbqAFtUzakT4dqQgn1XHh6SrPEtkn89/L0S7gonxogv2TZwdPkWvuTUdWw914++Ub+zk2rdwh9Vh3NG7oFBu+VRs+lCOMK9Y0CHTlOa0Kq/V4MbhUlHgdy4VnuxUhB8i3U6BFMcLio0u84GxrDmMooAaCkQM3Ke7ykdx0tW2wELmMZ+PO/7B9ybTIZ+AQqd/tO2BkyxZGBR9+l/Mxs3bVhbsw/Sp+hSL/xqV5ygzJQMQ4yqh72LB0FZuxfFKuz+QgrTmjS/vW6IUnLgyxbBBWFrJ9vtR7eBdhnijANdwkp6h9Pz3p+b8IHIJ3SNDA0upXvn9/KitRWLafS0rcwL18pF7RdgHGYxq/cqrJ2T2ZznBbnraN3elPH//To6zirGHFGMuKrhzdD3cHN7zXq+Q6BNRXNsl7Yu0DVhlHFjCCusrQeMqin6u0i55u0S/xSAS3pnaA2dWBKnZAKWp0UpZnYrD7HRxlTX7bdTdwXwFewr12uf32dK2eTtMz7He9BH+dFNRizmtMr3xfCduxQwvBTXZs5lDhJAQjbbBumIexc43Lb1M0mj4UmH+JctxtZfq1olzd74HWvqthdd24W6oXxa11eHGjIbonO/UuNDr45ufOPaL9aROOAieacO0epY4dAcdJk/BV6HgozHrg88lg+9Du+wsrevKhtzDgP90LinMaDv7Z5zG+fQUQjueLyFcBvI+rbmumsxTGV3lGqLZFypo42hS2xFwt3icKlEJvjGdmWwe0QncxyEllyiHZ3M87mYb3iIS1EANAWufTi7MwAr0RboTb1T77y55BvfbXvF6Gr7+kcxyJvjBA6mskLo7jtzDXYEhL7bE1Sy3uCHsmjKB4HoaelAni+EDAktFQKNW09XfA5JH2GdNl0apKNVwA3GT4Gpjo1JtaD8LjnQVx5oUiHFIOPfClSfig7QAH23f23FdM45y/rv78MeYh+s9aMtUSdtYYzEfWgKv6WBNY2fWnX9je2W/1dQFc6noHaPTYjyNDLtVx0lfyeWTYWhm+2o9UBra/IW+zrw+8V6G9+g7h8veK2AGMTZRJ/DxhDC/1U7tYR15pWO7trawh0N4jvp/JrKV4UjHRXf29GrjuZ41plahWnmZvppCSHZz4AWWRB5JvbgHaAbHY074NV7p+haNMI9PmZhjfuwQLd8rQjQnQi76ly6f4HfIhdiN1atMcceKHif+b3JVXZ/X6iHsLY0qAtwm6KG7H3b4Wl6crGmSskHtskpT85iXVjF9z99wM3vy3a66f3GSzRWtLsIReC831N6vKh3cQv7XowfPWwKrTnUvFJJHUyvV92vRFHibB4MF8aGPlHoLqbivnVoHfUneREN6yWXctW8PWESTcKAob8HupArVrba6GgbsBDQdcBiQkFMh/uNJ6itOei2hRb3kiBrjCM3BHLCKRkOtD5Y7B21KBT/qqPvE+anl4Fo9cJ17sYyXG5ArqFs/POgFZqrDrMaLlQYkfN4ImdAWx2N+mLmSA9iHJc18TGFRnX4cwoJUj5YuHu8e2f3vImKGCXfitPuwrHMOjy86u5KOlxAAzKQpYC9wxdb358k3GoGFX9MR185PxqcrrCkUk03fVsuPNAFW70BI4B7kXxUulouZXA1j/ej7bfGiXYiz+5VdWzNssygnb6zDkxLzQ/VdSTkHX8Vad9VUC17kqjeL2q8Dre9hDa06dVV0NhMbc1i6WjrplE/8Hkba44vfwrK3Yb86KjuMGcmyxjUVbWsDt/ViXZ5BdUG6AEkRBLDq37zQjXSvQ4sqo7Wa0mfxfLgBECLoktIY4qlcJvoNRVjAfcc+gFcezF6kozhwZukWS/pXy13tqaXKM2lBrJhptsQl0Y3n7qK7qvcC3QiHJdatlPgDD0VdqC31FDavPXf9q5L1r27cqoDN28rAphxE4qFrf0wquN/vUmXneICnpLy1+Ag0AFeue2Pv1d1xXOXNa2y4EZgTWG4ktW93dmgGzq1HGgY0tF0RYWTfxXIbfopYOzKsDJBcFYkFRfhjQWA+dF2g7wFlFPf1zwrzKbqG6+jN2C1Ka/UXT21MkxMe8meQvTYfWxskJcmJgcI0aXoGGrsastKae/1qz9isRvyhuaFGMrkIfZ4LaCSTm+FcDt9uM34Cs8qUe1Ms8eT7bmRiX/xP58ani9Fx9Z/Y82i4iYfBQ2fByQmWpsu5mJBhR0m91G/p/ItKs3k2j16S95o4f8qj+xIstuft2QpwDpRrEO4qVBXqyTtc4f7bzYb6V6UuuWOixXWN1LdkWp15JgVhDuJU3rzI9AND8nBXVGPbnBnK7uXYfdmV+AraDaLpli1VTnT7QJiqY/oOM5lyGyBAO4dM0DCEp2wKpdL7DhcajzVJEnTfrM2QIRnbqjMto/Jj91trbOmvlHKBxo+hFKZ7VJ6X9hiPpeLuafdhiplvlTxfhK5wEohzS63Nk3NS83ukIgd3VJHpphlMf/KN71R31KWrbLs9IayrOOjnT74VlZnD63Qa+2Ja5WwN3uoY38shJR68O5vELvBbWz/8oEbqp7dwiggtgNvBofolEMjgRfA+WXveAzRGvUuCIebpgH6b1XdO534C1TP/wNCXZN/Z+ADr3bTaICBBlsQJ9zW9EWniEKdnQl1mh0hziff43zIbYIjb954/u1jX+IsoB/qs/QHRj1F9dq3On9ZaR/qAvsJI6wEP1Kak2NvnXx+a/zPGvBCUAMMtG1YJU8+1ClQU2jxPjtadODVBAjgZe/o/ZqX0lXqFBAtmoiiLF2jzrFIH+6vh7OVR6TXGF4UZBBntvH30fquDyc9hDIFbxTzvIhyhX9KW4tXXgAw9AZJ24wSu9DHEVuUi0ydcoO+F1mnr2ISz3GITrlF4XDihLAWpa2FY5kk5D9MmrrIli9zwX++zX+VNQIwdEfTYR+kphcA/iNKHOKde/gVeQV9Mk4Ax59X385IPe4xHHN1oXt7iZ9xMY77nFrRvkJfHW/3/itCjPfjO2ZGhzuuj50mnEEzHGOgToMO4OcsvIooHX2MX/zituq/y/b9/CnBqV4+QP8eRi93IvDfjjYcu9/Q2WoLIvtUvUQkDK8MNPyD/iT0d3z9fJmBHxGulxn/D5olIqnw71UJAAAAAElFTkSuQmCC" alt="AI for Data – Data for AI" width="119" height="40"></a>
+</header>
+
+<p class="privacy panel"><strong>Demo only. Your text is not stored.</strong> The model runs on this Space's server, not in your browser. The text is sent there only to find the PII, and the app does not store it or send it to any other service.</p>
+
+<section class="model-strip panel is-loading" id="model-strip" aria-label="Base model and status">
+  <div class="model-card">
+    <span class="model-kicker">Base model</span>
+    <div class="model-name-row">
+      <button type="button" class="model-trigger" aria-describedby="model-pop" aria-expanded="false" id="model-trigger">LFM2.5-Encoder-350M-PII-Detector</button>
+      <span class="model-variant">350M parameters</span>
+      <span class="model-variant">CPU only</span>
+    </div>
+    <div class="model-pop" id="model-pop" role="tooltip">
+      <h3>LFM2.5-Encoder-350M-PII-Detector</h3>
+      <p class="pop-lead">Made by Liquid AI, not by AI for Data. This demo uses it as its base model.</p>
+      <dl>
+        <dt>Type</dt><dd>Bidirectional LFM2.5 encoder with a token-classification head</dd>
+        <dt>Size</dt><dd>354M parameters, run in f32 on a CPU</dd>
+        <dt>Detects</dt><dd>40 PII types in 16 languages</dd>
+        <dt>Decode</dt><dd>The model's own hybrid regex layer adds checks for formats such as email, IBAN, card numbers and JWT</dd>
+        <dt>License</dt><dd>LFM Open License v1.0</dd>
+      </dl>
+      <p class="pop-links"><a href="https://huggingface.co/LiquidAI/LFM2.5-Encoder-350M-PII-Detector" target="_blank" rel="noopener">Model card</a> · <a href="https://huggingface.co/LiquidAI/LFM2.5-Encoder-350M-PII-Detector/blob/main/LICENSE" target="_blank" rel="noopener">License</a></p>
+    </div>
+  </div>
+  <div class="load-block">
+    <div class="load-meta">
+      <span id="status" role="status" aria-live="polite">Connecting to server…</span>
+      <span id="load-percent">0%</span>
+    </div>
+    <div class="load-track" role="progressbar" aria-label="Model loading" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="load-progress"></span></div>
+  </div>
+</section>
+
+<main>
+<div class="pii-workspace">
+  <section class="workspace-card input-panel">
+    <div class="panel-header">
+      <div><h2>Text</h2></div>
+    </div>
+    <div class="editor-stage">
+      <textarea id="input" spellcheck="false" placeholder="Paste text containing names, emails, IDs, cards…">Update the account for david.miller@example.com: phone +1 415 555 0199, SSN 123-45-6789, card 4111 1111 1111 1111, passport C01X00T47.</textarea>
+    </div>
+  </section>
+
+  <section class="workspace-card output-panel">
+    <div class="panel-header">
+      <div><h2>Detected PII</h2></div>
+      <div class="view-toggle" id="view-toggle" role="tablist" aria-label="Output view">
+        <button type="button" data-view="highlight" class="active" role="tab">Highlight</button>
+        <button type="button" data-view="redacted" role="tab">Redacted</button>
+      </div>
+    </div>
+    <div class="output-stage">
+      <div id="output" class="output-body"><div class="output-empty">Detected personal data will appear here.</div></div>
+    </div>
+    <div class="controls">
+      <div class="legend" id="legend"></div>
+    </div>
+  </section>
+</div>
+
+<section class="examples-panel" aria-label="Examples">
+  <span class="examples-label">Examples</span>
+  <div class="example-list" id="examples">
+    <button type="button" class="ex active" data-t="Update the account for david.miller@example.com: phone +1 415 555 0199, SSN 123-45-6789, card 4111 1111 1111 1111, passport C01X00T47.">Contact & ID</button>
+    <button type="button" class="ex" data-t="Please wire EUR 5,000 to IBAN DE89 3704 0044 0532 0130 00 (SWIFT COBADEFFXXX) from account 0532013000. My server is at 192.168.1.42.">Financial</button>
+    <button type="button" class="ex" data-t="Deploy creds: AWS key AKIAIOSFODNN7EXAMPLE, session token eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3In0.dozjgNryP4J3jVmNHl0w, and DB password Str0ngP@ssw0rd!.">Credentials</button>
+    <button type="button" class="ex" data-t="Company laptop MAC 00:1A:2B:3C:4D:5E connected from IP 10.0.0.5 near GPS 37.7749, -122.4194.">Device</button>
+    <button type="button" class="ex" data-t="Send 0.5 BTC to bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh or ETH to 0x742d35Cc6634C0532925a3b844Bc454e4438f44e.">Crypto wallets</button>
+    <button type="button" class="ex" data-t="Follow username jsmith on https://social.example.com/jsmith or email j.smith@example.com for details.">Online</button>
+    <button type="button" class="ex" data-t="Patient Sarah Connor, date of birth 03/14/1985, record number 887766, diagnosed with Type 2 diabetes and prescribed Metformin.">Healthcare</button>
+    <button type="button" class="ex" data-t="Ich heiße Hans Müller und wohne in der Hauptstraße 5, 80331 München. Erreichbar unter +49 30 4505 1234 oder hans.mueller@example.de.">Deutsch</button>
+    <button type="button" class="ex" data-t="Je m'appelle Jean Dupont, email jean.dupont@example.fr, téléphone +33 6 12 34 56 78, IBAN FR76 3000 6000 0112 3456 7890 189.">Français</button>
+    <button type="button" class="ex" data-t="María García, correo maria.garcia@example.es, teléfono +34 612 345 678, tarjeta 4111 1111 1111 1111.">Español</button>
+    <button type="button" class="ex" data-t="Иван Петров, email ivan.petrov@example.ru, телефон +7 495 123 45 67.">Русский</button>
+    <button type="button" class="ex" data-t="我叫张伟，电话号码是13800138000，邮箱是 zhang.wei@example.cn，住在北京市朝阳区建国路88号。">中文</button>
+    <button type="button" class="ex" data-t="田中太郎と申します。メールアドレスは taro.tanaka@example.jp、電話番号は 090-1234-5678 です。">日本語</button>
+    <button type="button" class="ex" data-t="제 이름은 김민수입니다. 이메일은 minsu.kim@example.kr, 전화번호는 010-1234-5678입니다.">한국어</button>
+    <button type="button" class="ex" data-t="اسمي محمد أحمد، بريدي الإلكتروني mohammed.ahmed@example.com، هاتفي +20 10 1234 5678.">العربية</button>
+  </div>
+</section>
+</main>
+</div>
+
+<script>
+window.addEventListener("error", e => {
+  const el = document.getElementById("status");
+  if (el) el.textContent = "· ERROR: " + (e.message || (e.target && (e.target.src || e.target.href)) || "resource failed");
+}, true);
+</script>
+<script>
+(() => {
+  const wraps = [...document.querySelectorAll(".model-card, .has-pop")];
+  const popOf = (w) => w.querySelector(".model-pop, .hint-pop");
+  const place = (w) => {            // keep the card inside the viewport
+    const p = popOf(w); p.style.marginLeft = "0px";
+    const r = p.getBoundingClientRect(), over = r.right - (window.innerWidth - 16);
+    if (over > 0) p.style.marginLeft = `${-Math.min(over, Math.max(0, r.left - 16))}px`;
+  };
+  const set = (w, on) => {
+    w.classList.toggle("is-open", on);
+    const t = w.querySelector("button"); if (t) t.setAttribute("aria-expanded", String(on));
+    if (on) place(w);
+  };
+  wraps.forEach((w) => {
+    w.addEventListener("pointerenter", () => place(w));
+    w.addEventListener("focusin", () => place(w));
+    w.querySelector("button").addEventListener("click", () => {
+      const on = !w.classList.contains("is-open");
+      wraps.forEach((o) => set(o, false)); set(w, on);
+    });
+  });
+  document.addEventListener("click", (e) => { if (!wraps.some((w) => w.contains(e.target))) wraps.forEach((w) => set(w, false)); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") wraps.forEach((w) => set(w, false)); });
+})();
+</script>
+<script type="module">
+// The detector runs on the server (CPU, f32). This script drives the UI and asks
+// /api/detect for char-anchored PII spans; highlighting, the redacted view, the
+// legend, and stats are done here. Nothing is downloaded to the client.
+
+const DOMAINS = ["identity","contact","financial","credential","online","device","location","healthcare","org","special","legal","other"];
+const $ = (id) => document.getElementById(id);
+const escapeHtml = (v) => v.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+
+function setStatus(message, tone = "loading") {
+  $("status").textContent = message;
+  const strip = $("model-strip");
+  strip.classList.remove("is-loading", "is-preparing", "is-ready", "is-error");
+  strip.classList.add(`is-${tone}`);
+}
+function setLoadProgress(value) {
+  const pct = Math.max(0, Math.min(100, Number(value) || 0));
+  $("load-progress").style.width = `${pct}%`;
+  $("load-percent").textContent = `${Math.round(pct)}%`;
+  document.querySelector(".load-track").setAttribute("aria-valuenow", String(Math.round(pct)));
+}
+let READY = false, timer = null, version = 0;
+let lastText = "", lastResult = null, view = "highlight";
+
+function renderHighlight(text, spans) {
+  let html = "", prev = 0, i = 0;
+  for (const sp of spans) {
+    html += escapeHtml(text.slice(prev, sp.start));
+    const t = escapeHtml(text.slice(sp.start, sp.end));
+    const tip = escapeHtml(`${sp.label} · ${sp.type}`);
+    html += `<span class="pii is-animated" style="--pii-color:var(--d-${sp.domain});--i:${i++}" title="${tip}">${t}</span>`;
+    prev = sp.end;
+  }
+  return html + escapeHtml(text.slice(prev));
+}
+function renderRedacted(redacted) {
+  return escapeHtml(redacted).replace(/\[([A-Z0-9_]+)\]/g, '<span class="redacted-tag">[$1]</span>');
+}
+function renderLegend(spans) {
+  const counts = {};
+  for (const sp of spans) counts[sp.domain] = (counts[sp.domain] || 0) + 1;
+  $("legend").innerHTML = DOMAINS.filter(d => counts[d]).map(d =>
+    `<span class="legend-chip" style="--pii-color:var(--d-${d})"><span class="legend-swatch" aria-hidden="true"></span>${cap(d)}<span class="legend-count">${counts[d]}</span></span>`
+  ).join("");
+}
+function paint() {
+  const out = $("output");
+  if (!lastResult || !lastText.trim()) {
+    out.className = "output-body";
+    out.innerHTML = '<div class="output-empty">Detected personal data will appear here.</div>';
+    return;
+  }
+  out.className = view === "redacted" ? "output-body is-redacted" : "output-body";
+  out.innerHTML = view === "redacted" ? renderRedacted(lastResult.redacted) : renderHighlight(lastText, lastResult.spans);
+}
+
+async function detect() {
+  if (!READY) return;
+  const runVersion = ++version;
+  const text = $("input").value;
+  if (!text.trim()) { lastText = text; lastResult = null; paint(); $("legend").innerHTML = ""; return; }
+  document.querySelector(".output-panel").classList.add("is-detecting");
+  let data;
+  try {
+    const resp = await fetch("api/detect", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    data = await resp.json();
+  } catch (e) {
+    document.querySelector(".output-panel").classList.remove("is-detecting");
+    return;
+  }
+  if (runVersion !== version) return;
+  lastText = text; lastResult = data;
+  paint();
+  renderLegend(data.spans);
+  document.querySelector(".output-panel").classList.remove("is-detecting");
+}
+
+function detectSoon(delay = 350) { clearTimeout(timer); timer = setTimeout(() => detect(), delay); }
+
+$("input").addEventListener("input", () => detectSoon());
+$("view-toggle").addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  view = b.dataset.view;
+  $("view-toggle").querySelectorAll("button").forEach(x => x.classList.toggle("active", x === b));
+  paint();
+});
+$("examples").addEventListener("click", (e) => {
+  const b = e.target.closest(".ex"); if (!b) return;
+  $("examples").querySelectorAll(".ex").forEach(x => x.classList.toggle("active", x === b));
+  $("input").value = b.dataset.t;
+  detectSoon(40);
+});
+
+async function waitForServer() {
+  setStatus("Connecting to server…", "loading");
+  setLoadProgress(12);
+  for (let attempt = 0; attempt < 900; attempt++) {
+    try {
+      const r = await fetch("api/ready", { cache: "no-store" });
+      if (r.ok && (await r.json()).ready) return true;
+    } catch (e) { /* server still starting */ }
+    setStatus("Warming up model on the server…", "preparing");
+    setLoadProgress(Math.min(92, 12 + attempt * 4));
+    await new Promise((r) => setTimeout(r, 1000));
+  }
+  return false;
+}
+
+(async () => {
+  const ok = await waitForServer();
+  if (!ok) { setStatus("Model unavailable", "error"); setLoadProgress(100); $("load-percent").textContent = "Error"; return; }
+  READY = true;
+  setLoadProgress(100);
+  setStatus("Model ready", "ready");
+  await detect();
+  window.__PII_READY = true;
+})();
+</script>
+</body>
+</html>

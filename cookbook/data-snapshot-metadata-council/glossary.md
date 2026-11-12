@@ -37,6 +37,8 @@ description: Terms used in this guide.
 
 **Grouped split.** A draw of whole groups (households, documents) into the parts of a dataset, so that no group is divided between training and test.
 
+**Human adjudication.** A documented human decision about the evidence, scope, materiality, and appropriate treatment of a proposed concept or schema change.
+
 **Inventory.** The list of documents with their type, year, page count, text-layer status, and counts of tables and figures.
 
 **Issue.** The review pipeline's output: a detected problem with a category, a severity from 1 to 5, the current value, and a proposed value.

@@ -1,0 +1,243 @@
+---
+id: characterization
+title: "1. Artifact Characterization and Sampling"
+sidebar_label: "1. Artifacts and sampling"
+sidebar_position: 2
+description: Define the unit described, document its diversity, and freeze identifiable development and held-out evidence.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 1. Artifact Characterization and Sampling
+
+**Question:** What must the schema describe, and which artifacts provide credible evidence of its requirements?
+
+## Rationale
+
+An artifact is the item that receives one metadata description, such as a report,
+dataset, image, or recording. The artifact class is the type of item the schema
+will describe. Schema development can go in the wrong direction
+if reviewers and AI models are describing different things. A record for an
+entire report serves a different purpose from a record for one chart within it.
+Agreeing on what receives one metadata record and how that record will be used
+keeps discovery focused on useful information. Text and numbers can both be metadata; what
+matters is their role in describing the selected item.
+
+The examples selected for discovery also shape the schema. If they are too
+similar, important differences in purpose, language, structure, format, or source
+may go unnoticed. Selecting varied examples helps reveal those requirements.
+
+A schema that works on the examples used to build it may still miss information
+in other materials. Use a development sample to discover and refine fields, and
+reserve a separate holdout sample for testing the schema later. Keeping those
+items out of development helps reveal gaps that familiar examples may hide.
+Related items can still share terminology and structure, so record whether the
+two samples share sources, versions, or components of the same object.
+
+## Target state
+
+- A short characterization statement, written by the practitioner, defines what receives one metadata record, how the record will be used, and what information falls outside the task.
+- A fixed list of examples for developing the schema and a separate list reserved for validation record each item's identity, source, and reason for selection.
+- Development and holdout lists contain no shared items, and any shared sources are documented.
+
+## Prerequisites
+
+- Access to candidate artifacts and their source references.
+- A reviewer who understands the type of material and its intended uses.
+- Python 3.10 or newer only for the optional check in Recipe 1.3; no external packages are needed.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | A reviewer agrees on what each record describes and selects examples. |
+| **AI-ready** | A table records each item's identifier, source, and development or holdout membership. |
+| **AI-native** | Optional AI assistance suggests scope or sampling choices; its inputs and suggestions are recorded and checked by a reviewer. |
+
+:::info[Running example]
+**Teaching examples.** The Jordan food-expenditure chart, Afghanistan income
+table, and Russian fiscal chart carry forward into
+[discovery](./discovery.mdx) and [profiling](./concept-synthesis.mdx).
+:::
+
+## Recipes
+
+<Recipe title="1.1 Define the artifact class and descriptive scope" level="Foundational" skills="Domain reviewer; technical practitioner" time="30–60 minutes for a first statement">
+
+**Result:** A short statement defines what each metadata record will describe and what it should help people do.
+
+Use the filled [characterization worksheet](pathname:///cookbook-files/ai-assisted-metadata-schema-development/artifact_characterization.md)
+as a starting point for the statement. It is a teaching example prepared for
+this guide.
+
+**Input example.** The [Jordan chart](https://huggingface.co/datasets/ai4data/data-snapshot/blob/626f3c54ba6d8f6e0ba0795f9e544e24b2650faf/snapshots/refugee/027_Jordan-Emergency-Food-Security-Project_figure_001.png) shows food-expenditure shares.
+Its title describes the chart; the bar values are its analytical contents, and
+the parent-report title supplies context. Decide which of these belongs in the
+metadata task before proposing fields.
+
+1. Define the type of item that receives one record: a whole object or a component within it.
+2. State what people should be able to find, understand, or do using the metadata.
+3. Decide what information belongs in the description, what remains content, and what supporting context may be used.
+4. Record the reviewer and version. Check the statement against a contrasting item before accepting it.
+
+**Worked example.** The teaching statement makes these choices for the chart:
+
+| Question | Decision |
+|---|---|
+| What receives one record? | The chart, described so people can discover and interpret it. |
+| What belongs in its description? | Its title about food-expenditure shares describes the chart's subject. |
+| What is excluded? | Reconstructing individual bar values or a complete data series. |
+| What context may be used? | The parent report can supply context, such as Jordan, but that evidence must be identified separately from what is visible in the chart. |
+
+**Verification.** Another reviewer can use the statement to explain how the
+chart title, bar values, and parent-report information should be handled.
+
+**What this does not do.** The statement sets the scope for discovery; it does
+not prescribe the final field list.
+
+</Recipe>
+
+<Recipe title="1.2 Select varied examples for schema development" level="AI-ready" skills="Domain reviewer; technical practitioner" time="1–2 hours for a small accessible collection">
+
+**Result:** A documented development sample includes examples likely to reveal different metadata needs.
+
+A schema built from a few similar items may miss fields needed elsewhere in
+the collection. Select examples for the differences they expose; a spreadsheet
+is sufficient to record the selection.
+
+**Input example.** The study drew on tables and figures from humanitarian
+reports, policy research papers, and project documents. These materials differ
+in purpose and presentation, so selecting only one kind could hide metadata
+needs present in another.
+
+1. Identify differences that could affect the metadata, such as purpose, language, format, structure, or source.
+2. Inspect examples across those differences and select a development sample. Record why each group matters to the intended use.
+3. Save the selected items' identifiers or filenames, source references, and collection version so the same sample can be revisited.
+4. Note exclusions and poorly represented groups. Keep the selection fixed during development; document any later changes. Reserve other examples for validation in Recipe 1.3.
+
+**Worked example: sample output.** The output of this recipe is a register
+showing which artifacts were selected and how they are grouped. The table below
+reproduces three rows and five columns from the
+[teaching register](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv);
+the full download contains eight artifacts. The holdout row illustrates the
+assignment made in Recipe 1.3.
+
+| `snapshot_id` | `split` | `corpus` | `artifact_type` | `parent_document_id` |
+|---|---|---|---|---|
+| 027_Jordan-Emergency-Food-Security-Project_figure_001.png | development | refugee | figure | 027_Jordan-Emergency-Food-Security-Project |
+| 108733-revised-public-wb-unhcr-policy-brief-final_table_000.png | development | unhcr | table | 108733-revised-public-wb-unhcr-policy-brief-final |
+| protection_trends_paper_no_7_jan-mar_2016_final_figure_004.png | heldout | unhcr | figure | protection_trends_paper_no_7_jan-mar_2016_final |
+
+The identifier and sample assignment are generally useful. In this example,
+artifact_type and corpus record variation, while corpus plus parent_document_id
+identify a source group. Another collection can use different diversity
+attributes and grouping keys; it does not need parent documents. The script
+uses the literal split values development and heldout.
+
+The Data Snapshot study selected 35 tables and 35 figures from each of three
+institutional collections. Those choices illustrate one sampling approach;
+another use case may need different groups and counts.
+
+**Verification.** A reviewer can locate each selected item and explain which
+relevant differences the sample covers and which remain unexamined.
+
+**What this does not do.** Varied examples do not establish statistical
+representativeness. There is no universal sample size for this method.
+
+</Recipe>
+
+<Recipe title="1.3 Reserve a holdout sample and check for overlap" level="AI-ready" skills="Technical practitioner; evaluation reviewer" time="15–30 minutes with prepared lists">
+
+**Result:** A separate sample is reserved for validation, with any shared sources documented.
+
+The development sample is used to build the schema. The holdout sample is kept
+out of that work and used later to check whether the schema describes additional
+items adequately.
+
+**Input.** Use the development list from Recipe 1.2 and the remaining candidate
+items. For charts from reports, compare both the chart identifiers and their
+parent reports: different charts can still share a source.
+
+1. Select holdout items that reflect the intended use, including relevant variation beyond the development examples.
+2. Label each selected item as development or holdout. Keep holdout items out of discovery and field design until validation.
+3. Compare the lists and resolve any overlap so each item belongs to only one sample. Check related versions and shared sources too: two charts from one report, for example, may have similar content and presentation.
+4. Record what is separate and what remains shared. Testing new items from familiar sources supports a different conclusion from testing items from new sources.
+
+**Worked example: optional manifest check.** Download [check_manifest.py](pathname:///cookbook-files/ai-assisted-metadata-schema-development/check_manifest.py)
+and the full [source_images.csv](pathname:///cookbook-files/ai-assisted-metadata-schema-development/source_images.csv)
+into the same new working directory. With Python 3.10 or newer, run the command
+from that directory. If the interpreter is named python3, substitute that name.
+The checker reads the register and writes nothing.
+
+```bash
+python check_manifest.py source_images.csv
+```
+
+```text
+development: 6 snapshots, 6 parent documents
+heldout: 2 snapshots, 2 parent documents
+snapshot overlap: 0
+shared parent documents: 0
+```
+
+No artifact or parent report is shared within this eight-item teaching excerpt.
+The source-group comparison uses corpus and parent_document_id together.
+Zero artifact overlap alone would not establish separation from shared origins.
+
+:::note[Study sample]
+The full study used 210 development and 202 holdout snapshots, with zero
+snapshot overlap and 65 shared parent reports. Its evidence concerns new
+snapshots within those reporting sources; it is not a document-disjoint test.
+:::
+
+**Verification.** No item appears in both samples, and any shared sources are
+recorded. The optional checker should print the four lines above and exit with
+status 0. Invalid input or a path error produces status 2. Those counts describe
+only the excerpt; full-study findings are reported separately above.
+
+**What this does not do.** Checking overlap does not establish that either
+sample covers every metadata need. Once holdout findings are used to revise
+the schema, a further independent test requires fresh examples.
+
+</Recipe>
+
+## Implementation options
+
+A spreadsheet and manual inspection are sufficient for a small collection.
+For larger collections, programmatic summaries of known attributes can help
+identify groups to inspect, but their quality depends on the available labels.
+Select examples across differences relevant to the intended use, and group
+related items when the validation claim concerns new sources or origins.
+Parent-document grouping is one case-specific choice; recordings, records,
+or other artifacts may need different group identifiers.
+
+## Resources
+
+- The [characterization worksheet](pathname:///cookbook-files/ai-assisted-metadata-schema-development/artifact_characterization.md) supplies a filled teaching statement.
+- The [public Data Snapshot dataset](https://huggingface.co/datasets/ai4data/data-snapshot) provides the linked images and source metadata.
+- Dy & Solatorio (2026). *Artifact-Driven Metadata Schema Development: A Human-in-the-Loop Methodology with Multimodal LLMs*. Working paper. Sections 3–5 supply the methodological scope and recorded collection design.
+
+## Common mistakes
+
+- A containing-object description can obscure the individual artifacts that need their own records.
+- In the snapshot example, extracted data values can be mistaken for reusable descriptive properties.
+- Balanced group counts can be mistaken for statistical representativeness.
+- Separate items can still share sources, terminology, and structure.
+
+## Verification
+
+- Another reviewer can apply the scope statement consistently to contrasting items.
+- Selected items can be located, and the development sample's coverage and exclusions are documented.
+- Development and holdout samples contain no shared items; any shared sources are recorded.
+
+## Checklist
+
+<Checklist id="ai-assisted-metadata-schema-development-characterization" items={[
+  'The scope statement defines the items, intended uses, and exclusions.',
+  'The development sample covers relevant differences and records its sources.',
+  'A separate holdout sample is reserved, and shared sources are documented.',
+]} />
+
+Use the scope statement and development sample in
+[Chapter 2](./discovery.mdx); keep the holdout sample reserved for validation.
