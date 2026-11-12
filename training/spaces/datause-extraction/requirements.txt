@@ -1,0 +1,4 @@
+spaces
+torch==2.12.1
+transformers==5.22.2
+gliner==0.2.30
