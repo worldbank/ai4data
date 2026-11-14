@@ -170,6 +170,17 @@ export const allCookbooks = [
     to: '/cookbook/ai-assistants-at-work/',
   },
   {
+    id: 'data-snapshot-metadata-council',
+    version: '0.1',
+    date: 'November 2026',
+    audience: 'Data scientists, ML engineers, and AI application developers',
+    title: 'Practical Guide to Refining Data Snapshot Metadata Extraction Policies with Model Councils',
+    description:
+      'Plan an experiment in which a model council proposes evidence-based changes to Data Snapshot metadata extraction policies.',
+    chapters: 6,
+    to: '/cookbook/data-snapshot-metadata-council/',
+  },
+  {
     id: 'ai-assisted-metadata-schema-development',
     version: '0.1',
     date: 'November 2026',
@@ -205,7 +216,7 @@ export function cookbookPage(pathname) {
 const allGroups = [
   {
     title: 'Data products that AI can use',
-    ids: ['ai-ready-dissemination', 'microdata-documentation', 'data-from-documents', 'data-snapshot-end-to-end', 'ml-ready-datasets'],
+    ids: ['ai-ready-dissemination', 'microdata-documentation', 'data-from-documents', 'data-snapshot-end-to-end', 'data-snapshot-metadata-council', 'ml-ready-datasets'],
   },
   {
     title: 'Metadata and interfaces',

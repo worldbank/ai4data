@@ -1,0 +1,114 @@
+{
+  "title": "Figure 1: Labor force status after the COVID-19 outbreak (18-64 years)",
+  "document_label": "Figure 1",
+  "subject_domains": [
+    "labor force",
+    "employment",
+    "unemployment",
+    "COVID-19"
+  ],
+  "subject_summary": "Percent of the population that was employed or unemployed after the COVID-19 outbreak, comparing Urban Nationals and Shona across periods from May-June 2020 to April-June 2021.",
+  "variables": [
+    {
+      "name": "Employed",
+      "unit": {
+        "source_text": "%"
+      },
+      "axis_roles": [
+        "y_axis"
+      ],
+      "statistical_forms": [
+        {
+          "source_text": "Percent of population",
+          "normalized_value": "percentage"
+        }
+      ]
+    },
+    {
+      "name": "Unemployed",
+      "unit": {
+        "source_text": "%"
+      },
+      "axis_roles": [
+        "y_axis"
+      ],
+      "statistical_forms": [
+        {
+          "source_text": "Percent of population",
+          "normalized_value": "percentage"
+        }
+      ]
+    }
+  ],
+  "dimensions": [
+    {
+      "name": "Period",
+      "categories": [
+        {
+          "source_text": "May-Jun '20"
+        },
+        {
+          "source_text": "Jul-Sep '20"
+        },
+        {
+          "source_text": "Oct-Nov '20"
+        },
+        {
+          "source_text": "Jan-Mar '21"
+        },
+        {
+          "source_text": "Apr-Jun '21"
+        }
+      ]
+    },
+    {
+      "name": "Population group",
+      "categories": [
+        {
+          "source_text": "Urban Nationals"
+        },
+        {
+          "source_text": "Shona"
+        }
+      ]
+    }
+  ],
+  "population_group": "Urban Nationals and Shona",
+  "visualization_types": [
+    {
+      "normalized_value": "line_chart"
+    }
+  ],
+  "temporal_coverage": {
+    "period": {
+      "start": "2020-05",
+      "end": "2021-06",
+      "relation": "interval",
+      "precision": "month",
+      "source_text": "May-Jun '20; Jul-Sep '20; Oct-Nov '20; Jan-Mar '21; Apr-Jun '21"
+    }
+  },
+  "geographic_coverage": {
+    "scope": {
+      "source_text": "Kenya",
+      "name": "Kenya"
+    }
+  },
+  "provenance": {
+    "sources": [
+      {
+        "name": "Kenya COVID-19 Rapid Response Phone Surveys (RRPS)"
+      }
+    ]
+  },
+  "languages": [
+    {
+      "tag": "en"
+    }
+  ],
+  "data_collection_methods": [
+    {
+      "source_text": "Phone surveys"
+    }
+  ]
+}

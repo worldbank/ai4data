@@ -1,0 +1,178 @@
+{
+  "title": "Table 3: Rural farm households, IFLS",
+  "document_label": "Table 3",
+  "subject_domains": [
+    "agriculture"
+  ],
+  "subject_summary": "Regression results for rural farm households, with log PCE as the dependent variable and monsoon onset terms estimated under one- and two-lag specifications.",
+  "variables": [
+    {
+      "name": "Log PCE",
+      "analytical_roles": [
+        "outcome"
+      ]
+    },
+    {
+      "name": "Monsoon Onset",
+      "analytical_roles": [
+        "predictor"
+      ],
+      "statistical_forms": [
+        {
+          "source_text": "Coef",
+          "normalized_value": "coefficient"
+        },
+        {
+          "source_text": "SE",
+          "normalized_value": "standard_error"
+        }
+      ]
+    },
+    {
+      "name": "Onset squared",
+      "analytical_roles": [
+        "predictor"
+      ],
+      "statistical_forms": [
+        {
+          "source_text": "Coef",
+          "normalized_value": "coefficient"
+        },
+        {
+          "source_text": "SE",
+          "normalized_value": "standard_error"
+        }
+      ]
+    },
+    {
+      "name": "Onset cubic",
+      "analytical_roles": [
+        "predictor"
+      ],
+      "statistical_forms": [
+        {
+          "source_text": "Coef",
+          "normalized_value": "coefficient"
+        },
+        {
+          "source_text": "SE",
+          "normalized_value": "standard_error"
+        }
+      ]
+    },
+    {
+      "name": "Onset quartic",
+      "analytical_roles": [
+        "predictor"
+      ],
+      "statistical_forms": [
+        {
+          "source_text": "Coef",
+          "normalized_value": "coefficient"
+        },
+        {
+          "source_text": "SE",
+          "normalized_value": "standard_error"
+        }
+      ]
+    },
+    {
+      "name": "Observations",
+      "statistical_forms": [
+        {
+          "normalized_value": "count"
+        }
+      ]
+    },
+    {
+      "name": "Households",
+      "statistical_forms": [
+        {
+          "normalized_value": "count"
+        }
+      ]
+    },
+    {
+      "name": "R² (within)",
+      "statistical_forms": [
+        {
+          "normalized_value": "score"
+        }
+      ]
+    }
+  ],
+  "dimensions": [
+    {
+      "name": "Lag specification",
+      "categories": [
+        {
+          "source_text": "One lag"
+        },
+        {
+          "source_text": "Two lags"
+        }
+      ],
+      "presentation_roles": [
+        "column"
+      ]
+    },
+    {
+      "name": "Regression lag",
+      "categories": [
+        {
+          "source_text": "Prior year"
+        },
+        {
+          "source_text": "Two years ago"
+        }
+      ],
+      "presentation_roles": [
+        "row"
+      ]
+    },
+    {
+      "name": "Estimated effects",
+      "category_groups": [
+        {
+          "name": "Early onset",
+          "categories": [
+            {
+              "source_text": "Prior year"
+            },
+            {
+              "source_text": "Two years ago"
+            }
+          ]
+        },
+        {
+          "name": "Late onset",
+          "categories": [
+            {
+              "source_text": "Prior year"
+            },
+            {
+              "source_text": "Two years ago"
+            }
+          ]
+        }
+      ],
+      "presentation_roles": [
+        "row"
+      ]
+    }
+  ],
+  "population_group": "Rural farm households",
+  "visualization_types": [
+    {
+      "normalized_value": "table"
+    }
+  ],
+  "languages": [
+    {
+      "tag": "en"
+    }
+  ],
+  "interpretive_notes": [
+    "See notes to table 1."
+  ]
+}
