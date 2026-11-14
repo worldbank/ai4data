@@ -213,8 +213,9 @@ Each capability is an optional extra.
 | `metadata-reviewer` | The five-agent review pipeline, combined with one provider extra: `openai`, `anthropic`, `azure`, or `ollama` |
 | `data-snapshot` | Figure and table images from PDFs |
 | `data-snapshot-metadata` | Validated Data Snapshot Metadata Schema v1.4 metadata from snapshot images through OpenRouter or OpenAI |
+| `data-snapshot-metadata-reviewer` | Local Streamlit editor for human review of snapshot metadata, with separate reviewed JSON outputs |
 
-For the Data Snapshot pipeline, combine `data-snapshot` and `data-snapshot-metadata`. These extras are absent from `ai4data==0.1.0`; until a release includes them, follow the [source installation instructions](src/ai4data/data_snapshot/README.md#installation). In this checkout, `all` includes DocLayout-YOLO and snapshot metadata extraction. TF-ID is installed separately; the [usage guide](src/ai4data/data_snapshot/README.md) describes its dependency requirements and the three commands.
+For the Data Snapshot pipeline, combine `data-snapshot` and `data-snapshot-metadata`. These extras and `data-snapshot-metadata-reviewer` are absent from `ai4data==0.1.0`; until a release includes them, follow the [source installation instructions](src/ai4data/data_snapshot/README.md#installation). In this checkout, `all` includes DocLayout-YOLO, snapshot metadata extraction, and human metadata review. TF-ID is installed separately; the [usage guide](src/ai4data/data_snapshot/README.md) describes its dependency requirements and commands.
 
 <details>
 <summary>Example: review a metadata record</summary>

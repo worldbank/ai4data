@@ -8,7 +8,7 @@ description: This cookbook helps developers and data curators extract analytical
 
 # Practical Guide to the Data Snapshot End-to-End Workflow
 
-**A cookbook for developers and data curators working with institutional PDFs.** Version 0.1 (working draft), October 2026.
+**A cookbook for developers and data curators working with institutional PDFs.** Version 0.1 (working draft), November 2026.
 
 :::note[Working draft]
 This guide is working material of the AI for Data – Data for AI program. It does not represent official World Bank Group guidance or policy. The [contributing page](./contributing.md) explains how to report corrections and propose reviewed examples.
@@ -26,6 +26,8 @@ The result is a set of PNG images and Schema v1.4 JSON files. Numerical transcri
 - A developer can install optional dependencies and run commands; a curator can inspect institutional charts and tables.
 - The sample PDF used in the tutorial is downloaded from its publisher following [chapter 1](./preparation.mdx).
 - Metadata execution requires an authorized provider key and credits. Snapshot-only execution does not require that key.
+
+[Chapter 9](./metadata-reviewer.mdx) uses saved image–JSON pairs and needs only the reviewer extra. It can be completed without detector weights or provider credentials.
 
 ## First steps
 
@@ -50,6 +52,9 @@ The shortest path uses the recorded example's default configuration and the two 
 | [6. Recovery and controlled execution](./operation.mdx) | How can the pipeline be operated reliably? | Partial failures, skip rules, safe reruns, and request scope |
 | [7. Models and settings](./models.mdx) | Which models and settings are available, and how are they selected? | Detector parameters, benchmark results, and metadata provider selection |
 | [8. Extraction improvements and future models](./roadmap.mdx) | How can we improve snapshot extraction performance? | New detector benchmarks, relevance filtering, and context association |
+| [9. Metadata review with the local editor](./metadata-reviewer.mdx) | How can a curator review and update data snapshot metadata? | Optional app walkthrough for local editing, schema validation, and separate reviewed JSON records |
+
+[Chapter 9](./metadata-reviewer.mdx) demonstrates a correction and a separate reviewed output using the recorded chart and table. It can be followed directly after chapter 4.
 
 ## Maturity levels
 
@@ -69,6 +74,8 @@ The recorded detector output contains seven figure-labelled candidate images and
 
 The figure and table data snapshots are actual production outputs; their metadata records come from separate selected-image requests. The combined section shows the expected output layout for both stages. Other detectors are documented but not benchmarked here. The second-stage classifier and improvement roadmap are proposed extensions. The example was run on 30 October 2026 using DocLayout-YOLO 0.0.4, CPU, 300 DPI, and the unchanged packaged OpenRouter preset. The two JSON files are unedited model responses, with interpretation findings in [chapter 3](./metadata.mdx) and review observations in [chapter 4](./review.mdx).
 
+Chapter 9 adds a local editing demonstration recorded on 11 November 2026. Its reviewed chart record removes the axis-label title and preserves the other canonical metadata values. This single correction is separate from the two unedited responses and does not establish that every field has been audited.
+
 ## Files
 
 | File | Used in |
@@ -79,6 +86,9 @@ The figure and table data snapshots are actual production outputs; their metadat
 | [policy_brief_on_shona_community_from_stateless_to_citizens_table_000.json](pathname:///cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.json) | Chapters 3 and 4 inspect this unedited table response and its relationship to the visible rows and year columns. |
 | [policy_brief_on_shona_community_from_stateless_to_citizens_table_000.png](pathname:///cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.png) | Chapters 2 to 4 use this selected demographic-table data snapshot as the second metadata input. |
 | [shona-page-4.webp](pathname:///cookbook-files/data-snapshot-end-to-end/shona-page-4.webp) | Chapters 2 and 4 use this source-page image to locate both artifacts and identify captions and source notes outside the data snapshots. |
+| [metadata-reviewer-dark.png](pathname:///cookbook-files/data-snapshot-end-to-end/metadata-reviewer-dark.png) | Chapter 9 shows the editor with the original chart and generated metadata. |
+| [metadata-reviewer-reviewed-dark.png](pathname:///cookbook-files/data-snapshot-end-to-end/metadata-reviewer-reviewed-dark.png) | Chapter 9 shows the reopened chart after the title correction has been saved. |
+| [reviewed-figure-001.json](pathname:///cookbook-files/data-snapshot-end-to-end/reviewed-figure-001.json) | Chapter 9 provides the saved title correction as a separate example output. |
 
 ## Related resources
 
@@ -96,4 +106,5 @@ World Bank. 2026. *Practical Guide to the Data Snapshot End-to-End Workflow.* Ve
 
 ## Version history
 
+- **November 2026 update.** Chapter 9 demonstrates the local review app, a recorded correction, and separate reviewed output.
 - **0.1 (October 2026).** This first draft documents the tutorial example and production interfaces, with proposed improvements explicitly identified.

@@ -1,0 +1,90 @@
+{
+  "subject_domains": [
+    "Employment",
+    "Labor market"
+  ],
+  "subject_summary": "Percentage of the population that is employed or unemployed across successive periods for Urban Nationals and Shona.",
+  "variables": [
+    {
+      "name": "Employed",
+      "unit": {
+        "source_text": "%"
+      },
+      "axis_roles": [
+        "y_axis"
+      ],
+      "statistical_forms": [
+        {
+          "source_text": "Percent of population",
+          "normalized_value": "percentage"
+        }
+      ]
+    },
+    {
+      "name": "Unemployed",
+      "unit": {
+        "source_text": "%"
+      },
+      "axis_roles": [
+        "y_axis"
+      ],
+      "statistical_forms": [
+        {
+          "source_text": "Percent of population",
+          "normalized_value": "percentage"
+        }
+      ]
+    }
+  ],
+  "dimensions": [
+    {
+      "name": "Time period",
+      "categories": [
+        {
+          "source_text": "May-Jun '20"
+        },
+        {
+          "source_text": "Jul-Sep '20"
+        },
+        {
+          "source_text": "Oct-Nov '20"
+        },
+        {
+          "source_text": "Jan-Mar '21"
+        },
+        {
+          "source_text": "Apr-Jun '21"
+        }
+      ]
+    },
+    {
+      "name": "Population group",
+      "categories": [
+        {
+          "source_text": "Urban Nationals"
+        },
+        {
+          "source_text": "Shona"
+        }
+      ]
+    }
+  ],
+  "visualization_types": [
+    {
+      "normalized_value": "line_chart"
+    }
+  ],
+  "temporal_coverage": {
+    "period": {
+      "start": "2020-05",
+      "end": "2021-06",
+      "relation": "interval",
+      "precision": "month"
+    }
+  },
+  "languages": [
+    {
+      "tag": "en"
+    }
+  ]
+}

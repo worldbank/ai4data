@@ -75,6 +75,8 @@ The following examples connect the observed issues to the content that needs che
 | Raw chart JSON | The `title` field contains the vertical-axis label `Percent of population`. | Compare the title with the axis label and the printed caption. |
 | Table data snapshot, `table_000` | The five rows and two year columns are present; the caption and source note are outside the data snapshot. | Check whether the omitted context is needed to interpret the table. |
 
+[Chapter 9](./metadata-reviewer.mdx) presents an alternative way to perform this audit using the local metadata reviewer. This optional workflow displays the data snapshot beside editable metadata fields and saves reviewed copies separately from the generated JSON.
+
 **What this does not do.** Inspecting metadata does not automatically correct the JSON or recover information outside the data snapshot. Numerical observations are outside the schema and this cookbook.
 
 </Recipe>
@@ -82,6 +84,8 @@ The following examples connect the observed issues to the content that needs che
 After the two image–JSON pairs have been inspected, [chapter 5](./combined.mdx) explains how to run both extraction stages with one command for a PDF or directory of PDFs.
 
 ## Implementation options
+
+For side-by-side inspection and editing, the optional [local review app walkthrough in chapter 9](./metadata-reviewer.mdx) uses the existing `snapshots/` and `metadata/` directories and writes corrections to `reviewed/`.
 
 Numerical extraction and verification are later steps in the [document cookbook](/cookbook/data-from-documents/).
 

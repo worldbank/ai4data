@@ -1,0 +1,174 @@
+---
+id: metadata-reviewer
+title: "9. Metadata review with the local editor"
+sidebar_label: "9. Metadata review (optional)"
+sidebar_position: 10
+description: This chapter helps curators check generated metadata against an image, correct unsupported values, and save a separate reviewed copy.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 9. Metadata review with the local editor
+
+**Question:** How can a curator review and update data snapshot metadata?
+
+:::note[Optional chapter]
+This chapter demonstrates one tool for carrying out the review described in [chapter 4](./review.mdx). It can be skipped when metadata is reviewed using other tools.
+:::
+
+## Rationale
+
+Generated metadata is sometimes inaccurate and needs to be checked against the data snapshot. The local reviewer makes this comparison easier by showing the snapshot and the metadata fields in one view.
+
+This chapter provides a walkthrough of opening the files, checking and correcting a field, and saving a separate reviewed copy.
+
+## Target state
+
+- A separate reviewed JSON file contains the chosen correction and passes the app's checks for allowed fields and values. The file stores the metadata as named fields and values.
+- The saved record can be reopened beside its image and compared with the generated reference.
+- The image and original generated JSON remain in their input directories.
+
+## Prerequisites
+
+- Python 3.11 or later is available in an isolated environment, with a checkout of the repository for installation.
+- The chart and table reviewed in [chapter 4](./review.mdx) have matching metadata JSON files from chapter 3. The JSON must satisfy Data Snapshot Metadata Schema v1.4, which defines the allowed fields, value types, and validation rules.
+- A browser and a writable directory are available for viewing the app and saving reviewed copies.
+
+The exercise uses saved model responses. It requires no detector weights, provider credentials, or new metadata requests.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | A curator compares a data snapshot with its metadata and notes errors or unsupported values. |
+| **AI-ready** | The curator saves a correction that passes the schema check, retains the generated reference, and verifies the saved result. |
+| **AI-native** | An organization repeats quality checks and assigns uncertain records for further review. These practices require tooling beyond this local editor. |
+
+:::info[Running example]
+The exercise uses the chart `figure_001` and demographic table `table_000` from chapters 2 to 4. The screenshots show a local editing session recorded on 11 November 2026. The chart's generated title repeats its vertical-axis label, providing one finding to resolve in Recipe 9.2.
+:::
+
+## Recipes
+
+<Recipe title="9.1 Open data snapshots for review" level="AI-ready" skills="Developer and data curator" time="Ten minutes for setup and opening the existing outputs, plus installation time">
+
+**Result:** The editor displays each data snapshot beside the metadata to be reviewed.
+
+The app matches an image with its JSON by filename stem, which is the filename without its extension. For example, `chart.png` and `chart.json` share the stem `chart`. Each stem must be unique within its directory and subdirectories.
+
+The following source-installation command selects the reviewer's optional dependencies. Run it from the repository root in the Python environment prepared above:
+
+```bash
+python -m pip install ".[data-snapshot-metadata-reviewer]"
+```
+
+Use the existing outputs reviewed in chapter 4 under `output/cookbook-data-snapshot/doclayoutyolo/`. The app reads the images and generated metadata from their existing directories and saves reviewed copies beside them:
+
+| Directory | Role |
+|---|---|
+| `snapshots/` | The app reads the image files as visible evidence. |
+| `metadata/` | The app reads the generated JSON as the comparison reference. |
+| `reviewed/` | The app creates this directory on the first save. Its JSON filenames match the input images. |
+
+1. Confirm that the chart and table images are in `output/cookbook-data-snapshot/doclayoutyolo/snapshots/` and their matching JSON files are in `output/cookbook-data-snapshot/doclayoutyolo/metadata/`. The links below provide reference copies of these two pairs.
+
+   | Material | Image | Generated metadata |
+   |---|---|---|
+   | Employment chart, `figure_001` | [Chart PNG](pathname:///cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_figure_001.png) | [Chart JSON](pathname:///cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_figure_001.json) |
+   | Demographic table, `table_000` | [Table PNG](pathname:///cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.png) | [Table JSON](pathname:///cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.json) |
+
+2. Launch the reviewer with the existing image directory. It will read generated JSON from the adjacent `metadata/` directory and save reviewed copies in the adjacent `reviewed/` directory:
+
+   ```bash
+   python -m ai4data.data_snapshot.metadata_reviewer \
+     --snapshots-root output/cookbook-data-snapshot/doclayoutyolo/snapshots
+   ```
+
+3. Open the address printed in the terminal if a browser does not open automatically. The default address is `http://127.0.0.1:8501`. Confirm that two matching pairs are available. Use **Previous** or **Next** to select the chart `figure_001`, then inspect its **Generated reference**. The recorded chart JSON contains `Percent of population` as its title.
+
+Chapter 3 generated metadata for only two of the eight candidate images. Warnings for the other six images are therefore expected; the app excludes them from review. If the chart or table pair is missing, check its filenames and directory locations. Duplicate stems stop discovery because the app cannot choose a unique match.
+
+If reviewed files already exist, the app uses those copies when their items are opened. It starts at the first unreviewed item when one is available. A title correction already saved in Recipe 9.2 can be checked without repeating the edit.
+
+**Worked example.** The two recorded pairs opened with their original filenames. Before the first save, the chart appeared first and the toolbar reported zero reviewed records, as shown in the dark-theme screenshot.
+
+[![The dark-theme reviewer displaying the original chart and its generated title](/cookbook-files/data-snapshot-end-to-end/metadata-reviewer-dark.png)](/cookbook-files/data-snapshot-end-to-end/metadata-reviewer-dark.png)
+
+**What this does not do.** Opening a pair does not mark it as reviewed. The editor cannot reveal charts or tables that the detector missed or recover context outside the image. Those checks require the source-page comparison described in chapter 4.
+
+</Recipe>
+
+<Recipe title="9.2 Correct and save a metadata record" level="AI-ready" skills="Data curator" time="Fifteen minutes for the demonstrated correction and verification">
+
+**Result:** A separate reviewed JSON file contains the correction and can be reopened in the app.
+
+Begin with one finding that can be checked against the image. In this example, the chart's generated title is `Percent of population`, its vertical-axis label. A title identifies the data snapshot; this axis label describes the scale of the values. The source-page caption is outside the extracted image, so it does not supply a title for this image-derived record.
+
+Saving creates a separate JSON file and marks the record **Reviewed**. That label records a save and does not establish that every field has been checked. Passing the schema checks does not establish that the metadata accurately describes the image; that remains the curator's decision.
+
+1. In **Edit metadata**, select **Overview** and compare **Title** with the chart. The **?** control shows the generated field value, and **Generated reference** displays the full original JSON.
+2. Clear **Title** and press Tab to apply the edit. Its label becomes orange, and the toolbar reports **Unsaved edits**. Leave the title blank because no title is visible inside the image.
+3. Select **Save reviewed & next**. The app checks the record against Schema v1.4 before saving, then moves to the table. If validation fails, correct the fields identified by the error message and save again. The edits remain available, and an existing saved file is preserved.
+4. Select **Previous** to reopen the chart. Confirm that its status is **Reviewed**, its title remains blank, and **Generated reference** still contains the original title. The orange label identifies the difference from that reference.
+
+A cleared title is omitted from the saved JSON. Saving also omits fields containing `null`, JSON's marker for no value, and applies schema rules that can trim spaces and remove identical list entries. These changes do not represent additional decisions about the image.
+
+Open the saved chart JSON beside the chapter 4 inputs at this path to check the output:
+
+```text
+output/cookbook-data-snapshot/doclayoutyolo/reviewed/policy_brief_on_shona_community_from_stateless_to_citizens_figure_001.json
+```
+
+For this correction, the title differs as follows:
+
+| Representation | `title` |
+|---|---|
+| Generated reference | The value is `"Percent of population"`. |
+| Reviewed copy | The `title` field is absent because it was cleared in the editor. |
+
+**Worked example.** The chart reopened with a blank title after saving. The saved JSON passed Schema v1.4 validation. Comparing the records after applying the same schema rules confirmed that the title was the only content correction. The original image and generated JSON were unchanged.
+
+[![The dark-theme reviewer after reopening the saved chart, with a blank orange title and reviewed status](/cookbook-files/data-snapshot-end-to-end/metadata-reviewer-reviewed-dark.png)](/cookbook-files/data-snapshot-end-to-end/metadata-reviewer-reviewed-dark.png)
+
+The [saved example JSON](pathname:///cookbook-files/data-snapshot-end-to-end/reviewed-figure-001.json) provides that output for comparison with the [original chart JSON](pathname:///cookbook-files/data-snapshot-end-to-end/policy_brief_on_shona_community_from_stateless_to_citizens_figure_001.json). The download has a shorter name; the app saves the full matching filename shown above. Keep this comparison file outside the generated-metadata input directory.
+
+**What this does not do.** This exercise corrects one field and does not provide a complete review. Edits are not saved automatically: closing or reloading a session can lose unsaved work. When navigating between images, the app offers **Save & move**, **Discard & move**, and **Cancel** for pending edits.
+
+</Recipe>
+
+Continue with the remaining chart fields and the table using the same compare, edit, save, and reopen sequence. Once the required checks are complete, the reviewed JSON and matching image can be handed to the next workflow. The app does not publish records or start downstream processing.
+
+## Implementation options
+
+When metadata and reviewed copies are stored elsewhere, use `--generated-root` and `--reviewed-root` to supply those locations explicitly. The reviewed directory must be separate from both input directories. A text editor is an alternative for editing JSON, followed by validation with the existing [inspection helper](./metadata.mdx#recipe-3-2).
+
+## Resources
+
+- The [app guide](https://github.com/worldbank/ai4data/blob/main/src/ai4data/data_snapshot/metadata_reviewer/README.md) documents installation, custom directories, and file behavior.
+- The [schema reference](/docs/data-snapshots/metadata-schema/) defines the fields used to interpret and validate edits.
+
+## Common mistakes
+
+- Renaming an image without renaming its JSON prevents the app from matching the pair.
+- Copying a caption from outside the data snapshot into image-derived metadata changes the evidence boundary of this workflow.
+- Treating **Reviewed** as a guarantee of semantic accuracy overstates what the app records.
+- Editing the same output directory in multiple sessions can overwrite another session's saved changes because there is no conflict detection.
+- Reusing reviewed outputs after regenerating inputs can conceal work that needs another review. Previous reviewed copies should be moved aside before starting a fresh review of regenerated inputs.
+
+## Verification
+
+- The chapter 4 directories contain the two matching image–JSON pairs, and the app reports two items. Images without metadata appear as warnings.
+- The reopened chart has a blank title and a reviewed status, while its generated reference retains `Percent of population`.
+- The save completed without schema errors. The JSON file in `reviewed/` omits `title`, and any other differences are explained by the saving rules above.
+- The original image files and generated JSON remain available in their input directories. Use Ctrl+C in the terminal to stop the app after inspection.
+
+## Checklist
+
+<Checklist id="data-snapshot-end-to-end-metadata-reviewer" items={[
+  "The two recorded image–JSON pairs are available in separate input directories.",
+  "The title correction follows the evidence visible inside the chart image.",
+  "The reviewed copy validates and can be reopened in the editor.",
+  "The generated reference remains available for comparison.",
+  "The demonstrated correction is distinguished from a complete semantic audit."
+]} />

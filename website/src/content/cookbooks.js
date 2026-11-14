@@ -7,12 +7,12 @@ export const allCookbooks = [
   {
     id: 'data-snapshot-end-to-end',
     version: '0.1',
-    date: 'October 2026',
+    date: 'November 2026',
     audience: 'Developers and data curators working with institutional PDFs',
     title: 'Practical Guide to the Data Snapshot End-to-End Workflow',
     description:
-      'Eight chapters cover PDF preparation, snapshot extraction, semantic metadata, output review, combined execution, safe recovery, model selection, and a proposed improvement roadmap, using data snapshots from the sample PDF used in the tutorial and two selected metadata requests.',
-    chapters: 8,
+      'Nine chapters cover PDF preparation, snapshot extraction, semantic metadata, output review, combined execution, safe recovery, model selection, a proposed improvement roadmap, and local metadata editing using the recorded outputs.',
+    chapters: 9,
     to: '/cookbook/data-snapshot-end-to-end/',
   },
   {

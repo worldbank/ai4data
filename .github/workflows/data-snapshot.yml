@@ -37,7 +37,7 @@ jobs:
       - name: Install wheel with test dependencies
         run: |
           for wheel in dist/*.whl; do
-            pip install "${wheel}[data-snapshot-metadata]" pytest
+            pip install "${wheel}[data-snapshot-metadata,data-snapshot-metadata-reviewer]" pytest
           done
       - name: Test offline from the installed package
         run: python -m pytest tests/data_snapshot -q

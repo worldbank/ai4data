@@ -1,0 +1,87 @@
+"""Check the installed reviewer launcher without starting a server."""
+
+import sys
+from pathlib import Path
+from unittest.mock import MagicMock
+
+import pytest
+
+from ai4data.data_snapshot.metadata_reviewer import _parse_args
+from ai4data.data_snapshot.metadata_reviewer import __main__ as launcher
+
+
+def test_directory_defaults_follow_snapshot_root() -> None:
+    """Infer metadata and reviewed siblings for default and custom runs."""
+    for root in ("output/doclayoutyolo/snapshots", "custom run/images"):
+        paths = _parse_args(["--snapshots-root", root])
+        assert paths.snapshots_root == Path(root)
+        assert paths.generated_root == Path(root).parent / "metadata"
+        assert paths.reviewed_root == Path(root).parent / "reviewed"
+
+
+def test_launch_uses_installed_app_and_localhost(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Preserve paths with spaces and return the Streamlit process status."""
+    commands = []
+    process = MagicMock()
+    process.__enter__.return_value = process
+    process.wait.return_value = 7
+
+    def popen(command: list[str]) -> MagicMock:
+        commands.append(command)
+        return process
+
+    monkeypatch.setattr(launcher, "find_spec", lambda name: object())
+    monkeypatch.setattr(launcher.subprocess, "Popen", popen)
+    assert (
+        launcher.main(
+            [
+                "--snapshots-root",
+                str(tmp_path / "snapshot images"),
+                "--generated-root",
+                str(tmp_path / "generated metadata"),
+                "--reviewed-root",
+                str(tmp_path / "reviewed metadata"),
+            ]
+        )
+        == 7
+    )
+    command = commands[0]
+    assert command[:3] == [sys.executable, "-m", "streamlit"]
+    assert Path(command[4]).is_file()
+    assert "--server.address=127.0.0.1" in command
+    assert not any(argument.startswith("--server.headless") for argument in command)
+    assert "--server.showEmailPrompt=false" in command
+    assert command[command.index("--") + 1 :] == [
+        "--snapshots-root",
+        str(tmp_path / "snapshot images"),
+        "--generated-root",
+        str(tmp_path / "generated metadata"),
+        "--reviewed-root",
+        str(tmp_path / "reviewed metadata"),
+    ]
+
+
+@pytest.mark.parametrize("interrupts", [1, 2])
+def test_interrupt_waits_for_streamlit_shutdown(
+    monkeypatch: pytest.MonkeyPatch, interrupts: int
+) -> None:
+    """Allow repeated Ctrl+C while Streamlit finishes without killing the child."""
+    process = MagicMock()
+    process.__enter__.return_value = process
+    process.wait.side_effect = [KeyboardInterrupt() for _ in range(interrupts)] + [0]
+    monkeypatch.setattr(launcher, "find_spec", lambda name: object())
+    monkeypatch.setattr(launcher.subprocess, "Popen", lambda command: process)
+
+    assert launcher.main([]) == 0
+    assert process.wait.call_count == interrupts + 1
+    process.kill.assert_not_called()
+    process.terminate.assert_not_called()
+
+
+def test_missing_streamlit_explains_install(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Provide the correct extra name when the optional UI is unavailable."""
+    monkeypatch.setattr(launcher, "find_spec", lambda name: None)
+    with pytest.raises(SystemExit, match="data-snapshot-metadata-reviewer"):
+        launcher.main([])

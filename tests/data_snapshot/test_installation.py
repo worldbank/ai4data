@@ -20,12 +20,13 @@ class BlockOptionalImports(importlib.abc.MetaPathFinder):
     def find_spec(self, fullname, path=None, target=None):
         if fullname.split('.')[0] in {
             'PIL', 'pymupdf', 'openai', 'dotenv', 'torch', 'transformers',
-            'ultralytics', 'doclayout_yolo', 'huggingface_hub',
+            'ultralytics', 'doclayout_yolo', 'huggingface_hub', 'streamlit',
         }:
             raise AssertionError(f'Unexpected optional import: {fullname}')
 
 sys.meta_path.insert(0, BlockOptionalImports())
 from ai4data import data_snapshot
+from ai4data.data_snapshot import metadata_reviewer
 assert data_snapshot.discover_pdfs.__module__ == 'ai4data.data_snapshot.inputs'
 try:
     data_snapshot.unknown
@@ -56,6 +57,20 @@ def test_module_help_runs_outside_checkout(module: str, tmp_path: Path) -> None:
     )
     assert module in result.stdout
     assert "--input" in result.stdout
+
+
+def test_reviewer_help_runs_outside_checkout(tmp_path: Path) -> None:
+    """Expose reviewer help from the installed package without starting Streamlit."""
+    result = subprocess.run(
+        [sys.executable, "-m", "ai4data.data_snapshot.metadata_reviewer", "--help"],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert "--snapshots-root" in result.stdout
+    assert "--generated-root" in result.stdout
+    assert "--reviewed-root" in result.stdout
 
 
 def test_packaged_resources_are_available() -> None:
