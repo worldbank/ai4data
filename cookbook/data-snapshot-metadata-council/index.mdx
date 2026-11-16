@@ -1,0 +1,113 @@
+---
+id: index
+title: Practical Guide to Refining Data Snapshot Metadata Extraction Policies with Model Councils
+sidebar_label: Overview
+sidebar_position: 0
+description: Plan an experiment in which a model council proposes evidence-based changes to Data Snapshot metadata extraction policies.
+---
+
+# Practical Guide to Refining Data Snapshot Metadata Extraction Policies with Model Councils
+
+**A cookbook for data scientists, ML engineers, and AI application developers.** Version 0.1 (working draft), November 2026.
+
+:::note[Working draft]
+This guide documents a proposed experiment. The snapshots and published human-reviewed annotations are real. All round extractions, reviews, deliberations, and policy revisions are illustrative.
+:::
+
+Metadata extracted from a data snapshot can conform to the schema even when the model assigns an axis label to the title field or infers a value that the snapshot does not support. These errors can help identify where the *extraction policy*, the instructions that guide the model, needs to be more precise.
+
+This guide proposes an experiment that uses a council of models to refine an initial extraction policy. The council uses findings from each review round to propose and critique changes. The experiment aims to develop a metadata extraction pipeline by pairing a fixed reference extractor with the final policy. The guide starts with a prepared example so the team can see how an error becomes a candidate rule before setting up a round.
+
+The registration script in Chapter 2 runs offline on local files. Chapters 3–6 use the prepared round records to explain the proposed Pi workflow, human decisions, council deliberation, and next-round choices. The Pi runner and its manifest-generation tool still need implementation.
+
+## Prerequisites
+
+The walkthrough uses the examples supplied with the guide. For a round using the team's own data, the following are needed.
+
+- Familiarity with multimodal model inference, prompts, structured outputs, and basic evaluation.
+- Existing data snapshots, their source references, and the [Data Snapshot Metadata Schema v1.4 reference](/docs/data-snapshots/metadata-schema/).
+- A human reviewer who understands the metadata schema and can assess extraction issues against the source evidence.
+
+## First steps
+
+1. Start with the prepared D1 example in [the workflow chapter](./workflow.mdx). Follow one title error from the data snapshot to a proposed policy revision. Allow about an hour.
+2. Use [the preparation chapter](./preparation.mdx) to set up a round. Verify the data snapshots and their references, then record the starting policy and settings. Allow about two hours.
+3. Use [the startup chapter](./start-round.mdx) to walk through how the proposed Pi setup would turn those inputs into extraction records and judge findings. The walkthrough stops at the point where a finding needs a human decision.
+
+The [self-assessment](./start-here.mdx) helps teams decide where to start.
+
+## Chapters and questions
+
+| Chapter | Question | What the reader does |
+|---|---|---|
+| [1. One round at a glance](./workflow.mdx) | What does a round start with, and what does it produce? | Follow D1 from the starting policy to a proposed rule revision. |
+| [2. Round preparation](./preparation.mdx) | What must be prepared before starting the experiment? | Select the data snapshots, verify the annotations, and record the batch, starting policy, and settings. |
+| [3. Round configuration and startup](./start-round.mdx) | How would the prepared batch become extraction records and judge findings? | Trace the proposed Pi setup through extraction and diagnosis and identify where it would pause. |
+| [4. Human review of findings](./review-findings.mdx) | What needs a human decision before the council begins? | Resolve escalated findings and spot-check selected fields before deliberation. |
+| [5. Council deliberation and the next policy](./deliberation.mdx) | How do the reviewed findings become a policy for the next round? | Follow the proposals and critiques, then check what the orchestrator changed and carried forward. |
+| [6. Decisions after a round](./progress.mdx) | Should the team run another batch, investigate an open issue, or move to independent evaluation? | Use the round findings to decide what to do next. |
+
+## Maturity levels
+
+| Level | Meaning |
+|---|---|
+| **Foundational** | People can inspect the workflow and review a round from its records. |
+| **AI-ready** | Structured artifacts, stable identifiers, and documented checks support repeatable handoffs. |
+| **AI-native** | The team designs model coordination with provenance, scoped access, and verification built into each handoff. |
+
+## Running example
+
+The [Data Snapshot dataset](https://huggingface.co/datasets/ai4data/data-snapshot) contains more than 3,900 data snapshots. The [gold metadata release](https://huggingface.co/datasets/ai4data/data_snapshot_metadata_gold) contains 102 human-reviewed records. The walkthrough uses the following four data snapshots, two with human-reviewed annotations.
+
+| Sample | Batch | Snapshot and focus |
+|---|---|---|
+| D1 | Discovery | The Shona labor-force chart distinguishes a caption from an axis label. |
+| D2 | Discovery | The WPS5070 rural Indonesia regression table distinguishes variables, statistics, and lag groupings. |
+| C1 | Challenge | The Shona demographics table shows row-specific units but omits the caption. |
+| C2 | Challenge | The WPS4771 guarantee-systems chart shows categories and legend entries but does not identify the counted entity. |
+
+The sample register pins the dataset revisions, source pages, and image fingerprints. The [preparation chapter](./preparation.mdx) explains the pairings and reuse information.
+
+## Scope of the examples
+
+The example illustrates one round, from the starting policy and state (P001 and S001) to the candidate policy and updated state (P002 and S002). The walkthrough uses selected fields to make each decision inspectable. Observations across rounds would be needed to assess stabilization, and independent evaluation would measure extraction quality. Distinguishability judging, fine-tuning, and operational deployment are outside this design.
+
+## Files
+
+The downloadable round files, registration script, and role instructions are in `website/static/cookbook-files/data-snapshot-metadata-council/`. In the supplied teaching register, image and annotation paths are relative to `website/static/`. A register generated for a local experiment uses paths relative to its own directory, as described in Recipe 2.1.
+
+| File | Used in |
+|---|---|
+| [Attribution and reuse notes](pathname:///cookbook-files/data-snapshot-metadata-council/README.md) | Source attribution and artifact overview |
+| [Sample register](pathname:///cookbook-files/data-snapshot-metadata-council/samples.json) | Exact data snapshots, source documents, annotation availability, and checksums |
+| [Registration script](pathname:///cookbook-files/data-snapshot-metadata-council/register_samples.py) and [source CSV](pathname:///cookbook-files/data-snapshot-metadata-council/batch_sources.csv) | Build a register from a local batch directory and its source attribution |
+| [Role instructions](pathname:///cookbook-files/data-snapshot-metadata-council/role-instructions.md) | Templates for extraction, diagnosis, review, deliberation, and synthesis |
+| [D1 image](pathname:///img/snapshot/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.png) and [D1 gold](pathname:///cookbook-files/data-snapshot-metadata-council/policy_brief_on_shona_community_from_stateless_to_citizens_figure_000.json) | Shona labor-force chart and its published annotation |
+| [D2 image](pathname:///cookbook-files/data-snapshot-metadata-council/document_11174028_table_007.png) and [D2 gold](pathname:///cookbook-files/data-snapshot-metadata-council/document_11174028_table_007.json) | Rural Indonesia regression table and its published annotation |
+| [C1 image](pathname:///cookbook-files/data-snapshot-metadata-council/policy_brief_on_shona_community_from_stateless_to_citizens_table_000.png) | Shona demographics table snapshot |
+| [C2 image](pathname:///cookbook-files/data-snapshot-metadata-council/document_10000660_figure_002.png) | WPS4771 guarantee-systems chart |
+| [Initial policy P001](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md) and [candidate P002](pathname:///cookbook-files/data-snapshot-metadata-council/002_policy.md) | Starting instructions and proposed revision |
+| [Initial state S001](pathname:///cookbook-files/data-snapshot-metadata-council/001_experiment_state.md) and [state S002](pathname:///cookbook-files/data-snapshot-metadata-council/002_experiment_state.md) | Initial conditions and handoff to the next round |
+| [Extraction records](pathname:///cookbook-files/data-snapshot-metadata-council/001_extractions.jsonl) | Schema v1.4 payloads under P001 |
+| [Judge reviews](pathname:///cookbook-files/data-snapshot-metadata-council/001_judge_reviews.jsonl) | Field evidence, reference status, and routing |
+| [Human review](pathname:///cookbook-files/data-snapshot-metadata-council/001_human_review.md) | Escalation and spot-check decisions |
+| [Council deliberation](pathname:///cookbook-files/data-snapshot-metadata-council/001_deliberation.md) | Proposals, cross-critiques, revisions, and synthesis |
+| [Round findings](pathname:///cookbook-files/data-snapshot-metadata-council/001_round_findings.md) | Dispositions, rule tally, and open issues |
+| [Round manifest](pathname:///cookbook-files/data-snapshot-metadata-council/001_manifest.json) | Batch, version relationships, and artifact inventory |
+
+## Related resources
+
+| Resource | Purpose |
+|---|---|
+| [Extracting Data from Documents](/cookbook/data-from-documents/) | Learn how to extract and verify numerical observations. |
+| [Publishing ML-Ready Datasets](/cookbook/ml-ready-datasets/) | Document and version datasets and plan splits. |
+| [Evaluation Suites for Statistical AI](/cookbook/evaluation-suites/) | Design independent quality assessment. |
+
+## Citation
+
+World Bank. 2026. *Practical Guide to Refining Data Snapshot Metadata Extraction Policies with Model Councils.* Version 0.1. AI for Data – Data for AI.
+https://worldbank.github.io/ai4data/cookbook/data-snapshot-metadata-council/
+
+## Version history
+
+- **0.1 (November 2026).** Working draft of the experiment design and illustrative round, revised for editorial review under the current title.

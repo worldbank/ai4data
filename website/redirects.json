@@ -1,3 +1,16 @@
 [
-  {"from": "/training/session-01/documents.html", "to": "/training/session-01/documents"}
+  {"from": "/training/session-01/documents.html", "to": "/training/session-01/documents"},
+  {"from": "/cookbook/data-snapshot-council", "to": "/cookbook/data-snapshot-metadata-council"},
+  {"from": "/cookbook/data-snapshot-council/contributing", "to": "/cookbook/data-snapshot-metadata-council/contributing"},
+  {"from": "/cookbook/data-snapshot-council/deliberation", "to": "/cookbook/data-snapshot-metadata-council/deliberation"},
+  {"from": "/cookbook/data-snapshot-council/diagnosis", "to": "/cookbook/data-snapshot-metadata-council/review-findings"},
+  {"from": "/cookbook/data-snapshot-council/glossary", "to": "/cookbook/data-snapshot-metadata-council/glossary"},
+  {"from": "/cookbook/data-snapshot-council/orchestration", "to": "/cookbook/data-snapshot-metadata-council/start-round"},
+  {"from": "/cookbook/data-snapshot-council/preparation", "to": "/cookbook/data-snapshot-metadata-council/preparation"},
+  {"from": "/cookbook/data-snapshot-council/progress", "to": "/cookbook/data-snapshot-metadata-council/progress"},
+  {"from": "/cookbook/data-snapshot-council/standards", "to": "/cookbook/data-snapshot-metadata-council/standards"},
+  {"from": "/cookbook/data-snapshot-council/start-here", "to": "/cookbook/data-snapshot-metadata-council/start-here"},
+  {"from": "/cookbook/data-snapshot-council/workflow", "to": "/cookbook/data-snapshot-metadata-council/workflow"},
+  {"from": "/cookbook/data-snapshot-metadata-council/diagnosis", "to": "/cookbook/data-snapshot-metadata-council/review-findings"},
+  {"from": "/cookbook/data-snapshot-metadata-council/orchestration", "to": "/cookbook/data-snapshot-metadata-council/start-round"}
 ]

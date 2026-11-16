@@ -1,0 +1,130 @@
+---
+id: progress
+title: "6. Decisions after a round"
+sidebar_label: "6. Decisions after a round"
+sidebar_position: 7
+description: Shows how to count rule changes, interpret stopping signals, and design an independent quality comparison.
+---
+
+import Recipe from '@site/src/components/Cookbook/Recipe';
+import Checklist from '@site/src/components/Cookbook/Checklist';
+
+# 6. Decisions after a round
+
+**Question:** Should the team run another batch, investigate an open issue, or move to independent evaluation?
+
+## Rationale
+
+The candidate policy and findings from [Chapter 5](./deliberation.mdx) give the team a basis for deciding what to do next. Another batch can test a revised rule on fresh images. A consequential issue may need more evidence or human review before another batch is useful.
+
+A sustained low count of accepted rule changes on comparable batches can suggest that the policy is stabilizing. Easier batches or repeatedly deferred problems can produce the same pattern, so review recurring failures alongside the rule counts.
+
+When development ends, the fixed reference extractor and the final policy form the metadata extraction pipeline. Independent evaluation compares the initial and final policies on data snapshots kept outside development. That comparison gives the team separate evidence about extraction quality for an adoption decision.
+
+## Target state
+
+- Each round accounts for active, added, amended, and retired rules and unresolved failure modes.
+- A human records the reason to continue or stop policy development.
+- An independent evaluation plan defines the comparison needed to assess quality and readiness.
+
+## Maturity levels
+
+| Level | Steps |
+|---|---|
+| **Foundational** | Keep a rule ledger and review open issues before deciding whether to continue. |
+| **AI-ready** | Calculate changes between policy versions and specify a separate evaluation set and rubric. |
+| **AI-native** | Design versioned reporting and gates that preserve independent review of candidate policies. |
+
+:::info[Running example]
+The one illustrative transition from P001 to P002 supports a rule tally. It gives no evidence of a trend. F04 remains an open question for future samples.
+:::
+
+## Recipes
+
+<Recipe title="6.1 Reconcile the rule tally and open issues" level="AI-ready" skills="Experiment lead and ML engineer" time="30 minutes">
+
+**Result:** The rule tally agrees with the policy changes, and the open issues identify what to check in another batch.
+
+Look for R02 in the [starting policy (P001)](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md) and the [candidate policy (P002)](pathname:///cookbook-files/data-snapshot-metadata-council/002_policy.md). The wording changes under the same ID, so R02 counts as an amendment. R05 appears only in P002, so it counts as an addition. A retirement removes an active rule from the next policy and reserves its ID.
+
+For round `r`, the accepted rule-change count is `C_r = A_r + M_r + R_r`, where `A_r` counts additions, `M_r` counts amendments, and `R_r` counts retirements. Track the active total separately.
+
+1. Compare the starting and candidate policies by rule ID. Classify each rule once as added, amended, retired, or unchanged, then check the [tally in the round findings](pathname:///cookbook-files/data-snapshot-metadata-council/001_round_findings.md).
+2. Reconcile the active total with the prior active count plus additions minus retirements. Store reasons and finding IDs alongside accepted changes.
+3. Record failure modes and unresolved issues, including rejected proposals. Keep batch membership and review coverage available to interpret any future change in frequency.
+
+**Worked example.** P001 starts with four active rules. P002 adds R05, amends R02 and R03, and retires no rules. The accepted rule-change count is `C_001 = 1 + 2 + 0 = 3`. P002 has five active rules. F04 remains open as a test of whether the proposed unit guidance generalizes. [Round findings and rule tally](pathname:///cookbook-files/data-snapshot-metadata-council/001_round_findings.md)
+
+**What this does not do.** Counts of rules describe policy activity. The tally says nothing about the relative quality of P001 and P002.
+
+</Recipe>
+
+<Recipe title="6.2 Decide whether to continue, investigate, or evaluate" level="Foundational" skills="Experiment lead and metadata reviewer" time="30 minutes">
+
+**Result:** A decision records the next action, its reason, and any unresolved issues.
+
+Finding F04 leaves an open question in the [cumulative state (S002)](pathname:///cookbook-files/data-snapshot-metadata-council/002_experiment_state.md). Will the proposed unit rule also work on figures and mixed-unit tables in future batches? Check open issues like this alongside rule counts when deciding whether to stop.
+
+Choose how many rounds to review and what would count as a minor change before observing a trend. Consider how much the policy changed and how consequential those changes were.
+
+A plateau in `C_r` is a possible stopping signal when the count stays low, ideally near zero, over that review window. A flat count that still includes substantial changes each round shows ongoing revision. Use the count alongside the reasons for the changes, recurring failures, and unresolved issues.
+
+1. Compare accepted changes and recurrent issues in the [round findings](pathname:///cookbook-files/data-snapshot-metadata-council/001_round_findings.md) over the chosen window. Check batch composition, rubric and model versions, and the scope of review.
+2. Inspect unresolved disagreements and severe failures. Ask whether they need different evidence, human adjudication, or a change to the planned scope.
+3. Record the decision and its reason. Continue with a fresh batch if it can test the current policy. Investigate first if a consequential issue needs other evidence or human review. If the low change count and review of remaining issues support closing development, record the final policy and move to the independent comparison.
+
+**Worked example.** The illustrative decision is to continue with a fresh batch that can test R05 on figures and mixed-unit tables. Round 001 has three accepted changes and gives the team a specific open question in F04. A later review would check whether unsupported unit values recur and whether fixing them still requires policy changes.
+
+**What this does not do.** Policy stabilization is a reason to consider ending development. Independent evaluation is needed to assess extraction quality, and the stopping threshold depends on the experiment.
+
+</Recipe>
+
+<Recipe title="6.3 Design an independent quality comparison" level="AI-ready" skills="Evaluation lead and metadata reviewers" time="60 minutes">
+
+**Result:** An evaluation brief specifies the sample separation, comparison, and evidence required for adoption.
+
+Consider a comparison of the [starting policy (P001)](pathname:///cookbook-files/data-snapshot-metadata-council/001_policy.md) and the [candidate policy (P002)](pathname:///cookbook-files/data-snapshot-metadata-council/002_policy.md). For each reserved image, the fixed reference extractor would produce one metadata record under each policy. This is a paired comparison because both policies are tested on the same examples.
+
+Set aside the evaluation images and annotations before development. Keep data snapshots from the same source document together, and group near-duplicate documents where appropriate.
+
+1. Define the field-level assessment and review rubric before running the comparison. Include unsupported claims, omissions, and errors that matter to downstream users.
+2. Compare the experiment's initial and final policies with identical model and schema settings. Arrange independent human assessment, preferably without showing which policy produced the record.
+3. Report disagreements, case counts, and uncertainty. Define what evidence would justify proceeding and which unresolved failures require further work.
+4. Record the evaluation status separately from the development stopping decision.
+
+**Worked example.** D1, D2, C1, and C2 are development examples. The evaluation brief would reserve other source documents and have reviewers check both records for each data snapshot against the same rubric. The published gold release has a single train split, so the team must establish evaluation independence separately.
+
+**What this does not do.** The comparison is proposed. Distinguishability judging is a separate future question, and model fine-tuning is outside this design.
+
+</Recipe>
+
+## Implementation options
+
+- Use a table for a small rule ledger. Derive counts from stable IDs when several versions need to be checked repeatedly.
+- Adapt an extraction evaluation rubric to snapshot metadata. Review field evidence and use an independent sample for the comparison.
+
+## Resources
+
+- [Publishing ML-Ready Datasets](/cookbook/ml-ready-datasets/splits) explains grouped splits and leakage checks.
+- [Evaluation Suites for Statistical AI](/cookbook/evaluation-suites/extraction) explains task-specific extraction assessment.
+- The [semantic gold release](https://huggingface.co/datasets/ai4data/data_snapshot_metadata_gold) documents its sampling and split limitations.
+
+## Common mistakes
+
+- Treating a quiet rule ledger as evidence of higher accuracy can conceal persistent failures.
+- Comparing policies on different images confounds the policy with the sample.
+- Reusing Discovery examples for the final quality claim undermines independence.
+
+## Verification
+
+- Reconcile the tally with the two policy files and trace each accepted change to a finding.
+- Check that a stopping record separates observed stability, open issues, and human judgment.
+- Verify that the evaluation brief keeps related development images out of the evaluation set.
+
+## Checklist
+
+<Checklist id="data-snapshot-metadata-council-progress" items={[
+  'The ledger records added, amended, retired, and active rules.',
+  'The stopping procedure examines recurring failures and records human judgment.',
+  'The evaluation plan compares both policies on independent paired samples.'
+]} />
