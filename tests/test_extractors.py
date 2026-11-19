@@ -1,5 +1,6 @@
 """Tests for DatasetExtractor."""
 
+from conftest import gliner_entities
 from ai4data.data_use.extractors.dataset_extractor import DatasetExtractor
 
 
@@ -402,6 +403,9 @@ class TestExtractFromDocumentOutputFormat:
                 ]
 
         mock_gliner_model.batch_extract.side_effect = fake_batch_extract
+        mock_model_manager.mock_entity_model.inference.side_effect = lambda texts, labels, **kw: [
+            gliner_entities(r) for r in fake_batch_extract(texts, object())
+        ]
 
         extractor = DatasetExtractor()
         results = extractor.extract_from_text(
@@ -486,6 +490,9 @@ class TestExtractFromDocumentOutputFormat:
                 ]
 
         mock_gliner_model.batch_extract.side_effect = fake_batch_extract
+        mock_model_manager.mock_entity_model.inference.side_effect = lambda texts, labels, **kw: [
+            gliner_entities(r) for r in fake_batch_extract(texts, object())
+        ]
 
         extractor = DatasetExtractor()
         results = extractor.extract_from_text(
